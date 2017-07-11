@@ -29,8 +29,5 @@ SUBDIRS += \
     orderbutton         \
     denon               \
     avahimonitor        \
-    pushbullet          \
-    usbwde              \
     senic               \
-    multisensor         \
     gpio                \
