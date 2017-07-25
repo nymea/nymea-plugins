@@ -1,0 +1,16 @@
+Source: guh-plugins
+Section: utils
+Priority: options
+Maintainer: Michael Zanetti <michael.zanetti@guh.io>
+Build-depends: debhelper (>= 0.0.0),
+               libguh1-dev,
+               qtbase5-dev,
+               qtconnectivity5-dev,
+Standards-Version: 3.9.3
+
+Package: guh-plugin-avahimonitor
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin to monitor avahi services
+  guh.io plugin to monitor avahi services
