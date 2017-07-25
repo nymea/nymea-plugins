@@ -13,5 +13,222 @@ Package: guh-plugin-avahimonitor
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-Description: guh.io plugin to monitor avahi services
-  guh.io plugin to monitor avahi services
+Description: guh.io plugin for avahimonitor
+  guh.io plugin for avahimonitor
+
+Package: guh-plugin-awattar
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for awattar
+  guh.io plugin for awattar
+
+Package: guh-plugin-commandlauncher
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for commandlauncher
+  guh.io plugin for commandlauncher
+
+Package: guh-plugin-conrad
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for conrad
+  guh.io plugin for conrad
+
+Package: guh-plugin-datetime
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for datetime
+  guh.io plugin for datetime
+
+Package: guh-plugin-denon
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for denon
+  guh.io plugin for denon
+
+Package: guh-plugin-dollhouse
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for dollhouse
+  guh.io plugin for dollhouse
+
+Package: guh-plugin-elgato
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for elgato
+  guh.io plugin for elgato
+
+Package: guh-plugin-elro
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for elro
+  guh.io plugin for elro
+
+Package: guh-plugin-eq-3
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for eq-3
+  guh.io plugin for eq-3
+
+Package: guh-plugin-genericelements
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for genericelements
+  guh.io plugin for genericelements
+
+Package: guh-plugin-gpio
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for gpio
+  guh.io plugin for gpio
+
+Package: guh-plugin-intertechno
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for intertechno
+  guh.io plugin for intertechno
+
+Package: guh-plugin-kodi
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for kodi
+  guh.io plugin for kodi
+
+Package: guh-plugin-leynew
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for leynew
+  guh.io plugin for leynew
+
+Package: guh-plugin-lgsmarttv
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for lgsmarttv
+  guh.io plugin for lgsmarttv
+
+Package: guh-plugin-lircd
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for lircd
+  guh.io plugin for lircd
+
+Package: guh-plugin-mailnotification
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for mailnotification
+  guh.io plugin for mailnotification
+
+Package: guh-plugin-netatmo
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for netatmo
+  guh.io plugin for netatmo
+
+Package: guh-plugin-networkdetector
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for networkdetector
+  guh.io plugin for networkdetector
+
+Package: guh-plugin-openweathermap
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for openweathermap
+  guh.io plugin for openweathermap
+
+Package: guh-plugin-orderbutton
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for orderbutton
+  guh.io plugin for orderbutton
+
+Package: guh-plugin-osdomotics
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for osdomotics
+  guh.io plugin for osdomotics
+
+Package: guh-plugin-philipshue
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for philipshue
+  guh.io plugin for philipshue
+
+Package: guh-plugin-plantcare
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for plantcare
+  guh.io plugin for plantcare
+
+Package: guh-plugin-senic
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for senic
+  guh.io plugin for senic
+
+Package: guh-plugin-tune
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for tune
+  guh.io plugin for tune
+
+Package: guh-plugin-udpcommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for udpcommander
+  guh.io plugin for udpcommander
+
+Package: guh-plugin-unitec
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for unitec
+  guh.io plugin for unitec
+
+Package: guh-plugin-wakeonlan
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for wakeonlan
+  guh.io plugin for wakeonlan
+
+Package: guh-plugin-wemo
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for wemo
+  guh.io plugin for wemo
+
+Package: guh-plugin-ws2812
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: guh.io plugin for ws2812
+  guh.io plugin for ws2812
