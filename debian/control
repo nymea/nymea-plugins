@@ -4,6 +4,7 @@ Priority: options
 Maintainer: Michael Zanetti <michael.zanetti@guh.io>
 Build-depends: debhelper (>= 0.0.0),
                libguh1-dev,
+               libqt5serialport5-dev,
                qtbase5-dev,
                qtconnectivity5-dev,
 Standards-Version: 3.9.3
