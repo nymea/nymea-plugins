@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 
-PLUGINS_DIRS = \
+PLUGIN_DIRS = \
     elro                \
     intertechno         \
     networkdetector     \
@@ -48,7 +48,7 @@ contains(CONFIG, selection) {
 
     # Check each plugin if the subdir exists
     for(plugin, PLUGINS) {
-        contains(PLUGINS_DIRS, $${plugin}) {
+        contains(PLUGIN_DIRS, $${plugin}) {
             SUBDIRS*= $${plugin}
         } else {
             error("Invalid plugin passed. There is no subdirectory with the name $${plugin}.")
@@ -58,7 +58,7 @@ contains(CONFIG, selection) {
 }
 
 all {
-    SUBDIRS *= $${PLUGINS_DIRS}
+    SUBDIRS *= $${PLUGIN_DIRS}
     message("Building all plugins")
 }
 
