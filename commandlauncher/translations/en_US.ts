@@ -52,15 +52,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/commandlauncher/plugininfo.h" line="62"/>
-        <source>script</source>
-        <extracomment>The name of the paramType (391cf4af-ccb4-4ec0-9711-00c1b53a3c4c) of Bashscript launcher</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/commandlauncher/plugininfo.h" line="59"/>
         <source>Bashscript launcher</source>
         <extracomment>The name of the DeviceClass (96044325-a6fb-47c9-9117-f29c3b327978)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/commandlauncher/plugininfo.h" line="62"/>
+        <source>script</source>
+        <extracomment>The name of the paramType (391cf4af-ccb4-4ec0-9711-00c1b53a3c4c) of Bashscript launcher</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

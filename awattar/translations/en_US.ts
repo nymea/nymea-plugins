@@ -16,12 +16,6 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="144"/>
-        <source>set sg-mode</source>
-        <extracomment>The name of the ActionType dd82f6c7-5e92-48ca-b0bc-bdc55d3e1482 of deviceClass aWATTar</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="66"/>
         <source>RPL address</source>
         <extracomment>The name of the paramType (cf13eebf-f188-447a-afcb-bbd330983060) of aWATTar</extracomment>
@@ -142,6 +136,15 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="132"/>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="147"/>
+        <source>sg-mode</source>
+        <extracomment>The name of the ParamType of StateType (b83d3533-aeae-4a9b-95d8-28466bf6c0cf) of DeviceClass aWATTar
+----------
+The name of the paramType (c7b13a33-1c05-457c-a087-20ecc1b8ca01) of aWATTar</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="135"/>
         <source>sync mode changed</source>
         <extracomment>The name of the autocreated EventType (4c303bcd-152d-45ad-874d-d57fc87a26bb)</extracomment>
@@ -160,12 +163,9 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="132"/>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="147"/>
-        <source>sg-mode</source>
-        <extracomment>The name of the ParamType of StateType (b83d3533-aeae-4a9b-95d8-28466bf6c0cf) of DeviceClass aWATTar
-----------
-The name of the paramType (c7b13a33-1c05-457c-a087-20ecc1b8ca01) of aWATTar</extracomment>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="144"/>
+        <source>set sg-mode</source>
+        <extracomment>The name of the ActionType dd82f6c7-5e92-48ca-b0bc-bdc55d3e1482 of deviceClass aWATTar</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

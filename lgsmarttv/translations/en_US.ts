@@ -4,12 +4,6 @@
 <context>
     <name>LgSmartTv</name>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="85"/>
-        <source>LG</source>
-        <extracomment>The name of the vendor (a9af9673-78db-4226-a16b-f34b304f7041)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="82"/>
         <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="91"/>
         <source>LG Smart Tv</source>
@@ -19,30 +13,15 @@ The name of the DeviceClass (1d41b5a8-74ff-4a12-b365-c7bbe610848f)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="85"/>
+        <source>LG</source>
+        <extracomment>The name of the vendor (a9af9673-78db-4226-a16b-f34b304f7041)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="88"/>
         <source>Please enter the pairing key displayed on the Tv.</source>
         <extracomment>The pairing info of deviceClass LG Smart Tv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="172"/>
-        <source>volume up</source>
-        <extracomment>The name of the ActionType ac5d7dcd-dfe8-4a94-9ab9-21b3f804b39e of deviceClass LG Smart Tv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="175"/>
-        <source>volume down</source>
-        <extracomment>The name of the ActionType 62b17bec-f461-4ffa-93d1-67a9430d55e1 of deviceClass LG Smart Tv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="133"/>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="178"/>
-        <source>mute</source>
-        <extracomment>The name of the ParamType of StateType (a6ac9061-3de7-403a-a646-790ca5d73764) of DeviceClass LG Smart Tv
-----------
-The name of the ActionType 1aa9d7f0-0f66-4b90-bb72-f6b7b2118221 of deviceClass LG Smart Tv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -124,6 +103,15 @@ The name of the ActionType 1aa9d7f0-0f66-4b90-bb72-f6b7b2118221 of deviceClass L
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="133"/>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="178"/>
+        <source>mute</source>
+        <extracomment>The name of the ParamType of StateType (a6ac9061-3de7-403a-a646-790ca5d73764) of DeviceClass LG Smart Tv
+----------
+The name of the ActionType 1aa9d7f0-0f66-4b90-bb72-f6b7b2118221 of deviceClass LG Smart Tv</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="136"/>
         <source>tc channel type changed</source>
         <extracomment>The name of the autocreated EventType (84c86670-77c7-4fc6-9e23-abca066e76aa)</extracomment>
@@ -190,6 +178,27 @@ The name of the ActionType 1aa9d7f0-0f66-4b90-bb72-f6b7b2118221 of deviceClass L
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="169"/>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="214"/>
+        <source>input source</source>
+        <extracomment>The name of the ParamType of StateType (58b734ec-2269-4c57-99e1-e1eeee401053) of DeviceClass LG Smart Tv
+----------
+The name of the ActionType 9a6e5111-95d3-49ac-8056-249e704b1509 of deviceClass LG Smart Tv</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="172"/>
+        <source>volume up</source>
+        <extracomment>The name of the ActionType ac5d7dcd-dfe8-4a94-9ab9-21b3f804b39e of deviceClass LG Smart Tv</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="175"/>
+        <source>volume down</source>
+        <extracomment>The name of the ActionType 62b17bec-f461-4ffa-93d1-67a9430d55e1 of deviceClass LG Smart Tv</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="181"/>
         <source>unmute</source>
         <extracomment>The name of the ActionType b7e31999-ba67-443d-8e5c-ec104af987bd of deviceClass LG Smart Tv</extracomment>
@@ -253,15 +262,6 @@ The name of the ActionType 1aa9d7f0-0f66-4b90-bb72-f6b7b2118221 of deviceClass L
         <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="211"/>
         <source>home</source>
         <extracomment>The name of the ActionType 33f941c1-f5fc-4449-b6e3-93eafca493e0 of deviceClass LG Smart Tv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="169"/>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/lgsmarttv/plugininfo.h" line="214"/>
-        <source>input source</source>
-        <extracomment>The name of the ParamType of StateType (58b734ec-2269-4c57-99e1-e1eeee401053) of DeviceClass LG Smart Tv
-----------
-The name of the ActionType 9a6e5111-95d3-49ac-8056-249e704b1509 of deviceClass LG Smart Tv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

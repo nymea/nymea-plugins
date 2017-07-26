@@ -19,36 +19,6 @@ The name of the vendor (2cac0645-855e-44fa-837e-1cab0ae4304c)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="158"/>
-        <source>Max! Wall Thermostat</source>
-        <extracomment>The name of the DeviceClass (ffbfec5d-06e8-4082-b62b-92cc5c3e8c4e)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="269"/>
-        <source>set auto mode</source>
-        <extracomment>The name of the ActionType 162b4b3d-9923-4f2c-a755-b50c8a06a6f0 of deviceClass Max! Wall Thermostat</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="272"/>
-        <source>set manual mode</source>
-        <extracomment>The name of the ActionType 8e604437-9f5b-4c17-b5b0-e2db6007af5b of deviceClass Max! Wall Thermostat</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="275"/>
-        <source>set eco mode</source>
-        <extracomment>The name of the ActionType 27a981e8-ec23-4ba8-921e-33b911a7dd89 of deviceClass Max! Wall Thermostat</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="278"/>
-        <source>display current temperature</source>
-        <extracomment>The name of the ActionType 184fb112-7a03-4560-8634-0257c969c26e of deviceClass Max! Wall Thermostat</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="134"/>
         <source>host address</source>
         <extracomment>The name of the paramType (b30c14db-5b2a-4366-87e3-13d0d38b1905) of Max! Cube LAN Gateway</extracomment>
@@ -94,6 +64,12 @@ The name of the vendor (2cac0645-855e-44fa-837e-1cab0ae4304c)</extracomment>
         <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="155"/>
         <source>portal enabled</source>
         <extracomment>The name of the ParamType of StateType (2c2367da-c229-40ed-9d47-a6e73cd6dc3b) of DeviceClass Max! Cube LAN Gateway</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="158"/>
+        <source>Max! Wall Thermostat</source>
+        <extracomment>The name of the DeviceClass (ffbfec5d-06e8-4082-b62b-92cc5c3e8c4e)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -314,6 +290,30 @@ The name of the ParamType of StateType (aff38be8-7ea6-4fd8-b0fa-e987ab05c719) of
         <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="266"/>
         <source>current temperature</source>
         <extracomment>The name of the ParamType of StateType (852e7708-db1d-42d1-96e4-19c13598262c) of DeviceClass Max! Wall Thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="269"/>
+        <source>set auto mode</source>
+        <extracomment>The name of the ActionType 162b4b3d-9923-4f2c-a755-b50c8a06a6f0 of deviceClass Max! Wall Thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="272"/>
+        <source>set manual mode</source>
+        <extracomment>The name of the ActionType 8e604437-9f5b-4c17-b5b0-e2db6007af5b of deviceClass Max! Wall Thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="275"/>
+        <source>set eco mode</source>
+        <extracomment>The name of the ActionType 27a981e8-ec23-4ba8-921e-33b911a7dd89 of deviceClass Max! Wall Thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="278"/>
+        <source>display current temperature</source>
+        <extracomment>The name of the ActionType 184fb112-7a03-4560-8634-0257c969c26e of deviceClass Max! Wall Thermostat</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

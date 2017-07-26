@@ -4,6 +4,15 @@
 <context>
     <name>PlantCare</name>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/plantcare/plugininfo.h" line="50"/>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/plantcare/plugininfo.h" line="59"/>
+        <source>Plant Care</source>
+        <extracomment>The name of the plugin Plant Care (80ea115f-2a9f-49b3-9575-9e36d137c8d6)
+----------
+The name of the DeviceClass (3245db46-5c6f-42d6-9001-753150763385)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/plantcare/plugininfo.h" line="53"/>
         <source>RPL address</source>
         <extracomment>The name of the paramType (138e19bd-a8db-472a-b3a4-f6497ef2e50c) of Plant Care</extracomment>
@@ -13,15 +22,6 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/plantcare/plugininfo.h" line="56"/>
         <source>guh</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/plantcare/plugininfo.h" line="50"/>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/plantcare/plugininfo.h" line="59"/>
-        <source>Plant Care</source>
-        <extracomment>The name of the plugin Plant Care (80ea115f-2a9f-49b3-9575-9e36d137c8d6)
-----------
-The name of the DeviceClass (3245db46-5c6f-42d6-9001-753150763385)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

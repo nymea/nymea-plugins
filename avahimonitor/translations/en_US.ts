@@ -4,18 +4,18 @@
 <context>
     <name>AvahiMonitor</name>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/avahimonitor/plugininfo.h" line="35"/>
-        <source>guh</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/avahimonitor/plugininfo.h" line="32"/>
         <location filename="../../../build-guh-plugins-Desktop-Debug/avahimonitor/plugininfo.h" line="38"/>
         <source>Avahi Monitor</source>
         <extracomment>The name of the plugin Avahi Monitor (d83fb167-cef7-4347-8c58-fa39df7bea4f)
 ----------
 The name of the DeviceClass (97f0154d-6945-49b8-bd65-0a8cea0c6652)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/avahimonitor/plugininfo.h" line="35"/>
+        <source>guh</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
