@@ -5,6 +5,7 @@ Maintainer: Michael Zanetti <michael.zanetti@guh.io>
 Build-depends: debhelper (>= 0.0.0),
                libguh1-dev,
                libqt5serialport5-dev,
+               python:any,
                qtbase5-dev,
                qtconnectivity5-dev,
 Standards-Version: 3.9.3
@@ -226,3 +227,41 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
 Description: guh.io plugin for ws2812
   guh.io plugin for ws2812
+
+Package: guh-plugins-all
+Section: libs
+Architecture: all
+Multi-Arch: same
+Depends: guh-plugin-avahimonitor,
+         guh-plugin-awattar,
+         guh-plugin-commandlauncher,
+         guh-plugin-conrad,
+         guh-plugin-datetime,
+         guh-plugin-denon,
+         guh-plugin-dollhouse,
+         guh-plugin-elgato,
+         guh-plugin-elro,
+         guh-plugin-eq-3,
+         guh-plugin-genericelements,
+         guh-plugin-gpio,
+         guh-plugin-intertechno,
+         guh-plugin-kodi,
+         guh-plugin-leynew,
+         guh-plugin-lgsmarttv,
+         guh-plugin-lircd,
+         guh-plugin-mailnotification,
+         guh-plugin-netatmo,
+         guh-plugin-networkdetector,
+         guh-plugin-openweathermap,
+         guh-plugin-orderbutton,
+         guh-plugin-osdomotics,
+         guh-plugin-philipshue,
+         guh-plugin-plantcare,
+         guh-plugin-senic,
+         guh-plugin-udpcommander,
+         guh-plugin-unitec,
+         guh-plugin-wakeonlan,
+         guh-plugin-wemo,
+         guh-plugin-ws2812,
+Description: guh.io plugn meta package for all plugins
+  guh.io plugin meta package to install all plugins at once
