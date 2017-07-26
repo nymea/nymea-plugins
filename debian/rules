@@ -8,7 +8,7 @@ $(PREPROCESS_FILES:.in=): %: %.in
 	sed 's,/@DEB_HOST_MULTIARCH@,$(DEB_HOST_MULTIARCH:%=/%),g' $< > $@
 
 %:
-	dh $@
+	dh $@ --parallel
 
 override_dh_install: $(PREPROCESS_FILES:.in=)
 	dh_install --fail-missing
