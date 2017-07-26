@@ -11,6 +11,7 @@ Standards-Version: 3.9.3
 
 Package: guh-plugin-avahimonitor
 Architecture: any
+Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
 Description: guh.io plugin for avahimonitor
@@ -190,13 +191,6 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
 Description: guh.io plugin for senic
   guh.io plugin for senic
-
-Package: guh-plugin-tune
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-Description: guh.io plugin for tune
-  guh.io plugin for tune
 
 Package: guh-plugin-udpcommander
 Architecture: any
