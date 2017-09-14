@@ -10,7 +10,6 @@
         <extracomment>The name of the plugin OpenWeatherMap (bc6af567-2338-41d5-aac1-462dec6e4783)
 ----------
 The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
-        <translatorcomment>Der Name des Services.</translatorcomment>
         <translation>OpenWeatherMap</translation>
     </message>
     <message>
@@ -20,16 +19,40 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <translation>Wetter</translation>
     </message>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="80"/>
+        <source>name</source>
+        <extracomment>The name of the paramType (394d3983-49d4-47f7-888b-243f3f5e9972) of Weather</extracomment>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="83"/>
+        <source>country</source>
+        <extracomment>The name of the paramType (f0cd96bb-ddd1-4484-8353-8b6633fa101d) of Weather</extracomment>
+        <translation>Land</translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="86"/>
+        <source>id</source>
+        <extracomment>The name of the paramType (286342e1-b299-4f67-9d8f-2ed9e8844466) of Weather</extracomment>
+        <translation>ID</translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="89"/>
+        <source>location</source>
+        <extracomment>The name of the paramType (f370b076-a783-4b46-85b2-6f4a9dba55d8) of Weather</extracomment>
+        <translation>Ort</translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="92"/>
         <source>last update changed</source>
         <extracomment>The name of the autocreated EventType (36b2f09b-7d77-4fbc-a68f-23d735dda0b1)</extracomment>
-        <translation>Letzte Aktualisierung geändert</translation>
+        <translation>Zuletzt aktualisiert geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="95"/>
         <source>last update</source>
         <extracomment>The name of the ParamType of StateType (36b2f09b-7d77-4fbc-a68f-23d735dda0b1) of DeviceClass Weather</extracomment>
-        <translation>Letzte Aktualisierung</translation>
+        <translation>Zuletzt aktualisiert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="98"/>
@@ -119,25 +142,25 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="140"/>
         <source>cloudiness changed</source>
         <extracomment>The name of the autocreated EventType (798553bc-45c7-42eb-9105-430bddb5d9b7)</extracomment>
-        <translation>Bewölkung geändert</translation>
+        <translation>Bewölkungsgrad geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="143"/>
         <source>cloudiness</source>
         <extracomment>The name of the ParamType of StateType (798553bc-45c7-42eb-9105-430bddb5d9b7) of DeviceClass Weather</extracomment>
-        <translation>Bewölkung</translation>
+        <translation>Bewölungsgrad</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="146"/>
         <source>visibility changed</source>
         <extracomment>The name of the autocreated EventType (1e10d129-cb88-48b0-9244-e3e7e7b175d9)</extracomment>
-        <translation>Weitsicht geändert</translation>
+        <translation>Fernsicht geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="149"/>
         <source>visibility</source>
         <extracomment>The name of the ParamType of StateType (1e10d129-cb88-48b0-9244-e3e7e7b175d9) of DeviceClass Weather</extracomment>
-        <translation>Weitsicht</translation>
+        <translation>Fernsicht</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="152"/>
@@ -149,7 +172,7 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="155"/>
         <source>weather description</source>
         <extracomment>The name of the ParamType of StateType (f9539108-0e0e-4736-a306-6408f8e20a26) of DeviceClass Weather</extracomment>
-        <translation>Better Beschreibung</translation>
+        <translation>Wetter Beschreibung</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="158"/>
@@ -180,30 +203,6 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <source>refresh</source>
         <extracomment>The name of the ActionType cfbc6504-d86f-4856-8dfa-97b6fbb385e4 of deviceClass Weather</extracomment>
         <translation>Aktualisieren</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="80"/>
-        <source>name</source>
-        <extracomment>The name of the paramType (394d3983-49d4-47f7-888b-243f3f5e9972) of Weather</extracomment>
-        <translation>Name</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="83"/>
-        <source>country</source>
-        <extracomment>The name of the paramType (f0cd96bb-ddd1-4484-8353-8b6633fa101d) of Weather</extracomment>
-        <translation>Land</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="86"/>
-        <source>id</source>
-        <extracomment>The name of the paramType (286342e1-b299-4f67-9d8f-2ed9e8844466) of Weather</extracomment>
-        <translation>ID</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="89"/>
-        <source>location</source>
-        <extracomment>The name of the paramType (f370b076-a783-4b46-85b2-6f4a9dba55d8) of Weather</extracomment>
-        <translation>Ortschaft</translation>
     </message>
 </context>
 </TS>

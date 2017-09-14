@@ -19,13 +19,13 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="51"/>
         <source>Custom mail</source>
         <extracomment>The name of the DeviceClass (f4844c97-7ca6-4349-904e-ff9749a9fe74)</extracomment>
-        <translation>Benutzerdefinierte Mail</translation>
+        <translation>Eigener Mailaccount</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="54"/>
         <source>sender mail</source>
         <extracomment>The name of the paramType (af30ce7b-fb6b-42f0-889d-20b32f8b8fa4) of Custom mail</extracomment>
-        <translation>Absender</translation>
+        <translation>Sender Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="57"/>
@@ -34,7 +34,7 @@
         <extracomment>The name of the paramType (b91d0ecc-6903-4991-ae8d-f36757ce40a7) of Custom mail
 ----------
 The name of the paramType (0a4ea3ff-ea76-4a5f-adbb-b8f79faa2156) of Google mail</extracomment>
-        <translation>Benutzer</translation>
+        <translation>Benutzername</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="60"/>

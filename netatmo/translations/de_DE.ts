@@ -52,14 +52,13 @@ The name of the vendor (4b46b4ed-5ec9-4aa4-afc3-92d3f80e6351)</extracomment>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="95"/>
         <source>Indoor Station</source>
         <extracomment>The name of the DeviceClass (1c809049-04f2-4710-99f5-6ed379a2934f)</extracomment>
-        <translatorcomment>Wird auch von Netatmo in Deutsch so beschrieben.</translatorcomment>
-        <translation>Indoor Station</translation>
+        <translation>Innenstation</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="98"/>
         <source>mac address</source>
         <extracomment>The name of the paramType (157d470a-e579-4d0e-b879-6b5bfa8e34ae) of Indoor Station</extracomment>
-        <translation>Mac Adresse</translation>
+        <translation>MAC Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="101"/>
@@ -71,13 +70,13 @@ The name of the vendor (4b46b4ed-5ec9-4aa4-afc3-92d3f80e6351)</extracomment>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="104"/>
         <source>last update changed</source>
         <extracomment>The name of the autocreated EventType (50da9f6b-c350-401c-a72e-2e4036f3975d)</extracomment>
-        <translation>Letztes update geändert</translation>
+        <translation>Letztes Update geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="107"/>
         <source>last update</source>
         <extracomment>The name of the ParamType of StateType (50da9f6b-c350-401c-a72e-2e4036f3975d) of DeviceClass Indoor Station</extracomment>
-        <translation>Letztes update</translation>
+        <translation>Letztes Update</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="110"/>
@@ -155,38 +154,37 @@ The name of the vendor (4b46b4ed-5ec9-4aa4-afc3-92d3f80e6351)</extracomment>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="146"/>
         <source>co2 changed</source>
         <extracomment>The name of the autocreated EventType (e5710bd1-79fa-4bd4-9052-8416aae909b9)</extracomment>
-        <translation>CO2 geändert</translation>
+        <translation>CO2 Wert geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="149"/>
         <source>co2</source>
         <extracomment>The name of the ParamType of StateType (e5710bd1-79fa-4bd4-9052-8416aae909b9) of DeviceClass Indoor Station</extracomment>
-        <translation>CO2</translation>
+        <translation>CO2 Wert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="152"/>
         <source>wifi signal strength changed</source>
         <extracomment>The name of the autocreated EventType (6ea906d4-5740-454d-a730-6fdb9fa0d624)</extracomment>
-        <translation>WiFi Signalstärke geändert</translation>
+        <translation>Wifi Signalstärke geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="155"/>
         <source>wifi signal strength</source>
         <extracomment>The name of the ParamType of StateType (6ea906d4-5740-454d-a730-6fdb9fa0d624) of DeviceClass Indoor Station</extracomment>
-        <translation>WiFi Signalstärke</translation>
+        <translation>Wifi Signalstärke</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="158"/>
         <source>Outdoor Station</source>
         <extracomment>The name of the DeviceClass (6cc01d62-7317-4ec4-8ac4-a4cab762c179)</extracomment>
-        <translatorcomment>Wird auch von Netatmo in Deutsch so beschrieben</translatorcomment>
-        <translation>Outdoor Station</translation>
+        <translation>Außenstation</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="161"/>
         <source>base station</source>
         <extracomment>The name of the paramType (d7a0ec46-760c-4fdc-9753-fe10c86fe1b9) of Outdoor Station</extracomment>
-        <translation>Basis Station</translation>
+        <translation>Basisstation</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="164"/>
@@ -204,7 +202,7 @@ The name of the vendor (4b46b4ed-5ec9-4aa4-afc3-92d3f80e6351)</extracomment>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="170"/>
         <source>battery changed</source>
         <extracomment>The name of the autocreated EventType (15d8fae1-ba47-42e1-994d-530e8017c965)</extracomment>
-        <translation>Batterie Ladezustand geändert</translation>
+        <translation>Batteriestatus geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/netatmo/plugininfo.h" line="173"/>

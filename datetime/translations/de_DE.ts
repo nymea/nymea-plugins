@@ -67,7 +67,7 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="125"/>
         <source>day</source>
         <extracomment>The name of the ParamType of StateType (eb5231ea-6a1b-4d7e-a95f-d49e7b25122e) of DeviceClass Today</extracomment>
-        <translation>Rag</translation>
+        <translation>Tag</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="128"/>
@@ -79,7 +79,7 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="131"/>
         <source>month</source>
         <extracomment>The name of the ParamType of StateType (fcd8ec96-4488-438a-8b30-58bfe2a7fae2) of DeviceClass Today</extracomment>
-        <translation>Montat</translation>
+        <translation>Monat</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="134"/>
@@ -121,19 +121,19 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="152"/>
         <source>weekday name changed</source>
         <extracomment>The name of the autocreated EventType (f627d052-cee6-4727-b9c6-0e935d41e04a)</extracomment>
-        <translation>Wochentag name geändert</translation>
+        <translation>Wochentag Name geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="155"/>
         <source>weekday name</source>
         <extracomment>The name of the ParamType of StateType (f627d052-cee6-4727-b9c6-0e935d41e04a) of DeviceClass Today</extracomment>
-        <translation>Wochentag name</translation>
+        <translation>Wochentag Name</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="158"/>
         <source>weekend changed</source>
         <extracomment>The name of the autocreated EventType (4de5b57b-bb1a-4d66-9ce3-22bb280b075d)</extracomment>
-        <translation>Wochentag geändert</translation>
+        <translation>Wochenende geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="161"/>
@@ -151,7 +151,7 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="167"/>
         <source>dusk</source>
         <extracomment>The name of the ParamType of StateType (44a99419-fbcd-4d8e-9441-897848b8f77c) of DeviceClass Today</extracomment>
-        <translation>Abenddämmerung</translation>
+        <translation>Abenddämmerung </translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="170"/>
@@ -169,19 +169,19 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="176"/>
         <source>noon changed</source>
         <extracomment>The name of the autocreated EventType (d92be29a-929c-4240-91a0-30153850f838)</extracomment>
-        <translation>Mittag geändert</translation>
+        <translation>Sonnenhöchststand geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="179"/>
         <source>noon</source>
         <extracomment>The name of the ParamType of StateType (d92be29a-929c-4240-91a0-30153850f838) of DeviceClass Today</extracomment>
-        <translation>Mittag</translation>
+        <translation>Sonnenhöchststand</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="182"/>
         <source>dawn changed</source>
         <extracomment>The name of the autocreated EventType (a5779b11-0499-4a6d-a7bd-8143dcc546b4)</extracomment>
-        <translation>Mogendämmerung geändert</translation>
+        <translation>Morgendämmerung geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="185"/>
@@ -265,7 +265,7 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="224"/>
         <source>time type</source>
         <extracomment>The name of the paramType (5c285d83-284b-4ab2-bff8-d9a0ebbecbe4) of Alarm</extracomment>
-        <translation>Zeit Art</translation>
+        <translation>Zeit Typ</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="227"/>
@@ -277,7 +277,7 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="230"/>
         <source>alarm</source>
         <extracomment>The name of the EventType 5ec9a4af-d5ea-4f68-ab32-f7a3fcd75ccc of deviceClass Alarm</extracomment>
-        <translation>Wecker</translation>
+        <translation>Alarm</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="233"/>
@@ -301,13 +301,13 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="242"/>
         <source>running changed</source>
         <extracomment>The name of the autocreated EventType (b21ccd53-1ebd-41a0-a2a3-662874e79837)</extracomment>
-        <translation>Aktiv geändert</translation>
+        <translation>Lauf geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="245"/>
         <source>running</source>
         <extracomment>The name of the ParamType of StateType (b21ccd53-1ebd-41a0-a2a3-662874e79837) of DeviceClass Countdown</extracomment>
-        <translation>Aktiv</translation>
+        <translation>Läuft</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="248"/>
@@ -331,7 +331,7 @@
         <location filename="../../../build-guh-plugins-Desktop-Debug/datetime/plugininfo.h" line="257"/>
         <source>timeout</source>
         <extracomment>The name of the EventType 1db11351-ad67-448e-a784-216741a06a58 of deviceClass Countdown</extracomment>
-        <translation>Time-out</translation>
+        <translation>Timeout</translation>
     </message>
 </context>
 </TS>
