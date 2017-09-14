@@ -183,20 +183,5 @@
         <extracomment>The name of the autocreated ActionType (97c83be0-7ba7-4758-b52b-d997a80bfbe5)</extracomment>
         <translation>Setze Tricolore Farbe 3</translation>
     </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/ws2812/plugininfo.h" line="67"/>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/ws2812/plugininfo.h" line="76"/>
-        <source>WS2812</source>
-        <extracomment>The name of the plugin WS2812 (60b68c75-3261-4bf1-8912-798d2d3bbd3b)
-----------
-The name of the DeviceClass (3142db46-5c6f-42d6-9001-753150763385)</extracomment>
-        <translation>WS2812</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/ws2812/plugininfo.h" line="79"/>
-        <source>host</source>
-        <extracomment>The name of the paramType (ccf1f6b1-54c4-46c1-b978-6abcf3fad882) of WS2812</extracomment>
-        <translation>Hostadresse</translation>
-    </message>
 </context>
 </TS>

@@ -4,61 +4,28 @@
 <context>
     <name>PhilipsHue</name>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="97"/>
+        <source>Philips Hue</source>
+        <extracomment>The name of the plugin Philips Hue (5f2e634b-b7f3-48ee-976a-b5ae22aa5c55)</extracomment>
+        <translation>Philips Hue</translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="100"/>
         <source>Philips</source>
         <extracomment>The name of the vendor (0ae1e001-2aa6-47ed-b8c0-334c3728a68f)</extracomment>
         <translation>Philips</translation>
     </message>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="103"/>
+        <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
+        <extracomment>The pairing info of deviceClass Hue gateway</extracomment>
+        <translation>Bitte drücken sie den Knopf auf der Hue Bridge innerhalb von 30 Sekunden bevor sie fortfahren</translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="106"/>
         <source>Hue gateway</source>
         <extracomment>The name of the DeviceClass (642aa4c7-19aa-45ed-ba06-aa1ae6c9edf7)</extracomment>
         <translation>Hue Gateway</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="103"/>
-        <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
-        <extracomment>The pairing info of deviceClass Hue gateway</extracomment>
-        <translation>Bitte drücken Sie den Knopf am Hue Gateway innerhalb der nächsten 30 Sekunden bevor sie fortfahren</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="154"/>
-        <source>search devices</source>
-        <extracomment>The name of the ActionType cca3f171-6318-44e7-a2ac-d841857c1c24 of deviceClass Hue gateway</extracomment>
-        <translation>Suche Geräte</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="157"/>
-        <source>check updates</source>
-        <extracomment>The name of the ActionType 07a85e91-d064-4bce-b017-13fd0c320c0b of deviceClass Hue gateway</extracomment>
-        <translation>Suche Updates</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="160"/>
-        <source>Upgrade bridge</source>
-        <extracomment>The name of the ActionType 6dfbc7c0-7372-42f6-82ba-e777cb32dc4c of deviceClass Hue gateway</extracomment>
-        <translation>Upgrade Gateway</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="124"/>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="145"/>
-        <source>software version</source>
-        <extracomment>The name of the paramType (ea228c4d-975c-4b43-9445-7c9a907c29d6) of Hue gateway
-----------
-The name of the ParamType of StateType (4c707b18-6604-4e6d-b6bc-4e27769c2adc) of DeviceClass Hue gateway</extracomment>
-        <translation>Software Version</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="163"/>
-        <source>Hue Light</source>
-        <extracomment>The name of the DeviceClass (0edba26c-96ab-44fb-a6a2-c0574d19630e)</extracomment>
-        <translation>Hue Licht</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="241"/>
-        <source>flash</source>
-        <extracomment>The name of the ActionType d25dcfbc-d28c-4905-80e3-300ffb1248f5 of deviceClass Hue Light</extracomment>
-        <translation>Aufleuchten</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="109"/>
@@ -68,12 +35,6 @@ The name of the ParamType of StateType (4c707b18-6604-4e6d-b6bc-4e27769c2adc) of
 ----------
 The name of the paramType (0d71522c-08c0-4a66-bb5e-e31eb2dd41e5) of Hue Light</extracomment>
         <translation>Name</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="97"/>
-        <source>Philips Hue</source>
-        <extracomment>The name of the plugin Philips Hue (5f2e634b-b7f3-48ee-976a-b5ae22aa5c55)</extracomment>
-        <translation>Philips Hue</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="112"/>
@@ -91,19 +52,28 @@ The name of the paramType (99458d90-d171-4600-ba08-4818a4aaed68) of Hue Light</e
         <extracomment>The name of the paramType (1845975b-1184-4440-bc0d-73d53a9f683c) of Hue gateway
 ----------
 The name of the paramType (56d14f2f-1b20-4004-a333-87ac09fa54d2) of Hue Light</extracomment>
-        <translation>Host Adresse</translation>
+        <translation>Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="118"/>
         <source>mac address</source>
         <extracomment>The name of the paramType (2c67203d-a308-45ec-9a08-fc4183c06ff8) of Hue gateway</extracomment>
-        <translation>Mac Adresse</translation>
+        <translation>MAC Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="121"/>
         <source>id</source>
         <extracomment>The name of the paramType (a496feb0-3b7b-46cb-a63a-e063447d6b1d) of Hue gateway</extracomment>
         <translation>ID</translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="124"/>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="145"/>
+        <source>software version</source>
+        <extracomment>The name of the paramType (ea228c4d-975c-4b43-9445-7c9a907c29d6) of Hue gateway
+----------
+The name of the ParamType of StateType (4c707b18-6604-4e6d-b6bc-4e27769c2adc) of DeviceClass Hue gateway</extracomment>
+        <translation>Software Version</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="127"/>
@@ -160,10 +130,34 @@ The name of the ParamType of StateType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of
         <translation>Update Status</translation>
     </message>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="154"/>
+        <source>search devices</source>
+        <extracomment>The name of the ActionType cca3f171-6318-44e7-a2ac-d841857c1c24 of deviceClass Hue gateway</extracomment>
+        <translation>Suche Geräte</translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="157"/>
+        <source>check updates</source>
+        <extracomment>The name of the ActionType 07a85e91-d064-4bce-b017-13fd0c320c0b of deviceClass Hue gateway</extracomment>
+        <translation>Suche Updates</translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="160"/>
+        <source>Upgrade bridge</source>
+        <extracomment>The name of the ActionType 6dfbc7c0-7372-42f6-82ba-e777cb32dc4c of deviceClass Hue gateway</extracomment>
+        <translation>Bridge updaten</translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="163"/>
+        <source>Hue Light</source>
+        <extracomment>The name of the DeviceClass (0edba26c-96ab-44fb-a6a2-c0574d19630e)</extracomment>
+        <translation>Hue Licht</translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="169"/>
         <source>bridge</source>
         <extracomment>The name of the paramType (33b01ab8-3811-4a06-ab3c-0a0ef2faa3ef) of Hue Light</extracomment>
-        <translation>Gateway</translation>
+        <translation>Bridge</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="172"/>
@@ -181,7 +175,7 @@ The name of the ParamType of StateType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="178"/>
         <source>uuid</source>
         <extracomment>The name of the paramType (1a5129ca-006c-446c-9f2e-79b065de715f) of Hue Light</extracomment>
-        <translation>Uuid</translation>
+        <translation>UUID</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="187"/>
@@ -193,37 +187,37 @@ The name of the ParamType of StateType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="196"/>
         <source>power changed</source>
         <extracomment>The name of the autocreated EventType (90aaffe5-6a76-47d2-a14a-550f60390245)</extracomment>
-        <translation>Power geändert</translation>
+        <translation>Eingeschlaten geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="199"/>
         <source>power</source>
         <extracomment>The name of the ParamType of StateType (90aaffe5-6a76-47d2-a14a-550f60390245) of DeviceClass Hue Light</extracomment>
-        <translation>Power</translation>
+        <translation>Eingeschlaten</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="202"/>
         <source>Set power</source>
         <extracomment>The name of the autocreated ActionType (90aaffe5-6a76-47d2-a14a-550f60390245)</extracomment>
-        <translation>Setze Power</translation>
+        <translation>Einschalten</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="205"/>
         <source>color temperature changed</source>
         <extracomment>The name of the autocreated EventType (c0f4206f-f219-4f06-93c4-4ca515a56f79)</extracomment>
-        <translation>Farbtemperatur geändert</translation>
+        <translation>Lichtfarben Temperatur geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="208"/>
         <source>color temperature</source>
         <extracomment>The name of the ParamType of StateType (c0f4206f-f219-4f06-93c4-4ca515a56f79) of DeviceClass Hue Light</extracomment>
-        <translation>Farbtemperatur</translation>
+        <translation>Lichtfarben Temperatur</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="211"/>
         <source>Set color temperature</source>
         <extracomment>The name of the autocreated ActionType (c0f4206f-f219-4f06-93c4-4ca515a56f79)</extracomment>
-        <translation>Setze Farbtemperatur</translation>
+        <translation>Setze Lichtfarben Temperatur</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="214"/>
@@ -265,19 +259,25 @@ The name of the ParamType of StateType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="232"/>
         <source>effect changed</source>
         <extracomment>The name of the autocreated EventType (0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc)</extracomment>
-        <translation>Effekt geändert</translation>
+        <translation>Licht Effekt geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="235"/>
         <source>effect</source>
         <extracomment>The name of the ParamType of StateType (0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc) of DeviceClass Hue Light</extracomment>
-        <translation>Effekt</translation>
+        <translation>Licht Effekt</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="238"/>
         <source>Set effect</source>
         <extracomment>The name of the autocreated ActionType (0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc)</extracomment>
-        <translation>Setze Effekt</translation>
+        <translation>Setze Licht Effekt</translation>
+    </message>
+    <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="241"/>
+        <source>flash</source>
+        <extracomment>The name of the ActionType d25dcfbc-d28c-4905-80e3-300ffb1248f5 of deviceClass Hue Light</extracomment>
+        <translation>Aufleuchten</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="244"/>
@@ -289,7 +289,7 @@ The name of the ParamType of StateType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="247"/>
         <source>Hue White Light</source>
         <extracomment>The name of the DeviceClass (4fa568ef-7a3a-422b-b0c0-206d37cb4eed)</extracomment>
-        <translation>Hue Weiß Licht</translation>
+        <translation>Hue Weißlicht</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="250"/>
@@ -307,7 +307,7 @@ The name of the ParamType of StateType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="256"/>
         <source>battery changed</source>
         <extracomment>The name of the autocreated EventType (683e493a-9796-4d5e-b0e3-61cb178d5819)</extracomment>
-        <translation>Batterie Ladezustand geändert</translation>
+        <translation>Batterie geändert</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="259"/>
@@ -319,37 +319,37 @@ The name of the ParamType of StateType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="262"/>
         <source>on pressed</source>
         <extracomment>The name of the EventType de769db0-4c31-46cf-9760-dbc6f9209c26 of deviceClass Hue Remote</extracomment>
-        <translation>An gedrückt</translation>
+        <translation>Wenn gedrückt</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="265"/>
         <source>on long pressed</source>
         <extracomment>The name of the EventType 6c5e596b-7c15-40bb-af9d-c778a6b0f30e of deviceClass Hue Remote</extracomment>
-        <translation>An lange gedrückt</translation>
+        <translation>Wenn lange gedrückt</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="268"/>
         <source>dim up pressed</source>
         <extracomment>The name of the EventType 8e3d6a62-6a19-4e9a-a25b-e1da2e56ede9 of deviceClass Hue Remote</extracomment>
-        <translation>Dimmen + gedrückt</translation>
+        <translation>Hochdimmen</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="271"/>
         <source>dim up long pressed</source>
         <extracomment>The name of the EventType 53d3c9af-3e25-4116-b22b-38d897bc20aa of deviceClass Hue Remote</extracomment>
-        <translation>Dimmen + lange gedrückt</translation>
+        <translation>Runterdimmen</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="274"/>
         <source>dim down pressed</source>
         <extracomment>The name of the EventType efd8b972-9a37-43f2-b9bc-f9dfe144a96d of deviceClass Hue Remote</extracomment>
-        <translation>Dimmen - gedrückt</translation>
+        <translation>Runter dimmen gedrückt</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="277"/>
         <source>dim down long pressed</source>
         <extracomment>The name of the EventType 1986d4c6-4c9f-4e43-ba70-0ff06c6f177b of deviceClass Hue Remote</extracomment>
-        <translation>Dimmen - lange gedrückt</translation>
+        <translation>Runter dimmen lange gedrückt</translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/philipshue/plugininfo.h" line="280"/>
