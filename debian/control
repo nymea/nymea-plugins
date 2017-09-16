@@ -262,6 +262,7 @@ Package: guh-plugin-networkdetector
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         nmap
 Description: guh.io plugin for networkdetector
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and

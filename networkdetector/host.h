@@ -25,24 +25,36 @@
 
 #include <QString>
 #include <QDebug>
+#include <QDateTime>
 
 class Host
 {
 public:
     Host();
-    Host(const QString &hostName, const QString &address, const bool &reachable);
+
+    QString macAddress() const;
+    void setMacAddress(const QString &macAddress);
 
     QString hostName() const;
-    QString adderss() const;
-    bool reachable() const;
+    void setHostName(const QString &hostName);
 
-    bool isValid() const;
+    QString address() const;
+    void setAddress(const QString &address);
+
+    void seen();
+    QDateTime lastSeenTime() const;
+
+    bool reachable() const;
+    void setReachable(bool reachable);
 
 private:
+    QString m_macAddress;
     QString m_hostName;
     QString m_address;
+    QDateTime m_lastSeenTime;
     bool m_reachable;
 };
+Q_DECLARE_METATYPE(Host)
 
 QDebug operator<<(QDebug dbg, const Host &host);
 

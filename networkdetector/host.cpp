@@ -24,15 +24,18 @@
 
 Host::Host()
 {
-
+    qRegisterMetaType<Host>();
+    qRegisterMetaType<QList<Host> >();
 }
 
-Host::Host(const QString &hostName, const QString &address, const bool &reachable):
-    m_hostName(hostName),
-    m_address(address),
-    m_reachable(reachable)
+QString Host::macAddress() const
 {
+    return m_macAddress;
+}
 
+void Host::setMacAddress(const QString &macAddress)
+{
+    m_macAddress = macAddress;
 }
 
 QString Host::hostName() const
@@ -40,9 +43,29 @@ QString Host::hostName() const
     return m_hostName;
 }
 
-QString Host::adderss() const
+void Host::setHostName(const QString &hostName)
+{
+    m_hostName = hostName;
+}
+
+QString Host::address() const
 {
     return m_address;
+}
+
+void Host::setAddress(const QString &address)
+{
+    m_address = address;
+}
+
+void Host::seen()
+{
+    m_lastSeenTime = QDateTime::currentDateTime();
+}
+
+QDateTime Host::lastSeenTime() const
+{
+    return m_lastSeenTime;
 }
 
 bool Host::reachable() const
@@ -50,13 +73,13 @@ bool Host::reachable() const
     return m_reachable;
 }
 
-bool Host::isValid() const
+void Host::setReachable(bool reachable)
 {
-    return !m_hostName.isEmpty() && !m_address.isEmpty();
+    m_reachable = reachable;
 }
 
 QDebug operator<<(QDebug dbg, const Host &host)
 {
-    dbg.nospace() << "Host(" << host.hostName() << ", " << host.adderss() << ", " << (host.reachable() ? "up" : "down") << ")";
+    dbg.nospace() << "Host(" << host.macAddress() << "," << host.hostName() << ", " << host.address() << ", " << (host.reachable() ? "up" : "down") << ")";
     return dbg.space();
 }
