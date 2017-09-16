@@ -26,9 +26,12 @@
 
 #include "plugin/deviceplugin.h"
 #include "host.h"
+#include "discovery.h"
+#include "devicemonitor.h"
 
 #include <QProcess>
 #include <QXmlStreamReader>
+#include <QHostInfo>
 
 class DevicePluginNetworkDetector : public DevicePlugin
 {
@@ -44,27 +47,18 @@ public:
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::HardwareResources requiredHardware() const override;
+    void deviceRemoved(Device *device) override;
 
     void guhTimer() override;
 
-private:
-    QProcess * m_discoveryProcess;
-    QProcess * m_scanProcess;
-
-    QXmlStreamReader m_reader;
-
-    bool m_aboutToQuit;
-
-    QStringList getDefaultTargets();
-    QProcess *startScanProcesses();
-
-    // Process parsing
-    QList<Host> parseProcessOutput(const QByteArray &processData);
-    Host parseHost();
-
 private slots:
-    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void discoveryFinished(const QList<Host> &hosts);
 
+    void deviceReachableChanged(bool reachable);
+    void deviceAddressChanged(const QString &address);
+private:
+    Discovery *m_discovery = nullptr;
+    QHash<DeviceMonitor*, Device*> m_monitors;
 };
 
 #endif // DEVICEPLUGINNETWORKDETECTOR_H

@@ -21,11 +21,19 @@
                     "createMethods": ["user", "discovery"],
                     "paramTypes": [
                         {
-                            "id": "44337c69-6101-4366-9913-ca9332da6b5c",
-                            "idName": "hostname",
-                            "name": "host name",
+                            "id": "c6707093-3b51-469d-9fc0-f167bff2a987",
+                            "idName": "address",
+                            "name": "address",
                             "type": "QString",
                             "index": 0,
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "18fd3b05-478a-49cf-b8ae-3c6a98675ccc",
+                            "idName": "macAddress",
+                            "name": "hardware address",
+                            "type": "QString",
+                            "index": 1,
                             "inputType": "TextLine"
                         }
                     ],
