@@ -77,8 +77,8 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
         ping();
     }
 
-    if (m_host->reachable() && m_host->lastSeenTime().addSecs(150) < QDateTime::currentDateTime()) {
-        qCDebug(dcNetworkDetector()) << "Could not reach device for > 150 secs. Marking it as gone." << m_host->address() << m_host->macAddress();
+    if (m_host->reachable() && m_host->lastSeenTime().addSecs(300) < QDateTime::currentDateTime()) {
+        qCDebug(dcNetworkDetector()) << "Could not reach device for > 5 mins. Marking it as gone." << m_host->address() << m_host->macAddress();
         m_host->setReachable(false);
         emit reachableChanged(false);
     }
