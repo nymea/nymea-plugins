@@ -154,6 +154,7 @@ Package: guh-plugin-networkdetector
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         nmap
 Description: guh.io plugin for networkdetector
   guh.io plugin for networkdetector
 

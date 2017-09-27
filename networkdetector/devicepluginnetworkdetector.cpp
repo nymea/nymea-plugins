@@ -52,37 +52,28 @@
 
 #include <QDebug>
 #include <QStringList>
-#include <QNetworkInterface>
 
-DevicePluginNetworkDetector::DevicePluginNetworkDetector():
-    m_discoveryProcess(0),
-    m_scanProcess(0),
-    m_aboutToQuit(false)
+DevicePluginNetworkDetector::DevicePluginNetworkDetector()
 {
-
+    m_discovery = new Discovery(this);
+    connect(m_discovery, &Discovery::finished, this, &DevicePluginNetworkDetector::discoveryFinished);
 }
 
 DevicePluginNetworkDetector::~DevicePluginNetworkDetector()
 {
-    // Stop running processes
-    m_aboutToQuit = true;
-
-    if (m_scanProcess && m_scanProcess->state() == QProcess::Running) {
-        qCDebug(dcNetworkDetector()) << "Kill running scan process";
-        m_scanProcess->kill();
-        m_scanProcess->waitForFinished(5000);
-    }
-
-    if (m_discoveryProcess && m_discoveryProcess->state() == QProcess::Running) {
-        qCDebug(dcNetworkDetector()) << "Kill running discovery process";
-        m_discoveryProcess->terminate();
-        m_discoveryProcess->waitForFinished(5000);
+    if (m_discovery->isRunning()) {
+        m_discovery->abort();
     }
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *device)
 {
     qCDebug(dcNetworkDetector()) << "Setup" << device->name() << device->params();
+    DeviceMonitor *monitor = new DeviceMonitor(device->paramValue(macAddressParamTypeId).toString(), device->paramValue(addressParamTypeId).toString(), this);
+    connect(monitor, &DeviceMonitor::reachableChanged, this, &DevicePluginNetworkDetector::deviceReachableChanged);
+    connect(monitor, &DeviceMonitor::addressChanged, this, &DevicePluginNetworkDetector::deviceAddressChanged);
+    m_monitors.insert(monitor, device);
+
     return DeviceManager::DeviceSetupStatusSuccess;
 }
 
@@ -94,12 +85,13 @@ DeviceManager::DeviceError DevicePluginNetworkDetector::discoverDevices(const De
     if (deviceClassId != networkDeviceClassId)
         return DeviceManager::DeviceErrorDeviceClassNotFound;
 
-    if (m_discoveryProcess) {
+    if (m_discovery->isRunning()) {
         qCWarning(dcNetworkDetector()) << "Network discovery already running";
         return DeviceManager::DeviceErrorDeviceInUse;
     }
 
-    m_discoveryProcess = startScanProcesses();
+    m_discovery->discoverHosts(14);
+
     return DeviceManager::DeviceErrorAsync;
 }
 
@@ -108,161 +100,55 @@ DeviceManager::HardwareResources DevicePluginNetworkDetector::requiredHardware()
     return DeviceManager::HardwareResourceTimer;
 }
 
+void DevicePluginNetworkDetector::deviceRemoved(Device *device)
+{
+    DeviceMonitor *monitor = m_monitors.key(device);
+    m_monitors.remove(monitor);
+    delete monitor;
+}
+
 void DevicePluginNetworkDetector::guhTimer()
 {
-    if (!myDevices().isEmpty() && !m_scanProcess)
-        m_scanProcess = startScanProcesses();
-
-}
-
-QProcess * DevicePluginNetworkDetector::startScanProcesses()
-{
-    QStringList targets = getDefaultTargets();
-    qCDebug(dcNetworkDetector()) << "Start network discovery" << targets;
-    QProcess *process = new QProcess(this);
-    connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processFinished(int,QProcess::ExitStatus)));
-
-    QStringList arguments;
-    arguments << "-R" << "-oX" << "-" << "-v" << "--stats-every" << "1" << "-sn";
-    arguments << targets;
-
-    process->start(QStringLiteral("nmap"), arguments);
-    return process;
-}
-
-
-QStringList DevicePluginNetworkDetector::getDefaultTargets()
-{
-    QStringList targets;
-    foreach (const QHostAddress &interface, QNetworkInterface::allAddresses()) {
-        if (!interface.isLoopback() && interface.scopeId().isEmpty()) {
-            QPair<QHostAddress, int> pair = QHostAddress::parseSubnet(interface.toString() + "/24");
-            targets << QString("%1/%2").arg(pair.first.toString()).arg(pair.second);
-        }
+    foreach (DeviceMonitor *monitor, m_monitors.keys()) {
+        monitor->update();
     }
-    return targets;
 }
 
-QList<Host> DevicePluginNetworkDetector::parseProcessOutput(const QByteArray &processData)
+void DevicePluginNetworkDetector::discoveryFinished(const QList<Host> &hosts)
 {
-    m_reader.clear();
-    m_reader.addData(processData);
+    qCDebug(dcNetworkDetector()) << "Discovery finished. Found" << hosts.count() << "devices";
+    QList<DeviceDescriptor> discoveredDevices;
+    foreach (const Host &host, hosts) {
+        DeviceDescriptor descriptor(networkDeviceClassId, (host.hostName().isEmpty() ? host.address() : host.hostName() + "(" + host.address() + ")"), host.macAddress());
 
-    QList<Host> hosts;
+        ParamList paramList;
+        Param macAddress(macAddressParamTypeId, host.macAddress());
+        Param address(addressParamTypeId, host.address());
+        paramList.append(macAddress);
+        paramList.append(address);
+        descriptor.setParams(paramList);
 
-    while (!m_reader.atEnd() && !m_reader.hasError()) {
-
-        QXmlStreamReader::TokenType token = m_reader.readNext();
-        if(token == QXmlStreamReader::StartDocument)
-            continue;
-
-        if(token == QXmlStreamReader::StartElement && m_reader.name() == "host") {
-            Host host = parseHost();
-            if (host.isValid()) {
-                hosts.append(host);
-            }
-        }
-    }
-    return hosts;
-}
-
-Host DevicePluginNetworkDetector::parseHost()
-{
-    if (!m_reader.isStartElement() || m_reader.name() != "host")
-        return Host();
-
-    QString address; QString hostName; QString status;
-    while(!(m_reader.tokenType() == QXmlStreamReader::EndElement && m_reader.name() == "host")){
-
-        m_reader.readNext();
-
-        if (m_reader.isStartElement() && m_reader.name() == "hostname") {
-            QString name = m_reader.attributes().value("name").toString();
-            if (!name.isEmpty())
-                hostName = name;
-
-            m_reader.readNext();
-        }
-
-        if (m_reader.name() == "address") {
-            QString addr = m_reader.attributes().value("addr").toString();
-            if (!addr.isEmpty())
-                address = addr;
-        }
-
-        if (m_reader.name() == "status") {
-            QString state = m_reader.attributes().value("state").toString();
-            if (!state.isEmpty())
-                status = state;
-        }
+        discoveredDevices.append(descriptor);
     }
 
-    return Host(hostName, address, (status == "up" ? true : false));
+    emit devicesDiscovered(networkDeviceClassId, discoveredDevices);
 }
 
-void DevicePluginNetworkDetector::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void DevicePluginNetworkDetector::deviceReachableChanged(bool reachable)
 {
-    QProcess *process = static_cast<QProcess*>(sender());
+    DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
+    Device *device = m_monitors.value(monitor);
+    if (device->stateValue(inRangeStateTypeId).toBool() != reachable) {
+        qCDebug(dcNetworkDetector()) << "Device" << device->paramValue(macAddressParamTypeId).toString() << "reachable changed" << reachable;
+        device->setStateValue(inRangeStateTypeId, reachable);
+    }
+}
 
-    // If the process was killed because guhd is shutting down...we dont't care any more about the result
-    if (m_aboutToQuit)
-        return;
-
-    // Discovery
-    if (process == m_discoveryProcess) {
-
-        qCDebug(dcNetworkDetector()) << "Discovery process finished";
-
-        process->deleteLater();
-        m_discoveryProcess = 0;
-
-        QList<DeviceDescriptor> deviceDescriptors;
-        if (exitCode != 0 || exitStatus != QProcess::NormalExit) {
-            qCWarning(dcNetworkDetector) << "Network scan error:" << process->readAllStandardError();
-            emit devicesDiscovered(networkDeviceClassId, deviceDescriptors);
-            return;
-        }
-
-        QByteArray outputData = process->readAllStandardOutput();
-        foreach (const Host &host, parseProcessOutput(outputData)) {
-            DeviceDescriptor descriptor(networkDeviceClassId, host.hostName(), host.adderss());
-            descriptor.setParams( ParamList() << Param(hostnameParamTypeId, host.hostName()));
-            deviceDescriptors.append(descriptor);
-        }
-
-        emit devicesDiscovered(networkDeviceClassId, deviceDescriptors);
-
-    } else if (process == m_scanProcess) {
-        // Scan
-        qCDebug(dcNetworkDetector()) << "Network scan process finished";
-
-        process->deleteLater();
-        m_scanProcess = 0;
-
-        if (exitCode != 0 || exitStatus != QProcess::NormalExit) {
-            qCWarning(dcNetworkDetector) << "Network scan error:" << process->readAllStandardError();
-            return;
-        }
-
-        if (myDevices().isEmpty()) {
-            process->deleteLater();
-            return;
-        }
-
-        QStringList upHosts;
-        QByteArray outputData = process->readAllStandardOutput();
-        foreach (const Host &host, parseProcessOutput(outputData)) {
-            if (host.isValid() && host.reachable())
-                upHosts.append(host.hostName());
-
-        }
-
-        foreach (Device *device, myDevices()) {
-            if (upHosts.contains(device->paramValue(hostnameParamTypeId).toString())) {
-                device->setStateValue(inRangeStateTypeId, true);
-            } else {
-                device->setStateValue(inRangeStateTypeId, false);
-            }
-        }
+void DevicePluginNetworkDetector::deviceAddressChanged(const QString &address)
+{
+    DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
+    Device *device = m_monitors.value(monitor);
+    if (device->paramValue(addressParamTypeId).toString() != address) {
+        device->setParamValue(addressParamTypeId.toString(), address);
     }
 }
