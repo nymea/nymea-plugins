@@ -27,7 +27,6 @@
                             "idName": "location",
                             "name": "location",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "Search",
                             "defaultValue": ""
                         }
@@ -38,7 +37,6 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -46,7 +44,6 @@
                             "idName": "country",
                             "name": "country",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "TextLine"
                         },
                         {
@@ -54,7 +51,6 @@
                             "idName": "id",
                             "name": "id",
                             "type": "QString",
-                            "index": 2,
                             "inputType": "TextLine"
                         }
                     ],
@@ -62,7 +58,6 @@
                         {
                             "id": "cfbc6504-d86f-4856-8dfa-97b6fbb385e4",
                             "idName": "refreshWeather",
-                            "index": 0,
                             "name": "refresh"
                         }
                     ],
@@ -72,7 +67,6 @@
                             "idName": "updateTime",
                             "name": "last update",
                             "eventTypeName": "last update changed",
-                            "index": 0,
                             "unit": "UnixTime",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -84,7 +78,6 @@
                             "idName": "temperature",
                             "name": "temperature",
                             "eventTypeName": "temperature changed",
-                            "index": 1,
                             "unit": "DegreeCelsius",
                             "graphRelevant": true,
                             "type": "double",
@@ -95,7 +88,6 @@
                             "idName": "temperatureMin",
                             "name": "temperature minimum",
                             "eventTypeName": "temperature minimum changed",
-                            "index": 2,
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -105,7 +97,6 @@
                             "idName": "temperatureMax",
                             "name": "temperature maximum",
                             "eventTypeName": "temperature maximum changed",
-                            "index": 3,
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -115,7 +106,6 @@
                             "idName": "humidity",
                             "name": "humidity",
                             "eventTypeName": "humidity changed",
-                            "index": 4,
                             "unit": "Percentage",
                             "type": "int",
                             "defaultValue": 0
@@ -126,7 +116,6 @@
                             "name": "pressure",
                             "eventTypeName": "pressure changed",
                             "graphRelevant": true,
-                            "index": 5,
                             "unit": "HectoPascal",
                             "type": "double",
                             "defaultValue": 0
@@ -136,7 +125,6 @@
                             "idName": "windSpeed",
                             "name": "wind speed",
                             "eventTypeName": "wind speed changed",
-                            "index": 6,
                             "unit": "MeterPerSecond",
                             "graphRelevant": true,
                             "type": "double",
@@ -148,7 +136,6 @@
                             "name": "wind direction",
                             "eventTypeName": "wind direction changed",
                             "unit": "Degree",
-                            "index": 7,
                             "type": "int",
                             "defaultValue": 0
                         },
@@ -159,7 +146,6 @@
                             "eventTypeName": "cloudiness changed",
                             "unit": "Percentage",
                             "graphRelevant": true,
-                            "index": 8,
                             "type": "int",
                             "defaultValue": 0
                         },
@@ -168,7 +154,6 @@
                             "idName": "visibility",
                             "name": "visibility",
                             "eventTypeName": "visibility changed",
-                            "index": 9,
                             "unit": "Meter",
                             "graphRelevant": true,
                             "type": "int",
@@ -179,7 +164,6 @@
                             "idName": "weatherDescription",
                             "name": "weather description",
                             "eventTypeName": "weather description changed",
-                            "index": 10,
                             "type": "QString",
                             "defaultValue": "-"
                         },
@@ -188,7 +172,6 @@
                             "idName": "sunset",
                             "name": "sunset",
                             "eventTypeName": "sunset changed",
-                            "index": 11,
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0
@@ -198,7 +181,6 @@
                             "idName": "sunrise",
                             "name": "sunrise",
                             "eventTypeName": "sunrise changed",
-                            "index": 12,
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0

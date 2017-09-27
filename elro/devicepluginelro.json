@@ -24,71 +24,61 @@
                             "id": "66b2a017-658a-46d9-9e98-33aaed6345ad",
                             "idName": "chan1",
                             "name": "channel 1",
-                            "type": "bool",
-                            "index": 0
+                            "type": "bool"
                         },
                         {
                             "id": "bda44f42-b608-4c70-a370-8d8d2e406205",
                             "idName": "chan2",
                             "name": "channel 2",
-                            "type": "bool",
-                            "index": 1
+                            "type": "bool"
                         },
                         {
                             "id": "4165bfb7-f1db-49ce-bad7-34956ea45d03",
                             "idName": "chan3",
                             "name": "channel 3",
-                            "type": "bool",
-                            "index": 3
+                            "type": "bool"
                         },
                         {
                             "id": "69960183-8fba-4f94-94b4-6d536e28f3a0",
                             "idName": "chan4",
                             "name": "channel 4",
-                            "type": "bool",
-                            "index": 4
+                            "type": "bool"
                         },
                         {
                             "id": "41a9706c-e6e8-4de8-b280-789f1434f6ed",
                             "idName": "chan5",
                             "name": "channel 5",
-                            "type": "bool",
-                            "index": 5
+                            "type": "bool"
                         },
                         {
                             "id": "906811d6-e232-42e6-829c-2cdaa9ee5340",
                             "idName": "a",
                             "name": "A",
-                            "type": "bool",
-                            "index": 6
+                            "type": "bool"
                         },
                         {
                             "id": "0d9b27f7-01cc-44bc-99f6-65612dee0027",
                             "idName": "b",
                             "name": "B",
-                            "type": "bool",
-                            "index": 7
+                            "type": "bool"
                         },
                         {
                             "id": "d82d95db-b6b5-4d0b-9ea6-a00fc455a0ff",
                             "idName": "c",
                             "name": "C",
-                            "type": "bool",
-                            "index": 8
+                            "type": "bool"
                         },
                         {
                             "id": "a4a13ee3-605f-4b42-b81b-a26e66f74b26",
                             "idName": "d",
                             "name": "D",
-                            "type": "bool",
-                            "index": 9
+                            "type": "bool"
                         },
                         {
                             "id": "e71ee50f-5c54-4a35-877a-743fe928a528",
                             "idName": "e",
                             "name": "E",
-                            "type": "bool",
-                            "index": 10
+                            "type": "bool"
                         }
                     ],
                     "actionTypes": [
@@ -96,14 +86,12 @@
                             "id": "31c9758e-6567-4f89-85bb-29e1a7c55d44",
                             "idName": "power",
                             "name": "set power",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "004ad008-0084-40be-9b1a-b60e1b30579d",
                                     "idName": "power",
                                     "name": "power",
-                                    "type": "bool",
-                                    "index": 0
+                                    "type": "bool"
                                 }
                             ]
                         }

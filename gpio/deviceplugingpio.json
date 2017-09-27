@@ -24,7 +24,6 @@
                             "idName": "gpio",
                             "name": "GPIO",
                             "type": "int",
-                            "index": 0,
                             "defaultValue": -1
                         },
                         {
@@ -32,7 +31,6 @@
                             "idName": "pin",
                             "name": "Pin number",
                             "type": "int",
-                            "index": 1,
                             "defaultValue": -1
                         },
                         {
@@ -40,7 +38,6 @@
                             "idName": "description",
                             "name": "Description",
                             "type": "QString",
-                            "index": 2,
                             "defaultValue": "-"
                         }
                     ],
@@ -49,7 +46,6 @@
                             "id": "06843766-358e-44b0-8d52-2b46ef98459a",
                             "idName": "powerValue",
                             "name": "Power",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true,
@@ -74,7 +70,6 @@
                             "idName": "gpio",
                             "name": "GPIO",
                             "type": "int",
-                            "index": 0,
                             "defaultValue": -1
                         },
                         {
@@ -82,7 +77,6 @@
                             "idName": "pin",
                             "name": "Pin number",
                             "type": "int",
-                            "index": 1,
                             "defaultValue": -1
                         },
                         {
@@ -90,7 +84,6 @@
                             "idName": "description",
                             "name": "Description",
                             "type": "QString",
-                            "index": 2,
                             "defaultValue": "-"
                         }
                     ],
@@ -99,7 +92,6 @@
                             "id": "57f1b7cc-26c8-434b-ba04-d3077dc886c8",
                             "idName": "pressed",
                             "name": "Pressed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false,
                             "eventTypeName": "Pressed changed"
@@ -129,7 +121,6 @@
                             "idName": "gpio",
                             "name": "GPIO",
                             "type": "int",
-                            "index": 0,
                             "defaultValue": -1
                         },
                         {
@@ -137,7 +128,6 @@
                             "idName": "pin",
                             "name": "Pin number",
                             "type": "int",
-                            "index": 1,
                             "defaultValue": -1
                         },
                         {
@@ -145,7 +135,6 @@
                             "idName": "description",
                             "name": "Description",
                             "type": "QString",
-                            "index": 2,
                             "defaultValue": "-"
                         }
                     ],
@@ -154,7 +143,6 @@
                             "id": "06843766-358e-44b0-8d52-2b46ef98459a",
                             "idName": "powerValue",
                             "name": "Power",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true,
@@ -179,7 +167,6 @@
                             "idName": "gpio",
                             "name": "GPIO",
                             "type": "int",
-                            "index": 0,
                             "defaultValue": -1
                         },
                         {
@@ -187,7 +174,6 @@
                             "idName": "pin",
                             "name": "Pin number",
                             "type": "int",
-                            "index": 1,
                             "defaultValue": -1
                         },
                         {
@@ -195,7 +181,6 @@
                             "idName": "description",
                             "name": "Description",
                             "type": "QString",
-                            "index": 2,
                             "defaultValue": "-"
                         }
                     ],
@@ -204,7 +189,6 @@
                             "id": "57f1b7cc-26c8-434b-ba04-d3077dc886c8",
                             "idName": "pressed",
                             "name": "Pressed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false,
                             "eventTypeName": "Pressed changed"

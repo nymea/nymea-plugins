@@ -24,7 +24,6 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -32,7 +31,6 @@
                             "idName": "mac",
                             "name": "mac address",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "MacAddress"
                         }
                     ],
@@ -42,7 +40,6 @@
                             "idName": "available",
                             "name": "available",
                             "eventTypeName": "available changed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -51,7 +48,6 @@
                             "idName": "battery",
                             "name": "battery",
                             "eventTypeName": "battery changed",
-                            "index": 1,
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
@@ -63,7 +59,6 @@
                             "idName": "rotation",
                             "name": "rotation",
                             "eventTypeName": "rotation changed",
-                            "index": 2,
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
@@ -75,19 +70,16 @@
                         {
                             "id": "bb1c46fe-5dfb-4fa3-ad89-0ba576ac780e",
                             "idName": "connect",
-                            "index": 0,
                             "name": "connect"
                         },
                         {
                             "id": "11bf3143-34f8-42ab-9750-073040c1a7fc",
                             "idName": "disconnect",
-                            "index": 1,
                             "name": "disconnect"
                         },
                         {
                             "id": "d44ca5b7-f8d6-4413-9d2e-cef89282c039",
                             "idName": "showLogo",
-                            "index": 2,
                             "name": "Show logo",
                             "paramTypes": [
                                 {
@@ -95,7 +87,6 @@
                                     "idName": "logo",
                                     "name": "logo",
                                     "type": "QString",
-                                    "index": 0,
                                     "defaultValue": "Guh",
                                     "allowedValues": [
                                         "Guh",
@@ -110,32 +101,27 @@
                         {
                             "id": "5b9e08e8-7a6c-4311-9db6-82547847708c",
                             "idName": "clicked",
-                            "name": "clicked",
-                            "index": 0
+                            "name": "clicked"
                         },
                         {
                             "id": "2be36aa0-e2fe-4192-81c5-cf0bb7f08dd4",
                             "idName": "swipeLeft",
-                            "name": "Swipe left",
-                            "index": 1
+                            "name": "Swipe left"
                         },
                         {
                             "id": "81fb61ab-6d3d-4c1b-85fe-3dbd5c8dead7",
                             "idName": "swipeRight",
-                            "name": "Swipe right",
-                            "index": 2
+                            "name": "Swipe right"
                         },
                         {
                             "id": "ab5c575b-b265-491c-93ca-ad9212374bc1",
                             "idName": "swipeUp",
-                            "name": "Swipe up",
-                            "index": 3
+                            "name": "Swipe up"
                         },
                         {
                             "id": "4d97cf28-1030-4a30-bed5-411102dd4b9b",
                             "idName": "swipeDown",
-                            "name": "Swipe down",
-                            "index": 4
+                            "name": "Swipe down"
                         }
                     ]
                 }

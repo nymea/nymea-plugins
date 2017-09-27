@@ -26,7 +26,6 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -34,14 +33,12 @@
                             "idName": "host",
                             "name": "host address",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "IPv4Address"
                         },
                         {
                             "id": "2d30eb6b-08cf-4d34-aeb5-fb441bb2291a",
                             "idName": "port",
                             "name": "port",
-                            "index": 2,
                             "type": "int"
                         },
                         {
@@ -49,7 +46,6 @@
                             "idName": "serial",
                             "name": "serial number",
                             "type": "QString",
-                            "index": 3,
                             "inputType": "TextLine"
                         }
                     ],
@@ -60,7 +56,6 @@
                             "name": "power",
                             "eventTypeName": "power changed",
                             "actionTypeName": "Set power",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -70,7 +65,6 @@
                             "idName": "reachable",
                             "eventTypeName": "reachable changed",
                             "name": "reachable",
-                            "index": 1,
                             "type": "bool",
                             "defaultValue": false
                         }
