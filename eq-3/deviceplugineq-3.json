@@ -28,30 +28,26 @@
                             "idName": "host",
                             "name": "host address",
                             "type": "QString",
-                            "inputType": "IPv4Address",
-                            "index": 0
+                            "inputType": "IPv4Address"
                         },
                         {
                             "id": "a4c92442-dc47-463f-8e24-15b5b593adec",
                             "idName": "port",
                             "name": "port",
-                            "type": "int",
-                            "index": 1
+                            "type": "int"
                         },
                         {
                             "id": "67dc1a45-7369-422a-b677-881271f29d6c",
                             "idName": "serial",
                             "name": "serial number",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "index": 2
+                            "inputType": "TextLine"
                         },
                         {
                             "id": "8d629061-8d4b-49f1-ab47-b82fdde3036c",
                             "idName": "firmware",
                             "name": "firmware version",
-                            "type": "int",
-                            "index": 3
+                            "type": "int"
                         }
                     ],
                     "stateTypes": [
@@ -60,7 +56,6 @@
                             "idName": "connection",
                             "name": "connected",
                             "eventTypeName": "connected changed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -69,7 +64,6 @@
                             "idName": "portalEnabled",
                             "name": "portal enabled",
                             "eventTypeName": "portal enabled changed",
-                            "index": 1,
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -96,77 +90,66 @@
                             "idName": "serial",
                             "name": "serial number",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "index": 0
+                            "inputType": "TextLine"
                         },
                         {
                             "id": "8d32b228-8618-483f-bcc3-2d62868d6912",
                             "idName": "name",
                             "name": "name",
-                            "type": "QString",
-                            "index": 1
+                            "type": "QString"
                         },
                         {
                             "id": "801be701-ea53-4cb2-a933-823f330e7837",
                             "idName": "parent",
                             "name": "parent cube",
-                            "type": "QString",
-                            "index": 2
+                            "type": "QString"
                         },
                         {
                             "id": "6ba358c1-0c31-4ea4-93fd-544f030582a7",
                             "idName": "rf",
                             "name": "rf address",
-                            "type": "QString",
-                            "index": 3
+                            "type": "QString"
                         },
                         {
                             "id": "e3bb28dc-5311-4325-805a-e1e3a1495016",
                             "idName": "room",
                             "name": "room id",
-                            "type": "int",
-                            "index": 4
+                            "type": "int"
                         },
                         {
                             "id": "14ea2e10-4545-47ff-8955-8172913f1039",
                             "idName": "roomName",
                             "name": "room name",
-                            "type": "QString",
-                            "index": 5
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "162b4b3d-9923-4f2c-a755-b50c8a06a6f0",
                             "idName": "setAutoMode",
-                            "name": "set auto mode",
-                            "index": 0
+                            "name": "set auto mode"
                         },
                         {
                             "id": "8e604437-9f5b-4c17-b5b0-e2db6007af5b",
                             "idName": "setManualMode",
-                            "name": "set manual mode",
-                            "index": 1
+                            "name": "set manual mode"
                         },
                         {
                             "id": "27a981e8-ec23-4ba8-921e-33b911a7dd89",
                             "idName": "setEcoMode",
-                            "name": "set eco mode",
-                            "index": 2
+                            "name": "set eco mode"
                         },
                         {
                             "id": "184fb112-7a03-4560-8634-0257c969c26e",
                             "idName": "displayCurrentTemp",
                             "name": "display current temperature",
-                            "index": 3,
                             "paramTypes": [
                                 {
                                     "id": "894dbb8e-73b5-4e89-8b93-d7afda239dcb",
                                     "idName": "display",
                                     "name": "display",
                                     "type": "bool",
-                                    "defaultValue": true,
-                                    "index": 0
+                                    "defaultValue": true
                                 }
                             ]
                         }
@@ -178,7 +161,6 @@
                             "name": "comfort temperature",
                             "eventTypeName": "confort temperature changed",
                             "type": "double",
-                            "index": 0,
                             "unit": "DegreeCelsius",
                             "defaultValue": 0
                         },
@@ -188,7 +170,6 @@
                             "name": "eco temperature",
                             "eventTypeName": "eco temperature changed",
                             "type": "double",
-                            "index": 1,
                             "unit": "DegreeCelsius",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -200,7 +181,6 @@
                             "name": "max setpoint",
                             "eventTypeName": "max setpoint changed",
                             "type": "double",
-                            "index": 2,
                             "unit": "DegreeCelsius",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -212,7 +192,6 @@
                             "name": "min setpoint",
                             "eventTypeName": "min setpoint changed",
                             "type": "double",
-                            "index": 3,
                             "unit": "DegreeCelsius",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -224,7 +203,6 @@
                             "name": "error occurred",
                             "eventTypeName": "error occured",
                             "type": "bool",
-                            "index": 4,
                             "defaultValue": false
                         },
                         {
@@ -233,7 +211,6 @@
                             "name": "initialized",
                             "eventTypeName": "initialized changed",
                             "type": "bool",
-                            "index": 5,
                             "defaultValue": false
                         },
                         {
@@ -242,7 +219,6 @@
                             "name": "battery low",
                             "eventTypeName": "battery low changed",
                             "type": "bool",
-                            "index": 6,
                             "defaultValue": false
                         },
                         {
@@ -251,7 +227,6 @@
                             "name": "link status ok",
                             "eventTypeName": "link status changed",
                             "type": "bool",
-                            "index": 7,
                             "defaultValue": false
                         },
                         {
@@ -260,7 +235,6 @@
                             "name": "panel locked",
                             "eventTypeName": "panel locked changed",
                             "type": "bool",
-                            "index": 8,
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "defaultValue": false
@@ -271,7 +245,6 @@
                             "name": "gateway known",
                             "eventTypeName": "gateway known changed",
                             "type": "bool",
-                            "index": 9,
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "defaultValue": false
@@ -282,7 +255,6 @@
                             "name": "dts active",
                             "eventTypeName": "dts active changed",
                             "type": "bool",
-                            "index": 10,
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "defaultValue": false
@@ -293,7 +265,6 @@
                             "name": "device mode",
                             "eventTypeName": "device mode changed",
                             "type": "int",
-                            "index": 11,
                             "defaultValue": -1
                         },
                         {
@@ -301,7 +272,6 @@
                             "idName": "deviceModeString",
                             "name": "device mode string",
                             "eventTypeName": "device mode string changed",
-                            "index": 12,
                             "type": "QString",
                             "defaultValue": "-"
                         },
@@ -313,7 +283,6 @@
                             "actionTypeName": "Set desired temperature",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "index": 13,
                             "defaultValue": 0,
                             "writable": true
                         },
@@ -323,7 +292,6 @@
                             "name": "current temperature",
                             "eventTypeName": "current temperature changed",
                             "unit": "DegreeCelsius",
-                            "index": 14,
                             "type": "double",
                             "defaultValue": 0
                         }
@@ -347,63 +315,54 @@
                             "idName": "serial",
                             "name": "serial number",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "index": 0
+                            "inputType": "TextLine"
                         },
                         {
                             "id": "8d32b228-8618-483f-bcc3-2d62868d6912",
                             "idName": "name",
                             "name": "name",
-                            "type": "QString",
-                            "index": 1
+                            "type": "QString"
                         },
                         {
                             "id": "801be701-ea53-4cb2-a933-823f330e7837",
                             "idName": "parent",
                             "name": "parent cube",
-                            "type": "QString",
-                            "index": 2
+                            "type": "QString"
                         },
                         {
                             "id": "6ba358c1-0c31-4ea4-93fd-544f030582a7",
                             "idName": "rf",
                             "name": "rf address",
-                            "type": "QString",
-                            "index": 3
+                            "type": "QString"
                         },
                         {
                             "id": "e3bb28dc-5311-4325-805a-e1e3a1495016",
                             "idName": "room",
                             "name": "room id",
-                            "type": "int",
-                            "index": 4
+                            "type": "int"
                         },
                         {
                             "id": "14ea2e10-4545-47ff-8955-8172913f1039",
                             "idName": "roomName",
                             "name": "room name",
-                            "type": "QString",
-                            "index": 5
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "162b4b3d-9923-4f2c-a755-b50c8a06a6f0",
                             "idName": "setAutoMode",
-                            "name": "set auto mode",
-                            "index": 0
+                            "name": "set auto mode"
                         },
                         {
                             "id": "8e604437-9f5b-4c17-b5b0-e2db6007af5b",
                             "idName": "setManualMode",
-                            "name": "set manual mode",
-                            "index": 1
+                            "name": "set manual mode"
                         },
                         {
                             "id": "27a981e8-ec23-4ba8-921e-33b911a7dd89",
                             "idName": "setEcoMode",
-                            "name": "set eco mode",
-                            "index": 2
+                            "name": "set eco mode"
                         }
                     ],
                     "stateTypes": [
@@ -414,8 +373,7 @@
                             "eventTypeName": "comfort temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
-                            "defaultValue": 0,
-                            "index": 0
+                            "defaultValue": 0
                         },
                         {
                             "id": "24dfd20d-bc8d-48e4-8162-b20ae0465c41",
@@ -424,8 +382,7 @@
                             "eventTypeName": "eco temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
-                            "defaultValue": 0,
-                            "index": 1
+                            "defaultValue": 0
                         },
                         {
                             "id": "a8536ddf-a6e4-41c2-89c1-e7102608f5f6",
@@ -436,8 +393,7 @@
                             "type": "double",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "defaultValue": 0,
-                            "index": 2
+                            "defaultValue": 0
                         },
                         {
                             "id": "ceb0ad05-37ad-4b79-a4d9-540c34a7e3e4",
@@ -448,8 +404,7 @@
                             "type": "double",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "defaultValue": 0,
-                            "index": 3
+                            "defaultValue": 0
                         },
                         {
                             "id": "9880247b-cf9a-453c-b0c3-d910eba8a253",
@@ -457,8 +412,7 @@
                             "name": "error occured",
                             "eventTypeName": "error occured changed",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 4
+                            "defaultValue": false
                         },
                         {
                             "id": "a9e29f03-063e-4686-8aac-2f6d8f8a4937",
@@ -466,8 +420,7 @@
                             "name": "initialized",
                             "eventTypeName": "initialized changed",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 5
+                            "defaultValue": false
                         },
                         {
                             "id": "53b89f32-8894-4290-92a0-6a470c6b69ab",
@@ -475,8 +428,7 @@
                             "name": "battery low",
                             "eventTypeName": "battery low changed",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 6
+                            "defaultValue": false
                         },
                         {
                             "id": "aff38be8-7ea6-4fd8-b0fa-e987ab05c719",
@@ -484,8 +436,7 @@
                             "name": "link status ok",
                             "eventTypeName": "link status changed",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 7
+                            "defaultValue": false
                         },
                         {
                             "id": "979df197-09a1-46f9-9217-9d323b1062bd",
@@ -495,8 +446,7 @@
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "defaultValue": false,
-                            "index": 8
+                            "defaultValue": false
                         },
                         {
                             "id": "1d6bd962-5c31-47ad-80a4-dda87bff98f5",
@@ -506,8 +456,7 @@
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "defaultValue": false,
-                            "index": 9
+                            "defaultValue": false
                         },
                         {
                             "id": "1b402ba6-a8ae-45b1-8acf-2b0a89f71889",
@@ -517,8 +466,7 @@
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "defaultValue": false,
-                            "index": 10
+                            "defaultValue": false
                         },
                         {
                             "id": "639360f0-bb65-43e6-b227-50ae0ac39d6c",
@@ -526,8 +474,7 @@
                             "name": "device mode",
                             "eventTypeName": "device mode changed",
                             "type": "int",
-                            "defaultValue": -1,
-                            "index": 11
+                            "defaultValue": -1
                         },
                         {
                             "id": "ff5194e3-5641-4ac2-92c7-48c431b4a2eb",
@@ -535,8 +482,7 @@
                             "name": "device mode string",
                             "eventTypeName": "device mode string changed",
                             "type": "QString",
-                            "defaultValue": "-",
-                            "index": 12
+                            "defaultValue": "-"
                         },
                         {
                             "id": "579aa8c6-8814-491b-9e7c-b98108c323d1",
@@ -547,8 +493,7 @@
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0,
-                            "writable": true,
-                            "index": 13
+                            "writable": true
                         },
                         {
                             "id": "576da571-9a65-478f-96bf-19256c8b9ece",
@@ -557,8 +502,7 @@
                             "eventTypeName": "offset temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
-                            "defaultValue": 0,
-                            "index": 14
+                            "defaultValue": 0
                         },
                         {
                             "id": "81c6c74a-b0cd-4daa-9eb9-f1cd68f328af",
@@ -567,8 +511,7 @@
                             "eventTypeName": "window open duration changed",
                             "unit": "Minutes",
                             "type": "int",
-                            "defaultValue": 0,
-                            "index": 15
+                            "defaultValue": 0
                         },
                         {
                             "id": "7c41fa64-b1a1-48d2-9d03-67aa16cd83ad",
@@ -576,8 +519,7 @@
                             "name": "boost valve",
                             "eventTypeName": "boost value changed",
                             "type": "int",
-                            "defaultValue": 0,
-                            "index": 16
+                            "defaultValue": 0
                         },
                         {
                             "id": "e75c1398-9ad7-466c-b3b9-b03bbb686a30",
@@ -588,8 +530,7 @@
                             "type": "int",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "defaultValue": 0,
-                            "index": 17
+                            "defaultValue": 0
                         },
                         {
                             "id": "bd6f5947-d4b4-444b-81c8-77eec46957e4",
@@ -599,8 +540,7 @@
                             "type": "QString",
                             "defaultValue": "",
                             "ruleRelevant": false,
-                            "eventRuleRelevant": false,
-                            "index": 18
+                            "eventRuleRelevant": false
                         },
                         {
                             "id": "e78235ee-affc-41e3-a463-9f0512b4a6c3",
@@ -608,8 +548,7 @@
                             "name": "discalc time",
                             "eventTypeName": "discalc time changed",
                             "type": "QString",
-                            "defaultValue": "",
-                            "index": 19
+                            "defaultValue": ""
                         },
                         {
                             "id": "e367fa3a-b30f-49bd-af3f-cff92360ad32",
@@ -617,8 +556,7 @@
                             "name": "valve maximum setting",
                             "eventTypeName": "valve maximum setting changed",
                             "type": "double",
-                            "defaultValue": 0,
-                            "index": 20
+                            "defaultValue": 0
                         },
                         {
                             "id": "ffaff87b-b741-4db8-9875-3380af4f1885",
@@ -627,8 +565,7 @@
                             "eventTypeName": "valve offset changed",
                             "unit": "Percentage",
                             "type": "int",
-                            "defaultValue": 0,
-                            "index": 21
+                            "defaultValue": 0
                         },
                         {
                             "id": "72956000-0203-4c32-a6b6-3bb7e46c03ca",
@@ -637,8 +574,7 @@
                             "eventTypeName": "valve position changed",
                             "unit": "Percentage",
                             "type": "int",
-                            "defaultValue": 0,
-                            "index": 22
+                            "defaultValue": 0
                         }
                     ]
                 }

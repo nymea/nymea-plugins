@@ -8,7 +8,6 @@
             "idName": "rpl",
             "name": "RPL address",
             "type": "QString",
-            "index": 0,
             "inputType": "TextLine",
             "defaultValue": "fdaa:e9b8:d03a::ff:fe00:1"
         }
@@ -36,7 +35,6 @@
                             "idName": "host",
                             "name": "host",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         }
                     ],
@@ -46,7 +44,6 @@
                             "idName": "battery",
                             "name": "battery voltage",
                             "eventTypeName": "battery voltage changed",
-                            "index": 0,
                             "type": "double",
                             "unit": "Volt",
                             "defaultValue": 0
@@ -56,7 +53,6 @@
                             "idName": "moisture",
                             "name": "moisture",
                             "eventTypeName": "moisture changed",
-                            "index": 1,
                             "type": "int",
                             "graphRelevant": true,
                             "unit": "Percentage",
@@ -67,7 +63,6 @@
                             "idName": "water",
                             "name": "water empty",
                             "eventTypeName": "water empty changed",
-                            "index": 2,
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -77,7 +72,6 @@
                             "name": "led power",
                             "eventTypeName": "led power changed",
                             "actionTypeName": "Set reachable",
-                            "index": 3,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -88,7 +82,6 @@
                             "name": "water pump power",
                             "eventTypeName": "water pump power changed",
                             "actionTypeName": "Set water pump power",
-                            "index": 4,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -98,7 +91,6 @@
                             "idName": "reachable",
                             "name": "reachable",
                             "eventTypeName": "reachable changed",
-                            "index": 5,
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -107,7 +99,6 @@
                         {
                             "id": "9afbcc80-1c97-4c18-bc08-5209d6297f2e",
                             "idName": "toggleLed",
-                            "index": 0,
                             "name": "toggle led"
                         }
                     ]

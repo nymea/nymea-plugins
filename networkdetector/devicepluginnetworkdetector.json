@@ -25,7 +25,6 @@
                             "idName": "address",
                             "name": "address",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -33,7 +32,6 @@
                             "idName": "macAddress",
                             "name": "hardware address",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "TextLine"
                         }
                     ],
@@ -43,7 +41,6 @@
                             "idName": "inRange",
                             "name": "Device in network",
                             "eventTypeName": "Device in network changed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false
                         }

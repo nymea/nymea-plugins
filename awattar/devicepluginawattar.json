@@ -8,7 +8,6 @@
             "idName": "rpl",
             "name": "RPL address",
             "type": "QString",
-            "index": 0,
             "inputType": "TextLine",
             "defaultValue": "fdaa:e9b8:d03a::ff:fe00:1"
         }
@@ -39,7 +38,6 @@
                             "idName": "userUuid",
                             "name": "user uuid",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -47,7 +45,6 @@
                             "idName": "token",
                             "name": "token",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "Password"
                         }
                     ],
@@ -58,7 +55,6 @@
                             "name": "current market price",
                             "eventTypeName": "current market price changed",
                             "type": "double",
-                            "index": 0,
                             "unit": "EuroCentPerKiloWattHour",
                             "graphRelevant": true,
                             "defaultValue": 0
@@ -68,7 +64,6 @@
                             "idName": "averageDeviation",
                             "name": "average deviation",
                             "eventTypeName": "average deviation changed",
-                            "index": 1,
                             "type": "int",
                             "unit": "Percentage",
                             "graphRelevant": true,
@@ -79,7 +74,6 @@
                             "idName": "validUntil",
                             "name": "valid until",
                             "eventTypeName": "valid until changed",
-                            "index": 2,
                             "unit": "UnixTime",
                             "type": "int",
                             "ruleRelevant": false,
@@ -91,7 +85,6 @@
                             "idName": "averagePrice",
                             "name": "average market price [+/- 12 h]",
                             "eventTypeName": "average market price [+/- 12 h] changed",
-                            "index": 3,
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "graphRelevant": true,
@@ -102,7 +95,6 @@
                             "idName": "lowestPrice",
                             "name": "lowest market price [+/- 12 h]",
                             "eventTypeName": "lowest market price [+/- 12 h] changed",
-                            "index": 4,
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "ruleRelevant": false,
@@ -114,7 +106,6 @@
                             "idName": "highestPrice",
                             "name": "highest market price [+/- 12 h]",
                             "eventTypeName": "highest market price [+/- 12 h] changed",
-                            "index": 5,
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "ruleRelevant": false,
@@ -124,7 +115,6 @@
                         {
                             "id": "470b9b88-17f3-42e3-9250-cc181984eafe",
                             "idName": "online",
-                            "index": 6,
                             "name": "online",
                             "eventTypeName": "online changed",
                             "type": "bool",
@@ -133,7 +123,6 @@
                         {
                             "id": "1c9d139a-6618-4a39-bc83-37f80942017d",
                             "idName": "reachable",
-                            "index": 7,
                             "name": "pump reachable",
                             "eventTypeName": "pump reachable changed",
                             "type": "bool",
@@ -144,7 +133,6 @@
                             "idName": "sgMode",
                             "name": "sg-mode",
                             "eventTypeName": "sg-mode changed",
-                            "index": 8,
                             "type": "QString",
                             "possibleValues": [
                                 "0 - Invalid",
@@ -160,7 +148,6 @@
                             "idName": "sgSyncMode",
                             "name": "sync mode",
                             "eventTypeName": "sync mode changed",
-                            "index": 9,
                             "type": "QString",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -178,14 +165,12 @@
                             "id": "dd82f6c7-5e92-48ca-b0bc-bdc55d3e1482",
                             "idName": "setSgMode",
                             "name": "set sg-mode",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "c7b13a33-1c05-457c-a087-20ecc1b8ca01",
                                     "idName": "sgMode",
                                     "name": "sg-mode",
                                     "type": "QString",
-                                    "index": 0,
                                     "allowedValues": [
                                         "1 - Off",
                                         "2 - Normal",

@@ -25,15 +25,13 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "index" : 0
+                            "inputType": "TextLine"
                         },
                         {
                             "id": "d51ed68e-c84a-4136-a5b5-be2f95fd5a0f",
                             "idName": "mac",
                             "name": "mac address",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "MacAddress"
                         }
                     ],
@@ -43,7 +41,6 @@
                             "idName": "connected",
                             "name": "connected",
                             "eventTypeName": "connected changed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -52,7 +49,6 @@
                             "idName": "IRtemperature",
                             "name": "IR temperature",
                             "eventTypeName": "IR temperature changed",
-                            "index": 1,
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0
@@ -62,7 +58,6 @@
                             "idName": "humidity",
                             "name": "humidity",
                             "eventTypeName": "humidity changed",
-                            "index": 2,
                             "type": "double",
                             "unit": "Percentage",
                             "defaultValue": 0
@@ -72,7 +67,6 @@
                             "idName": "temperature",
                             "name": "temperature",
                             "eventTypeName": "temperature changed",
-                            "index": 3,
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0
@@ -82,7 +76,6 @@
                             "idName": "pressure",
                             "name": "pressure",
                             "eventTypeName": "pressure changed",
-                            "index": 4,
                             "type": "double",
                             "unit": "HectoPascal",
                             "defaultValue": 0
@@ -92,7 +85,6 @@
                             "idName": "moving",
                             "name": "moving",
                             "eventTypeName": "moving changed",
-                            "index": 5,
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -101,13 +93,11 @@
                         {
                             "id": "61478490-bed0-4fed-9d58-f13c35b4f220",
                             "idName": "leftKey",
-                            "index": 0,
                             "name": "left key pressed"
                         },
                         {
                             "id": "b7e927db-af28-4fdc-8eb7-edb02258ff5a",
                             "idName": "rightKey",
-                            "index": 1,
                             "name": "right key pressed"
                         }
                     ]

@@ -25,7 +25,6 @@
                             "idName": "service",
                             "name": "service name",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -33,7 +32,6 @@
                             "idName": "hostName",
                             "name": "host name",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "TextLine"
                         }
                     ],
@@ -43,7 +41,6 @@
                             "name": "online",
                             "idName": "online",
                             "type": "bool",
-                            "index": 0,
                             "defaultValue": false,
                             "eventTypeName": "online changed"
                         }

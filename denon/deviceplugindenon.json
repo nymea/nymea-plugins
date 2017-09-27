@@ -26,7 +26,6 @@
                             "idName": "ip",
                             "name": "ip",
                             "type" : "QString",
-                            "index": 0,
                             "inputType": "IPv4Address"
                         }
                     ],
@@ -36,7 +35,6 @@
                             "idName": "connected",
                             "name": "connected",
                             "eventTypeName": "connected changed",
-                            "index": 0,
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -47,7 +45,6 @@
                             "eventTypeName": "power changed",
                             "actionTypeName": "Set power",
                             "type": "bool",
-                            "index": 1,
                             "defaultValue": false,
                             "writable": true
                         },
@@ -57,7 +54,6 @@
                             "idName": "volume",
                             "eventTypeName": "volume changed",
                             "actionTypeName": "Set volume",
-                            "index": 2,
                             "type": "int",
                             "unit": "Dezibel",
                             "defaultValue": 0,
@@ -71,7 +67,6 @@
                             "idName": "channel",
                             "eventTypeName": "channel changed",
                             "actionTypeName": "Set channel",
-                            "index": 3,
                             "type": "QString",
                             "writable": true,
                             "possibleValues": [

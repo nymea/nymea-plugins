@@ -24,7 +24,6 @@
                             "idName": "customSender",
                             "name": "sender mail",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "Mail"
                         },
                         {
@@ -32,7 +31,6 @@
                             "idName": "customUser",
                             "name": "user",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "TextLine"
                         },
                         {
@@ -40,7 +38,6 @@
                             "idName": "customPassword",
                             "name": "password",
                             "type": "QString",
-                            "index": 2,
                             "inputType": "Password"
                         },
                         {
@@ -48,7 +45,6 @@
                             "idName": "customRecipient",
                             "name": "recipient",
                             "type": "QString",
-                            "index": 3,
                             "inputType": "Mail"
                         },
                         {
@@ -56,7 +52,6 @@
                             "idName": "smtp",
                             "name": "SMTP server",
                             "type": "QString",
-                            "index": 4,
                             "inputType": "Url"
                         },
                         {
@@ -64,7 +59,6 @@
                             "idName": "port",
                             "name": "port",
                             "type": "int",
-                            "index": 5,
                             "defaultValue": "465"
                         },
                         {
@@ -72,7 +66,6 @@
                             "idName": "authentication",
                             "name": "authentification",
                             "type": "QString",
-                            "index": 6,
                             "defaultValue": "LOGIN",
                             "allowedValues": ["PLAIN", "LOGIN"]
                         },
@@ -81,7 +74,6 @@
                             "idName": "encryption",
                             "name": "encryption",
                             "type": "QString",
-                            "index": 7,
                             "allowedValues": ["NONE","SSL","TLS"]
                         }
                     ],
@@ -89,14 +81,12 @@
                         {
                             "id": "054613b0-3666-4dad-9252-e0ebca187edc",
                             "name": "send mail",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "2047e0f4-3d34-4214-bc8f-9ab741ae6006",
                                     "idName": "subject",
                                     "name": "subject",
                                     "type": "QString",
-                                    "index": 0,
                                     "inputType": "TextLine"
                                 },
                                 {
@@ -104,7 +94,6 @@
                                     "idName": "body",
                                     "name": "body",
                                     "type": "QString",
-                                    "index": 1,
                                     "inputType": "TextArea"
                                 }
                             ]
@@ -134,7 +123,6 @@
                             "idName": "user",
                             "name": "user",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "Mail"
                         },
                         {
@@ -142,7 +130,6 @@
                             "idName": "password",
                             "name": "password",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "Password"
                         },
                         {
@@ -150,7 +137,6 @@
                             "idName": "recipient",
                             "name": "recipient",
                             "type": "QString",
-                            "index": 2,
                             "inputType": "Mail"
                         }
                     ],
@@ -158,7 +144,6 @@
                         {
                             "id": "054613b0-3666-4dad-9252-e0ebca187edc",
                             "idName": "sendMail",
-                            "index": 0,
                             "name": "send mail",
                             "paramTypes": [
                                 {
@@ -166,7 +151,6 @@
                                     "idName": "subject",
                                     "name": "subject",
                                     "type": "QString",
-                                    "index": 0,
                                     "inputType": "TextLine"
                                 },
                                 {
@@ -174,7 +158,6 @@
                                     "idName": "body",
                                     "name": "body",
                                     "type": "QString",
-                                    "index": 1,
                                     "inputType": "TextArea"
                                 }
                             ]
@@ -204,7 +187,6 @@
                             "idName": "user",
                             "name": "user",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "Mail"
                         },
                         {
@@ -212,7 +194,6 @@
                             "idName": "password",
                             "name": "password",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "Password"
                         },
                         {
@@ -220,7 +201,6 @@
                             "idName": "recipient",
                             "name": "recipient",
                             "type": "QString",
-                            "index": 2,
                             "inputType": "Mail"
                         }
                     ],
@@ -228,14 +208,12 @@
                         {
                             "id": "054613b0-3666-4dad-9252-e0ebca187edc",
                             "name": "send mail",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "2047e0f4-3d34-4214-bc8f-9ab741ae6006",
                                     "idName": "subject",
                                     "name": "subject",
                                     "type": "QString",
-                                    "index": 0,
                                     "inputType": "TextLine"
                                 },
                                 {
@@ -243,7 +221,6 @@
                                     "idName": "body",
                                     "name": "body",
                                     "type": "QString",
-                                    "index": 1,
                                     "inputType": "TextArea"
                                 }
                             ]
