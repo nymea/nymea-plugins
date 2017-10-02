@@ -53,11 +53,8 @@
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/tcpcommander/plugininfo.h" line="65"/>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/tcpcommander/plugininfo.h" line="74"/>
         <source>Data</source>
-        <extracomment>The name of the paramType (6604c852-6b24-4707-b8e5-1ddd8032efcc) of TCP Output
-----------
-The name of the paramType (23051bdf-3f50-41fa-abde-bc4fe0bcc4fc) of TCP Input</extracomment>
+        <extracomment>The name of the paramType (6604c852-6b24-4707-b8e5-1ddd8032efcc) of TCP Output</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -73,14 +70,20 @@ The name of the paramType (23051bdf-3f50-41fa-abde-bc4fe0bcc4fc) of TCP Input</e
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../../build-guh-plugins-Desktop-Debug/tcpcommander/plugininfo.h" line="74"/>
+        <source>Command</source>
+        <extracomment>The name of the paramType (23051bdf-3f50-41fa-abde-bc4fe0bcc4fc) of TCP Input</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/tcpcommander/plugininfo.h" line="77"/>
-        <source>response received</source>
+        <source>Data received</source>
         <extracomment>The name of the autocreated EventType (b98fdacc-59d7-41c4-b790-1fdca50dfb22)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-guh-plugins-Desktop-Debug/tcpcommander/plugininfo.h" line="80"/>
-        <source>Response</source>
+        <source>Data Received</source>
         <extracomment>The name of the ParamType of StateType (b98fdacc-59d7-41c4-b790-1fdca50dfb22) of DeviceClass TCP Input</extracomment>
         <translation type="unfinished"></translation>
     </message>

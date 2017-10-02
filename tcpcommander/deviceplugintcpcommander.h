@@ -47,6 +47,10 @@ private:
     QHash<TcpServer *, Device *> m_tcpServer;
 
 private slots:
+    void onTcpSocketConnected();
+    void onTcpSocketDisconnected();
+    void onTcpSocketBytesWritten();
+
     void onTcpServerConnected();
     void onTcpServerDisconnected();
     void onTcpServerTextMessageReceived(QByteArray message);

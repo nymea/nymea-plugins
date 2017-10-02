@@ -37,19 +37,23 @@ DeviceManager::DeviceSetupStatus DevicePluginTcpCommander::setupDevice(Device *d
     if (device->deviceClassId() == tcpOutputDeviceClassId) {
         QTcpSocket *tcpSocket = new QTcpSocket(this);
         m_tcpSockets.insert(tcpSocket, device);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        connect(tcpSocket, &QTcpSocket::connected, this, &DevicePluginTcpCommander::onTcpSocketConnected);
+        connect(tcpSocket, &QTcpSocket::disconnected, this, &DevicePluginTcpCommander::onTcpSocketDisconnected);
+        connect(tcpSocket, &QTcpSocket::bytesWritten, this, &DevicePluginTcpCommander::onTcpSocketBytesWritten);
+        return DeviceManager::DeviceSetupStatusAsync;
     }
 
     if (device->deviceClassId() == tcpInputDeviceClassId) {
         int port = device->paramValue(portParamTypeId).toInt();
         TcpServer *tcpServer = new TcpServer(port, this);
-        //TODO Connect TCP Server request received
+
         if (tcpServer->isValid()) {
             m_tcpServer.insert(tcpServer, device);
             connect(tcpServer, &TcpServer::connected, this, &DevicePluginTcpCommander::onTcpServerConnected);
             connect(tcpServer, &TcpServer::disconnected, this, &DevicePluginTcpCommander::onTcpServerDisconnected);
             return DeviceManager::DeviceSetupStatusSuccess;
         } else {
+            tcpServer->deleteLater();
             qDebug(dcTCPCommander()) << "Could not open TCP Server";
         }
     }
@@ -65,10 +69,7 @@ DeviceManager::DeviceError DevicePluginTcpCommander::executeAction(Device *devic
             int port = device->paramValue(portParamTypeId).toInt();
             QHostAddress address= QHostAddress(device->paramValue(ipv4addressParamTypeId).toString());
             QTcpSocket *tcpSocket = m_tcpSockets.key(device);
-            QByteArray data = device->paramValue(outputDataAreaParamTypeId).toByteArray();
             tcpSocket->connectToHost(address, port);
-            tcpSocket->write(data);
-            tcpSocket->close();
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -80,8 +81,13 @@ DeviceManager::DeviceError DevicePluginTcpCommander::executeAction(Device *devic
 void DevicePluginTcpCommander::deviceRemoved(Device *device)
 {
     if(device->deviceClassId() == tcpOutputDeviceClassId){
-        m_tcpSockets.remove(m_tcpSockets.key(device));
+
+        QTcpSocket *tcpSocket = m_tcpSockets.key(device);
+        m_tcpSockets.remove(tcpSocket);
+        tcpSocket->deleteLater();
+
     }else if(device->deviceClassId() == tcpInputDeviceClassId){
+
         TcpServer *tcpServer = m_tcpServer.key(device);
         m_tcpServer.remove(tcpServer);
         tcpServer->deleteLater();
@@ -89,12 +95,42 @@ void DevicePluginTcpCommander::deviceRemoved(Device *device)
 }
 
 
+void DevicePluginTcpCommander::onTcpSocketConnected()
+{
+    QTcpSocket *tcpSocket = static_cast<QTcpSocket *>(sender());
+    Device *device = m_tcpSockets.value(tcpSocket);
+    if (!device->setupComplete()) {
+        qDebug(dcTCPCommander()) << device->name() << "Setup finished" ;
+        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+    } else {
+        QByteArray data = device->paramValue(outputDataAreaParamTypeId).toByteArray();
+        tcpSocket->write(data);
+    }
+    device->setStateValue(connectedStateTypeId, true);
+}
+
+
+void DevicePluginTcpCommander::onTcpSocketDisconnected()
+{
+    QTcpSocket *tcpSocket = static_cast<QTcpSocket *>(sender());
+    Device *device = m_tcpSockets.value(tcpSocket);
+    device->setStateValue(connectedStateTypeId, false);
+}
+
+
+void DevicePluginTcpCommander::onTcpSocketBytesWritten()
+{
+    QTcpSocket *tcpSocket = static_cast<QTcpSocket *>(sender());
+    tcpSocket->close();
+}
+
 void DevicePluginTcpCommander::onTcpServerConnected()
 {
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Device *device = m_tcpServer.value(tcpServer);
     qDebug(dcTCPCommander()) << device->name() << "Tcp Server Client connected" ;
     device->setStateValue(connectedStateTypeId, true);
+
     connect(tcpServer, &TcpServer::textMessageReceived, this, &DevicePluginTcpCommander::onTcpServerTextMessageReceived);
     //send signal device Setup was successfull
 }
@@ -113,7 +149,7 @@ void DevicePluginTcpCommander::onTcpServerTextMessageReceived(QByteArray data)
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Device *device = m_tcpServer.value(tcpServer);
     qDebug(dcTCPCommander()) << device->name() << "Message received" << data;
-    device->setStateValue(responseStateTypeId, data); //TODO change wording
+    device->setStateValue(dataReceivedStateTypeId, data);
 
     if (device->paramValue(comparisionParamTypeId).toString() == "Is exactly") {
         qDebug(dcTCPCommander()) << "is exacly";
