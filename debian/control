@@ -539,6 +539,7 @@ Architecture: all
 Depends: guh-plugin-lircd,
          guh-plugin-commandlauncher,
          guh-plugin-udpcommander,
+         guh-plugin-tcpcommander,
          guh-plugin-genericelements,
          guh-plugin-avahimonitor,
          guh-plugin-gpio,
