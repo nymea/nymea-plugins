@@ -406,7 +406,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          guh-plugins-translations,
-Description: guh.io plugin for udpcommander
+Description: guh.io plugin for UDP commander
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
@@ -473,6 +473,21 @@ Description: guh.io plugin for ws2812
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the guh.io plugin for ws2812
+
+
+Package: guh-plugin-tcpcommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         guh-plugins-translations,
+Description: guh.io plugin for TCP commander
+ The guh daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the guh.io plugin for TCP commander
 
 
 Package: guh-plugins-translations
