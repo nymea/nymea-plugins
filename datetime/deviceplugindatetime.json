@@ -25,7 +25,6 @@
                             "idName": "timeZone",
                             "name": "timezone",
                             "eventTypeName": "timezone changed",
-                            "index": 0,
                             "type": "QString",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -36,7 +35,6 @@
                             "idName": "city",
                             "name": "city",
                             "eventTypeName": "city changed",
-                            "index": 1,
                             "type": "QString",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -47,7 +45,6 @@
                             "idName": "country",
                             "name": "country",
                             "eventTypeName": "country changed",
-                            "index": 2,
                             "type": "QString",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -58,7 +55,6 @@
                             "idName": "day",
                             "name": "day",
                             "eventTypeName": "day changed",
-                            "index": 3,
                             "type": "int",
                             "defaultValue": 1,
                             "eventRuleRelevant": false,
@@ -70,7 +66,6 @@
                             "idName": "month",
                             "name": "month",
                             "eventTypeName": "month changed",
-                            "index": 4,
                             "type": "int",
                             "defaultValue": 1,
                             "eventRuleRelevant": false,
@@ -82,7 +77,6 @@
                             "idName": "monthName",
                             "name": "month name",
                             "eventTypeName": "month name changed",
-                            "index": 5,
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "type": "QString",
@@ -93,7 +87,6 @@
                             "idName": "year",
                             "name": "year",
                             "eventTypeName": "year changed",
-                            "index": 6,
                             "eventRuleRelevant": false,
                             "type": "int",
                             "defaultValue": "1970"
@@ -104,7 +97,6 @@
                             "name": "weekday",
                             "eventTypeName": "weekday changed",
                             "type": "int",
-                            "index": 7,
                             "eventRuleRelevant": false,
                             "defaultValue": 1,
                             "minValue": 1,
@@ -117,7 +109,6 @@
                             "eventTypeName": "weekday name changed",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "index": 8,
                             "type": "QString",
                             "defaultValue": "-"
                         },
@@ -126,7 +117,6 @@
                             "idName": "weekend",
                             "name": "weekend",
                             "eventTypeName": "weekend changed",
-                            "index": 9,
                             "type": "bool",
                             "eventRuleRelevant": false,
                             "defaultValue": false
@@ -136,7 +126,6 @@
                             "idName": "dusk",
                             "name": "dusk",
                             "eventTypeName": "dusk changed",
-                            "index": 10,
                             "unit": "UnixTime",
                             "type": "int",
                             "eventRuleRelevant": false,
@@ -147,7 +136,6 @@
                             "idName": "sunrise",
                             "name": "sunrise",
                             "eventTypeName": "sunrise changed",
-                            "index": 11,
                             "unit": "UnixTime",
                             "type": "int",
                             "eventRuleRelevant": false,
@@ -158,7 +146,6 @@
                             "idName": "noon",
                             "name": "noon",
                             "eventTypeName": "noon changed",
-                            "index": 12,
                             "unit": "UnixTime",
                             "type": "int",
                             "eventRuleRelevant": false,
@@ -169,7 +156,6 @@
                             "idName": "dawn",
                             "name": "dawn",
                             "eventTypeName": "dawn changed",
-                            "index": 13,
                             "unit": "UnixTime",
                             "type": "int",
                             "eventRuleRelevant": false,
@@ -180,7 +166,6 @@
                             "idName": "sunset",
                             "name": "sunset",
                             "eventTypeName": "sunset changed",
-                            "index": 14,
                             "unit": "UnixTime",
                             "type": "int",
                             "eventRuleRelevant": false,
@@ -191,32 +176,27 @@
                         {
                             "id": "792885f3-f505-42db-8c74-3d0460b575a1",
                             "idName": "dusk",
-                            "name": "dusk",
-                            "index": 0
+                            "name": "dusk"
                         },
                         {
                             "id": "726acb30-928b-43da-a790-977a821c979e",
                             "idName": "sunrise",
-                            "name": "sunrise",
-                            "index": 1
+                            "name": "sunrise"
                         },
                         {
                             "id": "97ae8dd8-640c-4f9b-8773-aa7abb1d32fa",
                             "idName": "noon",
-                            "name": "noon",
-                            "index": 2
+                            "name": "noon"
                         },
                         {
                             "id": "5e3657b0-a459-4837-a632-0b20de4b7349",
                             "idName": "dawn",
-                            "name": "dawn",
-                            "index": 3
+                            "name": "dawn"
                         },
                         {
                             "id": "f40d6e0f-fda2-475e-a6ae-c3fee03138b9",
                             "idName": "sunset",
-                            "name": "sunset",
-                            "index": 4
+                            "name": "sunset"
                         }
                     ]
                 },
@@ -237,62 +217,54 @@
                             "idName": "monday",
                             "name": "monday",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 0
+                            "defaultValue": false
                         },
                         {
                             "id": "6bcbecd9-d3b8-4a63-9a41-e3ee3f4c3bab",
                             "idName": "tuesday",
                             "name": "tuesday",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 1
+                            "defaultValue": false
                         },
                         {
                             "id": "66bf302c-a7de-41cd-9e12-415276b82e65",
                             "idName": "wednesday",
                             "name": "wednesday",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 2
+                            "defaultValue": false
                         },
                         {
                             "id": "97aa24dc-a741-48db-ad13-7ba14ab71ea1",
                             "idName": "thursday",
                             "name": "thursday",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 3
+                            "defaultValue": false
                         },
                         {
                             "id": "8d99b490-9b59-4812-a18d-d43c1259d1b0",
                             "idName": "friday",
                             "name": "friday",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 4
+                            "defaultValue": false
                         },
                         {
                             "id": "59cc3316-8de7-4602-9ee2-71559f7b665a",
                             "idName": "saturday",
                             "name": "saturday",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 5
+                            "defaultValue": false
                         },
                         {
                             "id": "2d519d8f-4bda-4d30-801f-48fe6c10c540",
                             "idName": "sunday",
                             "name": "sunday",
                             "type": "bool",
-                            "defaultValue": false,
-                            "index": 6
+                            "defaultValue": false
                         },
                         {
                             "id": "3e38649d-f415-400f-bec2-81f374cad1cb",
                             "idName": "minutes",
                             "name": "minutes",
-                            "index": 7,
                             "type": "int",
                             "unit": "Minutes",
                             "minValue": 0,
@@ -304,7 +276,6 @@
                             "id": "85c1d50d-509b-4a6a-840f-fc8fdbf46a52",
                             "idName": "hours",
                             "name": "hours",
-                            "index": 8,
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 24,
@@ -316,7 +287,6 @@
                             "idName": "timeType",
                             "name": "time type",
                             "type": "QString",
-                            "index": 9,
                             "allowedValues": [
                                 "time",
                                 "dusk",
@@ -331,7 +301,6 @@
                             "id": "b37ec6bb-9f37-4520-ae34-d788ac2d5056",
                             "idName": "offset",
                             "name": "offset",
-                            "index": 10,
                             "type": "int",
                             "minValue": -120,
                             "maxValue": 120,
@@ -343,7 +312,6 @@
                         {
                             "id": "5ec9a4af-d5ea-4f68-ab32-f7a3fcd75ccc",
                             "idName": "alarm",
-                            "index": 0,
                             "name": "alarm"
                         }
                     ]
@@ -365,7 +333,6 @@
                             "id": "7c1d33d8-bcc3-4890-a4be-2c753d9c14be",
                             "idName": "seconds",
                             "name": "seconds",
-                            "index": 0,
                             "type": "int",
                             "unit": "Seconds",
                             "minValue": 0,
@@ -376,7 +343,6 @@
                             "id": "733e4174-dc42-4bf1-9a1d-65e785c2e580",
                             "idName": "minutes",
                             "name": "minutes",
-                            "index": 1,
                             "type": "int",
                             "unit": "Minutes",
                             "minValue": 0,
@@ -387,7 +353,6 @@
                             "id": "0a54fe54-45a7-4fc5-a8d2-f9b6a92033de",
                             "idName": "hours",
                             "name": "hours",
-                            "index": 2,
                             "type": "int",
                             "unit": "Hours",
                             "minValue": 0,
@@ -398,7 +363,6 @@
                             "id": "7b0c11cd-64c5-4cfc-9860-aa9ce7b7b3b5",
                             "idName": "repeating",
                             "name": "repeating",
-                            "index": 3,
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -407,8 +371,7 @@
                         {
                             "id": "1db11351-ad67-448e-a784-216741a06a58",
                             "idName": "timeout",
-                            "name": "timeout",
-                            "index": 0
+                            "name": "timeout"
                         }
                     ],
                     "stateTypes": [
@@ -417,7 +380,6 @@
                             "idName": "running",
                             "name": "running",
                             "eventTypeName": "running changed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -426,20 +388,17 @@
                         {
                             "id": "436e9923-6eff-444e-bde7-a61228a4d748",
                             "idName": "start",
-                            "name": "start",
-                            "index": 0
+                            "name": "start"
                         },
                         {
                             "id": "bf4d1def-4159-4254-a76d-fd31aaa84e2d",
                             "idName": "stop",
-                            "name": "stop",
-                            "index": 1
+                            "name": "stop"
                         },
                         {
                             "id": "14aad613-b972-411f-93c9-f00bfd254285",
                             "idName": "restart",
-                            "name": "restart",
-                            "index": 2
+                            "name": "restart"
                         }
                     ]
                 }

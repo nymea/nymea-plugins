@@ -27,7 +27,6 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -35,7 +34,6 @@
                             "idName": "username",
                             "name": "username",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "TextLine"
                         },
                         {
@@ -43,7 +41,6 @@
                             "idName": "password",
                             "name": "password",
                             "type": "QString",
-                            "index": 2,
                             "inputType": "Password"
                         }
                     ],
@@ -53,7 +50,6 @@
                             "idName": "available",
                             "name": "available",
                             "eventTypeName": "available changed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -77,7 +73,6 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -85,7 +80,6 @@
                             "idName": "mac",
                             "name": "mac address",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "TextLine",
                             "readOnly": true
                         },
@@ -94,7 +88,6 @@
                             "idName": "connection",
                             "name": "connection",
                             "type": "QString",
-                            "index": 2,
                             "inputType": "TextLine",
                             "readOnly": true
                         }
@@ -105,7 +98,6 @@
                             "idName": "updateTime",
                             "name": "last update",
                             "eventTypeName": "last update changed",
-                            "index": 0,
                             "unit": "UnixTime",
                             "type": "int",
                             "ruleRelevant": false,
@@ -117,7 +109,6 @@
                             "idName": "temperature",
                             "name": "temperature",
                             "eventTypeName": "temperature changed",
-                            "index": 1,
                             "unit": "DegreeCelsius",
                             "graphRelevant": true,
                             "type": "double",
@@ -128,7 +119,6 @@
                             "idName": "temperatureMin",
                             "name": "temperature minimum",
                             "eventTypeName": "temperature minimum changed",
-                            "index": 2,
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -138,7 +128,6 @@
                             "idName": "temperatureMax",
                             "name": "temperature maximum",
                             "eventTypeName": "temperature maximum changed",
-                            "index": 3,
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -148,7 +137,6 @@
                             "idName": "humidity",
                             "name": "humidity",
                             "eventTypeName": "humidity changed",
-                            "index": 4,
                             "graphRelevant": true,
                             "unit": "Percentage",
                             "type": "int",
@@ -159,7 +147,6 @@
                             "idName": "pressure",
                             "name": "pressure",
                             "eventTypeName": "pressure changed",
-                            "index": 5,
                             "unit": "MilliBar",
                             "graphRelevant": true,
                             "type": "double",
@@ -170,7 +157,6 @@
                             "idName": "noise",
                             "name": "noise",
                             "eventTypeName": "noise changed",
-                            "index": 6,
                             "graphRelevant": true,
                             "unit": "Dezibel",
                             "type": "int",
@@ -181,7 +167,6 @@
                             "idName": "co2",
                             "name": "co2",
                             "eventTypeName": "co2 changed",
-                            "index": 7,
                             "graphRelevant": true,
                             "unit": "PartsPerMillion",
                             "type": "int",
@@ -192,7 +177,6 @@
                             "idName": "wifiStrength",
                             "name": "wifi signal strength",
                             "eventTypeName": "wifi signal strength changed",
-                            "index": 8,
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "unit": "Percentage",
@@ -219,7 +203,6 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -227,7 +210,6 @@
                             "idName": "mac",
                             "name": "mac address",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "TextLine",
                             "readOnly": true
                         },
@@ -236,7 +218,6 @@
                             "idName": "connection",
                             "name": "connection",
                             "type": "QString",
-                            "index": 2,
                             "inputType": "TextLine",
                             "readOnly": true
                         },
@@ -245,7 +226,6 @@
                             "idName": "baseStation",
                             "name": "base station",
                             "type": "QString",
-                            "index": 3,
                             "inputType": "TextLine",
                             "readOnly": true
                         }
@@ -256,7 +236,6 @@
                             "idName": "updateTime",
                             "name": "last update",
                             "eventTypeName": "last update changed",
-                            "index": 0,
                             "unit": "UnixTime",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -269,7 +248,6 @@
                             "name": "temperature",
                             "eventTypeName": "temperature changed",
                             "graphRelevant": true,
-                            "index": 1,
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -279,7 +257,6 @@
                             "idName": "temperatureMin",
                             "name": "temperature minimum",
                             "eventTypeName": "temperature minimum changed",
-                            "index": 2,
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -289,7 +266,6 @@
                             "idName": "temperatureMax",
                             "name": "temperature maximum",
                             "eventTypeName": "temperature maximum changed",
-                            "index": 3,
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -300,7 +276,6 @@
                             "name": "humidity",
                             "eventTypeName": "humidity changed",
                             "graphRelevant": true,
-                            "index": 4,
                             "unit": "Percentage",
                             "type": "int",
                             "defaultValue": 0
@@ -310,7 +285,6 @@
                             "idName": "signalStrength",
                             "name": "signal strength",
                             "eventTypeName": "signal strength changed",
-                            "index": 5,
                             "unit": "Percentage",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -322,7 +296,6 @@
                             "idName": "battery",
                             "name": "battery",
                             "eventTypeName": "battery changed",
-                            "index": 6,
                             "unit": "Percentage",
                             "type": "int",
                             "defaultValue": 0

@@ -24,7 +24,6 @@
                             "idName": "rpl",
                             "name": "RPL address",
                             "type": "QString",
-                            "index": 1,
                             "inputType": "TextLine",
                             "defaultValue": "fdaa:e9b8:d03a::ff:fe00:1"
                         }
@@ -48,22 +47,19 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "index": 0,
                             "defaultValue": "Dollhouse Light"
                         },
                         {
                             "id": "37d5d2fa-dea2-4007-99b1-a1300025c709",
                             "idName": "address",
                             "name": "address",
-                            "type": "QString",
-                            "index": 1
+                            "type": "QString"
                         },
                         {
                             "id": "c843c179-ab02-4aa8-a228-fdc8d9558f1d",
                             "idName": "lightId",
                             "name": "light id",
                             "type": "int",
-                            "index": 2,
                             "defaultValue": 0,
                             "readOnly": true
                         },
@@ -72,7 +68,6 @@
                             "idName": "connectionUuid",
                             "name": "connection uuid",
                             "type": "QString",
-                            "index": 3,
                             "inputType": "TextLine",
                             "readOnly": true
                         }
@@ -84,7 +79,6 @@
                             "name": "color",
                             "eventTypeName": "color changed",
                             "actionTypeName": "Set color",
-                            "index": 0,
                             "type": "QColor",
                             "defaultValue": "#fff30a",
                             "ruleRelevant": false,
@@ -97,7 +91,6 @@
                             "name": "brightness",
                             "eventTypeName": "brightness changed",
                             "actionTypeName": "Set brightness",
-                            "index": 1,
                             "type": "int",
                             "unit": "Percentage",
                             "minValue": 0,
@@ -113,7 +106,6 @@
                             "name": "power",
                             "eventTypeName": "power changed",
                             "actionTypeName": "Set power",
-                            "index": 2,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -123,7 +115,6 @@
                             "idName": "reachable",
                             "name": "reachable",
                             "eventTypeName": "reachable changed",
-                            "index": 3,
                             "type": "bool",
                             "defaultValue": false
                         }
