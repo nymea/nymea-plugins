@@ -10,11 +10,13 @@ Build-depends: debhelper (>= 0.0.0),
                qtconnectivity5-dev,
 Standards-Version: 3.9.3
 
+
 Package: guh-plugin-avahimonitor
 Architecture: any
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for avahimonitor
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -24,10 +26,12 @@ Description: guh.io plugin for avahimonitor
  .
  This package will install the guh.io plugin for avahimonitor
 
+
 Package: guh-plugin-awattar
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for awattar
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -37,10 +41,12 @@ Description: guh.io plugin for awattar
  .
  This package will install the guh.io plugin for awattar
 
+
 Package: guh-plugin-commandlauncher
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for commandlauncher
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -50,10 +56,12 @@ Description: guh.io plugin for commandlauncher
  .
  This package will install the guh.io plugin for commandlauncher
 
+
 Package: guh-plugin-conrad
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for conrad
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -63,10 +71,12 @@ Description: guh.io plugin for conrad
  .
  This package will install the guh.io plugin for conrad
 
+
 Package: guh-plugin-datetime
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for datetime
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -76,10 +86,12 @@ Description: guh.io plugin for datetime
  .
  This package will install the guh.io plugin for datetime
 
+
 Package: guh-plugin-denon
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for denon
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -89,10 +101,12 @@ Description: guh.io plugin for denon
  .
  This package will install the guh.io plugin for denon
 
+
 Package: guh-plugin-dollhouse
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for dollhouse
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -102,10 +116,12 @@ Description: guh.io plugin for dollhouse
  .
  This package will install the guh.io plugin for dollhouse
 
+
 Package: guh-plugin-elgato
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for elgato
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -115,10 +131,12 @@ Description: guh.io plugin for elgato
  .
  This package will install the guh.io plugin for elgato
 
+
 Package: guh-plugin-elro
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for elro
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -128,10 +146,12 @@ Description: guh.io plugin for elro
  .
  This package will install the guh.io plugin for elro
 
+
 Package: guh-plugin-eq-3
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for eq-3
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -141,10 +161,12 @@ Description: guh.io plugin for eq-3
  .
  This package will install the guh.io plugin for eq-3
 
+
 Package: guh-plugin-genericelements
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for genericelements
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -154,10 +176,12 @@ Description: guh.io plugin for genericelements
  .
  This package will install the guh.io plugin for genericelements
 
+
 Package: guh-plugin-gpio
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for gpio
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -167,10 +191,12 @@ Description: guh.io plugin for gpio
  .
  This package will install the guh.io plugin for gpio
 
+
 Package: guh-plugin-intertechno
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for intertechno
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -180,10 +206,12 @@ Description: guh.io plugin for intertechno
  .
  This package will install the guh.io plugin for intertechno
 
+
 Package: guh-plugin-kodi
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for kodi
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -193,10 +221,12 @@ Description: guh.io plugin for kodi
  .
  This package will install the guh.io plugin for kodi
 
+
 Package: guh-plugin-leynew
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for leynew
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -206,10 +236,12 @@ Description: guh.io plugin for leynew
  .
  This package will install the guh.io plugin for leynew
 
+
 Package: guh-plugin-lgsmarttv
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for lgsmarttv
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -219,10 +251,12 @@ Description: guh.io plugin for lgsmarttv
  .
  This package will install the guh.io plugin for lgsmarttv
 
+
 Package: guh-plugin-lircd
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for lircd
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -232,10 +266,12 @@ Description: guh.io plugin for lircd
  .
  This package will install the guh.io plugin for lircd
 
+
 Package: guh-plugin-mailnotification
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for mailnotification
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -249,6 +285,7 @@ Package: guh-plugin-netatmo
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for netatmo
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -258,11 +295,13 @@ Description: guh.io plugin for netatmo
  .
  This package will install the guh.io plugin for netatmo
 
+
 Package: guh-plugin-networkdetector
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         nmap
+         nmap,
+         guh-plugins-translations,
 Description: guh.io plugin for networkdetector
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -272,10 +311,12 @@ Description: guh.io plugin for networkdetector
  .
  This package will install the guh.io plugin for networkdetector
 
+
 Package: guh-plugin-openweathermap
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for openweathermap
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -285,10 +326,12 @@ Description: guh.io plugin for openweathermap
  .
  This package will install the guh.io plugin for openweathermap
 
+
 Package: guh-plugin-orderbutton
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for orderbutton
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -298,10 +341,12 @@ Description: guh.io plugin for orderbutton
  .
  This package will install the guh.io plugin for orderbutton
 
+
 Package: guh-plugin-osdomotics
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for osdomotics
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -311,10 +356,12 @@ Description: guh.io plugin for osdomotics
  .
  This package will install the guh.io plugin for osdomotics
 
+
 Package: guh-plugin-philipshue
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for philipshue
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -324,10 +371,12 @@ Description: guh.io plugin for philipshue
  .
  This package will install the guh.io plugin for philipshue
 
+
 Package: guh-plugin-plantcare
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for plantcare
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -341,6 +390,7 @@ Package: guh-plugin-senic
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for senic
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -350,10 +400,12 @@ Description: guh.io plugin for senic
  .
  This package will install the guh.io plugin for senic
 
+
 Package: guh-plugin-udpcommander
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for udpcommander
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -363,10 +415,12 @@ Description: guh.io plugin for udpcommander
  .
  This package will install the guh.io plugin for udpcommander
 
+
 Package: guh-plugin-unitec
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for unitec
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -380,6 +434,7 @@ Package: guh-plugin-wakeonlan
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for wakeonlan
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -389,10 +444,12 @@ Description: guh.io plugin for wakeonlan
  .
  This package will install the guh.io plugin for wakeonlan
 
+
 Package: guh-plugin-wemo
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for wemo
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -402,10 +459,12 @@ Description: guh.io plugin for wemo
  .
  This package will install the guh.io plugin for wemo
 
+
 Package: guh-plugin-ws2812
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         guh-plugins-translations,
 Description: guh.io plugin for ws2812
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -415,15 +474,60 @@ Description: guh.io plugin for ws2812
  .
  This package will install the guh.io plugin for ws2812
 
+
+Package: guh-plugins-translations
+Section: misc
+Architecture: all
+Depends: ${misc:Depends}
+Description: Translation files for guh plugins - translations
+ The guh daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package provides the translation files for all guh plugins.
+
+
+
+Package: guh-plugins
+Section: libs
+Architecture: all
+Depends: guh-plugin-awattar,
+         guh-plugin-datetime,
+         guh-plugin-denon,
+         guh-plugin-elgato,
+         guh-plugin-eq-3,
+         guh-plugin-kodi,
+         guh-plugin-lgsmarttv,
+         guh-plugin-mailnotification,
+         guh-plugin-netatmo,
+         guh-plugin-networkdetector,
+         guh-plugin-openweathermap,
+         guh-plugin-philipshue,
+         guh-plugin-senic,
+         guh-plugin-wakeonlan,
+         guh-plugin-wemo,
+Description: Plugins for guh IoT server - the default plugin collection
+ The guh daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the default guh plugins.
+
+
 Package: guh-plugins-maker
 Section: libs
 Architecture: all
 Depends: guh-plugin-lircd,
          guh-plugin-commandlauncher,
          guh-plugin-udpcommander,
+         guh-plugin-genericelements,
          guh-plugin-avahimonitor,
          guh-plugin-gpio,
-Description: Plugins for guh IoT server - for makers, tinkers and hackers
+Description: Plugins for guh IoT server - Meta package for makers, tinkers and hackers
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
@@ -432,7 +536,8 @@ Description: Plugins for guh IoT server - for makers, tinkers and hackers
  .
  This package will install guh plugins for maker, tinker and hackers.
 
-Package: guh-plugins-merkur
+
+Package: guh-plugins-merkurboard
 Section: libs
 Architecture: all
 Depends: guh-plugin-osdomotics,
@@ -440,7 +545,7 @@ Depends: guh-plugin-osdomotics,
          guh-plugin-plantcare,
          guh-plugin-ws2812,
          guh-plugin-orderbutton,
-Description: Plugins for guh IoT server - 6LoWPAN Merkur boards
+Description: Plugins for guh IoT server - Meta package for 6LoWPAN Merkur boards
  The guh daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
@@ -449,33 +554,32 @@ Description: Plugins for guh IoT server - 6LoWPAN Merkur boards
  .
  This package will install the 6LoWPAN Merkur board plugins for guh.
 
+
+Package: guh-plugins-433mhz
+Section: libs
+Architecture: all
+Depends: guh-plugin-elro,
+         guh-plugin-conrad,
+         guh-plugin-intertechno,
+         guh-plugin-leynew,
+         guh-plugin-unitec,
+Description: Plugins for guh IoT server - Meta package for RF 433 MHz plugins
+ The guh daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the RF 433 MHz plugins for guh.
+
+
 Package: guh-plugins-all
 Section: libs
 Architecture: all
-Depends: guh-plugins-maker,
-         guh-plugins-merkur,
-         guh-plugin-awattar,
-         guh-plugin-conrad,
-         guh-plugin-datetime,
-         guh-plugin-denon,
-         guh-plugin-elgato,
-         guh-plugin-elro,
-         guh-plugin-eq-3,
-         guh-plugin-genericelements,
-         guh-plugin-intertechno,
-         guh-plugin-kodi,
-         guh-plugin-leynew,
-         guh-plugin-lgsmarttv,
-         guh-plugin-mailnotification,
-         guh-plugin-netatmo,
-         guh-plugin-networkdetector,
-         guh-plugin-openweathermap,
-         guh-plugin-philipshue,
-         guh-plugin-plantcare,
-         guh-plugin-senic,
-         guh-plugin-unitec,
-         guh-plugin-wakeonlan,
-         guh-plugin-wemo,
+Depends: guh-plugins,
+         guh-plugins-433mhz,
+         guh-plugins-maker,
+         guh-plugins-merkurboard,
 Description: Plugins for guh IoT server - Meta package for all plugins
  The guh daemon is a plugin based IoT (Internet of Things) server. The		
  server works like a translator for devices, things and services and		

@@ -26,6 +26,7 @@ Copyright: 2016-2017, Simon Stürz <simon.stuerz@guh.io>
 Files: debian/*
 License: GPL-2+
 Copyright: 2017, Michael Zanetti <michael.zanetti@guh.io>
+           2017, Simon Stürz <simon.stuerz@guh.io>
 
 Files: denon/*
        orderbutton/*
