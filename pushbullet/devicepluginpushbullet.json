@@ -22,7 +22,6 @@
                             "id": "1f37ce22-50b8-4183-8b74-557fdb2d3076",
                             "idName": "token",
                             "name": "access token",
-                            "index": 0,
                             "type": "QString"
                         }
                     ],
@@ -31,14 +30,12 @@
                             "id": "1378480f-6583-44e2-8fdd-22afe979a9a3",
                             "idName": "notify",
                             "name": "notify",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "ceed6e66-0dcb-4405-832d-e9091f882acc",
                                     "idName": "title",
                                     "name": "title",
                                     "type": "QString",
-                                    "index": 0,
                                     "inputType": "TextLine",
                                     "defaultValue": ""
                                 },
@@ -47,7 +44,6 @@
                                     "idName": "body",
                                     "name": "body",
                                     "type": "QString",
-                                    "index": 1,
                                     "inputType": "TextArea",
                                     "defaultValue": ""
                                 }

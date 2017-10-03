@@ -29,7 +29,6 @@
                             "idName": "bridgeName",
                             "name": "name",
                             "type" : "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -37,7 +36,6 @@
                             "idName": "bridgeApi",
                             "name": "api key",
                             "type" : "QString",
-                            "index": 1,
                             "inputType": "TextLine",
                             "readOnly": true
                         },
@@ -46,7 +44,6 @@
                             "idName": "bridgeHost",
                             "name": "host address",
                             "type" : "QString",
-                            "index": 2,
                             "inputType": "IPv4Address",
                             "readOnly": true
                         },
@@ -55,7 +52,6 @@
                             "idName": "bridgeMac",
                             "name": "mac address",
                             "type" : "QString",
-                            "index": 3,
                             "inputType": "MacAddress",
                             "readOnly": true
                         },
@@ -64,7 +60,6 @@
                             "idName": "bridgeId",
                             "name": "id",
                             "type" : "QString",
-                            "index": 4,
                             "readOnly": true
                         },
                         {
@@ -72,7 +67,6 @@
                             "idName": "bridgeSoftware",
                             "name": "software version",
                             "type" : "QString",
-                            "index": 5,
                             "readOnly": true
                         },
                         {
@@ -80,7 +74,6 @@
                             "idName": "bridgeZigbeeChannel",
                             "name": "zigbee channel",
                             "type" : "int",
-                            "index": 6,
                             "readOnly": true
                         }
                     ],
@@ -90,7 +83,6 @@
                             "idName": "bridgeReachable",
                             "name": "reachable",
                             "eventTypeName": "reachable changed",
-                            "index": 0,
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -99,7 +91,6 @@
                             "idName": "apiVersion",
                             "name": "api version",
                             "eventTypeName": "api version changed",
-                            "index": 1,
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "defaultValue": "-",
@@ -112,7 +103,6 @@
                             "eventTypeName": "software version changed",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "index": 2,
                             "defaultValue": "-",
                             "type": "QString"
                         },
@@ -121,7 +111,6 @@
                             "idName": "updateStatus",
                             "name": "update status",
                             "eventTypeName": "update status changed",
-                            "index": 3,
                             "ruleRelevant": false,
                             "type": "QString",
                             "defaultValue": "Up to date",
@@ -137,19 +126,16 @@
                         {
                             "id": "cca3f171-6318-44e7-a2ac-d841857c1c24",
                             "idName": "searchNewDevices",
-                            "index": 0,
                             "name": "search devices"
                         },
                         {
                             "id": "07a85e91-d064-4bce-b017-13fd0c320c0b",
                             "idName": "checkForUpdates",
-                            "index": 1,
                             "name": "check updates"
                         },
                         {
                             "id": "6dfbc7c0-7372-42f6-82ba-e777cb32dc4c",
                             "idName": "upgrade",
-                            "index": 2,
                             "name": "Upgrade bridge"
                         }
                     ]
@@ -174,7 +160,6 @@
                             "idName": "name",
                             "name": "name",
                             "type" : "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -182,7 +167,6 @@
                             "idName": "bridge",
                             "name": "bridge",
                             "type" : "QString",
-                            "index": 1,
                             "readOnly": true
                         },
                         {
@@ -190,7 +174,6 @@
                             "idName": "modelId",
                             "name": "model id",
                             "type" : "QString",
-                            "index": 2,
                             "readOnly": true
                         },
                         {
@@ -198,7 +181,6 @@
                             "idName": "type",
                             "name": "type",
                             "type" : "QString",
-                            "index": 3,
                             "readOnly": true
                         },
                         {
@@ -206,7 +188,6 @@
                             "idName": "uuid",
                             "name": "uuid",
                             "type" : "QString",
-                            "index": 4,
                             "readOnly": true
                         },
                         {
@@ -215,7 +196,6 @@
                             "name": "api key",
                             "type" : "QString",
                             "inputType": "TextLine",
-                            "index": 5,
                             "readOnly": true
                         },
                         {
@@ -224,7 +204,6 @@
                             "name": "host address",
                             "type" : "QString",
                             "inputType": "IPv4Address",
-                            "index": 6,
                             "readOnly": true
                         },
                         {
@@ -232,7 +211,6 @@
                             "idName": "lightId",
                             "name": "light id",
                             "type" : "int",
-                            "index": 7,
                             "readOnly": true
                         }
                     ],
@@ -242,7 +220,6 @@
                             "idName": "hueReachable",
                             "name": "reachable",
                             "eventTypeName": "reachable changed",
-                            "index": 0,
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -252,7 +229,6 @@
                             "name": "power",
                             "eventTypeName": "power changed",
                             "actionTypeName": "Set power",
-                            "index": 1,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -264,7 +240,6 @@
                             "eventTypeName": "color temperature changed",
                             "actionTypeName": "Set color temperature",
                             "type": "int",
-                            "index": 2,
                             "unit": "Mired",
                             "defaultValue": 170,
                             "ruleRelevant": false,
@@ -279,7 +254,6 @@
                             "name": "color",
                             "eventTypeName": "color changed",
                             "actionTypeName": "Set color",
-                            "index": 3,
                             "type": "QColor",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -294,7 +268,6 @@
                             "eventTypeName": "brightness changed",
                             "actionTypeName": "Set brigtness",
                             "type": "int",
-                            "index": 4,
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "unit": "Percentage",
@@ -310,7 +283,6 @@
                             "name": "effect",
                             "eventTypeName": "effect changed",
                             "actionTypeName": "Set effect",
-                            "index": 5,
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "type": "QString",
@@ -327,14 +299,12 @@
                             "id": "d25dcfbc-d28c-4905-80e3-300ffb1248f5",
                             "idName": "hueAlert",
                             "name": "flash",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "8ace6f8c-b2c7-4d0d-a407-52a54ad0ab05",
                                     "idName": "alert",
                                     "name": "alert",
                                     "type": "QString",
-                                    "index": 0,
                                     "allowedValues": [
                                         "flash",
                                         "flash 15 [s]"
@@ -364,7 +334,6 @@
                             "idName": "name",
                             "name": "name",
                             "type" : "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -372,7 +341,6 @@
                             "idName": "bridge",
                             "name": "bridge",
                             "type" : "QString",
-                            "index": 1,
                             "readOnly": true
                         },
                         {
@@ -380,7 +348,6 @@
                             "idName": "modelId",
                             "name": "model id",
                             "type" : "QString",
-                            "index": 2,
                             "readOnly": true
                         },
                         {
@@ -388,7 +355,6 @@
                             "idName": "type",
                             "name": "type",
                             "type" : "QString",
-                            "index": 3,
                             "readOnly": true
                         },
                         {
@@ -396,7 +362,6 @@
                             "idName": "uuid",
                             "name": "uuid",
                             "type" : "QString",
-                            "index": 4,
                             "readOnly": true
                         },
                         {
@@ -405,7 +370,6 @@
                             "name": "api key",
                             "type" : "QString",
                             "inputType": "TextLine",
-                            "index": 5,
                             "readOnly": true
                         },
                         {
@@ -414,7 +378,6 @@
                             "name": "host address",
                             "type" : "QString",
                             "inputType": "IPv4Address",
-                            "index": 6,
                             "readOnly": true
                         },
                         {
@@ -422,7 +385,6 @@
                             "idName": "lightId",
                             "name": "light id",
                             "type" : "int",
-                            "index": 7,
                             "readOnly": true
                         }
                     ],
@@ -432,7 +394,6 @@
                             "idName": "hueReachable",
                             "name": "reachable",
                             "eventTypeName": "reachable changed",
-                            "index": 0,
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -442,7 +403,6 @@
                             "name": "power",
                             "eventTypeName": "power changed",
                             "actionTypeName": "Set power",
-                            "index": 1,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -453,7 +413,6 @@
                             "name": "brightness",
                             "eventTypeName": "brightness changed",
                             "actionTypeName": "Set brightness",
-                            "index": 2,
                             "type": "int",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -470,14 +429,12 @@
                             "id": "d25dcfbc-d28c-4905-80e3-300ffb1248f5",
                             "idName": "hueAlert",
                             "name": "flash",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "8ace6f8c-b2c7-4d0d-a407-52a54ad0ab05",
                                     "idName": "alert",
                                     "name": "alert",
                                     "type": "QString",
-                                    "index": 0,
                                     "allowedValues": [
                                         "flash",
                                         "flash 15 [s]"
@@ -504,7 +461,6 @@
                             "idName": "name",
                             "name": "name",
                             "type" : "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         },
                         {
@@ -512,7 +468,6 @@
                             "idName": "bridge",
                             "name": "bridge",
                             "type" : "QString",
-                            "index": 1,
                             "readOnly": true
                         },
                         {
@@ -520,7 +475,6 @@
                             "idName": "modelId",
                             "name": "model id",
                             "type" : "QString",
-                            "index": 2,
                             "readOnly": true
                         },
                         {
@@ -528,7 +482,6 @@
                             "idName": "type",
                             "name": "type",
                             "type" : "QString",
-                            "index": 3,
                             "readOnly": true
                         },
                         {
@@ -536,7 +489,6 @@
                             "idName": "uuid",
                             "name": "uuid",
                             "type" : "QString",
-                            "index": 4,
                             "readOnly": true
                         },
                         {
@@ -545,7 +497,6 @@
                             "name": "api key",
                             "type" : "QString",
                             "inputType": "TextLine",
-                            "index": 5,
                             "readOnly": true
                         },
                         {
@@ -554,7 +505,6 @@
                             "name": "host address",
                             "type" : "QString",
                             "inputType": "IPv4Address",
-                            "index": 6,
                             "readOnly": true
                         },
                         {
@@ -562,7 +512,6 @@
                             "idName": "sensorId",
                             "name": "sensor id",
                             "type" : "int",
-                            "index": 7,
                             "readOnly": true
                         }
                     ],
@@ -572,7 +521,6 @@
                             "idName": "hueReachable",
                             "name": "reachable",
                             "eventTypeName": "reachable changed",
-                            "index": 0,
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -583,7 +531,6 @@
                             "eventTypeName": "battery changed",
                             "actionTypeName": "Set battery",
                             "type": "int",
-                            "index": 1,
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
@@ -594,49 +541,41 @@
                         {
                             "id": "de769db0-4c31-46cf-9760-dbc6f9209c26",
                             "idName": "onPressed",
-                            "index": 0,
                             "name": "on pressed"
                         },
                         {
                             "id": "6c5e596b-7c15-40bb-af9d-c778a6b0f30e",
                             "idName": "onLongPressed",
-                            "index": 1,
                             "name": "on long pressed"
                         },
                         {
                             "id": "8e3d6a62-6a19-4e9a-a25b-e1da2e56ede9",
                             "idName": "dimUpPressed",
-                            "index": 2,
                             "name": "dim up pressed"
                         },
                         {
                             "id": "53d3c9af-3e25-4116-b22b-38d897bc20aa",
                             "idName": "dimUpLongPressed",
-                            "index": 3,
                             "name": "dim up long pressed"
                         },
                         {
                             "id": "efd8b972-9a37-43f2-b9bc-f9dfe144a96d",
                             "idName": "dimDownPressed",
-                            "index": 4,
                             "name": "dim down pressed"
                         },
                         {
                             "id": "1986d4c6-4c9f-4e43-ba70-0ff06c6f177b",
                             "idName": "dimDownLongPressed",
-                            "index": 5,
                             "name": "dim down long pressed"
                         },
                         {
                             "id": "7c2a58f1-137c-4bf3-8f9e-453dff020487",
                             "idName": "offPressed",
-                            "index": 6,
                             "name": "off pressed"
                         },
                         {
                             "id": "d69306eb-ea52-4841-9e26-89c69e9cf6fc",
                             "idName": "offLongPressed",
-                            "index": 7,
                             "name": "off long pressed"
                         }
                     ]
