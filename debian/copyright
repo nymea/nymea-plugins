@@ -31,6 +31,7 @@ Copyright: 2017, Michael Zanetti <michael.zanetti@guh.io>
 Files: denon/*
        orderbutton/*
        ws2812/*
+       tcpcommander/*
 License: LGPL-2.1
 Copyright: 2016, Bernhard Trinnes <bernhard.trinnes@guh.io>
 
