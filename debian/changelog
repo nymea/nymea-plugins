@@ -1,3 +1,9 @@
+guh-plugins (0.1.0) xenial; urgency=medium
+
+  * Add metapackages
+
+ -- Simon Stürz <simon.stuerz@guh.io>  Tue, 03 Oct 2017 17:07:31 +0200
+
 guh-plugins (0.1) UNRELEASED; urgency=medium
 
   * Initial release. (Closes: #XXXXXX)

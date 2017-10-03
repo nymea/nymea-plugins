@@ -25,7 +25,6 @@
                             "idName": "command",
                             "name": "command",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "TextLine"
                         }
                     ],
@@ -35,7 +34,6 @@
                             "idName": "running",
                             "name": "running",
                             "eventTypeName": "running changed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -44,14 +42,12 @@
                         {
                             "id": "cf52b41d-3108-423c-8907-ca5b4d97cac5",
                             "idName": "execute",
-                            "name": "execute",
-                            "index": 0
+                            "name": "execute"
                         },
                         {
                             "id": "d21b1fed-1dd9-4c5a-a64e-0c6ba94059be",
                             "idName": "kill",
-                            "name": "kill",
-                            "index": 1
+                            "name": "kill"
                         }
                     ]
                 },
@@ -71,7 +67,6 @@
                             "idName": "script",
                             "name": "script",
                             "type": "QString",
-                            "index": 0,
                             "inputType": "Url"
                         }
                     ],
@@ -81,7 +76,6 @@
                             "idName": "running",
                             "name": "running",
                             "eventTypeName": "running changed",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -90,14 +84,12 @@
                         {
                             "id": "cf52b41d-3108-423c-8907-ca5b4d97cac5",
                             "idName": "execute",
-                            "name": "execute",
-                            "index": 0
+                            "name": "execute"
                         },
                         {
                             "id": "d21b1fed-1dd9-4c5a-a64e-0c6ba94059be",
                             "idName": "kill",
-                            "name": "kill",
-                            "index": 1
+                            "name": "kill"
                         }
                     ]
                 }

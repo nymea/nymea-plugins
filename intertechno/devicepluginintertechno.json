@@ -25,7 +25,6 @@
                             "idName": "familyCode",
                             "name": "family code",
                             "type": "QString",
-                            "index": 0,
                             "allowedValues": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"]
                         },
                         {
@@ -33,7 +32,6 @@
                             "idName": "buttonCode",
                             "name": "button code",
                             "type": "int",
-                            "index": 1,
                             "minValue": 1,
                             "maxValue": 16
                         }
@@ -42,14 +40,12 @@
                         {
                             "id": "df19fb51-c3cd-4b95-8d88-ebbb535f4789",
                             "name": "set power",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "8de21063-631c-4419-be5d-235cea3cd906",
                                     "idName": "power",
                                     "name": "power",
-                                    "type": "bool",
-                                    "index": 0
+                                    "type": "bool"
                                 }
                             ]
                         }

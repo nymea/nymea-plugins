@@ -23,8 +23,7 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "index": 0
+                            "inputType": "TextLine"
                         },
                         {
                             "id": "965fd538-8e8a-4a84-97d0-5f8fc9ea115e",
@@ -32,8 +31,7 @@
                             "name": "interface",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue": "/dev/ttyUSB0",
-                            "index": 1
+                            "defaultValue": "/dev/ttyUSB0"
                         },
                         {
                             "id": "b8239c85-8f09-40d5-9ab9-03b3bd0c8fcc",
@@ -41,8 +39,7 @@
                             "name": "baudrate",
                             "type": "int",
                             "inputType": "TextLine",
-                            "defaultValue": "9600",
-                            "index": 2
+                            "defaultValue": "9600"
                         }
                     ]
                 },
@@ -61,8 +58,7 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "index": 0
+                            "inputType": "TextLine"
                         },
                         {
                             "id": "fc611e60-d975-4d1f-9977-19d2b90c3838",
@@ -70,8 +66,7 @@
                             "name": "channel",
                             "type": "int",
                             "readonly": true,
-                            "inputType": "None",
-                            "index": 1
+                            "inputType": "None"
                         }
                     ],
                     "stateTypes": [
@@ -82,7 +77,6 @@
                             "type": "unsignedInt",
                             "unit": "UnixTime",
                             "defaultValue": 0,
-                            "index": 0,
                             "eventTypeName": "last update changed"
                         },
                         {
@@ -92,7 +86,6 @@
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0,
-                            "index": 1,
                             "eventTypeName": "temperature changed"
                         },
                         {
@@ -102,7 +95,6 @@
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0,
-                            "index": 2,
                             "eventTypeName": "humidity changed"
                         }
                     ]
@@ -122,8 +114,7 @@
                             "idName": "name",
                             "name": "name",
                             "type": "QString",
-                            "inputType": "TextLine",
-                            "index": 0
+                            "inputType": "TextLine"
                         },
                         {
                             "id": "fc611e60-d975-4d1f-9977-19d2b90c3838",
@@ -131,8 +122,7 @@
                             "name": "channel",
                             "type": "int",
                             "readonly": true,
-                            "inputType": "None",
-                            "index": 1
+                            "inputType": "None"
                         }
                     ],
                     "stateTypes": [
@@ -143,7 +133,6 @@
                             "type": "unsignedInt",
                             "unit": "UnixTime",
                             "defaultValue": 0,
-                            "index": 0,
                             "eventTypeName": "last update changed"
                         },
                         {
@@ -153,7 +142,6 @@
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0,
-                            "index": 1,
                             "eventTypeName": "temperature changed"
                         },
                         {
@@ -163,7 +151,6 @@
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0,
-                            "index": 2,
                             "eventTypeName": "humidity changed"
                         },
                         {
@@ -173,7 +160,6 @@
                             "type": "double",
                             "unit": "KiloMeterPerHour",
                             "defaultValue": 0,
-                            "index": 3,
                             "eventTypeName": "wind strength changed"
                         },
                         {
@@ -182,7 +168,6 @@
                             "name": "rain strength",
                             "type": "double",
                             "defaultValue": 0,
-                            "index": 4,
                             "eventTypeName": "rain strength changed"
                         },
                         {
@@ -191,7 +176,6 @@
                             "name": "is raining",
                             "type": "bool",
                             "defaultValue": false,
-                            "index": 5,
                             "eventTypeName": "is raining changed"
                         }
                     ]

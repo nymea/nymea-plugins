@@ -27,7 +27,6 @@
                             "name": "state",
                             "eventTypeName": "state changed",
                             "actionTypeName": "Set state",
-                            "index": 0,
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -50,7 +49,6 @@
                         {
                             "id": "01f38af1-b2ab-4ec3-844e-ef52f0f229a9",
                             "idName": "buttonPress",
-                            "index": 0,
                             "name": "press"
                         }
                     ],
@@ -58,7 +56,6 @@
                         {
                             "id": "effdbc2d-e467-4b0b-80a9-9dda251bfa5c",
                             "idName": "buttonPressed",
-                            "index": 0,
                             "name": "button pressed"
                         }
                     ]
@@ -78,13 +75,11 @@
                         {
                             "id": "892596d2-0863-4807-97da-469b9f7003f2",
                             "idName": "onOffButtonOn",
-                            "index": 0,
                             "name": "press ON"
                         },
                         {
                             "id": "a8d64050-0b58-4ccf-b052-77ce2b7368ad",
                             "idName": "onOffButtonOff",
-                            "index": 1,
                             "name": "press OFF"
                         }
                     ],
@@ -92,13 +87,11 @@
                         {
                             "id": "4eeba6a2-e4c7-4a2e-8360-2797d98114e6",
                             "idName": "onOffButtonOn",
-                            "index": 0,
                             "name": "ON pressed"
                         },
                         {
                             "id": "b636c5f3-2eb0-4682-96d4-88a4aa9d2c12",
                             "idName": "onOffButtonOff",
-                            "index": 1,
                             "name": "OFF pressed"
                         }
                     ]
