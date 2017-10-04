@@ -49,6 +49,7 @@
 
 DevicePluginNetatmo::DevicePluginNetatmo()
 {
+
 }
 
 DeviceManager::HardwareResources DevicePluginNetatmo::requiredHardware() const
@@ -59,7 +60,7 @@ DeviceManager::HardwareResources DevicePluginNetatmo::requiredHardware() const
 DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
 {
     if (device->deviceClassId() == connectionDeviceClassId) {
-        qCDebug(dcNetatmo) << "Setup netatmo connection";
+        qCDebug(dcNetatmo) << "Setup netatmo connection" << device->name() << device->params();
 
         OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
         authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
