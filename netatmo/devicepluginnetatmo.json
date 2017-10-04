@@ -23,13 +23,6 @@
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
-                            "id": "a97d256c-e159-4aa0-bc71-6bd7cd0688b3",
-                            "idName": "name",
-                            "name": "name",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
                             "id": "763c2c10-dee5-41c8-9f7e-ded741945e73",
                             "idName": "username",
                             "name": "username",
