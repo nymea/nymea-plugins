@@ -17,6 +17,7 @@
                         "Service",
                         "Notification"
                     ],
+                    "interfaces": ["notifications"],
                     "paramTypes": [
                         {
                             "id": "1f37ce22-50b8-4183-8b74-557fdb2d3076",
