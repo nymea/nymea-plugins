@@ -12,3 +12,8 @@ $(PREPROCESS_FILES:.in=): %: %.in
 
 override_dh_install: $(PREPROCESS_FILES:.in=)
 	dh_install --fail-missing
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf $(PREPROCESS_FILES:.in=)
+
