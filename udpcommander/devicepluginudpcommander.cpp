@@ -71,6 +71,7 @@ DevicePluginUdpCommander::DevicePluginUdpCommander()
 DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *device)
 {
     // check port
+    // TODO ports used by an input should be available for outputs and vice versa
     if ((device->deviceClassId() == udpInputDeviceClassId) || (device->deviceClassId() == udpOutputDeviceClassId)) {
         bool portOk = false;
         int port = device->paramValue(portParamTypeId).toInt(&portOk);
@@ -117,15 +118,7 @@ DeviceManager::DeviceError DevicePluginUdpCommander::executeAction(Device *devic
 
 void DevicePluginUdpCommander::deviceRemoved(Device *device)
 {
-    if (device->deviceClassId() == udpInputDeviceClassId) {
-
-        QUdpSocket *socket = m_commanderList.key(device);
-        m_commanderList.remove(socket);
-
-        socket->close();
-        socket->deleteLater();
-    }
-    if (device->deviceClassId() == udpOutputDeviceClassId) {
+    if ((device->deviceClassId() == udpInputDeviceClassId) || (device->deviceClassId() == udpOutputDeviceClassId)){
 
         QUdpSocket *socket = m_commanderList.key(device);
         m_commanderList.remove(socket);
@@ -151,6 +144,7 @@ void DevicePluginUdpCommander::readPendingDatagrams()
 
     device->setStateValue(inputDataStateTypeId, datagram);
 
+    //TO CHECK remove command param and event, comparison may be done in the rule engine
     if (datagram == device->paramValue(commandParamTypeId).toByteArray() ||
             datagram == device->paramValue(commandParamTypeId).toByteArray() + "\n") {
         qCDebug(dcUdpCommander) << device->name() << " got command from" << sender.toString() << senderPort;
