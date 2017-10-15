@@ -33,6 +33,7 @@ plugininfo.commands = touch ${QMAKE_FILE_OUT}; guh-generateplugininfo \
                             --output ${QMAKE_FILE_OUT} \
                             --builddir $$OUT_PWD \
                             --translations $$TRANSLATIONS; \
+                       mkdir -p $$shadowed($$PWD)/translations/ || true; \
                        rsync -a "$$OUT_PWD"/translations/*.qm $$shadowed($$PWD)/translations/;
 PRE_TARGETDEPS += compiler_plugininfo_make_all
 QMAKE_EXTRA_COMPILERS += plugininfo
