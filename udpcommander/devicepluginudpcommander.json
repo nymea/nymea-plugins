@@ -33,11 +33,69 @@
                             "inputType": "TextLine"
                         }
                     ],
+                    "stateTypes":[
+                        {
+                            "id": "065a1a0a-d324-4ae6-a461-bef8143e8795",
+                            "idName": "inputData",
+                            "name": "Input Data",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "eventTypeName": "input data changed",
+                            "index": 0
+                        }
+                    ],
                     "eventTypes": [
                         {
                             "id": "5fecbba3-ffbb-456b-872c-a2f571c681cb",
                             "name": "commandReceived",
                             "displayName": "command received"
+                        }
+                    ]
+                },
+                {
+                    "id": "31b00639-8904-4522-84ed-54c46a54c63c",
+                    "name": "UDP Output",
+                    "idName": "udpOutput",
+                    "deviceIcon": "Network",
+                    "basicTags": [
+                        "Service",
+                        "Sensor"
+                    ],
+                    "createMethods": ["user"],
+                    "paramTypes": [
+                        {
+                            "id": "1843adcb-e377-44d1-8d70-ab4f9eeb32ec",
+                            "idName": "port",
+                            "name": "port",
+                            "index": 0,
+                            "type": "int"
+                        },
+                        {
+                            "id": "ea1be9fc-9a9b-44ba-a28d-e021aef4f046",
+                            "idName": "ipv4Address",
+                            "name": "IPv4 Address",
+                            "type": "QString",
+                            "index": 1,
+                            "inputType": "IPv4Address",
+                            "defaultValue": "127.0.0.1"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "6bc52462-b192-46a4-a6df-92cc5a479c89",
+                            "idName": "outputData",
+                            "name": "Send Data",
+                            "index": 0,
+                            "paramTypes": [
+                                {
+                                    "id": "6604c852-6b24-4707-b8e5-1ddd8032efcc",
+                                    "idName": "outputDataArea",
+                                    "name": "Data",
+                                    "type": "QString",
+                                    "index": 0,
+                                    "inputType": "TextArea"
+                                }
+                            ]
                         }
                     ]
                 }
