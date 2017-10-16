@@ -1,0 +1,116 @@
+{
+    "name": "http commander",
+    "idName": "HttpCommander",
+    "id": "4e62670c-6268-4487-8dff-cccca498731a",
+    "vendors": [
+        {
+            "name": "http commander",
+            "idName": "httpCommander",
+            "id": "45d7c941-7690-43c9-92fc-fab36e1cebd0",
+            "deviceClasses": [
+                {
+                    "id": "b101abdf-86fd-4d2e-a657-ee76044235bd",
+                    "idName": "httpPost",
+                    "name": "http post",
+                    "deviceIcon": "Network",
+                    "createMethods": ["user"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "primaryStateTypeId": "137ec5fc-22f5-4201-8921-2896deda0fe6",
+                    "paramTypes": [
+                        {
+                            "id": "1a3fcb23-931b-4ba1-b134-c49b656c76f7",
+                            "idName": "url",
+                            "name": "url or ipv4 address",
+                            "type": "QString",
+                            "inputType": "None",
+                            "defaultValue": "http://nymea.io"
+                        },
+                        {
+                            "id": "bee8b151-815a-4159-9d8a-42b76e99b42c",
+                            "idName": "port",
+                            "name": "port",
+                            "type": "int",
+                            "defaultValue": "80"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "eventTypeName": "reachable status changed"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "5a97ca56-b334-411b-adba-116496ffe83d",
+                            "idName": "post",
+                            "name": "post",
+                            "paramTypes": [
+                                {
+                                    "id": "363119a3-c02c-4ed5-a915-11706198f3eb",
+                                    "idName": "postData",
+                                    "name": "post data",
+                                    "type": "QString",
+                                    "defaultValue": "",
+                                    "eventTypeName": "post data sent"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "8f3f6dde-9db3-4237-800b-bb7f804098c9",
+                    "idName": "httpGet",
+                    "name": "http get",
+                    "deviceIcon": "Network",
+                    "createMethods": ["user"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "primaryStateTypeId": "137ec5fc-22f5-4201-8921-2896deda0fe6",
+                    "paramTypes": [
+                        {
+                            "id": "1a3fcb23-931b-4ba1-b134-c49b656c76f7",
+                            "idName": "url",
+                            "name": "Url or IPv4 Address",
+                            "type": "QString",
+                            "inputType": "None",
+                            "defaultValue": "http://nymea.io"
+                        },
+                        {
+                            "id": "bee8b151-815a-4159-9d8a-42b76e99b42c",
+                            "idName": "port",
+                            "name": "Port",
+                            "type": "int",
+                            "defaultValue": "80"
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "137ec5fc-22f5-4201-8921-2896deda0fe6",
+                            "idName": "status",
+                            "name": "status",
+                            "type": "QString",
+                            "defaultValue": "Undefined",
+                            "eventTypeName": "connection status changed"
+                        },
+                        {
+                            "id": "5a97ca56-b334-411b-adba-116496ffe83d",
+                            "idName": "httpResponse",
+                            "name": "response",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "eventTypeName": "response received"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

@@ -19,6 +19,7 @@ PLUGIN_DIRS = \
     leynew              \
     udpcommander        \
     tcpcommander        \
+    httpcommander       \
     kodi                \
     elgato              \
     senic               \
