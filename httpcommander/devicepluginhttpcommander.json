@@ -17,7 +17,7 @@
                     "basicTags": [
                         "Service"
                     ],
-                    "primaryStateTypeId": "137ec5fc-22f5-4201-8921-2896deda0fe6",
+                    "criticalStateTypeId": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
                     "paramTypes": [
                         {
                             "id": "1a3fcb23-931b-4ba1-b134-c49b656c76f7",
@@ -42,7 +42,15 @@
                             "name": "reachable",
                             "type": "bool",
                             "defaultValue": false,
-                            "eventTypeName": "reachable status changed"
+                            "eventTypeName": "reachability changed"
+                        },
+                        {
+                            "id": "69f32ec8-114d-43f4-9241-1f6a57261f32",
+                            "idName": "httpResponse",
+                            "name": "response",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "eventTypeName": "response received"
                         }
                     ],
                     "actionTypes": [
@@ -64,6 +72,69 @@
                     ]
                 },
                 {
+                    "id": "05bf65f5-ff13-43e3-b6ae-77019e79d8a1",
+                    "idName": "httpPut",
+                    "name": "http put",
+                    "deviceIcon": "Network",
+                    "createMethods": ["user"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "criticalStateTypeId": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
+                    "paramTypes": [
+                        {
+                            "id": "1a3fcb23-931b-4ba1-b134-c49b656c76f7",
+                            "idName": "url",
+                            "name": "url or ipv4 address",
+                            "type": "QString",
+                            "inputType": "None",
+                            "defaultValue": "http://nymea.io"
+                        },
+                        {
+                            "id": "bee8b151-815a-4159-9d8a-42b76e99b42c",
+                            "idName": "port",
+                            "name": "port",
+                            "type": "int",
+                            "defaultValue": "80"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "eventTypeName": "reachability changed"
+                        },
+                        {
+                            "id": "69f32ec8-114d-43f4-9241-1f6a57261f32",
+                            "idName": "httpResponse",
+                            "name": "response",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "eventTypeName": "response received"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a9f165dc-cdf1-48f0-b4b6-7c24373cb77c",
+                            "idName": "put",
+                            "name": "put",
+                            "paramTypes": [
+                                {
+                                    "id": "7742d445-8fc1-4b20-87f2-1bb35929fce1",
+                                    "idName": "putData",
+                                    "name": "put data",
+                                    "type": "QString",
+                                    "defaultValue": "",
+                                    "eventTypeName": "post data sent"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "id": "8f3f6dde-9db3-4237-800b-bb7f804098c9",
                     "idName": "httpGet",
                     "name": "http get",
@@ -72,7 +143,7 @@
                     "basicTags": [
                         "Service"
                     ],
-                    "primaryStateTypeId": "137ec5fc-22f5-4201-8921-2896deda0fe6",
+                    "criticalStateTypeId": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
                     "paramTypes": [
                         {
                             "id": "1a3fcb23-931b-4ba1-b134-c49b656c76f7",
@@ -92,20 +163,20 @@
                     ],
                     "stateTypes":[
                         {
-                            "id": "137ec5fc-22f5-4201-8921-2896deda0fe6",
-                            "idName": "status",
-                            "name": "status",
-                            "type": "QString",
-                            "defaultValue": "Undefined",
-                            "eventTypeName": "connection status changed"
+                            "id": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "eventTypeName": "reachability changed"
                         },
                         {
-                            "id": "5a97ca56-b334-411b-adba-116496ffe83d",
-                            "idName": "httpResponse",
-                            "name": "response",
+                            "id": "d81f0644-b94e-48ed-ae48-1b8ff6cebc0c",
+                            "idName": "getData",
+                            "name": "data",
                             "type": "QString",
                             "defaultValue": "",
-                            "eventTypeName": "response received"
+                            "eventTypeName": "get data received"
                         }
                     ]
                 }
