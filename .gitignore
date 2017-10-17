@@ -5,3 +5,15 @@ doc/html
 *api.json.new
 *.qm
 *.install
+*.o
+moc_*.cpp
+*.moc
+Makefile
+*.so*
+qrc_*.cpp
+*debhelper.log
+*.dirs
+*.install
+*.substvars
+plugininfo.h
+extern-plugininfo.h
