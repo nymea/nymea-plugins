@@ -34,13 +34,15 @@ DeviceManager::HardwareResources DevicePluginHttpCommander::requiredHardware() c
 
 DeviceManager::DeviceSetupStatus DevicePluginHttpCommander::setupDevice(Device *device)
 {
-    if (device->deviceClassId() == httpGetDeviceClassId) {
+    if ((device->deviceClassId() == httpGetDeviceClassId) ||  (device->deviceClassId() == httpPostDeviceClassId) || (device->deviceClassId() == httpPutDeviceClassId)) {
+        QUrl url = device->paramValue(urlParamTypeId).toUrl();
+        if (!url.isValid()) {
+            qDebug(dcHttpCommander()) << "Given URL is not valid";
+        }
+
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
-    if (device->deviceClassId() == httpPostDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
@@ -55,6 +57,10 @@ void  DevicePluginHttpCommander::postSetupDevice(Device *device)
         request.setRawHeader("User-Agent", "guhIO 1.0");
         QNetworkReply *reply = networkManagerGet(request);;
         m_httpRequests.insert(reply, device);
+    }
+    if ((device->deviceClassId() == httpPostDeviceClassId) || (device->deviceClassId() == httpPutDeviceClassId)) {
+        //TODO find a way to check it the URL is reachable
+        device->setStateValue(reachableStateTypeId, true);
     }
 }
 
@@ -76,6 +82,20 @@ DeviceManager::DeviceError DevicePluginHttpCommander::executeAction(Device *devi
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
 
+    }
+    if (device->deviceClassId() == httpPutDeviceClassId) {
+
+        // check if this is the "press" action
+        if (action.actionTypeId() == putActionTypeId) {
+
+            QUrl url = device->paramValue(urlParamTypeId).toUrl();
+            url.setPort(device->paramValue(portParamTypeId).toInt());
+            QByteArray payload = action.param(putDataParamTypeId).value().toByteArray();
+            QNetworkReply *reply = networkManagerPut(QNetworkRequest(url), payload);
+            m_httpRequests.insert(reply, device);
+
+            return DeviceManager::DeviceErrorNoError;
+        }
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
@@ -116,8 +136,7 @@ void DevicePluginHttpCommander::networkManagerReplyReady(QNetworkReply *reply)
         Device *device = m_httpRequests.take(reply);
 
         if (device->deviceClassId() == httpGetDeviceClassId) {
-            device->setStateValue(httpResponseStateTypeId, data);
-            //device->setStateValue(statusStateTypeId, reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString());
+            device->setStateValue(getDataStateTypeId, data);
             // check HTTP status code
             if (status != 200 || reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcHttpCommander()) << "Request error:" << status << reply->errorString();
@@ -126,8 +145,8 @@ void DevicePluginHttpCommander::networkManagerReplyReady(QNetworkReply *reply)
                 return;
             }
             device->setStateValue(reachableStateTypeId, true);
-        } else if (device->deviceClassId() == httpPostDeviceClassId) {
-
+        } else if ((device->deviceClassId() == httpPostDeviceClassId) || (device->deviceClassId() == httpPutDeviceClassId) ) {
+            device->setStateValue(httpResponseStateTypeId, data);
             // check HTTP status code
             if (status != 200 || reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcHttpCommander()) << "Request error:" << status << reply->errorString();
