@@ -1,17 +1,17 @@
 {
     "name": "Conrad",
-    "idName": "Conrad",
+    "displayName": "Conrad",
     "id": "1fd1a076-f229-4ec6-b501-48ddd15935e4",
     "vendors": [
         {
-            "name": "Conrad Electronic",
-            "idName": "conrad",
+            "name": "Conrad",
+            "displayName": "Conrad Electronic",
             "id": "986cf06f-3ef1-4271-b2a3-2cc277ebecb6",
             "deviceClasses": [
                 {
                     "id": "2bb14180-aa5d-4999-992d-e6d464cff486",
-                    "name": "Shutter (RSM900R)",
-                    "idName": "conradShutter",
+                    "name": "conradShutter",
+                    "displayName": "Shutter (RSM900R)",
                     "deviceIcon": "Blinds",
                     "basicTags": [
                         "Device",
@@ -23,18 +23,18 @@
                     "actionTypes": [
                         {
                             "id": "e015419c-9df9-4bf5-a439-f1f32aedd1db",
-                            "idName": "up",
-                            "name": "up"
+                            "name": "up",
+                            "displayName": "up"
                         },
                         {
                             "id": "c58a463a-f765-4a61-b2e2-883cc23878c0",
-                            "idName": "down",
-                            "name": "down"
+                            "name": "down",
+                            "displayName": "down"
                         },
                         {
                             "id": "4125a18e-fa2d-4b25-acd1-e148d5d665f5",
-                            "idName": "sync",
-                            "name": "Send sync signal"
+                            "name": "sync",
+                            "displayName": "Send sync signal"
                         }
                     ]
                 }

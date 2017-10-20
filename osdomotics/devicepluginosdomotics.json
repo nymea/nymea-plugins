@@ -1,17 +1,17 @@
 {
-    "name": "OSDomotics",
-    "idName": "Osdomotics",
+    "displayName": "OSDomotics",
+    "name": "Osdomotics",
     "id": "78927596-e266-4a23-8634-7311b2c5fe32",
     "vendors": [
         {
-            "name": "OSDomotics",
-            "idName": "osdomotics",
+            "displayName": "OSDomotics",
+            "name": "osdomotics",
             "id": "e2912117-3b2f-4888-950e-6d259b699102",
             "deviceClasses": [
                 {
                     "id": "57d1b080-36a0-46af-a676-78c6b78d08ae",
-                    "idName": "rplRouter",
-                    "name": "RPL Router",
+                    "name": "rplRouter",
+                    "displayName": "RPL Router",
                     "interfaces": ["gateway"],
                     "basicTags": [
                         "Device",
@@ -21,16 +21,16 @@
                     "paramTypes": [
                         {
                             "id": "eec5810e-f885-46fd-b40a-1fa3f2794f0c",
-                            "idName": "rplName",
-                            "name": "name",
+                            "name": "rplName",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine",
                             "defaultValue": "Merkur RPL Router"
                         },
                         {
                             "id": "6b856757-e8de-4904-9f34-4c6aea73f8ca",
-                            "idName": "rplHost",
-                            "name": "host",
+                            "name": "rplHost",
+                            "displayName": "host",
                             "type": "QString",
                             "inputType": "IPv6Address"
                         }
@@ -38,8 +38,8 @@
                 },
                 {
                     "id": "4454e05e-ac0a-4b10-b9dd-56a1475895d7",
-                    "idName": "merkurNode",
-                    "name": "Merkur Node",
+                    "name": "merkurNode",
+                    "displayName": "Merkur Node",
                     "basicTags": [
                         "Device",
                         "Actuator"
@@ -48,24 +48,24 @@
                     "paramTypes": [
                         {
                             "id": "bb2b5f67-6baf-4eb9-9c06-589702564bce",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine",
                             "defaultValue": "Merkur Node"
                         },
                         {
                             "id": "f46b08c7-06e7-4c51-bb28-57e07d19275d",
-                            "idName": "host",
                             "name": "host",
+                            "displayName": "host",
                             "type": "QString",
                             "inputType": "IPv6Address",
                             "readOnly": true
                         },
                         {
                             "id": "c1e0c833-0138-42da-a5e1-bc5185c3a284",
-                            "idName": "router",
-                            "name": "router id",
+                            "name": "router",
+                            "displayName": "router id",
                             "type": "QString",
                             "readOnly": true
                         }
@@ -73,9 +73,9 @@
                     "stateTypes": [
                         {
                             "id": "06cf4e66-f102-4a8e-ae76-fac250a07753",
-                            "idName": "battery",
-                            "name": "battery voltage",
-                            "eventTypeName": "battery voltage changed",
+                            "name": "battery",
+                            "displayName": "battery voltage",
+                            "displayNameEvent": "battery voltage changed",
                             "type": "double",
                             "defaultValue": 0
                         }
@@ -83,8 +83,8 @@
                     "actionTypes": [
                         {
                             "id": "a91db0e7-9d0f-4071-9a8f-2bda45ed4c9d",
-                            "idName": "toggleLed",
-                            "name": "toggle led"
+                            "name": "toggleLed",
+                            "displayName": "toggle led"
                         }
                     ]
                 }

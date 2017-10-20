@@ -1,17 +1,17 @@
 {
-    "name": "UDP Commander",
-    "idName": "UdpCommander",
+    "name": "UdpCommander",
+    "displayName": "UDP Commander",
     "id": "24a8474c-1d86-499e-a76e-9cbfbf48dd72",
     "vendors": [
         {
             "name": "guh",
-            "idName": "guh",
+            "displayName": "guh",
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "deviceClasses": [
                 {
                     "id": "6ecd5a8d-595a-4520-85e3-dcc9679edf66",
-                    "name": "UDP Commander",
-                    "idName": "commander",
+                    "displayName": "UDP Commander",
+                    "name": "commander",
                     "deviceIcon": "Network",
                     "basicTags": [
                         "Service",
@@ -21,14 +21,14 @@
                     "paramTypes": [
                         {
                             "id": "1843adcb-e377-44d1-8d70-ab4f9eeb32ec",
-                            "idName": "port",
                             "name": "port",
+                            "displayName": "port",
                             "type": "int"
                         },
                         {
                             "id": "d0f29961-1624-4b91-a0e8-9b1cc86c44c7",
-                            "idName": "command",
                             "name": "command",
+                            "displayName": "command",
                             "type": "QString",
                             "inputType": "TextLine"
                         }
@@ -36,8 +36,8 @@
                     "eventTypes": [
                         {
                             "id": "5fecbba3-ffbb-456b-872c-a2f571c681cb",
-                            "idName": "commandReceived",
-                            "name": "command received"
+                            "name": "commandReceived",
+                            "displayName": "command received"
                         }
                     ]
                 }

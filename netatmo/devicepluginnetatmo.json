@@ -1,17 +1,17 @@
 {
+    "displayName": "Netatmo",
     "name": "Netatmo",
-    "idName": "Netatmo",
     "id": "69d14951-0c02-4877-bcef-dffdf48b7ccb",
     "vendors": [
         {
-            "name": "Netatmo",
-            "idName": "netatmo",
+            "displayName": "Netatmo",
+            "name": "netatmo",
             "id": "4b46b4ed-5ec9-4aa4-afc3-92d3f80e6351",
             "deviceClasses": [
                 {
                     "id": "728d5a67-27a3-400e-b83c-2765f5196f69",
-                    "idName": "connection",
-                    "name": "Netatmo Connection",
+                    "name": "connection",
+                    "displayName": "Netatmo Connection",
                     "critcalStateTypeId": "2f79bc1d-27ed-480a-b583-728363c83ea6",
                     "deviceIcon": "Network",
                     "interfaces": ["gateway"],
@@ -24,15 +24,15 @@
                     "paramTypes": [
                         {
                             "id": "763c2c10-dee5-41c8-9f7e-ded741945e73",
-                            "idName": "username",
                             "name": "username",
+                            "displayName": "username",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "c0d892d6-f359-4782-9d7d-8f74a3b53e3e",
-                            "idName": "password",
                             "name": "password",
+                            "displayName": "password",
                             "type": "QString",
                             "inputType": "Password"
                         }
@@ -40,9 +40,9 @@
                     "stateTypes": [
                         {
                             "id": "2f79bc1d-27ed-480a-b583-728363c83ea6",
-                            "idName": "available",
                             "name": "available",
-                            "eventTypeName": "available changed",
+                            "displayName": "available",
+                            "displayNameEvent": "available changed",
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -50,8 +50,8 @@
                 },
                 {
                     "id": "1c809049-04f2-4710-99f5-6ed379a2934f",
-                    "idName": "indoor",
-                    "name": "Indoor Station",
+                    "name": "indoor",
+                    "displayName": "Indoor Station",
                     "deviceIcon": "Thermometer",
                     "basicTags": [
                         "Device",
@@ -63,23 +63,23 @@
                     "paramTypes": [
                         {
                             "id": "a97d256c-e159-4aa0-bc71-6bd7cd0688b3",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "157d470a-e579-4d0e-b879-6b5bfa8e34ae",
-                            "idName": "mac",
-                            "name": "mac address",
+                            "name": "mac",
+                            "displayName": "mac address",
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true
                         },
                         {
                             "id": "c15e5dea-10f2-4c96-afab-649872f43d5c",
-                            "idName": "connection",
                             "name": "connection",
+                            "displayName": "connection",
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true
@@ -88,9 +88,9 @@
                     "stateTypes": [
                         {
                             "id": "50da9f6b-c350-401c-a72e-2e4036f3975d",
-                            "idName": "updateTime",
-                            "name": "last update",
-                            "eventTypeName": "last update changed",
+                            "name": "updateTime",
+                            "displayName": "last update",
+                            "displayNameEvent": "last update changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "ruleRelevant": false,
@@ -99,9 +99,9 @@
                         },
                         {
                             "id": "3cb25538-e463-40ae-92f9-8f34f0c06b92",
-                            "idName": "temperature",
                             "name": "temperature",
-                            "eventTypeName": "temperature changed",
+                            "displayName": "temperature",
+                            "displayNameEvent": "temperature changed",
                             "unit": "DegreeCelsius",
                             "graphRelevant": true,
                             "type": "double",
@@ -109,27 +109,27 @@
                         },
                         {
                             "id": "ae8bb713-8805-4efd-89a1-bca44a1f1690",
-                            "idName": "temperatureMin",
-                            "name": "temperature minimum",
-                            "eventTypeName": "temperature minimum changed",
+                            "name": "temperatureMin",
+                            "displayName": "temperature minimum",
+                            "displayNameEvent": "temperature minimum changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
                         },
                         {
                             "id": "dd30507e-037b-4c74-bcca-e04b94c7c5fe",
-                            "idName": "temperatureMax",
-                            "name": "temperature maximum",
-                            "eventTypeName": "temperature maximum changed",
+                            "name": "temperatureMax",
+                            "displayName": "temperature maximum",
+                            "displayNameEvent": "temperature maximum changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
                         },
                         {
                             "id": "e2db5f01-196a-48d1-8874-6b8cbfe0d8c9",
-                            "idName": "humidity",
                             "name": "humidity",
-                            "eventTypeName": "humidity changed",
+                            "displayName": "humidity",
+                            "displayNameEvent": "humidity changed",
                             "graphRelevant": true,
                             "unit": "Percentage",
                             "type": "int",
@@ -137,9 +137,9 @@
                         },
                         {
                             "id": "03b0a7b7-987d-4d3b-b3f0-21d9f92ad326",
-                            "idName": "pressure",
                             "name": "pressure",
-                            "eventTypeName": "pressure changed",
+                            "displayName": "pressure",
+                            "displayNameEvent": "pressure changed",
                             "unit": "MilliBar",
                             "graphRelevant": true,
                             "type": "double",
@@ -147,9 +147,9 @@
                         },
                         {
                             "id": "906cea9d-1daf-4e9c-90b9-e40f43052a34",
-                            "idName": "noise",
                             "name": "noise",
-                            "eventTypeName": "noise changed",
+                            "displayName": "noise",
+                            "displayNameEvent": "noise changed",
                             "graphRelevant": true,
                             "unit": "Dezibel",
                             "type": "int",
@@ -157,9 +157,9 @@
                         },
                         {
                             "id": "e5710bd1-79fa-4bd4-9052-8416aae909b9",
-                            "idName": "co2",
                             "name": "co2",
-                            "eventTypeName": "co2 changed",
+                            "displayName": "co2",
+                            "displayNameEvent": "co2 changed",
                             "graphRelevant": true,
                             "unit": "PartsPerMillion",
                             "type": "int",
@@ -167,9 +167,9 @@
                         },
                         {
                             "id": "6ea906d4-5740-454d-a730-6fdb9fa0d624",
-                            "idName": "wifiStrength",
-                            "name": "wifi signal strength",
-                            "eventTypeName": "wifi signal strength changed",
+                            "name": "wifiStrength",
+                            "displayName": "wifi signal strength",
+                            "displayNameEvent": "wifi signal strength changed",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "unit": "Percentage",
@@ -180,8 +180,8 @@
                 },
                 {
                     "id": "6cc01d62-7317-4ec4-8ac4-a4cab762c179",
-                    "idName": "outdoor",
-                    "name": "Outdoor Station",
+                    "name": "outdoor",
+                    "displayName": "Outdoor Station",
                     "deviceIcon": "Thermometer",
                     "basicTags": [
                         "Device",
@@ -193,31 +193,31 @@
                     "paramTypes": [
                         {
                             "id": "a97d256c-e159-4aa0-bc71-6bd7cd0688b3",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "157d470a-e579-4d0e-b879-6b5bfa8e34ae",
-                            "idName": "mac",
-                            "name": "mac address",
+                            "name": "mac",
+                            "displayName": "mac address",
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true
                         },
                         {
                             "id": "c15e5dea-10f2-4c96-afab-649872f43d5c",
-                            "idName": "connection",
                             "name": "connection",
+                            "displayName": "connection",
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true
                         },
                         {
                             "id": "d7a0ec46-760c-4fdc-9753-fe10c86fe1b9",
-                            "idName": "baseStation",
-                            "name": "base station",
+                            "name": "baseStation",
+                            "displayName": "base station",
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true
@@ -226,9 +226,9 @@
                     "stateTypes": [
                         {
                             "id": "50da9f6b-c350-401c-a72e-2e4036f3975d",
-                            "idName": "updateTime",
-                            "name": "last update",
-                            "eventTypeName": "last update changed",
+                            "name": "updateTime",
+                            "displayName": "last update",
+                            "displayNameEvent": "last update changed",
                             "unit": "UnixTime",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -237,9 +237,9 @@
                         },
                         {
                             "id": "3cb25538-e463-40ae-92f9-8f34f0c06b92",
-                            "idName": "temperature",
                             "name": "temperature",
-                            "eventTypeName": "temperature changed",
+                            "displayName": "temperature",
+                            "displayNameEvent": "temperature changed",
                             "graphRelevant": true,
                             "unit": "DegreeCelsius",
                             "type": "double",
@@ -247,27 +247,27 @@
                         },
                         {
                             "id": "ae8bb713-8805-4efd-89a1-bca44a1f1690",
-                            "idName": "temperatureMin",
-                            "name": "temperature minimum",
-                            "eventTypeName": "temperature minimum changed",
+                            "name": "temperatureMin",
+                            "displayName": "temperature minimum",
+                            "displayNameEvent": "temperature minimum changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
                         },
                         {
                             "id": "dd30507e-037b-4c74-bcca-e04b94c7c5fe",
-                            "idName": "temperatureMax",
-                            "name": "temperature maximum",
-                            "eventTypeName": "temperature maximum changed",
+                            "name": "temperatureMax",
+                            "displayName": "temperature maximum",
+                            "displayNameEvent": "temperature maximum changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
                         },
                         {
                             "id": "e2db5f01-196a-48d1-8874-6b8cbfe0d8c9",
-                            "idName": "humidity",
                             "name": "humidity",
-                            "eventTypeName": "humidity changed",
+                            "displayName": "humidity",
+                            "displayNameEvent": "humidity changed",
                             "graphRelevant": true,
                             "unit": "Percentage",
                             "type": "int",
@@ -275,9 +275,9 @@
                         },
                         {
                             "id": "0faa3d08-9004-46fb-a5aa-a59b75e454cc",
-                            "idName": "signalStrength",
-                            "name": "signal strength",
-                            "eventTypeName": "signal strength changed",
+                            "name": "signalStrength",
+                            "displayName": "signal strength",
+                            "displayNameEvent": "signal strength changed",
                             "unit": "Percentage",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -286,9 +286,9 @@
                         },
                         {
                             "id": "15d8fae1-ba47-42e1-994d-530e8017c965",
-                            "idName": "battery",
                             "name": "battery",
-                            "eventTypeName": "battery changed",
+                            "displayName": "battery",
+                            "displayNameEvent": "battery changed",
                             "unit": "Percentage",
                             "type": "int",
                             "defaultValue": 0

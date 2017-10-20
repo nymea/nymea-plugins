@@ -1,12 +1,12 @@
 {
-    "name": "aWATTar",
-    "idName": "Awattar",
+    "displayName": "aWATTar",
+    "name": "Awattar",
     "id": "9c261c33-d44e-461e-8ec1-68803cb73f12",
     "paramTypes": [
         {
             "id": "cf13eebf-f188-447a-afcb-bbd330983060",
-            "idName": "rpl",
-            "name": "RPL address",
+            "name": "rpl",
+            "displayName": "RPL address",
             "type": "QString",
             "inputType": "TextLine",
             "defaultValue": "fdaa:e9b8:d03a::ff:fe00:1"
@@ -14,14 +14,14 @@
     ],
     "vendors": [
         {
-            "name": "aWATTar",
-            "idName": "awattar",
+            "displayName": "aWATTar",
+            "name": "awattar",
             "id": "acd47238-bbbc-4eaf-b484-38c52cfa4866",
             "deviceClasses": [
                 {
                     "id": "29cd8265-d8bb-4cf9-9080-bfc2cf9787bc",
-                    "name": "aWATTar",
-                    "idName": "awattar",
+                    "displayName": "aWATTar",
+                    "name": "awattar",
                     "createMethods": ["user"],
                     "deviceIcon": "Energy",
                     "primaryStateTypeId": "eab37309-3dd8-46a0-94d4-bd05b5bb0430",
@@ -35,15 +35,15 @@
                     "paramTypes": [
                         {
                             "id": "cbbf6f0a-6a91-4844-83f5-60eadb46099b",
-                            "idName": "userUuid",
-                            "name": "user uuid",
+                            "name": "userUuid",
+                            "displayName": "user uuid",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "7ab323d0-f3b5-4baa-9ff9-4843b4dd9811",
-                            "idName": "token",
                             "name": "token",
+                            "displayName": "token",
                             "type": "QString",
                             "inputType": "Password"
                         }
@@ -51,9 +51,9 @@
                     "stateTypes": [
                         {
                             "id": "eab37309-3dd8-46a0-94d4-bd05b5bb0430",
-                            "idName": "currentMarketPrice",
-                            "name": "current market price",
-                            "eventTypeName": "current market price changed",
+                            "name": "currentMarketPrice",
+                            "displayName": "current market price",
+                            "displayNameEvent": "current market price changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "graphRelevant": true,
@@ -61,9 +61,9 @@
                         },
                         {
                             "id": "38b86cee-9588-4269-a585-128907929dc2",
-                            "idName": "averageDeviation",
-                            "name": "average deviation",
-                            "eventTypeName": "average deviation changed",
+                            "name": "averageDeviation",
+                            "displayName": "average deviation",
+                            "displayNameEvent": "average deviation changed",
                             "type": "int",
                             "unit": "Percentage",
                             "graphRelevant": true,
@@ -71,9 +71,9 @@
                         },
                         {
                             "id": "d5a8a176-aca0-45b1-b043-95c43750f383",
-                            "idName": "validUntil",
-                            "name": "valid until",
-                            "eventTypeName": "valid until changed",
+                            "name": "validUntil",
+                            "displayName": "valid until",
+                            "displayNameEvent": "valid until changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "ruleRelevant": false,
@@ -82,9 +82,9 @@
                         },
                         {
                             "id": "55d6d7a8-446f-48ae-8014-1225810d03ee",
-                            "idName": "averagePrice",
-                            "name": "average market price [+/- 12 h]",
-                            "eventTypeName": "average market price [+/- 12 h] changed",
+                            "name": "averagePrice",
+                            "displayName": "average market price [+/- 12 h]",
+                            "displayNameEvent": "average market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "graphRelevant": true,
@@ -92,9 +92,9 @@
                         },
                         {
                             "id": "e7af5bdc-48d7-4e96-b877-331da4dcfae5",
-                            "idName": "lowestPrice",
-                            "name": "lowest market price [+/- 12 h]",
-                            "eventTypeName": "lowest market price [+/- 12 h] changed",
+                            "name": "lowestPrice",
+                            "displayName": "lowest market price [+/- 12 h]",
+                            "displayNameEvent": "lowest market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "ruleRelevant": false,
@@ -103,9 +103,9 @@
                         },
                         {
                             "id": "0c171c42-b070-453e-8a63-df9aebfa8533",
-                            "idName": "highestPrice",
-                            "name": "highest market price [+/- 12 h]",
-                            "eventTypeName": "highest market price [+/- 12 h] changed",
+                            "name": "highestPrice",
+                            "displayName": "highest market price [+/- 12 h]",
+                            "displayNameEvent": "highest market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "ruleRelevant": false,
@@ -114,25 +114,25 @@
                         },
                         {
                             "id": "470b9b88-17f3-42e3-9250-cc181984eafe",
-                            "idName": "online",
                             "name": "online",
-                            "eventTypeName": "online changed",
+                            "displayName": "online",
+                            "displayNameEvent": "online changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "1c9d139a-6618-4a39-bc83-37f80942017d",
-                            "idName": "reachable",
-                            "name": "pump reachable",
-                            "eventTypeName": "pump reachable changed",
+                            "name": "reachable",
+                            "displayName": "pump reachable",
+                            "displayNameEvent": "pump reachable changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "b83d3533-aeae-4a9b-95d8-28466bf6c0cf",
-                            "idName": "sgMode",
-                            "name": "sg-mode",
-                            "eventTypeName": "sg-mode changed",
+                            "name": "sgMode",
+                            "displayName": "sg-mode",
+                            "displayNameEvent": "sg-mode changed",
                             "type": "QString",
                             "possibleValues": [
                                 "0 - Invalid",
@@ -145,9 +145,9 @@
                         },
                         {
                             "id": "4c303bcd-152d-45ad-874d-d57fc87a26bb",
-                            "idName": "sgSyncMode",
-                            "name": "sync mode",
-                            "eventTypeName": "sync mode changed",
+                            "name": "sgSyncMode",
+                            "displayName": "sync mode",
+                            "displayNameEvent": "sync mode changed",
                             "type": "QString",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -157,19 +157,19 @@
                             ],
                             "defaultValue": "auto",
                             "writable": true,
-                            "actionTypeName": "Set sync mode"
+                            "displayNameAction": "Set sync mode"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "dd82f6c7-5e92-48ca-b0bc-bdc55d3e1482",
-                            "idName": "setSgMode",
-                            "name": "set sg-mode",
+                            "name": "setSgMode",
+                            "displayName": "set sg-mode",
                             "paramTypes": [
                                 {
                                     "id": "c7b13a33-1c05-457c-a087-20ecc1b8ca01",
-                                    "idName": "sgMode",
-                                    "name": "sg-mode",
+                                    "name": "sgMode",
+                                    "displayName": "sg-mode",
                                     "type": "QString",
                                     "allowedValues": [
                                         "1 - Off",

@@ -1,12 +1,12 @@
 {
-    "name": "Order Button",
-    "idName": "OrderButton",
+    "displayName": "Order Button",
+    "name": "OrderButton",
     "id": "939a6557-649d-43de-990b-3484f972ad86",
     "paramTypes": [
         {
             "id": "e917e779-e01c-4095-9d62-ab46fc2deecc",
-            "idName": "rpl",
-            "name": "RPL address",
+            "name": "rpl",
+            "displayName": "RPL address",
             "type": "QString",
             "inputType": "TextLine",
             "defaultValue": "fdaa:e9b8:d03a::ff:fe00:1"
@@ -14,14 +14,14 @@
     ],
     "vendors": [
         {
+            "displayName": "guh",
             "name": "guh",
-            "idName": "guh",
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "deviceClasses": [
                 {
                     "id": "af4df281-2b3b-490f-8352-2b99ff23fc15",
-                    "name": "OrderButton",
-                    "idName": "orderbutton",
+                    "displayName": "OrderButton",
+                    "name": "orderbutton",
                     "createMethods": ["discovery"],
                     "interfaces": ["gateway"],
                     "basicTags": [
@@ -32,8 +32,8 @@
                     "paramTypes": [
                         {
                             "id": "53a00a7b-e168-4917-86b5-d4329a0a720c",
-                            "idName": "host",
                             "name": "host",
+                            "displayName": "host",
                             "type": "QString",
                             "inputType": "TextLine"
                         }
@@ -41,35 +41,35 @@
                     "stateTypes": [
                         {
                             "id": "a4d83813-10f3-4830-be2e-60d4815906c4",
-                            "idName": "battery",
-                            "name": "battery voltage",
-                            "eventTypeName": "battery voltage changed",
+                            "name": "battery",
+                            "displayName": "battery voltage",
+                            "displayNameEvent": "battery voltage changed",
                             "type": "double",
                             "unit": "Volt",
                             "defaultValue": 0
                         },
                         {
                             "id": "2df871fc-1888-4b04-8f02-f17b26642534",
-                            "idName": "count",
                             "name": "count",
-                            "eventTypeName": "count changed",
+                            "displayName": "count",
+                            "displayNameEvent": "count changed",
                             "type": "int",
                             "defaultValue": 0
                         },
                         {
                             "id": "783e74ee-ffd6-4dd7-ade5-3a961452cf15",
-                            "idName": "reachable",
-                            "eventTypeName": "reachable changed",
                             "name": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "displayName": "reachable",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "b184ccc8-e7d9-4e94-8683-07f81484bbda",
-                            "idName": "led",
                             "name": "led",
-                            "eventTypeName": "led changed",
-                            "actionTypeName": "Set led",
+                            "displayName": "led",
+                            "displayNameEvent": "led changed",
+                            "displayNameAction": "Set led",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -78,15 +78,15 @@
                     "actionTypes": [
                         {
                             "id": "b8e5da6c-501c-493e-8b0f-8ef09efb9057",
-                            "idName": "reset",
-                            "name": "reset"
+                            "name": "reset",
+                            "displayName": "reset"
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "2077a9ad-7f4b-4dd4-ae1c-7ecbe0a92dc0",
-                            "idName": "button",
-                            "name": "button"
+                            "name": "button",
+                            "displayName": "button"
                         }
                     ]
                 }

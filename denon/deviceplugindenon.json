@@ -1,17 +1,17 @@
 {
+    "displayName": "Denon",
     "name": "Denon",
-    "idName": "Denon",
     "id": "cd758269-dbbb-4ef0-80ab-48bd9a8a2765",
     "vendors": [
         {
             "id": "cf0a9644-2c13-4daf-85c1-ad88d6745b42",
-            "name": "Denon",
-            "idName": "denon",
+            "displayName": "Denon",
+            "name": "denon",
             "deviceClasses": [
                 {
                     "id": "1cd3d67e-aba0-450e-9e2a-483a1527aba6",
-                    "idName": "AVRX1000",
-                    "name": "AVR X1000",
+                    "name": "AVRX1000",
+                    "displayName": "AVR X1000",
                     "createMethods": ["user"],
                     "criticalStateTypeId": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
                     "primaryActionTypeId": "1cdb6b54-6831-4900-95b2-c78f64497701",
@@ -23,8 +23,8 @@
                     "paramTypes": [
                         {
                             "id": "a54b98b4-b78f-41dd-a257-14425c6cf9ab",
-                            "idName": "ip",
                             "name": "ip",
+                            "displayName": "ip",
                             "type" : "QString",
                             "inputType": "IPv4Address"
                         }
@@ -32,28 +32,28 @@
                     "stateTypes": [
                         {
                             "id": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
-                            "idName": "connected",
                             "name": "connected",
-                            "eventTypeName": "connected changed",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },
                         {
-                            "name": "power",
+                            "displayName": "power",
                             "id": "1cdb6b54-6831-4900-95b2-c78f64497701",
-                            "idName": "power",
-                            "eventTypeName": "power changed",
-                            "actionTypeName": "Set power",
+                            "name": "power",
+                            "displayNameEvent": "power changed",
+                            "displayNameAction": "Set power",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
                         },
                         {
-                            "name": "volume",
+                            "displayName": "volume",
                             "id": "773636b9-304d-463a-8755-fc7488dc0ff3",
-                            "idName": "volume",
-                            "eventTypeName": "volume changed",
-                            "actionTypeName": "Set volume",
+                            "name": "volume",
+                            "displayNameEvent": "volume changed",
+                            "displayNameAction": "Set volume",
                             "type": "int",
                             "unit": "Dezibel",
                             "defaultValue": 0,
@@ -62,11 +62,11 @@
                             "writable": true
                         },
                         {
-                            "name": "channel",
+                            "displayName": "channel",
                             "id": "f29ffa2c-31d6-4d88-b160-a38288c82ce1",
-                            "idName": "channel",
-                            "eventTypeName": "channel changed",
-                            "actionTypeName": "Set channel",
+                            "name": "channel",
+                            "displayNameEvent": "channel changed",
+                            "displayNameAction": "Set channel",
                             "type": "QString",
                             "writable": true,
                             "possibleValues": [
