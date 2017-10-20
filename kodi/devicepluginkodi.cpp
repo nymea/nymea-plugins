@@ -167,6 +167,29 @@ DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const
         } else if (action.actionTypeId() == kodiAudioLibraryActionTypeId) {
             kodi->audioLibrary(action.param(kodiAudioCommandParamTypeId).value().toString(), action.id());
             return DeviceManager::DeviceErrorAsync;
+        } else if(action.actionTypeId() == skipBackActionTypeId) {
+            kodi->pressButton("skipprevious", action.id());
+            return DeviceManager::DeviceErrorAsync;
+        } else if(action.actionTypeId() == rewindActionTypeId) {
+            kodi->pressButton("rewind", action.id());
+            return DeviceManager::DeviceErrorAsync;
+        } else if(action.actionTypeId() == stopActionTypeId) {
+            kodi->pressButton("stop", action.id());
+            return DeviceManager::DeviceErrorAsync;
+        } else if(action.actionTypeId() == playActionTypeId) {
+            kodi->pressButton("play", action.id());
+            return DeviceManager::DeviceErrorAsync;
+        } else if(action.actionTypeId() == pauseActionTypeId) {
+            kodi->pressButton("pause", action.id());
+            return DeviceManager::DeviceErrorAsync;
+        } else if(action.actionTypeId() == fastForwardActionTypeId) {
+            kodi->pressButton("fastforward", action.id());
+            return DeviceManager::DeviceErrorAsync;
+        } else if(action.actionTypeId() == skipNextActionTypeId) {
+            kodi->pressButton("skipnext", action.id());
+            return DeviceManager::DeviceErrorAsync;
+        } else {
+            qWarning(dcKodi()) << "Unhandled action type" << action.actionTypeId();
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }

@@ -78,7 +78,19 @@
                             "eventRuleRelevant": false,
                             "defaultValue": 50,
                             "writable": true
+                        },
+                        {
+                            "id": "2dd512b7-40c2-488e-8d4f-6519edaa6f74",
+                            "name": "playbackStatus",
+                            "displayName": "playback status",
+                            "type": "QString",
+                            "possibleValues": ["Playing", "Paused", "Stopped"],
+                            "defaultValue": "Stopped",
+                            "displayNameEvent": "playback status changed",
+                            "displayNameAction": "set playback status",
+                            "writable": true
                         }
+
                     ],
                     "eventTypes": [
                         {
@@ -98,6 +110,41 @@
                         }
                     ],
                     "actionTypes": [
+                        {
+                            "id": "a180807d-1265-4831-9d86-a421767418dd",
+                            "name": "skipBack",
+                            "displayName": "skip back"
+                        },
+                        {
+                            "id": "7e70b47b-7e79-4521-be34-04a3c427e5b1",
+                            "name": "rewind",
+                            "displayName": "rewind"
+                        },
+                        {
+                            "id": "ae3cbe03-ee3e-410e-abbd-efabc2402198",
+                            "name": "stop",
+                            "displayName": "stop"
+                        },
+                        {
+                            "id": "4d2ee668-a2e3-4795-8b96-0c800b703b46",
+                            "name": "play",
+                            "displayName": "play"
+                        },
+                        {
+                            "id": "3cf341cb-fe63-40bc-a450-9678d18e91e3",
+                            "name": "pause",
+                            "displayName": "pause"
+                        },
+                        {
+                            "id": "6985250e-1188-4e44-b9dd-93303b5738a1",
+                            "name": "fastForward",
+                            "displayName": "fastForward"
+                        },
+                        {
+                            "id": "85d7126a-b123-4a28-aeb4-d84bcfb4d14f",
+                            "name": "skipNext",
+                            "displayName": "skipNext"
+                        },
                         {
                             "id": "dc0aa3b5-4eae-4e58-a4ac-d4c124da53f1",
                             "name": "showNotification",
