@@ -217,7 +217,7 @@
                     "stateTypes": [
                         {
                             "id": "19bb8d10-1b28-4ba3-99b7-a634138dcfde",
-                            "name": "hueReachable",
+                            "name": "reachable",
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
                             "defaultValue": false,
@@ -225,7 +225,7 @@
                         },
                         {
                             "id": "90aaffe5-6a76-47d2-a14a-550f60390245",
-                            "name": "huePower",
+                            "name": "power",
                             "displayName": "power",
                             "displayNameEvent": "power changed",
                             "displayNameAction": "Set power",
@@ -235,7 +235,7 @@
                         },
                         {
                             "id": "c0f4206f-f219-4f06-93c4-4ca515a56f79",
-                            "name": "hueTemperature",
+                            "name": "colorTemperature",
                             "displayName": "color temperature",
                             "displayNameEvent": "color temperature changed",
                             "displayNameAction": "Set color temperature",
@@ -250,7 +250,7 @@
                         },
                         {
                             "id": "d25423e7-b924-4b20-80b6-77eecc65d089",
-                            "name": "hueColor",
+                            "name": "color",
                             "displayName": "color",
                             "displayNameEvent": "color changed",
                             "displayNameAction": "Set color",
@@ -263,7 +263,7 @@
                         },
                         {
                             "id": "90e91f64-a208-468c-a5a2-7f47e08859e2",
-                            "name": "hueBrightness",
+                            "name": "brightness",
                             "displayName": "brightness",
                             "displayNameEvent": "brightness changed",
                             "displayNameAction": "Set brigtness",
@@ -399,7 +399,7 @@
                         },
                         {
                             "id": "90aaffe5-6a76-47d2-a14a-550f60390245",
-                            "name": "huePower",
+                            "name": "power",
                             "displayName": "power",
                             "displayNameEvent": "power changed",
                             "displayNameAction": "Set power",
@@ -409,7 +409,7 @@
                         },
                         {
                             "id": "90e91f64-a208-468c-a5a2-7f47e08859e2",
-                            "name": "hueBrightness",
+                            "name": "brightness",
                             "displayName": "brightness",
                             "displayNameEvent": "brightness changed",
                             "displayNameAction": "Set brightness",

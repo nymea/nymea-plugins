@@ -352,7 +352,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (device->stateValue(hueLightHueReachableStateTypeId).toBool()) {
+            if (device->stateValue(hueLightReachableStateTypeId).toBool()) {
                 qCWarning(dcPhilipsHue) << "Refresh Hue lights request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
@@ -416,20 +416,20 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
             return DeviceManager::DeviceErrorHardwareNotAvailable;
         }
 
-        if (action.actionTypeId() == hueLightHuePowerActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(hueLightHuePowerStateParamTypeId).value().toBool());
+        if (action.actionTypeId() == hueLightPowerActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(hueLightPowerStateParamTypeId).value().toBool());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == hueLightHueColorActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetColorRequest(action.param(hueLightHueColorStateParamTypeId).value().value<QColor>());
+        } else if (action.actionTypeId() == hueLightColorActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetColorRequest(action.param(hueLightColorStateParamTypeId).value().value<QColor>());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply,QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == hueLightHueBrightnessActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(hueLightHueBrightnessStateParamTypeId).value().toInt()));
+        } else if (action.actionTypeId() == hueLightBrightnessActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(hueLightBrightnessStateParamTypeId).value().toInt()));
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
@@ -446,8 +446,8 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == hueLightHueTemperatureActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetTemperatureRequest(action.param(hueLightHueTemperatureStateParamTypeId).value().toInt());
+        } else if (action.actionTypeId() == hueLightColorTemperatureActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetTemperatureRequest(action.param(hueLightColorTemperatureStateParamTypeId).value().toInt());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
@@ -465,14 +465,14 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
             return DeviceManager::DeviceErrorHardwareNotAvailable;
         }
 
-        if (action.actionTypeId() == hueWhiteLightHuePowerActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(hueWhiteLightHuePowerStateParamTypeId).value().toBool());
+        if (action.actionTypeId() == hueWhiteLightPowerActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(hueWhiteLightPowerStateParamTypeId).value().toBool());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == hueWhiteLightHueBrightnessActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(hueWhiteLightHueBrightnessStateParamTypeId).value().toInt()));
+        } else if (action.actionTypeId() == hueWhiteLightBrightnessActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(hueWhiteLightBrightnessStateParamTypeId).value().toInt()));
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
@@ -526,16 +526,16 @@ void DevicePluginPhilipsHue::lightStateChanged()
     }
 
     if (device->deviceClassId() == hueLightDeviceClassId) {
-        device->setStateValue(hueLightHueReachableStateTypeId, light->reachable());
-        device->setStateValue(hueLightHueColorStateTypeId, QVariant::fromValue(light->color()));
-        device->setStateValue(hueLightHuePowerStateTypeId, light->power());
-        device->setStateValue(hueLightHueBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
-        device->setStateValue(hueLightHueTemperatureStateTypeId, light->ct());
+        device->setStateValue(hueLightReachableStateTypeId, light->reachable());
+        device->setStateValue(hueLightColorStateTypeId, QVariant::fromValue(light->color()));
+        device->setStateValue(hueLightPowerStateTypeId, light->power());
+        device->setStateValue(hueLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
+        device->setStateValue(hueLightColorTemperatureStateTypeId, light->ct());
         device->setStateValue(hueLightHueEffectStateTypeId, light->effect());
     } else if (device->deviceClassId() == hueWhiteLightDeviceClassId) {
         device->setStateValue(hueWhiteLightHueReachableStateTypeId, light->reachable());
-        device->setStateValue(hueWhiteLightHuePowerStateTypeId, light->power());
-        device->setStateValue(hueWhiteLightHueBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
+        device->setStateValue(hueWhiteLightPowerStateTypeId, light->power());
+        device->setStateValue(hueWhiteLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
     }
 }
 
@@ -1193,7 +1193,11 @@ void DevicePluginPhilipsHue::bridgeReachableChanged(Device *device, const bool &
             foreach (HueLight *light, m_lights.keys()) {
                 if (light->bridgeId() == device->id()) {
                     light->setReachable(false);
-                    m_lights.value(light)->setStateValue(hueLightHueReachableStateTypeId, false);
+                    if (m_lights.value(light)->deviceClassId() == hueLightDeviceClassId) {
+                        m_lights.value(light)->setStateValue(hueLightReachableStateTypeId, false);
+                    } else if (m_lights.value(light)->deviceClassId() == hueWhiteLightDeviceClassId) {
+                        m_lights.value(light)->setStateValue(hueWhiteLightHueReachableStateTypeId, false);
+                    }
                 }
             }
 
