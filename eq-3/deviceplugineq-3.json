@@ -1,17 +1,17 @@
 {
-    "name": "eQ-3",
-    "idName": "EQ3",
+    "name": "EQ3",
+    "displayName": "eQ-3",
     "id": "f324c43c-9680-48d8-852a-93b2227139b9",
     "vendors": [
         {
-            "name": "eQ-3",
-            "idName": "eq3",
+            "name": "eq3",
+            "displayName": "eQ-3",
             "id": "2cac0645-855e-44fa-837e-1cab0ae4304c",
             "deviceClasses": [
                 {
                     "id": "1e892268-8bd7-442c-a001-bd4e2e6b2949",
-                    "idName": "cube",
-                    "name": "Max! Cube LAN Gateway",
+                    "name": "cube",
+                    "displayName": "Max! Cube LAN Gateway",
                     "deviceIcon": "Gateway",
                     "criticalStateTypeId": "d0a9a369-cf8c-47c4-a12e-f2d076bf12fd",
                     "interfaces": ["gateway"],
@@ -25,45 +25,45 @@
                     "paramTypes": [
                         {
                             "id": "b30c14db-5b2a-4366-87e3-13d0d38b1905",
-                            "idName": "host",
-                            "name": "host address",
+                            "name": "host",
+                            "displayName": "host address",
                             "type": "QString",
                             "inputType": "IPv4Address"
                         },
                         {
                             "id": "a4c92442-dc47-463f-8e24-15b5b593adec",
-                            "idName": "port",
                             "name": "port",
+                            "displayName": "port",
                             "type": "int"
                         },
                         {
                             "id": "67dc1a45-7369-422a-b677-881271f29d6c",
-                            "idName": "serial",
-                            "name": "serial number",
+                            "name": "serial",
+                            "displayName": "serial number",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "8d629061-8d4b-49f1-ab47-b82fdde3036c",
-                            "idName": "firmware",
-                            "name": "firmware version",
+                            "name": "firmware",
+                            "displayName": "firmware version",
                             "type": "int"
                         }
                     ],
                     "stateTypes": [
                         {
                             "id": "d0a9a369-cf8c-47c4-a12e-f2d076bf12fd",
-                            "idName": "connection",
-                            "name": "connected",
-                            "eventTypeName": "connected changed",
+                            "name": "connection",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "2c2367da-c229-40ed-9d47-a6e73cd6dc3b",
-                            "idName": "portalEnabled",
-                            "name": "portal enabled",
-                            "eventTypeName": "portal enabled changed",
+                            "name": "portalEnabled",
+                            "displayName": "portal enabled",
+                            "displayNameEvent": "portal enabled changed",
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -73,8 +73,8 @@
                 },
                 {
                     "id": "ffbfec5d-06e8-4082-b62b-92cc5c3e8c4e",
-                    "idName": "wallThermostate",
-                    "name": "Max! Wall Thermostat",
+                    "name": "wallThermostate",
+                    "displayName": "Max! Wall Thermostat",
                     "deviceIcon": "Thermometer",
                     "primaryStateTypeId": "852e7708-db1d-42d1-96e4-19c13598262c",
                     "basicTags": [
@@ -87,67 +87,67 @@
                     "paramTypes": [
                         {
                             "id": "67dc1a45-7369-422a-b677-881271f29d6c",
-                            "idName": "serial",
-                            "name": "serial number",
+                            "name": "serial",
+                            "displayName": "serial number",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "8d32b228-8618-483f-bcc3-2d62868d6912",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString"
                         },
                         {
                             "id": "801be701-ea53-4cb2-a933-823f330e7837",
-                            "idName": "parent",
-                            "name": "parent cube",
+                            "name": "parent",
+                            "displayName": "parent cube",
                             "type": "QString"
                         },
                         {
                             "id": "6ba358c1-0c31-4ea4-93fd-544f030582a7",
-                            "idName": "rf",
-                            "name": "rf address",
+                            "name": "rf",
+                            "displayName": "rf address",
                             "type": "QString"
                         },
                         {
                             "id": "e3bb28dc-5311-4325-805a-e1e3a1495016",
-                            "idName": "room",
-                            "name": "room id",
+                            "name": "room",
+                            "displayName": "room id",
                             "type": "int"
                         },
                         {
                             "id": "14ea2e10-4545-47ff-8955-8172913f1039",
-                            "idName": "roomName",
-                            "name": "room name",
+                            "name": "roomName",
+                            "displayName": "room name",
                             "type": "QString"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "162b4b3d-9923-4f2c-a755-b50c8a06a6f0",
-                            "idName": "setAutoMode",
-                            "name": "set auto mode"
+                            "name": "setAutoMode",
+                            "displayName": "set auto mode"
                         },
                         {
                             "id": "8e604437-9f5b-4c17-b5b0-e2db6007af5b",
-                            "idName": "setManualMode",
-                            "name": "set manual mode"
+                            "name": "setManualMode",
+                            "displayName": "set manual mode"
                         },
                         {
                             "id": "27a981e8-ec23-4ba8-921e-33b911a7dd89",
-                            "idName": "setEcoMode",
-                            "name": "set eco mode"
+                            "name": "setEcoMode",
+                            "displayName": "set eco mode"
                         },
                         {
                             "id": "184fb112-7a03-4560-8634-0257c969c26e",
-                            "idName": "displayCurrentTemp",
-                            "name": "display current temperature",
+                            "name": "displayCurrentTemp",
+                            "displayName": "display current temperature",
                             "paramTypes": [
                                 {
                                     "id": "894dbb8e-73b5-4e89-8b93-d7afda239dcb",
-                                    "idName": "display",
                                     "name": "display",
+                                    "displayName": "display",
                                     "type": "bool",
                                     "defaultValue": true
                                 }
@@ -157,18 +157,18 @@
                     "stateTypes": [
                         {
                             "id": "850380ee-a787-43e7-adb8-768a21a6e64d",
-                            "idName": "comfortTemp",
-                            "name": "comfort temperature",
-                            "eventTypeName": "confort temperature changed",
+                            "name": "comfortTemp",
+                            "displayName": "comfort temperature",
+                            "displayNameEvent": "confort temperature changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0
                         },
                         {
                             "id": "24dfd20d-bc8d-48e4-8162-b20ae0465c41",
-                            "idName": "ecoTemp",
-                            "name": "eco temperature",
-                            "eventTypeName": "eco temperature changed",
+                            "name": "ecoTemp",
+                            "displayName": "eco temperature",
+                            "displayNameEvent": "eco temperature changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "ruleRelevant": false,
@@ -177,9 +177,9 @@
                         },
                         {
                             "id": "a8536ddf-a6e4-41c2-89c1-e7102608f5f6",
-                            "idName": "maxSetpointTemp",
-                            "name": "max setpoint",
-                            "eventTypeName": "max setpoint changed",
+                            "name": "maxSetpointTemp",
+                            "displayName": "max setpoint",
+                            "displayNameEvent": "max setpoint changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "ruleRelevant": false,
@@ -188,9 +188,9 @@
                         },
                         {
                             "id": "ceb0ad05-37ad-4b79-a4d9-540c34a7e3e4",
-                            "idName": "minSetpointTemp",
-                            "name": "min setpoint",
-                            "eventTypeName": "min setpoint changed",
+                            "name": "minSetpointTemp",
+                            "displayName": "min setpoint",
+                            "displayNameEvent": "min setpoint changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "ruleRelevant": false,
@@ -199,41 +199,41 @@
                         },
                         {
                             "id": "9880247b-cf9a-453c-b0c3-d910eba8a253",
-                            "idName": "errorOccurred",
-                            "name": "error occurred",
-                            "eventTypeName": "error occured",
+                            "name": "errorOccurred",
+                            "displayName": "error occurred",
+                            "displayNameEvent": "error occured",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "a9e29f03-063e-4686-8aac-2f6d8f8a4937",
-                            "idName": "initialized",
                             "name": "initialized",
-                            "eventTypeName": "initialized changed",
+                            "displayName": "initialized",
+                            "displayNameEvent": "initialized changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "53b89f32-8894-4290-92a0-6a470c6b69ab",
-                            "idName": "batteryLow",
-                            "name": "battery low",
-                            "eventTypeName": "battery low changed",
+                            "name": "batteryLow",
+                            "displayName": "battery low",
+                            "displayNameEvent": "battery low changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "aff38be8-7ea6-4fd8-b0fa-e987ab05c719",
-                            "idName": "linkStatusOK",
-                            "name": "link status ok",
-                            "eventTypeName": "link status changed",
+                            "name": "linkStatusOK",
+                            "displayName": "link status ok",
+                            "displayNameEvent": "link status changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "979df197-09a1-46f9-9217-9d323b1062bd",
-                            "idName": "panelLocked",
-                            "name": "panel locked",
-                            "eventTypeName": "panel locked changed",
+                            "name": "panelLocked",
+                            "displayName": "panel locked",
+                            "displayNameEvent": "panel locked changed",
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -241,9 +241,9 @@
                         },
                         {
                             "id": "1d6bd962-5c31-47ad-80a4-dda87bff98f5",
-                            "idName": "gatewayKnown",
-                            "name": "gateway known",
-                            "eventTypeName": "gateway known changed",
+                            "name": "gatewayKnown",
+                            "displayName": "gateway known",
+                            "displayNameEvent": "gateway known changed",
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -251,9 +251,9 @@
                         },
                         {
                             "id": "1b402ba6-a8ae-45b1-8acf-2b0a89f71889",
-                            "idName": "dtsActive",
-                            "name": "dts active",
-                            "eventTypeName": "dts active changed",
+                            "name": "dtsActive",
+                            "displayName": "dts active",
+                            "displayNameEvent": "dts active changed",
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -261,26 +261,26 @@
                         },
                         {
                             "id": "639360f0-bb65-43e6-b227-50ae0ac39d6c",
-                            "idName": "deviceMode",
-                            "name": "device mode",
-                            "eventTypeName": "device mode changed",
+                            "name": "deviceMode",
+                            "displayName": "device mode",
+                            "displayNameEvent": "device mode changed",
                             "type": "int",
                             "defaultValue": -1
                         },
                         {
                             "id": "ff5194e3-5641-4ac2-92c7-48c431b4a2eb",
-                            "idName": "deviceModeString",
-                            "name": "device mode string",
-                            "eventTypeName": "device mode string changed",
+                            "name": "deviceModeString",
+                            "displayName": "device mode string",
+                            "displayNameEvent": "device mode string changed",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "579aa8c6-8814-491b-9e7c-b98108c323d1",
-                            "idName": "desiredTemperature",
-                            "name": "desired temperature",
-                            "eventTypeName": "desired temperature changed",
-                            "actionTypeName": "Set desired temperature",
+                            "name": "desiredTemperature",
+                            "displayName": "desired temperature",
+                            "displayNameEvent": "desired temperature changed",
+                            "displayNameAction": "Set desired temperature",
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0,
@@ -288,9 +288,9 @@
                         },
                         {
                             "id": "852e7708-db1d-42d1-96e4-19c13598262c",
-                            "idName": "currentTemperature",
-                            "name": "current temperature",
-                            "eventTypeName": "current temperature changed",
+                            "name": "currentTemperature",
+                            "displayName": "current temperature",
+                            "displayNameEvent": "current temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -299,8 +299,8 @@
                 },
                 {
                     "id": "f80d9481-4827-45ee-a013-b97b22412d92",
-                    "idName": "radiatorThermostate",
-                    "name": "Max! Radiator Thermostat",
+                    "name": "radiatorThermostate",
+                    "displayName": "Max! Radiator Thermostat",
                     "deviceIcon": "Thermometer",
                     "basicTags": [
                         "Device",
@@ -312,83 +312,83 @@
                     "paramTypes": [
                         {
                             "id": "67dc1a45-7369-422a-b677-881271f29d6c",
-                            "idName": "serial",
-                            "name": "serial number",
+                            "name": "serial",
+                            "displayName": "serial number",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "8d32b228-8618-483f-bcc3-2d62868d6912",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString"
                         },
                         {
                             "id": "801be701-ea53-4cb2-a933-823f330e7837",
-                            "idName": "parent",
-                            "name": "parent cube",
+                            "name": "parent",
+                            "displayName": "parent cube",
                             "type": "QString"
                         },
                         {
                             "id": "6ba358c1-0c31-4ea4-93fd-544f030582a7",
-                            "idName": "rf",
-                            "name": "rf address",
+                            "name": "rf",
+                            "displayName": "rf address",
                             "type": "QString"
                         },
                         {
                             "id": "e3bb28dc-5311-4325-805a-e1e3a1495016",
-                            "idName": "room",
-                            "name": "room id",
+                            "name": "room",
+                            "displayName": "room id",
                             "type": "int"
                         },
                         {
                             "id": "14ea2e10-4545-47ff-8955-8172913f1039",
-                            "idName": "roomName",
-                            "name": "room name",
+                            "name": "roomName",
+                            "displayName": "room name",
                             "type": "QString"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "162b4b3d-9923-4f2c-a755-b50c8a06a6f0",
-                            "idName": "setAutoMode",
-                            "name": "set auto mode"
+                            "name": "setAutoMode",
+                            "displayName": "set auto mode"
                         },
                         {
                             "id": "8e604437-9f5b-4c17-b5b0-e2db6007af5b",
-                            "idName": "setManualMode",
-                            "name": "set manual mode"
+                            "name": "setManualMode",
+                            "displayName": "set manual mode"
                         },
                         {
                             "id": "27a981e8-ec23-4ba8-921e-33b911a7dd89",
-                            "idName": "setEcoMode",
-                            "name": "set eco mode"
+                            "name": "setEcoMode",
+                            "displayName": "set eco mode"
                         }
                     ],
                     "stateTypes": [
                         {
                             "id": "850380ee-a787-43e7-adb8-768a21a6e64d",
-                            "idName": "comfortTemp",
-                            "name": "comfort temperature",
-                            "eventTypeName": "comfort temperature changed",
+                            "name": "comfortTemp",
+                            "displayName": "comfort temperature",
+                            "displayNameEvent": "comfort temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
                         },
                         {
                             "id": "24dfd20d-bc8d-48e4-8162-b20ae0465c41",
-                            "idName": "comfortTemp",
-                            "name": "eco temperature",
-                            "eventTypeName": "eco temperature changed",
+                            "name": "comfortTemp",
+                            "displayName": "eco temperature",
+                            "displayNameEvent": "eco temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
                         },
                         {
                             "id": "a8536ddf-a6e4-41c2-89c1-e7102608f5f6",
-                            "idName": "maxSetpointTemp",
-                            "name": "max setpoint",
-                            "eventTypeName": "max setpoint changed",
+                            "name": "maxSetpointTemp",
+                            "displayName": "max setpoint",
+                            "displayNameEvent": "max setpoint changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "ruleRelevant": false,
@@ -397,9 +397,9 @@
                         },
                         {
                             "id": "ceb0ad05-37ad-4b79-a4d9-540c34a7e3e4",
-                            "idName": "minSetpointTemp",
-                            "name": "min setpoint",
-                            "eventTypeName": "min setpoint changed",
+                            "name": "minSetpointTemp",
+                            "displayName": "min setpoint",
+                            "displayNameEvent": "min setpoint changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "ruleRelevant": false,
@@ -408,41 +408,41 @@
                         },
                         {
                             "id": "9880247b-cf9a-453c-b0c3-d910eba8a253",
-                            "idName": "errorOccurred",
-                            "name": "error occured",
-                            "eventTypeName": "error occured changed",
+                            "name": "errorOccurred",
+                            "displayName": "error occured",
+                            "displayNameEvent": "error occured changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "a9e29f03-063e-4686-8aac-2f6d8f8a4937",
-                            "idName": "initialized",
                             "name": "initialized",
-                            "eventTypeName": "initialized changed",
+                            "displayName": "initialized",
+                            "displayNameEvent": "initialized changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "53b89f32-8894-4290-92a0-6a470c6b69ab",
-                            "idName": "batteryLow",
-                            "name": "battery low",
-                            "eventTypeName": "battery low changed",
+                            "name": "batteryLow",
+                            "displayName": "battery low",
+                            "displayNameEvent": "battery low changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "aff38be8-7ea6-4fd8-b0fa-e987ab05c719",
-                            "idName": "linkStatusOk",
-                            "name": "link status ok",
-                            "eventTypeName": "link status changed",
+                            "name": "linkStatusOk",
+                            "displayName": "link status ok",
+                            "displayNameEvent": "link status changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "979df197-09a1-46f9-9217-9d323b1062bd",
-                            "idName": "panelLocked",
-                            "name": "panel locked",
-                            "eventTypeName": "pannel locked changed",
+                            "name": "panelLocked",
+                            "displayName": "panel locked",
+                            "displayNameEvent": "pannel locked changed",
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -450,9 +450,9 @@
                         },
                         {
                             "id": "1d6bd962-5c31-47ad-80a4-dda87bff98f5",
-                            "idName": "gatewayKnown",
-                            "name": "gateway known",
-                            "eventTypeName": "gateway known changed",
+                            "name": "gatewayKnown",
+                            "displayName": "gateway known",
+                            "displayNameEvent": "gateway known changed",
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -460,9 +460,9 @@
                         },
                         {
                             "id": "1b402ba6-a8ae-45b1-8acf-2b0a89f71889",
-                            "idName": "dtsActive",
-                            "name": "dts active",
-                            "eventTypeName": "dts active changed",
+                            "name": "dtsActive",
+                            "displayName": "dts active",
+                            "displayNameEvent": "dts active changed",
                             "type": "bool",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -470,26 +470,26 @@
                         },
                         {
                             "id": "639360f0-bb65-43e6-b227-50ae0ac39d6c",
-                            "idName": "deviceMode",
-                            "name": "device mode",
-                            "eventTypeName": "device mode changed",
+                            "name": "deviceMode",
+                            "displayName": "device mode",
+                            "displayNameEvent": "device mode changed",
                             "type": "int",
                             "defaultValue": -1
                         },
                         {
                             "id": "ff5194e3-5641-4ac2-92c7-48c431b4a2eb",
-                            "idName": "deviceModeString",
-                            "name": "device mode string",
-                            "eventTypeName": "device mode string changed",
+                            "name": "deviceModeString",
+                            "displayName": "device mode string",
+                            "displayNameEvent": "device mode string changed",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "579aa8c6-8814-491b-9e7c-b98108c323d1",
-                            "idName": "desiredTemperature",
-                            "name": "desired temperature",
-                            "eventTypeName": "desired temperature changed",
-                            "actionTypeName": "Set desired temperature",
+                            "name": "desiredTemperature",
+                            "displayName": "desired temperature",
+                            "displayNameEvent": "desired temperature changed",
+                            "displayNameAction": "Set desired temperature",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0,
@@ -497,35 +497,35 @@
                         },
                         {
                             "id": "576da571-9a65-478f-96bf-19256c8b9ece",
-                            "idName": "offsetTemp",
-                            "name": "offset temperature",
-                            "eventTypeName": "offset temperature changed",
+                            "name": "offsetTemp",
+                            "displayName": "offset temperature",
+                            "displayNameEvent": "offset temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
                         },
                         {
                             "id": "81c6c74a-b0cd-4daa-9eb9-f1cd68f328af",
-                            "idName": "windowOpenDuration",
-                            "name": "window open duration",
-                            "eventTypeName": "window open duration changed",
+                            "name": "windowOpenDuration",
+                            "displayName": "window open duration",
+                            "displayNameEvent": "window open duration changed",
                             "unit": "Minutes",
                             "type": "int",
                             "defaultValue": 0
                         },
                         {
                             "id": "7c41fa64-b1a1-48d2-9d03-67aa16cd83ad",
-                            "idName": "boostValveValue",
-                            "name": "boost valve",
-                            "eventTypeName": "boost value changed",
+                            "name": "boostValveValue",
+                            "displayName": "boost valve",
+                            "displayNameEvent": "boost value changed",
                             "type": "int",
                             "defaultValue": 0
                         },
                         {
                             "id": "e75c1398-9ad7-466c-b3b9-b03bbb686a30",
-                            "idName": "boostDuration",
-                            "name": "boost duration",
-                            "eventTypeName": "boost duration changed",
+                            "name": "boostDuration",
+                            "displayName": "boost duration",
+                            "displayNameEvent": "boost duration changed",
                             "unit": "Seconds",
                             "type": "int",
                             "ruleRelevant": false,
@@ -534,9 +534,9 @@
                         },
                         {
                             "id": "bd6f5947-d4b4-444b-81c8-77eec46957e4",
-                            "idName": "discalcWeekDay",
-                            "name": "discalc weekday",
-                            "eventTypeName": "discalc weekday changed",
+                            "name": "discalcWeekDay",
+                            "displayName": "discalc weekday",
+                            "displayNameEvent": "discalc weekday changed",
                             "type": "QString",
                             "defaultValue": "",
                             "ruleRelevant": false,
@@ -544,34 +544,34 @@
                         },
                         {
                             "id": "e78235ee-affc-41e3-a463-9f0512b4a6c3",
-                            "idName": "discalcTime",
-                            "name": "discalc time",
-                            "eventTypeName": "discalc time changed",
+                            "name": "discalcTime",
+                            "displayName": "discalc time",
+                            "displayNameEvent": "discalc time changed",
                             "type": "QString",
                             "defaultValue": ""
                         },
                         {
                             "id": "e367fa3a-b30f-49bd-af3f-cff92360ad32",
-                            "idName": "valveMaximumSettings",
-                            "name": "valve maximum setting",
-                            "eventTypeName": "valve maximum setting changed",
+                            "name": "valveMaximumSettings",
+                            "displayName": "valve maximum setting",
+                            "displayNameEvent": "valve maximum setting changed",
                             "type": "double",
                             "defaultValue": 0
                         },
                         {
                             "id": "ffaff87b-b741-4db8-9875-3380af4f1885",
-                            "idName": "valveOffset",
-                            "name": "valve offset",
-                            "eventTypeName": "valve offset changed",
+                            "name": "valveOffset",
+                            "displayName": "valve offset",
+                            "displayNameEvent": "valve offset changed",
                             "unit": "Percentage",
                             "type": "int",
                             "defaultValue": 0
                         },
                         {
                             "id": "72956000-0203-4c32-a6b6-3bb7e46c03ca",
-                            "idName": "valvePosition",
-                            "name": "valve position",
-                            "eventTypeName": "valve position changed",
+                            "name": "valvePosition",
+                            "displayName": "valve position",
+                            "displayNameEvent": "valve position changed",
                             "unit": "Percentage",
                             "type": "int",
                             "defaultValue": 0

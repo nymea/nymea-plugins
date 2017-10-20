@@ -1,17 +1,17 @@
 {
     "name": "Wemo",
-    "idName": "Wemo",
+    "displayName": "Wemo",
     "id": "2e3b5ce0-ecf1-43de-98f0-07df4068a583",
     "vendors": [
         {
-            "name": "Belkin",
-            "idName": "belkin",
+            "name": "belkin",
+            "displayName": "Belkin",
             "id": "b241f7f5-8153-4a72-b260-f62beadc2d19",
             "deviceClasses": [
                 {
                     "id": "69d97d3b-a8e6-42f3-afc0-ca8a53eb7cce",
-                    "idName": "wemoSwitch",
-                    "name": "WeMo Switch",
+                    "name": "wemoSwitch",
+                    "displayName": "WeMo Switch",
                     "deviceIcon": "Socket",
                     "basicTags": [
                         "Device",
@@ -23,28 +23,28 @@
                     "paramTypes": [
                         {
                             "id": "50d2236d-b73a-4d7b-ac8a-34c6566e6543",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "84ed399c-edb0-40da-8e2f-86eefc5790eb",
-                            "idName": "host",
-                            "name": "host address",
+                            "name": "host",
+                            "displayName": "host address",
                             "type": "QString",
                             "inputType": "IPv4Address"
                         },
                         {
                             "id": "2d30eb6b-08cf-4d34-aeb5-fb441bb2291a",
-                            "idName": "port",
                             "name": "port",
+                            "displayName": "port",
                             "type": "int"
                         },
                         {
                             "id": "93e1a45a-b8b9-48a7-869e-ad07550a1951",
-                            "idName": "serial",
-                            "name": "serial number",
+                            "name": "serial",
+                            "displayName": "serial number",
                             "type": "QString",
                             "inputType": "TextLine"
                         }
@@ -52,18 +52,19 @@
                     "stateTypes": [
                         {
                             "id": "7166c4f6-f68c-4188-8f7c-2205d72a5a6d",
-                            "idName": "power",
                             "name": "power",
-                            "eventTypeName": "power changed",
-                            "actionTypeName": "Set power",
+                            "displayName": "power",
+                            "displayNameEvent": "power changed",
+                            "displayNameAction": "Set power",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
                         },
                         {
                             "id": "ec2f5b49-585c-4455-a233-b7aa4c608dbc",
-                            "idName": "reachable",
-                            "eventTypeName": "reachable changed",
+                            "name": "reachable",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
                             "name": "reachable",
                             "type": "bool",
                             "defaultValue": false

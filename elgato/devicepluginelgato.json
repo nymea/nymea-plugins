@@ -1,17 +1,17 @@
 {
-    "name": "Elgato",
+    "displayName": "Elgato",
     "id": "c5c03ad4-bfdb-444a-8eca-2c234c46cc27",
-    "idName": "Elgato",
+    "name": "Elgato",
     "vendors": [
         {
-            "name": "Elgato",
-            "idName": "elgato",
+            "displayName": "Elgato",
+            "name": "elgato",
             "id": "90a3091d-1053-4f77-8dc3-92e27bbcebe7",
             "deviceClasses": [
                 {
                     "id": "164f9602-90ee-4693-bda3-9cafae37603e",
-                    "idName": "avea",
-                    "name": "Avea",
+                    "name": "avea",
+                    "displayName": "Avea",
                     "deviceIcon": "LightBulb",
                     "criticalStateTypeId": "6d5e792a-c786-40d2-ae35-a48ac6fafcbc",
                     "basicTags": [
@@ -23,15 +23,15 @@
                     "paramTypes": [
                         {
                             "id": "d7a5d96f-33dc-4dc3-a171-b1e89a5e1a4b",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "20932e39-00fd-40e3-8f39-850ba149844e",
-                            "idName": "macAddress",
-                            "name": "mac address",
+                            "name": "macAddress",
+                            "displayName": "mac address",
                             "type": "QString",
                             "inputType": "MacAddress"
                         }
@@ -39,18 +39,18 @@
                     "stateTypes": [
                         {
                             "id": "6d5e792a-c786-40d2-ae35-a48ac6fafcbc",
-                            "idName": "connected",
                             "name": "connected",
+                            "displayName": "connected",
                             "eventTypeName": "connected changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "c38181a0-e19b-423f-8b66-dedda94e89b5",
-                            "idName": "brightness",
-                            "name": "Brightness",
-                            "eventTypeName": "brightness changed",
-                            "actionTypeName": "Set brightness",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "brightness changed",
+                            "displayNameAction": "Set brightness",
                             "type": "int",
                             "defaultValue": 100,
                             "ruleRelevant": false,
@@ -61,16 +61,15 @@
                         },
                         {
                             "id": "3f15637a-8272-4714-bd08-04806e05bbef",
-                            "idName": "color",
                             "name": "color",
-                            "eventTypeName": "color changed",
-                            "actionTypeName": "Set color",
+                            "displayName": "color",
+                            "displayNameEvent": "color changed",
+                            "disoplayNameAction": "Set color",
                             "type": "QColor",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "defaultValue": "#000000",
                             "writable": true
-
                         }
                     ]
                 }

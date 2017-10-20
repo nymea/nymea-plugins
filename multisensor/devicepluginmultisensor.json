@@ -1,16 +1,16 @@
 {
+    "displayName": "MultiSensor",
     "name": "MultiSensor",
-    "idName": "MultiSensor",
     "id": "23bf0d8d-df7d-4bee-80ee-f015c5a7f52e",
     "vendors": [
         {
-            "name": "Texas Instruments",
-            "idName": "texas",
+            "displayName": "Texas Instruments",
+            "name": "texas",
             "id": "2edf543e-dc2c-4693-bb0c-e76c0d305fad",
             "deviceClasses": [
                 {
-                    "name": "Sensor Tag",
-                    "idName": "sensortag",
+                    "displayName": "Sensor Tag",
+                    "name": "sensortag",
                     "id": "158a06b6-b27f-4951-957e-6f1e3b44f604",
                     "createMethods": ["discovery"],
                     "deviceIcon": "Thermometer",
@@ -22,15 +22,15 @@
                     "paramTypes": [
                         {
                             "id": "bdb9d684-2f98-45f5-889c-f184c1e73dc7",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "d51ed68e-c84a-4136-a5b5-be2f95fd5a0f",
-                            "idName": "mac",
-                            "name": "mac address",
+                            "name": "mac",
+                            "displayName": "mac address",
                             "type": "QString",
                             "inputType": "MacAddress"
                         }
@@ -38,53 +38,53 @@
                     "stateTypes": [
                         {
                             "id": "a9629b11-0f34-47f0-a0f0-f758a6aec2b4",
-                            "idName": "connected",
                             "name": "connected",
-                            "eventTypeName": "connected changed",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "c664e9ec-a045-49ba-add1-1642ceba7c4f",
-                            "idName": "IRtemperature",
-                            "name": "IR temperature",
-                            "eventTypeName": "IR temperature changed",
+                            "name": "IRtemperature",
+                            "displayName": "IR temperature",
+                            "displayNameEvent": "IR temperature changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0
                         },
                         {
                             "id": "e83a50ff-96c9-4b6d-889f-f4238353e794",
-                            "idName": "humidity",
                             "name": "humidity",
-                            "eventTypeName": "humidity changed",
+                            "displayName": "humidity",
+                            "displayNameEvent": "humidity changed",
                             "type": "double",
                             "unit": "Percentage",
                             "defaultValue": 0
                         },
                         {
                             "id": "8359ada9-df1c-4e60-bb87-9e21d05ee2e2",
-                            "idName": "temperature",
                             "name": "temperature",
-                            "eventTypeName": "temperature changed",
+                            "displayName": "temperature",
+                            "displayNameEvent": "temperature changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0
                         },
                         {
                             "id": "645633ad-77d4-45b2-8be8-d6ca7a12eb7a",
-                            "idName": "pressure",
                             "name": "pressure",
-                            "eventTypeName": "pressure changed",
+                            "displayName": "pressure",
+                            "displayNameEvent": "pressure changed",
                             "type": "double",
                             "unit": "HectoPascal",
                             "defaultValue": 0
                         },
                         {
                             "id": "4be5ca26-0565-419d-b18b-2a5a385d2a3d",
-                            "idName": "moving",
                             "name": "moving",
-                            "eventTypeName": "moving changed",
+                            "displayName": "moving",
+                            "displayNameEvent": "moving changed",
                             "type": "bool",
                             "defaultValue": false
                         }
@@ -92,13 +92,13 @@
                     "eventTypes": [
                         {
                             "id": "61478490-bed0-4fed-9d58-f13c35b4f220",
-                            "idName": "leftKey",
-                            "name": "left key pressed"
+                            "name": "leftKey",
+                            "displayName": "left key pressed"
                         },
                         {
                             "id": "b7e927db-af28-4fdc-8eb7-edb02258ff5a",
-                            "idName": "rightKey",
-                            "name": "right key pressed"
+                            "name": "rightKey",
+                            "displayName": "right key pressed"
                         }
                     ]
                 }

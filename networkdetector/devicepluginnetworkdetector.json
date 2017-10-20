@@ -1,17 +1,17 @@
 {
-    "name": "Network Detector",
-    "idName": "NetworkDetector",
+    "name": "NetworkDetector",
+    "displayName": "Network Detector",
     "id": "8e0f791e-b273-4267-8605-b7c2f55a68ab",
     "vendors": [
         {
             "name": "guh",
-            "idName": "guh",
+            "displayName": "guh",
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "deviceClasses": [
                 {
                     "id": "bd216356-f1ec-4324-9785-6982d2174e17",
-                    "name": "Network Device",
-                    "idName": "network",
+                    "name": "networkDevice",
+                    "displayName": "Network Device",
                     "deviceIcon": "Network",
                     "basicTags": [
                         "Device",
@@ -22,15 +22,15 @@
                     "paramTypes": [
                         {
                             "id": "c6707093-3b51-469d-9fc0-f167bff2a987",
-                            "idName": "address",
                             "name": "address",
+                            "displayName": "address",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "18fd3b05-478a-49cf-b8ae-3c6a98675ccc",
-                            "idName": "macAddress",
-                            "name": "hardware address",
+                            "name": "macAddress",
+                            "displayName": "hardware address",
                             "type": "QString",
                             "inputType": "TextLine"
                         }
@@ -38,9 +38,9 @@
                     "stateTypes": [
                         {
                             "id": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
-                            "idName": "inRange",
-                            "name": "Device in network",
-                            "eventTypeName": "Device in network changed",
+                            "name": "inRange",
+                            "displayName": "Device in network",
+                            "displayNameEvent": "Device in network changed",
                             "type": "bool",
                             "defaultValue": false
                         }

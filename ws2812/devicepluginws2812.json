@@ -1,12 +1,12 @@
 {
-    "name": "WS2812",
-    "idName": "Ws2812",
+    "displayName": "WS2812",
+    "name": "Ws2812",
     "id": "60b68c75-3261-4bf1-8912-798d2d3bbd3b",
     "paramTypes": [
         {
             "id": "0a2898cb-ca36-4c6e-8418-993c1d9df434",
-            "idName": "rpl",
-            "name": "RPL address",
+            "name": "rpl",
+            "displayName": "RPL address",
             "type": "QString",
             "inputType": "TextLine",
             "defaultValue": "fdaa:e9b8:d03a::ff:fe00:1"
@@ -14,14 +14,14 @@
     ],
     "vendors": [
         {
+            "displayName": "guh",
             "name": "guh",
-            "idName": "guh",
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "deviceClasses": [
                 {
                     "id": "3142db46-5c6f-42d6-9001-753150763385",
-                    "name": "WS2812",
-                    "idName": "ws2812",
+                    "displayName": "WS2812",
+                    "name": "ws2812",
                     "createMethods": ["discovery"],
                     "interfaces": ["gateway"],
                     "basicTags": [
@@ -32,8 +32,8 @@
                     "paramTypes": [
                         {
                             "id": "ccf1f6b1-54c4-46c1-b978-6abcf3fad882",
-                            "idName": "host",
                             "name": "host",
+                            "displayName": "host",
                             "type": "QString",
                             "inputType": "TextLine"
                         }
@@ -41,27 +41,27 @@
                     "stateTypes": [
                         {
                             "id": "c9f6042f-1193-4075-94b1-37b29641ec24",
-                            "idName": "battery",
-                            "name": "battery voltage",
-                            "eventTypeName": "battery voltage changed",
+                            "name": "battery",
+                            "displayName": "battery voltage",
+                            "displayNameEvent": "battery voltage changed",
                             "type": "double",
                             "unit": "Volt",
                             "defaultValue": 0
                         },
                         {
                             "id": "08091cde-983d-42f7-bdd7-d89c312ccbed",
-                            "idName": "reachable",
                             "name": "reachable",
-                            "eventTypeName": "reachable changed",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "8a73c60a-1da9-4228-8dba-2ffccc6531a6",
-                            "idName": "effectColor",
-                            "name": "color",
-                            "eventTypeName": "color changed",
-                            "actionTypeName": "set color",
+                            "name": "effectColor",
+                            "displayName": "color",
+                            "displayNameEvent": "color changed",
+                            "displayNameAction": "set color",
                             "type": "QColor",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -71,10 +71,10 @@
                         },
                         {
                             "id": "01da8dbc-1ac8-4d18-bc17-fc4b4c591693",
-                            "idName": "brightness",
                             "name": "brightness",
-                            "eventTypeName": "brightness changed",
-                            "actionTypeName": "set brightness",
+                            "displayName": "brightness",
+                            "displayNameEvent": "brightness changed",
+                            "displayNameAction": "set brightness",
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0,
@@ -86,10 +86,10 @@
                         },
                         {
                             "id": "ac372b72-c2ae-4f0f-9fca-bd7cf654603a",
-                            "idName": "maxPix",
-                            "name": "leds",
-                            "eventTypeName": "leds changed",
-                            "actionTypeName": "set leds",
+                            "name": "maxPix",
+                            "displayName": "leds",
+                            "displayNameEvent": "leds changed",
+                            "displayNameAction": "set leds",
                             "type": "int",
                             "defaultValue": 240,
                             "minValue": 0,
@@ -100,10 +100,10 @@
                         },
                         {
                             "id": "e53ae524-ca10-49c5-b530-e414779ecc1d",
-                            "idName": "speed",
                             "name": "speed",
-                            "eventTypeName": "speed changed",
-                            "actionTypeName": "set speed",
+                            "displayName": "speed",
+                            "displayNameEvent": "speed changed",
+                            "displayNameAction": "set speed",
                             "type": "int",
                             "defaultValue": 60,
                             "minValue": 60,
@@ -114,10 +114,10 @@
                         },
                         {
                             "id": "f4fe5d31-1edb-4944-9ddb-c89e7da8bee7",
-                            "idName": "effectMode",
-                            "name": "effect mode",
-                            "eventTypeName": "effect mode changed",
-                            "actionTypeName": "set effect mode",
+                            "name": "effectMode",
+                            "displayName": "effect mode",
+                            "displayNameEvent": "effect mode changed",
+                            "displayNameAction": "set effect mode",
                             "type": "QString",
                             "writable": true,
                             "ruleRelevant": false,
@@ -138,10 +138,10 @@
                         },
                         {
                             "id": "8fe2e42a-7b9d-4c76-ae77-355759c81350",
-                            "name": "tricolore color 1",
-                            "eventTypeName": "tricolore color 1 changed",
-                            "actionTypeName": "set tricolore color 1",
-                            "idName": "tcolor1",
+                            "displayName": "tricolore color 1",
+                            "displayNameEvent": "tricolore color 1 changed",
+                            "displayNameAction": "set tricolore color 1",
+                            "name": "tcolor1",
                             "type": "QColor",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -151,10 +151,10 @@
                         },
                         {
                             "id": "dd4ad65b-007a-4eae-8ce0-b76d6cbf093e",
-                            "name": "tricolore color 2",
-                            "eventTypeName": "tricolore color 2 changed",
-                            "actionTypeName": "set tricolore color 2",
-                            "idName": "tcolor2",
+                            "displayName": "tricolore color 2",
+                            "displayNameEvent": "tricolore color 2 changed",
+                            "displayNameAction": "set tricolore color 2",
+                            "name": "tcolor2",
                             "type": "QColor",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
@@ -164,10 +164,10 @@
                         },
                         {
                             "id": "97c83be0-7ba7-4758-b52b-d997a80bfbe5",
-                            "name": "tricolore color 3",
-                            "eventTypeName": "tricolore color 3 changed",
-                            "actionTypeName": "set tricolore color 3",
-                            "idName": "tcolor3",
+                            "displayName": "tricolore color 3",
+                            "displayNameEvent": "tricolore color 3 changed",
+                            "displayNameAction": "set tricolore color 3",
+                            "name": "tcolor3",
                             "type": "QColor",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,

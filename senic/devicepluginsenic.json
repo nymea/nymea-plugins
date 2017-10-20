@@ -1,17 +1,17 @@
 {
-    "name": "Senic",
+    "displayName": "Senic",
     "id": "413e9d77-335f-4ecf-abbc-8f2a8a399c39",
-    "idName": "Senic",
+    "name": "Senic",
     "vendors": [
         {
-            "name": "Senic",
-            "idName": "senic",
+            "displayName": "Senic",
+            "name": "senic",
             "id": "8e6cae9c-706b-49e5-ae86-da52a20dd336",
             "deviceClasses": [
                 {
                     "id": "315ece51-053e-49f9-831f-b09f9f27fb9f",
-                    "idName": "nuimo",
-                    "name": "Nuimo",
+                    "name": "nuimo",
+                    "displayName": "Nuimo",
                     "deviceIcon": "Switch",
                     "basicTags": [
                         "Device",
@@ -21,15 +21,15 @@
                     "paramTypes": [
                         {
                             "id": "db67d1e6-26fa-44ed-ad55-c6aef45ea2ea",
-                            "idName": "name",
                             "name": "name",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "71553f6a-2ed4-4896-bb7b-52e7dca948b2",
-                            "idName": "mac",
-                            "name": "mac address",
+                            "name": "mac",
+                            "displayName": "mac address",
                             "type": "QString",
                             "inputType": "MacAddress"
                         }
@@ -37,41 +37,41 @@
                     "stateTypes": [
                         {
                             "id": "5286976a-f5dc-4662-872a-438ac5d491cb",
-                            "idName": "connected",
-                            "name": "Connected",
-                            "eventTypeName": "Connected changed",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "5c400da4-a14e-4e0a-be9f-c82ffe7e1972",
-                            "idName": "hardwareRevision",
-                            "name": "Hardware revision",
+                            "name": "hardwareRevision",
+                            "displayName": "Hardware revision",
                             "eventTypeName": "Hardware revision changed",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "edcf76c6-9fed-4c26-9853-c284cf887adb",
-                            "idName": "firmwareRevision",
-                            "name": "Firmware revision",
-                            "eventTypeName": "Firmware revision changed",
+                            "name": "firmwareRevision",
+                            "displayName": "Firmware revision",
+                            "displayNameEvent": "Firmware revision changed",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "be42cbd3-12e9-44ec-8f9d-141e10d9573a",
-                            "idName": "softwareRevision",
-                            "name": "Software revision",
-                            "eventTypeName": "Software revision changed",
+                            "name": "softwareRevision",
+                            "displayName": "Software revision",
+                            "displayNameEvent": "Software revision changed",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "b5ee2465-7fa1-450b-8073-f115537d3409",
-                            "idName": "battery",
                             "name": "battery",
-                            "eventTypeName": "battery changed",
+                            "displayName": "battery",
+                            "displayNameEvent": "battery changed",
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
@@ -80,9 +80,9 @@
                         },
                         {
                             "id": "69a5f495-5452-434b-8fb8-b73d992c5446",
-                            "idName": "rotation",
                             "name": "rotation",
-                            "eventTypeName": "rotation changed",
+                            "displayName": "rotation",
+                            "displayNameEvent": "rotation changed",
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
@@ -93,13 +93,13 @@
                     "actionTypes": [
                         {
                             "id": "d44ca5b7-f8d6-4413-9d2e-cef89282c039",
-                            "idName": "showLogo",
-                            "name": "Show logo",
+                            "name": "showLogo",
+                            "displayName": "Show logo",
                             "paramTypes": [
                                 {
                                     "id": "a8f72c37-9cb5-4885-a7e4-b2b396f8e4cd",
-                                    "idName": "logo",
                                     "name": "logo",
+                                    "displayName": "logo",
                                     "type": "QString",
                                     "defaultValue": "Guh",
                                     "allowedValues": [
@@ -114,28 +114,28 @@
                     "eventTypes": [
                         {
                             "id": "5b9e08e8-7a6c-4311-9db6-82547847708c",
-                            "idName": "clicked",
-                            "name": "clicked"
+                            "name": "clicked",
+                            "displayName": "clicked"
                         },
                         {
                             "id": "2be36aa0-e2fe-4192-81c5-cf0bb7f08dd4",
-                            "idName": "swipeLeft",
-                            "name": "Swipe left"
+                            "name": "swipeLeft",
+                            "displayName": "Swipe left"
                         },
                         {
                             "id": "81fb61ab-6d3d-4c1b-85fe-3dbd5c8dead7",
-                            "idName": "swipeRight",
-                            "name": "Swipe right"
+                            "name": "swipeRight",
+                            "displayName": "Swipe right"
                         },
                         {
                             "id": "ab5c575b-b265-491c-93ca-ad9212374bc1",
-                            "idName": "swipeUp",
-                            "name": "Swipe up"
+                            "name": "swipeUp",
+                            "displayName": "Swipe up"
                         },
                         {
                             "id": "4d97cf28-1030-4a30-bed5-411102dd4b9b",
-                            "idName": "swipeDown",
-                            "name": "Swipe down"
+                            "name": "swipeDown",
+                            "displayName": "Swipe down"
                         }
                     ]
                 }
