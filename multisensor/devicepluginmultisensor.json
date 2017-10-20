@@ -4,9 +4,9 @@
     "id": "23bf0d8d-df7d-4bee-80ee-f015c5a7f52e",
     "vendors": [
         {
-            "displayName": "Texas Instruments",
-            "name": "texas",
             "id": "2edf543e-dc2c-4693-bb0c-e76c0d305fad",
+            "name": "texasInstruments",
+            "displayName": "Texas Instruments",
             "deviceClasses": [
                 {
                     "displayName": "Sensor Tag",
