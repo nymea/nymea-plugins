@@ -13,7 +13,7 @@
                     "name": "kodi",
                     "displayName": "Kodi",
                     "deviceIcon": "Tv",
-                    "interfaces": ["mediacontroller"],
+                    "interfaces": ["mediacontroller", "extendedvolumecontroller"],
                     "basicTags": [
                         "Service",
                         "Multimedia",
