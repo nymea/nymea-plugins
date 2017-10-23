@@ -557,35 +557,55 @@ void DevicePluginPhilipsHue::onRemoteButtonEvent(const int &buttonCode)
 {
     HueRemote *remote = static_cast<HueRemote *>(sender());
 
+    Param param(hueRemoteButtonNameParamTypeId);
+    EventTypeId id;
+
     // TODO: Legacy events should be removed eventually
     switch (buttonCode) {
     case HueRemote::OnPressed:
         emitEvent(Event(hueRemoteOnPressedEventTypeId, m_remotes.value(remote)->id()));
+        param.setValue("ON");
+        id = hueRemotePressedEventTypeId;
         break;
     case HueRemote::OnLongPressed:
         emitEvent(Event(hueRemoteOnLongPressedEventTypeId, m_remotes.value(remote)->id()));
+        param.setValue("ON");
+        id = hueRemoteLongPressedEventTypeId;
         break;
     case HueRemote::DimUpPressed:
         emitEvent(Event(hueRemoteDimUpPressedEventTypeId, m_remotes.value(remote)->id()));
+        param.setValue("DIM UP");
+        id = hueRemotePressedEventTypeId;
         break;
     case HueRemote::DimUpLongPressed:
         emitEvent(Event(hueRemoteDimUpLongPressedEventTypeId, m_remotes.value(remote)->id()));
+        param.setValue("DIM UP");
+        id = hueRemoteLongPressedEventTypeId;
         break;
     case HueRemote::DimDownPressed:
         emitEvent(Event(hueRemoteDimDownPressedEventTypeId, m_remotes.value(remote)->id()));
+        param.setValue("DIM DOWN");
+        id = hueRemotePressedEventTypeId;
         break;
     case HueRemote::DimDownLongPressed:
         emitEvent(Event(hueRemoteDimDownLongPressedEventTypeId, m_remotes.value(remote)->id()));
+        param.setValue("DIM DOWN");
+        id = hueRemoteLongPressedEventTypeId;
         break;
     case HueRemote::OffPressed:
         emitEvent(Event(hueRemoteOffPressedEventTypeId, m_remotes.value(remote)->id()));
+        param.setValue("OFF");
+        id = hueRemotePressedEventTypeId;
         break;
     case HueRemote::OffLongPressed:
         emitEvent(Event(hueRemoteOffLongPressedEventTypeId, m_remotes.value(remote)->id()));
+        param.setValue("OFF");
+        id = hueRemoteLongPressedEventTypeId;
         break;
     default:
         break;
     }
+    emitEvent(Event(id, m_remotes.value(remote)->id(), ParamList() << param));
 }
 
 void DevicePluginPhilipsHue::onPluginTimer()
