@@ -449,6 +449,7 @@
                     "name": "hueRemote",
                     "displayName": "Hue Remote",
                     "deviceIcon": "Switch",
+                    "interfaces": ["longpressmultibutton"],
                     "basicTags": [
                         "Device",
                         "Sensor"
@@ -577,6 +578,34 @@
                             "id": "d69306eb-ea52-4841-9e26-89c69e9cf6fc",
                             "name": "offLongPressed",
                             "displayName": "off long pressed"
+                        },
+                        {
+                            "id": "8da28cf1-2457-451e-953e-2685f8daeda8",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "e4e3eb3a-a7c4-49e3-9344-0b3f213e0b42",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "possibleValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "2c64561b-2381-4769-8e21-0e206c84bbcc",
+                            "name": "longPressed",
+                            "displayName": "Button longpressed",
+                            "paramTypes": [
+                                {
+                                    "id": "e4e3eb3a-a7c4-49e3-9344-0b3f213e0b42",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "possibleValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
                         }
                     ]
                 }
