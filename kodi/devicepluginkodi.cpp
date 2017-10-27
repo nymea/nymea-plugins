@@ -104,9 +104,7 @@ DeviceManager::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
     connect(kodi, &Kodi::actionExecuted, this, &DevicePluginKodi::onActionExecuted);
     connect(kodi, &Kodi::versionDataReceived, this, &DevicePluginKodi::versionDataReceived);
     connect(kodi, &Kodi::updateDataReceived, this, &DevicePluginKodi::onSetupFinished);
-    connect(kodi, &Kodi::onPlayerPlay, this, &DevicePluginKodi::onPlayerPlay);
-    connect(kodi, &Kodi::onPlayerPause, this, &DevicePluginKodi::onPlayerPause);
-    connect(kodi, &Kodi::onPlayerStop, this, &DevicePluginKodi::onPlayerStop);
+    connect(kodi, &Kodi::playbackStatusChanged, this, &DevicePluginKodi::onPlaybackStatusChanged);
 
     m_kodis.insert(kodi, device);
     m_asyncSetups.append(kodi);
@@ -167,25 +165,25 @@ DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const
         } else if (action.actionTypeId() == kodiAudioLibraryActionTypeId) {
             kodi->audioLibrary(action.param(kodiAudioCommandParamTypeId).value().toString(), action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if(action.actionTypeId() == skipBackActionTypeId) {
+        } else if(action.actionTypeId() == kodiSkipBackActionTypeId) {
             kodi->pressButton("skipprevious", action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if(action.actionTypeId() == rewindActionTypeId) {
+        } else if(action.actionTypeId() == kodiRewindActionTypeId) {
             kodi->pressButton("rewind", action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if(action.actionTypeId() == stopActionTypeId) {
+        } else if(action.actionTypeId() == kodiStopActionTypeId) {
             kodi->pressButton("stop", action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if(action.actionTypeId() == playActionTypeId) {
+        } else if(action.actionTypeId() == kodiPlayActionTypeId) {
             kodi->pressButton("play", action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if(action.actionTypeId() == pauseActionTypeId) {
+        } else if(action.actionTypeId() == kodiPauseActionTypeId) {
             kodi->pressButton("pause", action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if(action.actionTypeId() == fastForwardActionTypeId) {
+        } else if(action.actionTypeId() == kodiFastForwardActionTypeId) {
             kodi->pressButton("fastforward", action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if(action.actionTypeId() == skipNextActionTypeId) {
+        } else if(action.actionTypeId() == kodiSkipNextActionTypeId) {
             kodi->pressButton("skipnext", action.id());
             return DeviceManager::DeviceErrorAsync;
         } else {
@@ -309,24 +307,18 @@ void DevicePluginKodi::onSetupFinished(const QVariantMap &data)
     kodi->showNotification("Connected", 2000, "info", ActionId());
 }
 
-void DevicePluginKodi::onPlayerPlay()
+void DevicePluginKodi::onPlaybackStatusChanged(const QString &playbackStatus)
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
     Device *device = m_kodis.value(kodi);
-    emit emitEvent(Event(kodiOnPlayerPlayEventTypeId, device->id()));
-}
-
-void DevicePluginKodi::onPlayerPause()
-{
-    Kodi *kodi = static_cast<Kodi *>(sender());
-    Device *device = m_kodis.value(kodi);
-    emit emitEvent(Event(kodiOnPlayerPauseEventTypeId, device->id()));
-}
-
-void DevicePluginKodi::onPlayerStop()
-{
-    Kodi *kodi = static_cast<Kodi *>(sender());
-    Device *device = m_kodis.value(kodi);
-    emit emitEvent(Event(kodiOnPlayerStopEventTypeId, device->id()));
+    device->setStateValue(kodiPlaybackStatusStateTypeId, playbackStatus);
+    // legacy events
+    if (playbackStatus == "PLAYING") {
+        emit emitEvent(Event(kodiOnPlayerPlayEventTypeId, device->id()));
+    } else if (playbackStatus == "PAUSED") {
+        emit emitEvent(Event(kodiOnPlayerPauseEventTypeId, device->id()));
+    } else {
+        emit emitEvent(Event(kodiOnPlayerStopEventTypeId, device->id()));
+    }
 }
 

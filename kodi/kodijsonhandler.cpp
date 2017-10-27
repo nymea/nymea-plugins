@@ -51,17 +51,17 @@ void KodiJsonHandler::sendData(const QString &method, const QVariantMap &params,
 
 void KodiJsonHandler::processNotification(const QString &method, const QVariantMap &params)
 {
-    //qCDebug(dcKodi) << "got notification" << method;
+    qCDebug(dcKodi) << "got notification" << method;
 
     if (method == "Application.OnVolumeChanged") {
         QVariantMap data = params.value("data").toMap();
         emit volumeChanged(data.value("volume").toInt(), data.value("muted").toBool());
     } else if (method == "Player.OnPlay") {
-        emit onPlayerPlay();
+        emit playbackStatusChanged("PLAYING");
     } else if (method == "Player.OnPause") {
-        emit onPlayerPause();
+        emit playbackStatusChanged("PAUSED");
     } else if (method == "Player.OnStop") {
-        emit onPlayerStop();
+        emit playbackStatusChanged("STOPPED");
     }
 }
 
@@ -81,17 +81,34 @@ void KodiJsonHandler::processRequestResponse(const KodiReply &reply, const QVari
     if (response.contains("error")) {
         //qCDebug(dcKodi) << QJsonDocument::fromVariant(response).toJson();
         qCWarning(dcKodi) << "got error response for request " << reply.method() << ":" << response.value("error").toMap().value("message").toString();
+        return;
     }
 
     if (reply.method() == "Application.GetProperties") {
         //qCDebug(dcKodi) << "got update response" << reply.method();
         emit updateDataReceived(response.value("result").toMap());
+        return;
     }
 
     if (reply.method() == "JSONRPC.Version") {
         qCDebug(dcKodi) << "got version response" << reply.method();
         emit versionDataReceived(response.value("result").toMap());
+        return;
     }
+
+    if (reply.method() == "Player.GetActivePlayers") {
+        qCDebug(dcKodi) << "Active players changed" << response;
+        emit activePlayersChanged(response.value("result").toList());
+        return;
+    }
+
+    if (reply.method() == "Player.GetProperties") {
+        qCDebug(dcKodi) << "Player properties received" << response;
+        emit playerPropertiesReveived(response.value("result").toMap());
+        return;
+    }
+
+    qCDebug(dcKodi()) << "unhandled reply" << reply.method() << response;
 }
 
 void KodiJsonHandler::processResponse(const QByteArray &data)

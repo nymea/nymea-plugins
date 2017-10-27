@@ -66,6 +66,7 @@ private:
     KodiJsonHandler *m_jsonHandler;
     bool m_muted;
     int m_volume;
+    int m_activePlayerCount = 0; // if it's > 0, there is something playing (either music or video or slideshow)
 
 signals:
     void connectionStatusChanged();
@@ -73,16 +74,13 @@ signals:
     void actionExecuted(const ActionId &actionId, const bool &success);
     void updateDataReceived(const QVariantMap &data);
     void versionDataReceived(const QVariantMap &data);
-
-    void onPlayerPlay();
-    void onPlayerPause();
-    void onPlayerStop();
+    void playbackStatusChanged(const QString &playbackState);
 
 private slots:
     void onVolumeChanged(const int &volume, const bool &muted);
     void onUpdateFinished(const QVariantMap &data);
-
-
+    void activePlayersChanged(const QVariantList &data);
+    void playerPropertiesReceived(const QVariantMap &properties);
 };
 
 #endif // KODI_H
