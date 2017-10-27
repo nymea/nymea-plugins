@@ -21,6 +21,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "kodi.h"
+#include <QDebug>
+#include "extern-plugininfo.h"
 
 Kodi::Kodi(const QHostAddress &hostAddress, const int &port, QObject *parent) :
     QObject(parent),
@@ -36,9 +38,9 @@ Kodi::Kodi(const QHostAddress &hostAddress, const int &port, QObject *parent) :
     connect(m_jsonHandler, &KodiJsonHandler::versionDataReceived, this, &Kodi::versionDataReceived);
     connect(m_jsonHandler, &KodiJsonHandler::updateDataReceived, this, &Kodi::updateDataReceived);
     connect(m_jsonHandler, &KodiJsonHandler::updateDataReceived, this, &Kodi::onUpdateFinished);
-    connect(m_jsonHandler, &KodiJsonHandler::onPlayerPlay, this, &Kodi::onPlayerPlay);
-    connect(m_jsonHandler, &KodiJsonHandler::onPlayerPause, this, &Kodi::onPlayerPause);
-    connect(m_jsonHandler, &KodiJsonHandler::onPlayerStop, this, &Kodi::onPlayerStop);
+    connect(m_jsonHandler, &KodiJsonHandler::playbackStatusChanged, this, &Kodi::playbackStatusChanged);
+    connect(m_jsonHandler, &KodiJsonHandler::activePlayersChanged, this, &Kodi::activePlayersChanged);
+    connect(m_jsonHandler, &KodiJsonHandler::playerPropertiesReveived, this, &Kodi::playerPropertiesReceived);
 }
 
 QHostAddress Kodi::hostAddress() const
@@ -157,6 +159,9 @@ void Kodi::update()
     params.insert("properties", properties);
 
     m_jsonHandler->sendData("Application.GetProperties", params, ActionId());
+
+    params.clear();
+    m_jsonHandler->sendData("Player.GetActivePlayers", params, ActionId());
 }
 
 void Kodi::checkVersion()
@@ -185,6 +190,7 @@ void Kodi::onVolumeChanged(const int &volume, const bool &muted)
 
 void Kodi::onUpdateFinished(const QVariantMap &data)
 {
+    qCDebug(dcKodi()) << "update finished:" << data;
     if (data.contains("volume")) {
         m_volume = data.value("volume").toInt();
     }
@@ -192,4 +198,33 @@ void Kodi::onUpdateFinished(const QVariantMap &data)
         m_muted = data.value("muted").toBool();
     }
     emit stateChanged();
+}
+
+void Kodi::activePlayersChanged(const QVariantList &data)
+{
+    qCDebug(dcKodi()) << "active players changed" << data.count();
+    m_activePlayerCount = data.count();
+    if (m_activePlayerCount == 0) {
+        emit playbackStatusChanged("STOPPED");
+        return;
+    }
+    int activePlayer = data.first().toMap().value("playerid").toInt();
+    QVariantMap params;
+    params.insert("playerid", activePlayer);
+    QVariantList properties;
+    properties.append("speed");
+    params.insert("properties", properties);
+    m_jsonHandler->sendData("Player.GetProperties", params, ActionId());
+}
+
+void Kodi::playerPropertiesReceived(const QVariantMap &properties)
+{
+    qCDebug(dcKodi()) << "player props received" << properties;
+    if (m_activePlayerCount > 0) {
+        if (properties.value("speed").toDouble() > 0) {
+            emit playbackStatusChanged("PLAYING");
+        } else {
+            emit playbackStatusChanged("PAUSED");
+        }
+    }
 }

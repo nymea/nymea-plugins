@@ -61,9 +61,7 @@ private slots:
     void versionDataReceived(const QVariantMap &data);
     void onSetupFinished(const QVariantMap &data);
 
-    void onPlayerPlay();
-    void onPlayerPause();
-    void onPlayerStop();
+    void onPlaybackStatusChanged(const QString &playbackStatus);
 };
 
 #endif // DEVICEPLUGINKODI_H

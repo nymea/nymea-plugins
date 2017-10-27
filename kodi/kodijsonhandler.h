@@ -53,10 +53,10 @@ signals:
     void actionExecuted(const ActionId &actionId, const bool &success);
     void updateDataReceived(const QVariantMap &data);
     void versionDataReceived(const QVariantMap &data);
+    void activePlayersChanged(const QVariantList &data);
+    void playerPropertiesReveived(const QVariantMap &properties);
 
-    void onPlayerPlay();
-    void onPlayerPause();
-    void onPlayerStop();
+    void playbackStatusChanged(const QString &playbackStatus);
 
 private slots:
     void processResponse(const QByteArray &data);
