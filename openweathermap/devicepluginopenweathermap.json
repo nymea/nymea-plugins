@@ -64,6 +64,15 @@
                     ],
                     "stateTypes": [
                         {
+                            "id": "f16891f3-1174-44f6-a940-cffc8b64bdc1",
+                            "name": "weatherCondition",
+                            "displayName": "weather condition",
+                            "displayNameEvent": "weather condition changed",
+                            "type": "QString",
+                            "possibleValues": ["clear-day", "clear-night", "few-clouds-day", "few-clouds-night", "clouds", "overcast", "light-rain", "shower-rain", "thunderstorm", "snow", "fog"],
+                            "defaultValue": "clear-day"
+                        },
+                        {
                             "id": "36b2f09b-7d77-4fbc-a68f-23d735dda0b1",
                             "name": "updateTime",
                             "displayName": "last update",

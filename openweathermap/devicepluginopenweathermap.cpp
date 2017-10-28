@@ -351,6 +351,7 @@ void DevicePluginOpenweathermap::processWeatherData(const QByteArray &data, Devi
     }
 
     if (dataMap.contains("main")) {
+
         double temperatur = dataMap.value("main").toMap().value("temp").toDouble();
         double temperaturMax = dataMap.value("main").toMap().value("temp_max").toDouble();
         double temperaturMin = dataMap.value("main").toMap().value("temp_min").toDouble();
@@ -378,7 +379,37 @@ void DevicePluginOpenweathermap::processWeatherData(const QByteArray &data, Devi
     }
 
     // http://openweathermap.org/weather-conditions
-    if (dataMap.contains("weather")) {
+    if (dataMap.contains("weather") && dataMap.value("weather").toList().count() > 0) {
+        int conditionId = dataMap.value("weather").toList().first().toMap().value("id").toInt();
+        if (conditionId == 800) {
+            if (device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > device->stateValue(openweathermapSunriseStateTypeId).toInt() &&
+                device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < device->stateValue(openweathermapSunsetStateTypeId).toInt()) {
+                device->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-day");
+            } else {
+                device->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-night");
+            }
+        } else if (conditionId == 801) {
+            if (device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > device->stateValue(openweathermapSunriseStateTypeId).toInt() &&
+                device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < device->stateValue(openweathermapSunsetStateTypeId).toInt()) {
+                device->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-day");
+            } else {
+                device->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-night");
+            }
+        } else if (conditionId == 802) {
+            device->setStateValue(openweathermapWeatherConditionStateTypeId, "clouds");
+        } else if (conditionId >= 803 && conditionId < 900) {
+            device->setStateValue(openweathermapWeatherConditionStateTypeId, "overcast");
+        } else if (conditionId >= 300 && conditionId < 400) {
+            device->setStateValue(openweathermapWeatherConditionStateTypeId, "light-rain");
+        } else if (conditionId >= 500 && conditionId < 600) {
+            device->setStateValue(openweathermapWeatherConditionStateTypeId, "shower-rain");
+        } else if (conditionId >= 200 && conditionId < 300) {
+            device->setStateValue(openweathermapWeatherConditionStateTypeId, "thunderstorm");
+        } else if (conditionId >= 600 && conditionId < 700) {
+            device->setStateValue(openweathermapWeatherConditionStateTypeId, "snow");
+        } else if (conditionId >= 700 && conditionId < 800) {
+            device->setStateValue(openweathermapWeatherConditionStateTypeId, "fog");
+        }
         QString description = dataMap.value("weather").toList().first().toMap().value("description").toString();
         device->setStateValue(openweathermapWeatherDescriptionStateTypeId, description);
     }
