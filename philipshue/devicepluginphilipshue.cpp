@@ -98,7 +98,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
                 device->setParamValue(hueBridgeBridgeIdParamTypeId, b->id());
                 device->setParamValue(hueBridgeBridgeMacParamTypeId, b->macAddress());
                 m_bridges.insert(b, device);
-                device->setStateValue(hueBridgeBridgeReachableStateTypeId, true);
+                device->setStateValue(hueBridgeConnectedStateTypeId, true);
                 discoverBridgeDevices(b);
                 return DeviceManager::DeviceSetupStatusSuccess;
             }
@@ -326,7 +326,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (device->stateValue(hueBridgeBridgeReachableStateTypeId).toBool()) {
+            if (device->stateValue(hueBridgeConnectedStateTypeId).toBool()) {
                 qCWarning(dcPhilipsHue) << "Refresh Hue Bridge request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
@@ -352,7 +352,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (device->stateValue(hueLightReachableStateTypeId).toBool()) {
+            if (device->stateValue(hueLightConnectedStateTypeId).toBool()) {
                 qCWarning(dcPhilipsHue) << "Refresh Hue lights request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
@@ -366,7 +366,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (device->stateValue(hueRemoteHueReachableStateTypeId).toBool()) {
+            if (device->stateValue(hueRemoteConnectedStateTypeId).toBool()) {
                 qCWarning(dcPhilipsHue) << "Refresh Hue sensors request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
@@ -489,7 +489,7 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
 
     if (device->deviceClassId() == hueBridgeDeviceClassId) {
         HueBridge *bridge = m_bridges.key(device);
-        if (!device->stateValue(hueBridgeBridgeReachableStateTypeId).toBool()) {
+        if (!device->stateValue(hueBridgeConnectedStateTypeId).toBool()) {
             qCWarning(dcPhilipsHue) << "Bridge" << bridge->hostAddress().toString() << "not reachable";
             return DeviceManager::DeviceErrorHardwareNotAvailable;
         }
@@ -526,14 +526,14 @@ void DevicePluginPhilipsHue::lightStateChanged()
     }
 
     if (device->deviceClassId() == hueLightDeviceClassId) {
-        device->setStateValue(hueLightReachableStateTypeId, light->reachable());
+        device->setStateValue(hueLightConnectedStateTypeId, light->reachable());
         device->setStateValue(hueLightColorStateTypeId, QVariant::fromValue(light->color()));
         device->setStateValue(hueLightPowerStateTypeId, light->power());
         device->setStateValue(hueLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
         device->setStateValue(hueLightColorTemperatureStateTypeId, light->ct());
         device->setStateValue(hueLightHueEffectStateTypeId, light->effect());
     } else if (device->deviceClassId() == hueWhiteLightDeviceClassId) {
-        device->setStateValue(hueWhiteLightHueReachableStateTypeId, light->reachable());
+        device->setStateValue(hueWhiteLightConnectedStateTypeId, light->reachable());
         device->setStateValue(hueWhiteLightPowerStateTypeId, light->power());
         device->setStateValue(hueWhiteLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
     }
@@ -549,7 +549,7 @@ void DevicePluginPhilipsHue::remoteStateChanged()
         return;
     }
 
-    device->setStateValue(hueRemoteHueReachableStateTypeId, remote->reachable());
+    device->setStateValue(hueRemoteConnectedStateTypeId, remote->reachable());
     device->setStateValue(hueRemoteBatteryStateTypeId, remote->battery());
 }
 
@@ -1204,19 +1204,19 @@ void DevicePluginPhilipsHue::processActionResponse(Device *device, const ActionI
 void DevicePluginPhilipsHue::bridgeReachableChanged(Device *device, const bool &reachable)
 {
     if (reachable) {
-        device->setStateValue(hueBridgeBridgeReachableStateTypeId, true);
+        device->setStateValue(hueBridgeConnectedStateTypeId, true);
     } else {
         // mark bridge and corresponding hue devices unreachable
         if (device->deviceClassId() == hueBridgeDeviceClassId) {
-            device->setStateValue(hueBridgeBridgeReachableStateTypeId, false);
+            device->setStateValue(hueBridgeConnectedStateTypeId, false);
 
             foreach (HueLight *light, m_lights.keys()) {
                 if (light->bridgeId() == device->id()) {
                     light->setReachable(false);
                     if (m_lights.value(light)->deviceClassId() == hueLightDeviceClassId) {
-                        m_lights.value(light)->setStateValue(hueLightReachableStateTypeId, false);
+                        m_lights.value(light)->setStateValue(hueLightConnectedStateTypeId, false);
                     } else if (m_lights.value(light)->deviceClassId() == hueWhiteLightDeviceClassId) {
-                        m_lights.value(light)->setStateValue(hueWhiteLightHueReachableStateTypeId, false);
+                        m_lights.value(light)->setStateValue(hueWhiteLightConnectedStateTypeId, false);
                     }
                 }
             }
@@ -1224,7 +1224,7 @@ void DevicePluginPhilipsHue::bridgeReachableChanged(Device *device, const bool &
             foreach (HueRemote *remote, m_remotes.keys()) {
                 if (remote->bridgeId() == device->id()) {
                     remote->setReachable(false);
-                    m_remotes.value(remote)->setStateValue(hueRemoteHueReachableStateTypeId, false);
+                    m_remotes.value(remote)->setStateValue(hueRemoteConnectedStateTypeId, false);
                 }
             }
         }
