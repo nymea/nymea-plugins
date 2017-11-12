@@ -1,0 +1,634 @@
+{
+    "name": "Simulation",
+    "idName": "Simulation",
+    "id": "b7368429-e312-4c82-9eab-e1cd996e43d6",
+    "vendors": [
+        {
+            "name": "Simulated Devices",
+            "idName": "simulation",
+            "id": "fd2ae067-2c3d-4332-9c4b-ee0af653bcaf",
+            "deviceClasses": [
+                {
+                    "id": "73bb670b-e7a3-40da-bd6f-3260f017ec80",
+                    "idName": "simpleButton",
+                    "name": "Simple Button",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Switch",
+                    "basicTags": [
+                        "Device"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "64c4ced5-9a1a-4858-81dd-1b5c94dba495",
+                            "idName": "pressSimpleButton",
+                            "name": "press the button"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "f9652210-9aed-4f38-8c19-2fd54f703fbe",
+                            "idName": "simpleButtonPressed",
+                            "name": "button pressed"
+                        }
+                    ]
+                },
+                {
+                    "id": "910b2f58-70dc-4da3-89ae-9e7393290ccb",
+                    "idName": "alternativePowerButton",
+                    "name": "Power Button",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Switch",
+                    "basicTags": [
+                        "Device"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "fa63c0b9-10e5-4280-9cc2-243bf27c05ad",
+                            "idName": "alternativePower",
+                            "name": "power",
+                            "type": "bool",
+                            "eventTypeName": "power changed",
+                            "actionTypeName": "set power",
+                            "defaultValue": false,
+                            "index" : 0,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "77c6ccff-84e8-4983-b69e-5e1a3f4723f2",
+                    "idName": "temperatureSensor",
+                    "name": "Temperature Sensor",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Thermometer",
+                    "criticalStateTypeId": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                    "primaryStateTypeId": "169d7a2a-d1c9-4578-bb30-fc7d25690e59",
+                    "basicTags": [
+                        "Device",
+                        "Sensor"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "169d7a2a-d1c9-4578-bb30-fc7d25690e59",
+                            "idName": "temperature",
+                            "name": "temperature",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "eventTypeName": "temperature changed",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "10c735fd-7b81-484a-a148-76ea0da840f0",
+                            "idName": "humidity",
+                            "name": "humidity",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "eventTypeName": "humidity changed",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "45c0de32-b519-47d7-9f82-e5f09d1542d4",
+                            "idName": "battery",
+                            "name": "battery",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "eventTypeName": "battery changed",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "eventTypeName": "reachable changed",
+                            "defaultValue": true
+                        }
+                    ]
+                },
+                {
+                    "id": "990fc2ba-260a-4648-9a93-e803e219da4f",
+                    "idName": "motionDetector",
+                    "name": "Motion Detector",
+                    "createMethods": ["user"],
+                    "deviceIcon": "MotionDetectors",
+                    "basicTags": [
+                        "Device",
+                        "Sensor"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5ab00bfc-7345-44a2-90d4-852c810e59ec",
+                            "idName": "active",
+                            "name": "active",
+                            "type": "bool",
+                            "eventTypeName": "motion detected",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "45c0de32-b519-47d7-9f82-e5f09d1542d4",
+                            "idName": "battery",
+                            "name": "battery",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "eventTypeName": "battery changed",
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "eventTypeName": "reachable changed",
+                            "defaultValue": true
+                        }
+                    ]
+                },
+                {
+                    "id": "62e302f4-b92a-4b55-bd18-a1e0cc56362a",
+                    "idName": "heating",
+                    "name": "Heating",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Radiator",
+                    "basicTags": [
+                        "Device",
+                        "Actuator"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e1910c53-a6bc-434b-9caa-0d08e214c122",
+                            "idName": "power",
+                            "name": "power",
+                            "type": "bool",
+                            "eventTypeName": "power changed",
+                            "actionTypeName": "change power",
+                            "defaultValue": 0,
+                            "writable": true
+                        },
+                        {
+                            "id": "47a16375-1027-42cc-82d3-56cbfdb1193c",
+                            "idName": "heatingActive",
+                            "name": "active",
+                            "type": "bool",
+                            "eventTypeName": "active status changed",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8256a670-85c5-4043-9133-05518812848c",
+                            "idName": "targetTemperature",
+                            "name": "target",
+                            "type": "int",
+                            "unit": "DegreeCelsius",
+                            "eventTypeName": "target temperature changed",
+                            "actionTypeName": "change target temperature",
+                            "defaultValue": 0,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "1fa40afa-6a07-4a97-918b-76e3944ea0fb",
+                    "idName": "evCharger",
+                    "name": "EV Charging Station",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Energy",
+                    "basicTags": [
+                        "Device",
+                        "Actuator"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b786029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "evPower",
+                            "name": "power",
+                            "type": "bool",
+                            "eventTypeName": "power changed",
+                            "actionTypeName": "change power",
+                            "defaultValue": 0,
+                            "writable": true
+                        },
+                        {
+                            "id": "87600986-da37-4032-af37-015995910368",
+                            "idName": "evCurrent",
+                            "name": "current",
+                            "type": "int",
+                            "unit": "Ampere",
+                            "minValue": 6,
+                            "maxValue": 64,
+                            "eventTypeName": "target temperature changed",
+                            "actionTypeName": "change target temperature",
+                            "defaultValue": 6,
+                            "writable": true
+                        },
+                        {
+                            "id": "9d3f56e1-bb73-4efd-814c-50477c609c17",
+                            "idName": "evCharging",
+                            "name": "charging",
+                            "type": "bool",
+                            "eventTypeName": "charging status changed",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "cfb44bcf-b4b9-4bef-89f7-3a55baf35668",
+                    "idName": "garageDoor",
+                    "name": "Garage Door",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Garage",
+                    "basicTags": [
+                        "Device",
+                        "Actuator"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f786029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "door",
+                            "name": "door",
+                            "type": "bool",
+                            "eventTypeName": "door status changed",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "1786029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "garageOpen",
+                            "name": "open",
+                            "type": "bool",
+                            "eventTypeName": "door opening"
+                        },
+                        {
+                            "id": "2786029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "garageStop",
+                            "name": "stop",
+                            "type": "bool",
+                            "eventTypeName": "door stopping"
+                        },
+                        {
+                            "id": "3786029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "garageClose",
+                            "name": "close",
+                            "type": "bool",
+                            "eventTypeName": "door closing"
+                        }
+                    ]
+                },
+                {
+                    "id": "1039b7ee-5351-400b-a477-5b8fc1447138",
+                    "idName": "rollerShutter",
+                    "name": "Roller Shutter",
+                    "createMethods": ["user"],
+                    "deviceIcon": "RollerShutter",
+                    "basicTags": [
+                        "Device",
+                        "Actuator",
+                        "Shading"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1386029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "shutterStatus",
+                            "name": "status",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "eventTypeName": "shutter status changed",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "17860291-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "shutterOpen",
+                            "name": "open",
+                            "type": "bool",
+                            "eventTypeName": "shutter opening"
+                        },
+                        {
+                            "id": "27860292-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "shutterStop",
+                            "name": "stop",
+                            "type": "bool",
+                            "eventTypeName": "shutter stopping"
+                        },
+                        {
+                            "id": "37860293-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "shutterClose",
+                            "name": "close",
+                            "type": "bool",
+                            "eventTypeName": "shutter closing"
+                        }
+                    ]
+                },
+                {
+                    "id": "1039b7ee-5121-400b-a477-5b8fc14471ff",
+                    "idName": "rgbBulb",
+                    "name": "Color Bulb",
+                    "createMethods": ["user"],
+                    "deviceIcon": "LightBulb",
+                    "basicTags": [
+                        "Device",
+                        "Actuator"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9faaffe5-6a76-47d2-a14a-550f60390245",
+                            "idName": "bulbPower",
+                            "name": "power",
+                            "eventTypeName": "power changed",
+                            "actionTypeName": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "cff4206f-f219-4f06-93c4-4ca515a56f79",
+                            "idName": "bulbTemperature",
+                            "name": "color temperature",
+                            "eventTypeName": "color temperature changed",
+                            "actionTypeName": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "ruleRelevant": false,
+                            "eventRuleRelevant": false,
+                            "minValue": 153,
+                            "maxValue": 500,
+                            "writable": true
+                        },
+                        {
+                            "id": "df5423f1-b924-4b20-80b6-77eecc65d089",
+                            "idName": "bulbColor",
+                            "name": "color",
+                            "eventTypeName": "color changed",
+                            "actionTypeName": "Set color",
+                            "type": "QColor",
+                            "ruleRelevant": false,
+                            "eventRuleRelevant": false,
+                            "defaultValue": "#000000",
+                            "writable": true
+
+                        },
+                        {
+                            "id": "90e91f11-a208-468c-a5a2-7f47e08229e2",
+                            "idName": "bulbBrightness",
+                            "name": "brightness",
+                            "eventTypeName": "brightness changed",
+                            "actionTypeName": "Set brigtness",
+                            "type": "int",
+                            "ruleRelevant": false,
+                            "eventRuleRelevant": false,
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "1039b7ee-5351-400b-a477-5b8fc14471ff",
+                    "idName": "socket",
+                    "name": "Socket",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Socket",
+                    "basicTags": [
+                        "Device",
+                        "Actuator"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b7ff029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "idName": "socketPower",
+                            "name": "power",
+                            "type": "bool",
+                            "eventTypeName": "power changed",
+                            "actionTypeName": "change power",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "45906fb3-9bf5-4331-9b69-0a0407b8511e",
+                    "idName": "fingerPrintSensor",
+                    "name": "Finger Print Sensor",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Network",
+                    "basicTags": [
+                        "Device",
+                        "Sensor"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "eventTypeName": "reachable changed",
+                            "defaultValue": true
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "1d2dde79-7121-4f8c-b7c1-904ced66a79e",
+                            "idName": "accessGranted",
+                            "name": "access granted"
+                        },
+                        {
+                            "id": "992b7742-af0c-447c-bd94-9ec70b872268",
+                            "idName": "accessDenied",
+                            "name": "access denied"
+                        }
+                    ]
+                },
+                {
+                    "id": "c242f229-d3f4-4d3d-854c-817b52aa18ab",
+                    "idName": "smartMeter",
+                    "name": "Smart Meter",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Energy",
+                    "basicTags": [
+                        "Device"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "eventTypeName": "reachable changed",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "d57f4d9c-759e-40eb-999e-a1acbc8df2b1",
+                            "idName": "powerSmartMeter",
+                            "name": "Power",
+                            "type": "double",
+                            "unit": "KiloWatt",
+                            "eventTypeName": "power consumption changed",
+                            "eventRuleRelevant": false,
+                            "defaultValue": 3.70
+                        },
+                        {
+                            "id": "5ac91819-c855-441c-a734-ee5cc0514822",
+                            "idName": "energyTodaySmartMeter",
+                            "name": "Energy Today",
+                            "type": "double",
+                            "unit": "KiloWatt",
+                            "eventTypeName": "today's energy production changed",
+                            "ruleRelevant": false,
+                            "eventRuleRelevant": false,
+                            "defaultValue": 13.45
+                        }
+                    ]
+                },
+                {
+                    "id": "280c481e-757a-4af7-b1d3-dc9cfc1d46a5",
+                    "idName": "battery",
+                    "name": "Battery",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Battery",
+                    "basicTags": [
+                        "Device"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "eventTypeName": "reachable changed",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "30fd9fd9-1a6b-4698-93ac-6b2a1ba18500",
+                            "idName": "batteryStatus",
+                            "name": "Battery Status",
+                            "eventTypeName": "battery status changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 91,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "c977e60a-e820-4647-addb-cf0b39732ffb",
+                            "idName": "chargingBattery",
+                            "name": "Charging",
+                            "type": "double",
+                            "unit": "KiloWatt",
+                            "eventTypeName": "charging amount changed",
+                            "eventRuleRelevant": false,
+                            "defaultValue": 0.70
+                        },
+                        {
+                            "id": "bdf328a6-eebc-4b67-8165-551bc21e9be6",
+                            "idName": "maxCharging",
+                            "name": "Max Charging Power",
+                            "eventTypeName": "max charging power changed",
+                            "actionTypeName": "Set max charging power",
+                            "type": "int",
+                            "unit": "Watt",
+                            "defaultValue": 700,
+                            "minValue": 0,
+                            "maxValue": 2000,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "b2565887-443a-45ae-a2e7-67fb1b1003d8",
+                    "idName": "heatingRod",
+                    "name": "Heating Rod",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Thermometer",
+                    "basicTags": [
+                        "Device"
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "idName": "reachable",
+                            "name": "reachable",
+                            "type": "bool",
+                            "eventTypeName": "reachable changed",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "e1910c53-a6bc-434b-9caa-0d08e214c122",
+                            "idName": "power",
+                            "name": "power",
+                            "type": "bool",
+                            "eventTypeName": "power changed",
+                            "actionTypeName": "power",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "2ab2a0fa-ea66-426c-ba22-d23b42c80883",
+                            "idName": "maxPower",
+                            "name": "Max Power",
+                            "eventTypeName": "max power changed",
+                            "actionTypeName": "Set max power",
+                            "type": "int",
+                            "unit": "Watt",
+                            "defaultValue": 2000,
+                            "minValue": 0,
+                            "maxValue": 2000,
+                            "writable": true
+                        },
+                        {
+                            "id": "49388b11-8076-4698-8091-5c5f5762fd08",
+                            "idName": "waterTemperature",
+                            "name": "target water temperature",
+                            "type": "int",
+                            "unit": "DegreeCelsius",
+                            "eventTypeName": "target water temperature changed",
+                            "actionTypeName": "change target water temperature",
+                            "minValue": 0,
+                            "maxValue": 80,
+                            "defaultValue": 65,
+                            "writable": true
+                        },
+                        {
+                            "id": "47a16375-1027-42cc-82d3-56cbfdb1193c",
+                            "idName": "heatingActive",
+                            "name": "active",
+                            "type": "bool",
+                            "eventTypeName": "active status changed",
+                            "defaultValue": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
