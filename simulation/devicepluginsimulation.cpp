@@ -21,30 +21,18 @@
 #include "devicepluginsimulation.h"
 #include "plugininfo.h"
 
-// Note: You can find the tutorial for this code here -> http://dev.guh.guru/write-plugins.html
 
-/* The constructor of this device plugin. */
 DevicePluginSimulation::DevicePluginSimulation()
 {
 }
 
-/* This method will be called from the devicemanager to get
- * information about this plugin which device resource will be needed.
- *
- * For multiple resources use the OR operator:
- * Example:
- *
- *  return DeviceManager::HardwareResourceTimer | DeviceManager::HardwareResourceNetworkManager;
- */
+
 DeviceManager::HardwareResources DevicePluginSimulation::requiredHardware() const
 {
     return DeviceManager::HardwareResourceTimer;
 }
 
-/* This method will be called from the devicemanager while he
- * is setting up a new device. Here the developer has the chance to
- * perform the setup on the actual device and report the result.
- */
+
 DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *device)
 {
     Q_UNUSED(device)
@@ -53,9 +41,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *dev
     return DeviceManager::DeviceSetupStatusSuccess;
 }
 
-/* This method will be called whenever a client or the RuleEngine want's to execute
- * an action on the given device.
- */
+
 DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device, const Action &action)
 {
 
