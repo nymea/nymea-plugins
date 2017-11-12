@@ -32,6 +32,7 @@ PLUGIN_DIRS = \
     avahimonitor        \
     gpio                \
     snapd               \
+    simulation          \
 
 
 CONFIG+=all
