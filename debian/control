@@ -462,6 +462,20 @@ Description: nymea.io plugin for TCP commander
  .
  This package will install the nymea.io plugin for TCP commander
 
+Package: guh-plugin-httpcommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         guh-plugins-translations,
+Description: guh.io plugin for HTTP commander
+ The guh daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the guh.io plugin for HTTP commander
+
 
 Package: nymea-plugin-simulation
 Architecture: any
@@ -543,7 +557,6 @@ Description: nymea.io plugin for keba
  This package will install the nymea.io plugin for keba
 
 
-
 Package: nymea-plugins-translations
 Section: misc
 Architecture: all
@@ -557,7 +570,6 @@ Description: Translation files for nymea plugins - translations
  in the system and create individual scenes and behaviors for your environment.
  .
  This package provides the translation files for all nymea plugins.
-
 
 
 Package: nymea-plugins
@@ -595,6 +607,7 @@ Architecture: all
 Depends: nymea-plugin-commandlauncher,
          nymea-plugin-udpcommander,
          nymea-plugin-tcpcommander,
+         nymea-plugin-httpcommander,
          nymea-plugin-genericelements,
          nymea-plugin-avahimonitor,
          nymea-plugin-gpio,
