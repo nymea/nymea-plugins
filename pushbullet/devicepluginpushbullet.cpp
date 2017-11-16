@@ -39,7 +39,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *dev
 
 DeviceManager::DeviceError DevicePluginPushbullet::executeAction(Device *device, const Action &action) {
     if (device->deviceClassId() == pushNotificationDeviceClassId) {
-        if (action.actionTypeId() == notifyActionTypeId) {
+        if (action.actionTypeId() == pushNotificationNotifyActionTypeId) {
             QNetworkReply* reply = sendNotification(device, action.params());
             m_asyncActions.insert(reply, action.id());
             return DeviceManager::DeviceErrorAsync;
@@ -51,13 +51,13 @@ DeviceManager::DeviceError DevicePluginPushbullet::executeAction(Device *device,
 
 QNetworkReply* DevicePluginPushbullet::sendNotification(Device* device, ParamList params) {
     QUrlQuery urlParams;
-    urlParams.addQueryItem("body", params.paramValue(bodyParamTypeId).toByteArray());
-    urlParams.addQueryItem("title", params.paramValue(titleParamTypeId).toByteArray());
+    urlParams.addQueryItem("body", params.paramValue(pushNotificationBodyParamTypeId).toByteArray());
+    urlParams.addQueryItem("title", params.paramValue(pushNotificationTitleParamTypeId).toByteArray());
     urlParams.addQueryItem("type", "note");
 
     QNetworkRequest request(QUrl("https://api.pushbullet.com/v2/pushes"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(tokenParamTypeId).toByteArray());
+    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(pushNotificationTokenParamTypeId).toByteArray());
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, urlParams.toString(QUrl::FullyEncoded).toUtf8());
     connect(reply, &QNetworkReply::finished, this, &DevicePluginPushbullet::onNetworkReplyFinished);
     return reply;

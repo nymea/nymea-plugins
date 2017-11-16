@@ -60,7 +60,7 @@ bool AveaBulb::setColor(const QColor &color)
 void AveaBulb::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcElgato()) << "Bulb" << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
-    m_device->setStateValue(connectedStateTypeId, connected);
+    m_device->setStateValue(aveaConnectedStateTypeId, connected);
 
     if (!connected) {
         // Clean up services

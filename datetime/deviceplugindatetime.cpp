@@ -142,17 +142,17 @@ DeviceManager::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *devic
     if (device->deviceClassId() == alarmDeviceClassId) {
         Alarm *alarm = new Alarm(this);
         alarm->setName(device->name());
-        alarm->setMonday(device->paramValue(mondayParamTypeId).toBool());
-        alarm->setTuesday(device->paramValue(tuesdayParamTypeId).toBool());
-        alarm->setWednesday(device->paramValue(wednesdayParamTypeId).toBool());
-        alarm->setThursday(device->paramValue(thursdayParamTypeId).toBool());
-        alarm->setFriday(device->paramValue(fridayParamTypeId).toBool());
-        alarm->setSaturday(device->paramValue(saturdayParamTypeId).toBool());
-        alarm->setSunday(device->paramValue(sundayParamTypeId).toBool());
-        alarm->setMinutes(device->paramValue(minutesParamTypeId).toInt());
-        alarm->setHours(device->paramValue(hoursParamTypeId).toInt());
-        alarm->setTimeType(device->paramValue(timeTypeParamTypeId).toString());
-        alarm->setOffset(device->paramValue(offsetParamTypeId).toInt());
+        alarm->setMonday(device->paramValue(alarmMondayParamTypeId).toBool());
+        alarm->setTuesday(device->paramValue(alarmTuesdayParamTypeId).toBool());
+        alarm->setWednesday(device->paramValue(alarmWednesdayParamTypeId).toBool());
+        alarm->setThursday(device->paramValue(alarmThursdayParamTypeId).toBool());
+        alarm->setFriday(device->paramValue(alarmFridayParamTypeId).toBool());
+        alarm->setSaturday(device->paramValue(alarmSaturdayParamTypeId).toBool());
+        alarm->setSunday(device->paramValue(alarmSundayParamTypeId).toBool());
+        alarm->setMinutes(device->paramValue(alarmMinutesParamTypeId).toInt());
+        alarm->setHours(device->paramValue(alarmHoursParamTypeId).toInt());
+        alarm->setTimeType(device->paramValue(alarmTimeTypeParamTypeId).toString());
+        alarm->setOffset(device->paramValue(alarmOffsetParamTypeId).toInt());
         alarm->setDusk(m_dusk);
         alarm->setSunrise(m_sunrise);
         alarm->setNoon(m_noon);
@@ -166,10 +166,10 @@ DeviceManager::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *devic
 
     if (device->deviceClassId() == countdownDeviceClassId) {
         Countdown *countdown = new Countdown(device->name(),
-                                             QTime(device->paramValue(hoursParamTypeId).toInt(),
-                                                   device->paramValue(minutesParamTypeId).toInt(),
-                                                   device->paramValue(secondsParamTypeId).toInt()),
-                                             device->paramValue(repeatingParamTypeId).toBool());
+                                             QTime(device->paramValue(countdownHoursParamTypeId).toInt(),
+                                                   device->paramValue(countdownMinutesParamTypeId).toInt(),
+                                                   device->paramValue(countdownSecondsParamTypeId).toInt()),
+                                             device->paramValue(countdownRepeatingParamTypeId).toBool());
 
         connect(countdown, &Countdown::countdownTimeout, this, &DevicePluginDateTime::onCountdownTimeout);
         connect(countdown, &Countdown::runningStateChanged, this, &DevicePluginDateTime::onCountdownRunningChanged);
@@ -225,13 +225,13 @@ DeviceManager::DeviceError DevicePluginDateTime::executeAction(Device *device, c
 {
     if (device->deviceClassId() == countdownDeviceClassId) {
         Countdown *countdown = m_countdowns.value(device);
-        if (action.actionTypeId() == startActionTypeId) {
+        if (action.actionTypeId() == countdownStartActionTypeId) {
             countdown->start();
             return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == restartActionTypeId) {
+        } else if (action.actionTypeId() == countdownRestartActionTypeId) {
             countdown->restart();
             return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == stopActionTypeId) {
+        } else if (action.actionTypeId() == countdownStopActionTypeId) {
             countdown->stop();
             return DeviceManager::DeviceErrorNoError;
         }
@@ -286,9 +286,9 @@ void DevicePluginDateTime::processGeoLocationData(const QByteArray &data)
     // check timezone
     QString timeZone = response.value("timezone").toString();
 
-    m_todayDevice->setStateValue(timeZoneStateTypeId, timeZone);
-    m_todayDevice->setStateValue(cityStateTypeId, response.value("city").toString());
-    m_todayDevice->setStateValue(countryStateTypeId, response.value("country").toString());
+    m_todayDevice->setStateValue(todayTimeZoneStateTypeId, timeZone);
+    m_todayDevice->setStateValue(todayCityStateTypeId, response.value("city").toString());
+    m_todayDevice->setStateValue(todayCountryStateTypeId, response.value("country").toString());
 
     qCDebug(dcDateTime) << "---------------------------------------------";
     qCDebug(dcDateTime) << "autodetected location for" << response.value("query").toString();
@@ -392,7 +392,7 @@ void DevicePluginDateTime::onAlarm()
     Alarm *alarm = static_cast<Alarm *>(sender());
     Device *device = m_alarms.key(alarm);
 
-    emit emitEvent(Event(alarmEventTypeId, device->id()));
+    emit emitEvent(Event(alarmAlarmEventTypeId, device->id()));
 }
 
 void DevicePluginDateTime::onCountdownTimeout()
@@ -400,7 +400,7 @@ void DevicePluginDateTime::onCountdownTimeout()
     Countdown *countdown = static_cast<Countdown *>(sender());
     Device *device = m_countdowns.key(countdown);
 
-    emit emitEvent(Event(timeoutEventTypeId, device->id()));
+    emit emitEvent(Event(countdownTimeoutEventTypeId, device->id()));
 }
 
 void DevicePluginDateTime::onCountdownRunningChanged(const bool &running)
@@ -408,7 +408,7 @@ void DevicePluginDateTime::onCountdownRunningChanged(const bool &running)
     Countdown *countdown = static_cast<Countdown *>(sender());
     Device *device = m_countdowns.key(countdown);
 
-    device->setStateValue(runningStateTypeId, running);
+    device->setStateValue(countdownRunningStateTypeId, running);
 }
 
 void DevicePluginDateTime::onSecondChanged()
@@ -457,16 +457,16 @@ void DevicePluginDateTime::onDayChanged(const QDateTime &dateTime)
     if (m_todayDevice == 0)
         return;
 
-    m_todayDevice->setStateValue(dayStateTypeId, dateTime.date().day());
-    m_todayDevice->setStateValue(monthStateTypeId, dateTime.date().month());
-    m_todayDevice->setStateValue(yearStateTypeId, dateTime.date().year());
-    m_todayDevice->setStateValue(weekdayStateTypeId, dateTime.date().dayOfWeek());
-    m_todayDevice->setStateValue(weekdayNameStateTypeId, dateTime.date().longDayName(dateTime.date().dayOfWeek()));
-    m_todayDevice->setStateValue(monthNameStateTypeId, dateTime.date().longMonthName(dateTime.date().month()));
+    m_todayDevice->setStateValue(todayDayStateTypeId, dateTime.date().day());
+    m_todayDevice->setStateValue(todayMonthStateTypeId, dateTime.date().month());
+    m_todayDevice->setStateValue(todayYearStateTypeId, dateTime.date().year());
+    m_todayDevice->setStateValue(todayWeekdayStateTypeId, dateTime.date().dayOfWeek());
+    m_todayDevice->setStateValue(todayWeekdayNameStateTypeId, dateTime.date().longDayName(dateTime.date().dayOfWeek()));
+    m_todayDevice->setStateValue(todayMonthNameStateTypeId, dateTime.date().longMonthName(dateTime.date().month()));
     if(dateTime.date().dayOfWeek() == 6 || dateTime.date().dayOfWeek() == 7){
-        m_todayDevice->setStateValue(weekendStateTypeId, true);
+        m_todayDevice->setStateValue(todayWeekendStateTypeId, true);
     }else{
-        m_todayDevice->setStateValue(weekendStateTypeId, false);
+        m_todayDevice->setStateValue(todayWeekendStateTypeId, false);
     }
 }
 
@@ -486,29 +486,29 @@ void DevicePluginDateTime::updateTimes()
         return;
 
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(duskStateTypeId, m_dusk.toTime_t());
+        m_todayDevice->setStateValue(todayDuskStateTypeId, m_dusk.toTime_t());
     } else {
-        m_todayDevice->setStateValue(duskStateTypeId, 0);
+        m_todayDevice->setStateValue(todayDuskStateTypeId, 0);
     }
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(sunriseStateTypeId, m_sunrise.toTime_t());
+        m_todayDevice->setStateValue(todaySunriseStateTypeId, m_sunrise.toTime_t());
     } else {
-        m_todayDevice->setStateValue(sunriseStateTypeId, 0);
+        m_todayDevice->setStateValue(todaySunriseStateTypeId, 0);
     }
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(noonStateTypeId, m_noon.toTime_t());
+        m_todayDevice->setStateValue(todayNoonStateTypeId, m_noon.toTime_t());
     } else {
-        m_todayDevice->setStateValue(noonStateTypeId, 0);
+        m_todayDevice->setStateValue(todayNoonStateTypeId, 0);
     }
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(sunsetStateTypeId, m_sunset.toTime_t());
+        m_todayDevice->setStateValue(todaySunsetStateTypeId, m_sunset.toTime_t());
     } else {
-        m_todayDevice->setStateValue(sunsetStateTypeId, 0);
+        m_todayDevice->setStateValue(todaySunsetStateTypeId, 0);
     }
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(dawnStateTypeId, m_dawn.toTime_t());
+        m_todayDevice->setStateValue(todayDawnStateTypeId, m_dawn.toTime_t());
     } else {
-        m_todayDevice->setStateValue(dawnStateTypeId, 0);
+        m_todayDevice->setStateValue(todayDawnStateTypeId, 0);
     }
 }
 
@@ -519,15 +519,15 @@ void DevicePluginDateTime::validateTimeTypes(const QDateTime &dateTime)
         return;
 
     if (dateTime == m_dusk) {
-        emit emitEvent(Event(duskEventTypeId, m_todayDevice->id()));
+        emit emitEvent(Event(todayDuskEventTypeId, m_todayDevice->id()));
     } else if (dateTime == m_sunrise) {
-        emit emitEvent(Event(sunriseEventTypeId, m_todayDevice->id()));
+        emit emitEvent(Event(todaySunriseEventTypeId, m_todayDevice->id()));
     } else if (dateTime == m_noon) {
-        emit emitEvent(Event(noonEventTypeId, m_todayDevice->id()));
+        emit emitEvent(Event(todayNoonEventTypeId, m_todayDevice->id()));
     } else if (dateTime == m_dawn) {
-        emit emitEvent(Event(dawnEventTypeId, m_todayDevice->id()));
+        emit emitEvent(Event(todayDawnEventTypeId, m_todayDevice->id()));
     } else if (dateTime == m_sunset) {
-        emit emitEvent(Event(sunsetEventTypeId, m_todayDevice->id()));
+        emit emitEvent(Event(todaySunsetEventTypeId, m_todayDevice->id()));
     }
 
     foreach (Alarm *alarm, m_alarms.values()) {

@@ -47,7 +47,7 @@ void SensorTag::updatePressureValue(const QByteArray &value)
 void SensorTag::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcMultiSensor()) << "Sensor" << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
-    m_device->setStateValue(connectedStateTypeId, connected);
+    m_device->setStateValue(sensortagConnectedStateTypeId, connected);
 
     if (!connected) {
         // Clean up services
@@ -157,7 +157,6 @@ void SensorTag::onServiceDiscoveryFinished()
             m_pressureService->discoverDetails();
         }
     }
-
 }
 
 void SensorTag::onInfraredServiceStateChanged(const QLowEnergyService::ServiceState &state)

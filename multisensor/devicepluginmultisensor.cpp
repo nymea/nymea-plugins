@@ -82,8 +82,8 @@ DeviceManager::DeviceSetupStatus DevicePluginMultiSensor::setupDevice(Device *de
 
     if (device->deviceClassId() == sensortagDeviceClassId) {
 
-        QBluetoothAddress address = QBluetoothAddress(device->paramValue(macParamTypeId).toString());
-        QString name = device->paramValue(nameParamTypeId).toString();
+        QBluetoothAddress address = QBluetoothAddress(device->paramValue(sensortagMacParamTypeId).toString());
+        QString name = device->paramValue(sensortagNameParamTypeId).toString();
         QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
@@ -115,7 +115,7 @@ void DevicePluginMultiSensor::deviceRemoved(Device *device)
 bool DevicePluginMultiSensor::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
 {
     foreach (Device *device, m_sensors.keys()) {
-        if (device->paramValue(macParamTypeId).toString() == deviceInfo.address().toString())
+        if (device->paramValue(sensortagMacParamTypeId).toString() == deviceInfo.address().toString())
             return true;
     }
 
@@ -132,13 +132,13 @@ void DevicePluginMultiSensor::onPluginTimer()
 void DevicePluginMultiSensor::onSensorLeftButtonPressed()
 {
     SensorTag *sensor = static_cast<SensorTag *>(sender());
-    emit emitEvent(Event(leftKeyEventTypeId, sensor->device()->id()));
+    emit emitEvent(Event(sensortagLeftKeyEventTypeId, sensor->device()->id()));
 }
 
 void DevicePluginMultiSensor::onSensorRightButtonPressed()
 {
     SensorTag *sensor = static_cast<SensorTag *>(sender());
-    emit emitEvent(Event(rightKeyEventTypeId, sensor->device()->id()));
+    emit emitEvent(Event(sensortagRightKeyEventTypeId, sensor->device()->id()));
 }
 
 void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
@@ -157,8 +157,8 @@ void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
             if (!verifyExistingDevices(deviceInfo)) {
                 DeviceDescriptor descriptor(sensortagDeviceClassId, "Sensor Tag", deviceInfo.address().toString());
                 ParamList params;
-                params.append(Param(nameParamTypeId, deviceInfo.name()));
-                params.append(Param(macParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(sensortagNameParamTypeId, deviceInfo.name()));
+                params.append(Param(sensortagMacParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
             }

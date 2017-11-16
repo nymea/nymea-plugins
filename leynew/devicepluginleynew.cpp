@@ -82,63 +82,63 @@ DeviceManager::DeviceError DevicePluginLeynew::executeAction(Device *device, con
     // TODO: find out how the id will be calculated to bin code or make it discoverable
     // =======================================
     // bincode depending on the id
-    if (device->paramValue(idParamTypeId) == "0115"){
+    if (device->paramValue(rfControllerIdParamTypeId) == "0115"){
         binCode.append("001101000001");
-    } else if (device->paramValue(idParamTypeId) == "0014") {
+    } else if (device->paramValue(rfControllerIdParamTypeId) == "0014") {
         binCode.append("110000010101");
-    } else if (device->paramValue(idParamTypeId) == "0008") {
+    } else if (device->paramValue(rfControllerIdParamTypeId) == "0008") {
         binCode.append("111101010101");
     } else {
-        qCWarning(dcLeynew) << "Could not get id of device: invalid parameter" << device->paramValue(idParamTypeId);
+        qCWarning(dcLeynew) << "Could not get id of device: invalid parameter" << device->paramValue(rfControllerIdParamTypeId);
         return DeviceManager::DeviceErrorInvalidParameter;
     }
 
     int repetitions = 12;
     // =======================================
     // bincode depending on the action
-    if (action.actionTypeId() == brightnessUpActionTypeId) {
+    if (action.actionTypeId() == rfControllerBrightnessUpActionTypeId) {
         binCode.append("000000000011");
         repetitions = 8;
-    } else if (action.actionTypeId() == brightnessDownActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerBrightnessDownActionTypeId) {
         binCode.append("000000001100");
         repetitions = 8;
-    } else if (action.actionTypeId() == powerActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerPowerActionTypeId) {
         binCode.append("000011000000");
-    } else if (action.actionTypeId() == redActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerRedActionTypeId) {
         binCode.append("000000001111");
-    } else if (action.actionTypeId() == greenActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerGreenActionTypeId) {
         binCode.append("000000110011");
-    } else if (action.actionTypeId() == blueActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerBlueActionTypeId) {
         binCode.append("000011000011");
-    } else if (action.actionTypeId() == whiteActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerWhiteActionTypeId) {
         binCode.append("000000111100");
-    } else if (action.actionTypeId() == orangeActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerOrangeActionTypeId) {
         binCode.append("000011001100");
-    } else if (action.actionTypeId() == yellowActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerYellowActionTypeId) {
         binCode.append("000011110000");
-    } else if (action.actionTypeId() == cyanActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerCyanActionTypeId) {
         binCode.append("001100000011");
-    } else if (action.actionTypeId() == purpleActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerPurpleActionTypeId) {
         binCode.append("110000000011");
-    } else if (action.actionTypeId() == playPauseActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerPlayPauseActionTypeId) {
         binCode.append("000000110000");
-    } else if (action.actionTypeId() == speedUpActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerSpeedUpActionTypeId) {
         binCode.append("001100110000");
         repetitions = 8;
-    } else if (action.actionTypeId() == speedDownActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerSpeedDownActionTypeId) {
         binCode.append("110000000000");
         repetitions = 8;
-    } else if (action.actionTypeId() == autoActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerAutoActionTypeId) {
         binCode.append("001100001100");
-    } else if (action.actionTypeId() == flashActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerFlashActionTypeId) {
         binCode.append("110011000000");
-    } else if (action.actionTypeId() == jump3ActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerJump3ActionTypeId) {
         binCode.append("111100001100");
-    } else if (action.actionTypeId() == jump7ActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerJump7ActionTypeId) {
         binCode.append("001111000000");
-    } else if (action.actionTypeId() == fade3ActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerFade3ActionTypeId) {
         binCode.append("110000110000");
-    } else if (action.actionTypeId() == fade7ActionTypeId) {
+    } else if (action.actionTypeId() == rfControllerFade7ActionTypeId) {
         binCode.append("001100000000");
     } else {
         return DeviceManager::DeviceErrorActionTypeNotFound;

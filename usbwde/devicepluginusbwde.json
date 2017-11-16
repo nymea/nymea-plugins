@@ -74,7 +74,7 @@
                             "id": "046e5ffe-7d75-4a8a-ac0a-9310814a800e",
                             "name": "lastUpdate",
                             "displayName": "last update",
-                            "type": "unsignedInt",
+                            "type": "int",
                             "unit": "UnixTime",
                             "defaultValue": 0,
                             "displayNameEvent": "last update changed"
@@ -130,7 +130,7 @@
                             "id": "046e5ffe-7d75-4a8a-ac0a-9310814a800e",
                             "name": "lastUpdate",
                             "displayName": "last update",
-                            "type": "unsignedInt",
+                            "type": "int",
                             "unit": "UnixTime",
                             "defaultValue": 0,
                             "displayNameEvent": "last update changed"

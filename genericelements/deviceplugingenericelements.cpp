@@ -83,16 +83,16 @@ DeviceManager::DeviceError DevicePluginGenericElements::executeAction(Device *de
 {
     // Toggle Button
     if (device->deviceClassId() == toggleButtonDeviceClassId ) {
-        if (action.actionTypeId() == stateActionTypeId) {
-            device->setStateValue(stateStateTypeId, !device->stateValue(stateStateTypeId).toBool());
+        if (action.actionTypeId() == toggleButtonStateActionTypeId) {
+            device->setStateValue(toggleButtonStateStateTypeId, !device->stateValue(toggleButtonStateStateTypeId).toBool());
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
     // Button
     if (device->deviceClassId() == buttonDeviceClassId ) {
-        if (action.actionTypeId() == buttonPressActionTypeId) {
-            emit emitEvent(Event(buttonPressedEventTypeId, device->id()));
+        if (action.actionTypeId() == buttonButtonPressActionTypeId) {
+            emit emitEvent(Event(buttonButtonPressedEventTypeId, device->id()));
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;

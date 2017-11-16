@@ -71,8 +71,8 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
 
         OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
         authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
-        authentication->setUsername(device->paramValue(usernameParamTypeId).toString());
-        authentication->setPassword(device->paramValue(passwordParamTypeId).toString());
+        authentication->setUsername(device->paramValue(connectionUsernameParamTypeId).toString());
+        authentication->setPassword(device->paramValue(connectionPasswordParamTypeId).toString());
         authentication->setScope("read_station read_thermostat write_thermostat");
 
         m_authentications.insert(authentication, device);
@@ -84,9 +84,9 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
 
     } else if (device->deviceClassId() == indoorDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo indoor base station" << device->params();
-        NetatmoBaseStation *indoor = new NetatmoBaseStation(device->paramValue(nameParamTypeId).toString(),
-                                                            device->paramValue(macParamTypeId).toString(),
-                                                            device->paramValue(connectionParamTypeId).toString(), this);
+        NetatmoBaseStation *indoor = new NetatmoBaseStation(device->paramValue(indoorNameParamTypeId).toString(),
+                                                            device->paramValue(indoorMacParamTypeId).toString(),
+                                                            device->paramValue(indoorConnectionParamTypeId).toString(), this);
 
         device->setParentId(DeviceId(indoor->connectionId()));
         m_indoorDevices.insert(indoor, device);
@@ -95,10 +95,10 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
         return DeviceManager::DeviceSetupStatusSuccess;
     } else if (device->deviceClassId() == outdoorDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo outdoor module" << device->params();
-        NetatmoOutdoorModule *outdoor = new NetatmoOutdoorModule(device->paramValue(nameParamTypeId).toString(),
-                                                                 device->paramValue(macParamTypeId).toString(),
-                                                                 device->paramValue(connectionParamTypeId).toString(),
-                                                                 device->paramValue(baseStationParamTypeId).toString(),this);
+        NetatmoOutdoorModule *outdoor = new NetatmoOutdoorModule(device->paramValue(outdoorNameParamTypeId).toString(),
+                                                                 device->paramValue(outdoorMacParamTypeId).toString(),
+                                                                 device->paramValue(outdoorConnectionParamTypeId).toString(),
+                                                                 device->paramValue(outdoorBaseStationParamTypeId).toString(),this);
 
         device->setParentId(DeviceId(outdoor->connectionId()));
         m_outdoorDevices.insert(outdoor, device);
@@ -165,9 +165,9 @@ void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, const QStr
                     if (!indoorDevice) {
                         DeviceDescriptor descriptor(indoorDeviceClassId, "Indoor Station", deviceMap.value("station_name").toString());
                         ParamList params;
-                        params.append(Param(nameParamTypeId, deviceMap.value("station_name").toString()));
-                        params.append(Param(macParamTypeId, deviceMap.value("_id").toString()));
-                        params.append(Param(connectionParamTypeId, connectionId));
+                        params.append(Param(indoorNameParamTypeId, deviceMap.value("station_name").toString()));
+                        params.append(Param(indoorMacParamTypeId, deviceMap.value("_id").toString()));
+                        params.append(Param(indoorConnectionParamTypeId, connectionId));
                         descriptor.setParams(params);
                         emit autoDevicesAppeared(indoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
                     } else {
@@ -192,10 +192,10 @@ void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, const QStr
                     if (!outdoorDevice) {
                         DeviceDescriptor descriptor(outdoorDeviceClassId, "Outdoor Module", moduleMap.value("module_name").toString());
                         ParamList params;
-                        params.append(Param(nameParamTypeId, moduleMap.value("module_name").toString()));
-                        params.append(Param(macParamTypeId, moduleMap.value("_id").toString()));
-                        params.append(Param(connectionParamTypeId, connectionId));
-                        params.append(Param(baseStationParamTypeId, moduleMap.value("main_device").toString()));
+                        params.append(Param(outdoorNameParamTypeId, moduleMap.value("module_name").toString()));
+                        params.append(Param(outdoorMacParamTypeId, moduleMap.value("_id").toString()));
+                        params.append(Param(outdoorConnectionParamTypeId, connectionId));
+                        params.append(Param(outdoorBaseStationParamTypeId, moduleMap.value("main_device").toString()));
                         descriptor.setParams(params);
                         emit autoDevicesAppeared(outdoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
                     } else {
@@ -213,7 +213,7 @@ Device *DevicePluginNetatmo::findIndoorDevice(const QString &macAddress)
 {
     foreach (Device *device, myDevices()) {
         if (device->deviceClassId() == indoorDeviceClassId) {
-            if (device->paramValue(macParamTypeId).toString() == macAddress) {
+            if (device->paramValue(indoorMacParamTypeId).toString() == macAddress) {
                 return device;
             }
         }
@@ -225,7 +225,7 @@ Device *DevicePluginNetatmo::findOutdoorDevice(const QString &macAddress)
 {
     foreach (Device *device, myDevices()) {
         if (device->deviceClassId() == outdoorDeviceClassId) {
-            if (device->paramValue(macParamTypeId).toString() == macAddress) {
+            if (device->paramValue(outdoorMacParamTypeId).toString() == macAddress) {
                 return device;
             }
         }
@@ -256,7 +256,7 @@ void DevicePluginNetatmo::onNetworkReplyFinished()
         // check HTTP status code
         if (status != 200) {
             qCWarning(dcNetatmo) << "Device list reply HTTP error:" << status << reply->errorString();
-            device->setStateValue(availableStateTypeId, false);
+            device->setStateValue(connectionAvailableStateTypeId, false);
             reply->deleteLater();
             return;
         }
@@ -286,7 +286,7 @@ void DevicePluginNetatmo::onAuthenticationChanged()
         return;
 
     // set the available state
-    device->setStateValue(availableStateTypeId, authentication->authenticated());
+    device->setStateValue(connectionAvailableStateTypeId, authentication->authenticated());
 
     // check if this is was a setup athentication
     if (m_asyncSetups.contains(device)) {
@@ -305,15 +305,15 @@ void DevicePluginNetatmo::onIndoorStatesChanged()
     NetatmoBaseStation *indoor = static_cast<NetatmoBaseStation *>(sender());
     Device *device = m_indoorDevices.value(indoor);
 
-    device->setStateValue(updateTimeStateTypeId, indoor->lastUpdate());
-    device->setStateValue(temperatureStateTypeId, indoor->temperature());
-    device->setStateValue(temperatureMinStateTypeId, indoor->minTemperature());
-    device->setStateValue(temperatureMaxStateTypeId, indoor->maxTemperature());
-    device->setStateValue(pressureStateTypeId, indoor->pressure());
-    device->setStateValue(humidityStateTypeId, indoor->humidity());
-    device->setStateValue(co2StateTypeId, indoor->co2());
-    device->setStateValue(noiseStateTypeId, indoor->noise());
-    device->setStateValue(wifiStrengthStateTypeId, indoor->wifiStrength());
+    device->setStateValue(indoorUpdateTimeStateTypeId, indoor->lastUpdate());
+    device->setStateValue(indoorTemperatureStateTypeId, indoor->temperature());
+    device->setStateValue(indoorTemperatureMinStateTypeId, indoor->minTemperature());
+    device->setStateValue(indoorTemperatureMaxStateTypeId, indoor->maxTemperature());
+    device->setStateValue(indoorPressureStateTypeId, indoor->pressure());
+    device->setStateValue(indoorHumidityStateTypeId, indoor->humidity());
+    device->setStateValue(indoorCo2StateTypeId, indoor->co2());
+    device->setStateValue(indoorNoiseStateTypeId, indoor->noise());
+    device->setStateValue(indoorWifiStrengthStateTypeId, indoor->wifiStrength());
 }
 
 void DevicePluginNetatmo::onOutdoorStatesChanged()
@@ -321,13 +321,13 @@ void DevicePluginNetatmo::onOutdoorStatesChanged()
     NetatmoOutdoorModule *outdoor = static_cast<NetatmoOutdoorModule *>(sender());
     Device *device = m_outdoorDevices.value(outdoor);
 
-    device->setStateValue(updateTimeStateTypeId, outdoor->lastUpdate());
-    device->setStateValue(temperatureStateTypeId, outdoor->temperature());
-    device->setStateValue(temperatureMinStateTypeId, outdoor->minTemperature());
-    device->setStateValue(temperatureMaxStateTypeId, outdoor->maxTemperature());
-    device->setStateValue(humidityStateTypeId, outdoor->humidity());
-    device->setStateValue(signalStrengthStateTypeId, outdoor->signalStrength());
-    device->setStateValue(batteryStateTypeId, outdoor->battery());
+    device->setStateValue(outdoorUpdateTimeStateTypeId, outdoor->lastUpdate());
+    device->setStateValue(outdoorTemperatureStateTypeId, outdoor->temperature());
+    device->setStateValue(outdoorTemperatureMinStateTypeId, outdoor->minTemperature());
+    device->setStateValue(outdoorTemperatureMaxStateTypeId, outdoor->maxTemperature());
+    device->setStateValue(outdoorHumidityStateTypeId, outdoor->humidity());
+    device->setStateValue(outdoorSignalStrengthStateTypeId, outdoor->signalStrength());
+    device->setStateValue(outdoorBatteryStateTypeId, outdoor->battery());
 }
 
 

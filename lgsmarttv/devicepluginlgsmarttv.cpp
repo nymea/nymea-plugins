@@ -83,25 +83,25 @@ DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::setupDevice(Device *devi
         return DeviceManager::DeviceSetupStatusFailure;
     }
 
-    TvDevice *tvDevice = new TvDevice(QHostAddress(device->paramValue(hostAddressParamTypeId).toString()),
-                                      device->paramValue(portParamTypeId).toInt(), this);
-    tvDevice->setUuid(device->paramValue(uuidParamTypeId).toString());
+    TvDevice *tvDevice = new TvDevice(QHostAddress(device->paramValue(lgSmartTvHostAddressParamTypeId).toString()),
+                                      device->paramValue(lgSmartTvPortParamTypeId).toInt(), this);
+    tvDevice->setUuid(device->paramValue(lgSmartTvUuidParamTypeId).toString());
 
     // if the key is missing, this setup call comes from a pairing procedure
-    if (device->paramValue(keyParamTypeId) == QString()) {
+    if (device->paramValue(lgSmartTvKeyParamTypeId) == QString()) {
         // check if we know the key from the pairing procedure
-        if (!m_tvKeys.contains(device->paramValue(uuidParamTypeId).toString())) {
+        if (!m_tvKeys.contains(device->paramValue(lgSmartTvUuidParamTypeId).toString())) {
             qCWarning(dcLgSmartTv) << "could not find any pairing key";
             return DeviceManager::DeviceSetupStatusFailure;
         }
         // use the key from the pairing procedure
-        QString key = m_tvKeys.value(device->paramValue(uuidParamTypeId).toString());
+        QString key = m_tvKeys.value(device->paramValue(lgSmartTvUuidParamTypeId).toString());
 
         tvDevice->setKey(key);
-        device->setParamValue(keyParamTypeId, key);
+        device->setParamValue(lgSmartTvKeyParamTypeId, key);
     } else {
         // add the key for editing
-        if (!m_tvKeys.contains(device->paramValue(uuidParamTypeId).toString())) {
+        if (!m_tvKeys.contains(device->paramValue(lgSmartTvUuidParamTypeId).toString())) {
             m_tvKeys.insert(tvDevice->uuid(), tvDevice->key());
         }
     }
@@ -136,92 +136,92 @@ DeviceManager::DeviceError DevicePluginLgSmartTv::executeAction(Device *device, 
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
 
-    if (action.actionTypeId() == commandVolumeUpActionTypeId) {
+    if (action.actionTypeId() == lgSmartTvCommandVolumeUpActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::VolUp);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandVolumeDownActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandVolumeDownActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::VolDown);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandMuteActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandMuteActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Mute);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandChannelUpActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandChannelUpActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::ChannelUp);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandChannelDownActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandChannelDownActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::ChannelDown);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandPowerOffActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandPowerOffActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Power);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandArrowUpActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandArrowUpActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Up);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandArrowDownActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandArrowDownActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Down);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandArrowLeftActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandArrowLeftActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Left);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandArrowRightActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandArrowRightActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Right);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandOkActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandOkActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Ok);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandBackActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandBackActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Back);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandHomeActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandHomeActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Home);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandInputSourceActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandInputSourceActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::ExternalInput);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandExitActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandExitActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Exit);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandInfoActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandInfoActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::Info);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandMyAppsActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandMyAppsActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::MyApps);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
-    } else if(action.actionTypeId() == commandProgramListActionTypeId) {
+    } else if(action.actionTypeId() == lgSmartTvCommandProgramListActionTypeId) {
         QPair<QNetworkRequest, QByteArray> request = tvDevice->createPressButtonRequest(TvDevice::ProgramList);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
@@ -236,8 +236,8 @@ DeviceManager::DeviceError DevicePluginLgSmartTv::displayPin(const PairingTransa
 {
     Q_UNUSED(pairingTransactionId)
 
-    QHostAddress host = QHostAddress(deviceDescriptor.params().paramValue(hostAddressParamTypeId).toString());
-    int port = deviceDescriptor.params().paramValue(portParamTypeId).toInt();
+    QHostAddress host = QHostAddress(deviceDescriptor.params().paramValue(lgSmartTvHostAddressParamTypeId).toString());
+    int port = deviceDescriptor.params().paramValue(lgSmartTvPortParamTypeId).toInt();
     QPair<QNetworkRequest, QByteArray> request = TvDevice::createDisplayKeyRequest(host, port);
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
@@ -250,23 +250,23 @@ DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::confirmPairing(const Pai
 {
     Q_UNUSED(deviceClassId)
 
-    QHostAddress host = QHostAddress(params.paramValue(hostAddressParamTypeId).toString());
-    int port = params.paramValue(portParamTypeId).toInt();
+    QHostAddress host = QHostAddress(params.paramValue(lgSmartTvHostAddressParamTypeId).toString());
+    int port = params.paramValue(lgSmartTvPortParamTypeId).toInt();
     QPair<QNetworkRequest, QByteArray> request = TvDevice::createPairingRequest(host, port, secret);
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
 
     m_setupPairingTv.insert(reply, pairingTransactionId);
-    m_tvKeys.insert(params.paramValue(uuidParamTypeId).toString(), secret);
+    m_tvKeys.insert(params.paramValue(lgSmartTvUuidParamTypeId).toString(), secret);
 
     return DeviceManager::DeviceSetupStatusAsync;
 }
 
 void DevicePluginLgSmartTv::pairTvDevice(Device *device, const bool &setup)
 {
-    QHostAddress host = QHostAddress(device->paramValue(hostAddressParamTypeId).toString());
-    int port = device->paramValue(portParamTypeId).toInt();
-    QString key = device->paramValue(keyParamTypeId).toString();
+    QHostAddress host = QHostAddress(device->paramValue(lgSmartTvHostAddressParamTypeId).toString());
+    int port = device->paramValue(lgSmartTvPortParamTypeId).toInt();
+    QString key = device->paramValue(lgSmartTvKeyParamTypeId).toString();
     QPair<QNetworkRequest, QByteArray> request = TvDevice::createPairingRequest(host, port, key);
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
@@ -280,8 +280,8 @@ void DevicePluginLgSmartTv::pairTvDevice(Device *device, const bool &setup)
 
 void DevicePluginLgSmartTv::unpairTvDevice(Device *device)
 {
-    QHostAddress host = QHostAddress(device->paramValue(hostAddressParamTypeId).toString());
-    int port = device->paramValue(portParamTypeId).toInt();
+    QHostAddress host = QHostAddress(device->paramValue(lgSmartTvHostAddressParamTypeId).toString());
+    int port = device->paramValue(lgSmartTvPortParamTypeId).toInt();
     QPair<QNetworkRequest, QByteArray> request = TvDevice::createEndPairingRequest(host, port);
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
@@ -332,12 +332,12 @@ void DevicePluginLgSmartTv::onUpnpDiscoveryFinished()
         qCDebug(dcLgSmartTv) << upnpDeviceDescriptor;
         DeviceDescriptor descriptor(lgSmartTvDeviceClassId, "Lg Smart Tv", upnpDeviceDescriptor.modelName());
         ParamList params;
-        params.append(Param(nameParamTypeId, upnpDeviceDescriptor.friendlyName()));
-        params.append(Param(uuidParamTypeId, upnpDeviceDescriptor.uuid()));
-        params.append(Param(modelParamTypeId, upnpDeviceDescriptor.modelName()));
-        params.append(Param(hostAddressParamTypeId, upnpDeviceDescriptor.hostAddress().toString()));
-        params.append(Param(portParamTypeId, upnpDeviceDescriptor.port()));
-        params.append(Param(keyParamTypeId, QString()));
+        params.append(Param(lgSmartTvNameParamTypeId, upnpDeviceDescriptor.friendlyName()));
+        params.append(Param(lgSmartTvUuidParamTypeId, upnpDeviceDescriptor.uuid()));
+        params.append(Param(lgSmartTvModelParamTypeId, upnpDeviceDescriptor.modelName()));
+        params.append(Param(lgSmartTvHostAddressParamTypeId, upnpDeviceDescriptor.hostAddress().toString()));
+        params.append(Param(lgSmartTvPortParamTypeId, upnpDeviceDescriptor.port()));
+        params.append(Param(lgSmartTvKeyParamTypeId, QString()));
         descriptor.setParams(params);
         deviceDescriptors.append(descriptor);
     }
@@ -433,14 +433,14 @@ void DevicePluginLgSmartTv::stateChanged()
     TvDevice *tvDevice = static_cast<TvDevice*>(sender());
     Device *device = m_tvList.value(tvDevice);
 
-    device->setStateValue(reachableStateTypeId, tvDevice->reachable());
-    device->setStateValue(tv3DModeStateTypeId, tvDevice->is3DMode());
-    device->setStateValue(tvVolumeLevelStateTypeId, tvDevice->volumeLevel());
-    device->setStateValue(tvMuteStateTypeId, tvDevice->mute());
-    device->setStateValue(tvChannelTypeStateTypeId, tvDevice->channelType());
-    device->setStateValue(tvChannelNameStateTypeId, tvDevice->channelName());
-    device->setStateValue(tvChannelNumberStateTypeId, tvDevice->channelNumber());
-    device->setStateValue(tvProgramNameStateTypeId, tvDevice->programName());
-    device->setStateValue(tvInputSourceIndexStateTypeId, tvDevice->inputSourceIndex());
-    device->setStateValue(tvInputSourceLabelNameStateTypeId, tvDevice->inputSourceLabelName());
+    device->setStateValue(lgSmartTvReachableStateTypeId, tvDevice->reachable());
+    device->setStateValue(lgSmartTvTv3DModeStateTypeId, tvDevice->is3DMode());
+    device->setStateValue(lgSmartTvTvVolumeLevelStateTypeId, tvDevice->volumeLevel());
+    device->setStateValue(lgSmartTvTvMuteStateTypeId, tvDevice->mute());
+    device->setStateValue(lgSmartTvTvChannelTypeStateTypeId, tvDevice->channelType());
+    device->setStateValue(lgSmartTvTvChannelNameStateTypeId, tvDevice->channelName());
+    device->setStateValue(lgSmartTvTvChannelNumberStateTypeId, tvDevice->channelNumber());
+    device->setStateValue(lgSmartTvTvProgramNameStateTypeId, tvDevice->programName());
+    device->setStateValue(lgSmartTvTvInputSourceIndexStateTypeId, tvDevice->inputSourceIndex());
+    device->setStateValue(lgSmartTvTvInputSourceLabelNameStateTypeId, tvDevice->inputSourceLabelName());
 }

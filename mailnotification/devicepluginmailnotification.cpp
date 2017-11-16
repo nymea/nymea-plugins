@@ -85,13 +85,13 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
         SmtpClient *smtpClient = new SmtpClient(this);
         smtpClient->setHost("smtp.gmail.com");
         smtpClient->setPort(465);
-        smtpClient->setUser(device->paramValue(userParamTypeId).toString());
+        smtpClient->setUser(device->paramValue(googleMailUserParamTypeId).toString());
         // TODO: use cryptography to save password not as plain text
-        smtpClient->setPassword(device->paramValue(passwordParamTypeId).toString());
+        smtpClient->setPassword(device->paramValue(googleMailPasswordParamTypeId).toString());
         smtpClient->setAuthMethod(SmtpClient::AuthMethodLogin);
         smtpClient->setEncryptionType(SmtpClient::EncryptionTypeSSL);
-        smtpClient->setSender(device->paramValue(userParamTypeId).toString());
-        smtpClient->setRecipient(device->paramValue(recipientParamTypeId).toString());
+        smtpClient->setSender(device->paramValue(googleMailUserParamTypeId).toString());
+        smtpClient->setRecipient(device->paramValue(googleMailRecipientParamTypeId).toString());
 
         connect(smtpClient, &SmtpClient::testLoginFinished, this, &DevicePluginMailNotification::testLoginFinished);
         connect(smtpClient, &SmtpClient::sendMailFinished, this, &DevicePluginMailNotification::sendMailFinished);
@@ -106,13 +106,13 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
         SmtpClient *smtpClient = new SmtpClient(this);
         smtpClient->setHost("smtp.mail.yahoo.com");
         smtpClient->setPort(465);
-        smtpClient->setUser(device->paramValue(userParamTypeId).toString());
+        smtpClient->setUser(device->paramValue(yahooMailUserParamTypeId).toString());
         // TODO: use cryptography to save password not as plain text
-        smtpClient->setPassword(device->paramValue(passwordParamTypeId).toString());
+        smtpClient->setPassword(device->paramValue(yahooMailPasswordParamTypeId).toString());
         smtpClient->setAuthMethod(SmtpClient::AuthMethodLogin);
         smtpClient->setEncryptionType(SmtpClient::EncryptionTypeSSL);
-        smtpClient->setSender(device->paramValue(userParamTypeId).toString());
-        smtpClient->setRecipient(device->paramValue(recipientParamTypeId).toString());
+        smtpClient->setSender(device->paramValue(yahooMailUserParamTypeId).toString());
+        smtpClient->setRecipient(device->paramValue(yahooMailRecipientParamTypeId).toString());
 
         connect(smtpClient, &SmtpClient::testLoginFinished, this, &DevicePluginMailNotification::testLoginFinished);
         connect(smtpClient, &SmtpClient::sendMailFinished, this, &DevicePluginMailNotification::sendMailFinished);
@@ -125,33 +125,33 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
     // Custom mail
     if(device->deviceClassId() == customMailDeviceClassId) {
         SmtpClient *smtpClient = new SmtpClient(this);
-        smtpClient->setHost(device->paramValue(smtpParamTypeId).toString());
-        smtpClient->setPort(device->paramValue(portParamTypeId).toInt());
-        smtpClient->setUser(device->paramValue(customUserParamTypeId).toString());
+        smtpClient->setHost(device->paramValue(customMailSmtpParamTypeId).toString());
+        smtpClient->setPort(device->paramValue(customMailPortParamTypeId).toInt());
+        smtpClient->setUser(device->paramValue(customMailCustomUserParamTypeId).toString());
 
         // TODO: use cryptography to save password not as plain text
-        smtpClient->setPassword(device->paramValue(customPasswordParamTypeId).toString());
+        smtpClient->setPassword(device->paramValue(customMailCustomPasswordParamTypeId).toString());
 
-        if(device->paramValue(authenticationParamTypeId).toString() == "PLAIN") {
+        if(device->paramValue(customMailAuthenticationParamTypeId).toString() == "PLAIN") {
             smtpClient->setAuthMethod(SmtpClient::AuthMethodPlain);
-        } else if(device->paramValue(authenticationParamTypeId).toString() == "LOGIN") {
+        } else if(device->paramValue(customMailAuthenticationParamTypeId).toString() == "LOGIN") {
             smtpClient->setAuthMethod(SmtpClient::AuthMethodLogin);
         } else {
             return DeviceManager::DeviceSetupStatusFailure;
         }
 
-        if(device->paramValue(encryptionParamTypeId).toString() == "NONE") {
+        if(device->paramValue(customMailEncryptionParamTypeId).toString() == "NONE") {
             smtpClient->setEncryptionType(SmtpClient::EncryptionTypeNone);
-        } else if(device->paramValue(encryptionParamTypeId).toString() == "SSL") {
+        } else if(device->paramValue(customMailEncryptionParamTypeId).toString() == "SSL") {
             smtpClient->setEncryptionType(SmtpClient::EncryptionTypeSSL);
-        } else if(device->paramValue(encryptionParamTypeId).toString() == "TLS") {
+        } else if(device->paramValue(customMailEncryptionParamTypeId).toString() == "TLS") {
             smtpClient->setEncryptionType(SmtpClient::EncryptionTypeTLS);
         } else {
             return DeviceManager::DeviceSetupStatusFailure;
         }
 
-        smtpClient->setRecipient(device->paramValue(customRecipientParamTypeId).toString());
-        smtpClient->setSender(device->paramValue(customSenderParamTypeId).toString());
+        smtpClient->setRecipient(device->paramValue(customMailCustomRecipientParamTypeId).toString());
+        smtpClient->setSender(device->paramValue(customMailCustomSenderParamTypeId).toString());
 
         connect(smtpClient, &SmtpClient::testLoginFinished, this, &DevicePluginMailNotification::testLoginFinished);
         connect(smtpClient, &SmtpClient::sendMailFinished, this, &DevicePluginMailNotification::sendMailFinished);
@@ -166,9 +166,9 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
 
 DeviceManager::DeviceError DevicePluginMailNotification::executeAction(Device *device, const Action &action)
 {
-    if(action.actionTypeId() == sendMailActionTypeId) {
+    if(action.actionTypeId() == googleMailSendMailActionTypeId) {
         SmtpClient *smtpClient = m_clients.key(device);
-        smtpClient->sendMail(action.param(subjectParamTypeId).value().toString(), action.param(bodyParamTypeId).value().toString(), action.id());
+        smtpClient->sendMail(action.param(googleMailSubjectParamTypeId).value().toString(), action.param(googleMailBodyParamTypeId).value().toString(), action.id());
         return DeviceManager::DeviceErrorAsync;
     }
     return DeviceManager::DeviceErrorActionTypeNotFound;

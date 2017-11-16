@@ -70,11 +70,11 @@ void DevicePluginOsdomotics::init()
 DeviceManager::DeviceSetupStatus DevicePluginOsdomotics::setupDevice(Device *device)
 {
     if (device->deviceClassId() == rplRouterDeviceClassId) {
-        qCDebug(dcOsdomotics) << "Setup RPL router" << device->paramValue(hostParamTypeId).toString();
-        QHostAddress address(device->paramValue(hostParamTypeId).toString());
+        qCDebug(dcOsdomotics) << "Setup RPL router" << device->paramValue(rplRouterRplHostParamTypeId).toString();
+        QHostAddress address(device->paramValue(rplRouterRplHostParamTypeId).toString());
 
         if (address.isNull()) {
-            qCWarning(dcOsdomotics) << "Got invalid address" << device->paramValue(hostParamTypeId).toString();
+            qCWarning(dcOsdomotics) << "Got invalid address" << device->paramValue(rplRouterRplHostParamTypeId).toString();
             return DeviceManager::DeviceSetupStatusFailure;
         }
 
@@ -88,8 +88,8 @@ DeviceManager::DeviceSetupStatus DevicePluginOsdomotics::setupDevice(Device *dev
 
         return DeviceManager::DeviceSetupStatusAsync;
     } else if (device->deviceClassId() == merkurNodeDeviceClassId) {
-        qCDebug(dcOsdomotics) << "Setup Merkur node" << device->paramValue(hostParamTypeId).toString();
-        device->setParentId(DeviceId(device->paramValue(routerParamTypeId).toString()));
+        qCDebug(dcOsdomotics) << "Setup Merkur node" << device->paramValue(merkurNodeHostParamTypeId).toString();
+        device->setParentId(DeviceId(device->paramValue(merkurNodeRouterParamTypeId).toString()));
         return DeviceManager::DeviceSetupStatusSuccess;
     }
     return DeviceManager::DeviceSetupStatusFailure;
@@ -108,10 +108,10 @@ void DevicePluginOsdomotics::postSetupDevice(Device *device)
 DeviceManager::DeviceError DevicePluginOsdomotics::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == merkurNodeDeviceClassId) {
-        if (action.actionTypeId() == toggleLedActionTypeId) {
+        if (action.actionTypeId() == merkurNodeToggleLedActionTypeId) {
             QUrl url;
             url.setScheme("coap");
-            url.setHost(device->paramValue(hostParamTypeId).toString());
+            url.setHost(device->paramValue(merkurNodeHostParamTypeId).toString());
             url.setPath("/actuators/toggle");
 
             qCDebug(dcOsdomotics) << "Toggle light";
@@ -137,7 +137,7 @@ DeviceManager::DeviceError DevicePluginOsdomotics::executeAction(Device *device,
 
 void DevicePluginOsdomotics::scanNodes(Device *device)
 {
-    QHostAddress address(device->paramValue(hostParamTypeId).toString());
+    QHostAddress address(device->paramValue(merkurNodeHostParamTypeId).toString());
     qCDebug(dcOsdomotics) << "Scan for new nodes" << address.toString();
 
     QUrl url;
@@ -163,7 +163,7 @@ void DevicePluginOsdomotics::parseNodes(Device *device, const QByteArray &data)
 
     // check if we allready have found this node
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(hostParamTypeId).toString() == nodeAddress.toString()) {
+        if (device->paramValue(merkurNodeHostParamTypeId).toString() == nodeAddress.toString()) {
             return;
         }
     }
@@ -192,11 +192,11 @@ void DevicePluginOsdomotics::parseNodes(Device *device, const QByteArray &data)
 
 void DevicePluginOsdomotics::updateNode(Device *device)
 {
-    qCDebug(dcOsdomotics) << "Update node" << device->paramValue(hostParamTypeId).toString() << "battery value";
+    qCDebug(dcOsdomotics) << "Update node" << device->paramValue(merkurNodeHostParamTypeId).toString() << "battery value";
 
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(hostParamTypeId).toString());
+    url.setHost(device->paramValue(merkurNodeHostParamTypeId).toString());
     url.setPath("/sensors/battery");
 
     CoapReply *reply = m_coap->get(CoapRequest(url));
@@ -213,7 +213,7 @@ void DevicePluginOsdomotics::updateNode(Device *device)
 Device *DevicePluginOsdomotics::findDevice(const QHostAddress &address)
 {
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(hostParamTypeId).toString() == address.toString()) {
+        if (device->paramValue(merkurNodeHostParamTypeId).toString() == address.toString()) {
             return device;
         }
     }
@@ -285,9 +285,9 @@ void DevicePluginOsdomotics::coapReplyFinished(CoapReply *reply)
 
         DeviceDescriptor descriptor(merkurNodeDeviceClassId, "Merkur Node", reply->request().url().host());
         ParamList params;
-        params.append(Param(nameParamTypeId, "Merkur Node"));
-        params.append(Param(hostParamTypeId,  reply->request().url().host()));
-        params.append(Param(routerParamTypeId, device->id()));
+        params.append(Param(merkurNodeNameParamTypeId, "Merkur Node"));
+        params.append(Param(merkurNodeHostParamTypeId,  reply->request().url().host()));
+        params.append(Param(merkurNodeRouterParamTypeId, device->id()));
         descriptor.setParams(params);
         emit autoDevicesAppeared(merkurNodeDeviceClassId, QList<DeviceDescriptor>() << descriptor);
 
@@ -310,7 +310,7 @@ void DevicePluginOsdomotics::coapReplyFinished(CoapReply *reply)
         }
         int batteryValue = reply->payload().toInt();
         qCDebug(dcOsdomotics) << "Node updated" << batteryValue;
-        device->setStateValue(batteryStateTypeId, batteryValue);
+        device->setStateValue(merkurNodeBatteryStateTypeId, batteryValue);
     }
 
     reply->deleteLater();
