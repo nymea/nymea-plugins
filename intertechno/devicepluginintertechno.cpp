@@ -64,7 +64,7 @@ DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device
     QList<int> rawData;
     QByteArray binCode;
 
-    QString familyCode = device->paramValue(familyCodeParamTypeId).toString();
+    QString familyCode = device->paramValue(switchFamilyCodeParamTypeId).toString();
 
     // =======================================
     // generate bin from family code
@@ -102,7 +102,7 @@ DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device
         binCode.append("01010101");
     }
 
-    QString buttonCode = device->paramValue(buttonCodeParamTypeId).toString();
+    QString buttonCode = device->paramValue(switchButtonCodeParamTypeId).toString();
 
     // =======================================
     // generate bin from button code
@@ -150,7 +150,7 @@ DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device
 
     // =======================================
     // add power nibble
-    if (action.param(powerParamTypeId).value().toBool()) {
+    if (action.param(switchPowerParamTypeId).value().toBool()) {
         binCode.append("0101");
     } else {
         binCode.append("0100");
@@ -177,9 +177,9 @@ DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device
     // =======================================
     // send data to hardware resource
     if (hardwareManager()->radio433()->sendData(delay, rawData, 10)) {
-        qCDebug(dcIntertechno) << "transmitted" << pluginName() << device->name() << "power: " << action.param(powerParamTypeId).value().toBool();
+        qCDebug(dcIntertechno) << "transmitted" << pluginName() << device->name() << "power: " << action.param(switchPowerParamTypeId).value().toBool();
     } else {
-        qCWarning(dcIntertechno) << "could not transmitt" << pluginName() << device->name() << "power: " << action.param(powerParamTypeId).value().toBool();
+        qCWarning(dcIntertechno) << "could not transmitt" << pluginName() << device->name() << "power: " << action.param(switchPowerParamTypeId).value().toBool();
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
     return DeviceManager::DeviceErrorNoError;

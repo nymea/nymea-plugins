@@ -64,7 +64,7 @@ void DevicePluginDenon::init()
 
 DeviceManager::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
 {
-    qCDebug(dcDenon) << "Setup Denon device" << device->paramValue(ipParamTypeId).toString();
+    qCDebug(dcDenon) << "Setup Denon device" << device->paramValue(AVRX1000IpParamTypeId).toString();
 
     // Check if we already have a denon device
     if (!myDevices().isEmpty()) {
@@ -72,9 +72,9 @@ DeviceManager::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
         return DeviceManager::DeviceSetupStatusFailure;
     }
 
-    QHostAddress address(device->paramValue(ipParamTypeId).toString());
+    QHostAddress address(device->paramValue(AVRX1000IpParamTypeId).toString());
     if (address.isNull()) {
-        qCWarning(dcDenon) << "Could not parse ip address" << device->paramValue(ipParamTypeId).toString();
+        qCWarning(dcDenon) << "Could not parse ip address" << device->paramValue(AVRX1000IpParamTypeId).toString();
         return DeviceManager::DeviceSetupStatusFailure;
     }
 
@@ -112,13 +112,13 @@ DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, cons
             return DeviceManager::DeviceErrorHardwareNotAvailable;
 
         // check if the requested action is our "update" action ...
-        if (action.actionTypeId() == powerActionTypeId) {
+        if (action.actionTypeId() == AVRX1000PowerActionTypeId) {
 
             // Print information that we are executing now the update action
             qCDebug(dcDenon) << "set power action" << action.id();
-            qCDebug(dcDenon) << "power: " << action.param(powerStateParamTypeId).value().Bool;
+            qCDebug(dcDenon) << "power: " << action.param(AVRX1000PowerStateParamTypeId).value().Bool;
 
-            if (action.param(powerStateParamTypeId).value().toBool() == true){
+            if (action.param(AVRX1000PowerStateParamTypeId).value().toBool() == true){
                 QByteArray cmd = "PWON\r";
                 qCDebug(dcDenon) << "Execute power: " << action.id() << cmd;
                 m_denonConnection->sendData(cmd);
@@ -130,9 +130,9 @@ DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, cons
 
             return DeviceManager::DeviceErrorNoError;
 
-        } else if (action.actionTypeId() == volumeActionTypeId) {
+        } else if (action.actionTypeId() == AVRX1000VolumeActionTypeId) {
 
-            QByteArray vol = action.param(volumeStateParamTypeId).value().toByteArray();
+            QByteArray vol = action.param(AVRX1000VolumeStateParamTypeId).value().toByteArray();
             QByteArray cmd = "MV" + vol + "\r";
 
             qCDebug(dcDenon) << "Execute volume" << action.id() << cmd;
@@ -140,10 +140,10 @@ DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, cons
 
             return DeviceManager::DeviceErrorNoError;
 
-        } else if (action.actionTypeId() == channelActionTypeId) {
+        } else if (action.actionTypeId() == AVRX1000ChannelActionTypeId) {
 
             qCDebug(dcDenon) << "Execute update action" << action.id();
-            QByteArray channel = action.param(channelStateParamTypeId).value().toByteArray();
+            QByteArray channel = action.param(AVRX1000ChannelStateParamTypeId).value().toByteArray();
             QByteArray cmd = "SI" + channel + "\r";
 
             qCDebug(dcDenon) << "Change to channel:" << cmd;
@@ -184,7 +184,7 @@ void DevicePluginDenon::onConnectionChanged()
     }
 
     // Set connection status
-    m_device->setStateValue(connectedStateTypeId, m_denonConnection->connected());
+    m_device->setStateValue(AVRX1000ConnectedStateTypeId, m_denonConnection->connected());
 }
 
 void DevicePluginDenon::onDataReceived(const QByteArray &data)
@@ -200,7 +200,7 @@ void DevicePluginDenon::onDataReceived(const QByteArray &data)
         int vol = data.mid(index+2, 2).toInt();
 
         qCDebug(dcDenon) << "Update volume:" << vol;
-        m_device->setStateValue(volumeStateTypeId, vol);
+        m_device->setStateValue(AVRX1000VolumeStateTypeId, vol);
     }
 
     if (data.contains("SI")) {
@@ -248,15 +248,15 @@ void DevicePluginDenon::onDataReceived(const QByteArray &data)
         }
 
         qCDebug(dcDenon) << "Update channel:" << cmd;
-        m_device->setStateValue(channelStateTypeId, cmd);
+        m_device->setStateValue(AVRX1000ChannelStateTypeId, cmd);
     }
 
     if (data.contains("PWON")) {
         qCDebug(dcDenon) << "Update power on";
-        m_device->setStateValue(powerStateTypeId, true);
+        m_device->setStateValue(AVRX1000PowerStateTypeId, true);
     } else if (data.contains("PWSTANDBY")) {
         qCDebug(dcDenon) << "Update power off";
-        m_device->setStateValue(powerStateTypeId, false);
+        m_device->setStateValue(AVRX1000PowerStateTypeId, false);
     }
 }
 

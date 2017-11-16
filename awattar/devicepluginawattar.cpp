@@ -100,8 +100,8 @@ DeviceManager::DeviceSetupStatus DevicePluginAwattar::setupDevice(Device *device
 
     qCDebug(dcAwattar) << "Setup device" << device->name() << device->params();
 
-    m_token = device->paramValue(tokenParamTypeId).toString();
-    m_userUuid = device->paramValue(userUuidParamTypeId).toString();
+    m_token = device->paramValue(awattarTokenParamTypeId).toString();
+    m_userUuid = device->paramValue(awattarUserUuidParamTypeId).toString();
     m_device = device;
 
     if (m_token.isEmpty() || m_userUuid.isEmpty()) {
@@ -132,21 +132,21 @@ DeviceManager::DeviceError DevicePluginAwattar::executeAction(Device *device, co
     if (m_device.isNull() || m_device != device)
         return DeviceManager::DeviceErrorHardwareNotAvailable;
 
-    if (action.actionTypeId() == sgSyncModeActionTypeId) {
-        qCDebug(dcAwattar) << "Set sg sync mode to" << action.param(sgSyncModeStateParamTypeId).value();
-        device->setStateValue(sgSyncModeStateTypeId, action.param(sgSyncModeStateParamTypeId).value());
-        if (action.param(sgSyncModeStateParamTypeId).value() == "auto")
+    if (action.actionTypeId() == awattarSgSyncModeActionTypeId) {
+        qCDebug(dcAwattar) << "Set sg sync mode to" << action.param(awattarSgSyncModeStateParamTypeId).value();
+        device->setStateValue(awattarSgSyncModeStateTypeId, action.param(awattarSgSyncModeStateParamTypeId).value());
+        if (action.param(awattarSgSyncModeStateParamTypeId).value() == "auto")
             setSgMode(m_autoSgMode);
 
         return DeviceManager::DeviceErrorNoError;
-    } else if (action.actionTypeId() == setSgModeActionTypeId) {
-        if (!device->stateValue(reachableStateTypeId).toBool()) {
+    } else if (action.actionTypeId() == awattarSetSgModeActionTypeId) {
+        if (!device->stateValue(awattarReachableStateTypeId).toBool()) {
             qCWarning(dcAwattar) << "Could not set SG mode. The pump is not reachable";
             return DeviceManager::DeviceErrorHardwareNotAvailable;
         }
 
-        device->setStateValue(sgSyncModeStateTypeId, "manual");
-        QString sgModeString = action.param(sgModeParamTypeId).value().toString();
+        device->setStateValue(awattarSgSyncModeStateTypeId, "manual");
+        QString sgModeString = action.param(awattarSgModeParamTypeId).value().toString();
         qCDebug(dcAwattar) << "Set manual SG mode to:" << sgModeString;
 
         if(sgModeString == "1 - Off") {
@@ -198,10 +198,10 @@ void DevicePluginAwattar::updateData()
 
 void DevicePluginAwattar::searchHeatPumps()
 {
-    QHostAddress rplAddress = QHostAddress(configuration().paramValue(rplParamTypeId).toString());
+    QHostAddress rplAddress = QHostAddress(configuration().paramValue(awattarRplParamTypeId).toString());
 
     if (rplAddress.isNull()) {
-        qCWarning(dcAwattar) << "Invalid RPL address" << configuration().paramValue(rplParamTypeId).toString();
+        qCWarning(dcAwattar) << "Invalid RPL address" << configuration().paramValue(awattarRplParamTypeId).toString();
         return;
     }
 
@@ -256,8 +256,8 @@ void DevicePluginAwattar::processPriceData(const QVariantMap &data)
             if (price < minPrice)
                 minPrice = price;
 
-            m_device->setStateValue(currentMarketPriceStateTypeId, currentPrice / 10.0);
-            m_device->setStateValue(validUntilStateTypeId, endTime.toLocalTime().toTime_t());
+            m_device->setStateValue(awattarCurrentMarketPriceStateTypeId, currentPrice / 10.0);
+            m_device->setStateValue(awattarValidUntilStateTypeId, endTime.toLocalTime().toTime_t());
         }
     }
 
@@ -270,10 +270,10 @@ void DevicePluginAwattar::processPriceData(const QVariantMap &data)
         deviation = qRound(-100 * (averagePrice - currentPrice) / (maxPrice - averagePrice));
     }
 
-    m_device->setStateValue(averagePriceStateTypeId, averagePrice / 10.0);
-    m_device->setStateValue(lowestPriceStateTypeId, minPrice / 10.0);
-    m_device->setStateValue(highestPriceStateTypeId, maxPrice / 10.0);
-    m_device->setStateValue(averageDeviationStateTypeId, deviation);
+    m_device->setStateValue(awattarAveragePriceStateTypeId, averagePrice / 10.0);
+    m_device->setStateValue(awattarLowestPriceStateTypeId, minPrice / 10.0);
+    m_device->setStateValue(awattarHighestPriceStateTypeId, maxPrice / 10.0);
+    m_device->setStateValue(awattarAverageDeviationStateTypeId, deviation);
 }
 
 void DevicePluginAwattar::processUserData(const QVariantMap &data)
@@ -301,7 +301,7 @@ void DevicePluginAwattar::processUserData(const QVariantMap &data)
             m_autoSgMode = sgMode;
 
             // sync the sg mode to each pump available
-            if (m_device->stateValue(sgSyncModeStateTypeId).toString() == "auto") {
+            if (m_device->stateValue(awattarSgSyncModeStateTypeId).toString() == "auto") {
                 setSgMode(m_autoSgMode);
             } else {
                 setSgMode(m_manualSgMode);
@@ -340,19 +340,19 @@ void DevicePluginAwattar::setSgMode(const int &sgMode)
 
     switch (sgMode) {
     case 1:
-        m_device->setStateValue(sgModeStateTypeId, "1 - Off");
+        m_device->setStateValue(awattarSgModeStateTypeId, "1 - Off");
         break;
     case 2:
-        m_device->setStateValue(sgModeStateTypeId, "2 - Normal");
+        m_device->setStateValue(awattarSgModeStateTypeId, "2 - Normal");
         break;
     case 3:
-        m_device->setStateValue(sgModeStateTypeId, "3 - High Temperature");
+        m_device->setStateValue(awattarSgModeStateTypeId, "3 - High Temperature");
         break;
     case 4:
-        m_device->setStateValue(sgModeStateTypeId, "4 - On");
+        m_device->setStateValue(awattarSgModeStateTypeId, "4 - On");
         break;
     default:
-        m_device->setStateValue(sgModeStateTypeId, "0 - Invalid");
+        m_device->setStateValue(awattarSgModeStateTypeId, "0 - Invalid");
         return;
     }
 
@@ -369,7 +369,7 @@ void DevicePluginAwattar::setOnlineStatus(const bool &online)
     if (m_device.isNull())
         return;
 
-    m_device->setStateValue(onlineStateTypeId, online);
+    m_device->setStateValue(awattarOnlineStateTypeId, online);
 }
 
 bool DevicePluginAwattar::heatPumpExists(const QHostAddress &pumpAddress)
@@ -481,6 +481,6 @@ void DevicePluginAwattar::onHeatPumpReachableChanged()
     }
 
     if (m_device)
-        m_device->setStateValue(reachableStateTypeId, reachable);
+        m_device->setStateValue(awattarReachableStateTypeId, reachable);
 
 }

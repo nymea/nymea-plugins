@@ -77,11 +77,11 @@ DeviceManager::DeviceError DevicePluginConrad::executeAction(Device *device, con
 
     int repetitions = 10;
 
-    if (action.actionTypeId() == upActionTypeId) {
+    if (action.actionTypeId() == conradShutterUpActionTypeId) {
         binCode = "10101000";
-    } else if (action.actionTypeId() == downActionTypeId) {
+    } else if (action.actionTypeId() == conradShutterDownActionTypeId) {
         binCode = "10100000";
-    } else if (action.actionTypeId() == syncActionTypeId) {
+    } else if (action.actionTypeId() == conradShutterSyncActionTypeId) {
         binCode = "10100000";
         repetitions = 20;
     } else {

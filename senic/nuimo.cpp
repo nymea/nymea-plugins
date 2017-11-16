@@ -143,13 +143,13 @@ void Nuimo::setBatteryValue(const QByteArray &data)
     int batteryPercentage = data.toHex().toUInt(0, 16);
     qCDebug(dcSenic()) << "Battery:" << batteryPercentage << "%";
 
-    device()->setStateValue(batteryStateTypeId, batteryPercentage);
+    device()->setStateValue(nuimoBatteryStateTypeId, batteryPercentage);
 }
 
 void Nuimo::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcSenic()) << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
-    m_device->setStateValue(connectedStateTypeId, connected);
+    m_device->setStateValue(nuimoConnectedStateTypeId, connected);
 
     if (!connected) {
         // Clean up services
@@ -264,9 +264,9 @@ void Nuimo::onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceStat
 
     printService(m_deviceInfoService);
 
-    device()->setStateValue(firmwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::FirmwareRevisionString).value()));
-    device()->setStateValue(hardwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::HardwareRevisionString).value()));
-    device()->setStateValue(softwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::SoftwareRevisionString).value()));
+    device()->setStateValue(nuimoFirmwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::FirmwareRevisionString).value()));
+    device()->setStateValue(nuimoHardwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::HardwareRevisionString).value()));
+    device()->setStateValue(nuimoSoftwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::SoftwareRevisionString).value()));
 
 }
 

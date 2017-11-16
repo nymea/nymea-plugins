@@ -96,8 +96,8 @@ void DevicePluginKodi::init()
 
 DeviceManager::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
 {
-    qCDebug(dcKodi) << "Setup Kodi device" << device->paramValue(ipParamTypeId).toString();
-    Kodi *kodi= new Kodi(QHostAddress(device->paramValue(ipParamTypeId).toString()), 9090, this);
+    qCDebug(dcKodi) << "Setup Kodi device" << device->paramValue(kodiIpParamTypeId).toString();
+    Kodi *kodi= new Kodi(QHostAddress(device->paramValue(kodiIpParamTypeId).toString()), 9090, this);
 
     connect(kodi, &Kodi::connectionStatusChanged, this, &DevicePluginKodi::onConnectionChanged);
     connect(kodi, &Kodi::stateChanged, this, &DevicePluginKodi::onStateChanged);
@@ -146,26 +146,26 @@ DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const
             return DeviceManager::DeviceErrorHardwareNotAvailable;
         }
 
-        if (action.actionTypeId() == showNotificationActionTypeId) {
-            kodi->showNotification(action.param(messageParamTypeId).value().toString(), 8000, action.param(typeParamTypeId).value().toString(), action.id());
+        if (action.actionTypeId() == kodiShowNotificationActionTypeId) {
+            kodi->showNotification(action.param(kodiMessageParamTypeId).value().toString(), 8000, action.param(kodiTypeParamTypeId).value().toString(), action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == volumeActionTypeId) {
-            kodi->setVolume(action.param(volumeStateParamTypeId).value().toInt(), action.id());
+        } else if (action.actionTypeId() == kodiVolumeActionTypeId) {
+            kodi->setVolume(action.param(kodiVolumeStateParamTypeId).value().toInt(), action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == muteActionTypeId) {
-            kodi->setMuted(action.param(muteStateParamTypeId).value().toBool(), action.id());
+        } else if (action.actionTypeId() == kodiMuteActionTypeId) {
+            kodi->setMuted(action.param(kodiMuteStateParamTypeId).value().toBool(), action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == pressButtonActionTypeId) {
-            kodi->pressButton(action.param(buttonParamTypeId).value().toString(), action.id());
+        } else if (action.actionTypeId() == kodiPressButtonActionTypeId) {
+            kodi->pressButton(action.param(kodiButtonParamTypeId).value().toString(), action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == systemActionTypeId) {
-            kodi->systemCommand(action.param(systemCommandParamTypeId).value().toString(), action.id());
+        } else if (action.actionTypeId() == kodiSystemActionTypeId) {
+            kodi->systemCommand(action.param(kodiSystemCommandParamTypeId).value().toString(), action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == videoLibraryActionTypeId) {
-            kodi->videoLibrary(action.param(videoCommandParamTypeId).value().toString(), action.id());
+        } else if (action.actionTypeId() == kodiVideoLibraryActionTypeId) {
+            kodi->videoLibrary(action.param(kodiVideoCommandParamTypeId).value().toString(), action.id());
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == audioLibraryActionTypeId) {
-            kodi->audioLibrary(action.param(audioCommandParamTypeId).value().toString(), action.id());
+        } else if (action.actionTypeId() == kodiAudioLibraryActionTypeId) {
+            kodi->audioLibrary(action.param(kodiAudioCommandParamTypeId).value().toString(), action.id());
             return DeviceManager::DeviceErrorAsync;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -199,7 +199,7 @@ void DevicePluginKodi::onUpnpDiscoveryFinished()
             // check if we allready found the kodi on this ip
             bool alreadyAdded = false;
             foreach (const DeviceDescriptor dDescriptor, deviceDescriptors) {
-                if (dDescriptor.params().paramValue(ipParamTypeId).toString() == upnpDescriptor.hostAddress().toString()) {
+                if (dDescriptor.params().paramValue(kodiIpParamTypeId).toString() == upnpDescriptor.hostAddress().toString()) {
                     alreadyAdded = true;
                     break;
                 }
@@ -210,9 +210,9 @@ void DevicePluginKodi::onUpnpDiscoveryFinished()
             qCDebug(dcKodi) << upnpDescriptor;
             DeviceDescriptor deviceDescriptor(kodiDeviceClassId, "Kodi - Media Center", upnpDescriptor.hostAddress().toString());
             ParamList params;
-            params.append(Param(nameParamTypeId, upnpDescriptor.friendlyName()));
-            params.append(Param(ipParamTypeId, upnpDescriptor.hostAddress().toString()));
-            params.append(Param(portParamTypeId, 9090));
+            params.append(Param(kodiNameParamTypeId, upnpDescriptor.friendlyName()));
+            params.append(Param(kodiIpParamTypeId, upnpDescriptor.hostAddress().toString()));
+            params.append(Param(kodiPortParamTypeId, 9090));
             deviceDescriptor.setParams(params);
             deviceDescriptors.append(deviceDescriptor);
         }
@@ -233,7 +233,7 @@ void DevicePluginKodi::onConnectionChanged()
         }
     }
 
-    device->setStateValue(connectedStateTypeId, kodi->connected());
+    device->setStateValue(kodiConnectedStateTypeId, kodi->connected());
 }
 
 void DevicePluginKodi::onStateChanged()
@@ -242,8 +242,8 @@ void DevicePluginKodi::onStateChanged()
     Device *device = m_kodis.value(kodi);
 
     // set device state values
-    device->setStateValue(volumeStateTypeId, kodi->volume());
-    device->setStateValue(muteStateTypeId, kodi->muted());
+    device->setStateValue(kodiVolumeStateTypeId, kodi->volume());
+    device->setStateValue(kodiMuteStateTypeId, kodi->muted());
 }
 
 void DevicePluginKodi::onActionExecuted(const ActionId &actionId, const bool &success)
@@ -290,20 +290,20 @@ void DevicePluginKodi::onPlayerPlay()
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
     Device *device = m_kodis.value(kodi);
-    emit emitEvent(Event(onPlayerPlayEventTypeId, device->id()));
+    emit emitEvent(Event(kodiOnPlayerPlayEventTypeId, device->id()));
 }
 
 void DevicePluginKodi::onPlayerPause()
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
     Device *device = m_kodis.value(kodi);
-    emit emitEvent(Event(onPlayerPauseEventTypeId, device->id()));
+    emit emitEvent(Event(kodiOnPlayerPauseEventTypeId, device->id()));
 }
 
 void DevicePluginKodi::onPlayerStop()
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
     Device *device = m_kodis.value(kodi);
-    emit emitEvent(Event(onPlayerStopEventTypeId, device->id()));
+    emit emitEvent(Event(kodiOnPlayerStopEventTypeId, device->id()));
 }
 

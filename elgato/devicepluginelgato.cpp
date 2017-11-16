@@ -431,8 +431,8 @@ DeviceManager::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
     qCDebug(dcElgato()) << "Setup device" << device->name() << device->params();
 
     if (device->deviceClassId() == aveaDeviceClassId) {
-        QBluetoothAddress address = QBluetoothAddress(device->paramValue(macAddressParamTypeId).toString());
-        QString name = device->paramValue(nameParamTypeId).toString();
+        QBluetoothAddress address = QBluetoothAddress(device->paramValue(aveaMacAddressParamTypeId).toString());
+        QString name = device->paramValue(aveaNameParamTypeId).toString();
         QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
@@ -469,7 +469,6 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
-
 void DevicePluginElgato::deviceRemoved(Device *device)
 {
     if (!m_bulbs.keys().contains(device))
@@ -484,7 +483,7 @@ void DevicePluginElgato::deviceRemoved(Device *device)
 bool DevicePluginElgato::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
 {
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(macAddressParamTypeId).toString() == deviceInfo.address().toString())
+        if (device->paramValue(aveaMacAddressParamTypeId).toString() == deviceInfo.address().toString())
             return true;
     }
 
@@ -507,8 +506,8 @@ void DevicePluginElgato::onBluetoothDiscoveryFinished()
             if (!verifyExistingDevices(deviceInfo)) {
                 DeviceDescriptor descriptor(aveaDeviceClassId, "Avea", deviceInfo.address().toString());
                 ParamList params;
-                params.append(Param(nameParamTypeId, deviceInfo.name()));
-                params.append(Param(macAddressParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(aveaNameParamTypeId, deviceInfo.name()));
+                params.append(Param(aveaMacAddressParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
             }

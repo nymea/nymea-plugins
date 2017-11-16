@@ -84,7 +84,7 @@ DeviceManager::DeviceError DevicePluginOpenweathermap::discoverDevices(const Dev
         return DeviceManager::DeviceErrorDeviceClassNotFound;
     }
 
-    QString location = params.paramValue(locationParamTypeId).toString();
+    QString location = params.paramValue(openweathermapLocationParamTypeId).toString();
 
     // if we have an empty search string, perform an autodetection of the location with the WAN ip...
     if (location.isEmpty()){
@@ -107,7 +107,7 @@ DeviceManager::DeviceSetupStatus DevicePluginOpenweathermap::setupDevice(Device 
 
 DeviceManager::DeviceError DevicePluginOpenweathermap::executeAction(Device *device, const Action &action)
 {
-    if(action.actionTypeId() == refreshWeatherActionTypeId){
+    if(action.actionTypeId() == openweathermapRefreshWeatherActionTypeId){
         update(device);
         return DeviceManager::DeviceErrorNoError;
     }
@@ -161,7 +161,7 @@ void DevicePluginOpenweathermap::update(Device *device)
     qCDebug(dcOpenWeatherMap()) << "Refresh data for" << device->name();
     QUrl url("http://api.openweathermap.org/data/2.5/weather");
     QUrlQuery query;
-    query.addQueryItem("id", device->paramValue(idParamTypeId).toString());
+    query.addQueryItem("id", device->paramValue(openweathermapIdParamTypeId).toString());
     query.addQueryItem("mode", "json");
     query.addQueryItem("units", "metric");
     query.addQueryItem("appid", m_apiKey);
@@ -315,11 +315,11 @@ void DevicePluginOpenweathermap::processSearchResults(const QList<QVariantMap> &
     foreach (QVariantMap elemant, cityList) {
         DeviceDescriptor descriptor(openweathermapDeviceClassId, elemant.value("name").toString(), elemant.value("country").toString());
         ParamList params;
-        Param nameParam(nameParamTypeId, elemant.value("name"));
+        Param nameParam(openweathermapNameParamTypeId, elemant.value("name"));
         params.append(nameParam);
-        Param countryParam(countryParamTypeId, elemant.value("country"));
+        Param countryParam(openweathermapCountryParamTypeId, elemant.value("country"));
         params.append(countryParam);
-        Param idParam(idParamTypeId, elemant.value("id"));
+        Param idParam(openweathermapIdParamTypeId, elemant.value("id"));
         params.append(idParam);
         descriptor.setParams(params);
         retList.append(descriptor);
@@ -343,11 +343,11 @@ void DevicePluginOpenweathermap::processWeatherData(const QByteArray &data, Devi
     QVariantMap dataMap = jsonDoc.toVariant().toMap();
     if (dataMap.contains("clouds")) {
         int cloudiness = dataMap.value("clouds").toMap().value("all").toInt();
-        device->setStateValue(cloudinessStateTypeId, cloudiness);
+        device->setStateValue(openweathermapCloudinessStateTypeId, cloudiness);
     }
     if (dataMap.contains("dt")) {
         uint lastUpdate = dataMap.value("dt").toUInt();
-        device->setStateValue(updateTimeStateTypeId, lastUpdate);
+        device->setStateValue(openweathermapUpdateTimeStateTypeId, lastUpdate);
     }
 
     if (dataMap.contains("main")) {
@@ -357,38 +357,38 @@ void DevicePluginOpenweathermap::processWeatherData(const QByteArray &data, Devi
         double pressure = dataMap.value("main").toMap().value("pressure").toDouble();
         int humidity = dataMap.value("main").toMap().value("humidity").toInt();
 
-        device->setStateValue(temperatureStateTypeId, temperatur);
-        device->setStateValue(temperatureMinStateTypeId, temperaturMin);
-        device->setStateValue(temperatureMaxStateTypeId, temperaturMax);
-        device->setStateValue(pressureStateTypeId, pressure);
-        device->setStateValue(humidityStateTypeId, humidity);
+        device->setStateValue(openweathermapTemperatureStateTypeId, temperatur);
+        device->setStateValue(openweathermapTemperatureMinStateTypeId, temperaturMin);
+        device->setStateValue(openweathermapTemperatureMaxStateTypeId, temperaturMax);
+        device->setStateValue(openweathermapPressureStateTypeId, pressure);
+        device->setStateValue(openweathermapHumidityStateTypeId, humidity);
     }
 
     if (dataMap.contains("sys")) {
         uint sunrise = dataMap.value("sys").toMap().value("sunrise").toUInt();
         uint sunset = dataMap.value("sys").toMap().value("sunset").toUInt();
 
-        device->setStateValue(sunriseStateTypeId, sunrise);
-        device->setStateValue(sunsetStateTypeId, sunset);
+        device->setStateValue(openweathermapSunriseStateTypeId, sunrise);
+        device->setStateValue(openweathermapSunsetStateTypeId, sunset);
     }
 
     if (dataMap.contains("visibility")) {
         int visibility = dataMap.value("visibility").toInt();
-        device->setStateValue(visibilityStateTypeId, visibility);
+        device->setStateValue(openweathermapVisibilityStateTypeId, visibility);
     }
 
     // http://openweathermap.org/weather-conditions
     if (dataMap.contains("weather")) {
         QString description = dataMap.value("weather").toList().first().toMap().value("description").toString();
-        device->setStateValue(weatherDescriptionStateTypeId, description);
+        device->setStateValue(openweathermapWeatherDescriptionStateTypeId, description);
     }
 
     if (dataMap.contains("wind")) {
         int windDirection = dataMap.value("wind").toMap().value("deg").toInt();
         double windSpeed = dataMap.value("wind").toMap().value("speed").toDouble();
 
-        device->setStateValue(windDirectionStateTypeId, windDirection);
-        device->setStateValue(windSpeedStateTypeId, windSpeed);
+        device->setStateValue(openweathermapWindDirectionStateTypeId, windDirection);
+        device->setStateValue(openweathermapWindSpeedStateTypeId, windSpeed);
     }
 }
 

@@ -65,7 +65,7 @@ DeviceManager::DeviceSetupStatus DevicePluginOrderButton::setupDevice(Device *de
     qCDebug(dcOrderButton) << "Setup Plant Care" << device->name() << device->params();
 
     // Check if device already added with this address
-    if (deviceAlreadyAdded(QHostAddress(device->paramValue(hostParamTypeId).toString()))) {
+    if (deviceAlreadyAdded(QHostAddress(device->paramValue(orderbuttonHostParamTypeId).toString()))) {
         qCWarning(dcOrderButton) << "Device with this address already added.";
         return DeviceManager::DeviceSetupStatusFailure;
     }
@@ -95,7 +95,7 @@ DeviceManager::DeviceError DevicePluginOrderButton::discoverDevices(const Device
     Q_UNUSED(params)
 
     // Perform a HTTP GET on the RPL router address
-    QHostAddress address(configuration().paramValue(rplParamTypeId).toString());
+    QHostAddress address(configuration().paramValue(orderButtonRplParamTypeId).toString());
     qCDebug(dcOrderButton) << "Scan for new nodes on RPL" << address.toString();
 
     QUrl url;
@@ -122,16 +122,16 @@ DeviceManager::DeviceError DevicePluginOrderButton::executeAction(Device *device
     qCDebug(dcOrderButton) << "Execute action" << device->name() << action.params();
 
     // Check if the device is reachable
-    if (!device->stateValue(reachableStateTypeId).toBool()) {
+    if (!device->stateValue(orderbuttonReachableStateTypeId).toBool()) {
         qCWarning(dcOrderButton) << "Device not reachable.";
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
 
     // Check which action sould be executed
-    if (action.actionTypeId() == resetActionTypeId) {
+    if (action.actionTypeId() == orderbuttonResetActionTypeId) {
         QUrl url;
         url.setScheme("coap");
-        url.setHost(device->paramValue(hostParamTypeId).toString());
+        url.setHost(device->paramValue(orderbuttonHostParamTypeId).toString());
         url.setPath("/s/count");
 
         CoapReply *reply = m_coap->post(CoapRequest(url), QByteArray("count=0"));
@@ -146,12 +146,12 @@ DeviceManager::DeviceError DevicePluginOrderButton::executeAction(Device *device
         m_asyncActions.insert(action.id(), device);
         return DeviceManager::DeviceErrorAsync;
 
-    } else if(action.actionTypeId() == ledActionTypeId) {
-        bool led = action.param(ledStateParamTypeId).value().toBool();
+    } else if(action.actionTypeId() == orderbuttonLedActionTypeId) {
+        bool led = action.param(orderbuttonLedStateParamTypeId).value().toBool();
 
         QUrl url;
         url.setScheme("coap");
-        url.setHost(device->paramValue(hostParamTypeId).toString());
+        url.setHost(device->paramValue(orderbuttonHostParamTypeId).toString());
         url.setPath("/a/led");
 
         QByteArray payload = QString("mode=%1").arg(QString::number((int)led)).toUtf8();
@@ -175,7 +175,7 @@ void DevicePluginOrderButton::pingDevice(Device *device)
 {
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(hostParamTypeId).toString());
+    url.setHost(device->paramValue(orderbuttonHostParamTypeId).toString());
     m_pingReplies.insert(m_coap->ping(CoapRequest(url)), device);
 }
 
@@ -184,7 +184,7 @@ void DevicePluginOrderButton::updateBattery(Device *device)
     qCDebug(dcOrderButton) << "Update" << device->name() << "battery value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(hostParamTypeId).toString());
+    url.setHost(device->paramValue(orderbuttonHostParamTypeId).toString());
     url.setPath("/s/battery");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -201,7 +201,7 @@ void DevicePluginOrderButton::updateCount(Device *device)
     qCDebug(dcOrderButton) << "Update" << device->name() << "count value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(hostParamTypeId).toString());
+    url.setHost(device->paramValue(orderbuttonHostParamTypeId).toString());
     url.setPath("/s/count");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -219,7 +219,7 @@ void DevicePluginOrderButton::updateButton(Device *device)
     qCDebug(dcOrderButton) << "Update" << device->name() << "button value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(hostParamTypeId).toString());
+    url.setHost(device->paramValue(orderbuttonHostParamTypeId).toString());
     url.setPath("/s/button");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -238,7 +238,7 @@ void DevicePluginOrderButton::updateLed(Device *device)
     qCDebug(dcOrderButton) << "Update" << device->name() << "led value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(hostParamTypeId).toString());
+    url.setHost(device->paramValue(orderbuttonHostParamTypeId).toString());
     url.setPath("/a/led");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -256,7 +256,7 @@ void DevicePluginOrderButton::enableNotifications(Device *device)
     qCDebug(dcOrderButton) << "Enable" << device->name() << "notifications";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(hostParamTypeId).toString());
+    url.setHost(device->paramValue(orderbuttonHostParamTypeId).toString());
 
     url.setPath("/s/button");
     m_enableNotification.insert(m_coap->enableResourceNotifications(CoapRequest(url)), device);
@@ -273,7 +273,7 @@ void DevicePluginOrderButton::enableNotifications(Device *device)
 
 void DevicePluginOrderButton::setReachable(Device *device, const bool &reachable)
 {
-    if (device->stateValue(reachableStateTypeId).toBool() != reachable) {
+    if (device->stateValue(orderbuttonReachableStateTypeId).toBool() != reachable) {
         if (!reachable) {
             // Warn just once that the device is not reachable
             qCWarning(dcOrderButton()) << device->name() << "reachable changed" << reachable;
@@ -291,14 +291,14 @@ void DevicePluginOrderButton::setReachable(Device *device, const bool &reachable
         }
     }
 
-    device->setStateValue(reachableStateTypeId, reachable);
+    device->setStateValue(orderbuttonReachableStateTypeId, reachable);
 }
 
 bool DevicePluginOrderButton::deviceAlreadyAdded(const QHostAddress &address)
 {
     // Check if we already have a device with the given address
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(hostParamTypeId).toString() == address.toString()) {
+        if (device->paramValue(orderbuttonHostParamTypeId).toString() == address.toString()) {
             return true;
         }
     }
@@ -309,7 +309,7 @@ Device *DevicePluginOrderButton::findDevice(const QHostAddress &address)
 {
     // Return the device pointer with the given address (otherwise 0)
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(hostParamTypeId).toString() == address.toString()) {
+        if (device->paramValue(orderbuttonHostParamTypeId).toString() == address.toString()) {
             return device;
         }
     }
@@ -358,7 +358,7 @@ void DevicePluginOrderButton::onNetworkReplyFinished()
             // Create a deviceDescriptor for each found address
             DeviceDescriptor descriptor(deviceClassId, "Order Button", address.toString());
             ParamList params;
-            params.append(Param(hostParamTypeId, address.toString()));
+            params.append(Param(orderbuttonHostParamTypeId, address.toString()));
             descriptor.setParams(params);
             deviceDescriptors.append(descriptor);
         }
@@ -377,7 +377,7 @@ void DevicePluginOrderButton::coapReplyFinished(CoapReply *reply)
 
         // Check CoAP reply error
         if (reply->error() != CoapReply::NoError) {
-            if (device->stateValue(reachableStateTypeId).toBool())
+            if (device->stateValue(orderbuttonReachableStateTypeId).toBool())
                 qCWarning(dcOrderButton) << "Ping device" << reply->request().url().toString() << "reply finished with error" << reply->errorString();
 
             setReachable(device, false);
@@ -408,17 +408,17 @@ void DevicePluginOrderButton::coapReplyFinished(CoapReply *reply)
         // Update corresponding device state
         if (urlPath == "/s/count") {
             qCDebug(dcOrderButton()) << "Updated count value:" << reply->payload();
-            device->setStateValue(countStateTypeId, reply->payload().toInt());
+            device->setStateValue(orderbuttonCountStateTypeId, reply->payload().toInt());
         } else if (urlPath == "/s/button") {
             qCDebug(dcOrderButton()) << "Updated button value:" << reply->payload();
             //device->(buttonStateTypeId, QVariant(reply->payload().toInt()).toBool());
-            emit emitEvent(Event(buttonEventTypeId, device->id()));
+            emit emitEvent(Event(orderbuttonButtonEventTypeId, device->id()));
         } else if (urlPath == "/s/battery") {
             qCDebug(dcOrderButton()) << "Updated battery value:" << reply->payload();
-            device->setStateValue(batteryStateTypeId, reply->payload().toDouble());
+            device->setStateValue(orderbuttonBatteryStateTypeId, reply->payload().toDouble());
         } else if (urlPath == "/a/led") {
             qCDebug(dcOrderButton()) << "Updated led value:" << reply->payload();
-            device->setStateValue(ledStateTypeId, QVariant(reply->payload().toInt()).toBool());
+            device->setStateValue(orderbuttonLedStateTypeId, QVariant(reply->payload().toInt()).toBool());
         }
 
     } else if (m_resetCounterRequests.contains(reply)) {
@@ -466,7 +466,7 @@ void DevicePluginOrderButton::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(ledStateTypeId, action.param(ledStateParamTypeId).value().toBool());
+        device->setStateValue(orderbuttonLedStateTypeId, action.param(orderbuttonLedStateParamTypeId).value().toBool());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 
@@ -506,13 +506,13 @@ void DevicePluginOrderButton::onNotificationReceived(const CoapObserveResource &
 
     // Update the corresponding device state
     if (resource.url().path() == "/s/button") {
-        emit emitEvent(Event(buttonEventTypeId, device->id()));
+        emit emitEvent(Event(orderbuttonButtonEventTypeId, device->id()));
         //device->setStateValue(buttonStateTypeId, QVariant(payload.toInt()).toBool());
     } else if (resource.url().path() == "/s/battery") {
-        device->setStateValue(batteryStateTypeId, payload.toDouble());
+        device->setStateValue(orderbuttonBatteryStateTypeId, payload.toDouble());
     } else if (resource.url().path() == "/a/led") {
-        device->setStateValue(ledStateTypeId, QVariant(payload.toInt()).toBool());
+        device->setStateValue(orderbuttonLedStateTypeId, QVariant(payload.toInt()).toBool());
     } else if (resource.url().path() == "/s/count") {
-        device->setStateValue(countStateTypeId, payload.toInt());
+        device->setStateValue(orderbuttonCountStateTypeId, payload.toInt());
     }
 }

@@ -23,7 +23,7 @@
                         {
                             "id": "c4e2ec44-5e8e-4168-9f6d-a905ea3329c9",
                             "name": "familyCode",
-                            "displyName": "family code",
+                            "displayName": "family code",
                             "type": "QString",
                             "allowedValues": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"]
                         },

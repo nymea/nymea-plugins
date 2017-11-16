@@ -77,8 +77,8 @@ DeviceManager::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
 {
     qCDebug(dcSenic()) << "Setup device" << device->name() << device->params();
 
-    QString name = device->paramValue(nameParamTypeId).toString();
-    QBluetoothAddress address = QBluetoothAddress(device->paramValue(macParamTypeId).toString());
+    QString name = device->paramValue(nuimoNameParamTypeId).toString();
+    QBluetoothAddress address = QBluetoothAddress(device->paramValue(nuimoMacParamTypeId).toString());
     QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
     BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::RandomAddress);
@@ -101,15 +101,14 @@ DeviceManager::DeviceError DevicePluginSenic::executeAction(Device *device, cons
     if (nuimo.isNull())
         return DeviceManager::DeviceErrorHardwareFailure;
 
-    if (action.actionTypeId() == showLogoActionTypeId) {
-
-        if (action.param(logoParamTypeId).value().toString() == "Guh")
+    if (action.actionTypeId() == nuimoShowLogoActionTypeId) {
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Guh")
             nuimo->showGuhLogo();
 
-        if (action.param(logoParamTypeId).value().toString() == "Arrow up")
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Arrow up")
             nuimo->showArrowUp();
 
-        if (action.param(logoParamTypeId).value().toString() == "Arrow down")
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Arrow down")
             nuimo->showArrowDown();
 
         return DeviceManager::DeviceErrorNoError;
@@ -131,7 +130,7 @@ void DevicePluginSenic::deviceRemoved(Device *device)
 bool DevicePluginSenic::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
 {
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(macParamTypeId).toString() == deviceInfo.address().toString())
+        if (device->paramValue(nuimoMacParamTypeId).toString() == deviceInfo.address().toString())
             return true;
     }
 
@@ -164,8 +163,8 @@ void DevicePluginSenic::onBluetoothDiscoveryFinished()
             if (!verifyExistingDevices(deviceInfo)) {
                 DeviceDescriptor descriptor(nuimoDeviceClassId, "Nuimo", deviceInfo.address().toString());
                 ParamList params;
-                params.append(Param(nameParamTypeId, deviceInfo.name()));
-                params.append(Param(macParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(nuimoNameParamTypeId, deviceInfo.name()));
+                params.append(Param(nuimoMacParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
             }
@@ -181,7 +180,7 @@ void DevicePluginSenic::onButtonPressed()
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
-    emitEvent(Event(clickedEventTypeId, device->id()));
+    emitEvent(Event(nuimoClickedEventTypeId, device->id()));
 }
 
 void DevicePluginSenic::onButtonReleased()
@@ -196,16 +195,16 @@ void DevicePluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
 
     switch (direction) {
     case Nuimo::SwipeDirectionLeft:
-        emitEvent(Event(swipeLeftEventTypeId, device->id()));
+        emitEvent(Event(nuimoSwipeLeftEventTypeId, device->id()));
         break;
     case Nuimo::SwipeDirectionRight:
-        emitEvent(Event(swipeRightEventTypeId, device->id()));
+        emitEvent(Event(nuimoSwipeRightEventTypeId, device->id()));
         break;
     case Nuimo::SwipeDirectionUp:
-        emitEvent(Event(swipeUpEventTypeId, device->id()));
+        emitEvent(Event(nuimoSwipeUpEventTypeId, device->id()));
         break;
     case Nuimo::SwipeDirectionDown:
-        emitEvent(Event(swipeDownEventTypeId, device->id()));
+        emitEvent(Event(nuimoSwipeDownEventTypeId, device->id()));
         break;
     default:
         break;
@@ -216,7 +215,7 @@ void DevicePluginSenic::onRotationValueChanged(const uint &value)
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
-    device->setStateValue(rotationStateTypeId, value);
+    device->setStateValue(nuimoRotationStateTypeId, value);
 }
 
 
