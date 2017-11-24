@@ -164,11 +164,6 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
-DeviceManager::HardwareResources DevicePluginMailNotification::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNone;
-}
-
 DeviceManager::DeviceError DevicePluginMailNotification::executeAction(Device *device, const Action &action)
 {
     if(action.actionTypeId() == sendMailActionTypeId) {

@@ -73,14 +73,21 @@
 
 DevicePluginEQ3::DevicePluginEQ3()
 {
-    m_cubeDiscovery = new MaxCubeDiscovery(this);
 
-    connect(m_cubeDiscovery,SIGNAL(cubesDetected(QList<MaxCube*>)),this,SLOT(discoveryDone(QList<MaxCube*>)));
 }
 
-DeviceManager::HardwareResources DevicePluginEQ3::requiredHardware() const
+DevicePluginEQ3::~DevicePluginEQ3()
 {
-    return DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginEQ3::init()
+{
+    m_cubeDiscovery = new MaxCubeDiscovery(this);
+    connect(m_cubeDiscovery, &MaxCubeDiscovery::cubesDetected, this, &DevicePluginEQ3::discoveryDone);
+
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginEQ3::onPluginTimer);
 }
 
 DeviceManager::DeviceError DevicePluginEQ3::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -145,15 +152,6 @@ void DevicePluginEQ3::deviceRemoved(Device *device)
     cube->deleteLater();
 }
 
-void DevicePluginEQ3::guhTimer()
-{
-    foreach (MaxCube *cube, m_cubes.keys()){
-        if(cube->isConnected() && cube->isInitialized()){
-            cube->refresh();
-        }
-    }
-}
-
 DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const Action &action)
 {    
     if(device->deviceClassId() == wallThermostateDeviceClassId || device->deviceClassId() == radiatorThermostateDeviceClassId){
@@ -180,6 +178,15 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
     }
 
     return DeviceManager::DeviceErrorActionTypeNotFound;
+}
+
+void DevicePluginEQ3::onPluginTimer()
+{
+    foreach (MaxCube *cube, m_cubes.keys()){
+        if(cube->isConnected() && cube->isInitialized()){
+            cube->refresh();
+        }
+    }
 }
 
 void DevicePluginEQ3::cubeConnectionStatusChanged(const bool &connected)

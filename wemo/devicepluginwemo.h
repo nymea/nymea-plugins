@@ -23,6 +23,7 @@
 #ifndef DEVICEPLUGINWEMO_H
 #define DEVICEPLUGINWEMO_H
 
+#include "plugintimer.h"
 #include "plugin/deviceplugin.h"
 
 class DevicePluginWemo : public DevicePlugin
@@ -34,20 +35,16 @@ class DevicePluginWemo : public DevicePlugin
 
 public:
     explicit DevicePluginWemo();
+    ~DevicePluginWemo();
 
+    void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-
     void deviceRemoved(Device *device) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
-
-    void guhTimer() override;
-    void upnpDiscoveryFinished(const QList<UpnpDeviceDescriptor> &upnpDeviceDescriptorList) override;
-    void upnpNotifyReceived(const QByteArray &notifyData);
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QHash<QNetworkReply *, Device *> m_refreshReplies;
     QHash<QNetworkReply *, Device *> m_setPowerReplies;
     QHash<QNetworkReply *, ActionId> m_runningActionExecutions;
@@ -57,6 +54,12 @@ private:
 
     void processRefreshData(const QByteArray &data, Device *device);
     void processSetPowerData(const QByteArray &data, Device *device, const ActionId &actionId);
+
+private slots:
+    void onNetworkReplyFinished();
+    void onPluginTimer();
+    void onUpnpDiscoveryFinished();
+    void onUpnpNotifyReceived(const QByteArray &notification);
 
 };
 

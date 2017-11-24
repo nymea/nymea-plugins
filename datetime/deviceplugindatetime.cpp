@@ -96,6 +96,8 @@
 #include "plugin/device.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
+#include "hardwaremanager.h"
+#include "network/networkaccessmanager.h"
 
 #include <QJsonDocument>
 #include <QUrlQuery>
@@ -116,11 +118,6 @@ DevicePluginDateTime::DevicePluginDateTime() :
     m_currentDateTime = QDateTime(QDate::currentDate(), QTime::currentTime(), m_timeZone);
 
     connect(m_timer, &QTimer::timeout, this, &DevicePluginDateTime::onSecondChanged);
-}
-
-DeviceManager::HardwareResources DevicePluginDateTime::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNetworkManager;
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *device)
@@ -243,28 +240,6 @@ DeviceManager::DeviceError DevicePluginDateTime::executeAction(Device *device, c
     return DeviceManager::DeviceErrorNoError;
 }
 
-void DevicePluginDateTime::networkManagerReplyReady(QNetworkReply *reply)
-{
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-    if (m_locationReplies.contains(reply)) {
-        m_locationReplies.removeAll(reply);
-        if (status != 200) {
-            qCWarning(dcDateTime) << "Http error status for location request:" << status << reply->error();
-        } else {
-            processGeoLocationData(reply->readAll());
-        }
-    } else if (m_timeReplies.contains(reply)) {
-        m_timeReplies.removeAll(reply);
-        if (status != 200) {
-            qCWarning(dcDateTime) << "Http error status for time request:" << status << reply->error();
-        } else {
-            processTimesData(reply->readAll());
-        }
-    }
-    reply->deleteLater();
-}
-
 void DevicePluginDateTime::startMonitoringAutoDevices()
 {
 //    foreach (Device *device, myDevices()) {
@@ -285,9 +260,10 @@ void DevicePluginDateTime::searchGeoLocation()
     QNetworkRequest request;
     request.setUrl(QUrl("http://ip-api.com/json"));
 
-    qCDebug(dcDateTime) << "Requesting geo location.";
+    qCDebug(dcDateTime()) << "Requesting geo location.";
 
-    QNetworkReply *reply = networkManagerGet(request);
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginDateTime::onNetworkReplayFinished);
     m_locationReplies.append(reply);
 }
 
@@ -340,7 +316,9 @@ void DevicePluginDateTime::getTimes(const QString &latitude, const QString &long
     QNetworkRequest request;
     request.setUrl(url);
 
-    QNetworkReply *reply = networkManagerGet(request);
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginDateTime::onNetworkReplayFinished);
+
     m_timeReplies.append(reply);
 }
 
@@ -383,6 +361,30 @@ void DevicePluginDateTime::processTimesData(const QByteArray &data)
     //    qCDebug(dcDateTime) << "---------------------------------------------";
 
     updateTimes();
+}
+
+void DevicePluginDateTime::onNetworkReplayFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    if (m_locationReplies.contains(reply)) {
+        m_locationReplies.removeAll(reply);
+        if (status != 200) {
+            qCWarning(dcDateTime) << "Http error status for location request:" << status << reply->error();
+        } else {
+            processGeoLocationData(reply->readAll());
+        }
+    } else if (m_timeReplies.contains(reply)) {
+        m_timeReplies.removeAll(reply);
+        if (status != 200) {
+            qCWarning(dcDateTime) << "Http error status for time request:" << status << reply->error();
+        } else {
+            processTimesData(reply->readAll());
+        }
+    }
+    reply->deleteLater();
 }
 
 void DevicePluginDateTime::onAlarm()

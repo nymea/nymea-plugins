@@ -23,6 +23,7 @@
 #ifndef DEVICEPLUGINNETATMO_H
 #define DEVICEPLUGINNETATMO_H
 
+#include "plugintimer.h"
 #include "plugin/deviceplugin.h"
 #include "network/oauth2.h"
 #include "netatmobasestation.h"
@@ -39,18 +40,17 @@ class DevicePluginNetatmo : public DevicePlugin
 
 public:
     explicit DevicePluginNetatmo();
+    ~DevicePluginNetatmo();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
-
-    void guhTimer() override;
 
 public slots:
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    PluginTimer *m_pluginTimer;
     QList<Device *> m_asyncSetups;
 
     QHash<OAuth2 *, Device *> m_authentications;
@@ -66,6 +66,8 @@ private:
     Device *findOutdoorDevice(const QString &macAddress);
 
 private slots:
+    void onPluginTimer();
+    void onNetworkReplyFinished();
     void onAuthenticationChanged();
     void onIndoorStatesChanged();
     void onOutdoorStatesChanged();

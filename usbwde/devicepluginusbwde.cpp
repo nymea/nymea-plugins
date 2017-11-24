@@ -26,14 +26,20 @@
 #include "devicemanager.h"
 #include "plugininfo.h"
 
-DevicePluginUsbWde::DevicePluginUsbWde() :
-    m_bridgeDevice(0)
+DevicePluginUsbWde::DevicePluginUsbWde()
 {
+
 }
 
-DeviceManager::HardwareResources DevicePluginUsbWde::requiredHardware() const
+DevicePluginUsbWde::~DevicePluginUsbWde()
 {
-    return DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginUsbWde::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginUsbWde::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginUsbWde::setupDevice(Device *device)
@@ -81,7 +87,27 @@ void DevicePluginUsbWde::handleError(QSerialPort::SerialPortError serialPortErro
     }
 }
 
-void DevicePluginUsbWde::guhTimer()
+void DevicePluginUsbWde::createNewSensor(int channel)
+{
+    DeviceClassId createClassId;
+    QString deviceName;
+    QList<DeviceDescriptor> deviceDescriptors;
+    createClassId = temperatureSensorDeviceClassId;
+    deviceName = "Sensor channel " + QString::number(channel);
+    if (channel == 9) {
+        createClassId = windRainSensorDeviceClassId;
+        deviceName = "Weather station";
+    }
+    DeviceDescriptor descriptor(createClassId, deviceName, deviceName);
+    ParamList params;
+    params.append(Param(nameParamTypeId, "Sensor " + QString::number(channel)));
+    params.append(Param(channelParamTypeId, channel));
+    descriptor.setParams(params);
+    deviceDescriptors.append(descriptor);
+    emit autoDevicesAppeared(createClassId, deviceDescriptors);
+}
+
+void DevicePluginUsbWde::onPluginTimer()
 {
     if (!m_readData.isEmpty()) {
         // Handle data
@@ -123,24 +149,4 @@ void DevicePluginUsbWde::guhTimer()
         }
         m_readData.clear();
     }
-}
-
-void DevicePluginUsbWde::createNewSensor(int channel)
-{
-    DeviceClassId createClassId;
-    QString deviceName;
-    QList<DeviceDescriptor> deviceDescriptors;
-    createClassId = temperatureSensorDeviceClassId;
-    deviceName = "Sensor channel " + QString::number(channel);
-    if (channel == 9) {
-        createClassId = windRainSensorDeviceClassId;
-        deviceName = "Weather station";
-    }
-    DeviceDescriptor descriptor(createClassId, deviceName, deviceName);
-    ParamList params;
-    params.append(Param(nameParamTypeId, "Sensor " + QString::number(channel)));
-    params.append(Param(channelParamTypeId, channel));
-    descriptor.setParams(params);
-    deviceDescriptors.append(descriptor);
-    emit autoDevicesAppeared(createClassId, deviceDescriptors);
 }

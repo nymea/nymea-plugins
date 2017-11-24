@@ -49,6 +49,8 @@
 #include "plugin/device.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
+#include "network/networkaccessmanager.h"
+#include "network/upnp/upnpdiscovery.h"
 
 #include <QDebug>
 #include <QNetworkReply>
@@ -61,13 +63,26 @@ DevicePluginWemo::DevicePluginWemo()
 {
 }
 
+DevicePluginWemo::~DevicePluginWemo()
+{
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginWemo::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginWemo::onPluginTimer);
+
+    connect(hardwareManager()->upnpDiscovery(), &UpnpDiscovery::upnpNotify, this, &DevicePluginWemo::onUpnpNotifyReceived);
+}
+
 DeviceManager::DeviceError DevicePluginWemo::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params);
-    if (deviceClassId != wemoSwitchDeviceClassId) {
-        return DeviceManager::DeviceErrorDeviceClassNotFound;
-    }
-    upnpDiscover("upnp:rootdevice");
+    Q_UNUSED(deviceClassId)
+
+    UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices("upnp:rootdevice");
+    connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginWemo::onUpnpDiscoveryFinished);
     return DeviceManager::DeviceErrorAsync;
 }
 
@@ -79,11 +94,6 @@ DeviceManager::DeviceSetupStatus DevicePluginWemo::setupDevice(Device *device)
 
     refresh(device);
     return DeviceManager::DeviceSetupStatusSuccess;
-}
-
-DeviceManager::HardwareResources DevicePluginWemo::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceTimer | DeviceManager::HardwareResourceUpnpDisovery | DeviceManager::HardwareResourceNetworkManager;
 }
 
 DeviceManager::DeviceError DevicePluginWemo::executeAction(Device *device, const Action &action)
@@ -128,69 +138,6 @@ void DevicePluginWemo::deviceRemoved(Device *device)
     }
 }
 
-void DevicePluginWemo::networkManagerReplyReady(QNetworkReply *reply)
-{
-    if (m_refreshReplies.contains(reply)) {
-        QByteArray data = reply->readAll();
-        Device *device = m_refreshReplies.take(reply);
-        if (reply->error()) {
-            // give only error if we don't already know that is unreachable
-            if (device->stateValue(reachableStateTypeId).toBool()) {
-                qCWarning(dcWemo) << "WeMo reply error: " << reply->errorString();
-            }
-            device->setStateValue(reachableStateTypeId, false);
-        } else {
-            processRefreshData(data, device);
-        }
-    } else if (m_setPowerReplies.contains(reply)) {
-        QByteArray data = reply->readAll();
-        Device *device = m_setPowerReplies.take(reply);
-        ActionId actionId = m_runningActionExecutions.take(reply);
-        if (reply->error()) {
-            // give only error if we don't already know that is unreachable
-            if (device->stateValue(reachableStateTypeId).toBool()) {
-                qCWarning(dcWemo) << "WeMo reply error: " << reply->errorString();
-            }
-            device->setStateValue(reachableStateTypeId, false);
-        } else {
-            processSetPowerData(data, device, actionId);
-        }
-    }
-
-    reply->deleteLater();
-}
-
-void DevicePluginWemo::guhTimer()
-{
-    foreach (Device* device, myDevices()) {
-        refresh(device);
-    }
-}
-
-void DevicePluginWemo::upnpDiscoveryFinished(const QList<UpnpDeviceDescriptor> &upnpDeviceDescriptorList)
-{
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (UpnpDeviceDescriptor upnpDeviceDescriptor, upnpDeviceDescriptorList) {
-        if (upnpDeviceDescriptor.friendlyName() == "WeMo Switch") {
-            DeviceDescriptor descriptor(wemoSwitchDeviceClassId, "WemoSwitch", upnpDeviceDescriptor.serialNumber());
-            ParamList params;
-            params.append(Param(nameParamTypeId, upnpDeviceDescriptor.friendlyName()));
-            params.append(Param(hostParamTypeId, upnpDeviceDescriptor.hostAddress().toString()));
-            params.append(Param(portParamTypeId, upnpDeviceDescriptor.port()));
-            params.append(Param(serialParamTypeId, upnpDeviceDescriptor.serialNumber()));
-            descriptor.setParams(params);
-            deviceDescriptors.append(descriptor);
-        }
-    }
-    emit devicesDiscovered(wemoSwitchDeviceClassId, deviceDescriptors);
-}
-
-void DevicePluginWemo::upnpNotifyReceived(const QByteArray &notifyData)
-{
-    Q_UNUSED(notifyData);
-}
-
-
 void DevicePluginWemo::refresh(Device *device)
 {
     QByteArray getBinarayStateMessage("<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:GetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\"><BinaryState>1</BinaryState></u:GetBinaryState></s:Body></s:Envelope>");
@@ -201,7 +148,8 @@ void DevicePluginWemo::refresh(Device *device)
     request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("guh"));
     request.setRawHeader("SOAPACTION", "\"urn:Belkin:service:basicevent:1#GetBinaryState\"");
 
-    QNetworkReply *reply = networkManagerPost(request, getBinarayStateMessage);
+    QNetworkReply *reply = hardwareManager()->networkManager()->post(request, getBinarayStateMessage);
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginWemo::onNetworkReplyFinished);
     m_refreshReplies.insert(reply, device);
 }
 
@@ -220,7 +168,8 @@ bool DevicePluginWemo::setPower(Device *device, const bool &power, const ActionI
     request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("guh"));
     request.setRawHeader("SOAPACTION", "\"urn:Belkin:service:basicevent:1#SetBinaryState\"");
 
-    QNetworkReply *reply = networkManagerPost(request, setPowerMessage);
+    QNetworkReply *reply = hardwareManager()->networkManager()->post(request, setPowerMessage);
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginWemo::onNetworkReplyFinished);
     m_setPowerReplies.insert(reply, device);
     m_runningActionExecutions.insert(reply, actionId);
     return true;
@@ -250,4 +199,68 @@ void DevicePluginWemo::processSetPowerData(const QByteArray &data, Device *devic
         device->setStateValue(reachableStateTypeId, false);
         emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorHardwareNotAvailable);
     }
+}
+
+void DevicePluginWemo::onNetworkReplyFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    // check HTTP status code
+    if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        qCWarning(dcWemo()) << "Request error:" << status << reply->errorString();
+        reply->deleteLater();
+        return;
+    }
+
+    if (m_refreshReplies.contains(reply)) {
+        QByteArray data = reply->readAll();
+        Device *device = m_refreshReplies.take(reply);
+        processRefreshData(data, device);
+    } else if (m_setPowerReplies.contains(reply)) {
+        QByteArray data = reply->readAll();
+        Device *device = m_setPowerReplies.take(reply);
+        ActionId actionId = m_runningActionExecutions.take(reply);
+        processSetPowerData(data, device, actionId);
+    }
+
+    reply->deleteLater();
+}
+
+void DevicePluginWemo::onPluginTimer()
+{
+    foreach (Device* device, myDevices()) {
+        refresh(device);
+    }
+}
+
+void DevicePluginWemo::onUpnpDiscoveryFinished()
+{
+    qCDebug(dcWemo()) << "Upnp discovery finished";
+
+    UpnpDiscoveryReply *reply = static_cast<UpnpDiscoveryReply *>(sender());
+    if (reply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
+        qCWarning(dcWemo()) << "Upnp discovery error" << reply->error();
+    }
+    reply->deleteLater();
+
+    QList<DeviceDescriptor> deviceDescriptors;
+    foreach (const UpnpDeviceDescriptor &upnpDeviceDescriptor, reply->deviceDescriptors()) {
+        if (upnpDeviceDescriptor.friendlyName() == "WeMo Switch") {
+            DeviceDescriptor descriptor(wemoSwitchDeviceClassId, "WeMo Switch", upnpDeviceDescriptor.serialNumber());
+            ParamList params;
+            params.append(Param(nameParamTypeId, upnpDeviceDescriptor.friendlyName()));
+            params.append(Param(hostParamTypeId, upnpDeviceDescriptor.hostAddress().toString()));
+            params.append(Param(portParamTypeId, upnpDeviceDescriptor.port()));
+            params.append(Param(serialParamTypeId, upnpDeviceDescriptor.serialNumber()));
+            descriptor.setParams(params);
+            deviceDescriptors.append(descriptor);
+        }
+    }
+    emit devicesDiscovered(wemoSwitchDeviceClassId, deviceDescriptors);
+}
+
+void DevicePluginWemo::onUpnpNotifyReceived(const QByteArray &notification)
+{
+    Q_UNUSED(notification)
 }

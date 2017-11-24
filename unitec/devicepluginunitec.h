@@ -35,7 +35,6 @@ class DevicePluginUnitec : public DevicePlugin
 public:
     explicit DevicePluginUnitec();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
 
 public slots:

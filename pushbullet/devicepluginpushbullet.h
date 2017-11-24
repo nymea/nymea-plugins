@@ -38,9 +38,7 @@ class DevicePluginPushbullet: public DevicePlugin {
 
 public:
     DevicePluginPushbullet();
-    DeviceManager::HardwareResources requiredHardware() const override;
 	DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
 
 public slots:
 	DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
@@ -48,6 +46,10 @@ public slots:
 private:
     QHash<QNetworkReply *, ActionId> m_asyncActions;
     QNetworkReply* sendNotification(Device* device, ParamList params);
+
+private slots:
+    void onNetworkReplyFinished();
+
 };
 
 #endif // DEVICEPLUGINPUSHBULLET_H

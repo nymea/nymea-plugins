@@ -23,36 +23,18 @@
 #include "devicepluginpushbullet.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
+#include "network/networkaccessmanager.h"
 
-DevicePluginPushbullet::DevicePluginPushbullet() {
-}
-
-DeviceManager::HardwareResources DevicePluginPushbullet::requiredHardware() const {
-    return DeviceManager::HardwareResourceNetworkManager;
-}
-
-DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *device) {
-    Q_UNUSED(device);
-    return DeviceManager::DeviceSetupStatusSuccess;
-}
-
-void DevicePluginPushbullet::networkManagerReplyReady(QNetworkReply *reply)
+DevicePluginPushbullet::DevicePluginPushbullet()
 {
-    if (m_asyncActions.keys().contains(reply)) {
-        ActionId actionId = m_asyncActions.value(reply);
-        if (reply->error()) {
-            qCWarning(dcPushbullet) << "Pushbullet reply error: " << reply->errorString();
-            emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorInvalidParameter);
-            reply->deleteLater();
-            return;
-        }
-        if (reply->readAll().contains("error")) {
-            emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorHardwareFailure);
-        } else {
-            emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
-        }
-    }
-    reply->deleteLater();
+
+}
+
+DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *device)
+{
+    qCDebug(dcPushbullet()) << "Setup" << device->name();
+
+    return DeviceManager::DeviceSetupStatusSuccess;
 }
 
 DeviceManager::DeviceError DevicePluginPushbullet::executeAction(Device *device, const Action &action) {
@@ -76,5 +58,28 @@ QNetworkReply* DevicePluginPushbullet::sendNotification(Device* device, ParamLis
     QNetworkRequest request(QUrl("https://api.pushbullet.com/v2/pushes"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader(QByteArray("Access-Token"), device->paramValue(tokenParamTypeId).toByteArray());
-    return networkManagerPost(request, urlParams.toString(QUrl::FullyEncoded).toUtf8());
+    QNetworkReply *reply = hardwareManager()->networkManager()->post(request, urlParams.toString(QUrl::FullyEncoded).toUtf8());
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginPushbullet::onNetworkReplyFinished);
+    return reply;
+}
+
+void DevicePluginPushbullet::onNetworkReplyFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+
+    if (m_asyncActions.keys().contains(reply)) {
+        ActionId actionId = m_asyncActions.value(reply);
+        if (reply->error()) {
+            qCWarning(dcPushbullet) << "Pushbullet reply error: " << reply->errorString();
+            emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorInvalidParameter);
+            reply->deleteLater();
+            return;
+        }
+        if (reply->readAll().contains("error")) {
+            emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorHardwareFailure);
+        } else {
+            emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
+        }
+    }
+    reply->deleteLater();
 }

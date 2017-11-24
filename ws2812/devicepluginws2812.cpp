@@ -44,7 +44,7 @@
 #include "devicepluginws2812.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
-
+#include "network/networkaccessmanager.h"
 
 #include <QDebug>
 #include <QStringList>
@@ -55,10 +55,15 @@ DevicePluginWs2812::DevicePluginWs2812()
 
 }
 
-DeviceManager::HardwareResources DevicePluginWs2812::requiredHardware() const
+DevicePluginWs2812::~DevicePluginWs2812()
 {
-    // We need the NetworkAccessManager for node discovery and the timer for ping requests
-    return DeviceManager::HardwareResourceNetworkManager | DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginWs2812::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginWs2812::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginWs2812::setupDevice(Device *device)
@@ -103,66 +108,16 @@ DeviceManager::DeviceError DevicePluginWs2812::discoverDevices(const DeviceClass
     url.setScheme("http");
     url.setHost(address.toString());
 
-    m_asyncNodeScans.insert(networkManagerGet(QNetworkRequest(url)), deviceClassId);
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginWs2812::onNetworkReplyFinished);
+    m_asyncNodeScans.insert(reply, deviceClassId);
     return DeviceManager::DeviceErrorAsync;
-}
-
-void DevicePluginWs2812::networkManagerReplyReady(QNetworkReply *reply)
-{
-    if (m_asyncNodeScans.keys().contains(reply)) {
-        DeviceClassId deviceClassId = m_asyncNodeScans.take(reply);
-        // Check HTTP status code
-        if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-            qCWarning(dcWs2812) << "Node scan reply HTTP error:" << reply->errorString();
-            emit devicesDiscovered(deviceClassId, QList<DeviceDescriptor>());
-            reply->deleteLater();
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        qCDebug(dcWs2812) << "Node discovery finished:" << endl << data;
-
-        QList<DeviceDescriptor> deviceDescriptors;
-        QList<QByteArray> lines = data.split('\n');
-        qCDebug(dcWs2812) << lines;
-        foreach (const QByteArray &line, lines) {
-            if (line.isEmpty())
-                continue;
-
-            QHostAddress address(QString(line.left(line.length() - 4)));
-            if (address.isNull())
-                continue;
-
-            qCDebug(dcWs2812) << "Found node" << address.toString();
-            // Create a deviceDescriptor for each found address
-            DeviceDescriptor descriptor(deviceClassId, "ws2812", address.toString());
-            ParamList params;
-            params.append(Param(hostParamTypeId, address.toString()));
-            descriptor.setParams(params);
-            deviceDescriptors.append(descriptor);
-        }
-        // Inform the user which devices were found
-        emit devicesDiscovered(deviceClassId, deviceDescriptors);
-    }
-
-    // Delete the HTTP reply
-    reply->deleteLater();
 }
 
 void DevicePluginWs2812::postSetupDevice(Device *device)
 {
     // Try to ping the device after a successful setup
     pingDevice(device);
-}
-
-void DevicePluginWs2812::guhTimer()
-{
-    // Try to ping each device every 10 seconds to make sure it is still reachable
-    foreach (Device *device, myDevices()) {
-        if (device->deviceClassId() == ws2812DeviceClassId) {
-            pingDevice(device);
-        }
-    }
 }
 
 DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, const Action &action)
@@ -228,7 +183,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         return DeviceManager::DeviceErrorAsync;
 
 
-    }else if(action.actionTypeId() == brightnessActionTypeId) {
+    } else if(action.actionTypeId() == brightnessActionTypeId) {
 
         QUrl url;
         url.setScheme("coap");
@@ -255,7 +210,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         return DeviceManager::DeviceErrorAsync;
 
 
-    }else if(action.actionTypeId() == maxPixActionTypeId) {
+    } else if(action.actionTypeId() == maxPixActionTypeId) {
 
         QUrl url;
         url.setScheme("coap");
@@ -288,7 +243,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         return DeviceManager::DeviceErrorAsync;
 
 
-    }else if(action.actionTypeId() == effectModeActionTypeId) {
+    } else if(action.actionTypeId() == effectModeActionTypeId) {
 
         int effectmode = 0;
 
@@ -304,7 +259,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
 
 
         //TODO switch to enum
-        if(effectModeString == "Off") {
+        if (effectModeString == "Off") {
             effectmode = 0;
         } else if (effectModeString == "Color On") {
             effectmode = 1;
@@ -312,17 +267,17 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
             effectmode = 2;
         } else if (effectModeString == "Color Fade") {
             effectmode = 3;
-        }else if (effectModeString == "Color Flash") {
+        } else if (effectModeString == "Color Flash") {
             effectmode = 4;
-        }else if (effectModeString == "Rainbow Wave") {
+        } else if (effectModeString == "Rainbow Wave") {
             effectmode = 5;
-        }else if (effectModeString == "Rainbow Flash") {
+        } else if (effectModeString == "Rainbow Flash") {
             effectmode = 6;
-        }else if (effectModeString == "Knight Rider") {
+        } else if (effectModeString == "Knight Rider") {
             effectmode = 7;
-        }else if (effectModeString == "Fire") {
+        } else if (effectModeString == "Fire") {
             effectmode = 8;
-        }else if (effectModeString == "Tricolore") {
+        } else if (effectModeString == "Tricolore") {
             effectmode = 9;
         }
 
@@ -330,7 +285,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         qCDebug(dcWs2812()) << "Sending" << payload << url.path();
 
         CoapReply *reply = m_coap->post(CoapRequest(url), payload);
-        if (reply->isFinished() && reply->error() != CoapReply::NoError) {
+        if(reply->isFinished() && reply->error() != CoapReply::NoError) {
             qCWarning(dcWs2812) << "CoAP reply finished with error" << reply->errorString();
             setReachable(device, false);
             reply->deleteLater();
@@ -341,7 +296,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         m_asyncActions.insert(action.id(), device);
         return DeviceManager::DeviceErrorAsync;
 
-    }else if(action.actionTypeId() == tcolor1ActionTypeId || action.actionTypeId() == tcolor2ActionTypeId || action.actionTypeId() == tcolor3ActionTypeId) {
+    } else if(action.actionTypeId() == tcolor1ActionTypeId || action.actionTypeId() == tcolor2ActionTypeId || action.actionTypeId() == tcolor3ActionTypeId) {
 
         QUrl url;
         url.setScheme("coap");
@@ -356,7 +311,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
          *
          */
 
-        if(action.actionTypeId() == tcolor1ActionTypeId){
+        if(action.actionTypeId() == tcolor1ActionTypeId) {
             tColor1 = action.param(tcolor1StateParamTypeId).value().value<QColor>().toRgb();
         } else if(action.actionTypeId() == tcolor2ActionTypeId){
             tColor2 = action.param(tcolor2StateParamTypeId).value().value<QColor>().toRgb();
@@ -556,6 +511,60 @@ Device *DevicePluginWs2812::findDevice(const QHostAddress &address)
         }
     }
     return NULL;
+}
+
+void DevicePluginWs2812::onPluginTimer()
+{
+    // Try to ping each device every 10 seconds to make sure it is still reachable
+    foreach (Device *device, myDevices()) {
+        if (device->deviceClassId() == ws2812DeviceClassId) {
+            pingDevice(device);
+        }
+    }
+}
+
+void DevicePluginWs2812::onNetworkReplyFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+
+    if (m_asyncNodeScans.keys().contains(reply)) {
+        DeviceClassId deviceClassId = m_asyncNodeScans.take(reply);
+        // Check HTTP status code
+        if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+            qCWarning(dcWs2812) << "Node scan reply HTTP error:" << reply->errorString();
+            emit devicesDiscovered(deviceClassId, QList<DeviceDescriptor>());
+            reply->deleteLater();
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        qCDebug(dcWs2812) << "Node discovery finished:" << endl << data;
+
+        QList<DeviceDescriptor> deviceDescriptors;
+        QList<QByteArray> lines = data.split('\n');
+        qCDebug(dcWs2812) << lines;
+        foreach (const QByteArray &line, lines) {
+            if (line.isEmpty())
+                continue;
+
+            QHostAddress address(QString(line.left(line.length() - 4)));
+            if (address.isNull())
+                continue;
+
+            qCDebug(dcWs2812) << "Found node" << address.toString();
+            // Create a deviceDescriptor for each found address
+            DeviceDescriptor descriptor(deviceClassId, "ws2812", address.toString());
+            ParamList params;
+            params.append(Param(hostParamTypeId, address.toString()));
+            descriptor.setParams(params);
+            deviceDescriptors.append(descriptor);
+        }
+        // Inform the user which devices were found
+        emit devicesDiscovered(deviceClassId, deviceDescriptors);
+    }
+
+    // Delete the HTTP reply
+    reply->deleteLater();
 }
 
 void DevicePluginWs2812::coapReplyFinished(CoapReply *reply)

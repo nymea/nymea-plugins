@@ -6,7 +6,6 @@ PLUGIN_DIRS = \
     networkdetector     \
     conrad              \
     openweathermap      \
-    lircd               \
     wakeonlan           \
     mailnotification    \
     philipshue          \
@@ -21,10 +20,9 @@ PLUGIN_DIRS = \
     udpcommander        \
     tcpcommander        \
     kodi                \
-    elgato              \
+    #elgato              \
     awattar             \
     netatmo             \
-    dollhouse           \
     plantcare           \
     osdomotics          \
     ws2812              \
@@ -33,8 +31,8 @@ PLUGIN_DIRS = \
     avahimonitor        \
     pushbullet          \
     usbwde              \
-    senic               \
-    multisensor         \
+    #senic               \
+    #multisensor         \
     gpio                \
 
 

@@ -38,7 +38,6 @@ class DevicePluginUdpCommander : public DevicePlugin
 public:
     explicit DevicePluginUdpCommander();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 

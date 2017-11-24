@@ -35,7 +35,6 @@ class DevicePluginTcpCommander : public DevicePlugin
 public:
     explicit DevicePluginTcpCommander();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
 
     void deviceRemoved(Device *device) override;

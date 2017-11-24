@@ -211,11 +211,6 @@ DeviceManager::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId
     return DeviceManager::DeviceErrorVendorNotFound;
 }
 
-DeviceManager::HardwareResources DevicePluginGpio::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNone;
-}
-
 void DevicePluginGpio::deviceRemoved(Device *device)
 {
     if (m_gpioDevices.values().contains(device)) {

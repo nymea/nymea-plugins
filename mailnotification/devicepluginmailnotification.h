@@ -38,7 +38,6 @@ public:
     ~DevicePluginMailNotification();
 
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
     void deviceRemoved(Device *device) override;
 

@@ -67,11 +67,6 @@ DevicePluginUdpCommander::DevicePluginUdpCommander()
 
 }
 
-DeviceManager::HardwareResources DevicePluginUdpCommander::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNone;
-}
-
 DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *device)
 {
     // check port

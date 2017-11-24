@@ -25,6 +25,7 @@
 
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
+#include "plugintimer.h"
 
 #include <QSerialPort>
 
@@ -36,20 +37,24 @@ class DevicePluginUsbWde : public DevicePlugin
     Q_INTERFACES(DevicePlugin)
 
 public:
-    DevicePluginUsbWde();
-    DeviceManager::HardwareResources requiredHardware() const override;
+    explicit DevicePluginUsbWde();
+    ~DevicePluginUsbWde();
+
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    void guhTimer() override;
 
 private:
-    Device* m_bridgeDevice;
-    QSerialPort *m_serialPort;
+    PluginTimer *m_pluginTimer = nullptr;
+    Device *m_bridgeDevice = nullptr;
+    QSerialPort *m_serialPort = nullptr;
     QByteArray  m_readData;
     QHash<int, Device *> m_deviceList;
+
     void createNewSensor(int channel);
 
 private slots:
+    void onPluginTimer();
     void handleReadyRead();
     void handleError(QSerialPort::SerialPortError error);
 };

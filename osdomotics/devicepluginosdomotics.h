@@ -29,6 +29,7 @@
 #include <QDebug>
 
 #include "coap/coap.h"
+#include "plugintimer.h"
 
 class DevicePluginOsdomotics : public DevicePlugin
 {
@@ -38,19 +39,17 @@ class DevicePluginOsdomotics : public DevicePlugin
 
 public:
     explicit DevicePluginOsdomotics();
+    ~DevicePluginOsdomotics();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
-
     void postSetupDevice(Device *device) override;
-
-    void guhTimer() override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    Coap *m_coap;
+    PluginTimer *m_pluginTimer = nullptr;
+    Coap *m_coap = nullptr;
     QHash<QNetworkReply *, Device *> m_asyncSetup;
     QHash<QNetworkReply *, Device *> m_asyncNodeRescans;
 
@@ -65,6 +64,8 @@ private:
     Device *findDevice(const QHostAddress &address);
 
 private slots:
+    void onPluginTimer();
+    void onNetworkReplyFinished();
     void coapReplyFinished(CoapReply *reply);
 
 };

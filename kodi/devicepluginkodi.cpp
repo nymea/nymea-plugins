@@ -64,6 +64,7 @@
 #include "devicepluginkodi.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
+#include "network/upnp/upnpdiscovery.h"
 
 DevicePluginKodi::DevicePluginKodi()
 {
@@ -79,12 +80,18 @@ DevicePluginKodi::DevicePluginKodi()
 //        qCWarning(dcKodi) << "could not read" << file.fileName();
 //        return;
 //    }
-//    m_logo = guhLogoByteArray;
+    //    m_logo = guhLogoByteArray;
 }
 
-DeviceManager::HardwareResources DevicePluginKodi::requiredHardware() const
+DevicePluginKodi::~DevicePluginKodi()
 {
-    return DeviceManager::HardwareResourceTimer | DeviceManager::HardwareResourceUpnpDisovery;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginKodi::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginKodi::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
@@ -117,57 +124,16 @@ void DevicePluginKodi::deviceRemoved(Device *device)
     kodi->deleteLater();
 }
 
-void DevicePluginKodi::guhTimer()
-{
-    foreach (Kodi *kodi, m_kodis.keys()) {
-        if (!kodi->connected()) {
-            kodi->connectKodi();
-            continue;
-        } else {
-            // no need for polling information, notifications do the job
-            //kodi->update();
-        }
-    }
-}
-
-
 DeviceManager::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     Q_UNUSED(deviceClassId)
+
     qCDebug(dcKodi) << "Start UPnP search";
-    upnpDiscover();
+    UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices();
+    connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginKodi::onUpnpDiscoveryFinished);
+
     return DeviceManager::DeviceErrorAsync;
-}
-
-void DevicePluginKodi::upnpDiscoveryFinished(const QList<UpnpDeviceDescriptor> &upnpDeviceDescriptorList)
-{
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (const UpnpDeviceDescriptor &upnpDescriptor, upnpDeviceDescriptorList) {
-        if (upnpDescriptor.modelName().contains("Kodi")) {
-
-            // check if we allready found the kodi on this ip
-            bool alreadyAdded = false;
-            foreach (const DeviceDescriptor dDescriptor, deviceDescriptors) {
-                if (dDescriptor.params().paramValue(ipParamTypeId).toString() == upnpDescriptor.hostAddress().toString()) {
-                    alreadyAdded = true;
-                    break;
-                }
-            }
-            if (alreadyAdded)
-                continue;
-
-            qCDebug(dcKodi) << upnpDescriptor;
-            DeviceDescriptor deviceDescriptor(kodiDeviceClassId, "Kodi - Media Center", upnpDescriptor.hostAddress().toString());
-            ParamList params;
-            params.append(Param(nameParamTypeId, upnpDescriptor.friendlyName()));
-            params.append(Param(ipParamTypeId, upnpDescriptor.hostAddress().toString()));
-            params.append(Param(portParamTypeId, 9090));
-            deviceDescriptor.setParams(params);
-            deviceDescriptors.append(deviceDescriptor);
-        }
-    }
-    emit devicesDiscovered(kodiDeviceClassId, deviceDescriptors);
 }
 
 DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const Action &action)
@@ -205,6 +171,53 @@ DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
+}
+
+void DevicePluginKodi::onPluginTimer()
+{
+    foreach (Kodi *kodi, m_kodis.keys()) {
+        if (!kodi->connected()) {
+            kodi->connectKodi();
+            continue;
+        }
+    }
+}
+
+void DevicePluginKodi::onUpnpDiscoveryFinished()
+{
+    qCDebug(dcKodi()) << "Upnp discovery finished";
+    UpnpDiscoveryReply *reply = static_cast<UpnpDiscoveryReply *>(sender());
+    if (reply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
+        qCWarning(dcKodi()) << "Upnp discovery error" << reply->error();
+    }
+    reply->deleteLater();
+
+    QList<DeviceDescriptor> deviceDescriptors;
+    foreach (const UpnpDeviceDescriptor &upnpDescriptor, reply->deviceDescriptors()) {
+        if (upnpDescriptor.modelName().contains("Kodi")) {
+
+            // check if we allready found the kodi on this ip
+            bool alreadyAdded = false;
+            foreach (const DeviceDescriptor dDescriptor, deviceDescriptors) {
+                if (dDescriptor.params().paramValue(ipParamTypeId).toString() == upnpDescriptor.hostAddress().toString()) {
+                    alreadyAdded = true;
+                    break;
+                }
+            }
+            if (alreadyAdded)
+                continue;
+
+            qCDebug(dcKodi) << upnpDescriptor;
+            DeviceDescriptor deviceDescriptor(kodiDeviceClassId, "Kodi - Media Center", upnpDescriptor.hostAddress().toString());
+            ParamList params;
+            params.append(Param(nameParamTypeId, upnpDescriptor.friendlyName()));
+            params.append(Param(ipParamTypeId, upnpDescriptor.hostAddress().toString()));
+            params.append(Param(portParamTypeId, 9090));
+            deviceDescriptor.setParams(params);
+            deviceDescriptors.append(deviceDescriptor);
+        }
+    }
+    emit devicesDiscovered(kodiDeviceClassId, deviceDescriptors);
 }
 
 void DevicePluginKodi::onConnectionChanged()

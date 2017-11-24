@@ -25,6 +25,7 @@
 
 #include "plugin/deviceplugin.h"
 #include "maxcubediscovery.h"
+#include "plugintimer.h"
 
 #include <QHostAddress>
 
@@ -39,25 +40,27 @@ class DevicePluginEQ3: public DevicePlugin
 
 public:
     explicit DevicePluginEQ3();
+    ~DevicePluginEQ3();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
 
     void startMonitoringAutoDevices() override;
 
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    void guhTimer() override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QList<Param> m_config;
-    MaxCubeDiscovery *m_cubeDiscovery;
-    QHash<MaxCube*, Device*> m_cubes;
+    MaxCubeDiscovery *m_cubeDiscovery = nullptr;
+    QHash<MaxCube *, Device *> m_cubes;
 
 public slots:
     DeviceManager::DeviceError executeAction(Device *device, const Action &action);
 
 private slots:
+    void onPluginTimer();
     void cubeConnectionStatusChanged(const bool &connected);
     void discoveryDone(const QList<MaxCube *> &cubeList);
     void commandActionFinished(const bool &succeeded, const ActionId &actionId);

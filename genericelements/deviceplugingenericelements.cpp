@@ -62,11 +62,6 @@ DevicePluginGenericElements::DevicePluginGenericElements()
 {
 }
 
-DeviceManager::HardwareResources DevicePluginGenericElements::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNone;
-}
-
 DeviceManager::DeviceSetupStatus DevicePluginGenericElements::setupDevice(Device *device)
 {
     // Toggle Button

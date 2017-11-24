@@ -42,16 +42,22 @@
 #include "devicepluginorderbutton.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
+#include "network/networkaccessmanager.h"
 
 DevicePluginOrderButton::DevicePluginOrderButton()
 {
 
 }
 
-DeviceManager::HardwareResources DevicePluginOrderButton::requiredHardware() const
+DevicePluginOrderButton::~DevicePluginOrderButton()
 {
-    // We need the NetworkAccessManager for node discovery and the timer for ping requests
-    return DeviceManager::HardwareResourceNetworkManager | DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginOrderButton::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginOrderButton::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginOrderButton::setupDevice(Device *device)
@@ -96,66 +102,16 @@ DeviceManager::DeviceError DevicePluginOrderButton::discoverDevices(const Device
     url.setScheme("http");
     url.setHost(address.toString());
 
-    m_asyncNodeScans.insert(networkManagerGet(QNetworkRequest(url)), deviceClassId);
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginOrderButton::onNetworkReplyFinished);
+    m_asyncNodeScans.insert(reply, deviceClassId);
     return DeviceManager::DeviceErrorAsync;
-}
-
-void DevicePluginOrderButton::networkManagerReplyReady(QNetworkReply *reply)
-{
-    if (m_asyncNodeScans.keys().contains(reply)) {
-        DeviceClassId deviceClassId = m_asyncNodeScans.take(reply);
-        // Check HTTP status code
-        if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-            qCWarning(dcOrderButton) << "Node scan reply HTTP error:" << reply->errorString();
-            emit devicesDiscovered(deviceClassId, QList<DeviceDescriptor>());
-            reply->deleteLater();
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        qCDebug(dcOrderButton) << "Node discovery finished:" << endl << data;
-
-        QList<DeviceDescriptor> deviceDescriptors;
-        QList<QByteArray> lines = data.split('\n');
-        qCDebug(dcOrderButton) << lines;
-        foreach (const QByteArray &line, lines) {
-            if (line.isEmpty())
-                continue;
-
-            QHostAddress address(QString(line.left(line.length() - 4)));
-            if (address.isNull())
-                continue;
-
-            qCDebug(dcOrderButton) << "Found node" << address.toString();
-            // Create a deviceDescriptor for each found address
-            DeviceDescriptor descriptor(deviceClassId, "Order Button", address.toString());
-            ParamList params;
-            params.append(Param(hostParamTypeId, address.toString()));
-            descriptor.setParams(params);
-            deviceDescriptors.append(descriptor);
-        }
-        // Inform the user which devices were found
-        emit devicesDiscovered(deviceClassId, deviceDescriptors);
-    }
-
-    // Delete the HTTP reply
-    reply->deleteLater();
 }
 
 void DevicePluginOrderButton::postSetupDevice(Device *device)
 {
     // Try to ping the device after a successful setup
     pingDevice(device);
-}
-
-void DevicePluginOrderButton::guhTimer()
-{
-    // Try to ping each device every 10 seconds to make sure it is still reachable
-    foreach (Device *device, myDevices()) {
-        if (device->deviceClassId() == orderbuttonDeviceClassId) {
-            pingDevice(device);
-        }
-    }
 }
 
 DeviceManager::DeviceError DevicePluginOrderButton::executeAction(Device *device, const Action &action)
@@ -358,6 +314,60 @@ Device *DevicePluginOrderButton::findDevice(const QHostAddress &address)
         }
     }
     return NULL;
+}
+
+void DevicePluginOrderButton::onPluginTimer()
+{
+    // Try to ping each device every 10 seconds to make sure it is still reachable
+    foreach (Device *device, myDevices()) {
+        if (device->deviceClassId() == orderbuttonDeviceClassId) {
+            pingDevice(device);
+        }
+    }
+}
+
+void DevicePluginOrderButton::onNetworkReplyFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+
+    if (m_asyncNodeScans.keys().contains(reply)) {
+        DeviceClassId deviceClassId = m_asyncNodeScans.take(reply);
+        // Check HTTP status code
+        if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+            qCWarning(dcOrderButton) << "Node scan reply HTTP error:" << reply->errorString();
+            emit devicesDiscovered(deviceClassId, QList<DeviceDescriptor>());
+            reply->deleteLater();
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        qCDebug(dcOrderButton) << "Node discovery finished:" << endl << data;
+
+        QList<DeviceDescriptor> deviceDescriptors;
+        QList<QByteArray> lines = data.split('\n');
+        qCDebug(dcOrderButton) << lines;
+        foreach (const QByteArray &line, lines) {
+            if (line.isEmpty())
+                continue;
+
+            QHostAddress address(QString(line.left(line.length() - 4)));
+            if (address.isNull())
+                continue;
+
+            qCDebug(dcOrderButton) << "Found node" << address.toString();
+            // Create a deviceDescriptor for each found address
+            DeviceDescriptor descriptor(deviceClassId, "Order Button", address.toString());
+            ParamList params;
+            params.append(Param(hostParamTypeId, address.toString()));
+            descriptor.setParams(params);
+            deviceDescriptors.append(descriptor);
+        }
+        // Inform the user which devices were found
+        emit devicesDiscovered(deviceClassId, deviceDescriptors);
+    }
+
+    // Delete the HTTP reply
+    reply->deleteLater();
 }
 
 void DevicePluginOrderButton::coapReplyFinished(CoapReply *reply)

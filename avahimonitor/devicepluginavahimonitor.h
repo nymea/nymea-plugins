@@ -25,6 +25,7 @@
 #define DEVICEPLUGINAVAHIMONITOR_H
 
 #include "plugin/deviceplugin.h"
+#include "network/avahi/avahiserviceentry.h"
 
 #include <QProcess>
 
@@ -42,7 +43,6 @@ public:
 
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::HardwareResources requiredHardware() const override;
 
 private slots:
     void onServiceEntryAdded(const AvahiServiceEntry &serviceEntry);

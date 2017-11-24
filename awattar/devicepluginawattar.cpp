@@ -69,6 +69,8 @@
 #include "devicepluginawattar.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
+#include "hardwaremanager.h"
+#include "network/networkaccessmanager.h"
 
 #include <QDateTime>
 #include <QJsonDocument>
@@ -78,9 +80,15 @@ DevicePluginAwattar::DevicePluginAwattar()
 {
 }
 
-DeviceManager::HardwareResources DevicePluginAwattar::requiredHardware() const
+DevicePluginAwattar::~DevicePluginAwattar()
 {
-    return DeviceManager::HardwareResourceNetworkManager | DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginAwattar::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(15);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginAwattar::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginAwattar::setupDevice(Device *device)
@@ -117,85 +125,6 @@ void DevicePluginAwattar::deviceRemoved(Device *device)
     qDeleteAll(m_heatPumps);
     m_heatPumps.clear();
     m_device = 0;
-}
-
-void DevicePluginAwattar::networkManagerReplyReady(QNetworkReply *reply)
-{
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-    if (m_updatePrice.contains(reply)) {
-        m_updatePrice.removeAll(reply);
-
-        // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcAwattar) << "Update reply HTTP error:" << status << reply->errorString();
-            setOnlineStatus(false);
-            reply->deleteLater();
-            return;
-        }
-
-        // check JSON file
-        QJsonParseError error;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcAwattar) << "Update reply JSON error:" << error.errorString();
-            setOnlineStatus(false);
-            reply->deleteLater();
-            return;
-        }
-
-        processPriceData(jsonDoc.toVariant().toMap());
-
-        // start user data update
-        m_updateUserData.append(requestUserData(m_token, m_userUuid));
-
-    } else if (m_updateUserData.contains(reply)) {
-        m_updateUserData.removeAll(reply);
-
-        // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcAwattar) << "Update user data reply HTTP error:" << status << reply->errorString();
-            setOnlineStatus(false);
-            reply->deleteLater();
-            return;
-        }
-
-        // check JSON file
-        QJsonParseError error;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcAwattar) << "Update user data reply JSON error:" << error.errorString();
-            setOnlineStatus(false);
-            reply->deleteLater();
-            return;
-        }
-
-        setOnlineStatus(true);
-        processUserData(jsonDoc.toVariant().toMap());
-
-    } else if (m_searchPumpReplies.contains(reply)) {
-        m_searchPumpReplies.removeAll(reply);
-
-        // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcAwattar) << "Search pump reply HTTP error:" << status << reply->errorString();
-            reply->deleteLater();
-            return;
-        }
-
-        processPumpSearchData(reply->readAll());
-    }
-
-    reply->deleteLater();
-}
-
-void DevicePluginAwattar::guhTimer()
-{
-    if (m_device.isNull())
-        return;
-
-    updateData();
-    searchHeatPumps();
 }
 
 DeviceManager::DeviceError DevicePluginAwattar::executeAction(Device *device, const Action &action)
@@ -244,7 +173,9 @@ QNetworkReply *DevicePluginAwattar::requestPriceData(const QString &token)
     QNetworkRequest request(QUrl("https://api.awattar.com/v1/marketdata"));
     request.setRawHeader("Authorization", header.toLocal8Bit());
     request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
-    return networkManagerGet(request);
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginAwattar::onNetworkReplyFinished);
+    return reply;
 }
 
 QNetworkReply *DevicePluginAwattar::requestUserData(const QString &token, const QString &userId)
@@ -255,7 +186,9 @@ QNetworkReply *DevicePluginAwattar::requestUserData(const QString &token, const 
     QNetworkRequest request(QUrl(QString("https://api.awattar.com/v1/devices/%1/actuators").arg(userId)));
     request.setRawHeader("Authorization", header.toLocal8Bit());
     request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
-    return networkManagerGet(request);
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginAwattar::onNetworkReplyFinished);
+    return reply;
 }
 
 void DevicePluginAwattar::updateData()
@@ -273,8 +206,8 @@ void DevicePluginAwattar::searchHeatPumps()
     }
 
     QNetworkRequest request(QUrl(QString("http://[%1]").arg(rplAddress.toString())));
-    QNetworkReply *reply = networkManagerGet(request);
-
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginAwattar::onNetworkReplyFinished);
     m_searchPumpReplies.append(reply);
 }
 
@@ -450,6 +383,86 @@ bool DevicePluginAwattar::heatPumpExists(const QHostAddress &pumpAddress)
         }
     }
     return false;
+}
+
+void DevicePluginAwattar::onPluginTimer()
+{
+    if (m_device.isNull())
+        return;
+
+    updateData();
+    searchHeatPumps();
+}
+
+void DevicePluginAwattar::onNetworkReplyFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    if (m_updatePrice.contains(reply)) {
+        m_updatePrice.removeAll(reply);
+
+        // check HTTP status code
+        if (status != 200) {
+            qCWarning(dcAwattar) << "Update reply HTTP error:" << status << reply->errorString();
+            setOnlineStatus(false);
+            reply->deleteLater();
+            return;
+        }
+
+        // check JSON file
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcAwattar) << "Update reply JSON error:" << error.errorString();
+            setOnlineStatus(false);
+            reply->deleteLater();
+            return;
+        }
+
+        processPriceData(jsonDoc.toVariant().toMap());
+
+        // start user data update
+        m_updateUserData.append(requestUserData(m_token, m_userUuid));
+
+    } else if (m_updateUserData.contains(reply)) {
+        m_updateUserData.removeAll(reply);
+
+        // check HTTP status code
+        if (status != 200) {
+            qCWarning(dcAwattar) << "Update user data reply HTTP error:" << status << reply->errorString();
+            setOnlineStatus(false);
+            reply->deleteLater();
+            return;
+        }
+
+        // check JSON file
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcAwattar) << "Update user data reply JSON error:" << error.errorString();
+            setOnlineStatus(false);
+            reply->deleteLater();
+            return;
+        }
+
+        setOnlineStatus(true);
+        processUserData(jsonDoc.toVariant().toMap());
+
+    } else if (m_searchPumpReplies.contains(reply)) {
+        m_searchPumpReplies.removeAll(reply);
+
+        // check HTTP status code
+        if (status != 200) {
+            qCWarning(dcAwattar) << "Search pump reply HTTP error:" << status << reply->errorString();
+            reply->deleteLater();
+            return;
+        }
+
+        processPumpSearchData(reply->readAll());
+    }
+
+    reply->deleteLater();
 }
 
 void DevicePluginAwattar::onHeatPumpReachableChanged()

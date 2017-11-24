@@ -46,21 +46,29 @@
 #include "devicepluginosdomotics.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
+#include "network/networkaccessmanager.h"
 
 DevicePluginOsdomotics::DevicePluginOsdomotics()
 {
-    m_coap = new Coap(this);
-    connect(m_coap, SIGNAL(replyFinished(CoapReply*)), this, SLOT(coapReplyFinished(CoapReply*)));
+
 }
 
-DeviceManager::HardwareResources DevicePluginOsdomotics::requiredHardware() const
+DevicePluginOsdomotics::~DevicePluginOsdomotics()
 {
-    return DeviceManager::HardwareResourceNetworkManager | DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginOsdomotics::init()
+{
+    m_coap = new Coap(this);
+    connect(m_coap, &Coap::replyFinished, this, &DevicePluginOsdomotics::coapReplyFinished);
+
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginOsdomotics::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginOsdomotics::setupDevice(Device *device)
 {
-
     if (device->deviceClassId() == rplRouterDeviceClassId) {
         qCDebug(dcOsdomotics) << "Setup RPL router" << device->paramValue(hostParamTypeId).toString();
         QHostAddress address(device->paramValue(hostParamTypeId).toString());
@@ -74,7 +82,8 @@ DeviceManager::DeviceSetupStatus DevicePluginOsdomotics::setupDevice(Device *dev
         url.setScheme("http");
         url.setHost(address.toString());
 
-        QNetworkReply *reply = networkManagerGet(QNetworkRequest(url));
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+        connect(reply, &QNetworkReply::finished, this, &DevicePluginOsdomotics::onNetworkReplyFinished);
         m_asyncSetup.insert(reply, device);
 
         return DeviceManager::DeviceSetupStatusAsync;
@@ -91,57 +100,9 @@ void DevicePluginOsdomotics::deviceRemoved(Device *device)
     Q_UNUSED(device)
 }
 
-void DevicePluginOsdomotics::networkManagerReplyReady(QNetworkReply *reply)
-{
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-    // create user finished
-    if (m_asyncSetup.contains(reply)) {
-        Device *device = m_asyncSetup.take(reply);
-
-        // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcOsdomotics) << "Setup reply HTTP error:" << reply->errorString();
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
-            reply->deleteLater();
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        parseNodes(device, data);
-
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
-    } else if (m_asyncNodeRescans.contains(reply)) {
-        Device *device = m_asyncSetup.take(reply);
-
-        // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcOsdomotics) << "Setup reply HTTP error:" << reply->errorString();
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
-            reply->deleteLater();
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        parseNodes(device, data);
-    }
-    reply->deleteLater();
-}
-
 void DevicePluginOsdomotics::postSetupDevice(Device *device)
 {
     updateNode(device);
-}
-
-void DevicePluginOsdomotics::guhTimer()
-{
-    foreach (Device *device, myDevices()) {
-        if (device->deviceClassId() == merkurNodeDeviceClassId) {
-            updateNode(device);
-        } else if(device->deviceClassId() == rplRouterDeviceClassId) {
-            scanNodes(device);
-        }
-    }
 }
 
 DeviceManager::DeviceError DevicePluginOsdomotics::executeAction(Device *device, const Action &action)
@@ -183,7 +144,8 @@ void DevicePluginOsdomotics::scanNodes(Device *device)
     url.setScheme("http");
     url.setHost(address.toString());
 
-    QNetworkReply *reply = networkManagerGet(QNetworkRequest(url));
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginOsdomotics::onNetworkReplyFinished);
     m_asyncNodeRescans.insert(reply, device);
 }
 
@@ -256,6 +218,55 @@ Device *DevicePluginOsdomotics::findDevice(const QHostAddress &address)
         }
     }
     return 0;
+}
+
+void DevicePluginOsdomotics::onPluginTimer()
+{
+    foreach (Device *device, myDevices()) {
+        if (device->deviceClassId() == merkurNodeDeviceClassId) {
+            updateNode(device);
+        } else if(device->deviceClassId() == rplRouterDeviceClassId) {
+            scanNodes(device);
+        }
+    }
+}
+
+void DevicePluginOsdomotics::onNetworkReplyFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    // create user finished
+    if (m_asyncSetup.contains(reply)) {
+        Device *device = m_asyncSetup.take(reply);
+
+        // check HTTP status code
+        if (status != 200) {
+            qCWarning(dcOsdomotics) << "Setup reply HTTP error:" << reply->errorString();
+            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            reply->deleteLater();
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        parseNodes(device, data);
+
+        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+    } else if (m_asyncNodeRescans.contains(reply)) {
+        Device *device = m_asyncSetup.take(reply);
+
+        // check HTTP status code
+        if (status != 200) {
+            qCWarning(dcOsdomotics) << "Setup reply HTTP error:" << reply->errorString();
+            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            reply->deleteLater();
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        parseNodes(device, data);
+    }
+    reply->deleteLater();
 }
 
 void DevicePluginOsdomotics::coapReplyFinished(CoapReply *reply)

@@ -34,6 +34,7 @@
 #include <QHostAddress>
 #include <QNetworkReply>
 
+#include "plugintimer.h"
 #include "denonconnection.h"
 
 class DevicePluginDenon : public DevicePlugin
@@ -45,15 +46,15 @@ class DevicePluginDenon : public DevicePlugin
 
 public:
     explicit DevicePluginDenon();
+    ~DevicePluginDenon();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-    void guhTimer() override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QPointer<Device> m_device;
     QPointer<DenonConnection> m_denonConnection;
     QList<DenonConnection *> m_asyncSetups;
@@ -62,6 +63,7 @@ private:
     QHash <QNetworkReply *, ActionId> m_asyncActionReplies;
 
 private slots:
+    void onPluginTimer();
     void onConnectionChanged();
     void onDataReceived(const QByteArray &data);
     void onSocketError();
