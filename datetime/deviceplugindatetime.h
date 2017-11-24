@@ -42,13 +42,11 @@ class DevicePluginDateTime : public DevicePlugin
 public:
     explicit DevicePluginDateTime();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
 
     void startMonitoringAutoDevices() override;
 
@@ -84,6 +82,7 @@ signals:
     void dawn();
 
 private slots:
+    void onNetworkReplayFinished();
     void onAlarm();
     void onCountdownTimeout();
     void onCountdownRunningChanged(const bool &running);

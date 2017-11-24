@@ -58,11 +58,6 @@ DevicePluginWakeOnLan::DevicePluginWakeOnLan()
 {
 }
 
-DeviceManager::HardwareResources DevicePluginWakeOnLan::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNone;
-}
-
 DeviceManager::DeviceError DevicePluginWakeOnLan::executeAction(Device *device, const Action &action)
 {
     if(action.actionTypeId() == wolActionTypeId){

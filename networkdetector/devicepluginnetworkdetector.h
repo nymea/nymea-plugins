@@ -27,6 +27,7 @@
 #include "plugin/deviceplugin.h"
 #include "host.h"
 #include "discovery.h"
+#include "plugintimer.h"
 #include "devicemonitor.h"
 
 #include <QProcess>
@@ -44,19 +45,23 @@ public:
     explicit DevicePluginNetworkDetector();
     ~DevicePluginNetworkDetector();
 
+    void init() override;
+
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::HardwareResources requiredHardware() const override;
     void deviceRemoved(Device *device) override;
 
-    void guhTimer() override;
 
 private slots:
     void discoveryFinished(const QList<Host> &hosts);
 
     void deviceReachableChanged(bool reachable);
     void deviceAddressChanged(const QString &address);
+
+    void onPluginTimer();
+
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     Discovery *m_discovery = nullptr;
     QHash<DeviceMonitor*, Device*> m_monitors;
 };

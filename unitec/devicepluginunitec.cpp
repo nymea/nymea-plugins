@@ -49,17 +49,14 @@
 #include "devicepluginunitec.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
+#include "hardwaremanager.h"
+#include "hardware/radio433/radio433.h"
 
 #include <QDebug>
 #include <QStringList>
 
 DevicePluginUnitec::DevicePluginUnitec()
 {
-}
-
-DeviceManager::HardwareResources DevicePluginUnitec::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceRadio433;
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginUnitec::setupDevice(Device *device)
@@ -80,6 +77,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUnitec::setupDevice(Device *device)
 
 DeviceManager::DeviceError DevicePluginUnitec::executeAction(Device *device, const Action &action)
 {   
+    if (!hardwareManager()->radio433()->available())
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
+
     QList<int> rawData;
     QByteArray binCode;
 
@@ -127,11 +127,12 @@ DeviceManager::DeviceError DevicePluginUnitec::executeAction(Device *device, con
 
     // =======================================
     // send data to hardware resource
-    if(transmitData(delay, rawData)){
+    if(hardwareManager()->radio433()->sendData(delay, rawData, 10)){
         qCDebug(dcUnitec) << "transmitted" << pluginName() << device->name() << "power: " << action.param(powerParamTypeId).value().toBool();
-        return DeviceManager::DeviceErrorNoError;
     }else{
         qCWarning(dcUnitec) << "could not transmitt" << pluginName() << device->name() << "power: " << action.param(powerParamTypeId).value().toBool();
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
+
+    return DeviceManager::DeviceErrorNoError;
 }

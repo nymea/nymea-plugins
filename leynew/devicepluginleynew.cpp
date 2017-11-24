@@ -49,6 +49,7 @@
 #include "devicepluginleynew.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
+#include "hardware/radio433/radio433.h"
 
 #include <QDebug>
 #include <QStringList>
@@ -64,13 +65,11 @@ DeviceManager::DeviceSetupStatus DevicePluginLeynew::setupDevice(Device *device)
     return DeviceManager::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::HardwareResources DevicePluginLeynew::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceRadio433;
-}
-
 DeviceManager::DeviceError DevicePluginLeynew::executeAction(Device *device, const Action &action)
 {   
+    if (!hardwareManager()->radio433()->available()) {
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
+    }
 
     if (device->deviceClassId() != rfControllerDeviceClassId) {
         return DeviceManager::DeviceErrorDeviceClassNotFound;
@@ -170,11 +169,11 @@ DeviceManager::DeviceError DevicePluginLeynew::executeAction(Device *device, con
 
     // =======================================
     // send data to hardware resource
-    if(transmitData(delay, rawData, repetitions)){
+    if(hardwareManager()->radio433()->sendData(delay, rawData, repetitions)){
         qCDebug(dcLeynew) << "Transmitted" << pluginName() << device->name() << action.id();
-        return DeviceManager::DeviceErrorNoError;
     }else{
         qCWarning(dcLeynew) << "Could not transmitt" << pluginName() << device->name() << action.id();
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
+    return DeviceManager::DeviceErrorNoError;
 }

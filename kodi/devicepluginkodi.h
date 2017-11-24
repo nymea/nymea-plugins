@@ -24,6 +24,7 @@
 #define DEVICEPLUGINKODI_H
 
 #include "plugin/deviceplugin.h"
+#include "plugintimer.h"
 #include "kodi.h"
 
 #include <QHash>
@@ -38,23 +39,22 @@ class DevicePluginKodi : public DevicePlugin
 
 public:
     explicit DevicePluginKodi();
+    ~DevicePluginKodi();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    void guhTimer() override;
-
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    void upnpDiscoveryFinished(const QList<UpnpDeviceDescriptor> &upnpDeviceDescriptorList) override;
-
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    PluginTimer *m_pluginTimer;
     QHash<Kodi *, Device *> m_kodis;
     QList<Kodi *> m_asyncSetups;
 
-
 private slots:
+    void onPluginTimer();
+    void onUpnpDiscoveryFinished();
     void onConnectionChanged();
     void onStateChanged();
     void onActionExecuted(const ActionId &actionId, const bool &success);

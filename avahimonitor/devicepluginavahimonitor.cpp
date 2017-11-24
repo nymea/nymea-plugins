@@ -44,6 +44,7 @@
 #include "plugin/device.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
+#include "network/avahi/qtavahiservicebrowser.h"
 
 #include <QDebug>
 #include <QStringList>
@@ -56,8 +57,8 @@ DevicePluginAvahiMonitor::DevicePluginAvahiMonitor()
 
 void DevicePluginAvahiMonitor::init()
 {
-    connect(avahiServiceBrowser(), SIGNAL(serviceEntryAdded(AvahiServiceEntry)), this, SLOT(onServiceEntryAdded(AvahiServiceEntry)));
-    connect(avahiServiceBrowser(), SIGNAL(serviceEntryRemoved(AvahiServiceEntry)), this, SLOT(onServiceEntryRemoved(AvahiServiceEntry)));
+    connect(hardwareManager()->avahiBrowser(), &QtAvahiServiceBrowser::serviceEntryAdded, this, &DevicePluginAvahiMonitor::onServiceEntryAdded);
+    connect(hardwareManager()->avahiBrowser(), &QtAvahiServiceBrowser::serviceEntryRemoved, this, &DevicePluginAvahiMonitor::onServiceEntryRemoved);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginAvahiMonitor::setupDevice(Device *device)
@@ -75,7 +76,7 @@ DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const Devic
         return DeviceManager::DeviceErrorDeviceClassNotFound;
 
     QList<DeviceDescriptor> deviceDescriptors;
-    foreach (const AvahiServiceEntry &service, avahiServiceBrowser()->serviceEntries()) {
+    foreach (const AvahiServiceEntry &service, hardwareManager()->avahiBrowser()->serviceEntries()) {
         DeviceDescriptor deviceDescriptor(avahiDeviceClassId, service.name(), service.hostAddress().toString());
         ParamList params;
         params.append(Param(serviceParamTypeId, service.name()));
@@ -87,11 +88,6 @@ DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const Devic
     emit devicesDiscovered(avahiDeviceClassId, deviceDescriptors);
 
     return DeviceManager::DeviceErrorAsync;
-}
-
-DeviceManager::HardwareResources DevicePluginAvahiMonitor::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNone;
 }
 
 void DevicePluginAvahiMonitor::onServiceEntryAdded(const AvahiServiceEntry &serviceEntry)

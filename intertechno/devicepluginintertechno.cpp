@@ -44,6 +44,7 @@
 
 #include "plugin/device.h"
 #include "devicemanager.h"
+#include "hardware/radio433/radio433.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -51,15 +52,15 @@
 
 DevicePluginIntertechno::DevicePluginIntertechno()
 {
+
 }
 
-DeviceManager::HardwareResources DevicePluginIntertechno::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceRadio433;
-}
 
 DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device, const Action &action)
 {
+    if (!hardwareManager()->isAvailable(HardwareResource::TypeRadio433))
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
+
     QList<int> rawData;
     QByteArray binCode;
 
@@ -175,13 +176,13 @@ DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device
 
     // =======================================
     // send data to hardware resource
-    if (transmitData(delay, rawData)) {
+    if (hardwareManager()->radio433()->sendData(delay, rawData, 10)) {
         qCDebug(dcIntertechno) << "transmitted" << pluginName() << device->name() << "power: " << action.param(powerParamTypeId).value().toBool();
-        return DeviceManager::DeviceErrorNoError;
     } else {
         qCWarning(dcIntertechno) << "could not transmitt" << pluginName() << device->name() << "power: " << action.param(powerParamTypeId).value().toBool();
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
+    return DeviceManager::DeviceErrorNoError;
 }
 
 void DevicePluginIntertechno::radioData(const QList<int> &rawData)

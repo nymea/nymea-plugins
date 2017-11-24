@@ -43,16 +43,22 @@
 #include "devicepluginplantcare.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
+#include "network/networkaccessmanager.h"
 
 DevicePluginPlantCare::DevicePluginPlantCare()
 {
 
 }
 
-DeviceManager::HardwareResources DevicePluginPlantCare::requiredHardware() const
+DevicePluginPlantCare::~DevicePluginPlantCare()
 {
-    // We need the NetworkAccessManager for node discovery and the timer for ping requests
-    return DeviceManager::HardwareResourceNetworkManager | DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginPlantCare::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginPlantCare::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginPlantCare::setupDevice(Device *device)
@@ -85,6 +91,12 @@ void DevicePluginPlantCare::deviceRemoved(Device *device)
     }
 }
 
+void DevicePluginPlantCare::postSetupDevice(Device *device)
+{
+    // Try to ping the device after a successful setup
+    pingDevice(device);
+}
+
 DeviceManager::DeviceError DevicePluginPlantCare::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
@@ -97,66 +109,10 @@ DeviceManager::DeviceError DevicePluginPlantCare::discoverDevices(const DeviceCl
     url.setScheme("http");
     url.setHost(address.toString());
 
-    m_asyncNodeScans.insert(networkManagerGet(QNetworkRequest(url)), deviceClassId);
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginPlantCare::onNetworkReplyFinished);
+    m_asyncNodeScans.insert(reply, deviceClassId);
     return DeviceManager::DeviceErrorAsync;
-}
-
-void DevicePluginPlantCare::networkManagerReplyReady(QNetworkReply *reply)
-{
-    if (m_asyncNodeScans.keys().contains(reply)) {
-        DeviceClassId deviceClassId = m_asyncNodeScans.take(reply);
-        // Check HTTP status code
-        if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-            qCWarning(dcPlantCare) << "Node scan reply HTTP error:" << reply->errorString();
-            emit devicesDiscovered(deviceClassId, QList<DeviceDescriptor>());
-            reply->deleteLater();
-            return;
-        }
-
-        QByteArray data = reply->readAll();
-        qCDebug(dcPlantCare) << "Node discovery finished:" << endl << data;
-
-        QList<DeviceDescriptor> deviceDescriptors;
-        QList<QByteArray> lines = data.split('\n');
-        qCDebug(dcPlantCare) << lines;
-        foreach (const QByteArray &line, lines) {
-            if (line.isEmpty())
-                continue;
-
-            QHostAddress address(QString(line.left(line.length() - 4)));
-            if (address.isNull())
-                continue;
-
-            qCDebug(dcPlantCare) << "Found node" << address.toString();
-            // Create a deviceDescriptor for each found address
-            DeviceDescriptor descriptor(deviceClassId, "Plant Care", address.toString());
-            ParamList params;
-            params.append(Param(hostParamTypeId, address.toString()));
-            descriptor.setParams(params);
-            deviceDescriptors.append(descriptor);
-        }
-        // Inform the user which devices were found
-        emit devicesDiscovered(deviceClassId, deviceDescriptors);
-    }
-
-    // Delete the HTTP reply
-    reply->deleteLater();
-}
-
-void DevicePluginPlantCare::postSetupDevice(Device *device)
-{
-    // Try to ping the device after a successful setup
-    pingDevice(device);
-}
-
-void DevicePluginPlantCare::guhTimer()
-{
-    // Try to ping each device every 10 seconds to make sure it is still reachable
-    foreach (Device *device, myDevices()) {
-        if (device->deviceClassId() == plantCareDeviceClassId) {
-            pingDevice(device);
-        }
-    }
 }
 
 DeviceManager::DeviceError DevicePluginPlantCare::executeAction(Device *device, const Action &action)
@@ -402,6 +358,60 @@ Device *DevicePluginPlantCare::findDevice(const QHostAddress &address)
         }
     }
     return NULL;
+}
+
+void DevicePluginPlantCare::onPluginTimer()
+{
+    // Try to ping each device every 10 seconds to make sure it is still reachable
+    foreach (Device *device, myDevices()) {
+        if (device->deviceClassId() == plantCareDeviceClassId) {
+            pingDevice(device);
+        }
+    }
+}
+
+void DevicePluginPlantCare::onNetworkReplyFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+
+    if (m_asyncNodeScans.keys().contains(reply)) {
+        DeviceClassId deviceClassId = m_asyncNodeScans.take(reply);
+        // Check HTTP status code
+        if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+            qCWarning(dcPlantCare) << "Node scan reply HTTP error:" << reply->errorString();
+            emit devicesDiscovered(deviceClassId, QList<DeviceDescriptor>());
+            reply->deleteLater();
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        qCDebug(dcPlantCare) << "Node discovery finished:" << endl << data;
+
+        QList<DeviceDescriptor> deviceDescriptors;
+        QList<QByteArray> lines = data.split('\n');
+        qCDebug(dcPlantCare) << lines;
+        foreach (const QByteArray &line, lines) {
+            if (line.isEmpty())
+                continue;
+
+            QHostAddress address(QString(line.left(line.length() - 4)));
+            if (address.isNull())
+                continue;
+
+            qCDebug(dcPlantCare) << "Found node" << address.toString();
+            // Create a deviceDescriptor for each found address
+            DeviceDescriptor descriptor(deviceClassId, "Plant Care", address.toString());
+            ParamList params;
+            params.append(Param(hostParamTypeId, address.toString()));
+            descriptor.setParams(params);
+            deviceDescriptors.append(descriptor);
+        }
+        // Inform the user which devices were found
+        emit devicesDiscovered(deviceClassId, deviceDescriptors);
+    }
+
+    // Delete the HTTP reply
+    reply->deleteLater();
 }
 
 void DevicePluginPlantCare::coapReplyFinished(CoapReply *reply)

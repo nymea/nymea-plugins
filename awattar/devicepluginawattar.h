@@ -24,6 +24,8 @@
 #define DEVICEPLUGINAWATTAR_H
 
 #include "plugin/deviceplugin.h"
+#include "plugintimer.h"
+
 #include "heatpump.h"
 
 #include <QHash>
@@ -39,17 +41,16 @@ class DevicePluginAwattar : public DevicePlugin
 
 public:
     explicit DevicePluginAwattar();
+    ~DevicePluginAwattar();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
-
-    void guhTimer() override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QPointer<Device> m_device;
     QList<QPointer<HeatPump> > m_heatPumps;
 
@@ -62,7 +63,6 @@ private:
 
     int m_autoSgMode;
     int m_manualSgMode;
-
 
     QNetworkReply *requestPriceData(const QString& token);
     QNetworkReply *requestUserData(const QString& token, const QString &userId);
@@ -79,6 +79,8 @@ private:
     bool heatPumpExists(const QHostAddress &pumpAddress);
 
 private slots:
+    void onPluginTimer();
+    void onNetworkReplyFinished();
     void onHeatPumpReachableChanged();
 
 };

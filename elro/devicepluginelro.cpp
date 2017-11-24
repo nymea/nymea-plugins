@@ -43,6 +43,8 @@
 #include "devicepluginelro.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
+#include "hardware/radio433/radio433.h"
+
 
 #include <QDebug>
 #include <QStringList>
@@ -51,13 +53,10 @@ DevicePluginElro::DevicePluginElro()
 {
 }
 
-DeviceManager::HardwareResources DevicePluginElro::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceRadio433;
-}
-
 DeviceManager::DeviceError DevicePluginElro::executeAction(Device *device, const Action &action)
-{   
+{
+    if (!hardwareManager()->isAvailable(HardwareResource::TypeRadio433))
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
 
     if (action.actionTypeId() != powerActionTypeId)
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -146,13 +145,14 @@ DeviceManager::DeviceError DevicePluginElro::executeAction(Device *device, const
     }
 
     // send data to hardware resource
-    if (transmitData(delay, rawData)) {
+    if (hardwareManager()->radio433()->sendData(delay, rawData, 10)) {
         qCDebug(dcElro) << "Transmitted" << pluginName() << device->name() << "power: " << action.param(powerParamTypeId).value().toBool();
-        return DeviceManager::DeviceErrorNoError;
     } else {
         qCWarning(dcElro) << "Could not transmitt" << pluginName() << device->name() << "power: " << action.param(powerParamTypeId).value().toBool();
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
+
+    return DeviceManager::DeviceErrorNoError;
 }
 
 void DevicePluginElro::radioData(const QList<int> &rawData)

@@ -27,6 +27,7 @@
 #include "plugin/deviceplugin.h"
 #include "types/action.h"
 #include "coap/coap.h"
+#include "plugintimer.h"
 
 #include <QHash>
 
@@ -38,19 +39,17 @@ class DevicePluginOrderButton : public DevicePlugin
 
 public:
     explicit DevicePluginOrderButton();
+    ~DevicePluginOrderButton();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
-
     void postSetupDevice(Device *device) override;
-
-    void guhTimer() override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QPointer<Coap> m_coap;
     QHash<QNetworkReply *, DeviceClassId> m_asyncNodeScans;
     QHash<CoapReply *, Device *> m_enableNotification;
@@ -81,6 +80,8 @@ private:
     Device *findDevice(const QHostAddress &address);
 
 private slots:
+    void onPluginTimer();
+    void onNetworkReplyFinished();
     void coapReplyFinished(CoapReply *reply);
     void onNotificationReceived(const CoapObserveResource &resource, const int &notificationNumber, const QByteArray &payload);
 };

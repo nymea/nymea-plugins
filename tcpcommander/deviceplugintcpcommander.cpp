@@ -26,12 +26,6 @@ DevicePluginTcpCommander::DevicePluginTcpCommander()
 {
 }
 
-DeviceManager::HardwareResources DevicePluginTcpCommander::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNone;
-}
-
-
 DeviceManager::DeviceSetupStatus DevicePluginTcpCommander::setupDevice(Device *device)
 {
     if (device->deviceClassId() == tcpOutputDeviceClassId) {

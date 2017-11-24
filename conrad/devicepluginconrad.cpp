@@ -46,6 +46,7 @@
 #include "plugin/device.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
+#include "hardware/radio433/radio433.h"
 
 #include <QDebug>
 #include <QStringList>
@@ -53,11 +54,7 @@
 
 DevicePluginConrad::DevicePluginConrad()
 {
-}
 
-DeviceManager::HardwareResources DevicePluginConrad::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceRadio433;
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginConrad::setupDevice(Device *device)
@@ -70,6 +67,10 @@ DeviceManager::DeviceSetupStatus DevicePluginConrad::setupDevice(Device *device)
 
 DeviceManager::DeviceError DevicePluginConrad::executeAction(Device *device, const Action &action)
 {
+
+    if (!hardwareManager()->radio433()->available()) {
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
+    }
 
     QList<int> rawData;
     QByteArray binCode;
@@ -119,13 +120,13 @@ DeviceManager::DeviceError DevicePluginConrad::executeAction(Device *device, con
 
     // =======================================
     // send data to driver
-    if(transmitData(delay, rawData, repetitions)){
+    if(hardwareManager()->radio433()->sendData(delay, rawData, repetitions)){
         qCDebug(dcConrad) << "Transmitted successfully" << device->name() << action.actionTypeId();
-        return DeviceManager::DeviceErrorNoError;
     }else{
         qCWarning(dcConrad) << "Could not transmitt" << pluginName() << device->name() << action.actionTypeId();
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
+    return DeviceManager::DeviceErrorNoError;
 }
 
 void DevicePluginConrad::radioData(const QList<int> &rawData)

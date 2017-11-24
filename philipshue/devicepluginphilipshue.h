@@ -29,6 +29,9 @@
 #include "huelight.h"
 #include "hueremote.h"
 #include "pairinginfo.h"
+#include "plugintimer.h"
+#include "network/networkaccessmanager.h"
+#include "network/upnp/upnpdiscovery.h"
 
 class QNetworkReply;
 
@@ -41,18 +44,13 @@ class DevicePluginPhilipsHue: public DevicePlugin
 
 public:
     explicit DevicePluginPhilipsHue();
+    ~DevicePluginPhilipsHue();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
-
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     void deviceRemoved(Device *device) override;
-
-    void upnpDiscoveryFinished(const QList<UpnpDeviceDescriptor> &upnpDeviceDescriptorList) override;
     DeviceManager::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
-
-    void networkManagerReplyReady(QNetworkReply *reply) override;
 
 public slots:
     DeviceManager::DeviceError executeAction(Device *device, const Action &action);
@@ -61,10 +59,14 @@ private slots:
     void lightStateChanged();
     void remoteStateChanged();
     void onRemoteButtonEvent(const int &buttonCode);
-    void onTimeout();
+    void onPluginTimer();
+
+private slots:
+    void onUpnpDiscoveryFinished();
+    void networkManagerReplyReady();
 
 private:
-    QTimer *m_timer;
+    PluginTimer *m_pluginTimer = nullptr;
 
     QHash<QNetworkReply *, PairingInfo *> m_pairingRequests;
     QHash<QNetworkReply *, PairingInfo *> m_informationRequests;
@@ -119,6 +121,7 @@ private:
 
     int brightnessToPercentage(int brightness);
     int percentageToBrightness(int percentage);
+
 };
 
 #endif // DEVICEPLUGINBOBLIGHT_H

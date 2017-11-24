@@ -35,8 +35,7 @@ class DevicePluginElro : public DevicePlugin
 public:
     explicit DevicePluginElro();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
-    void radioData(const QList<int> &rawData) override;
+    void radioData(const QList<int> &rawData);
 
 public slots:
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;

@@ -41,7 +41,6 @@ public:
 
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::HardwareResources requiredHardware() const override;
     void deviceRemoved(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 

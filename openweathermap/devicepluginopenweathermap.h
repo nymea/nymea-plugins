@@ -23,9 +23,12 @@
 #ifndef DEVICEPLUGINOPENWEATHERMAP_H
 #define DEVICEPLUGINOPENWEATHERMAP_H
 
+#include "plugintimer.h"
 #include "plugin/deviceplugin.h"
+#include "network/networkaccessmanager.h"
 
 #include <QTimer>
+#include <QHostAddress>
 
 class DevicePluginOpenweathermap : public DevicePlugin
 {
@@ -36,17 +39,17 @@ class DevicePluginOpenweathermap : public DevicePlugin
 
 public:
     explicit DevicePluginOpenweathermap();
+    ~DevicePluginOpenweathermap();
 
+    void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
     void deviceRemoved(Device *device) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
-    //void guhTimer() override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QList<QNetworkReply *> m_autodetectionReplies;
     QList<QNetworkReply *> m_searchReplies;
     QList<QNetworkReply *> m_searchGeoReplies;
@@ -59,7 +62,6 @@ private:
     double m_longitude;
     double m_latitude;
 
-    QTimer *m_timer;
     QString m_apiKey;
 
     void update(Device *device);
@@ -75,7 +77,8 @@ private:
     void processWeatherData(const QByteArray &data, Device *device);
 
 private slots:
-    void onTimeout();
+    void networkManagerReplyReady();
+    void onPluginTimer();
 
 };
 

@@ -51,9 +51,15 @@ DevicePluginDenon::DevicePluginDenon()
 
 }
 
-DeviceManager::HardwareResources DevicePluginDenon::requiredHardware() const
+DevicePluginDenon::~DevicePluginDenon()
 {
-    return DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginDenon::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(15);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginDenon::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
@@ -94,19 +100,6 @@ void DevicePluginDenon::deviceRemoved(Device *device)
     m_device.clear();
     m_denonConnection->disconnectDenon();
     m_denonConnection->deleteLater();
-}
-
-
-void DevicePluginDenon::guhTimer()
-{
-    if (m_denonConnection.isNull())
-        return;
-
-    if (!m_denonConnection->connected()) {
-        m_denonConnection->connectDenon();
-    } else {
-        m_denonConnection->sendData("PW?\rSI?\rMV?\r");
-    }
 }
 
 DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, const Action &action)
@@ -161,6 +154,18 @@ DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, cons
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
+}
+
+void DevicePluginDenon::onPluginTimer()
+{
+    if (m_denonConnection.isNull())
+        return;
+
+    if (!m_denonConnection->connected()) {
+        m_denonConnection->connectDenon();
+    } else {
+        m_denonConnection->sendData("PW?\rSI?\rMV?\r");
+    }
 }
 
 void DevicePluginDenon::onConnectionChanged()

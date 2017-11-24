@@ -61,9 +61,17 @@ DevicePluginNetworkDetector::DevicePluginNetworkDetector()
 
 DevicePluginNetworkDetector::~DevicePluginNetworkDetector()
 {
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+
     if (m_discovery->isRunning()) {
         m_discovery->abort();
     }
+}
+
+void DevicePluginNetworkDetector::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginNetworkDetector::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *device)
@@ -81,7 +89,6 @@ DeviceManager::DeviceError DevicePluginNetworkDetector::discoverDevices(const De
 {
     Q_UNUSED(params)
 
-
     if (deviceClassId != networkDeviceClassId)
         return DeviceManager::DeviceErrorDeviceClassNotFound;
 
@@ -95,11 +102,6 @@ DeviceManager::DeviceError DevicePluginNetworkDetector::discoverDevices(const De
     return DeviceManager::DeviceErrorAsync;
 }
 
-DeviceManager::HardwareResources DevicePluginNetworkDetector::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceTimer;
-}
-
 void DevicePluginNetworkDetector::deviceRemoved(Device *device)
 {
     DeviceMonitor *monitor = m_monitors.key(device);
@@ -107,7 +109,7 @@ void DevicePluginNetworkDetector::deviceRemoved(Device *device)
     delete monitor;
 }
 
-void DevicePluginNetworkDetector::guhTimer()
+void DevicePluginNetworkDetector::onPluginTimer()
 {
     foreach (DeviceMonitor *monitor, m_monitors.keys()) {
         monitor->update();

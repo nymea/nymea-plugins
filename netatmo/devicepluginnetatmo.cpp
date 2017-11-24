@@ -42,6 +42,7 @@
 #include "devicepluginnetatmo.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
+#include "network/networkaccessmanager.h"
 
 #include <QDebug>
 #include <QUrlQuery>
@@ -52,9 +53,15 @@ DevicePluginNetatmo::DevicePluginNetatmo()
 
 }
 
-DeviceManager::HardwareResources DevicePluginNetatmo::requiredHardware() const
+DevicePluginNetatmo::~DevicePluginNetatmo()
 {
-    return DeviceManager::HardwareResourceNetworkManager | DeviceManager::HardwareResourceTimer;
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void DevicePluginNetatmo::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginNetatmo::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
@@ -119,49 +126,6 @@ void DevicePluginNetatmo::deviceRemoved(Device *device)
     }
 }
 
-void DevicePluginNetatmo::networkManagerReplyReady(QNetworkReply *reply)
-{
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-    // update values request
-    if (m_refreshRequest.keys().contains(reply)) {
-        Device *device = m_refreshRequest.take(reply);
-
-        // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcNetatmo) << "Device list reply HTTP error:" << status << reply->errorString();
-            device->setStateValue(availableStateTypeId, false);
-            reply->deleteLater();
-            return;
-        }
-
-        // check JSON file
-        QJsonParseError error;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcNetatmo) << "Device list reply JSON error:" << error.errorString();
-            reply->deleteLater();
-            return;
-        }
-
-        //qCDebug(dcNetatmo) << jsonDoc.toJson();
-        processRefreshData(jsonDoc.toVariant().toMap(), device->id().toString());
-    }
-
-    reply->deleteLater();
-}
-
-void DevicePluginNetatmo::guhTimer()
-{
-    foreach (OAuth2 *authentication, m_authentications.keys()) {
-        if (authentication->authenticated()) {
-            refreshData(m_authentications.value(authentication), authentication->token());
-        } else {
-            authentication->startAuthentication();
-        }
-    }
-}
-
 DeviceManager::DeviceError DevicePluginNetatmo::executeAction(Device *device, const Action &action)
 {
     Q_UNUSED(device)
@@ -178,7 +142,9 @@ void DevicePluginNetatmo::refreshData(Device *device, const QString &token)
     QUrl url("https://api.netatmo.com/api/devicelist");
     url.setQuery(query);
 
-    QNetworkReply *reply = networkManagerGet(QNetworkRequest(url));
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginNetatmo::onNetworkReplyFinished);
+
     m_refreshRequest.insert(reply, device);
 }
 
@@ -265,6 +231,50 @@ Device *DevicePluginNetatmo::findOutdoorDevice(const QString &macAddress)
         }
     }
     return 0;
+}
+
+void DevicePluginNetatmo::onPluginTimer()
+{
+    foreach (OAuth2 *authentication, m_authentications.keys()) {
+        if (authentication->authenticated()) {
+            refreshData(m_authentications.value(authentication), authentication->token());
+        } else {
+            authentication->startAuthentication();
+        }
+    }
+}
+
+void DevicePluginNetatmo::onNetworkReplyFinished()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    // update values request
+    if (m_refreshRequest.keys().contains(reply)) {
+        Device *device = m_refreshRequest.take(reply);
+
+        // check HTTP status code
+        if (status != 200) {
+            qCWarning(dcNetatmo) << "Device list reply HTTP error:" << status << reply->errorString();
+            device->setStateValue(availableStateTypeId, false);
+            reply->deleteLater();
+            return;
+        }
+
+        // check JSON file
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcNetatmo) << "Device list reply JSON error:" << error.errorString();
+            reply->deleteLater();
+            return;
+        }
+
+        //qCDebug(dcNetatmo) << jsonDoc.toJson();
+        processRefreshData(jsonDoc.toVariant().toMap(), device->id().toString());
+    }
+
+    reply->deleteLater();
 }
 
 void DevicePluginNetatmo::onAuthenticationChanged()

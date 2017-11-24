@@ -23,8 +23,9 @@
 #ifndef DEVICEPLUGINLGSMARTTV_H
 #define DEVICEPLUGINLGSMARTTV_H
 
-#include "plugin/deviceplugin.h"
 #include "tvdevice.h"
+#include "plugintimer.h"
+#include "plugin/deviceplugin.h"
 #include "network/upnp/upnpdevicedescriptor.h"
 
 class DevicePluginLgSmartTv : public DevicePlugin
@@ -36,23 +37,19 @@ class DevicePluginLgSmartTv : public DevicePlugin
 
 public:
     explicit DevicePluginLgSmartTv();
+    ~DevicePluginLgSmartTv();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-
-    void upnpDiscoveryFinished(const QList<UpnpDeviceDescriptor> &upnpDeviceDescriptorList) override;
 
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
     DeviceManager::DeviceError displayPin(const PairingTransactionId &pairingTransactionId, const DeviceDescriptor &deviceDescriptor) override;
     DeviceManager::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
 
-    void networkManagerReplyReady(QNetworkReply *reply) override;
-
-    void guhTimer() override;
-
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QHash<TvDevice *, Device *> m_tvList;
     QHash<QString, QString> m_tvKeys;
 
@@ -78,6 +75,9 @@ private:
     void refreshTv(Device *device);
 
 private slots:
+    void onPluginTimer();
+    void onUpnpDiscoveryFinished();
+    void onNetworkManagerReplyFinished();
     void stateChanged();
 };
 

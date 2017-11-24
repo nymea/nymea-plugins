@@ -102,21 +102,6 @@ Description: guh.io plugin for denon
  This package will install the guh.io plugin for denon
 
 
-Package: guh-plugin-dollhouse
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for dollhouse
- The guh daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the guh.io plugin for dollhouse
-
-
 Package: guh-plugin-elgato
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -250,21 +235,6 @@ Description: guh.io plugin for lgsmarttv
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the guh.io plugin for lgsmarttv
-
-
-Package: guh-plugin-lircd
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for lircd
- The guh daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the guh.io plugin for lircd
 
 
 Package: guh-plugin-mailnotification
@@ -536,8 +506,7 @@ Description: Plugins for guh IoT server - the default plugin collection
 Package: guh-plugins-maker
 Section: libs
 Architecture: all
-Depends: guh-plugin-lircd,
-         guh-plugin-commandlauncher,
+Depends: guh-plugin-commandlauncher,
          guh-plugin-udpcommander,
          guh-plugin-tcpcommander,
          guh-plugin-genericelements,
@@ -557,7 +526,6 @@ Package: guh-plugins-merkurboard
 Section: libs
 Architecture: all
 Depends: guh-plugin-osdomotics,
-         guh-plugin-dollhouse,
          guh-plugin-plantcare,
          guh-plugin-ws2812,
          guh-plugin-orderbutton,

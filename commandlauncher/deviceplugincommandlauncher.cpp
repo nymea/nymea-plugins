@@ -106,6 +106,7 @@
 
 DevicePluginCommandLauncher::DevicePluginCommandLauncher()
 {
+
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginCommandLauncher::setupDevice(Device *device)
@@ -135,11 +136,6 @@ DeviceManager::DeviceSetupStatus DevicePluginCommandLauncher::setupDevice(Device
         return DeviceManager::DeviceSetupStatusSuccess;
     }
     return DeviceManager::DeviceSetupStatusFailure;
-}
-
-DeviceManager::HardwareResources DevicePluginCommandLauncher::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceNone;
 }
 
 DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *device, const Action &action)
