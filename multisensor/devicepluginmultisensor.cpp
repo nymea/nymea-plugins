@@ -44,17 +44,20 @@
 
 #include "plugininfo.h"
 #include "devicemanager.h"
-#include "bluetooth/bluetoothlowenergydevice.h"
+#include "bluetooth/bluetoothlowenergymanager.h"
 #include "devicepluginmultisensor.h"
+
+// http://processors.wiki.ti.com/index.php/SensorTag_User_Guide
 
 DevicePluginMultiSensor::DevicePluginMultiSensor()
 {
 
 }
 
-DeviceManager::HardwareResources DevicePluginMultiSensor::requiredHardware() const
+void DevicePluginMultiSensor::init()
 {
-    return DeviceManager::HardwareResourceBluetoothLE;
+    m_measureTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+    connect(m_measureTimer, &PluginTimer::timeout, this, &DevicePluginMultiSensor::onPluginTimer);
 }
 
 DeviceManager::DeviceError DevicePluginMultiSensor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -64,48 +67,35 @@ DeviceManager::DeviceError DevicePluginMultiSensor::discoverDevices(const Device
     if (deviceClassId != sensortagDeviceClassId)
         return DeviceManager::DeviceErrorDeviceClassNotFound;
 
-    if (!discoverBluetooth())
+    if (!hardwareManager()->bluetoothLowEnergyManager()->available())
         return DeviceManager::DeviceErrorHardwareNotAvailable;
 
+    if (!hardwareManager()->bluetoothLowEnergyManager()->enabled())
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
+
+    BluetoothDiscoveryReply *reply = hardwareManager()->bluetoothLowEnergyManager()->discoverDevices();
+    connect(reply, &BluetoothDiscoveryReply::finished, this, &DevicePluginMultiSensor::onBluetoothDiscoveryFinished);
     return DeviceManager::DeviceErrorAsync;
-}
-
-void DevicePluginMultiSensor::bluetoothDiscoveryFinished(const QList<QBluetoothDeviceInfo> &deviceInfos)
-{
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (auto deviceInfo, deviceInfos) {
-        if (deviceInfo.name().contains("SensorTag")) {
-            if (!verifyExistingDevices(deviceInfo)) {
-                DeviceDescriptor descriptor(sensortagDeviceClassId, "SensorTag", deviceInfo.address().toString());
-                ParamList params;
-                params.append(Param(nameParamTypeId, deviceInfo.name()));
-                params.append(Param(macParamTypeId, deviceInfo.address().toString()));
-                descriptor.setParams(params);
-                deviceDescriptors.append(descriptor);
-            }
-        }
-    }
-
-    emit devicesDiscovered(sensortagDeviceClassId, deviceDescriptors);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginMultiSensor::setupDevice(Device *device)
 {
-    qCDebug(dcMultiSensor) << "Setting up MultiSensor" << device->name() << device->params();
+    qCDebug(dcMultiSensor) << "Setting up Multi Sensor" << device->name() << device->params();
 
     if (device->deviceClassId() == sensortagDeviceClassId) {
-        auto address = QBluetoothAddress(device->paramValue(macParamTypeId).toString());
-        auto name = device->paramValue(nameParamTypeId).toString();
-        auto deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
-        QSharedPointer<SensorTag> tag{new SensorTag(deviceInfo, QLowEnergyController::PublicAddress, this)};
-        connect(tag.data(), &SensorTag::valueChanged, this,
-                [device, this](StateTypeId state, QVariant value) { device->setStateValue(state, value); });
-        connect(tag.data(), &SensorTag::event, this,
-                [device, this](EventTypeId event) { emit emitEvent(Event(event, device->id())); });
-        m_tags.insert(tag, device);
+        QBluetoothAddress address = QBluetoothAddress(device->paramValue(macParamTypeId).toString());
+        QString name = device->paramValue(nameParamTypeId).toString();
+        QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
-        tag->connectDevice();
+        BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
+
+        SensorTag *sensor = new SensorTag(device, bluetoothDevice, this);
+        connect(sensor, &SensorTag::leftKeyPressed, this, &DevicePluginMultiSensor::onSensorLeftButtonPressed);
+        connect(sensor, &SensorTag::rightKeyPressed, this, &DevicePluginMultiSensor::onSensorRightButtonPressed);
+
+        m_sensors.insert(device, sensor);
+        sensor->bluetoothDevice()->connectDevice();
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
@@ -115,21 +105,70 @@ DeviceManager::DeviceSetupStatus DevicePluginMultiSensor::setupDevice(Device *de
 
 void DevicePluginMultiSensor::deviceRemoved(Device *device)
 {
-    if (!m_tags.values().contains(device))
+    if (!m_sensors.contains(device))
         return;
 
-    auto tag= m_tags.key(device);
-    m_tags.remove(tag);
+    SensorTag *sensor = m_sensors.value(device);
+    m_sensors.remove(device);
+    hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(sensor->bluetoothDevice());
+    sensor->deleteLater();
 }
 
 bool DevicePluginMultiSensor::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
 {
-    foreach (Device *device, myDevices()) {
+    foreach (Device *device, m_sensors.keys()) {
         if (device->paramValue(macParamTypeId).toString() == deviceInfo.address().toString())
             return true;
     }
 
     return false;
+}
+
+void DevicePluginMultiSensor::onPluginTimer()
+{
+    foreach (SensorTag *sensor, m_sensors) {
+        sensor->measure();
+    }
+}
+
+void DevicePluginMultiSensor::onSensorLeftButtonPressed()
+{
+    SensorTag *sensor = static_cast<SensorTag *>(sender());
+    emit emitEvent(Event(leftKeyEventTypeId, sensor->device()->id()));
+}
+
+void DevicePluginMultiSensor::onSensorRightButtonPressed()
+{
+    SensorTag *sensor = static_cast<SensorTag *>(sender());
+    emit emitEvent(Event(rightKeyEventTypeId, sensor->device()->id()));
+}
+
+void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
+{
+    BluetoothDiscoveryReply *reply = static_cast<BluetoothDiscoveryReply *>(sender());
+    if (reply->error() != BluetoothDiscoveryReply::BluetoothDiscoveryReplyErrorNoError) {
+        qCWarning(dcMultiSensor()) << "Bluetooth discovery error:" << reply->error();
+        reply->deleteLater();
+        emit devicesDiscovered(sensortagDeviceClassId, QList<DeviceDescriptor>());
+        return;
+    }
+
+    QList<DeviceDescriptor> deviceDescriptors;
+    foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
+        if (deviceInfo.name().contains("SensorTag")) {
+            if (!verifyExistingDevices(deviceInfo)) {
+                DeviceDescriptor descriptor(sensortagDeviceClassId, "Sensor Tag", deviceInfo.address().toString());
+                ParamList params;
+                params.append(Param(nameParamTypeId, deviceInfo.name()));
+                params.append(Param(macParamTypeId, deviceInfo.address().toString()));
+                descriptor.setParams(params);
+                deviceDescriptors.append(descriptor);
+            }
+        }
+    }
+
+    reply->deleteLater();
+    emit devicesDiscovered(sensortagDeviceClassId, deviceDescriptors);
 }
 
 #endif // BLUETOOTH_LE

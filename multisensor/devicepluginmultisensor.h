@@ -30,6 +30,7 @@
 #include <QHash>
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
+#include "plugintimer.h"
 #include "bluetooth/bluetoothlowenergydevice.h"
 #include "sensortag.h"
 
@@ -42,16 +43,24 @@ class DevicePluginMultiSensor : public DevicePlugin
 public:
     explicit DevicePluginMultiSensor();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    void bluetoothDiscoveryFinished(const QList<QBluetoothDeviceInfo> &deviceInfos) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
 private:
+    PluginTimer *m_measureTimer = nullptr;
+    QHash<Device *, SensorTag *> m_sensors;
+
     bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
 
-    QHash<QSharedPointer<SensorTag>,QPointer<Device>> m_tags;
+private slots:
+    void onPluginTimer();
+
+    void onSensorLeftButtonPressed();
+    void onSensorRightButtonPressed();
+
+    void onBluetoothDiscoveryFinished();
 };
 
 #endif // BLUETOOTH_LE

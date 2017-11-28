@@ -32,7 +32,7 @@ PLUGIN_DIRS = \
     pushbullet          \
     usbwde              \
     #senic               \
-    #multisensor         \
+    multisensor         \
     gpio                \
 
 
