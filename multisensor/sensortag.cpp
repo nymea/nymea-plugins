@@ -332,6 +332,8 @@ void SensorTag::measure()
     if (!m_bluetoothDevice->connected())
         return;
 
+    // TODO: measure using plugintimer to save energy
+
 //    qCDebug(dcMultiSensor()) << "Measure data" << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString();
 
 //    m_infraredService->writeCharacteristic(m_infraredConfigCharacteristic, QByteArray::fromHex("01"));
