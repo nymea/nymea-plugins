@@ -21,6 +21,7 @@ PLUGIN_DIRS = \
     tcpcommander        \
     kodi                \
     #elgato              \
+    #senic               \
     awattar             \
     netatmo             \
     plantcare           \
@@ -29,7 +30,6 @@ PLUGIN_DIRS = \
     orderbutton         \
     denon               \
     avahimonitor        \
-    #senic               \
     gpio                \
 
 

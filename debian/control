@@ -102,21 +102,6 @@ Description: guh.io plugin for denon
  This package will install the guh.io plugin for denon
 
 
-Package: guh-plugin-elgato
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for elgato
- The guh daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the guh.io plugin for elgato
-
-
 Package: guh-plugin-elro
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -356,20 +341,6 @@ Description: guh.io plugin for plantcare
  .
  This package will install the guh.io plugin for plantcare
 
-Package: guh-plugin-senic
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for senic
- The guh daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the guh.io plugin for senic
-
 
 Package: guh-plugin-udpcommander
 Architecture: any
@@ -481,7 +452,6 @@ Architecture: all
 Depends: guh-plugin-awattar,
          guh-plugin-datetime,
          guh-plugin-denon,
-         guh-plugin-elgato,
          guh-plugin-eq-3,
          guh-plugin-kodi,
          guh-plugin-lgsmarttv,
@@ -490,7 +460,7 @@ Depends: guh-plugin-awattar,
          guh-plugin-networkdetector,
          guh-plugin-openweathermap,
          guh-plugin-philipshue,
-         guh-plugin-senic,
+         guh-plugin-pushbullet,
          guh-plugin-wakeonlan,
          guh-plugin-wemo,
 Description: Plugins for guh IoT server - the default plugin collection
