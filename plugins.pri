@@ -11,11 +11,6 @@ LIBS += -lguh
 
 PLUGIN_PATH=/usr/lib/$$system('dpkg-architecture -q DEB_HOST_MULTIARCH')/guh/plugins/
 
-# Check for Bluetoot LE support (Qt >= 5.4)
-equals(QT_MAJOR_VERSION, 5):greaterThan(QT_MINOR_VERSION, 3) {
-    DEFINES += BLUETOOTH_LE
-}
-
 # Check if this is a snap build
 snappy{
     INCLUDEPATH+=$$(SNAPCRAFT_STAGE)/usr/include/guh

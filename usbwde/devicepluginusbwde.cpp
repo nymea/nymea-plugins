@@ -26,6 +26,8 @@
 #include "devicemanager.h"
 #include "plugininfo.h"
 
+#include <QDateTime>
+
 DevicePluginUsbWde::DevicePluginUsbWde()
 {
 

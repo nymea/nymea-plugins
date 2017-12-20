@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QPointer>
+#include <QNetworkReply>
 
 class DevicePluginAwattar : public DevicePlugin
 {

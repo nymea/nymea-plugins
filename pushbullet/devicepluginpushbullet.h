@@ -30,6 +30,7 @@
 #include <QNetworkInterface>
 #include <QProcess>
 #include <QUrlQuery>
+#include <QNetworkReply>
 
 class DevicePluginPushbullet: public DevicePlugin {
 	Q_OBJECT

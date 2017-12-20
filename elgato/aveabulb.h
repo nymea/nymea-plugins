@@ -21,84 +21,47 @@
 #ifndef AVEABULB_H
 #define AVEABULB_H
 
-#ifdef BLUETOOTH_LE
-
 #include <QObject>
 #include <QQueue>
+#include <QColor>
 
 #include "typeutils.h"
-#include "bluetooth/bluetoothlowenergydevice.h"
-#include "commandrequest.h"
+#include "plugin/device.h"
+#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
-class AveaBulb : public BluetoothLowEnergyDevice
+static QBluetoothUuid colorServiceUuid  = QBluetoothUuid(QUuid("f815e810-456c-6761-746f-4d756e696368"));
+static QBluetoothUuid imageServiceUuid  = QBluetoothUuid(QUuid("f815e500-456c-6761-746f-4d756e696368"));
+
+class AveaBulb : public QObject
 {
     Q_OBJECT
 public:
-    explicit AveaBulb(const QBluetoothDeviceInfo &deviceInfo, const QLowEnergyController::RemoteAddressType &addressType, QObject *parent = 0);
+    explicit AveaBulb(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
-    bool isAvailable();
+    Device *device();
+    BluetoothLowEnergyDevice *bluetoothDevice();
 
-signals:
-    void availableChanged();
-    void actionExecutionFinished(const ActionId &actionId, const bool &success);
+    bool setColor(const QColor &color);
 
 private:
-    QBluetoothUuid m_colorSeviceUuid;
-    QLowEnergyService *m_colorService;
+    Device *m_device;
+    BluetoothLowEnergyDevice *m_bluetoothDevice;
 
-    QBluetoothUuid m_imageSeviceUuid;
-    QLowEnergyService *m_imageService;
+private:
+    QLowEnergyService *m_colorService = nullptr;
+    QLowEnergyService *m_imageService = nullptr;
 
-    QBluetoothUuid m_imageCharacteristicUuid;
     QLowEnergyCharacteristic m_imageCharacteristic;
-
-    QBluetoothUuid m_colorCharacteristicUuid;
     QLowEnergyCharacteristic m_colorCharacteristic;
 
-    bool m_isAvailable;
-
-    QHash<QByteArray, ActionId> m_actions;
-
-    QQueue<CommandRequest> m_commandQueue;
-    CommandRequest m_currentRequest;
-    bool m_queueRunning;
-
-    QByteArray m_brigthness;
-    QByteArray m_liveliness;
-
 private slots:
-    void serviceScanFinished();
-    void onConnectionStatusChanged();
+    void onConnectedChanged(const bool &connected);
+    void onServiceDiscoveryFinished();
 
     // Color service
-    void serviceStateChanged(const QLowEnergyService::ServiceState &state);
-    void serviceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
-    void confirmedCharacteristicWritten(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
-    void confirmedDescriptorWritten(const QLowEnergyDescriptor &descriptor, const QByteArray &value);
-    void serviceError(const QLowEnergyService::ServiceError &error);
-
-    void enqueueCommand(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
-    void sendNextCommand();
-
-public slots:
-    bool actionPowerOff(ActionId actionId);
-    bool setWhite(ActionId actionId);
-    bool setRed(ActionId actionId);
-    bool setGreen(ActionId actionId);
-    bool setBlue(ActionId actionId);
-    bool setYellow(ActionId actionId);
-    bool setPurple(ActionId actionId);
-    bool setOrange(ActionId actionId);
-
-    bool setCalmProvence(ActionId actionId);
-    bool setCozyFlames(ActionId actionId);
-    bool setCherryBlossom(ActionId actionId);
-    bool setMountainBreeze(ActionId actionId);
-    bool setNorthernGlow(ActionId actionId);
-    bool setFairyWoods(ActionId actionId);
-    bool setMagicHour(ActionId actionId);
+    void onColorServiceStateChanged(const QLowEnergyService::ServiceState &state);
+    void onColorServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
 
 };
-#endif // BLUETOOTH_LE
 
 #endif // AVEABULB_H

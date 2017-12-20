@@ -40,11 +40,9 @@
     \quotefile plugins/deviceplugins/multisensor/devicepluginmultisensor.json
 */
 
-#ifdef BLUETOOTH_LE
-
 #include "plugininfo.h"
 #include "devicemanager.h"
-#include "bluetooth/bluetoothlowenergymanager.h"
+#include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
 #include "devicepluginmultisensor.h"
 
 // http://processors.wiki.ti.com/index.php/SensorTag_User_Guide
@@ -170,5 +168,3 @@ void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
     reply->deleteLater();
     emit devicesDiscovered(sensortagDeviceClassId, deviceDescriptors);
 }
-
-#endif // BLUETOOTH_LE

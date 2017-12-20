@@ -24,14 +24,13 @@
 #ifndef DEVICEPLUGINMULTISENSOR_H
 #define DEVICEPLUGINMULTISENSOR_H
 
-#ifdef BLUETOOTH_LE
 
 #include <QPointer>
 #include <QHash>
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
 #include "plugintimer.h"
-#include "bluetooth/bluetoothlowenergydevice.h"
+#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 #include "sensortag.h"
 
 class DevicePluginMultiSensor : public DevicePlugin
@@ -62,7 +61,5 @@ private slots:
 
     void onBluetoothDiscoveryFinished();
 };
-
-#endif // BLUETOOTH_LE
 
 #endif // DEVICEPLUGINMULTISENSOR_H

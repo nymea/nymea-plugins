@@ -5,7 +5,7 @@
 
 #include "plugin/device.h"
 #include "extern-plugininfo.h"
-#include "bluetooth/bluetoothlowenergydevice.h"
+#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 static QBluetoothUuid infraredServiceUuid       = QBluetoothUuid(QUuid("f000aa00-0451-4000-b000-000000000000"));
 static QBluetoothUuid accelerometerServiceUuid  = QBluetoothUuid(QUuid("f000aa10-0451-4000-b000-000000000000"));

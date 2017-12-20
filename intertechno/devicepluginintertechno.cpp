@@ -58,7 +58,7 @@ DevicePluginIntertechno::DevicePluginIntertechno()
 
 DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device, const Action &action)
 {
-    if (!hardwareManager()->isAvailable(HardwareResource::TypeRadio433))
+    if (!hardwareManager()->radio433()->available())
         return DeviceManager::DeviceErrorHardwareNotAvailable;
 
     QList<int> rawData;
