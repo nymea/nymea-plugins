@@ -27,6 +27,7 @@
 
 #include <QHash>
 #include <QDebug>
+#include <QNetworkReply>
 
 #include "coap/coap.h"
 #include "plugintimer.h"

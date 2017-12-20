@@ -31,6 +31,7 @@
 
 #include <QColor>
 #include <QHash>
+#include <QNetworkReply>
 
 class DevicePluginWs2812 : public DevicePlugin
 {

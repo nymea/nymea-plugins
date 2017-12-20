@@ -21,10 +21,8 @@
 #ifndef DEVICEPLUGINELGATO_H
 #define DEVICEPLUGINELGATO_H
 
-#ifdef BLUETOOTH_LE
-
 #include "plugin/deviceplugin.h"
-#include "bluetooth/bluetoothlowenergydevice.h"
+#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 #include "aveabulb.h"
 
 class DevicePluginElgato : public DevicePlugin
@@ -39,20 +37,16 @@ public:
 
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-
-    void bluetoothDiscoveryFinished(const QList<QBluetoothDeviceInfo> &deviceInfos);
     void deviceRemoved(Device *device) override;
 
 private:
-    QHash<AveaBulb *, Device *> m_bulbs;
+    QHash<Device *, AveaBulb *> m_bulbs;
     bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
 
 private slots:
-    void bulbAvailableChanged();
-    void actionFinished(const ActionId actionId, const bool &success);
+    void onBluetoothDiscoveryFinished();
+
 };
-#endif // BLUETOOTH_LE
 
 #endif // DEVICEPLUGINELGATO_H

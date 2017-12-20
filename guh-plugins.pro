@@ -20,7 +20,7 @@ PLUGIN_DIRS = \
     udpcommander        \
     tcpcommander        \
     kodi                \
-    #elgato              \
+    elgato              \
     #senic               \
     awattar             \
     netatmo             \

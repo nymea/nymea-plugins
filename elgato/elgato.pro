@@ -9,12 +9,12 @@ TARGET = $$qtLibraryTarget(guh_devicepluginelgato)
 SOURCES += \
     devicepluginelgato.cpp \
     aveabulb.cpp \
-    commandrequest.cpp
+    aveacolor.cpp
 
 HEADERS += \
     devicepluginelgato.h \
     aveabulb.h \
-    commandrequest.h
+    aveacolor.h
 
 
 

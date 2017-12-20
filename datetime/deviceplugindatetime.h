@@ -31,6 +31,7 @@
 #include <QTimeZone>
 #include <QTime>
 #include <QTimer>
+#include <QNetworkReply>
 
 class DevicePluginDateTime : public DevicePlugin
 {

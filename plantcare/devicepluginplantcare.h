@@ -30,6 +30,7 @@
 #include "plugintimer.h"
 
 #include <QHash>
+#include <QNetworkReply>
 
 class DevicePluginPlantCare : public DevicePlugin
 {

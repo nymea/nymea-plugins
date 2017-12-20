@@ -30,6 +30,7 @@
 #include "plugintimer.h"
 
 #include <QHash>
+#include <QNetworkReply>
 
 class DevicePluginOrderButton : public DevicePlugin
 {

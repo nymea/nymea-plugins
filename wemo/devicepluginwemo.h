@@ -26,6 +26,8 @@
 #include "plugintimer.h"
 #include "plugin/deviceplugin.h"
 
+#include <QNetworkReply>
+
 class DevicePluginWemo : public DevicePlugin
 {
     Q_OBJECT

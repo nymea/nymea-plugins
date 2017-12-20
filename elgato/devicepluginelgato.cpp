@@ -396,16 +396,16 @@
     \quotefile plugins/deviceplugins/elgato/devicepluginelgato.json
 */
 
-#ifdef BLUETOOTH_LE
-
 #include "devicepluginelgato.h"
 
 #include "plugin/device.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
+#include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
 
 DevicePluginElgato::DevicePluginElgato()
 {
+
 }
 
 DeviceManager::DeviceError DevicePluginElgato::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -415,155 +415,70 @@ DeviceManager::DeviceError DevicePluginElgato::discoverDevices(const DeviceClass
     if (deviceClassId != aveaDeviceClassId)
         return DeviceManager::DeviceErrorDeviceClassNotFound;
 
-    if (!discoverBluetooth())
+    if (!hardwareManager()->bluetoothLowEnergyManager()->available())
         return DeviceManager::DeviceErrorHardwareNotAvailable;
 
+    if (!hardwareManager()->bluetoothLowEnergyManager()->enabled())
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
+
+    BluetoothDiscoveryReply *reply = hardwareManager()->bluetoothLowEnergyManager()->discoverDevices();
+    connect(reply, &BluetoothDiscoveryReply::finished, this, &DevicePluginElgato::onBluetoothDiscoveryFinished);
     return DeviceManager::DeviceErrorAsync;
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
 {
+    qCDebug(dcElgato()) << "Setup device" << device->name() << device->params();
+
     if (device->deviceClassId() == aveaDeviceClassId) {
         QBluetoothAddress address = QBluetoothAddress(device->paramValue(macAddressParamTypeId).toString());
         QString name = device->paramValue(nameParamTypeId).toString();
         QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
-        AveaBulb *avea = new AveaBulb(deviceInfo, QLowEnergyController::PublicAddress, this);
-        connect(avea, &AveaBulb::availableChanged, this, &DevicePluginElgato::bulbAvailableChanged);
-        connect(avea, &AveaBulb::actionExecutionFinished, this, &DevicePluginElgato::actionFinished);
-        m_bulbs.insert(avea, device);
+        BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
 
-        avea->connectDevice();
+        AveaBulb *bulb = new AveaBulb(device, bluetoothDevice, this);
+
+        m_bulbs.insert(device, bulb);
+        bulb->bluetoothDevice()->connectDevice();
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
-DeviceManager::HardwareResources DevicePluginElgato::requiredHardware() const
-{
-    return DeviceManager::HardwareResourceBluetoothLE;
-}
-
 DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, const Action &action)
 {
+    Q_UNUSED(action)
     // check deviceClassId
     if (device->deviceClassId() == aveaDeviceClassId) {
-        AveaBulb *bulb = m_bulbs.key(device);
+        AveaBulb *bulb = m_bulbs.value(device);
 
-        // reconnect action does not need available true
-        if (action.actionTypeId() == connectActionTypeId) {
-            bulb->reconnectDevice();
-            return DeviceManager::DeviceErrorNoError;
-        }
+        Q_UNUSED(bulb)
+//        // check actionTypeId
+//        if (action.actionTypeId() == powerOffActionTypeId) {
+//            bulb->actionPowerOff(action.id());
+//            return DeviceManager::DeviceErrorAsync;
+//        } else if (action.actionTypeId() == colorActionTypeId) {
 
-        if (action.actionTypeId() == disconnectActionTypeId) {
-            bulb->disconnectDevice();
-            return DeviceManager::DeviceErrorNoError;
-        }
+//            return DeviceManager::DeviceErrorNoError;
+//        }
 
-        // check available
-        if (!bulb->isAvailable())
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
-
-        // check actionTypeId
-        if (action.actionTypeId() == powerOffActionTypeId) {
-            bulb->actionPowerOff(action.id());
-            return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == colorActionTypeId) {
-            if (action.param(colorParamTypeId).value().toString() == "green") {
-                bulb->setGreen(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(colorParamTypeId).value().toString() == "blue") {
-                bulb->setBlue(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(colorParamTypeId).value().toString() == "red") {
-                bulb->setRed(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(colorParamTypeId).value().toString() == "yellow") {
-                bulb->setYellow(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(colorParamTypeId).value().toString() == "orange") {
-                bulb->setOrange(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(colorParamTypeId).value().toString() == "purple") {
-                bulb->setPurple(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(colorParamTypeId).value().toString() == "white") {
-                bulb->setWhite(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            return DeviceManager::DeviceErrorInvalidParameter;
-        } else if (action.actionTypeId() == moodActionTypeId) {
-            if (action.param(moodParamTypeId).value().toString() == "calm provence") {
-                bulb->setCalmProvence(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(moodParamTypeId).value().toString() == "cozy flames") {
-                bulb->setCozyFlames(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(moodParamTypeId).value().toString() == "cherry blossom") {
-                bulb->setCherryBlossom(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(moodParamTypeId).value().toString() == "mountain breeze") {
-                bulb->setMountainBreeze(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(moodParamTypeId).value().toString() == "northern glow") {
-                bulb->setNorthernGlow(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(moodParamTypeId).value().toString() == "fairy woods") {
-                bulb->setFairyWoods(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            if (action.param(moodParamTypeId).value().toString() == "magic hour") {
-                bulb->setMagicHour(action.id());
-                return DeviceManager::DeviceErrorAsync;
-            }
-            return DeviceManager::DeviceErrorInvalidParameter;
-        }
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
-void DevicePluginElgato::bluetoothDiscoveryFinished(const QList<QBluetoothDeviceInfo> &deviceInfos)
-{
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (QBluetoothDeviceInfo deviceInfo, deviceInfos) {
-        if (deviceInfo.name().contains("Avea")) {
-            if (!verifyExistingDevices(deviceInfo)) {
-                DeviceDescriptor descriptor(aveaDeviceClassId, "Avea", deviceInfo.address().toString());
-                ParamList params;
-                params.append(Param(nameParamTypeId, deviceInfo.name()));
-                params.append(Param(macAddressParamTypeId, deviceInfo.address().toString()));
-                descriptor.setParams(params);
-                deviceDescriptors.append(descriptor);
-            }
-        }
-    }
-
-    emit devicesDiscovered(aveaDeviceClassId, deviceDescriptors);
-}
 
 void DevicePluginElgato::deviceRemoved(Device *device)
 {
-    if (!m_bulbs.values().contains(device))
+    if (!m_bulbs.keys().contains(device))
         return;
 
-    AveaBulb *bulb= m_bulbs.key(device);
-
-    m_bulbs.take(bulb);
-    delete bulb;
+    AveaBulb *bulb = m_bulbs.value(device);
+    m_bulbs.remove(device);
+    hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(bulb->bluetoothDevice());
+    bulb->deleteLater();
 }
 
 bool DevicePluginElgato::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
@@ -576,23 +491,32 @@ bool DevicePluginElgato::verifyExistingDevices(const QBluetoothDeviceInfo &devic
     return false;
 }
 
-void DevicePluginElgato::bulbAvailableChanged()
+void DevicePluginElgato::onBluetoothDiscoveryFinished()
 {
-    AveaBulb *bulb =static_cast<AveaBulb *>(sender());
-    Device *device = m_bulbs.value(bulb);
-    device->setStateValue(availableStateTypeId, bulb->isAvailable());
-
-}
-
-void DevicePluginElgato::actionFinished(const ActionId actionId, const bool &success)
-{
-    if (success) {
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
-    } else {
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorHardwareFailure);
+    BluetoothDiscoveryReply *reply = static_cast<BluetoothDiscoveryReply *>(sender());
+    if (reply->error() != BluetoothDiscoveryReply::BluetoothDiscoveryReplyErrorNoError) {
+        qCWarning(dcElgato()) << "Bluetooth discovery error:" << reply->error();
+        reply->deleteLater();
+        emit devicesDiscovered(aveaDeviceClassId, QList<DeviceDescriptor>());
+        return;
     }
+
+    QList<DeviceDescriptor> deviceDescriptors;
+    foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
+        if (deviceInfo.name().contains("Avea")) {
+            if (!verifyExistingDevices(deviceInfo)) {
+                DeviceDescriptor descriptor(aveaDeviceClassId, "Avea", deviceInfo.address().toString());
+                ParamList params;
+                params.append(Param(nameParamTypeId, deviceInfo.name()));
+                params.append(Param(macAddressParamTypeId, deviceInfo.address().toString()));
+                descriptor.setParams(params);
+                deviceDescriptors.append(descriptor);
+            }
+        }
+    }
+
+    reply->deleteLater();
+
+    emit devicesDiscovered(aveaDeviceClassId, deviceDescriptors);
 }
-
-#endif // BLUETOOTH_LE
-
 
