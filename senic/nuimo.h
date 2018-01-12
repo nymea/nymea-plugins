@@ -23,15 +23,14 @@
 #ifndef NUIMO_H
 #define NUIMO_H
 
-#ifdef BLUETOOTH_LE
-
 #include <QObject>
 #include <QBluetoothUuid>
 
 #include "typeutils.h"
-#include "bluetooth/bluetoothlowenergydevice.h"
+#include "plugin/device.h"
+#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
-class Nuimo : public BluetoothLowEnergyDevice
+class Nuimo : public QObject
 {
     Q_OBJECT
 public:
@@ -42,19 +41,23 @@ public:
         SwipeDirectionDown
     };
 
-    explicit Nuimo(const QBluetoothDeviceInfo &deviceInfo, const QLowEnergyController::RemoteAddressType &addressType, QObject *parent = 0);
+    explicit Nuimo(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
-    bool isAvailable();
+    Device *device();
+    BluetoothLowEnergyDevice *bluetoothDevice();
 
     void showGuhLogo();
     void showArrowUp();
     void showArrowDown();
 
 private:
-    QLowEnergyService *m_deviceInfoService;
-    QLowEnergyService *m_batteryService;
-    QLowEnergyService *m_inputService;
-    QLowEnergyService *m_ledMatrixService;
+    Device *m_device = nullptr;
+    BluetoothLowEnergyDevice *m_bluetoothDevice = nullptr;
+
+    QLowEnergyService *m_deviceInfoService = nullptr;
+    QLowEnergyService *m_batteryService = nullptr;
+    QLowEnergyService *m_inputService = nullptr;
+    QLowEnergyService *m_ledMatrixService = nullptr;
 
     QLowEnergyCharacteristic m_deviceInfoCharacteristic;
     QLowEnergyCharacteristic m_batteryCharacteristic;
@@ -63,11 +66,14 @@ private:
     QLowEnergyCharacteristic m_inputSwipeCharacteristic;
     QLowEnergyCharacteristic m_inputRotationCharacteristic;
 
-    bool m_isAvailable;
     uint m_rotationValue;
 
-    void registerService(QLowEnergyService *service);
     void showMatrix(const QByteArray &matrix, const int &seconds);
+
+    void printService(QLowEnergyService *service);
+
+    // Set states
+    void setBatteryValue(const QByteArray &data);
 
 signals:
     void availableChanged();
@@ -78,17 +84,19 @@ signals:
     void rotationValueChanged(const uint &value);
 
 private slots:
-    void serviceScanFinished();
-    void onConnectionStatusChanged();
+    void onConnectedChanged(const bool &connected);
+    void onServiceDiscoveryFinished();
 
-    void serviceStateChanged(const QLowEnergyService::ServiceState &state);
-    void serviceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
-    void confirmedCharacteristicWritten(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
-    void confirmedDescriptorWritten(const QLowEnergyDescriptor &descriptor, const QByteArray &value);
-    void serviceError(const QLowEnergyService::ServiceError &error);
+    void onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceState &state);
+
+    void onBatteryServiceStateChanged(const QLowEnergyService::ServiceState &state);
+    void onBatteryCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
+
+    void onInputServiceStateChanged(const QLowEnergyService::ServiceState &state);
+    void onInputCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
+
+    void onLedMatrixServiceStateChanged(const QLowEnergyService::ServiceState &state);
 
 };
-
-#endif // BLUETOOTH_LE
 
 #endif // NUIMO_H

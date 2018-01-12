@@ -21,7 +21,7 @@ PLUGIN_DIRS = \
     tcpcommander        \
     kodi                \
     elgato              \
-    #senic               \
+    senic               \
     awattar             \
     netatmo             \
     plantcare           \

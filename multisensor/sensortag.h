@@ -83,6 +83,7 @@ private slots:
 
 public slots:
     void measure();
+
 };
 
 #endif // SENSORTAG_H
