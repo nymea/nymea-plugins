@@ -23,10 +23,9 @@
 #ifndef DEVICEPLUGINELGATO_H
 #define DEVICEPLUGINELGATO_H
 
-#ifdef BLUETOOTH_LE
-
+#include "plugintimer.h"
 #include "plugin/deviceplugin.h"
-#include "bluetooth/bluetoothlowenergydevice.h"
+#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 #include "nuimo.h"
 
@@ -40,28 +39,28 @@ class DevicePluginSenic : public DevicePlugin
 public:
     explicit DevicePluginSenic();
 
+    void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::HardwareResources requiredHardware() const override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
-    void bluetoothDiscoveryFinished(const QList<QBluetoothDeviceInfo> &deviceInfos);
     void deviceRemoved(Device *device) override;
 
 private:
     QHash<Nuimo *, Device *> m_nuimos;
+    PluginTimer *m_reconnectTimer = nullptr;
+
     bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
 
 private slots:
-    void connectionAvailableChanged();
-    void onBatteryValueChanged(const uint &percentage);
+    void onReconnectTimeout();
+    void onBluetoothDiscoveryFinished();
+
     void onButtonPressed();
     void onButtonReleased();
     void onSwipeDetected(const Nuimo::SwipeDirection &direction);
     void onRotationValueChanged(const uint &value);
 
 };
-
-#endif // BLUETOOTH_LE
 
 #endif // DEVICEPLUGINELGATO_H
