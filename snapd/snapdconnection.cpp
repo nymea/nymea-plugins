@@ -85,18 +85,19 @@ void SnapdConnection::setConnected(const bool &connected)
 
     // Clean up replies of disconnected
     if (!m_connected) {
+        // Clean up current reply
         if (m_currentReply) {
             m_currentReply->setFinished(false);
             m_currentReply = nullptr;
         }
 
+        // Clean up queue
         while (!m_replyQueue.isEmpty()) {
             QPointer<SnapdReply> reply = m_replyQueue.dequeue();
             if (!reply.isNull()) {
                 reply->setFinished(false);
             }
         }
-
     } else {
         // Start with a clean parsing
         m_payload.clear();
