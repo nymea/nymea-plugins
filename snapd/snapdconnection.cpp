@@ -22,21 +22,9 @@ SnapdReply *SnapdConnection::get(const QString &path)
     reply->setRequestMethod("GET");
     reply->setRequestRawMessage(createRequestHeader("GET", path));
 
-    // Check if currently a reply is running
-    if (m_currentReply) {
-        m_replyQueue.enqueue(reply);
-    } else {
-        // Send request
-        m_currentReply = reply;
-        if (m_debug)
-            qCDebug(dcSnapd()) << "-->" << reply->requestMethod() << reply->requestPath();
-
-        if (write(reply->requestRawMessage()) <= 0) {
-            m_currentReply = nullptr;
-            reply->setFinished(false);
-            sendNextRequest();
-        }
-    }
+    // Enqueue the new reply
+    m_replyQueue.enqueue(reply);
+    sendNextRequest();
 
     // Note: the caller owns the object now
     return reply;
@@ -50,21 +38,9 @@ SnapdReply *SnapdConnection::post(const QString &path, const QByteArray &payload
     QByteArray header = createRequestHeader("POST", path, payload);
     reply->setRequestRawMessage(header.append(payload));
 
-    // Check if currently a reply is running
-    if (m_currentReply) {
-        m_replyQueue.enqueue(reply);
-    } else {
-        // Send request
-        m_currentReply = reply;
-        if (m_debug)
-            qCDebug(dcSnapd()) << "-->" << reply->requestMethod() << reply->requestPath() << payload;
-
-        if (write(reply->requestRawMessage()) <= 0) {
-            m_currentReply = nullptr;
-            reply->setFinished(false);
-            sendNextRequest();
-        }
-    }
+    // Enqueue the new reply
+    m_replyQueue.enqueue(reply);
+    sendNextRequest();
 
     // Note: the caller owns the object now
     return reply;
@@ -80,9 +56,22 @@ void SnapdConnection::setConnected(const bool &connected)
     if (m_connected == connected)
         return;
 
-    qCDebug(dcSnapd()) << "Connected";
-
     m_connected = connected;
+
+    // Clean up replies of disconnected
+    if (!m_connected) {
+        foreach (SnapdReply *reply, m_replyQueue) {
+            reply->setFinished(false);
+        }
+
+        if (m_currentReply) {
+            m_currentReply->setFinished(false);
+            m_currentReply = nullptr;
+        }
+
+        m_replyQueue.clear();
+    }
+
     emit connectedChanged(m_connected);
 }
 
@@ -210,26 +199,35 @@ void SnapdConnection::processData()
     m_currentReply->setHeader(parsedHeader);
     m_currentReply->setDataMap(jsonDoc.toVariant().toMap());
     m_currentReply->setFinished();
-    m_currentReply = nullptr;
-
-    sendNextRequest();
 
     // Current data stream finished, reset for new messages
     m_payload.clear();
     m_header.clear();
     m_chuncked = false;
+
+    // Ready for next reply
+    m_currentReply = nullptr;
+    sendNextRequest();
 }
 
 void SnapdConnection::sendNextRequest()
 {
+    // Check if nothing else to do
     if (m_replyQueue.isEmpty())
         return;
 
+    // Check a reply is currently pending
+    if (m_currentReply)
+        return;
+
+    // Dequeue and send next reply
     SnapdReply *reply = m_replyQueue.dequeue();
     m_currentReply = reply;
+
     if (m_debug)
         qCDebug(dcSnapd()) << "-->" << reply->requestMethod() << reply->requestPath();
 
+    // If write failes, the reply is finished invalid and the owner has to delete it
     if (write(reply->requestRawMessage()) < 0) {
         m_currentReply->setFinished(false);
         m_currentReply = nullptr;

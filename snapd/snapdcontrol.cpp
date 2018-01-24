@@ -131,7 +131,7 @@ void SnapdControl::processChange(const QVariantMap &changeMap)
 
     qCDebug(dcSnapd()) << changeStatus << changeKind << changeSummary;
 
-    // Add this change if not alreade finishished or added
+    // Add this change if not already finishished or added
     if (!m_watchingChanges.contains(changeId) && !changeReady)
         m_watchingChanges.append(changeId);
 
@@ -140,6 +140,7 @@ void SnapdControl::processChange(const QVariantMap &changeMap)
         device()->setStateValue(statusStateTypeId, changeSummary);
     }
 
+    // If this change is on ready, we can remove it from our watch list
     if (changeReady) {
         qCDebug(dcSnapd()).noquote() << changeKind << (changeReady ? "finished." : "running.") << changeSummary;
         m_watchingChanges.removeAll(changeId);
@@ -213,10 +214,16 @@ void SnapdControl::onLoadRunningChangesFinished()
         processChange(changeVariant.toMap());
     }
 
-    if (reply->dataMap().value("result").toList().isEmpty() && m_watchingChanges.isEmpty()) {
+    // Check if there are still changes around
+    if (reply->dataMap().value("result").toList().isEmpty()) {
+        // If there are no running changes, we can forget old ones
+        m_watchingChanges.clear();
+
+        // Update not running any more
         device()->setStateValue(updateRunningStateTypeId, false);
         device()->setStateValue(statusStateTypeId, "-");
     } else {
+        // Update running
         device()->setStateValue(updateRunningStateTypeId, true);
     }
 
@@ -236,7 +243,7 @@ void SnapdControl::onLoadChangeFinished()
 
     if (m_watchingChanges.isEmpty()) {
         device()->setStateValue(updateRunningStateTypeId, false);
-
+        device()->setStateValue(statusStateTypeId, "-");
     }
 
     reply->deleteLater();
