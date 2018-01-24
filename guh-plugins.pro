@@ -34,6 +34,7 @@ PLUGIN_DIRS = \
     usbwde              \
     multisensor         \
     gpio                \
+    snapd               \
 
 
 CONFIG+=all
