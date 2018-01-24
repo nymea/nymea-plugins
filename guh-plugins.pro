@@ -31,6 +31,7 @@ PLUGIN_DIRS = \
     denon               \
     avahimonitor        \
     gpio                \
+    snapd               \
 
 
 CONFIG+=all
