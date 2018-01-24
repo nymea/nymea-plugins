@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2017 Simon Stürz <simon.stuerz@guh.io                    *
+ *  Copyright (C) 2017-2018 Simon Stürz <simon.stuerz@guh.io               *
  *                                                                         *
  *  This file is part of guh.                                              *
  *                                                                         *
@@ -81,7 +81,7 @@ void SnapdControl::loadSystemInfo()
     if (!m_snapConnection->isConnected())
         return;
 
-    SnapdReply *reply = m_snapConnection->get("/v2/system-info");
+    SnapdReply *reply = m_snapConnection->get("/v2/system-info", this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onLoadSystemInfoFinished);
 }
 
@@ -93,7 +93,7 @@ void SnapdControl::loadSnapList()
     if (!m_snapConnection->isConnected())
         return;
 
-    SnapdReply *reply = m_snapConnection->get("/v2/snaps");
+    SnapdReply *reply = m_snapConnection->get("/v2/snaps", this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onLoadSnapListFinished);
 }
 
@@ -105,7 +105,7 @@ void SnapdControl::loadRunningChanges()
     if (!m_snapConnection->isConnected())
         return;
 
-    SnapdReply *reply = m_snapConnection->get("/v2/changes");
+    SnapdReply *reply = m_snapConnection->get("/v2/changes", this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onLoadRunningChangesFinished);
 }
 
@@ -117,7 +117,7 @@ void SnapdControl::loadChange(const int &change)
     if (!m_snapConnection->isConnected())
         return;
 
-    SnapdReply *reply = m_snapConnection->get(QString("/v2/changes/%1").arg(QString::number(change)));
+    SnapdReply *reply = m_snapConnection->get(QString("/v2/changes/%1").arg(QString::number(change)), this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onLoadChangeFinished);
 }
 
@@ -381,7 +381,7 @@ void SnapdControl::snapRefresh()
     request.insert("action", "refresh");
 
     qCDebug(dcSnapd()) << "Refresh all snaps";
-    SnapdReply *reply = m_snapConnection->post("/v2/snaps", QJsonDocument::fromVariant(request).toJson(QJsonDocument::Compact));
+    SnapdReply *reply = m_snapConnection->post("/v2/snaps", QJsonDocument::fromVariant(request).toJson(QJsonDocument::Compact), this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onSnapRefreshFinished);
 }
 
@@ -398,7 +398,7 @@ void SnapdControl::changeSnapChannel(const QString &snapName, const QString &cha
     request.insert("channel", channel);
 
     qCDebug(dcSnapd()) << "Refresh snap" << snapName << "to channel" << channel;
-    SnapdReply *reply = m_snapConnection->post(QString("/v2/snaps/%1").arg(snapName), QJsonDocument::fromVariant(request).toJson(QJsonDocument::Compact));
+    SnapdReply *reply = m_snapConnection->post(QString("/v2/snaps/%1").arg(snapName), QJsonDocument::fromVariant(request).toJson(QJsonDocument::Compact), this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onChangeSnapChannelFinished);
 }
 
@@ -410,7 +410,7 @@ void SnapdControl::checkForUpdates()
     if (!m_snapConnection->isConnected())
         return;
 
-    SnapdReply *reply = m_snapConnection->get("/v2/find?select=refresh");
+    SnapdReply *reply = m_snapConnection->get("/v2/find?select=refresh", this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onCheckForUpdatesFinished);
 }
 
@@ -426,6 +426,6 @@ void SnapdControl::snapRevert(const QString &snapName)
     request.insert("action", "revert");
 
     qCDebug(dcSnapd()) << "Revert snap" << snapName;
-    SnapdReply *reply = m_snapConnection->post(QString("/v2/snaps/%1").arg(snapName), QJsonDocument::fromVariant(request).toJson(QJsonDocument::Compact));
+    SnapdReply *reply = m_snapConnection->post(QString("/v2/snaps/%1").arg(snapName), QJsonDocument::fromVariant(request).toJson(QJsonDocument::Compact), this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onSnapRevertFinished);
 }

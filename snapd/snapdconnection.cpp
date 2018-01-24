@@ -1,6 +1,30 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *  Copyright (C) 2017-2018 Simon Stürz <simon.stuerz@guh.io               *
+ *                                                                         *
+ *  This file is part of guh.                                              *
+ *                                                                         *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
+ *                                                                         *
+ *  This library is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
+ *                                                                         *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+
 #include "snapdconnection.h"
 #include "extern-plugininfo.h"
 
+#include <QPointer>
 #include <QJsonDocument>
 #include <QJsonParseError>
 
@@ -15,9 +39,9 @@ SnapdConnection::SnapdConnection(QObject *parent) :
     connect(this, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(onError(QLocalSocket::LocalSocketError)));
 }
 
-SnapdReply *SnapdConnection::get(const QString &path)
+SnapdReply *SnapdConnection::get(const QString &path, QObject *parent)
 {
-    SnapdReply *reply = new SnapdReply(this);
+    SnapdReply *reply = new SnapdReply(parent);
     reply->setRequestPath(path);
     reply->setRequestMethod("GET");
     reply->setRequestRawMessage(createRequestHeader("GET", path));
@@ -30,9 +54,9 @@ SnapdReply *SnapdConnection::get(const QString &path)
     return reply;
 }
 
-SnapdReply *SnapdConnection::post(const QString &path, const QByteArray &payload)
+SnapdReply *SnapdConnection::post(const QString &path, const QByteArray &payload, QObject *parent)
 {
-    SnapdReply *reply = new SnapdReply(this);
+    SnapdReply *reply = new SnapdReply(parent);
     reply->setRequestPath(path);
     reply->setRequestMethod("POST");
     QByteArray header = createRequestHeader("POST", path, payload);
@@ -57,22 +81,28 @@ void SnapdConnection::setConnected(const bool &connected)
         return;
 
     m_connected = connected;
+    emit connectedChanged(m_connected);
 
     // Clean up replies of disconnected
     if (!m_connected) {
-        foreach (SnapdReply *reply, m_replyQueue) {
-            reply->setFinished(false);
-        }
-
         if (m_currentReply) {
             m_currentReply->setFinished(false);
             m_currentReply = nullptr;
         }
 
-        m_replyQueue.clear();
-    }
+        while (!m_replyQueue.isEmpty()) {
+            QPointer<SnapdReply> reply = m_replyQueue.dequeue();
+            if (!reply.isNull()) {
+                reply->setFinished(false);
+            }
+        }
 
-    emit connectedChanged(m_connected);
+    } else {
+        // Start with a clean parsing
+        m_payload.clear();
+        m_header.clear();
+        m_chuncked = false;
+    }
 }
 
 QByteArray SnapdConnection::createRequestHeader(const QString &method, const QString &path, const QByteArray &payload)
