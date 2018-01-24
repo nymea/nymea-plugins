@@ -149,7 +149,7 @@ DeviceManager::DeviceError DevicePluginSnapd::executeAction(Device *device, cons
         }
 
         if (!m_snapdControl->connected()) {
-            qCDebug(dcSnapd()) << "Snapd controller not connected to to backend.";
+            qCDebug(dcSnapd()) << "Snapd controller not connected to the backend.";
             return DeviceManager::DeviceErrorHardwareFailure;
         }
 
