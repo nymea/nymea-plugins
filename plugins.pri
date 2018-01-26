@@ -48,7 +48,7 @@ QMAKE_EXTRA_COMPILERS += externplugininfo
 TRANSLATIONS *= $$files($${PWD}/$${TARGET}/translations/*ts, true)
 lupdate.depends = FORCE
 lupdate.depends += plugininfo
-lupdate.commands = $$[QT_INSTALL_BINS]/lupdate -recursive -no-obsolete $$PWD/"$$TARGET"/"$$TARGET".pro;
+lupdate.commands = lupdate -recursive -no-obsolete $$PWD/"$$TARGET"/"$$TARGET".pro;
 QMAKE_EXTRA_TARGETS += lupdate
 
 translations.path = /usr/share/guh/translations
