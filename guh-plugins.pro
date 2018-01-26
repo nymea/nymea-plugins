@@ -42,6 +42,17 @@ CONFIG+=all
 message(============================================)
 message("Qt version:" $$[QT_VERSION])
 
+# Translations:
+# make lupdate to update .ts files
+lupdate.depends = FORCE
+for (entry, PLUGIN_DIRS):lupdate.commands += make -C $${entry} lupdate;
+QMAKE_EXTRA_TARGETS += lupdate
+
+# make lrelease to build .qm from .ts
+lrelease.depends = FORCE
+for (entry, PLUGIN_DIRS):lrelease.commands += $$[QT_INSTALL_BINS]/lrelease $$files($$PWD/$${entry}/translations/*.ts, true);
+QMAKE_EXTRA_TARGETS += lrelease
+
 # Verify if building only a selection of plugins
 contains(CONFIG, selection) {
     CONFIG-=all

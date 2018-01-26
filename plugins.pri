@@ -8,6 +8,8 @@ QMAKE_LFLAGS += -std=c++11
 
 INCLUDEPATH += /usr/include/guh
 LIBS += -lguh
+HEADERS += $${OUT_PWD}/plugininfo.h
+
 
 PLUGIN_PATH=/usr/lib/$$system('dpkg-architecture -q DEB_HOST_MULTIARCH')/guh/plugins/
 
@@ -26,10 +28,7 @@ plugininfo.commands = touch ${QMAKE_FILE_OUT}; guh-generateplugininfo \
                             --filetype i \
                             --jsonfile ${QMAKE_FILE_NAME} \
                             --output ${QMAKE_FILE_OUT} \
-                            --builddir $$OUT_PWD \
-                            --translations $$TRANSLATIONS; \
-                       mkdir -p $$shadowed($$PWD)/translations/ || true; \
-                       rsync -a "$$OUT_PWD"/translations/*.qm $$shadowed($$PWD)/translations/;
+                            --builddir $$OUT_PWD;
 PRE_TARGETDEPS += compiler_plugininfo_make_all
 QMAKE_EXTRA_COMPILERS += plugininfo
 
@@ -41,13 +40,17 @@ externplugininfo.commands = touch ${QMAKE_FILE_OUT}; guh-generateplugininfo \
                             --filetype e \
                             --jsonfile ${QMAKE_FILE_NAME} \
                             --output ${QMAKE_FILE_OUT} \
-                            --builddir $$OUT_PWD \
-                            --translations $$TRANSLATIONS;
+                            --builddir $$OUT_PWD;
 PRE_TARGETDEPS += compiler_externplugininfo_make_all
 QMAKE_EXTRA_COMPILERS += externplugininfo
 
-
 # Install translation files
+TRANSLATIONS *= $$files($${PWD}/$${TARGET}/translations/*ts, true)
+lupdate.depends = FORCE
+lupdate.depends += plugininfo
+lupdate.commands = $$[QT_INSTALL_BINS]/lupdate -recursive -no-obsolete $$PWD/"$$TARGET"/"$$TARGET".pro;
+QMAKE_EXTRA_TARGETS += lupdate
+
 translations.path = /usr/share/guh/translations
 translations.files = $$[QT_SOURCE_TREE]/translations/*.qm
 
