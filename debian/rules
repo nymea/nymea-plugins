@@ -10,6 +10,10 @@ $(PREPROCESS_FILES:.in=): %: %.in
 %:
 	dh $@ --parallel
 
+override_dh_auto_build:
+	dh_auto_build
+	make lrelease
+
 override_dh_install: $(PREPROCESS_FILES:.in=)
 	dh_install --fail-missing
 
