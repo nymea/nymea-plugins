@@ -137,7 +137,7 @@ void SnapdControl::processChange(const QVariantMap &changeMap)
 
     // If change is on Doing, update the status
     if (changeStatus == "Doing") {
-        device()->setStateValue(statusStateTypeId, changeSummary);
+        device()->setStateValue(snapdControlStatusStateTypeId, changeSummary);
     }
 
     // If this change is on ready, we can remove it from our watch list
@@ -161,10 +161,10 @@ bool SnapdControl::validAsyncResponse(const QVariantMap &responseMap)
 void SnapdControl::onConnectedChanged(const bool &connected)
 {
     if (connected) {
-        device()->setStateValue(snapdAvailableStateTypeId, true);
+        device()->setStateValue(snapdControlSnapdAvailableStateTypeId, true);
         update();
     } else {
-        device()->setStateValue(snapdAvailableStateTypeId, false);
+        device()->setStateValue(snapdControlSnapdAvailableStateTypeId, false);
     }
 }
 
@@ -182,8 +182,8 @@ void SnapdControl::onLoadSystemInfoFinished()
     QDateTime nextRefreshTime = QDateTime::fromString(result.value("refresh").toMap().value("next").toString(), Qt::ISODate);
 
     // Set update time information
-    device()->setStateValue(lastUpdateTimeStateTypeId, lastRefreshTime.toTime_t());
-    device()->setStateValue(nextUpdateTimeStateTypeId, nextRefreshTime.toTime_t());
+    device()->setStateValue(snapdControlLastUpdateTimeStateTypeId, lastRefreshTime.toTime_t());
+    device()->setStateValue(snapdControlNextUpdateTimeStateTypeId, nextRefreshTime.toTime_t());
 
     reply->deleteLater();
 }
@@ -220,11 +220,11 @@ void SnapdControl::onLoadRunningChangesFinished()
         m_watchingChanges.clear();
 
         // Update not running any more
-        device()->setStateValue(updateRunningStateTypeId, false);
-        device()->setStateValue(statusStateTypeId, "-");
+        device()->setStateValue(snapdControlUpdateRunningStateTypeId, false);
+        device()->setStateValue(snapdControlStatusStateTypeId, "-");
     } else {
         // Update running
-        device()->setStateValue(updateRunningStateTypeId, true);
+        device()->setStateValue(snapdControlUpdateRunningStateTypeId, true);
     }
 
     reply->deleteLater();
@@ -242,8 +242,8 @@ void SnapdControl::onLoadChangeFinished()
     processChange(reply->dataMap().value("result").toMap());
 
     if (m_watchingChanges.isEmpty()) {
-        device()->setStateValue(updateRunningStateTypeId, false);
-        device()->setStateValue(statusStateTypeId, "-");
+        device()->setStateValue(snapdControlUpdateRunningStateTypeId, false);
+        device()->setStateValue(snapdControlStatusStateTypeId, "-");
     }
 
     reply->deleteLater();
@@ -296,7 +296,7 @@ void SnapdControl::onCheckForUpdatesFinished()
     }
 
     //qCDebug(dcSnapd()) << qUtf8Printable(QJsonDocument::fromVariant(reply->dataMap()).toJson(QJsonDocument::Indented));
-    device()->setStateValue(updateAvailableStateTypeId, !reply->dataMap().value("result").toList().isEmpty());
+    device()->setStateValue(snapdControlUpdateAvailableStateTypeId, !reply->dataMap().value("result").toList().isEmpty());
     reply->deleteLater();
 }
 

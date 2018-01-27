@@ -33,7 +33,7 @@ DevicePluginSnapd::DevicePluginSnapd()
 void DevicePluginSnapd::init()
 {
     // Check advanced mode
-    m_advancedMode = configValue(advancedModeParamTypeId).toBool();
+    m_advancedMode = configValue(SnapdAdvancedModeParamTypeId).toBool();
     connect(this, &DevicePluginSnapd::configValueChanged, this, &DevicePluginSnapd::onPluginConfigurationChanged);
 
     // Setup timers
@@ -131,10 +131,10 @@ DeviceManager::DeviceError DevicePluginSnapd::executeAction(Device *device, cons
             return DeviceManager::DeviceErrorHardwareFailure;
         }
 
-        if (action.actionTypeId() == startUpdateActionTypeId) {
+        if (action.actionTypeId() == snapdControlStartUpdateActionTypeId) {
             m_snapdControl->snapRefresh();
             return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == checkUpdatesActionTypeId) {
+        } else if (action.actionTypeId() == snapdControlCheckUpdatesActionTypeId) {
             m_snapdControl->checkForUpdates();
             return DeviceManager::DeviceErrorNoError;
         }
@@ -171,7 +171,7 @@ DeviceManager::DeviceError DevicePluginSnapd::executeAction(Device *device, cons
 
 void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
 {
-    if (paramTypeId == advancedModeParamTypeId) {
+    if (paramTypeId == SnapdAdvancedModeParamTypeId) {
         qCDebug(dcSnapd()) << "Advanced mode" << (value.toBool() ? "enabled." : "disabled.");
         m_advancedMode = value.toBool();
 

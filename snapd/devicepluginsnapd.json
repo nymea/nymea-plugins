@@ -1,26 +1,26 @@
 {
     "name": "Snapd",
-    "idName": "Snapd",
+    "displayName": "Snapd",
     "id": "b82bce59-59bf-48b3-b781-54a6f45800f3",
     "paramTypes": [
         {
             "id": "017fe4c5-fc41-41fe-8e67-08fdaccb89ea",
-            "idName": "advancedMode",
-            "name": "Advanced mode",
+            "name": "advancedMode",
+            "displayName": "Advanced mode",
             "type": "bool",
             "defaultValue": false
         }
     ],
     "vendors": [
         {
-            "name": "Canonical",
-            "idName": "canonical",
+            "displayName": "Canonical",
+            "name": "canonical",
             "id": "60582ddf-32ea-4fcd-a6f2-f3beaaf21517",
             "deviceClasses": [
                 {
                     "id": "d90cda58-4d8c-4b7f-a982-38e56a95b72a",
-                    "idName": "snapdControl",
-                    "name": "Update manager",
+                    "name": "snapdControl",
+                    "displayName": "Update manager",
                     "createMethods": [ "auto" ],
                     "basicTags": [ "Gateway" ],
                     "deviceIcon": "Gateway",
@@ -28,47 +28,47 @@
                     "actionTypes": [
                         {
                             "id": "45626b75-f09d-4dd1-b6c4-ee33201b47b0",
-                            "idName": "startUpdate",
-                            "name": "Start update",
+                            "name": "startUpdate",
+                            "displayName": "Start update",
                             "paramTypes": [ ]
                         },
                         {
                             "id": "4738f2c9-666e-45b9-91d3-7bcbf722b669",
-                            "idName": "checkUpdates",
-                            "name": "Check for updates",
+                            "name": "checkUpdates",
+                            "displayName": "Check for updates",
                             "paramTypes": [ ]
                         }
                     ],
                     "stateTypes": [
                         {
                             "id": "6b662b3e-fd12-4f24-be77-aec066f16d8c",
-                            "idName": "snapdAvailable",
-                            "name": "Update manager available",
-                            "eventTypeName": "Update manager available changed",
+                            "name": "snapdAvailable",
+                            "displayName": "Update manager available",
+                            "displayNameEvent": "Update manager available changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "a6b1d24b-d523-4516-9bce-5b467e5e09b2",
-                            "idName": "updateAvailable",
-                            "name": "System update available",
-                            "eventTypeName": "System update available changed",
+                            "name": "updateAvailable",
+                            "displayName": "System update available",
+                            "displayNameEvent": "System update available changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "01ca7a22-5607-4c5e-a465-a2ae7e8b529c",
-                            "idName": "updateRunning",
-                            "name": "System update running",
-                            "eventTypeName": "System update running changed",
+                            "name": "updateRunning",
+                            "displayName": "System update running",
+                            "displayNameEvent": "System update running changed",
                             "type": "bool",
                             "defaultValue": false
                         },
                         {
                             "id": "c671545a-6bde-4c08-8e37-0d256841a3a5",
-                            "idName": "lastUpdateTime",
-                            "name": "Last automatic system update",
-                            "eventTypeName": "Last automatic system update time changed",
+                            "name": "lastUpdateTime",
+                            "displayName": "Last automatic system update",
+                            "displayNameEvent": "Last automatic system update time changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "eventRuleRelevant": false,
@@ -77,9 +77,9 @@
                         },
                         {
                             "id": "122c2423-a1d9-400f-80f8-b1f798975914",
-                            "idName": "nextUpdateTime",
-                            "name": "Next automatic system update",
-                            "eventTypeName": "Next automatic system update time changed",
+                            "name": "nextUpdateTime",
+                            "displayName": "Next automatic system update",
+                            "displayNameEvent": "Next automatic system update time changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "eventRuleRelevant": false,
@@ -88,9 +88,9 @@
                         },
                         {
                             "id": "4987aca3-3916-4cb3-938f-df6c99d04dbf",
-                            "idName": "status",
-                            "name": "Status",
-                            "eventTypeName": "Status changed",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
                             "type": "QString",
                             "eventRuleRelevant": false,
                             "stateRuleRelevant": false,
@@ -100,44 +100,44 @@
                 },
                 {
                     "id": "ff0840d7-fcfc-4403-9d9f-301610d5a437",
-                    "idName": "snap",
-                    "name": "Snap",
+                    "name": "snap",
+                    "displayName": "Snap",
                     "createMethods": [ "auto" ],
                     "basicTags": [ "Gateway" ],
                     "deviceIcon": "Network",
                     "paramTypes": [
                         {
                             "id": "4f38614d-8be0-48dc-a24d-cee9ff1f2a89",
-                            "idName": "snapName",
-                            "name": "Name",
+                            "name": "name",
+                            "displayName": "Name",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "9afb98fb-f717-4f4c-8009-1a6514054c5f",
-                            "idName": "snapId",
-                            "name": "ID",
+                            "name": "id",
+                            "displayName": "ID",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "12b9a65f-970b-49b5-b1d0-1625fc6d8758",
-                            "idName": "snapSummary",
-                            "name": "Summary",
+                            "name": "summary",
+                            "displayName": "Summary",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "fe24c61b-e154-4259-b7ca-6f0602e9d1c3",
-                            "idName": "snapDescription",
-                            "name": "Description",
+                            "name": "description",
+                            "displayName": "Description",
                             "type": "QString",
                             "defaultValue": "-"
                         },
                         {
                             "id": "76ead9c5-0a18-40a2-b31d-f6bb6dfea0a5",
-                            "idName": "snapDeveloper",
-                            "name": "Developer",
+                            "name": "developer",
+                            "displayName": "Developer",
                             "type": "QString",
                             "defaultValue": "-"
                         }
@@ -145,20 +145,20 @@
                     "actionTypes": [
                         {
                             "id": "e061dee6-62fc-45cc-9c9f-403c2be52939",
-                            "idName": "snapRevert",
-                            "name": "Rollback to previous version"
+                            "name": "revert",
+                            "displayName": "Rollback to previous version"
                         }
                     ],
                     "stateTypes": [
                         {
                             "id": "7be2b61e-3f59-4b92-b2bb-50d027bb92ff",
-                            "idName": "snapChannel",
-                            "name": "Channel",
-                            "eventTypeName": "Channel changed",
+                            "name": "channel",
+                            "displayName": "Channel",
+                            "displayNameEvent": "Channel changed",
+                            "displayNameAction": "Set channel",
                             "type": "QString",
                             "eventRuleRelevant": false,
                             "stateRuleRelevant": false,
-                            "actionTypeName": "Set channel",
                             "defaultValue": "stable",
                             "writable": true,
                             "possibleValues": [
@@ -170,9 +170,9 @@
                         },
                         {
                             "id": "532a95f3-db29-427e-bb32-d5a22029e586",
-                            "idName": "snapVersion",
-                            "name": "Version",
-                            "eventTypeName": "Version changed",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
                             "type": "QString",
                             "eventRuleRelevant": false,
                             "stateRuleRelevant": false,
@@ -180,9 +180,9 @@
                         },
                         {
                             "id": "f26a6404-e011-11e7-9224-2350048461eb",
-                            "idName": "snapRevision",
-                            "name": "Revision",
-                            "eventTypeName": "Revision changed",
+                            "name": "revision",
+                            "displayName": "Revision",
+                            "displayNameEvent": "Revision changed",
                             "type": "QString",
                             "eventRuleRelevant": false,
                             "stateRuleRelevant": false,
