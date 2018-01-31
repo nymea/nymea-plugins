@@ -39,9 +39,14 @@ CONFIG+=all
 message(============================================)
 message("Qt version:" $$[QT_VERSION])
 
+plugininfo.depends = FORCE
+for (entry, PLUGIN_DIRS):plugininfo.commands += test -d $${entry} || mkdir -p $${entry}; cd $${entry} && qmake -o Makefile $$PWD/$${entry}/$${entry}.pro && cd ..;
+for (entry, PLUGIN_DIRS):plugininfo.commands += make -C $${entry} plugininfo;
+QMAKE_EXTRA_TARGETS += plugininfo
+
 # Translations:
 # make lupdate to update .ts files
-lupdate.depends = FORCE
+lupdate.depends = FORCE plugininfo
 for (entry, PLUGIN_DIRS):lupdate.commands += make -C $${entry} lupdate;
 QMAKE_EXTRA_TARGETS += lupdate
 
