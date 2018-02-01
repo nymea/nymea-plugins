@@ -28,31 +28,31 @@ The name of the vendor (cf0a9644-2c13-4daf-85c1-ad88d6745b42)</extracomment>
         <location filename="../plugininfo.h" line="55"/>
         <source>connected changed</source>
         <extracomment>The name of the autocreated EventType (4d1790bf-28c6-4c1f-8892-ba1a0ef140f5)</extracomment>
-        <translation>Verbunden geändert</translation>
+        <translation>Verbindungsstatus geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="58"/>
         <source>connected</source>
         <extracomment>The name of the ParamType of StateType (4d1790bf-28c6-4c1f-8892-ba1a0ef140f5) of DeviceClass AVR X1000</extracomment>
-        <translation>verbunden</translation>
+        <translation>Verbunden</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="61"/>
         <source>power changed</source>
         <extracomment>The name of the autocreated EventType (1cdb6b54-6831-4900-95b2-c78f64497701)</extracomment>
-        <translation>Power geändert</translation>
+        <translation>Eingeschalten geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="64"/>
         <source>power</source>
         <extracomment>The name of the ParamType of StateType (1cdb6b54-6831-4900-95b2-c78f64497701) of DeviceClass AVR X1000</extracomment>
-        <translation>Power</translation>
+        <translation>Eingeschalten</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="67"/>
         <source>Set power</source>
         <extracomment>The name of the autocreated ActionType (1cdb6b54-6831-4900-95b2-c78f64497701)</extracomment>
-        <translation>Setze Power</translation>
+        <translation>Schalte ein</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="70"/>
@@ -88,7 +88,7 @@ The name of the vendor (cf0a9644-2c13-4daf-85c1-ad88d6745b42)</extracomment>
         <location filename="../plugininfo.h" line="85"/>
         <source>Set channel</source>
         <extracomment>The name of the autocreated ActionType (f29ffa2c-31d6-4d88-b160-a38288c82ce1)</extracomment>
-        <translation>Setze Kanal</translation>
+        <translation>Wähle Kanal</translation>
     </message>
 </context>
 </TS>
