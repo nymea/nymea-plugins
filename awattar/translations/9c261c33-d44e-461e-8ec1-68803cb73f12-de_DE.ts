@@ -2,42 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>Awattar</name>
+    <name>awattar</name>
     <message>
         <location filename="../plugininfo.h" line="63"/>
-        <location filename="../plugininfo.h" line="69"/>
-        <location filename="../plugininfo.h" line="72"/>
-        <source>aWATTar</source>
-        <extracomment>The name of the plugin aWATTar (9c261c33-d44e-461e-8ec1-68803cb73f12)
-----------
-The name of the vendor (acd47238-bbbc-4eaf-b484-38c52cfa4866)
-----------
-The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment>
-        <translation>aWATTar</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/awattar/plugininfo.h" line="144"/>
-        <source>set sg-mode</source>
-        <extracomment>The name of the ActionType dd82f6c7-5e92-48ca-b0bc-bdc55d3e1482 of deviceClass aWATTar</extracomment>
-        <translation>Setze SG-Modus</translation>
+        <source>awattar</source>
+        <extracomment>The name of the plugin awattar (9c261c33-d44e-461e-8ec1-68803cb73f12)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="66"/>
         <source>RPL address</source>
-        <extracomment>The name of the paramType (cf13eebf-f188-447a-afcb-bbd330983060) of aWATTar</extracomment>
-        <translation>RPL Adresse</translation>
+        <extracomment>The name of the paramType (cf13eebf-f188-447a-afcb-bbd330983060) of awattar</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="69"/>
+        <location filename="../plugininfo.h" line="72"/>
+        <source>aWATTar</source>
+        <extracomment>The name of the vendor (acd47238-bbbc-4eaf-b484-38c52cfa4866)
+----------
+The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="75"/>
         <source>user uuid</source>
-        <extracomment>The name of the paramType (cbbf6f0a-6a91-4844-83f5-60eadb46099b) of aWATTar</extracomment>
-        <translation>Benutzer Uuid</translation>
+        <extracomment>The name of the paramType (cbbf6f0a-6a91-4844-83f5-60eadb46099b) of awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="78"/>
         <source>token</source>
-        <extracomment>The name of the paramType (7ab323d0-f3b5-4baa-9ff9-4843b4dd9811) of aWATTar</extracomment>
-        <translation>Token</translation>
+        <extracomment>The name of the paramType (7ab323d0-f3b5-4baa-9ff9-4843b4dd9811) of awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="81"/>
@@ -47,9 +44,9 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="84"/>
-        <source>current market price</source>
-        <extracomment>The name of the ParamType of StateType (eab37309-3dd8-46a0-94d4-bd05b5bb0430) of DeviceClass aWATTar</extracomment>
-        <translation>Aktueller Marktpreis</translation>
+        <source>currentMarketPrice</source>
+        <extracomment>The name of the ParamType of StateType (eab37309-3dd8-46a0-94d4-bd05b5bb0430) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="87"/>
@@ -59,9 +56,9 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="90"/>
-        <source>average deviation</source>
-        <extracomment>The name of the ParamType of StateType (38b86cee-9588-4269-a585-128907929dc2) of DeviceClass aWATTar</extracomment>
-        <translation>Durchschnittliche Abweichung</translation>
+        <source>averageDeviation</source>
+        <extracomment>The name of the ParamType of StateType (38b86cee-9588-4269-a585-128907929dc2) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="93"/>
@@ -71,9 +68,9 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="96"/>
-        <source>valid until</source>
-        <extracomment>The name of the ParamType of StateType (d5a8a176-aca0-45b1-b043-95c43750f383) of DeviceClass aWATTar</extracomment>
-        <translation>gültig bis</translation>
+        <source>validUntil</source>
+        <extracomment>The name of the ParamType of StateType (d5a8a176-aca0-45b1-b043-95c43750f383) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="99"/>
@@ -83,9 +80,9 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="102"/>
-        <source>average market price [+/- 12 h]</source>
-        <extracomment>The name of the ParamType of StateType (55d6d7a8-446f-48ae-8014-1225810d03ee) of DeviceClass aWATTar</extracomment>
-        <translation>Aktueller Marktpreis [+/- 12 h]</translation>
+        <source>averagePrice</source>
+        <extracomment>The name of the ParamType of StateType (55d6d7a8-446f-48ae-8014-1225810d03ee) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="105"/>
@@ -95,9 +92,9 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="108"/>
-        <source>lowest market price [+/- 12 h]</source>
-        <extracomment>The name of the ParamType of StateType (e7af5bdc-48d7-4e96-b877-331da4dcfae5) of DeviceClass aWATTar</extracomment>
-        <translation>Kleinster Marktpreis [+/- 12 h]</translation>
+        <source>lowestPrice</source>
+        <extracomment>The name of the ParamType of StateType (e7af5bdc-48d7-4e96-b877-331da4dcfae5) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="111"/>
@@ -107,9 +104,9 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="114"/>
-        <source>highest market price [+/- 12 h]</source>
-        <extracomment>The name of the ParamType of StateType (0c171c42-b070-453e-8a63-df9aebfa8533) of DeviceClass aWATTar</extracomment>
-        <translation>Höchster Marktpreis [+/- 12 h]</translation>
+        <source>highestPrice</source>
+        <extracomment>The name of the ParamType of StateType (0c171c42-b070-453e-8a63-df9aebfa8533) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="117"/>
@@ -120,8 +117,8 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     <message>
         <location filename="../plugininfo.h" line="120"/>
         <source>online</source>
-        <extracomment>The name of the ParamType of StateType (470b9b88-17f3-42e3-9250-cc181984eafe) of DeviceClass aWATTar</extracomment>
-        <translation>Online</translation>
+        <extracomment>The name of the ParamType of StateType (470b9b88-17f3-42e3-9250-cc181984eafe) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="123"/>
@@ -131,9 +128,9 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="126"/>
-        <source>pump reachable</source>
-        <extracomment>The name of the ParamType of StateType (1c9d139a-6618-4a39-bc83-37f80942017d) of DeviceClass aWATTar</extracomment>
-        <translation>Pumpe erreichbar</translation>
+        <source>reachable</source>
+        <extracomment>The name of the ParamType of StateType (1c9d139a-6618-4a39-bc83-37f80942017d) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="129"/>
@@ -143,11 +140,8 @@ The name of the DeviceClass (29cd8265-d8bb-4cf9-9080-bfc2cf9787bc)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="132"/>
-        <location filename="../plugininfo.h" line="147"/>
-        <source>sg-mode</source>
-        <extracomment>The name of the ParamType of StateType (b83d3533-aeae-4a9b-95d8-28466bf6c0cf) of DeviceClass aWATTar
-----------
-The name of the paramType (c7b13a33-1c05-457c-a087-20ecc1b8ca01) of aWATTar</extracomment>
+        <source>sgMode</source>
+        <extracomment>The name of the ParamType of StateType (b83d3533-aeae-4a9b-95d8-28466bf6c0cf) of DeviceClass awattar</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -158,9 +152,9 @@ The name of the paramType (c7b13a33-1c05-457c-a087-20ecc1b8ca01) of aWATTar</ext
     </message>
     <message>
         <location filename="../plugininfo.h" line="138"/>
-        <source>sync mode</source>
-        <extracomment>The name of the ParamType of StateType (4c303bcd-152d-45ad-874d-d57fc87a26bb) of DeviceClass aWATTar</extracomment>
-        <translation>Sync Modus</translation>
+        <source>sgSyncMode</source>
+        <extracomment>The name of the ParamType of StateType (4c303bcd-152d-45ad-874d-d57fc87a26bb) of DeviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="141"/>
@@ -171,7 +165,13 @@ The name of the paramType (c7b13a33-1c05-457c-a087-20ecc1b8ca01) of aWATTar</ext
     <message>
         <location filename="../plugininfo.h" line="144"/>
         <source>set sg-mode</source>
-        <extracomment>The name of the ActionType dd82f6c7-5e92-48ca-b0bc-bdc55d3e1482 of deviceClass aWATTar</extracomment>
+        <extracomment>The name of the ActionType dd82f6c7-5e92-48ca-b0bc-bdc55d3e1482 of deviceClass awattar</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="147"/>
+        <source>sg-mode</source>
+        <extracomment>The name of the paramType (c7b13a33-1c05-457c-a087-20ecc1b8ca01) of awattar</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

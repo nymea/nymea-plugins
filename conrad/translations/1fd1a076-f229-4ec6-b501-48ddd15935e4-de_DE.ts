@@ -24,20 +24,20 @@
     <message>
         <location filename="../plugininfo.h" line="39"/>
         <source>up</source>
-        <extracomment>The name of the ActionType e015419c-9df9-4bf5-a439-f1f32aedd1db of deviceClass Shutter (RSM900R)</extracomment>
-        <translation>Rauf</translation>
+        <extracomment>The name of the ActionType e015419c-9df9-4bf5-a439-f1f32aedd1db of deviceClass conradShutter</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="42"/>
         <source>down</source>
-        <extracomment>The name of the ActionType c58a463a-f765-4a61-b2e2-883cc23878c0 of deviceClass Shutter (RSM900R)</extracomment>
-        <translation>Runter</translation>
+        <extracomment>The name of the ActionType c58a463a-f765-4a61-b2e2-883cc23878c0 of deviceClass conradShutter</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="45"/>
         <source>Send sync signal</source>
-        <extracomment>The name of the ActionType 4125a18e-fa2d-4b25-acd1-e148d5d665f5 of deviceClass Shutter (RSM900R)</extracomment>
-        <translation>Sende sync Signal</translation>
+        <extracomment>The name of the ActionType 4125a18e-fa2d-4b25-acd1-e148d5d665f5 of deviceClass conradShutter</extracomment>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

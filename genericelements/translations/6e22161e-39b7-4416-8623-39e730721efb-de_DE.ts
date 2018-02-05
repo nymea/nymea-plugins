@@ -5,9 +5,9 @@
     <name>GenericElements</name>
     <message>
         <location filename="../plugininfo.h" line="39"/>
-        <source>Generic Elements</source>
-        <extracomment>The name of the plugin Generic Elements (6e22161e-39b7-4416-8623-39e730721efb)</extracomment>
-        <translation>Generische Elemente</translation>
+        <source>GenericElements</source>
+        <extracomment>The name of the plugin GenericElements (6e22161e-39b7-4416-8623-39e730721efb)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="42"/>
@@ -30,8 +30,8 @@
     <message>
         <location filename="../plugininfo.h" line="51"/>
         <source>state</source>
-        <extracomment>The name of the ParamType of StateType (b5e90567-54aa-49bd-a78a-3c19fb38aaf5) of DeviceClass Toggle Button</extracomment>
-        <translation>Status</translation>
+        <extracomment>The name of the ParamType of StateType (b5e90567-54aa-49bd-a78a-3c19fb38aaf5) of DeviceClass toggleButton</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="54"/>
@@ -48,14 +48,14 @@
     <message>
         <location filename="../plugininfo.h" line="60"/>
         <source>press</source>
-        <extracomment>The name of the ActionType 01f38af1-b2ab-4ec3-844e-ef52f0f229a9 of deviceClass Button</extracomment>
-        <translation>Drücken</translation>
+        <extracomment>The name of the ActionType 01f38af1-b2ab-4ec3-844e-ef52f0f229a9 of deviceClass button</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="63"/>
         <source>button pressed</source>
-        <extracomment>The name of the EventType effdbc2d-e467-4b0b-80a9-9dda251bfa5c of deviceClass Button</extracomment>
-        <translation>Taster gedrückt</translation>
+        <extracomment>The name of the EventType effdbc2d-e467-4b0b-80a9-9dda251bfa5c of deviceClass button</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="66"/>
@@ -66,26 +66,26 @@
     <message>
         <location filename="../plugininfo.h" line="69"/>
         <source>press ON</source>
-        <extracomment>The name of the ActionType 892596d2-0863-4807-97da-469b9f7003f2 of deviceClass ON/OFF Button</extracomment>
-        <translation>Drücke AN</translation>
+        <extracomment>The name of the ActionType 892596d2-0863-4807-97da-469b9f7003f2 of deviceClass onOffButton</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="72"/>
         <source>press OFF</source>
-        <extracomment>The name of the ActionType a8d64050-0b58-4ccf-b052-77ce2b7368ad of deviceClass ON/OFF Button</extracomment>
-        <translation>Drücke AUS</translation>
+        <extracomment>The name of the ActionType a8d64050-0b58-4ccf-b052-77ce2b7368ad of deviceClass onOffButton</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="75"/>
         <source>ON pressed</source>
-        <extracomment>The name of the EventType 4eeba6a2-e4c7-4a2e-8360-2797d98114e6 of deviceClass ON/OFF Button</extracomment>
-        <translation>An gedrückt</translation>
+        <extracomment>The name of the EventType 4eeba6a2-e4c7-4a2e-8360-2797d98114e6 of deviceClass onOffButton</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="78"/>
         <source>OFF pressed</source>
-        <extracomment>The name of the EventType b636c5f3-2eb0-4682-96d4-88a4aa9d2c12 of deviceClass ON/OFF Button</extracomment>
-        <translation>Aus gedrückt</translation>
+        <extracomment>The name of the EventType b636c5f3-2eb0-4682-96d4-88a4aa9d2c12 of deviceClass onOffButton</extracomment>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

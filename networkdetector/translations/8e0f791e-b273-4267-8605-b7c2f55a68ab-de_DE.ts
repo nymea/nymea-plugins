@@ -5,8 +5,8 @@
     <name>NetworkDetector</name>
     <message>
         <location filename="../plugininfo.h" line="32"/>
-        <source>Network Detector</source>
-        <extracomment>The name of the plugin Network Detector (8e0f791e-b273-4267-8605-b7c2f55a68ab)</extracomment>
+        <source>NetworkDetector</source>
+        <extracomment>The name of the plugin NetworkDetector (8e0f791e-b273-4267-8605-b7c2f55a68ab)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -24,13 +24,13 @@
     <message>
         <location filename="../plugininfo.h" line="41"/>
         <source>address</source>
-        <extracomment>The name of the paramType (c6707093-3b51-469d-9fc0-f167bff2a987) of Network Device</extracomment>
+        <extracomment>The name of the paramType (c6707093-3b51-469d-9fc0-f167bff2a987) of networkDevice</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="44"/>
         <source>hardware address</source>
-        <extracomment>The name of the paramType (18fd3b05-478a-49cf-b8ae-3c6a98675ccc) of Network Device</extracomment>
+        <extracomment>The name of the paramType (18fd3b05-478a-49cf-b8ae-3c6a98675ccc) of networkDevice</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -41,8 +41,8 @@
     </message>
     <message>
         <location filename="../plugininfo.h" line="50"/>
-        <source>Device in network</source>
-        <extracomment>The name of the ParamType of StateType (cb43e1b5-4f61-4538-bfa2-c33055c542cf) of DeviceClass Network Device</extracomment>
+        <source>inRange</source>
+        <extracomment>The name of the ParamType of StateType (cb43e1b5-4f61-4538-bfa2-c33055c542cf) of DeviceClass networkDevice</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -21,7 +21,7 @@ The name of the vendor (cf0a9644-2c13-4daf-85c1-ad88d6745b42)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="52"/>
         <source>ip</source>
-        <extracomment>The name of the paramType (a54b98b4-b78f-41dd-a257-14425c6cf9ab) of AVR X1000</extracomment>
+        <extracomment>The name of the paramType (a54b98b4-b78f-41dd-a257-14425c6cf9ab) of AVRX1000</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -33,7 +33,7 @@ The name of the vendor (cf0a9644-2c13-4daf-85c1-ad88d6745b42)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="58"/>
         <source>connected</source>
-        <extracomment>The name of the ParamType of StateType (4d1790bf-28c6-4c1f-8892-ba1a0ef140f5) of DeviceClass AVR X1000</extracomment>
+        <extracomment>The name of the ParamType of StateType (4d1790bf-28c6-4c1f-8892-ba1a0ef140f5) of DeviceClass AVRX1000</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -45,7 +45,7 @@ The name of the vendor (cf0a9644-2c13-4daf-85c1-ad88d6745b42)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="64"/>
         <source>power</source>
-        <extracomment>The name of the ParamType of StateType (1cdb6b54-6831-4900-95b2-c78f64497701) of DeviceClass AVR X1000</extracomment>
+        <extracomment>The name of the ParamType of StateType (1cdb6b54-6831-4900-95b2-c78f64497701) of DeviceClass AVRX1000</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -63,7 +63,7 @@ The name of the vendor (cf0a9644-2c13-4daf-85c1-ad88d6745b42)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="73"/>
         <source>volume</source>
-        <extracomment>The name of the ParamType of StateType (773636b9-304d-463a-8755-fc7488dc0ff3) of DeviceClass AVR X1000</extracomment>
+        <extracomment>The name of the ParamType of StateType (773636b9-304d-463a-8755-fc7488dc0ff3) of DeviceClass AVRX1000</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -81,7 +81,7 @@ The name of the vendor (cf0a9644-2c13-4daf-85c1-ad88d6745b42)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="82"/>
         <source>channel</source>
-        <extracomment>The name of the ParamType of StateType (f29ffa2c-31d6-4d88-b160-a38288c82ce1) of DeviceClass AVR X1000</extracomment>
+        <extracomment>The name of the ParamType of StateType (f29ffa2c-31d6-4d88-b160-a38288c82ce1) of DeviceClass AVRX1000</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
