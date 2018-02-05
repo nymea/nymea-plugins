@@ -21,25 +21,25 @@ The name of the vendor (b5e1896e-b7fa-4c19-ac2b-10bd489f8302)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="40"/>
         <source>access token</source>
-        <extracomment>The name of the paramType (1f37ce22-50b8-4183-8b74-557fdb2d3076) of Push Notification</extracomment>
+        <extracomment>The name of the paramType (1f37ce22-50b8-4183-8b74-557fdb2d3076) of pushNotification</extracomment>
         <translation>Zugangs Token</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="43"/>
         <source>notify</source>
-        <extracomment>The name of the ActionType 1378480f-6583-44e2-8fdd-22afe979a9a3 of deviceClass Push Notification</extracomment>
+        <extracomment>The name of the ActionType 1378480f-6583-44e2-8fdd-22afe979a9a3 of deviceClass pushNotification</extracomment>
         <translation>Benachrichtigen</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="46"/>
         <source>title</source>
-        <extracomment>The name of the paramType (ceed6e66-0dcb-4405-832d-e9091f882acc) of Push Notification</extracomment>
+        <extracomment>The name of the paramType (ceed6e66-0dcb-4405-832d-e9091f882acc) of pushNotification</extracomment>
         <translation>Titel</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="49"/>
         <source>body</source>
-        <extracomment>The name of the paramType (f72cc56c-4d0b-4b96-ab9b-ff3ca92b00e2) of Push Notification</extracomment>
+        <extracomment>The name of the paramType (f72cc56c-4d0b-4b96-ab9b-ff3ca92b00e2) of pushNotification</extracomment>
         <translation>Nachrichten Inhalt</translation>
     </message>
 </context>

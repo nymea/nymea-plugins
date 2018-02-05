@@ -4,12 +4,9 @@
 <context>
     <name>UdpCommander</name>
     <message>
-        <location filename="../plugininfo.h" line="30"/>
         <location filename="../plugininfo.h" line="36"/>
         <source>UDP Commander</source>
-        <extracomment>The name of the plugin UDP Commander (24a8474c-1d86-499e-a76e-9cbfbf48dd72)
-----------
-The name of the DeviceClass (6ecd5a8d-595a-4520-85e3-dcc9679edf66)</extracomment>
+        <extracomment>The name of the DeviceClass (6ecd5a8d-595a-4520-85e3-dcc9679edf66)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -19,21 +16,27 @@ The name of the DeviceClass (6ecd5a8d-595a-4520-85e3-dcc9679edf66)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="30"/>
+        <source>UdpCommander</source>
+        <extracomment>The name of the plugin UdpCommander (24a8474c-1d86-499e-a76e-9cbfbf48dd72)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="39"/>
         <source>port</source>
-        <extracomment>The name of the paramType (1843adcb-e377-44d1-8d70-ab4f9eeb32ec) of UDP Commander</extracomment>
+        <extracomment>The name of the paramType (1843adcb-e377-44d1-8d70-ab4f9eeb32ec) of commander</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="42"/>
         <source>command</source>
-        <extracomment>The name of the paramType (d0f29961-1624-4b91-a0e8-9b1cc86c44c7) of UDP Commander</extracomment>
+        <extracomment>The name of the paramType (d0f29961-1624-4b91-a0e8-9b1cc86c44c7) of commander</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="45"/>
         <source>command received</source>
-        <extracomment>The name of the EventType 5fecbba3-ffbb-456b-872c-a2f571c681cb of deviceClass UDP Commander</extracomment>
+        <extracomment>The name of the EventType 5fecbba3-ffbb-456b-872c-a2f571c681cb of deviceClass commander</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

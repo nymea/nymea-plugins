@@ -24,13 +24,13 @@
     <message>
         <location filename="../plugininfo.h" line="58"/>
         <source>name</source>
-        <extracomment>The name of the paramType (bdb9d684-2f98-45f5-889c-f184c1e73dc7) of Sensor Tag</extracomment>
+        <extracomment>The name of the paramType (bdb9d684-2f98-45f5-889c-f184c1e73dc7) of sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="61"/>
         <source>mac address</source>
-        <extracomment>The name of the paramType (d51ed68e-c84a-4136-a5b5-be2f95fd5a0f) of Sensor Tag</extracomment>
+        <extracomment>The name of the paramType (d51ed68e-c84a-4136-a5b5-be2f95fd5a0f) of sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -42,7 +42,7 @@
     <message>
         <location filename="../plugininfo.h" line="67"/>
         <source>connected</source>
-        <extracomment>The name of the ParamType of StateType (a9629b11-0f34-47f0-a0f0-f758a6aec2b4) of DeviceClass Sensor Tag</extracomment>
+        <extracomment>The name of the ParamType of StateType (a9629b11-0f34-47f0-a0f0-f758a6aec2b4) of DeviceClass sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -53,8 +53,8 @@
     </message>
     <message>
         <location filename="../plugininfo.h" line="73"/>
-        <source>IR temperature</source>
-        <extracomment>The name of the ParamType of StateType (c664e9ec-a045-49ba-add1-1642ceba7c4f) of DeviceClass Sensor Tag</extracomment>
+        <source>IRtemperature</source>
+        <extracomment>The name of the ParamType of StateType (c664e9ec-a045-49ba-add1-1642ceba7c4f) of DeviceClass sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -66,7 +66,7 @@
     <message>
         <location filename="../plugininfo.h" line="79"/>
         <source>humidity</source>
-        <extracomment>The name of the ParamType of StateType (e83a50ff-96c9-4b6d-889f-f4238353e794) of DeviceClass Sensor Tag</extracomment>
+        <extracomment>The name of the ParamType of StateType (e83a50ff-96c9-4b6d-889f-f4238353e794) of DeviceClass sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -78,7 +78,7 @@
     <message>
         <location filename="../plugininfo.h" line="85"/>
         <source>temperature</source>
-        <extracomment>The name of the ParamType of StateType (8359ada9-df1c-4e60-bb87-9e21d05ee2e2) of DeviceClass Sensor Tag</extracomment>
+        <extracomment>The name of the ParamType of StateType (8359ada9-df1c-4e60-bb87-9e21d05ee2e2) of DeviceClass sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -90,7 +90,7 @@
     <message>
         <location filename="../plugininfo.h" line="91"/>
         <source>pressure</source>
-        <extracomment>The name of the ParamType of StateType (645633ad-77d4-45b2-8be8-d6ca7a12eb7a) of DeviceClass Sensor Tag</extracomment>
+        <extracomment>The name of the ParamType of StateType (645633ad-77d4-45b2-8be8-d6ca7a12eb7a) of DeviceClass sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -102,19 +102,19 @@
     <message>
         <location filename="../plugininfo.h" line="97"/>
         <source>moving</source>
-        <extracomment>The name of the ParamType of StateType (4be5ca26-0565-419d-b18b-2a5a385d2a3d) of DeviceClass Sensor Tag</extracomment>
+        <extracomment>The name of the ParamType of StateType (4be5ca26-0565-419d-b18b-2a5a385d2a3d) of DeviceClass sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="100"/>
         <source>left key pressed</source>
-        <extracomment>The name of the EventType 61478490-bed0-4fed-9d58-f13c35b4f220 of deviceClass Sensor Tag</extracomment>
+        <extracomment>The name of the EventType 61478490-bed0-4fed-9d58-f13c35b4f220 of deviceClass sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="103"/>
         <source>right key pressed</source>
-        <extracomment>The name of the EventType b7e927db-af28-4fdc-8eb7-edb02258ff5a of deviceClass Sensor Tag</extracomment>
+        <extracomment>The name of the EventType b7e927db-af28-4fdc-8eb7-edb02258ff5a of deviceClass sensortag</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

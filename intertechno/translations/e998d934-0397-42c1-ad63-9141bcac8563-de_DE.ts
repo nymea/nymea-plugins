@@ -4,8 +4,8 @@
 <context>
     <name>Intertechno</name>
     <message>
-        <location filename="../plugininfo.h" line="30"/>
-        <location filename="../plugininfo.h" line="33"/>
+        <location filename="../plugininfo.h" line="31"/>
+        <location filename="../plugininfo.h" line="34"/>
         <source>Intertechno</source>
         <extracomment>The name of the plugin Intertechno (e998d934-0397-42c1-ad63-9141bcac8563)
 ----------
@@ -13,27 +13,33 @@ The name of the vendor (6a852bc2-34dd-4f4c-9ac9-dd4c32ddbcba)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="36"/>
+        <location filename="../plugininfo.h" line="37"/>
         <source>Intertechno switch</source>
         <extracomment>The name of the DeviceClass (324219e8-7c53-41b5-b314-c2900cd15252)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="39"/>
+        <location filename="../plugininfo.h" line="40"/>
         <source>family code</source>
-        <extracomment>The name of the paramType (c4e2ec44-5e8e-4168-9f6d-a905ea3329c9) of Intertechno switch</extracomment>
+        <extracomment>The name of the paramType (c4e2ec44-5e8e-4168-9f6d-a905ea3329c9) of switch</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="42"/>
+        <location filename="../plugininfo.h" line="43"/>
         <source>button code</source>
-        <extracomment>The name of the paramType (abb67f92-2e3b-40e2-9106-e538e1882d11) of Intertechno switch</extracomment>
+        <extracomment>The name of the paramType (abb67f92-2e3b-40e2-9106-e538e1882d11) of switch</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="45"/>
+        <location filename="../plugininfo.h" line="46"/>
+        <source>set power</source>
+        <extracomment>The name of the ActionType df19fb51-c3cd-4b95-8d88-ebbb535f4789 of deviceClass switch</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="49"/>
         <source>power</source>
-        <extracomment>The name of the paramType (8de21063-631c-4419-be5d-235cea3cd906) of Intertechno switch</extracomment>
+        <extracomment>The name of the paramType (8de21063-631c-4419-be5d-235cea3cd906) of switch</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

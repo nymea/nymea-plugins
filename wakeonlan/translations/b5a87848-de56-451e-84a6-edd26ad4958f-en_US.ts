@@ -5,8 +5,8 @@
     <name>WakeOnLan</name>
     <message>
         <location filename="../plugininfo.h" line="29"/>
-        <source>Wake on Lan</source>
-        <extracomment>The name of the plugin Wake on Lan (b5a87848-de56-451e-84a6-edd26ad4958f)</extracomment>
+        <source>WakeOnLan</source>
+        <extracomment>The name of the plugin WakeOnLan (b5a87848-de56-451e-84a6-edd26ad4958f)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -24,13 +24,13 @@
     <message>
         <location filename="../plugininfo.h" line="38"/>
         <source>mac</source>
-        <extracomment>The name of the paramType (e2ba04ac-9fe1-4f9d-8152-024c27030cde) of Wake On Lan</extracomment>
+        <extracomment>The name of the paramType (e2ba04ac-9fe1-4f9d-8152-024c27030cde) of wol</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="41"/>
         <source>wake up device</source>
-        <extracomment>The name of the ActionType fb9b9d87-218f-4f0d-9e16-39f8a105029a of deviceClass Wake On Lan</extracomment>
+        <extracomment>The name of the ActionType fb9b9d87-218f-4f0d-9e16-39f8a105029a of deviceClass wol</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
