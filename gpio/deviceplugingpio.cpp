@@ -23,7 +23,7 @@
 /*!
     \page gpioplugin.html
     \title GPIO Plugin
-    \brief Plugin to controll gpios on different boards.
+    \brief Plugin to control gpios on different boards.
 
     \ingroup plugins
     \ingroup nymea-plugins-maker
