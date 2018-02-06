@@ -20,8 +20,8 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINELGATO_H
-#define DEVICEPLUGINELGATO_H
+#ifndef DEVICEPLUGINSENIC_H
+#define DEVICEPLUGINSENIC_H
 
 #include "plugintimer.h"
 #include "plugin/deviceplugin.h"
@@ -63,4 +63,4 @@ private slots:
 
 };
 
-#endif // DEVICEPLUGINELGATO_H
+#endif // DEVICEPLUGINSENIC_H
