@@ -18,6 +18,9 @@ snappy{
     INCLUDEPATH+=$$(SNAPCRAFT_STAGE)/usr/include/guh
 }
 
+# Make the device plugin json file visible in the Qt Creator
+OTHER_FILES+=$$PWD/$${TARGET}/deviceplugin"$$TARGET".json
+
 # Create plugininfo file
 plugininfo.commands = guh-generateplugininfo --filetype i --jsonfile $$PWD/$${TARGET}/deviceplugin"$$TARGET".json --output plugininfo.h --builddir $$OUT_PWD; \
                       guh-generateplugininfo --filetype e --jsonfile $$PWD/$${TARGET}/deviceplugin"$$TARGET".json --output extern-plugininfo.h --builddir $$OUT_PWD;
