@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
+ *  Copyright (C) 2018 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
  *  This file is part of guh.                                              *
  *                                                                         *
@@ -23,6 +24,7 @@
 
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
+#include "plugintimer.h"
 
 class DevicePluginSimulation : public DevicePlugin
 {
@@ -35,15 +37,18 @@ class DevicePluginSimulation : public DevicePlugin
 public:
     explicit DevicePluginSimulation();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-    void guhTimer() override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
 
     int getRandomNumber(const int min, const int max);
+
+private slots:
+    void onPluginTimer();
+
 };
 
 #endif // DEVICEPLUGINSIMMULATION_H
