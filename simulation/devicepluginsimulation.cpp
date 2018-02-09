@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
+ *  Copyright (C) 2018 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
  *  This file is part of guh.                                              *
  *                                                                         *
@@ -24,14 +25,14 @@
 
 DevicePluginSimulation::DevicePluginSimulation()
 {
+
 }
 
-
-DeviceManager::HardwareResources DevicePluginSimulation::requiredHardware() const
+void DevicePluginSimulation::init()
 {
-    return DeviceManager::HardwareResourceTimer;
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginSimulation::onPluginTimer);
 }
-
 
 DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *device)
 {
@@ -49,7 +50,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
     if (device->deviceClassId() == simpleButtonDeviceClassId ) {
 
         // check if this is the "press" action
-        if (action.actionTypeId() == pressSimpleButtonActionTypeId) {
+        if (action.actionTypeId() == simpleButtonTriggerActionTypeId) {
 
 
             // Emit the "button pressed" event
@@ -61,21 +62,21 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
-    // Check the DeviceClassId for "Alternative Power Button"
-    if (device->deviceClassId() == alternativePowerButtonDeviceClassId) {
+    // Check the DeviceClassId for "Alternative Button"
+    if (device->deviceClassId() == alternativeButtonDeviceClassId) {
 
         // check if this is the "set power" action
-        if (action.actionTypeId() == alternativePowerActionTypeId) {
+        if (action.actionTypeId() == alternativeButtonPowerActionTypeId) {
 
             // get the param value
-            Param powerParam = action.param(alternativePowerStateParamTypeId);
+            Param powerParam = action.param(alternativeButtonPowerStateParamTypeId);
             bool power = powerParam.value().toBool();
 
             qCDebug(dcSimulation) << "ActionTypeId :" << action.actionTypeId().toString();
-            qCDebug(dcSimulation) << "StateTypeId  :" << alternativePowerStateTypeId.toString();
+            qCDebug(dcSimulation) << "StateTypeId  :" << alternativeButtonPowerStateTypeId.toString();
 
             // Set the "power" state
-            device->setStateValue(alternativePowerStateTypeId, power);
+            device->setStateValue(alternativeButtonPowerStateTypeId, power);
 
             return DeviceManager::DeviceErrorNoError;
         }
@@ -85,44 +86,44 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
     if (device->deviceClassId() == heatingDeviceClassId) {
 
         // check if this is the "set power" action
-        if (action.actionTypeId() == powerActionTypeId) {
+        if (action.actionTypeId() == heatingPowerActionTypeId) {
 
             // get the param value
-            Param powerParam = action.param(powerStateParamTypeId);
+            Param powerParam = action.param(heatingPowerStateParamTypeId);
             bool power = powerParam.value().toBool();
             // Set the "power" state
-            device->setStateValue(powerStateTypeId, power);
+            device->setStateValue(heatingPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
 
-        }else if (action.actionTypeId() == targetTemperatureActionTypeId) {
+        } else if (action.actionTypeId() == heatingTargetTemperatureActionTypeId) {
 
             // get the param value
-            Param temperatureParam = action.param(targetTemperatureStateParamTypeId);
+            Param temperatureParam = action.param(heatingTargetTemperatureStateParamTypeId);
             int temperature = temperatureParam.value().toInt();
 
             // Set the "temperature" state
-            device->setStateValue(targetTemperatureStateTypeId, temperature);
+            device->setStateValue(heatingTargetTemperatureStateTypeId, temperature);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
-    if(device->deviceClassId() == evChargerDeviceClassId){
+    if (device->deviceClassId() == evChargerDeviceClassId){
 
-        if(action.actionTypeId() == evPowerActionTypeId){
+        if (action.actionTypeId() == evChargerPowerActionTypeId){
             // get the param value
-            Param powerParam = action.param(evPowerStateParamTypeId);
+            Param powerParam = action.param(evChargerPowerStateParamTypeId);
             bool power = powerParam.value().toBool();
             // Set the "power" state
-            device->setStateValue(evPowerStateTypeId, power);
+            device->setStateValue(evChargerPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
 
-        }else if(action.actionTypeId() == evCurrentActionTypeId){
+        } else if(action.actionTypeId() == evChargerCurrentActionTypeId){
             // get the param value
-            Param currentParam = action.param(evCurrentStateParamTypeId);
+            Param currentParam = action.param(evChargerCurrentStateParamTypeId);
             int current = currentParam.value().toInt();
             // Set the "current" state
-            device->setStateValue(evCurrentStateTypeId, current);
+            device->setStateValue(evChargerCurrentStateTypeId, current);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -141,26 +142,26 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
-    if(device->deviceClassId() == rgbBulbDeviceClassId){
+    if(device->deviceClassId() == colorBulbDeviceClassId){
 
-        if(action.actionTypeId() == bulbBrightnessActionTypeId){
-            int brightness = action.param(bulbBrightnessStateParamTypeId).value().toInt();
-            device->setStateValue(bulbBrightnessStateTypeId, brightness);
+        if(action.actionTypeId() == colorBulbBrightnessActionTypeId){
+            int brightness = action.param(colorBulbBrightnessStateParamTypeId).value().toInt();
+            device->setStateValue(colorBulbBrightnessStateTypeId, brightness);
             return DeviceManager::DeviceErrorNoError;
 
-        } else if (action.actionTypeId() == bulbTemperatureActionTypeId){
-            int temperature = action.param(bulbTemperatureStateParamTypeId).value().toInt();
-            device->setStateValue(bulbTemperatureStateTypeId, temperature);
+        } else if (action.actionTypeId() == colorBulbColorTemperatureActionTypeId){
+            int temperature = action.param(colorBulbColorTemperatureStateParamTypeId).value().toInt();
+            device->setStateValue(colorBulbColorTemperatureStateTypeId, temperature);
             return DeviceManager::DeviceErrorNoError;
 
-        } else if (action.actionTypeId() == bulbColorActionTypeId) {
-            QVariant color = action.param(bulbColorStateParamTypeId).value();
-            device->setStateValue(bulbColorStateTypeId, color);
+        } else if (action.actionTypeId() == colorBulbColorActionTypeId) {
+            QVariant color = action.param(colorBulbColorStateParamTypeId).value();
+            device->setStateValue(colorBulbColorStateTypeId, color);
             return DeviceManager::DeviceErrorNoError;
 
-        } else if (action.actionTypeId() == bulbPowerActionTypeId) {
-            bool power = action.param(bulbPowerStateParamTypeId).value().toBool();
-            device->setStateValue(bulbPowerStateTypeId, power);
+        } else if (action.actionTypeId() == colorBulbPowerActionTypeId) {
+            bool power = action.param(colorBulbPowerStateParamTypeId).value().toBool();
+            device->setStateValue(colorBulbPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
         }
 
@@ -169,17 +170,17 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
 
     if (device->deviceClassId() == heatingRodDeviceClassId) {
 
-        if (action.actionTypeId() == powerActionTypeId) {
-            bool power = action.param(powerStateParamTypeId).value().toBool();
-            device->setStateValue(powerStateTypeId, power);
+        if (action.actionTypeId() == heatingRodPowerActionTypeId) {
+            bool power = action.param(heatingRodPowerStateParamTypeId).value().toBool();
+            device->setStateValue(heatingRodPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == waterTemperatureActionTypeId) {
-            int temperature = action.param(waterTemperatureStateParamTypeId).value().toInt();
-            device->setStateValue(waterTemperatureStateTypeId, temperature);
+        } else if (action.actionTypeId() == heatingRodWaterTemperatureActionTypeId) {
+            int temperature = action.param(heatingRodWaterTemperatureStateParamTypeId).value().toInt();
+            device->setStateValue(heatingRodWaterTemperatureStateTypeId, temperature);
             return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == maxPowerActionTypeId) {
-            double maxPower = action.param(maxPowerStateParamTypeId).value().toDouble();
-            device->setStateValue(maxPowerStateTypeId, maxPower);
+        } else if (action.actionTypeId() == heatingRodMaxPowerActionTypeId) {
+            double maxPower = action.param(heatingRodMaxPowerStateParamTypeId).value().toDouble();
+            device->setStateValue(heatingRodMaxPowerStateTypeId, maxPower);
             return DeviceManager::DeviceErrorNoError;
         }
 
@@ -187,46 +188,47 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
     }
 
     if (device->deviceClassId() == batteryDeviceClassId) {
-        if (action.actionTypeId() == maxChargingActionTypeId) {
-            int maxCharging = action.param(maxChargingStateParamTypeId).value().toInt();
-            device->setStateValue(maxChargingStateTypeId, maxCharging);
-            device->setStateValue(chargingBatteryStateTypeId, ((double)maxCharging-10)/1000);
+        if (action.actionTypeId() == batteryMaxChargingActionTypeId) {
+            int maxCharging = action.param(batteryMaxChargingStateParamTypeId).value().toInt();
+            device->setStateValue(batteryMaxChargingStateTypeId, maxCharging);
+            device->setStateValue(batteryChargingStateTypeId, ((double)maxCharging-10)/1000);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
-
     return DeviceManager::DeviceErrorDeviceClassNotFound;
-}
-
-void DevicePluginSimulation::guhTimer(){
-
-    foreach (Device *device, myDevices()) {
-        if (device->deviceClassId() == temperatureSensorDeviceClassId) {
-            //generate Random Number
-            double temperature = ((double)getRandomNumber(200, 230)/10.0);
-            device->setStateValue(temperatureStateTypeId, temperature);
-            device->setStateValue(humidityStateTypeId, getRandomNumber(40, 60));
-            device->setStateValue(batteryStateTypeId, 93);
-            device->setStateValue(reachableStateTypeId, true);
-
-        }else if(device->deviceClassId() == motionDetectorDeviceClassId){
-            bool active = true;
-            if(getRandomNumber(0, 60)){
-                active = false;
-            }
-            device->setStateValue(activeStateTypeId, active);
-            device->setStateValue(batteryStateTypeId, 82);
-            device->setStateValue(reachableStateTypeId, true);
-        }else if(device->deviceClassId() == evChargerDeviceClassId){
-
-        }
-    }
 }
 
 int DevicePluginSimulation::getRandomNumber(const int Min, const int Max)
 {
     return ((qrand() % ((Max + 1) - Min)) + Min);
+}
+
+void DevicePluginSimulation::onPluginTimer()
+{
+    foreach (Device *device, myDevices()) {
+        if (device->deviceClassId() == temperatureSensorDeviceClassId) {
+            //generate Random Number
+            double temperature = ((double)getRandomNumber(200, 230)/10.0);
+            device->setStateValue(temperatureSensorTemperatureStateTypeId, temperature);
+            device->setStateValue(temperatureSensorHumidityStateTypeId, getRandomNumber(40, 60));
+            device->setStateValue(temperatureSensorBatteryLevelStateTypeId, getRandomNumber(10, 100));
+            device->setStateValue(temperatureSensorBatteryCriticalStateTypeId, device->stateValue(temperatureSensorBatteryLevelStateTypeId).toDouble() <= 30);
+            device->setStateValue(temperatureSensorConnectedStateTypeId, true);
+
+        } else if(device->deviceClassId() == motionDetectorDeviceClassId){
+            bool active = true;
+            if(getRandomNumber(0, 60)){
+                active = false;
+            }
+            device->setStateValue(motionDetectorActiveStateTypeId, active);
+            device->setStateValue(motionDetectorBatteryLevelStateTypeId, getRandomNumber(10, 100));
+            device->setStateValue(motionDetectorBatteryCriticalStateTypeId, device->stateValue(motionDetectorBatteryLevelStateTypeId).toDouble() <= 30);
+            device->setStateValue(motionDetectorConnectedStateTypeId, true);
+        } else if(device->deviceClassId() == evChargerDeviceClassId){
+
+        }
+    }
 }
 
