@@ -41,7 +41,7 @@
                             "id": "6d5e792a-c786-40d2-ae35-a48ac6fafcbc",
                             "name": "connected",
                             "displayName": "connected",
-                            "eventTypeName": "connected changed",
+                            "displayNameEvent": "connected changed",
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -64,7 +64,7 @@
                             "name": "color",
                             "displayName": "color",
                             "displayNameEvent": "color changed",
-                            "disoplayNameAction": "Set color",
+                            "displayNameAction": "Set color",
                             "type": "QColor",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
