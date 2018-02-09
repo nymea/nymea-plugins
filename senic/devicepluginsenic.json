@@ -47,7 +47,7 @@
                             "id": "5c400da4-a14e-4e0a-be9f-c82ffe7e1972",
                             "name": "hardwareRevision",
                             "displayName": "Hardware revision",
-                            "eventTypeName": "Hardware revision changed",
+                            "displayNameEvent": "Hardware revision changed",
                             "type": "QString",
                             "defaultValue": "-"
                         },
