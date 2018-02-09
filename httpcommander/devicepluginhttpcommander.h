@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
+ *  Copyright (C) 2018 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
  *  This file is part of guh.                                              *
  *                                                                         *
@@ -23,6 +24,9 @@
 
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
+#include "plugintimer.h"
+
+#include <QNetworkReply>
 
 class DevicePluginHttpCommander : public DevicePlugin
 {
@@ -33,18 +37,26 @@ class DevicePluginHttpCommander : public DevicePlugin
 
 public:
     explicit DevicePluginHttpCommander();
+    ~DevicePluginHttpCommander();
 
-    DeviceManager::HardwareResources requiredHardware() const override;
+    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void  postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    void networkManagerReplyReady(QNetworkReply *reply) override;
-    void guhTimer() override;
-
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QHash<QNetworkReply *, Device *> m_httpRequests;
+
+    void makeGetCall(Device *device);
+
+private slots:
+    void onPluginTimer();
+
+    void onGetRequestFinished();
+    void onPostRequestFinished();
+    void onPutRequestFinished();
 };
 
 #endif // DEVICEPLUGINHTTPCOMMANDER_H
