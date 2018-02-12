@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2016 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
  *                                                                         *
  *  This file is part of guh.                                              *
  *                                                                         *
@@ -54,52 +54,133 @@ BluetoothLowEnergyDevice *Nuimo::bluetoothDevice()
     return m_bluetoothDevice;
 }
 
-void Nuimo::showGuhLogo()
+void Nuimo::showImage(const Nuimo::MatrixType &matrixType)
 {
-    QByteArray matrix(
-                "         "
-                "  *      "
-                " **      "
-                " *** **  "
-                "  *****  "
-                "   **    "
-                "   **    "
-                "    *    "
-                "         ");
+    QByteArray matrix;
+    int time = 3;
+    switch (matrixType) {
+    case MatrixTypeUp:
+        matrix = QByteArray(
+                    "    *    "
+                    "   ***   "
+                    "  * * *  "
+                    " *  *  * "
+                    "*   *   *"
+                    "    *    "
+                    "    *    "
+                    "    *    "
+                    "    *    ");
+        time = 3;
+        break;
+    case MatrixTypeDown:
+        matrix = QByteArray(
+                    "    *    "
+                    "    *    "
+                    "    *    "
+                    "    *    "
+                    "*   *   *"
+                    " *  *  * "
+                    "  * * *  "
+                    "   ***   "
+                    "    *    ");
+        time = 3;
+        break;
+    case MatrixTypeLeft:
+        matrix = QByteArray(
+                    "    *    "
+                    "   *     "
+                    "  *      "
+                    " *       "
+                    "*********"
+                    " *       "
+                    "  *      "
+                    "   *     "
+                    "    *    ");
+        time = 3;
+        break;
+    case MatrixTypeRight:
+        matrix = QByteArray(
+                    "    *    "
+                    "     *   "
+                    "      *  "
+                    "       * "
+                    "*********"
+                    "       * "
+                    "      *  "
+                    "     *   "
+                    "    *    ");
+        time = 3;
+        break;
+    case MatrixTypePlay:
+        matrix = QByteArray(
+                    "         "
+                    "   *     "
+                    "   **    "
+                    "   ***   "
+                    "   ****  "
+                    "   ***   "
+                    "   **    "
+                    "   *     "
+                    "         ");
+        time = 3;
+        break;
+    case MatrixTypePause:
+        matrix = QByteArray(
+                    "         "
+                    "         "
+                    "  ** **  "
+                    "  ** **  "
+                    "  ** **  "
+                    "  ** **  "
+                    "  ** **  "
+                    "         "
+                    "         ");
+        time = 3;
+        break;
+    case MatrixTypeStop:
+        matrix = QByteArray(
+                    "         "
+                    "         "
+                    "  *****  "
+                    "  *****  "
+                    "  *****  "
+                    "  *****  "
+                    "  *****  "
+                    "         "
+                    "         ");
+        time = 3;
+        break;
+    case MatrixTypeMusic:
+        matrix = QByteArray(
+                    "  *******"
+                    "  *******"
+                    "  *     *"
+                    "  *     *"
+                    "  *     *"
+                    "  *     *"
+                    " **    **"
+                    "***   ***"
+                    " *     * ");
+        time = 5;
+        break;
+    case MatrixTypeHeart:
+        matrix = QByteArray(
+                    "         "
+                    "  ** **  "
+                    " ******* "
+                    "*********"
+                    "*********"
+                    " ******* "
+                    "  *****  "
+                    "   ***   "
+                    "    *    ");
+        time = 5;
+        break;
+    default:
+        break;
+    }
 
-    showMatrix(matrix, 10);
-}
-
-void Nuimo::showArrowUp()
-{
-    QByteArray matrix(
-                "    *    "
-                "   ***   "
-                "  * * *  "
-                " *  *  * "
-                "*   *   *"
-                "    *    "
-                "    *    "
-                "    *    "
-                "    *    ");
-
-    showMatrix(matrix, 3);
-}
-
-void Nuimo::showArrowDown()
-{
-    QByteArray matrix(
-                "    *    "
-                "    *    "
-                "    *    "
-                "    *    "
-                "*   *   *"
-                " *  *  * "
-                "  * * *  "
-                "   ***   "
-                "    *    ");
-
-    showMatrix(matrix, 3);
+    showMatrix(matrix, time);
 }
 
 void Nuimo::showMatrix(const QByteArray &matrix, const int &seconds)

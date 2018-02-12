@@ -101,11 +101,17 @@
                                     "name": "logo",
                                     "displayName": "logo",
                                     "type": "QString",
-                                    "defaultValue": "Guh",
+                                    "defaultValue": "Heart",
                                     "allowedValues": [
-                                        "Guh",
-                                        "Arrow up",
-                                        "Arrow down"
+                                        "Up",
+                                        "Down",
+                                        "Left",
+                                        "Right",
+                                        "Play",
+                                        "Pause",
+                                        "Stop",
+                                        "Music",
+                                        "Heart"
                                     ]
                                 }
                             ]

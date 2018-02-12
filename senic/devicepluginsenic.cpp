@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2016 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
  *                                                                         *
  *  This file is part of guh.                                              *
  *                                                                         *
@@ -101,15 +101,30 @@ DeviceManager::DeviceError DevicePluginSenic::executeAction(Device *device, cons
     if (nuimo.isNull())
         return DeviceManager::DeviceErrorHardwareFailure;
 
+    if (!nuimo->bluetoothDevice()->connected()) {
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
+    }
+
     if (action.actionTypeId() == nuimoShowLogoActionTypeId) {
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Guh")
-            nuimo->showGuhLogo();
 
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Arrow up")
-            nuimo->showArrowUp();
-
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Arrow down")
-            nuimo->showArrowDown();
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Up")
+            nuimo->showImage(Nuimo::MatrixTypeUp);
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Down")
+            nuimo->showImage(Nuimo::MatrixTypeDown);
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Left")
+            nuimo->showImage(Nuimo::MatrixTypeLeft);
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Right")
+            nuimo->showImage(Nuimo::MatrixTypeRight);
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Play")
+            nuimo->showImage(Nuimo::MatrixTypePlay);
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Pause")
+            nuimo->showImage(Nuimo::MatrixTypePause);
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Stop")
+            nuimo->showImage(Nuimo::MatrixTypeStop);
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Music")
+            nuimo->showImage(Nuimo::MatrixTypeStop);
+        if (action.param(nuimoLogoParamTypeId).value().toString() == "Heart")
+            nuimo->showImage(Nuimo::MatrixTypeHeart);
 
         return DeviceManager::DeviceErrorNoError;
     }
