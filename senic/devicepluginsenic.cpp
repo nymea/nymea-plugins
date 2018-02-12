@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2016 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
  *                                                                         *
  *  This file is part of guh.                                              *
  *                                                                         *
@@ -106,15 +106,6 @@ DeviceManager::DeviceError DevicePluginSenic::executeAction(Device *device, cons
     }
 
     if (action.actionTypeId() == nuimoShowLogoActionTypeId) {
-        //        "up",
-        //        "down",
-        //        "left",
-        //        "right",
-        //        "play",
-        //        "pause",
-        //        "stop",
-        //        "music",
-        //        "heart"
 
         if (action.param(nuimoLogoParamTypeId).value().toString() == "Up")
             nuimo->showImage(Nuimo::MatrixTypeUp);
