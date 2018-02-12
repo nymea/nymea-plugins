@@ -41,14 +41,24 @@ public:
         SwipeDirectionDown
     };
 
+    enum MatrixType {
+        MatrixTypeUp,
+        MatrixTypeDown,
+        MatrixTypeLeft,
+        MatrixTypeRight,
+        MatrixTypePlay,
+        MatrixTypePause,
+        MatrixTypeStop,
+        MatrixTypeMusic,
+        MatrixTypeHeart
+    };
+
     explicit Nuimo(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
     Device *device();
     BluetoothLowEnergyDevice *bluetoothDevice();
 
-    void showGuhLogo();
-    void showArrowUp();
-    void showArrowDown();
+    void showImage(const MatrixType &matrixType);
 
 private:
     Device *m_device = nullptr;
