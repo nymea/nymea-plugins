@@ -101,7 +101,7 @@
                                     "name": "logo",
                                     "displayName": "logo",
                                     "type": "QString",
-                                    "defaultValue": "heart",
+                                    "defaultValue": "Heart",
                                     "allowedValues": [
                                         "Up",
                                         "Down",
