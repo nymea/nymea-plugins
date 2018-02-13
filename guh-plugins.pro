@@ -35,6 +35,7 @@ PLUGIN_DIRS = \
     multisensor         \
     gpio                \
     snapd               \
+    simulation          \
 
 
 CONFIG+=all
