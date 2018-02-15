@@ -9,6 +9,16 @@
             "displayName": "Advanced mode",
             "type": "bool",
             "defaultValue": false
+        },
+        {
+            "id": "d2e697d1-9a68-4666-bf40-8d70fa694eec",
+            "name": "refreshSchedule",
+            "displayName": "Automatic daily refresh schedule",
+            "type": "int",
+            "unit": "Hours",
+            "minValue": 0,
+            "maxValue": 23,
+            "defaultValue": 2
         }
     ],
     "vendors": [
