@@ -34,9 +34,11 @@ class SnapdConnection : public QLocalSocket
     Q_OBJECT
 public:
     explicit SnapdConnection(QObject *parent = nullptr);
+    ~SnapdConnection();
 
     SnapdReply *get(const QString &path, QObject *parent);
     SnapdReply *post(const QString &path, const QByteArray &payload, QObject *parent);
+    SnapdReply *put(const QString &path, const QByteArray &payload, QObject *parent);
 
     bool isConnected() const;
 

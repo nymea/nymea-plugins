@@ -30,19 +30,26 @@ DevicePluginSnapd::DevicePluginSnapd()
 
 }
 
+DevicePluginSnapd::~DevicePluginSnapd()
+{
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_updateTimer);
+}
+
 void DevicePluginSnapd::init()
 {
-    // Check advanced mode
+    // Initialize plugin configurations
     m_advancedMode = configValue(SnapdAdvancedModeParamTypeId).toBool();
+    m_refreshTime = configValue(SnapdRefreshScheduleParamTypeId).toInt();
     connect(this, &DevicePluginSnapd::configValueChanged, this, &DevicePluginSnapd::onPluginConfigurationChanged);
 
-    // Setup timers
+    // Refresh timer for snapd checks
     m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
     connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginSnapd::onRefreshTimer);
 
-    // Check all 5 min if there is an update available
-    m_updateTimer = hardwareManager()->pluginTimerManager()->registerTimer(300);
-    connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginSnapd::onUpdateTimer);
+    // Check all 4 hours if there is an update available
+    m_updateTimer = hardwareManager()->pluginTimerManager()->registerTimer(14400);
+    connect(m_updateTimer, &PluginTimer::timeout, this, &DevicePluginSnapd::onUpdateTimer);
 }
 
 void DevicePluginSnapd::startMonitoringAutoDevices()
@@ -69,9 +76,9 @@ void DevicePluginSnapd::startMonitoringAutoDevices()
 
 void DevicePluginSnapd::postSetupDevice(Device *device)
 {
-    if (m_snapdControl && m_snapdControl->device() == device)
+    if (m_snapdControl && m_snapdControl->device() == device) {
         m_snapdControl->update();
-
+    }
 }
 
 void DevicePluginSnapd::deviceRemoved(Device *device)
@@ -107,6 +114,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSnapd::setupDevice(Device *device)
         }
 
         m_snapdControl = new SnapdControl(device, this);
+        m_snapdControl->setPreferedRefreshTime(configValue(SnapdRefreshScheduleParamTypeId).toInt());
         connect(m_snapdControl, &SnapdControl::snapListUpdated, this, &DevicePluginSnapd::onSnapListUpdated);
 
     } else if (device->deviceClassId() == snapDeviceClassId) {
@@ -171,6 +179,9 @@ DeviceManager::DeviceError DevicePluginSnapd::executeAction(Device *device, cons
 
 void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
 {
+    qCDebug(dcSnapd()) << "Plugin configuration changed";
+
+    // Check advanced mode
     if (paramTypeId == SnapdAdvancedModeParamTypeId) {
         qCDebug(dcSnapd()) << "Advanced mode" << (value.toBool() ? "enabled." : "disabled.");
         m_advancedMode = value.toBool();
@@ -188,6 +199,16 @@ void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTyp
 
             m_snapdControl->update();
         }
+    }
+
+    // Check refresh schedule
+    if (paramTypeId == SnapdRefreshScheduleParamTypeId) {
+        if (!m_snapdControl)
+            return;
+
+        m_refreshTime = value.toInt();
+        qCDebug(dcSnapd()) << "Refresh schedule start time" << QTime(m_refreshTime, 0, 0).toString("hh:mm");
+        m_snapdControl->setPreferedRefreshTime(m_refreshTime);
     }
 }
 
