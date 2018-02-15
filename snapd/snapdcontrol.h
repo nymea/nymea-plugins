@@ -40,6 +40,7 @@ public:
     bool available() const;
     bool connected() const;
     bool enabled() const;
+    bool timerBasedSchedule() const;
 
 private:
     Device *m_device = nullptr;
@@ -48,15 +49,19 @@ private:
     QString m_snapdSocketPath;
     bool m_enabled = true;
 
-    QList<int> m_watchingChanges;
+    QStringList m_updateChangeKinds;
+
+    bool m_timerBasedSchedule = false;
+    QString m_currentRefreshSchedule;
+    QString m_preferedRefreshSchedule;
 
     // Update calls
     void loadSystemInfo();
     void loadSnapList();
     void loadRunningChanges();
-    void loadChange(const int &change);
 
-    void processChange(const QVariantMap &changeMap);
+    void configureRefreshSchedule();
+
     bool validAsyncResponse(const QVariantMap &responseMap);
 
 private slots:
@@ -66,7 +71,7 @@ private slots:
     void onLoadSystemInfoFinished();
     void onLoadSnapListFinished();
     void onLoadRunningChangesFinished();
-    void onLoadChangeFinished();
+    void onConfigureRefreshScheduleFinished();
 
     void onSnapRefreshFinished();
     void onSnapRevertFinished();
@@ -84,6 +89,9 @@ public slots:
     void update();    
     void snapRefresh();
     void checkForUpdates();
+
+    void setPreferedRefreshTime(int startTime);
+
     void snapRevert(const QString &snapName);
     void changeSnapChannel(const QString &snapName, const QString &channel);
 };

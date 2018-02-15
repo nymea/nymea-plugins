@@ -39,6 +39,11 @@ SnapdConnection::SnapdConnection(QObject *parent) :
     connect(this, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(onError(QLocalSocket::LocalSocketError)));
 }
 
+SnapdConnection::~SnapdConnection()
+{
+    close();
+}
+
 SnapdReply *SnapdConnection::get(const QString &path, QObject *parent)
 {
     SnapdReply *reply = new SnapdReply(parent);
@@ -60,6 +65,22 @@ SnapdReply *SnapdConnection::post(const QString &path, const QByteArray &payload
     reply->setRequestPath(path);
     reply->setRequestMethod("POST");
     QByteArray header = createRequestHeader("POST", path, payload);
+    reply->setRequestRawMessage(header.append(payload));
+
+    // Enqueue the new reply
+    m_replyQueue.enqueue(reply);
+    sendNextRequest();
+
+    // Note: the caller owns the object now
+    return reply;
+}
+
+SnapdReply *SnapdConnection::put(const QString &path, const QByteArray &payload, QObject *parent)
+{
+    SnapdReply *reply = new SnapdReply(parent);
+    reply->setRequestPath(path);
+    reply->setRequestMethod("PUT");
+    QByteArray header = createRequestHeader("PUT", path, payload);
     reply->setRequestRawMessage(header.append(payload));
 
     // Enqueue the new reply
@@ -95,7 +116,7 @@ void SnapdConnection::setConnected(const bool &connected)
         while (!m_replyQueue.isEmpty()) {
             QPointer<SnapdReply> reply = m_replyQueue.dequeue();
             if (!reply.isNull()) {
-                reply->setFinished(false);
+                reply->deleteLater();
             }
         }
     } else {
@@ -258,8 +279,10 @@ void SnapdConnection::sendNextRequest()
     if (m_debug)
         qCDebug(dcSnapd()) << "-->" << reply->requestMethod() << reply->requestPath();
 
-    // If write failes, the reply is finished invalid and the owner has to delete it
-    if (write(reply->requestRawMessage()) < 0) {
+    // Send current reply request. If write failes, the reply is finished invalid and the owner has to delete it
+    qint64 bytesWritten = write(reply->requestRawMessage());
+    if (bytesWritten < 0) {
+        qCWarning(dcSnapd()) << "Could not write request data" << reply->requestMethod() << reply->requestMethod();
         m_currentReply->setFinished(false);
         m_currentReply = nullptr;
         sendNextRequest();

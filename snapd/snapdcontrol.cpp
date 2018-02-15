@@ -33,6 +33,12 @@ SnapdControl::SnapdControl(Device *device, QObject *parent) :
     m_device(device),
     m_snapdSocketPath("/run/snapd.socket")
 {
+    // If a change is one of following kind, the plugin will recognize it as update running
+    m_updateChangeKinds.append("install-snap");
+    m_updateChangeKinds.append("remove-snap");
+    m_updateChangeKinds.append("refresh-snap");
+    m_updateChangeKinds.append("revert-snap");
+
     m_snapConnection = new SnapdConnection(this);
     connect(m_snapConnection, &SnapdConnection::connectedChanged, this, &SnapdControl::onConnectedChanged);
 }
@@ -73,6 +79,11 @@ bool SnapdControl::enabled() const
     return m_enabled;
 }
 
+bool SnapdControl::timerBasedSchedule() const
+{
+    return m_timerBasedSchedule;
+}
+
 void SnapdControl::loadSystemInfo()
 {
     if (!m_snapConnection)
@@ -109,7 +120,7 @@ void SnapdControl::loadRunningChanges()
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onLoadRunningChangesFinished);
 }
 
-void SnapdControl::loadChange(const int &change)
+void SnapdControl::configureRefreshSchedule()
 {
     if (!m_snapConnection)
         return;
@@ -117,34 +128,15 @@ void SnapdControl::loadChange(const int &change)
     if (!m_snapConnection->isConnected())
         return;
 
-    SnapdReply *reply = m_snapConnection->get(QString("/v2/changes/%1").arg(QString::number(change)), this);
-    connect(reply, &SnapdReply::finished, this, &SnapdControl::onLoadChangeFinished);
-}
+    QVariantMap configuration; QVariantMap configMap;
+    configMap.insert("timer", m_preferedRefreshSchedule);
+    configMap.insert("schedule", m_preferedRefreshSchedule);
+    configuration.insert("refresh", configMap);
 
-void SnapdControl::processChange(const QVariantMap &changeMap)
-{
-    int changeId = changeMap.value("id").toInt();
-    bool changeReady = changeMap.value("ready").toBool();
-    QString changeKind = changeMap.value("kind").toString();
-    QString changeStatus = changeMap.value("status").toString();
-    QString changeSummary = changeMap.value("summary").toString();
+    qCDebug(dcSnapd()) << "Configure refresh schedule from" << m_currentRefreshSchedule << "-->" << m_preferedRefreshSchedule;
 
-    qCDebug(dcSnapd()) << changeStatus << changeKind << changeSummary;
-
-    // Add this change if not already finishished or added
-    if (!m_watchingChanges.contains(changeId) && !changeReady)
-        m_watchingChanges.append(changeId);
-
-    // If change is on Doing, update the status
-    if (changeStatus == "Doing") {
-        device()->setStateValue(snapdControlStatusStateTypeId, changeSummary);
-    }
-
-    // If this change is on ready, we can remove it from our watch list
-    if (changeReady) {
-        qCDebug(dcSnapd()).noquote() << changeKind << (changeReady ? "finished." : "running.") << changeSummary;
-        m_watchingChanges.removeAll(changeId);
-    }
+    SnapdReply *reply = m_snapConnection->put(QString("/v2/snaps/core/conf"), QJsonDocument::fromVariant(configuration).toJson(QJsonDocument::Compact), this);
+    connect(reply, &SnapdReply::finished, this, &SnapdControl::onConfigureRefreshScheduleFinished);
 }
 
 bool SnapdControl::validAsyncResponse(const QVariantMap &responseMap)
@@ -185,7 +177,23 @@ void SnapdControl::onLoadSystemInfoFinished()
     device()->setStateValue(snapdControlLastUpdateTimeStateTypeId, lastRefreshTime.toTime_t());
     device()->setStateValue(snapdControlNextUpdateTimeStateTypeId, nextRefreshTime.toTime_t());
 
+    // Check if we are working on refresh timer or refresh schedule
+    if (result.value("refresh").toMap().contains("schedule")) {
+        // Schedule based core snap
+        m_timerBasedSchedule = false;
+        m_currentRefreshSchedule = result.value("refresh").toMap().value("schedule").toString();
+    } else if (result.value("refresh").toMap().contains("timer")) {
+        // Timer based core snap: snapd >= 2.31
+        m_timerBasedSchedule = true;
+        m_currentRefreshSchedule = result.value("refresh").toMap().value("timer").toString();
+    }
+
     reply->deleteLater();
+
+    // Check if the refresh schedule should be updated
+    if (m_currentRefreshSchedule != m_preferedRefreshSchedule) {
+        configureRefreshSchedule();
+    }
 }
 
 void SnapdControl::onLoadSnapListFinished()
@@ -210,42 +218,63 @@ void SnapdControl::onLoadRunningChangesFinished()
         return;
     }
 
-    foreach (const QVariant &changeVariant, reply->dataMap().value("result").toList()) {
-        processChange(changeVariant.toMap());
-    }
+    // Load changes list
+    QVariantList changes = reply->dataMap().value("result").toList();
+    reply->deleteLater();
 
-    // Check if there are still changes around
-    if (reply->dataMap().value("result").toList().isEmpty()) {
-        // If there are no running changes, we can forget old ones
-        m_watchingChanges.clear();
-
+    // If there are no running changes, update is not running
+    if (changes.isEmpty()) {
         // Update not running any more
         device()->setStateValue(snapdControlUpdateRunningStateTypeId, false);
         device()->setStateValue(snapdControlStatusStateTypeId, "-");
-    } else {
-        // Update running
-        device()->setStateValue(snapdControlUpdateRunningStateTypeId, true);
+        return;
     }
 
-    reply->deleteLater();
+    bool updateRunning = false;
+    QString updateStatus = "-";
+
+    // Verifiy if a change is running and which one is currently doing something
+    foreach (const QVariant &changeVariant, changes) {
+        QVariantMap changeMap = changeVariant.toMap();
+
+        int changeId = changeMap.value("id").toInt();
+        bool changeReady = changeMap.value("ready").toBool();
+        QString changeKind = changeMap.value("kind").toString();
+        QString changeStatus = changeMap.value("status").toString();
+        QString changeSummary = changeMap.value("summary").toString();
+
+        // If there is a change kind "doing" or "Do"
+        if ( (changeStatus == "Doing" || changeStatus == "Do") && m_updateChangeKinds.contains(changeKind)) {
+            // Set the status of the current running change
+            updateRunning = true;
+            if (changeStatus == "Doing") {
+                updateStatus = changeSummary;
+                qCDebug(dcSnapd()).noquote() << "Current change:" << changeId << (changeReady ? "ready" : "not ready") << changeStatus << changeKind << changeSummary;
+
+            }
+        }
+    }
+
+    device()->setStateValue(snapdControlUpdateRunningStateTypeId, updateRunning);
+    device()->setStateValue(snapdControlStatusStateTypeId, updateStatus);
 }
 
-void SnapdControl::onLoadChangeFinished()
+void SnapdControl::onConfigureRefreshScheduleFinished()
 {
     SnapdReply *reply = static_cast<SnapdReply *>(sender());
     if (!reply->isValid()) {
-        qCDebug(dcSnapd()) << "Load change request finished with error" << reply->requestPath();
+        qCDebug(dcSnapd()) << "Set refresh schedule request finished with error" << reply->requestPath();
         reply->deleteLater();
         return;
     }
 
-    processChange(reply->dataMap().value("result").toMap());
-
-    if (m_watchingChanges.isEmpty()) {
-        device()->setStateValue(snapdControlUpdateRunningStateTypeId, false);
-        device()->setStateValue(snapdControlStatusStateTypeId, "-");
+    if (!validAsyncResponse(reply->dataMap())) {
+        qCWarning(dcSnapd()) << "Async refresh configuration request finished with error" << reply->dataMap().value("status").toString() << reply->dataMap().value("status-code").toInt();
+        reply->deleteLater();
+        return;
     }
 
+    qCDebug(dcSnapd()) << "Configure refresh schedule finished successfully";
     reply->deleteLater();
 }
 
@@ -258,11 +287,10 @@ void SnapdControl::onSnapRefreshFinished()
         return;
     }
 
-    //qCDebug(dcSnapd()) << qUtf8Printable(QJsonDocument::fromVariant(reply->dataMap()).toJson(QJsonDocument::Indented));
     if (!validAsyncResponse(reply->dataMap())) {
-        qCWarning(dcSnapd()) << "Async change request finished with error" << reply->dataMap().value("status").toString() << reply->dataMap().value("").toString();
+        qCWarning(dcSnapd()) << "Async refresh request finished with error" << reply->dataMap().value("status").toString() << reply->dataMap().value("status-code").toInt();
     } else {
-        loadChange(reply->dataMap().value("change").toInt());
+        loadRunningChanges();
     }
 
     reply->deleteLater();
@@ -277,12 +305,12 @@ void SnapdControl::onSnapRevertFinished()
         return;
     }
 
-    //qCDebug(dcSnapd()) << qUtf8Printable(QJsonDocument::fromVariant(reply->dataMap()).toJson(QJsonDocument::Indented));
     if (!validAsyncResponse(reply->dataMap())) {
-        qCWarning(dcSnapd()) << "Async change request finished with error" << reply->dataMap().value("status").toString() << reply->dataMap().value("").toString();
+        qCWarning(dcSnapd()) << "Async change request finished with error" << reply->dataMap().value("status").toString() << reply->dataMap().value("status-code").toInt();;
     } else {
-        loadChange(reply->dataMap().value("change").toInt());
+        loadRunningChanges();
     }
+
     reply->deleteLater();
 }
 
@@ -290,13 +318,26 @@ void SnapdControl::onCheckForUpdatesFinished()
 {
     SnapdReply *reply = static_cast<SnapdReply *>(sender());
     if (!reply->isValid()) {
-        qCDebug(dcSnapd()) << "Snap check for updates request finished with error" << reply->requestPath();
+        qCDebug(dcSnapd()) << "Check for snap updates request finished with error" << reply->requestPath();
         reply->deleteLater();
         return;
     }
 
-    //qCDebug(dcSnapd()) << qUtf8Printable(QJsonDocument::fromVariant(reply->dataMap()).toJson(QJsonDocument::Indented));
-    device()->setStateValue(snapdControlUpdateAvailableStateTypeId, !reply->dataMap().value("result").toList().isEmpty());
+    qCDebug(dcSnapd()) << "Check for available snap updates finished.";
+    if (reply->dataMap().value("result").toList().isEmpty()) {
+        qCDebug(dcSnapd()) << "There are no snap updates available.";
+        device()->setStateValue(snapdControlUpdateAvailableStateTypeId, false);
+    } else {
+        // Print available snap updates
+        qCDebug(dcSnapd()) << "Following snaps can be updated:";
+        foreach (const QVariant &resultVariant, reply->dataMap().value("result").toList()) {
+            QVariantMap resultMap = resultVariant.toMap();
+            qCDebug(dcSnapd()) << "    -->" << resultMap.value("name").toString() << resultMap.value("version").toString();
+        }
+
+        device()->setStateValue(snapdControlUpdateAvailableStateTypeId, true);
+    }
+
     reply->deleteLater();
 }
 
@@ -310,10 +351,11 @@ void SnapdControl::onChangeSnapChannelFinished()
     }
 
     if (!validAsyncResponse(reply->dataMap())) {
-        qCWarning(dcSnapd()) << "Async change request finished with error" << reply->dataMap().value("status").toString() << reply->dataMap().value("").toString();
+        qCWarning(dcSnapd()) << "Async change request finished with error" << reply->dataMap().value("status").toString() << reply->dataMap().value("status-code").toInt();
     } else {
-        loadChange(reply->dataMap().value("change").toInt());
+        loadRunningChanges();
     }
+
     reply->deleteLater();
 }
 
@@ -354,17 +396,13 @@ void SnapdControl::update()
         return;
 
     // Update information
-    if (!m_watchingChanges.isEmpty()) {
-        // We are watching currently changes
-        foreach (const int &change, m_watchingChanges) {
-            loadChange(change);
-        }
+    if (device()->stateValue(snapdControlUpdateRunningStateTypeId).toBool()) {
+        // Note: if an update is running, just load the changes to save system resources
         loadRunningChanges();
     } else {
-        // Normal refresh
+        // Normal update
         loadSystemInfo();
         loadSnapList();
-        checkForUpdates();
         loadRunningChanges();
     }
 }
@@ -410,8 +448,18 @@ void SnapdControl::checkForUpdates()
     if (!m_snapConnection->isConnected())
         return;
 
+    qCDebug(dcSnapd()) << "Checking for available snap updates";
     SnapdReply *reply = m_snapConnection->get("/v2/find?select=refresh", this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onCheckForUpdatesFinished);
+}
+
+void SnapdControl::setPreferedRefreshTime(int startTime)
+{
+    // Schedule the refresh between startTime and startTime + 59 minutes
+    QTime start(startTime, 0, 0);
+    QTime end = start.addSecs(3540);
+    m_preferedRefreshSchedule  = QString("%1-%2").arg(start.toString("h:mm")).arg(end.toString("h:mm"));
+    qCDebug(dcSnapd()) << "Set prefered refresh schedule to " << m_preferedRefreshSchedule;
 }
 
 void SnapdControl::snapRevert(const QString &snapName)

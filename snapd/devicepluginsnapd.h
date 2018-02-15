@@ -42,6 +42,8 @@ class DevicePluginSnapd: public DevicePlugin {
 
 public:
     explicit DevicePluginSnapd();
+    ~DevicePluginSnapd();
+
     void init() override;
     void startMonitoringAutoDevices() override;
     void postSetupDevice(Device *device) override;
@@ -56,6 +58,7 @@ private:
     PluginTimer *m_updateTimer = nullptr;
 
     bool m_advancedMode = false;
+    int m_refreshTime = 2;
 
     // Snap list for faster access (snap id, device)
     QHash<QString, Device *> m_snapDevices;
