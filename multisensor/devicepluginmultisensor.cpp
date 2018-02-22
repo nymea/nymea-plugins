@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stuerz <simon.stuerz@guh.io>                  *
+ *  Copyright (C) 2015-2018 Simon Stuerz <simon.stuerz@guh.io>             *
  *  Copyright (C) 2016 nicc                                                *
  *                                                                         *
  *  This file is part of nymea.                                            *
@@ -52,10 +52,15 @@ DevicePluginMultiSensor::DevicePluginMultiSensor()
 
 }
 
+DevicePluginMultiSensor::~DevicePluginMultiSensor()
+{
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
+}
+
 void DevicePluginMultiSensor::init()
 {
-    m_measureTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
-    connect(m_measureTimer, &PluginTimer::timeout, this, &DevicePluginMultiSensor::onPluginTimer);
+    m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginMultiSensor::onPluginTimer);
 }
 
 DeviceManager::DeviceError DevicePluginMultiSensor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -89,8 +94,6 @@ DeviceManager::DeviceSetupStatus DevicePluginMultiSensor::setupDevice(Device *de
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
 
         SensorTag *sensor = new SensorTag(device, bluetoothDevice, this);
-        connect(sensor, &SensorTag::leftKeyPressed, this, &DevicePluginMultiSensor::onSensorLeftButtonPressed);
-        connect(sensor, &SensorTag::rightKeyPressed, this, &DevicePluginMultiSensor::onSensorRightButtonPressed);
 
         m_sensors.insert(device, sensor);
         sensor->bluetoothDevice()->connectDevice();
@@ -124,21 +127,11 @@ bool DevicePluginMultiSensor::verifyExistingDevices(const QBluetoothDeviceInfo &
 
 void DevicePluginMultiSensor::onPluginTimer()
 {
-    foreach (SensorTag *sensor, m_sensors) {
-        sensor->measure();
+    foreach (SensorTag *sensor, m_sensors.values()) {
+        if (!sensor->bluetoothDevice()->connected()) {
+            sensor->bluetoothDevice()->connectDevice();
+        }
     }
-}
-
-void DevicePluginMultiSensor::onSensorLeftButtonPressed()
-{
-    SensorTag *sensor = static_cast<SensorTag *>(sender());
-    emit emitEvent(Event(sensortagLeftKeyEventTypeId, sensor->device()->id()));
-}
-
-void DevicePluginMultiSensor::onSensorRightButtonPressed()
-{
-    SensorTag *sensor = static_cast<SensorTag *>(sender());
-    emit emitEvent(Event(sensortagRightKeyEventTypeId, sensor->device()->id()));
 }
 
 void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()

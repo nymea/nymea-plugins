@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stuerz <simon.stuerz@guh.io>                  *
+ *  Copyright (C) 2015-2018 Simon Stuerz <simon.stuerz@guh.io>             *
  *  Copyright (C) 2016 nicc                                                *
  *                                                                         *
  *  This file is part of nymea.                                            *
@@ -41,6 +41,7 @@ class DevicePluginMultiSensor : public DevicePlugin
 
 public:
     explicit DevicePluginMultiSensor();
+    ~DevicePluginMultiSensor();
 
     void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
@@ -48,17 +49,13 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
-    PluginTimer *m_measureTimer = nullptr;
+    PluginTimer *m_reconnectTimer = nullptr;
     QHash<Device *, SensorTag *> m_sensors;
 
     bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
 
 private slots:
     void onPluginTimer();
-
-    void onSensorLeftButtonPressed();
-    void onSensorRightButtonPressed();
-
     void onBluetoothDiscoveryFinished();
 };
 
