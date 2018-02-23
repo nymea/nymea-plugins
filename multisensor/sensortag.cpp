@@ -22,6 +22,7 @@
 
 #include "sensortag.h"
 #include "extern-plugininfo.h"
+#include "math.h"
 
 #include <QDataStream>
 
