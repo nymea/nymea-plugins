@@ -59,6 +59,8 @@ DevicePluginMultiSensor::~DevicePluginMultiSensor()
 
 void DevicePluginMultiSensor::init()
 {
+    connect(this, &DevicePluginMultiSensor::configValueChanged, this, &DevicePluginMultiSensor::onPluginConfigurationChanged);
+
     m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
     connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginMultiSensor::onPluginTimer);
 }
@@ -94,13 +96,25 @@ DeviceManager::DeviceSetupStatus DevicePluginMultiSensor::setupDevice(Device *de
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
 
         SensorTag *sensor = new SensorTag(device, bluetoothDevice, this);
+        // Preconfigure with plugin configurations
+        sensor->setAccelerometerEnabled(configValue(MultiSensorAccelerometerEnabledParamTypeId).toBool());
+        sensor->setGyroscopeEnabled(configValue(MultiSensorGyroscopeEnabledParamTypeId).toBool());
+        sensor->setMagnetometerEnabled(configValue(MultiSensorMagnetometerEnabledParamTypeId).toBool());
+        sensor->setMeasurementPeriod(configValue(MultiSensorMeasurementPeriodParamTypeId).toInt());
+        sensor->setMeasurementPeriodMovement(configValue(MultiSensorMeasurementPeriodMovementParamTypeId).toInt());
 
         m_sensors.insert(device, sensor);
-        sensor->bluetoothDevice()->connectDevice();
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
     return DeviceManager::DeviceSetupStatusFailure;
+}
+
+void DevicePluginMultiSensor::postSetupDevice(Device *device)
+{
+    // Try to connect right after setup
+    SensorTag *sensor = m_sensors.value(device);
+    sensor->bluetoothDevice()->connectDevice();
 }
 
 
@@ -160,4 +174,35 @@ void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
 
     reply->deleteLater();
     emit devicesDiscovered(sensortagDeviceClassId, deviceDescriptors);
+}
+
+void DevicePluginMultiSensor::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    qCDebug(dcMultiSensor()) << "Plugin configuration changed" << paramTypeId.toString() << value;
+
+    foreach (SensorTag *sensor, m_sensors.values()) {
+        if (paramTypeId == MultiSensorAccelerometerEnabledParamTypeId) {
+            sensor->setAccelerometerEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorGyroscopeEnabledParamTypeId) {
+            sensor->setGyroscopeEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorMagnetometerEnabledParamTypeId) {
+            sensor->setMagnetometerEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorMeasurementPeriodParamTypeId) {
+            int valueInt = value.toInt();
+            if (valueInt % 10 != 0) {
+                qCWarning(dcMultiSensor()) << "Measurement period of sensors" << valueInt << "must be a multiple of 10ms";
+                // FIXME: force to valid value
+                return;
+            }
+            sensor->setMeasurementPeriod(valueInt);
+        } else if (paramTypeId == MultiSensorMeasurementPeriodParamTypeId) {
+            int valueInt = value.toInt();
+            if (valueInt % 10 != 0) {
+                qCWarning(dcMultiSensor()) << "Measurement period of movement sensor" << valueInt << "must be a multiple of 10ms";
+                // FIXME: force to valid value
+                return;
+            }
+            sensor->setMeasurementPeriodMovement(valueInt);
+        }
+    }
 }

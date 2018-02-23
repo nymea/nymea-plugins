@@ -24,6 +24,7 @@
 #include "extern-plugininfo.h"
 #include "math.h"
 
+#include <QVector3D>
 #include <QDataStream>
 
 SensorTag::SensorTag(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
@@ -47,7 +48,72 @@ BluetoothLowEnergyDevice *SensorTag::bluetoothDevice()
 
 void SensorTag::setAccelerometerEnabled(bool enabled)
 {
+    qCDebug(dcMultiSensor()) << "Accelerometer" << (enabled ? "enabled" : "disabled");
+
+    if (m_accelerometerEnabled == enabled)
+        return;
+
     m_accelerometerEnabled = enabled;
+    configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
+}
+
+void SensorTag::setGyroscopeEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Gyroscope" << (enabled ? "enabled" : "disabled");
+
+    if (m_gyroscopeEnabled == enabled)
+        return;
+
+    m_gyroscopeEnabled = enabled;
+    configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
+}
+
+void SensorTag::setMagnetometerEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Magnetometer" << (enabled ? "enabled" : "disabled");
+
+    if (m_magnetometerEnabled == enabled)
+        return;
+
+    m_magnetometerEnabled = enabled;
+    configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
+}
+
+void SensorTag::setMeasurementPeriod(int period)
+{
+    qCDebug(dcMultiSensor()) << "Set sensor measurement period to" << period << "ms";
+
+    m_temperaturePeriod = period;
+    if (m_temperatureService && m_temperaturePeriodCharacteristic.isValid())
+        configurePeriod(m_temperatureService, m_temperaturePeriodCharacteristic, m_temperaturePeriod);
+
+    m_humidityPeriod = period;
+    if (m_humidityService && m_humidityPeriodCharacteristic.isValid())
+        configurePeriod(m_humidityService, m_humidityPeriodCharacteristic, m_humidityPeriod);
+
+    m_pressurePeriod = period;
+    if (m_pressureService && m_pressurePeriodCharacteristic.isValid())
+        configurePeriod(m_pressureService, m_pressurePeriodCharacteristic, m_pressurePeriod);
+
+    m_opticalPeriod = period;
+    if (m_opticalService && m_opticalPeriodCharacteristic.isValid())
+        configurePeriod(m_opticalService, m_opticalPeriodCharacteristic, m_opticalPeriod);
+
+}
+
+void SensorTag::setMeasurementPeriodMovement(int period)
+{
+    qCDebug(dcMultiSensor()) << "Set movement sensor measurement period to" << period << "ms";
+
+    m_movementPeriod = period;
+    if (m_movementService && m_movementPeriodCharacteristic.isValid())
+        configurePeriod(m_movementService, m_movementPeriodCharacteristic, m_movementPeriod);
+
+}
+
+void SensorTag::setMovementSensitivity(int percentage)
+{
+    m_movementSensitivity = static_cast<double>(percentage) / 100.0;
 }
 
 void SensorTag::configurePeriod(QLowEnergyService *serice, const QLowEnergyCharacteristic &characteristic, int measurementPeriod)
@@ -87,12 +153,10 @@ void SensorTag::configureMovement(bool gyroscopeEnabled, bool accelerometerEnabl
         configuration |= (1 << 8); // enable
     }
 
-    // Accelerometer 2 Bit ( 0 = 2G, 1 = 4G, 2 = 8G, 3 = 16G)
-    // Default 0
-
+    // Accelerometer 2 Bit ( 0 = 2G, 1 = 4G, 2 = 8G, 3 = 16G) - Default 0
     QByteArray data;
     QDataStream stream(&data, QIODevice::WriteOnly);
-    stream.setByteOrder(QDataStream::BigEndian);
+    stream.setByteOrder(QDataStream::LittleEndian);
     stream << configuration;
 
     qCDebug(dcMultiSensor()) << "Configure movement sensor" << data.toHex();
@@ -143,6 +207,7 @@ void SensorTag::processHumidityData(const QByteArray &data)
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> rawHumidityTemperature >> rawHumidity ;
 
+    // Note: we don't need the temperature measurement from the humidity sensor
     //double humidityTemperature = (rawHumidityTemperature / 65536.0 * 165.0) - 40;
     double humidity = rawHumidity / 65536.0 * 100.0;
 
@@ -154,6 +219,13 @@ void SensorTag::processPressureData(const QByteArray &data)
 {
     Q_ASSERT(data.count() == 6);
 
+    QByteArray temperatureData(data.left(3));
+    quint32 rawTemperature = static_cast<quint8>(temperatureData.at(2));
+    rawTemperature <<= 8;
+    rawTemperature |= static_cast<quint8>(temperatureData.at(1));
+    rawTemperature <<= 8;
+    rawTemperature |= static_cast<quint8>(temperatureData.at(0));
+
     QByteArray pressureData(data.right(3));
     quint32 rawPressure = static_cast<quint8>(pressureData.at(2));
     rawPressure <<= 8;
@@ -161,6 +233,8 @@ void SensorTag::processPressureData(const QByteArray &data)
     rawPressure <<= 8;
     rawPressure |= static_cast<quint8>(pressureData.at(0));
 
+    // Note: we don't need the temperature measurement from the barometic pressure sensor
+    //qCDebug(dcMultiSensor()) << "Pressure temperature:" << roundValue(rawTemperature / 100.0) << "°C";
     //qCDebug(dcMultiSensor()) << "Pressure:" << roundValue(rawPressure / 100.0) << "mBar";
     m_device->setStateValue(sensortagPressureStateTypeId, roundValue(rawPressure / 100.0));
 }
@@ -186,10 +260,11 @@ void SensorTag::processOpticalData(const QByteArray &data)
 
 void SensorTag::processMovementData(const QByteArray &data)
 {
-    qCDebug(dcMultiSensor()) << "Movement value" << data.toHex();
+    qCDebug(dcMultiSensor()) << "--> Movement value" << data.toHex();
 
     QByteArray payload(data);
     QDataStream stream(&payload, QIODevice::ReadOnly);
+    stream.setByteOrder(QDataStream::LittleEndian);
 
     qint16 gyroXRaw = 0; qint16 gyroYRaw = 0; qint16 gyroZRaw = 0;
     stream >> gyroXRaw >> gyroYRaw >> gyroZRaw;
@@ -201,12 +276,33 @@ void SensorTag::processMovementData(const QByteArray &data)
     stream >> magXRaw >> magYRaw >> magZRaw;
 
 
-    // Calculate rotation, unit deg/s, range -250, +250
+    // Calculate rotation [deg/s], Range +- 250
     double gyroX = static_cast<double>(gyroXRaw) / (65536 / 500);
     double gyroY = static_cast<double>(gyroYRaw) / (65536 / 500);
     double gyroZ = static_cast<double>(gyroZRaw) / (65536 / 500);
-    qCDebug(dcMultiSensor()) << "Gyroscope x:" << gyroX << "   y:" << gyroY << "    z:" << gyroZ;
 
+    double accX = static_cast<double>(accXRaw)  / (32768 / m_accelerometerRange);
+    double accY = static_cast<double>(accYRaw)  / (32768 / m_accelerometerRange);
+    double accZ = static_cast<double>(accZRaw)  / (32768 / m_accelerometerRange);
+
+    // Calculate magnetism [uT], Range +- 4900
+    double magX = static_cast<double>(magXRaw);
+    double magY = static_cast<double>(magYRaw);
+    double magZ = static_cast<double>(magZRaw);
+
+
+    qCDebug(dcMultiSensor()) << "Accelerometer x:" << accX << "   y:" << accY << "    z:" << accZ;
+    //qCDebug(dcMultiSensor()) << "Gyroscope     x:" << gyroX << "   y:" << gyroY << "    z:" << gyroZ;
+    //qCDebug(dcMultiSensor()) << "Magnetometer  x:" << magX << "   y:" << magY << "    z:" << magZ;
+
+    QVector3D accelerometerVector(accX, accY, accZ);
+    QVector3D gyroscopeVector(gyroX, gyroY, gyroZ);
+    QVector3D magnetometerVector(magX, magY, magZ);
+
+    Q_UNUSED(gyroscopeVector)
+    Q_UNUSED(magnetometerVector)
+
+    qCDebug(dcMultiSensor()) << accelerometerVector.length();
 }
 
 void SensorTag::setLeftButtonPressed(bool pressed)
@@ -317,7 +413,6 @@ void SensorTag::onServiceDiscoveryFinished()
         m_bluetoothDevice->disconnectDevice();
         return;
     }
-
 
     // IR Temperature
     if (!m_temperatureService) {
@@ -731,7 +826,7 @@ void SensorTag::onMovementServiceStateChanged(const QLowEnergyService::ServiceSt
     // Set measurement period
     configurePeriod(m_movementService, m_movementPeriodCharacteristic, m_movementPeriod);
 
-    configureMovement();
+    configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
 
     // Enable measuring
     m_movementService->writeCharacteristic(m_movementConfigurationCharacteristic, QByteArray::fromHex("01"));

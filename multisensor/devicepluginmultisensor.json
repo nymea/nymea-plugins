@@ -25,22 +25,32 @@
             "defaultValue": false
         },
         {
-            "id": "5237c89c-c21d-4d78-ac99-8be661b40da7",
-            "name": "measurementPeriodMovement",
-            "displayName": "Measurement period movement sensor",
-            "type": "int",
-            "minValue": 10,
-            "maxValue": 2500,
-            "defaultValue": 2000
-        },
-        {
             "id": "c5308565-5dc9-409e-ae99-577c212c7a92",
             "name": "measurementPeriod",
             "displayName": "Measurement period for enviromental sensors",
             "type": "int",
             "minValue": 10,
             "maxValue": 2500,
+            "defaultValue": 2000
+        },
+        {
+            "id": "5237c89c-c21d-4d78-ac99-8be661b40da7",
+            "name": "measurementPeriodMovement",
+            "displayName": "Measurement period movement sensor",
+            "type": "int",
+            "minValue": 10,
+            "maxValue": 2500,
             "defaultValue": 500
+        },
+        {
+            "id": "a3298d16-eea6-4474-9061-90466e92d476",
+            "name": "movementSensitivity",
+            "displayName": "Movement sensitivity",
+            "type": "int",
+            "unit": "Percentage",
+            "minValue": 0,
+            "maxValue": 100,
+            "defaultValue": 50
         }
     ],
     "vendors": [
