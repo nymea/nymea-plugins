@@ -24,6 +24,7 @@
 #include "extern-plugininfo.h"
 #include "math.h"
 
+#include <QTimer>
 #include <QVector3D>
 #include <QDataStream>
 
@@ -83,6 +84,12 @@ void SensorTag::setMeasurementPeriod(int period)
 {
     qCDebug(dcMultiSensor()) << "Set sensor measurement period to" << period << "ms";
 
+    if (period % 10 != 0) {
+        int adjustedValue = qRound(static_cast<float>(period) / 10.0) * 10;
+        qCWarning(dcMultiSensor()) << "Measurement period of sensors" << period << "must be a multiple of 10ms. Adjusting it to" << adjustedValue;
+        period = adjustedValue;
+    }
+
     m_temperaturePeriod = period;
     if (m_temperatureService && m_temperaturePeriodCharacteristic.isValid())
         configurePeriod(m_temperatureService, m_temperaturePeriodCharacteristic, m_temperaturePeriod);
@@ -105,6 +112,12 @@ void SensorTag::setMeasurementPeriodMovement(int period)
 {
     qCDebug(dcMultiSensor()) << "Set movement sensor measurement period to" << period << "ms";
 
+    if (period % 10 != 0) {
+        int adjustedValue = qRound(static_cast<float>(period) / 10.0) * 10;
+        qCWarning(dcMultiSensor()) << "Measurement period of movement sensor" << period << "must be a multiple of 10ms. Adjusting it to" << adjustedValue;
+        period = adjustedValue;
+    }
+
     m_movementPeriod = period;
     if (m_movementService && m_movementPeriodCharacteristic.isValid())
         configurePeriod(m_movementService, m_movementPeriodCharacteristic, m_movementPeriod);
@@ -114,6 +127,37 @@ void SensorTag::setMeasurementPeriodMovement(int period)
 void SensorTag::setMovementSensitivity(int percentage)
 {
     m_movementSensitivity = static_cast<double>(percentage) / 100.0;
+}
+
+void SensorTag::setGreenLedPower(bool power)
+{
+    m_greenLedEnabled = power;
+    qCDebug(dcMultiSensor()) << "Green LED" << (power ? "enabled" : "disabled");
+    configureIo();
+    m_device->setStateValue(sensortagGreenLedStateTypeId, m_greenLedEnabled);
+}
+
+void SensorTag::setRedLedPower(bool power)
+{
+    m_redLedEnabled = power;
+    qCDebug(dcMultiSensor()) << "Red LED" << (power ? "enabled" : "disabled");
+    configureIo();
+    m_device->setStateValue(sensortagRedLedStateTypeId, m_redLedEnabled);
+}
+
+void SensorTag::setBuzzerPower(bool power)
+{
+    m_buzzerEnabled = power;
+    qCDebug(dcMultiSensor()) << "Buzzer" << (power ? "enabled" : "disabled");
+    configureIo();
+    m_device->setStateValue(sensortagBuzzerStateTypeId, m_buzzerEnabled);
+}
+
+void SensorTag::buzzerImpulse()
+{
+    qCDebug(dcMultiSensor()) << "Buzzer impulse";
+    setBuzzerPower(true);
+    QTimer::singleShot(1000, this, &SensorTag::onBuzzerImpulseTimeout);
 }
 
 void SensorTag::configurePeriod(QLowEnergyService *serice, const QLowEnergyCharacteristic &characteristic, int measurementPeriod)
@@ -153,7 +197,28 @@ void SensorTag::configureMovement(bool gyroscopeEnabled, bool accelerometerEnabl
         configuration |= (1 << 8); // enable
     }
 
-    // Accelerometer 2 Bit ( 0 = 2G, 1 = 4G, 2 = 8G, 3 = 16G) - Default 0
+    // Accelerometer range 2 Bit ( 0 = 2G, 1 = 4G, 2 = 8G, 3 = 16G) - Default 0
+    switch (m_accelerometerRange) {
+    case SensorAccelerometerRange2G:
+        // Bit 9 = 0
+        // Bit 10 = 0
+        break;
+    case SensorAccelerometerRange4G:
+        configuration |= (1 << 11);
+        // Bit 12 = 0
+        break;
+    case SensorAccelerometerRange8G:
+        // Bit 13 = 0
+        configuration |= (1 << 14);
+        break;
+    case SensorAccelerometerRange16G:
+        configuration |= (1 << 15);
+        configuration |= (1 << 16);
+        break;
+    default:
+        break;
+    }
+
     QByteArray data;
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream.setByteOrder(QDataStream::LittleEndian);
@@ -161,6 +226,43 @@ void SensorTag::configureMovement(bool gyroscopeEnabled, bool accelerometerEnabl
 
     qCDebug(dcMultiSensor()) << "Configure movement sensor" << data.toHex();
     m_movementService->writeCharacteristic(m_movementConfigurationCharacteristic, data);
+}
+
+void SensorTag::configureSensorMode(const SensorTag::SensorMode &mode)
+{
+    if (!m_ioService || !m_ioDataCharacteristic.isValid())
+        return;
+
+    qCDebug(dcMultiSensor()) << "Setting" << mode;
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::LittleEndian);
+    stream << static_cast<quint8>(mode);
+
+    m_ioService->writeCharacteristic(m_ioConfigurationCharacteristic, data);
+}
+
+void SensorTag::configureIo()
+{
+    if (!m_ioService || !m_ioDataCharacteristic.isValid())
+        return;
+
+    // Write value to IO
+    quint8 configuration = 0;
+    if (m_redLedEnabled)
+        configuration |= (1 << 0); // Red LED
+
+    if (m_greenLedEnabled)
+        configuration |= (1 << 1); // Green LED
+
+    if (m_buzzerEnabled)
+        configuration |= (1 << 2); // Buzzer
+
+    QByteArray payload;
+    QDataStream stream(&payload, QIODevice::WriteOnly);
+    stream << configuration;
+
+    m_ioService->writeCharacteristic(m_ioDataCharacteristic, payload);
 }
 
 void SensorTag::processTemperatureData(const QByteArray &data)
@@ -281,9 +383,9 @@ void SensorTag::processMovementData(const QByteArray &data)
     double gyroY = static_cast<double>(gyroYRaw) / (65536 / 500);
     double gyroZ = static_cast<double>(gyroZRaw) / (65536 / 500);
 
-    double accX = static_cast<double>(accXRaw)  / (32768 / m_accelerometerRange);
-    double accY = static_cast<double>(accYRaw)  / (32768 / m_accelerometerRange);
-    double accZ = static_cast<double>(accZRaw)  / (32768 / m_accelerometerRange);
+    double accX = static_cast<double>(accXRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
+    double accY = static_cast<double>(accYRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
+    double accZ = static_cast<double>(accZRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
 
     // Calculate magnetism [uT], Range +- 4900
     double magX = static_cast<double>(magXRaw);
@@ -291,7 +393,7 @@ void SensorTag::processMovementData(const QByteArray &data)
     double magZ = static_cast<double>(magZRaw);
 
 
-    qCDebug(dcMultiSensor()) << "Accelerometer x:" << accX << "   y:" << accY << "    z:" << accZ;
+    //qCDebug(dcMultiSensor()) << "Accelerometer x:" << accX << "   y:" << accY << "    z:" << accZ;
     //qCDebug(dcMultiSensor()) << "Gyroscope     x:" << gyroX << "   y:" << gyroY << "    z:" << gyroZ;
     //qCDebug(dcMultiSensor()) << "Magnetometer  x:" << magX << "   y:" << magY << "    z:" << magZ;
 
@@ -302,7 +404,11 @@ void SensorTag::processMovementData(const QByteArray &data)
     Q_UNUSED(gyroscopeVector)
     Q_UNUSED(magnetometerVector)
 
-    qCDebug(dcMultiSensor()) << accelerometerVector.length();
+    double limit = m_accelerometerRange * m_movementSensitivity;
+    bool motionDetected = (accelerometerVector.length() >= limit);
+    qCDebug(dcMultiSensor()) <<  accelerometerVector.length() << "  |  " << limit << (motionDetected ? "motion" : "-");
+
+    m_device->setStateValue(sensortagMovingStateTypeId, motionDetected);
 }
 
 void SensorTag::setLeftButtonPressed(bool pressed)
@@ -414,6 +520,12 @@ void SensorTag::onServiceDiscoveryFinished()
         return;
     }
 
+    if (!m_bluetoothDevice->serviceUuids().contains(ioServiceUuid)) {
+        qCWarning(dcMultiSensor()) << "Could not find IO service";
+        m_bluetoothDevice->disconnectDevice();
+        return;
+    }
+
     // IR Temperature
     if (!m_temperatureService) {
         m_temperatureService = m_bluetoothDevice->controller()->createServiceObject(temperatureServiceUuid, this);
@@ -512,6 +624,23 @@ void SensorTag::onServiceDiscoveryFinished()
 
         if (m_movementService->state() == QLowEnergyService::DiscoveryRequired) {
             m_movementService->discoverDetails();
+        }
+    }
+
+    // IO
+    if (!m_ioService) {
+        m_ioService = m_bluetoothDevice->controller()->createServiceObject(ioServiceUuid, this);
+        if (!m_ioService) {
+            qCWarning(dcMultiSensor()) << "Could not create IO service.";
+            m_bluetoothDevice->disconnectDevice();
+            return;
+        }
+
+        connect(m_ioService, &QLowEnergyService::stateChanged, this, &SensorTag::onIoServiceStateChanged);
+        connect(m_ioService, &QLowEnergyService::characteristicChanged, this, &SensorTag::onIoServiceCharacteristicChanged);
+
+        if (m_ioService->state() == QLowEnergyService::DiscoveryRequired) {
+            m_ioService->discoverDetails();
         }
     }
 }
@@ -825,7 +954,6 @@ void SensorTag::onMovementServiceStateChanged(const QLowEnergyService::ServiceSt
 
     // Set measurement period
     configurePeriod(m_movementService, m_movementPeriodCharacteristic, m_movementPeriod);
-
     configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
 
     // Enable measuring
@@ -837,4 +965,51 @@ void SensorTag::onMovementServiceCharacteristicChanged(const QLowEnergyCharacter
     if (characteristic == m_movementDataCharacteristic) {
         processMovementData(value);
     }
+}
+
+void SensorTag::onIoServiceStateChanged(const QLowEnergyService::ServiceState &state)
+{
+    // Only continue if discovered
+    if (state != QLowEnergyService::ServiceDiscovered)
+        return;
+
+    qCDebug(dcMultiSensor()) << "IO service discovered.";
+
+    foreach (const QLowEnergyCharacteristic &characteristic, m_pressureService->characteristics()) {
+        qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
+        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        }
+    }
+
+    // Data characteristic
+    m_ioDataCharacteristic = m_ioService->characteristic(ioDataCharacteristicUuid);
+    if (!m_ioDataCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid IO data characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    // Enable notifications
+    QLowEnergyDescriptor notificationDescriptor = m_ioDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+    m_ioService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
+
+    // Config characteristic
+    m_ioConfigurationCharacteristic = m_ioService->characteristic(ioConfigurationCharacteristicUuid);
+    if (!m_ioConfigurationCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid IO configuration characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    configureSensorMode(SensorModeRemote);
+    configureIo();
+}
+
+void SensorTag::onIoServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+{
+    qCDebug(dcMultiSensor()) << characteristic.uuid().toString() << value.toHex();
+}
+
+void SensorTag::onBuzzerImpulseTimeout()
+{
+    setBuzzerPower(false);
 }

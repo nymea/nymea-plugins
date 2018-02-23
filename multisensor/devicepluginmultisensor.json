@@ -178,6 +178,43 @@
                             "type": "bool",
                             "cached": false,
                             "defaultValue": false
+                        },
+                        {
+                            "id": "8d692132-f950-486f-b3dd-fe1ebc574e1d",
+                            "name": "greenLed",
+                            "displayName": "Green LED",
+                            "displayNameEvent": "Green LED power changed",
+                            "displayNameAction": "Set green LED power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "bb585725-6393-42de-aea2-ea4f525ad348",
+                            "name": "redLed",
+                            "displayName": "Red LED",
+                            "displayNameEvent": "Red LED power changed",
+                            "displayNameAction": "Set red LED power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "d522c536-4427-4c53-9980-7820b2649aad",
+                            "name": "buzzer",
+                            "displayName": "Buzzer",
+                            "displayNameEvent": "Buzzer power changed",
+                            "displayNameAction": "Set buzzer power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a048ab2e-4f17-4467-a166-a7572156c07e",
+                            "name": "buzzerImpulse",
+                            "displayName": "Buzzer impulse"
                         }
                     ]
                 }

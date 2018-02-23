@@ -49,6 +49,8 @@ public:
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
+    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+
 private:
     PluginTimer *m_reconnectTimer = nullptr;
     QHash<Device *, SensorTag *> m_sensors;
