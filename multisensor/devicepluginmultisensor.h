@@ -46,6 +46,7 @@ public:
     void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
 private:
@@ -57,6 +58,7 @@ private:
 private slots:
     void onPluginTimer();
     void onBluetoothDiscoveryFinished();
+    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 };
 
 #endif // DEVICEPLUGINMULTISENSOR_H

@@ -77,6 +77,8 @@ public:
     void setGyroscopeEnabled(bool enabled);
     void setMagnetometerEnabled(bool enabled);
     void setMeasurementPeriod(int period);
+    void setMeasurementPeriodMovement(int period);
+    void setMovementSensitivity(int percentage);
 
 private:
     Device *m_device;
@@ -119,6 +121,9 @@ private:
     int m_pressurePeriod = 2500;
     int m_opticalPeriod = 2500;
     int m_movementPeriod = 500;
+    double m_movementSensitivity = 50;
+    // Note: possible value: 2G, 4G, 8G, 16G, default 2G
+    int m_accelerometerRange = 2;
 
     bool m_leftButtonPressed = false;
     bool m_rightButtonPressed = false;
