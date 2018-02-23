@@ -117,7 +117,6 @@ void DevicePluginMultiSensor::postSetupDevice(Device *device)
     sensor->bluetoothDevice()->connectDevice();
 }
 
-
 void DevicePluginMultiSensor::deviceRemoved(Device *device)
 {
     if (!m_sensors.contains(device))
@@ -127,6 +126,26 @@ void DevicePluginMultiSensor::deviceRemoved(Device *device)
     m_sensors.remove(device);
     hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(sensor->bluetoothDevice());
     sensor->deleteLater();
+}
+
+DeviceManager::DeviceError DevicePluginMultiSensor::executeAction(Device *device, const Action &action)
+{
+    SensorTag *sensor = m_sensors.value(device);
+    if (action.actionTypeId() == sensortagBuzzerActionTypeId) {
+        sensor->setBuzzerPower(action.param(sensortagBuzzerStateParamTypeId).value().toBool());
+        return DeviceManager::DeviceErrorNoError;
+    } else if (action.actionTypeId() == sensortagGreenLedActionTypeId) {
+        sensor->setGreenLedPower(action.param(sensortagGreenLedStateParamTypeId).value().toBool());
+        return DeviceManager::DeviceErrorNoError;
+    } else if (action.actionTypeId() == sensortagRedLedActionTypeId) {
+        sensor->setRedLedPower(action.param(sensortagRedLedStateParamTypeId).value().toBool());
+        return DeviceManager::DeviceErrorNoError;
+    } else if (action.actionTypeId() == sensortagBuzzerImpulseActionTypeId) {
+        sensor->buzzerImpulse();
+        return DeviceManager::DeviceErrorNoError;
+    }
+
+    return DeviceManager::DeviceErrorActionTypeNotFound;
 }
 
 bool DevicePluginMultiSensor::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
@@ -188,21 +207,11 @@ void DevicePluginMultiSensor::onPluginConfigurationChanged(const ParamTypeId &pa
         } else if (paramTypeId == MultiSensorMagnetometerEnabledParamTypeId) {
             sensor->setMagnetometerEnabled(value.toBool());
         } else if (paramTypeId == MultiSensorMeasurementPeriodParamTypeId) {
-            int valueInt = value.toInt();
-            if (valueInt % 10 != 0) {
-                qCWarning(dcMultiSensor()) << "Measurement period of sensors" << valueInt << "must be a multiple of 10ms";
-                // FIXME: force to valid value
-                return;
-            }
-            sensor->setMeasurementPeriod(valueInt);
+            sensor->setMeasurementPeriod(value.toInt());
         } else if (paramTypeId == MultiSensorMeasurementPeriodParamTypeId) {
-            int valueInt = value.toInt();
-            if (valueInt % 10 != 0) {
-                qCWarning(dcMultiSensor()) << "Measurement period of movement sensor" << valueInt << "must be a multiple of 10ms";
-                // FIXME: force to valid value
-                return;
-            }
-            sensor->setMeasurementPeriodMovement(valueInt);
+            sensor->setMeasurementPeriodMovement(value.toInt());
+        } else if (paramTypeId == MultiSensorMovementSensitivityParamTypeId) {
+            sensor->setMovementSensitivity(value.toInt());
         }
     }
 }

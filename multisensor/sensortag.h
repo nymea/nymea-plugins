@@ -68,17 +68,39 @@ class SensorTag : public QObject
 {
     Q_OBJECT
 public:
+    enum SensorAccelerometerRange {
+        SensorAccelerometerRange2G = 2,
+        SensorAccelerometerRange4G = 4,
+        SensorAccelerometerRange8G = 8,
+        SensorAccelerometerRange16G = 16
+    };
+    Q_ENUM(SensorAccelerometerRange)
+
+    enum SensorMode {
+        SensorModeLocal = 0,
+        SensorModeRemote = 1,
+        SensorModeTest = 2
+    };
+    Q_ENUM(SensorMode)
+
     explicit SensorTag(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
     Device *device();
     BluetoothLowEnergyDevice *bluetoothDevice();
 
+    // Configurations
     void setAccelerometerEnabled(bool enabled);
     void setGyroscopeEnabled(bool enabled);
     void setMagnetometerEnabled(bool enabled);
     void setMeasurementPeriod(int period);
     void setMeasurementPeriodMovement(int period);
     void setMovementSensitivity(int percentage);
+
+    // Actions
+    void setGreenLedPower(bool power);
+    void setRedLedPower(bool power);
+    void setBuzzerPower(bool power);
+    void buzzerImpulse();
 
 private:
     Device *m_device;
@@ -91,6 +113,7 @@ private:
     QLowEnergyService *m_opticalService = nullptr;
     QLowEnergyService *m_keyService = nullptr;
     QLowEnergyService *m_movementService = nullptr;
+    QLowEnergyService *m_ioService = nullptr;
 
     // Characteristics
     QLowEnergyCharacteristic m_temperatureDataCharacteristic;
@@ -115,19 +138,25 @@ private:
     QLowEnergyCharacteristic m_movementConfigurationCharacteristic;
     QLowEnergyCharacteristic m_movementPeriodCharacteristic;
 
+    QLowEnergyCharacteristic m_ioDataCharacteristic;
+    QLowEnergyCharacteristic m_ioConfigurationCharacteristic;
+
     // Measure periods
     int m_temperaturePeriod = 2500;
     int m_humidityPeriod = 2500;
     int m_pressurePeriod = 2500;
     int m_opticalPeriod = 2500;
     int m_movementPeriod = 500;
-    double m_movementSensitivity = 50;
+    double m_movementSensitivity = 0.5;
     // Note: possible value: 2G, 4G, 8G, 16G, default 2G
-    int m_accelerometerRange = 2;
+    SensorAccelerometerRange m_accelerometerRange = SensorAccelerometerRange16G;
 
     bool m_leftButtonPressed = false;
     bool m_rightButtonPressed = false;
     bool m_magnetDetected = false;
+    bool m_greenLedEnabled = false;
+    bool m_redLedEnabled = false;
+    bool m_buzzerEnabled = false;
 
     // Plugin configs
     bool m_accelerometerEnabled = true;
@@ -136,6 +165,8 @@ private:
 
     void configurePeriod(QLowEnergyService *serice, const QLowEnergyCharacteristic &characteristic, int measurementPeriod);
     void configureMovement(bool gyroscopeEnabled = false, bool accelerometerEnabled = true, bool magnetometerEnabled = true, bool wakeOnMotion = true);
+    void configureSensorMode(const SensorMode &mode);
+    void configureIo();
 
     void processTemperatureData(const QByteArray &data);
     void processKeyData(const QByteArray &data);
@@ -186,6 +217,11 @@ private slots:
     void onMovementServiceStateChanged(const QLowEnergyService::ServiceState &state);
     void onMovementServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
 
+    // IO service
+    void onIoServiceStateChanged(const QLowEnergyService::ServiceState &state);
+    void onIoServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
+
+    void onBuzzerImpulseTimeout();
 };
 
 #endif // SENSORTAG_H
