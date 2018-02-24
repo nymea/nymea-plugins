@@ -90,6 +90,7 @@ public:
 
     // Configurations
     void setAccelerometerEnabled(bool enabled);
+    void setAccelerometerRange(const SensorAccelerometerRange &range);
     void setGyroscopeEnabled(bool enabled);
     void setMagnetometerEnabled(bool enabled);
     void setMeasurementPeriod(int period);
@@ -148,15 +149,16 @@ private:
     int m_opticalPeriod = 2500;
     int m_movementPeriod = 500;
     double m_movementSensitivity = 0.5;
-    // Note: possible value: 2G, 4G, 8G, 16G, default 2G
     SensorAccelerometerRange m_accelerometerRange = SensorAccelerometerRange16G;
 
+    // States
     bool m_leftButtonPressed = false;
     bool m_rightButtonPressed = false;
     bool m_magnetDetected = false;
     bool m_greenLedEnabled = false;
     bool m_redLedEnabled = false;
     bool m_buzzerEnabled = false;
+    double m_lastAccelerometerVectorLenght = -99999;
 
     // Plugin configs
     bool m_accelerometerEnabled = true;
@@ -164,7 +166,7 @@ private:
     bool m_magnetometerEnabled = false;
 
     void configurePeriod(QLowEnergyService *serice, const QLowEnergyCharacteristic &characteristic, int measurementPeriod);
-    void configureMovement(bool gyroscopeEnabled = false, bool accelerometerEnabled = true, bool magnetometerEnabled = true, bool wakeOnMotion = true);
+    void configureMovement();
     void configureSensorMode(const SensorMode &mode);
     void configureIo();
 

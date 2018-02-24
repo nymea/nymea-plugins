@@ -55,7 +55,18 @@ void SensorTag::setAccelerometerEnabled(bool enabled)
         return;
 
     m_accelerometerEnabled = enabled;
-    configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
+    configureMovement();
+}
+
+void SensorTag::setAccelerometerRange(const SensorTag::SensorAccelerometerRange &range)
+{
+    qCDebug(dcMultiSensor()) << "Accelerometer" << range;
+
+    if (m_accelerometerRange == range)
+        return;
+
+    m_accelerometerRange = range;
+    configureMovement();
 }
 
 void SensorTag::setGyroscopeEnabled(bool enabled)
@@ -66,7 +77,7 @@ void SensorTag::setGyroscopeEnabled(bool enabled)
         return;
 
     m_gyroscopeEnabled = enabled;
-    configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
+    configureMovement();
 }
 
 void SensorTag::setMagnetometerEnabled(bool enabled)
@@ -77,7 +88,7 @@ void SensorTag::setMagnetometerEnabled(bool enabled)
         return;
 
     m_magnetometerEnabled = enabled;
-    configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
+    configureMovement();
 }
 
 void SensorTag::setMeasurementPeriod(int period)
@@ -171,33 +182,32 @@ void SensorTag::configurePeriod(QLowEnergyService *serice, const QLowEnergyChara
     serice->writeCharacteristic(characteristic, payload);
 }
 
-void SensorTag::configureMovement(bool gyroscopeEnabled, bool accelerometerEnabled, bool magnetometerEnabled, bool wakeOnMotion)
+void SensorTag::configureMovement()
 {
     if (!m_movementService || !m_movementConfigurationCharacteristic.isValid())
         return;
 
     quint16 configuration = 0;
-    if (gyroscopeEnabled) {
+    if (m_gyroscopeEnabled) {
         configuration |= (1 << 0); // enable x-axis
         configuration |= (1 << 1); // enable y-axis
         configuration |= (1 << 2); // enable z-axis
     }
 
-    if (accelerometerEnabled) {
+    if (m_accelerometerEnabled) {
         configuration |= (1 << 3); // enable x-axis
         configuration |= (1 << 4); // enable y-axis
         configuration |= (1 << 5); // enable z-axis
     }
 
-    if (magnetometerEnabled) {
+    if (m_magnetometerEnabled) {
         configuration |= (1 << 6); // enable all axis
     }
 
-    if (wakeOnMotion) {
-        configuration |= (1 << 8); // enable
-    }
+    // Always enable wake on movement in order to save energy
+    configuration |= (1 << 8); // enable
 
-    // Accelerometer range 2 Bit ( 0 = 2G, 1 = 4G, 2 = 8G, 3 = 16G) - Default 0
+    // Accelerometer range 2 Bit ( 0 = 2G, 1 = 4G, 2 = 8G, 3 = 16G)
     switch (m_accelerometerRange) {
     case SensorAccelerometerRange2G:
         // Bit 9 = 0
@@ -362,7 +372,7 @@ void SensorTag::processOpticalData(const QByteArray &data)
 
 void SensorTag::processMovementData(const QByteArray &data)
 {
-    qCDebug(dcMultiSensor()) << "--> Movement value" << data.toHex();
+    //qCDebug(dcMultiSensor()) << "--> Movement value" << data.toHex();
 
     QByteArray payload(data);
     QDataStream stream(&payload, QIODevice::ReadOnly);
@@ -383,6 +393,7 @@ void SensorTag::processMovementData(const QByteArray &data)
     double gyroY = static_cast<double>(gyroYRaw) / (65536 / 500);
     double gyroZ = static_cast<double>(gyroZRaw) / (65536 / 500);
 
+    // Calculate acceleration [G], Range +- m_accelerometerRange
     double accX = static_cast<double>(accXRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
     double accY = static_cast<double>(accYRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
     double accZ = static_cast<double>(accZRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
@@ -404,11 +415,18 @@ void SensorTag::processMovementData(const QByteArray &data)
     Q_UNUSED(gyroscopeVector)
     Q_UNUSED(magnetometerVector)
 
-    double limit = m_accelerometerRange * m_movementSensitivity;
-    bool motionDetected = (accelerometerVector.length() >= limit);
-    qCDebug(dcMultiSensor()) <<  accelerometerVector.length() << "  |  " << limit << (motionDetected ? "motion" : "-");
+    // Initialize the accelerometer value if no data known yet
+    if (m_lastAccelerometerVectorLenght == -99999) {
+        m_lastAccelerometerVectorLenght = accelerometerVector.length();
+        return;
+    }
 
+
+    double delta = qAbs(qAbs(m_lastAccelerometerVectorLenght) - qAbs(accelerometerVector.length()));
+    bool motionDetected = (delta >= m_movementSensitivity);
+    //qCDebug(dcMultiSensor()) <<  accelerometerVector.length() << "  |  " << delta << m_movementSensitivity << (motionDetected ? "motion" : "-");
     m_device->setStateValue(sensortagMovingStateTypeId, motionDetected);
+    m_lastAccelerometerVectorLenght = accelerometerVector.length();
 }
 
 void SensorTag::setLeftButtonPressed(bool pressed)
@@ -477,6 +495,8 @@ void SensorTag::onConnectedChanged(const bool &connected)
         m_keyService = nullptr;
         m_movementService = nullptr;
         m_ioService = nullptr;
+
+        m_lastAccelerometerVectorLenght = -99999;
     }
 }
 
@@ -956,7 +976,7 @@ void SensorTag::onMovementServiceStateChanged(const QLowEnergyService::ServiceSt
 
     // Set measurement period
     configurePeriod(m_movementService, m_movementPeriodCharacteristic, m_movementPeriod);
-    configureMovement(m_gyroscopeEnabled, m_accelerometerEnabled, m_magnetometerEnabled, true);
+    configureMovement();
 
     // Enable measuring
     m_movementService->writeCharacteristic(m_movementConfigurationCharacteristic, QByteArray::fromHex("01"));
@@ -1002,6 +1022,7 @@ void SensorTag::onIoServiceStateChanged(const QLowEnergyService::ServiceState &s
         m_bluetoothDevice->disconnectDevice();
     }
 
+    configureIo();
     configureSensorMode(SensorModeRemote);
     configureIo();
 }
