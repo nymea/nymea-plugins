@@ -468,6 +468,7 @@ void SensorTag::onConnectedChanged(const bool &connected)
         m_opticalService->deleteLater();
         m_keyService->deleteLater();
         m_movementService->deleteLater();
+        m_ioService->deleteLater();
 
         m_temperatureService = nullptr;
         m_humidityService = nullptr;
@@ -475,6 +476,7 @@ void SensorTag::onConnectedChanged(const bool &connected)
         m_opticalService = nullptr;
         m_keyService = nullptr;
         m_movementService = nullptr;
+        m_ioService = nullptr;
     }
 }
 
