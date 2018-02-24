@@ -40,7 +40,7 @@
             "type": "int",
             "minValue": 10,
             "maxValue": 2500,
-            "defaultValue": 500
+            "defaultValue": 300
         },
         {
             "id": "a3298d16-eea6-4474-9061-90466e92d476",
@@ -50,7 +50,7 @@
             "unit": "Percentage",
             "minValue": 0,
             "maxValue": 100,
-            "defaultValue": 50
+            "defaultValue": 40
         }
     ],
     "vendors": [
