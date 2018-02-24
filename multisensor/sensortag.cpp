@@ -305,7 +305,7 @@ void SensorTag::processKeyData(const QByteArray &data)
     quint8 flags = static_cast<quint8>(data.at(0));
     setLeftButtonPressed(testBitUint8(flags, 0));
     setRightButtonPressed(testBitUint8(flags, 1));
-    setMagnetDetected(!testBitUint8(flags, 2));
+    setMagnetDetected(testBitUint8(flags, 2));
 }
 
 void SensorTag::processHumidityData(const QByteArray &data)
