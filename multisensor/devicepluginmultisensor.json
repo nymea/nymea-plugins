@@ -186,6 +186,7 @@
                             "displayNameEvent": "Green LED power changed",
                             "displayNameAction": "Set green LED power",
                             "type": "bool",
+                            "cached": false,
                             "defaultValue": false,
                             "writable": true
                         },
@@ -196,6 +197,7 @@
                             "displayNameEvent": "Red LED power changed",
                             "displayNameAction": "Set red LED power",
                             "type": "bool",
+                            "cached": false,
                             "defaultValue": false,
                             "writable": true
                         },
@@ -206,6 +208,7 @@
                             "displayNameEvent": "Buzzer power changed",
                             "displayNameAction": "Set buzzer power",
                             "type": "bool",
+                            "cached": false,
                             "defaultValue": false,
                             "writable": true
                         }
