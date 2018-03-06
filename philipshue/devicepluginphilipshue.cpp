@@ -3,7 +3,7 @@
  *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -27,10 +27,10 @@
     \brief Plugin for the Philips Hue lighting system.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
     This plugin allows to interact with the \l{http://www2.meethue.com/}{Philips hue} bridge. Each light bulp connected to the bridge
-    will appear automatically in the system, once the bridge is added to guh.
+    will appear automatically in the system, once the bridge is added to nymea.
 
     \chapter Plugin properties
     Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
@@ -231,7 +231,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::confirmPairing(const Pa
     pairingInfo->setHost(QHostAddress(params.paramValue(hueBridgeBridgeHostParamTypeId).toString()));
 
     QVariantMap deviceTypeParam;
-    deviceTypeParam.insert("devicetype", "guh");
+    deviceTypeParam.insert("devicetype", "nymea");
 
     QJsonDocument jsonDoc = QJsonDocument::fromVariant(deviceTypeParam);
 

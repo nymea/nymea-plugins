@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -29,7 +29,7 @@ class DevicePluginGenericElements : public DevicePlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "guru.guh.DevicePlugin" FILE "deviceplugingenericelements.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "deviceplugingenericelements.json")
     Q_INTERFACES(DevicePlugin)
 
 public:

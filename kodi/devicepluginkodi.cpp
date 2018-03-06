@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,10 +26,10 @@
     \brief Plugin for the Kodi media center.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
     This plugin allows you to controll the media center \l{http://kodi.tv/}{Kodi}. If you want to discover
-    and control Kodi with guh, you need to activate the remote access and the UPnP service.
+    and control Kodi with nymea, you need to activate the remote access and the UPnP service.
 
     \chapter "Activate UPnP"
     In order to discover Kodi in the network, you need to activate the UPnP serive in the Kodi settings:
@@ -46,7 +46,7 @@
 
 
     \chapter Activate "Remote Control"
-    In order to control Kodi over the network with guh, you need to activate the remote control permissions:
+    In order to control Kodi over the network with nymea, you need to activate the remote control permissions:
 
     \section2 Settings \unicode{0x2192} Services  \unicode{0x2192} Remote Control
     Activate all options.
@@ -69,18 +69,18 @@
 DevicePluginKodi::DevicePluginKodi()
 {
 //    Q_INIT_RESOURCE(images);
-//    QFile file(":/images/guh-logo.png");
+//    QFile file(":/images/nymea-logo.png");
 //    if (!file.open(QIODevice::ReadOnly)) {
 //        qCWarning(dcKodi) << "could not open" << file.fileName();
 //        return;
 //    }
 
-//    QByteArray guhLogoByteArray = file.readAll();
-//    if (guhLogoByteArray.isEmpty()) {
+//    QByteArray nymeaLogoByteArray = file.readAll();
+//    if (nymeaLogoByteArray.isEmpty()) {
 //        qCWarning(dcKodi) << "could not read" << file.fileName();
 //        return;
 //    }
-    //    m_logo = guhLogoByteArray;
+    //    m_logo = nymeaLogoByteArray;
 }
 
 DevicePluginKodi::~DevicePluginKodi()

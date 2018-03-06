@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_deviceplugintcpcommander)
+TARGET = $$qtLibraryTarget(nymea_deviceplugintcpcommander)
 
 SOURCES += \
     deviceplugintcpcommander.cpp \

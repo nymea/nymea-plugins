@@ -1,9 +1,9 @@
-Source: guh-plugins
+Source: nymea-plugins
 Section: utils
 Priority: options
 Maintainer: Michael Zanetti <michael.zanetti@guh.io>
 Build-depends: debhelper (>= 0.0.0),
-               libguh1-dev,
+               libnymea1-dev,
                libqt5serialport5-dev,
                python:any,
                qtbase5-dev,
@@ -11,598 +11,639 @@ Build-depends: debhelper (>= 0.0.0),
 Standards-Version: 3.9.3
 
 
-Package: guh-plugin-avahimonitor
+Package: nymea-plugin-avahimonitor
 Architecture: any
 Section: libs
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for avahimonitor
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-avahimonitor
+Description: nymea.io plugin for avahimonitor
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for avahimonitor
+ This package will install the nymea.io plugin for avahimonitor
 
 
-Package: guh-plugin-awattar
+Package: nymea-plugin-awattar
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for awattar
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-awattar
+Description: nymea.io plugin for awattar
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for awattar
+ This package will install the nymea.io plugin for awattar
 
 
-Package: guh-plugin-commandlauncher
+Package: nymea-plugin-commandlauncher
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for commandlauncher
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-commandlauncher
+Description: nymea.io plugin for commandlauncher
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for commandlauncher
+ This package will install the nymea.io plugin for commandlauncher
 
 
-Package: guh-plugin-conrad
+Package: nymea-plugin-conrad
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for conrad
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-conrad
+Description: nymea.io plugin for conrad
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for conrad
+ This package will install the nymea.io plugin for conrad
 
 
-Package: guh-plugin-datetime
+Package: nymea-plugin-datetime
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for datetime
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-datetime
+Description: nymea.io plugin for datetime
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for datetime
+ This package will install the nymea.io plugin for datetime
 
 
-Package: guh-plugin-denon
+Package: nymea-plugin-denon
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for denon
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-denon
+Description: nymea.io plugin for denon
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for denon
+ This package will install the nymea.io plugin for denon
 
 
-Package: guh-plugin-elro
+Package: nymea-plugin-elro
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for elro
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-elro
+Description: nymea.io plugin for elro
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for elro
+ This package will install the nymea.io plugin for elro
 
 
-Package: guh-plugin-eq-3
+Package: nymea-plugin-eq-3
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for eq-3
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-eq-3
+Description: nymea.io plugin for eq-3
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for eq-3
+ This package will install the nymea.io plugin for eq-3
 
 
-Package: guh-plugin-genericelements
+Package: nymea-plugin-genericelements
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for genericelements
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-genericelements
+Description: nymea.io plugin for genericelements
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for genericelements
+ This package will install the nymea.io plugin for genericelements
 
 
-Package: guh-plugin-gpio
+Package: nymea-plugin-gpio
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for gpio
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-gpio
+Description: nymea.io plugin for gpio
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for gpio
+ This package will install the nymea.io plugin for gpio
 
 
-Package: guh-plugin-intertechno
+Package: nymea-plugin-intertechno
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for intertechno
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-intertechno
+Description: nymea.io plugin for intertechno
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for intertechno
+ This package will install the nymea.io plugin for intertechno
 
 
-Package: guh-plugin-kodi
+Package: nymea-plugin-kodi
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for kodi
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-kodi
+Description: nymea.io plugin for kodi
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for kodi
+ This package will install the nymea.io plugin for kodi
 
 
-Package: guh-plugin-leynew
+Package: nymea-plugin-leynew
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for leynew
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-leynew
+Description: nymea.io plugin for leynew
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for leynew
+ This package will install the nymea.io plugin for leynew
 
 
-Package: guh-plugin-lgsmarttv
+Package: nymea-plugin-lgsmarttv
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for lgsmarttv
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-lgsmarttv
+Description: nymea.io plugin for lgsmarttv
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for lgsmarttv
+ This package will install the nymea.io plugin for lgsmarttv
 
 
-Package: guh-plugin-mailnotification
+Package: nymea-plugin-mailnotification
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for mailnotification
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-mailnotification
+Description: nymea.io plugin for mailnotification
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for mailnotification
+ This package will install the nymea.io plugin for mailnotification
 
-Package: guh-plugin-netatmo
+
+Package: nymea-plugin-netatmo
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for netatmo
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-netatmo
+Description: nymea.io plugin for netatmo
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for netatmo
+ This package will install the nymea.io plugin for netatmo
 
 
-Package: guh-plugin-networkdetector
+Package: nymea-plugin-networkdetector
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nmap,
-         guh-plugins-translations,
-Description: guh.io plugin for networkdetector
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-networkdetector
+Description: nymea.io plugin for networkdetector
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for networkdetector
+ This package will install the nymea.io plugin for networkdetector
 
 
-Package: guh-plugin-openweathermap
+Package: nymea-plugin-openweathermap
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for openweathermap
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-openweathermap
+Description: nymea.io plugin for openweathermap
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for openweathermap
+ This package will install the nymea.io plugin for openweathermap
 
 
-Package: guh-plugin-orderbutton
+Package: nymea-plugin-orderbutton
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for orderbutton
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-orderbutton
+Description: nymea.io plugin for orderbutton
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for orderbutton
+ This package will install the nymea.io plugin for orderbutton
 
 
-Package: guh-plugin-osdomotics
+Package: nymea-plugin-osdomotics
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for osdomotics
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-osdmotics
+Description: nymea.io plugin for osdomotics
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for osdomotics
+ This package will install the nymea.io plugin for osdomotics
 
 
-Package: guh-plugin-philipshue
+Package: nymea-plugin-philipshue
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for philipshue
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-philipshue
+Description: nymea.io plugin for philipshue
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for philipshue
+ This package will install the nymea.io plugin for philipshue
 
 
-Package: guh-plugin-plantcare
+Package: nymea-plugin-plantcare
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for plantcare
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-plantcare
+Description: nymea.io plugin for plantcare
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for plantcare
+ This package will install the nymea.io plugin for plantcare
 
 
-Package: guh-plugin-udpcommander
+
+Package: nymea-plugin-udpcommander
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for UDP commander
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-udpcommander
+Description: nymea.io plugin for UDP commander
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for udpcommander
+ This package will install the nymea.io plugin for udpcommander
 
 
-Package: guh-plugin-unitec
+Package: nymea-plugin-unitec
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for unitec
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-unitec
+Description: nymea.io plugin for unitec
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for unitec
+ This package will install the nymea.io plugin for unitec
 
-Package: guh-plugin-wakeonlan
+
+
+Package: nymea-plugin-wakeonlan
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for wakeonlan
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-wakeonlan
+Description: nymea.io plugin for wakeonlan
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for wakeonlan
+ This package will install the nymea.io plugin for wakeonlan
 
 
-Package: guh-plugin-wemo
+Package: nymea-plugin-wemo
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for wemo
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-wemo
+Description: nymea.io plugin for wemo
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for wemo
+ This package will install the nymea.io plugin for wemo
 
 
-Package: guh-plugin-ws2812
+Package: nymea-plugin-ws2812
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for ws2812
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-ws2812
+Description: nymea.io plugin for ws2812
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for ws2812
+ This package will install the nymea.io plugin for ws2812
 
 
-Package: guh-plugin-tcpcommander
+Package: nymea-plugin-tcpcommander
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for TCP commander
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-tcpcommander
+Description: nymea.io plugin for TCP commander
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for TCP commander
+ This package will install the nymea.io plugin for TCP commander
 
 
-Package: guh-plugin-simulation
+Package: nymea-plugin-simulation
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for simulated devices
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-simulation
+Description: nymea.io plugin for simulated devices
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for simulated devices
+ This package will install the nymea.io plugin for simulated devices
 
 
-Package: guh-plugin-elgato
+Package: nymea-plugin-elgato
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for elgato
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-elgato
+Description: nymea.io plugin for elgato
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for elgato
+ This package will install the nymea.io plugin for elgato
 
 
-Package: guh-plugin-senic
+Package: nymea-plugin-senic
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for senic
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-senic
+Description: nymea.io plugin for senic
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for senic
+ This package will install the nymea.io plugin for senic
 
 
-Package: guh-plugin-snapd
+Package: nymea-plugin-snapd
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         guh-plugins-translations,
-Description: guh.io plugin for snapd
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+         nymea-plugins-translations,
+Replaces: guh-plugin-snapd
+Description: nymea.io plugin for snapd
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the guh.io plugin for snapd
+ This package will install the nymea.io plugin for snapd
 
 
 
 
-Package: guh-plugins-translations
+Package: nymea-plugins-translations
 Section: misc
 Architecture: all
 Depends: ${misc:Depends}
-Description: Translation files for guh plugins - translations
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+Replaces: guh-plugins-translations
+Description: Translation files for nymea plugins - translations
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package provides the translation files for all guh plugins.
+ This package provides the translation files for all nymea plugins.
 
 
 
-Package: guh-plugins
+Package: nymea-plugins
 Section: libs
 Architecture: all
-Depends: guh-plugin-awattar,
-         guh-plugin-datetime,
-         guh-plugin-denon,
-         guh-plugin-eq-3,
-         guh-plugin-kodi,
-         guh-plugin-lgsmarttv,
-         guh-plugin-mailnotification,
-         guh-plugin-netatmo,
-         guh-plugin-networkdetector,
-         guh-plugin-openweathermap,
-         guh-plugin-philipshue,
-         guh-plugin-pushbullet,
-         guh-plugin-wakeonlan,
-         guh-plugin-wemo,
-         guh-plugin-elgato,
-         guh-plugin-senic
-Description: Plugins for guh IoT server - the default plugin collection
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+Depends: nymea-plugin-awattar,
+         nymea-plugin-datetime,
+         nymea-plugin-denon,
+         nymea-plugin-eq-3,
+         nymea-plugin-kodi,
+         nymea-plugin-lgsmarttv,
+         nymea-plugin-mailnotification,
+         nymea-plugin-netatmo,
+         nymea-plugin-networkdetector,
+         nymea-plugin-openweathermap,
+         nymea-plugin-philipshue,
+         nymea-plugin-wakeonlan,
+         nymea-plugin-wemo,
+         nymea-plugin-elgato,
+         nymea-plugin-senic
+Replaces: guh-plugins
+Description: Plugins for nymea IoT server - the default plugin collection
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the default guh plugins.
+ This package will install the default nymea plugins.
 
 
-Package: guh-plugins-maker
+Package: nymea-plugins-maker
 Section: libs
 Architecture: all
-Depends: guh-plugin-commandlauncher,
-         guh-plugin-udpcommander,
-         guh-plugin-tcpcommander,
-         guh-plugin-genericelements,
-         guh-plugin-avahimonitor,
-         guh-plugin-gpio,
-Description: Plugins for guh IoT server - Meta package for makers, tinkers and hackers
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+Depends: nymea-plugin-commandlauncher,
+         nymea-plugin-udpcommander,
+         nymea-plugin-tcpcommander,
+         nymea-plugin-genericelements,
+         nymea-plugin-avahimonitor,
+         nymea-plugin-gpio,
+Replaces: guh-plugins-maker
+Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install guh plugins for maker, tinker and hackers.
+ This package will install nymea plugins for maker, tinker and hackers.
 
 
-Package: guh-plugins-merkurboard
+Package: nymea-plugins-merkurboard
 Section: libs
 Architecture: all
-Depends: guh-plugin-osdomotics,
-         guh-plugin-plantcare,
-         guh-plugin-ws2812,
-         guh-plugin-orderbutton,
-Description: Plugins for guh IoT server - Meta package for 6LoWPAN Merkur boards
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+Depends: nymea-plugin-osdomotics,
+         nymea-plugin-plantcare,
+         nymea-plugin-ws2812,
+         nymea-plugin-orderbutton,
+Replaces: guh-plugins-merkurboard
+Description: Plugins for nymea IoT server - Meta package for 6LoWPAN Merkur boards
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the 6LoWPAN Merkur board plugins for guh.
+ This package will install the 6LoWPAN Merkur board plugins for nymea.
 
 
-Package: guh-plugins-433mhz
+Package: nymea-plugins-433mhz
 Section: libs
 Architecture: all
-Depends: guh-plugin-elro,
-         guh-plugin-conrad,
-         guh-plugin-intertechno,
-         guh-plugin-leynew,
-         guh-plugin-unitec,
-Description: Plugins for guh IoT server - Meta package for RF 433 MHz plugins
- The guh daemon is a plugin based IoT (Internet of Things) server. The
+Depends: nymea-plugin-elro,
+         nymea-plugin-conrad,
+         nymea-plugin-intertechno,
+         nymea-plugin-leynew,
+         nymea-plugin-unitec,
+Replaces: guh-plugins-433mhz
+Description: Plugins for nymea IoT server - Meta package for RF 433 MHz plugins
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
  .
- This package will install the RF 433 MHz plugins for guh.
+ This package will install the RF 433 MHz plugins for nymea.
 
 
-Package: guh-plugins-all
+Package: nymea-plugins-all
 Section: libs
 Architecture: all
-Depends: guh-plugins,
-         guh-plugins-433mhz,
-         guh-plugins-maker,
-         guh-plugins-merkurboard,
-Description: Plugins for guh IoT server - Meta package for all plugins
- The guh daemon is a plugin based IoT (Internet of Things) server. The		
+Depends: nymea-plugins,
+         nymea-plugins-433mhz,
+         nymea-plugins-maker,
+         nymea-plugins-merkurboard,
+Replaces: guh-plugins-all
+Description: Plugins for nymea IoT server - Meta package for all plugins
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The		
  server works like a translator for devices, things and services and		
  allows them to interact.		
  With the powerful rule engine you are able to connect any device available		
  in the system and create individual scenes and behaviors for your environment.		
  .		
- This package will install all the available plugins for guh.
+ This package will install all the available plugins for nymea.

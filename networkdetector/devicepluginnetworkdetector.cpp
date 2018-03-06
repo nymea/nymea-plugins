@@ -3,7 +3,7 @@
  *  Copyright (C) 2016 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2016 Michael Zanetti <michael_zanetti@gmx.net>           *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -27,12 +27,12 @@
     \brief Plugin to monitor devices in the local network.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
 
     This plugin allows to find and monitor network devices in your local network by using the hostname of the devices.
 
-    \underline{NOTE}: the application \c nmap has to be installed and guh has to run as root.
+    \underline{NOTE}: the application \c nmap has to be installed and nymea has to run as root.
 
     \chapter Plugin properties
     Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}

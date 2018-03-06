@@ -3,7 +3,7 @@
  *  Copyright (C) 2016 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2016 Michael Zanetti <michael_zanetti@gmx.net>           *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -38,7 +38,7 @@ class DevicePluginNetworkDetector : public DevicePlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "guru.guh.DevicePlugin" FILE "devicepluginnetworkdetector.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginnetworkdetector.json")
     Q_INTERFACES(DevicePlugin)
 
 public:

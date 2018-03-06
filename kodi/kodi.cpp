@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -87,7 +87,7 @@ int Kodi::volume() const
 void Kodi::showNotification(const QString &message, const int &displayTime, const QString &notificationType, const ActionId &actionId)
 {
     QVariantMap params;
-    params.insert("title", "guh notification");
+    params.insert("title", "nymea notification");
     params.insert("message", message);
     params.insert("displaytime", displayTime);
     params.insert("image", notificationType);

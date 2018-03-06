@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginawattar)
+TARGET = $$qtLibraryTarget(nymea_devicepluginawattar)
 
 SOURCES += \
     devicepluginawattar.cpp \

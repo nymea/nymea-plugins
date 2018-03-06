@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginconrad)
+TARGET = $$qtLibraryTarget(nymea_devicepluginconrad)
 
 SOURCES += \
     devicepluginconrad.cpp

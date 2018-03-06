@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginsnapd)
+TARGET = $$qtLibraryTarget(nymea_devicepluginsnapd)
 
 QT += network
 

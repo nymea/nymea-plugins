@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginsenic)
+TARGET = $$qtLibraryTarget(nymea_devicepluginsenic)
 
 SOURCES += \
     devicepluginsenic.cpp \

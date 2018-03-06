@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginwemo)
+TARGET = $$qtLibraryTarget(nymea_devicepluginwemo)
 
 QT+= network
 

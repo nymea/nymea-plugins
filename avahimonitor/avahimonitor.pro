@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginavahimonitor)
+TARGET = $$qtLibraryTarget(nymea_devicepluginavahimonitor)
 
 SOURCES += \
     devicepluginavahimonitor.cpp

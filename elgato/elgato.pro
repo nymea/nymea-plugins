@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginelgato)
+TARGET = $$qtLibraryTarget(nymea_devicepluginelgato)
 
 SOURCES += \
     devicepluginelgato.cpp \
