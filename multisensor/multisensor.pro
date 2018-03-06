@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginmultisensor)
+TARGET = $$qtLibraryTarget(nymea_devicepluginmultisensor)
 
 SOURCES += \
     devicepluginmultisensor.cpp \

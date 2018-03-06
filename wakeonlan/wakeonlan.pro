@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginwakeonlan)
+TARGET = $$qtLibraryTarget(nymea_devicepluginwakeonlan)
 
 QT += network
 

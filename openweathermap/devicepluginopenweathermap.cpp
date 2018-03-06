@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,7 +26,7 @@
     \brief Plugin for the Open Weather Map online weather service.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
     This plugin allows to get the current weather data from \l{http://www.openweathermap.org}{OpenWeatherMap}.
     The weather data will be refreshed every 15 minutes automatically, but can also refreshed manually.

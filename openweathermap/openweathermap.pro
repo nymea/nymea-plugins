@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginopenweathermap)
+TARGET = $$qtLibraryTarget(nymea_devicepluginopenweathermap)
 
 QT+= network
 

@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -169,7 +169,7 @@ QPair<QNetworkRequest, QByteArray> TvDevice::createPairingRequest(const QHostAdd
     QNetworkRequest request;
     request.setUrl(QUrl(urlString));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("text/xml; charset=utf-8"));
-    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("UDAP/2.0 guh"));
+    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("UDAP/2.0 nymea"));
 
     QByteArray data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><envelope><api type=\"pairing\"><name>hello</name><value>" + key.toUtf8() + "</value><port>8080</port></api></envelope>";
     return QPair<QNetworkRequest, QByteArray>(request, data);
@@ -180,7 +180,7 @@ QPair<QNetworkRequest, QByteArray> TvDevice::createEndPairingRequest(const QUrl 
     QNetworkRequest request;
     request.setUrl(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("text/xml; charset=utf-8"));
-    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("UDAP/2.0 guh"));
+    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("UDAP/2.0 nymea"));
     request.setRawHeader("Connection", "Close");
 
     QByteArray data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><envelope><api type=\"pairing\"><name>byebye</name><port>8080</port></api></envelope>";
@@ -193,7 +193,7 @@ QPair<QNetworkRequest, QByteArray> TvDevice::createEndPairingRequest(const QHost
     QNetworkRequest request;
     request.setUrl(QUrl(urlString));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("text/xml; charset=utf-8"));
-    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("UDAP/2.0 guh"));
+    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("UDAP/2.0 nymea"));
     request.setRawHeader("Connection", "Close");
 
     QByteArray data = "<?xml version=\"1.0\" encoding=\"utf-8\"?><envelope><api type=\"pairing\"><name>byebye</name><port>8080</port></api></envelope>";
@@ -228,7 +228,7 @@ QPair<QNetworkRequest, QByteArray> TvDevice::createPressButtonRequest(const TvDe
     QNetworkRequest request;
     request.setUrl(QUrl(urlString));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("text/xml; charset=utf-8"));
-    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("UDAP/2.0 guh"));
+    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("UDAP/2.0 nymea"));
 
     QByteArray data;
     data.append("<?xml version=\"1.0\" encoding=\"utf-8\"?><envelope><api type=\"command\"><name>HandleKeyInput</name><value>");

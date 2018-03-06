@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2016 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -27,7 +27,7 @@
     \brief Plugin for Denon AV
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
     This plug-in supports the
     \l {http://www.denon.de/de/product/hometheater/avreceivers/avrx1000}{Denon AV Amplifier AVR-X1000}

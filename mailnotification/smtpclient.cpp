@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -230,7 +230,7 @@ bool SmtpClient::sendMail(const QString &subject, const QString &body, const Act
 
     m_message = "To: " + m_rcpt + "\n";
     m_message.append("From: " + m_sender + "\n");
-    m_message.append("Subject: [guh notification] | " + subject + "\n");
+    m_message.append("Subject: [nymea notification] | " + subject + "\n");
     m_message.append(body);
     m_message.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) );
     m_message.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) );

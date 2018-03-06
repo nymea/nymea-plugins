@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,13 +26,13 @@
     \brief Plugin for Unitech RF 433 MHz devices.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
     This plugin allows to controll RF 433 MHz actors an receive remote signals from \l{http://www.unitec-elektro.de}{Unitec}
     devices.
 
     The unitec socket units have a learn function. If you plug in the switch, a red light will start to blink. This means
-    the socket is in the learning mode. Now you can add a Unitec switch (48111) to guh with your desired Channel (A,B,C or D).
+    the socket is in the learning mode. Now you can add a Unitec switch (48111) to nymea with your desired Channel (A,B,C or D).
     In order to pair the socket you just have to press the power ON, and the switch has to be in the pairing mode.
     If the pairing was successfull, the switch will turn on. If the switches will be removed from the socket or there will
     be a power breakdown, the switch has to be re-paired. The device can not remember the teached channel.

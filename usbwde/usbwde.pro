@@ -2,7 +2,7 @@ include(../plugins.pri)
 
 QT += serialport
 
-TARGET = $$qtLibraryTarget(guh_devicepluginusbwde)
+TARGET = $$qtLibraryTarget(nymea_devicepluginusbwde)
 
 SOURCES += \
     devicepluginusbwde.cpp

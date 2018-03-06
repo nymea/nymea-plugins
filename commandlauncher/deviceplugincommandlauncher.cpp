@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -27,27 +27,27 @@
     \brief Plugin for system commands.
 
     \ingroup plugins
-    \ingroup guh-plugins-maker
+    \ingroup nymea-plugins-maker
 
     The application and script launcher plugin allows you to execute bash commands and start bash scripts.
 
     \chapter Application launcher
 
     The application launcher \l{DeviceClass} allows you to call bash applications or commands (with parameters)
-    from guh. Once, the application started, the \tt running \l{State} will change to \tt true, if the application
+    from nymea. Once, the application started, the \tt running \l{State} will change to \tt true, if the application
     is finished, the \tt running \l{State} will change to \tt false.
 
     \section3 Example
     An example command could be \l{http://linux.die.net/man/1/espeak}{espeak}. (\tt{apt-get install espeak})
     \code
-    espeak -v en "Chuck Norris is using gooe" # gooe = guh pronounced correctly
+    espeak -v en "Chuck Norris is using nymea"
     \endcode
 
 
     \chapter Bashscript launcher
 
     The bashscript launcher \l{DeviceClass} allows you to call bash script (with parameters)
-    from guh. Once, the script is running, the \tt running \l{State} will change to \tt true, if the script
+    from nymea. Once, the script is running, the \tt running \l{State} will change to \tt true, if the script
     is finished, the \tt running \l{State} will change to \tt false.
 
     \section3 Example
@@ -62,7 +62,7 @@
 
     # Create archive filename...
     day=$(date +%Y%m%d)
-    hostname="guh.guru"
+    hostname="nymea.io"
     archive_file="$day-$hostname.tgz"
 
     # Print start status message...

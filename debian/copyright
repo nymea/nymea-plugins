@@ -1,5 +1,5 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: guhio
+Upstream-Name: nymea-plugins
 Upstream-Contact: Simon Stürz <simon.stuerz@guh.io>
 Copyright: 2014-2017, guh GmbH
 Download: http://www.github.com/guh/guh-plugins

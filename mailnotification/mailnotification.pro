@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginmailnotification)
+TARGET = $$qtLibraryTarget(nymea_devicepluginmailnotification)
 
 QT+= network
 

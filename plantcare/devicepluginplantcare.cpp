@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2016 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -24,12 +24,12 @@
 /*!
     \page plantcare.html
     \title Plantcare
-    \brief Plugin for the guh Plantcare example based on 6LoWPAN networking.
+    \brief Plugin for the nymea Plantcare example based on 6LoWPAN networking.
 
     \ingroup plugins
-    \ingroup guh-plugins-merkur
+    \ingroup nymea-plugins-merkur
 
-    This allows to controll the guh plantcare demo for 6LoWPAN networks.
+    This allows to controll the nymea plantcare demo for 6LoWPAN networks.
 
     \chapter Plugin properties
     Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}

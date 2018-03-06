@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,7 +26,7 @@
     \brief Common elements to test the rule engine.
 
     \ingroup plugins
-    \ingroup guh-tests
+    \ingroup nymea-tests
 
     The generic elements plugin allows you create virtual buttons, which can be connected with a rule. This gives you
     the possibility to execute multiple \l{Action}{Actions} with one signal. Without a rule this generic elements are

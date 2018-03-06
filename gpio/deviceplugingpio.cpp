@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2016 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,7 +26,7 @@
     \brief Plugin to control gpios on different boards.
 
     \ingroup plugins
-    \ingroup guh-plugins-maker
+    \ingroup nymea-plugins-maker
 
     \chapter Raspberry Pi 2
 

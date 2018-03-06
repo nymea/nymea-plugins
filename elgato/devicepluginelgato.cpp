@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -24,7 +24,7 @@
     \brief Plugin for Elgato Avea Blutooth lamp.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
     This plugin allows to find and controll the Bluetooth Low Energy bulb from \l{https://www.elgato.com/en/smart/avea}{Elgato Avea}.
 

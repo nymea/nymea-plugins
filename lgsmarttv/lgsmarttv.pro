@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginlgsmarttv)
+TARGET = $$qtLibraryTarget(nymea_devicepluginlgsmarttv)
 
 QT+= network xml
 

@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stuerz <simon.stuerz@guh.io>                  *
  *  Copyright (C) 2016 nicc                                                *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -27,7 +27,7 @@
     \brief Plugin for TI SensorTag.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
     This plugin allows finding and controlling the Bluetooth Low Energy SensorTag from Texas Instruments.
 

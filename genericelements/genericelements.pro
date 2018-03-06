@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_deviceplugingenericelements)
+TARGET = $$qtLibraryTarget(nymea_deviceplugingenericelements)
 
 SOURCES += \
     deviceplugingenericelements.cpp

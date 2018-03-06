@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginsimulation)
+TARGET = $$qtLibraryTarget(nymea_devicepluginsimulation)
 
 SOURCES += \
     devicepluginsimulation.cpp \
