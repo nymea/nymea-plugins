@@ -2,6 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2018 Michael Zanetti <michael.zanetti@guh.io>            *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -114,8 +115,9 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         bridge->setName(device->paramValue(hueBridgeBridgeNameParamTypeId).toString());
         bridge->setMacAddress(device->paramValue(hueBridgeBridgeMacParamTypeId).toString());
         bridge->setZigbeeChannel(device->paramValue(hueBridgeBridgeZigbeeChannelParamTypeId).toInt());
-
         m_bridges.insert(bridge, device);
+
+        discoverBridgeDevices(bridge);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -173,7 +175,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
 
     // hue remote
     if (device->deviceClassId() == hueRemoteDeviceClassId) {
-        qCDebug(dcPhilipsHue) << "Setup Hue remote" << device->params();
+        qCDebug(dcPhilipsHue) << "Setup Hue remote" << device->params() << device->deviceClassId();
 
         HueRemote *hueRemote = new HueRemote(this);
         hueRemote->setId(device->paramValue(hueRemoteSensorIdParamTypeId).toInt());
@@ -195,6 +197,24 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
+    // hue tap
+    if (device->deviceClassId() == hueTapDeviceClassId) {
+        HueRemote *hueTap = new HueRemote(this);
+        hueTap->setName(device->name());
+        hueTap->setId(device->paramValue(hueTapSensorIdParamTypeId).toInt());
+        hueTap->setBridgeId(DeviceId(device->paramValue(hueTapBridgeParamTypeId).toString()));
+        hueTap->setModelId(device->paramValue(hueTapModelIdParamTypeId).toString());
+        device->setParentId(hueTap->bridgeId());
+
+        connect(hueTap, &HueRemote::stateChanged, this, &DevicePluginPhilipsHue::remoteStateChanged);
+        connect(hueTap, &HueRemote::buttonPressed, this, &DevicePluginPhilipsHue::onRemoteButtonEvent);
+
+        m_remotes.insert(hueTap, device);
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    qCWarning(dcPhilipsHue()) << "Unhandled setupDevice call" << device->deviceClassId();
+
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
@@ -212,7 +232,7 @@ void DevicePluginPhilipsHue::deviceRemoved(Device *device)
         light->deleteLater();
     }
 
-    if (device->deviceClassId() == hueRemoteDeviceClassId) {
+    if (device->deviceClassId() == hueRemoteDeviceClassId || device->deviceClassId() == hueTapDeviceClassId) {
         HueRemote *remote = m_remotes.key(device);
         m_remotes.remove(remote);
         remote->deleteLater();
@@ -366,7 +386,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (device->stateValue(hueRemoteConnectedStateTypeId).toBool()) {
+            if (device->stateValue(hueRemoteConnectedStateTypeId).toBool() || device->stateValue(hueTapConnectedStateTypeId).toBool()) {
                 qCWarning(dcPhilipsHue) << "Refresh Hue sensors request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
@@ -399,6 +419,8 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
             return;
         }
         processSetNameResponse(device, reply->readAll());
+    } else {
+        qCWarning(dcPhilipsHue()) << "Unhandled bridge reply" << reply->readAll();
     }
     reply->deleteLater();
 }
@@ -548,18 +570,27 @@ void DevicePluginPhilipsHue::remoteStateChanged()
         qCWarning(dcPhilipsHue) << "Could not find device for remote" << remote->name();
         return;
     }
-
-    device->setStateValue(hueRemoteConnectedStateTypeId, remote->reachable());
-    device->setStateValue(hueRemoteBatteryLevelStateTypeId, remote->battery());
-    device->setStateValue(hueRemoteBatteryCriticalStateTypeId, remote->battery() < 5);
+    if (device->deviceClassId() == hueTapDeviceClassId) {
+        device->setStateValue(hueTapConnectedStateTypeId, remote->reachable());
+    } else {
+        device->setStateValue(hueRemoteConnectedStateTypeId, remote->reachable());
+        device->setStateValue(hueRemoteBatteryLevelStateTypeId, remote->battery());
+        device->setStateValue(hueRemoteBatteryCriticalStateTypeId, remote->battery() < 5);
+    }
 }
 
 void DevicePluginPhilipsHue::onRemoteButtonEvent(const int &buttonCode)
 {
     HueRemote *remote = static_cast<HueRemote *>(sender());
+    Device *device = m_remotes.value(remote);
 
-    Param param(hueRemoteButtonNameParamTypeId);
     EventTypeId id;
+    Param param;
+    if (device->deviceClassId() == hueRemoteDeviceClassId) {
+        param = Param(hueRemoteButtonNameParamTypeId);
+    } else if (device->deviceClassId() == hueTapDeviceClassId) {
+        param = Param(hueTapButtonNameParamTypeId);
+    }
 
     // TODO: Legacy events should be removed eventually
     switch (buttonCode) {
@@ -602,6 +633,22 @@ void DevicePluginPhilipsHue::onRemoteButtonEvent(const int &buttonCode)
         emitEvent(Event(hueRemoteOffLongPressedEventTypeId, m_remotes.value(remote)->id()));
         param.setValue("OFF");
         id = hueRemoteLongPressedEventTypeId;
+        break;
+    case HueRemote::TapButton1Pressed:
+        param.setValue("•");
+        id = hueTapPressedEventTypeId;
+        break;
+    case HueRemote::TapButton2Pressed:
+        param.setValue("••");
+        id = hueTapPressedEventTypeId;
+        break;
+    case HueRemote::TapButton3Pressed:
+        param.setValue("•••");
+        id = hueTapPressedEventTypeId;
+        break;
+    case HueRemote::TapButton4Pressed:
+        param.setValue("•••••");
+        id = hueTapPressedEventTypeId;
         break;
     default:
         break;
@@ -879,7 +926,6 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
     }
 
     // create sensors if not already added
-    QList<DeviceDescriptor> sensorDescriptors;
     QVariantMap sensorsMap = jsonDoc.toVariant().toMap();
     foreach (QString sensorId, sensorsMap.keys()) {
         QVariantMap sensorMap = sensorsMap.value(sensorId).toMap();
@@ -890,7 +936,6 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
         if (sensorAlreadyAdded(uuid))
             continue;
 
-        // check if this is a white light
         if (model == "RWL021" || model == "RWL020") {
             DeviceDescriptor descriptor(hueRemoteDeviceClassId, "Philips Hue Remote", sensorMap.value("name").toString());
             ParamList params;
@@ -903,14 +948,22 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
             params.append(Param(hueRemoteUuidParamTypeId, uuid));
             params.append(Param(hueRemoteSensorIdParamTypeId, sensorId));
             descriptor.setParams(params);
-            sensorDescriptors.append(descriptor);
+            emit autoDevicesAppeared(hueRemoteDeviceClassId, {descriptor});
             qCDebug(dcPhilipsHue) << "Found new remote" << sensorMap.value("name").toString() << model;
+        } else if (model == "ZGPSWITCH") {
+            DeviceDescriptor descriptor(hueTapDeviceClassId, "Hue Tap", sensorMap.value("name").toString());
+            ParamList params;
+            params.append(Param(hueTapBridgeParamTypeId, device->id().toString()));
+            params.append(Param(hueTapUuidParamTypeId, uuid));
+            params.append(Param(hueTapModelIdParamTypeId, model));
+            params.append(Param(hueTapSensorIdParamTypeId, sensorId));
+            descriptor.setParams(params);
+            emit autoDevicesAppeared(hueTapDeviceClassId, {descriptor});
+            qCDebug(dcPhilipsHue()) << "Found hue tap:" << sensorMap << hueTapDeviceClassId;
+        } else {
+            qCDebug(dcPhilipsHue()) << "Found unknown sensor:" << model;
         }
     }
-
-    if (!sensorDescriptors.isEmpty())
-        emit autoDevicesAppeared(hueRemoteDeviceClassId, sensorDescriptors);
-
 }
 
 void DevicePluginPhilipsHue::processLightRefreshResponse(Device *device, const QByteArray &data)
@@ -1045,7 +1098,7 @@ void DevicePluginPhilipsHue::processSensorsRefreshResponse(Device *device, const
         QVariantMap sensorMap = sensorsMap.value(sensorId).toMap();
         foreach (HueRemote *remote, m_remotes.keys()) {
             if (remote->id() == sensorId.toInt() && remote->bridgeId() == device->id()) {
-                //qCDebug(dcPhilipsHue) << "update remote" << remote->id() << remote->name();
+                qCDebug(dcPhilipsHue) << "update remote" << remote->id() << remote->name();
                 remote->updateStates(sensorMap.value("state").toMap(), sensorMap.value("config").toMap());
             }
         }
@@ -1225,7 +1278,11 @@ void DevicePluginPhilipsHue::bridgeReachableChanged(Device *device, const bool &
             foreach (HueRemote *remote, m_remotes.keys()) {
                 if (remote->bridgeId() == device->id()) {
                     remote->setReachable(false);
-                    m_remotes.value(remote)->setStateValue(hueRemoteConnectedStateTypeId, false);
+                    if (m_remotes.value(remote)->deviceClassId() == hueRemoteDeviceClassId) {
+                        m_remotes.value(remote)->setStateValue(hueRemoteConnectedStateTypeId, false);
+                    } else if (m_remotes.value(remote)->deviceClassId() == hueTapDeviceClassId) {
+                        m_remotes.value(remote)->setStateValue(hueTapConnectedStateTypeId, false);
+                    }
                 }
             }
         }
@@ -1266,6 +1323,11 @@ bool DevicePluginPhilipsHue::sensorAlreadyAdded(const QString &uuid)
     foreach (Device *device, myDevices()) {
         if (device->deviceClassId() == hueRemoteDeviceClassId) {
             if (device->paramValue(hueRemoteUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+        if (device->deviceClassId() == hueTapDeviceClassId) {
+            if (device->paramValue(hueTapUuidParamTypeId).toString() == uuid) {
                 return true;
             }
         }
