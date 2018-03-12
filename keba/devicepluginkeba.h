@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2016 Simon Stuerz <simon.stuerz@guh.io>                  *
+ *  Copyright (C) 2016-2018 Simon Stuerz <simon.stuerz@guh.io>             *
  *  Copyright (C) 2016 Christian Stachowitz                                *
  *                                                                         *
  *  This file is part of nymea.                                            *

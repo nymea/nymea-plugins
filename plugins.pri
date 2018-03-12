@@ -37,6 +37,7 @@ QMAKE_EXTRA_TARGETS += lupdate
 
 translations.path = /usr/share/nymea/translations
 translations.files = $$[QT_SOURCE_TREE]/translations/*.qm
+TRANSLATIONS += $$files($$[QT_SOURCE_TREE]/translations/*.ts, true)
 
 # Install plugin
 target.path = $$PLUGIN_PATH
