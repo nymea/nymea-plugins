@@ -527,15 +527,22 @@
                         },
                         {
                             "id": "683e493a-9796-4d5e-b0e3-61cb178d5819",
-                            "name": "battery",
+                            "name": "batteryLevel",
                             "displayName": "battery",
                             "displayNameEvent": "battery changed",
-                            "displayNameAction": "Set battery",
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
                             "maxValue": 100
+                        },
+                        {
+                            "id": "f8516899-6312-4110-bb97-70ffa81dc530",
+                            "name": "batteryCritical",
+                            "displayName": "battery critical",
+                            "displayNameEvent": "battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "eventTypes": [
