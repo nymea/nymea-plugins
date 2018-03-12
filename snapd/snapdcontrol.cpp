@@ -52,17 +52,17 @@ bool SnapdControl::available() const
 {
     QFileInfo fileInfo(m_snapdSocketPath);
     if (!fileInfo.exists()) {
-        qCWarning(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "does not exist";
+        qCDebug(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "does not exist";
         return false;
     }
 
     if (!fileInfo.isReadable()) {
-        qCWarning(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "is not readable";
+        qCDebug(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "is not readable";
         return false;
     }
 
     if (!fileInfo.isWritable()) {
-        qCWarning(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "is not writable";
+        qCDebug(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "is not writable";
         return false;
     }
 
