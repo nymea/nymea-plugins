@@ -44,7 +44,7 @@ message("Qt version:" $$[QT_VERSION])
 
 plugininfo.depends = FORCE
 for (entry, PLUGIN_DIRS):plugininfo.commands += test -d $${entry} || mkdir -p $${entry}; cd $${entry} && qmake -o Makefile $$PWD/$${entry}/$${entry}.pro && cd ..;
-for (entry, PLUGIN_DIRS):plugininfo.commands += make -C $${entry} plugininfo;
+for (entry, PLUGIN_DIRS):plugininfo.commands += make -C $${entry} plugininfo.h;
 QMAKE_EXTRA_TARGETS += plugininfo
 
 # Translations:
