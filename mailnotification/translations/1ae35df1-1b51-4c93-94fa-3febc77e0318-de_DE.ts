@@ -4,12 +4,6 @@
 <context>
     <name>MailNotification</name>
     <message>
-        <location filename="../plugininfo.h" line="57"/>
-        <source>guh</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation>guh</translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="60"/>
         <source>Custom mail</source>
         <extracomment>The name of the DeviceClass (f4844c97-7ca6-4349-904e-ff9749a9fe74)</extracomment>
@@ -133,6 +127,12 @@ The name of the ActionType 054613b0-3666-4dad-9252-e0ebca187edc of deviceClass y
         <location filename="../plugininfo.h" line="54"/>
         <source>MailNotification</source>
         <extracomment>The name of the plugin MailNotification (1ae35df1-1b51-4c93-94fa-3febc77e0318)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="57"/>
+        <source>guh GmbH</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

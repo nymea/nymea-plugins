@@ -22,12 +22,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="56"/>
-        <source>guh</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="62"/>
         <source>host</source>
         <extracomment>The name of the paramType (7ab5f794-459f-45f5-855e-40a76f494e20) of plantCare</extracomment>
@@ -67,6 +61,12 @@
         <location filename="../plugininfo.h" line="71"/>
         <source>moisture changed</source>
         <extracomment>The name of the autocreated EventType (8a7efda1-b6b7-41c8-ad07-4d892a532d1c)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="56"/>
+        <source>guh GmbH</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
