@@ -550,7 +550,8 @@ void DevicePluginPhilipsHue::remoteStateChanged()
     }
 
     device->setStateValue(hueRemoteConnectedStateTypeId, remote->reachable());
-    device->setStateValue(hueRemoteBatteryStateTypeId, remote->battery());
+    device->setStateValue(hueRemoteBatteryLevelStateTypeId, remote->battery());
+    device->setStateValue(hueRemoteBatteryCriticalStateTypeId, remote->battery() < 5);
 }
 
 void DevicePluginPhilipsHue::onRemoteButtonEvent(const int &buttonCode)
