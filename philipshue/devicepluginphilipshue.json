@@ -596,7 +596,7 @@
                                     "name": "buttonName",
                                     "displayName": "Button name",
                                     "type": "QString",
-                                    "possibleValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                    "allowedValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
                                 }
                             ]
                         },
@@ -610,7 +610,101 @@
                                     "name": "buttonName",
                                     "displayName": "Button name",
                                     "type": "QString",
-                                    "possibleValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                    "allowedValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e",
+                    "name": "hueTap",
+                    "displayName": "Hue Tap",
+                    "deviceIcon": "Switch",
+                    "interfaces": ["simplemultibutton", "connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "3d450f00-b521-4a2c-985f-046fad5122cb",
+                            "name": "name",
+                            "displayName": "name",
+                            "type" : "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "c9e7483b-2f4e-4280-a437-8471f4dc9b22",
+                            "name": "bridge",
+                            "displayName": "bridge",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "62d92175-db3a-4da2-a72b-f58f34cb6911",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "eace85b9-5369-466f-89eb-46c4de718305",
+                            "name": "type",
+                            "displayName": "type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "25cf4167-6c28-4497-9fa9-3d02faf4f3ed",
+                            "name": "uuid",
+                            "displayName": "uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "fb507641-9c78-4a28-937d-711775454e90",
+                            "name": "apiKey",
+                            "displayName": "api key",
+                            "type" : "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "6be56a1b-f64a-4188-a052-1fab11e01718",
+                            "name": "host",
+                            "displayName": "host address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "5eca2b24-8986-4487-bc12-50e91d023d97",
+                            "name": "sensorId",
+                            "displayName": "sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5e21b032-1230-4e93-8543-0c4773da17d3",
+                            "name": "connected",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "c45dd703-7cbd-48f7-88dc-31045cc3d39c",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "8ed643c0-1b8a-4709-8abf-717cf213f4a4",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["•", "••", "•••", "••••"]
                                 }
                             ]
                         }
