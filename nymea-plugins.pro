@@ -36,6 +36,7 @@ PLUGIN_DIRS = \
     gpio                \
     snapd               \
     simulation          \
+    keba                \ 
 
 
 CONFIG+=all
