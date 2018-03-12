@@ -4,12 +4,6 @@
 <context>
     <name>DateTime</name>
     <message>
-        <location filename="../plugininfo.h" line="100"/>
-        <source>guh</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="103"/>
         <source>Today</source>
         <extracomment>The name of the DeviceClass (fbf665fb-9aca-423f-a5f2-924e50ebe6ca)</extracomment>
@@ -109,6 +103,12 @@
         <location filename="../plugininfo.h" line="97"/>
         <source>DateTime</source>
         <extracomment>The name of the plugin DateTime (c26014c6-87fb-4233-85ed-01d18625018d)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="100"/>
+        <source>guh GmbH</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

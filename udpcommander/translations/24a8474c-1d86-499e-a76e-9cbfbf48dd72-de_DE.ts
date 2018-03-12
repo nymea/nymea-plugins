@@ -10,15 +10,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="33"/>
-        <source>guh</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation>guh</translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="30"/>
         <source>UdpCommander</source>
         <extracomment>The name of the plugin UdpCommander (24a8474c-1d86-499e-a76e-9cbfbf48dd72)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="33"/>
+        <source>guh GmbH</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

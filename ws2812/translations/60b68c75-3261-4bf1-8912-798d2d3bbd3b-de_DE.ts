@@ -22,12 +22,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="73"/>
-        <source>guh</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="79"/>
         <source>host</source>
         <extracomment>The name of the paramType (ccf1f6b1-54c4-46c1-b978-6abcf3fad882) of ws2812</extracomment>
@@ -86,6 +80,12 @@
         <source>reachable changed</source>
         <extracomment>The name of the autocreated EventType (08091cde-983d-42f7-bdd7-d89c312ccbed)</extracomment>
         <translation>Erreichbarkeit gändert</translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="73"/>
+        <source>guh GmbH</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="91"/>

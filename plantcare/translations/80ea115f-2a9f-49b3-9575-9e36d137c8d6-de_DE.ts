@@ -22,21 +22,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="56"/>
-        <source>guh</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation>guh</translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/plantcare/plugininfo.h" line="50"/>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/plantcare/plugininfo.h" line="59"/>
-        <source>Plant Care</source>
-        <extracomment>The name of the plugin Plant Care (80ea115f-2a9f-49b3-9575-9e36d137c8d6)
-----------
-The name of the DeviceClass (3245db46-5c6f-42d6-9001-753150763385)</extracomment>
-        <translation>Pflanzen Pflege</translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="62"/>
         <source>host</source>
         <extracomment>The name of the paramType (7ab5f794-459f-45f5-855e-40a76f494e20) of plantCare</extracomment>
@@ -77,6 +62,12 @@ The name of the DeviceClass (3245db46-5c6f-42d6-9001-753150763385)</extracomment
         <source>moisture changed</source>
         <extracomment>The name of the autocreated EventType (8a7efda1-b6b7-41c8-ad07-4d892a532d1c)</extracomment>
         <translation>Feuchtigkeit geändert</translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="56"/>
+        <source>guh GmbH</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="74"/>

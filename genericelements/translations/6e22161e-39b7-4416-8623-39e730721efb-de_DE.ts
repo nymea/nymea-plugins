@@ -11,7 +11,7 @@
     </message>
     <message>
         <location filename="../plugininfo.h" line="42"/>
-        <source>guh</source>
+        <source>guh GmbH</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation>guh</translation>
     </message>
