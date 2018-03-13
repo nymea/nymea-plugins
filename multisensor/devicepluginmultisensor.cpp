@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stuerz <simon.stuerz@guh.io>                  *
+ *  Copyright (C) 2015-2018 Simon Stuerz <simon.stuerz@guh.io>             *
  *  Copyright (C) 2016 nicc                                                *
  *                                                                         *
  *  This file is part of nymea.                                            *
@@ -52,10 +52,17 @@ DevicePluginMultiSensor::DevicePluginMultiSensor()
 
 }
 
+DevicePluginMultiSensor::~DevicePluginMultiSensor()
+{
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
+}
+
 void DevicePluginMultiSensor::init()
 {
-    m_measureTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
-    connect(m_measureTimer, &PluginTimer::timeout, this, &DevicePluginMultiSensor::onPluginTimer);
+    connect(this, &DevicePluginMultiSensor::configValueChanged, this, &DevicePluginMultiSensor::onPluginConfigurationChanged);
+
+    m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+    connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginMultiSensor::onPluginTimer);
 }
 
 DeviceManager::DeviceError DevicePluginMultiSensor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -89,17 +96,26 @@ DeviceManager::DeviceSetupStatus DevicePluginMultiSensor::setupDevice(Device *de
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
 
         SensorTag *sensor = new SensorTag(device, bluetoothDevice, this);
-        connect(sensor, &SensorTag::leftKeyPressed, this, &DevicePluginMultiSensor::onSensorLeftButtonPressed);
-        connect(sensor, &SensorTag::rightKeyPressed, this, &DevicePluginMultiSensor::onSensorRightButtonPressed);
+        // Preconfigure with plugin configurations
+        sensor->setAccelerometerEnabled(configValue(MultiSensorAccelerometerEnabledParamTypeId).toBool());
+        sensor->setGyroscopeEnabled(configValue(MultiSensorGyroscopeEnabledParamTypeId).toBool());
+        sensor->setMagnetometerEnabled(configValue(MultiSensorMagnetometerEnabledParamTypeId).toBool());
+        sensor->setMeasurementPeriod(configValue(MultiSensorMeasurementPeriodParamTypeId).toInt());
+        sensor->setMeasurementPeriodMovement(configValue(MultiSensorMeasurementPeriodMovementParamTypeId).toInt());
 
         m_sensors.insert(device, sensor);
-        sensor->bluetoothDevice()->connectDevice();
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
+void DevicePluginMultiSensor::postSetupDevice(Device *device)
+{
+    // Try to connect right after setup
+    SensorTag *sensor = m_sensors.value(device);
+    sensor->bluetoothDevice()->connectDevice();
+}
 
 void DevicePluginMultiSensor::deviceRemoved(Device *device)
 {
@@ -110,6 +126,26 @@ void DevicePluginMultiSensor::deviceRemoved(Device *device)
     m_sensors.remove(device);
     hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(sensor->bluetoothDevice());
     sensor->deleteLater();
+}
+
+DeviceManager::DeviceError DevicePluginMultiSensor::executeAction(Device *device, const Action &action)
+{
+    SensorTag *sensor = m_sensors.value(device);
+    if (action.actionTypeId() == sensortagBuzzerActionTypeId) {
+        sensor->setBuzzerPower(action.param(sensortagBuzzerStateParamTypeId).value().toBool());
+        return DeviceManager::DeviceErrorNoError;
+    } else if (action.actionTypeId() == sensortagGreenLedActionTypeId) {
+        sensor->setGreenLedPower(action.param(sensortagGreenLedStateParamTypeId).value().toBool());
+        return DeviceManager::DeviceErrorNoError;
+    } else if (action.actionTypeId() == sensortagRedLedActionTypeId) {
+        sensor->setRedLedPower(action.param(sensortagRedLedStateParamTypeId).value().toBool());
+        return DeviceManager::DeviceErrorNoError;
+    } else if (action.actionTypeId() == sensortagBuzzerImpulseActionTypeId) {
+        sensor->buzzerImpulse();
+        return DeviceManager::DeviceErrorNoError;
+    }
+
+    return DeviceManager::DeviceErrorActionTypeNotFound;
 }
 
 bool DevicePluginMultiSensor::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
@@ -124,21 +160,11 @@ bool DevicePluginMultiSensor::verifyExistingDevices(const QBluetoothDeviceInfo &
 
 void DevicePluginMultiSensor::onPluginTimer()
 {
-    foreach (SensorTag *sensor, m_sensors) {
-        sensor->measure();
+    foreach (SensorTag *sensor, m_sensors.values()) {
+        if (!sensor->bluetoothDevice()->connected()) {
+            sensor->bluetoothDevice()->connectDevice();
+        }
     }
-}
-
-void DevicePluginMultiSensor::onSensorLeftButtonPressed()
-{
-    SensorTag *sensor = static_cast<SensorTag *>(sender());
-    emit emitEvent(Event(sensortagLeftKeyEventTypeId, sensor->device()->id()));
-}
-
-void DevicePluginMultiSensor::onSensorRightButtonPressed()
-{
-    SensorTag *sensor = static_cast<SensorTag *>(sender());
-    emit emitEvent(Event(sensortagRightKeyEventTypeId, sensor->device()->id()));
 }
 
 void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
@@ -167,4 +193,25 @@ void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
 
     reply->deleteLater();
     emit devicesDiscovered(sensortagDeviceClassId, deviceDescriptors);
+}
+
+void DevicePluginMultiSensor::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    qCDebug(dcMultiSensor()) << "Plugin configuration changed" << paramTypeId.toString() << value;
+
+    foreach (SensorTag *sensor, m_sensors.values()) {
+        if (paramTypeId == MultiSensorAccelerometerEnabledParamTypeId) {
+            sensor->setAccelerometerEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorGyroscopeEnabledParamTypeId) {
+            sensor->setGyroscopeEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorMagnetometerEnabledParamTypeId) {
+            sensor->setMagnetometerEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorMeasurementPeriodParamTypeId) {
+            sensor->setMeasurementPeriod(value.toInt());
+        } else if (paramTypeId == MultiSensorMeasurementPeriodParamTypeId) {
+            sensor->setMeasurementPeriodMovement(value.toInt());
+        } else if (paramTypeId == MultiSensorMovementSensitivityParamTypeId) {
+            sensor->setMovementSensitivity(value.toInt());
+        }
+    }
 }
