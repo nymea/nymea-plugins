@@ -197,6 +197,17 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
+    if (device->deviceClassId() == waterValveDeviceClassId) {
+        if (action.actionTypeId() == waterValvePowerActionTypeId) {
+            Param powerParam = action.param(waterValvePowerStateParamTypeId);
+            bool power = powerParam.value().toBool();
+            device->setStateValue(waterValvePowerStateTypeId, power);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        return DeviceManager::DeviceErrorActionTypeNotFound;
+
+    }
+
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 

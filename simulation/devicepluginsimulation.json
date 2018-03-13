@@ -643,6 +643,92 @@
                             "defaultValue": false
                         }
                     ]
+                },
+                {
+                    "id": "b759f558-b484-45b6-9132-218d135c27d6",
+                    "name": "gardenSensor",
+                    "displayName": "Garden sensor",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Thermometer",
+                    "interfaces": ["temperaturesensor", "battery", "connectable"],
+                    "basicTags": [
+                        "Device",
+                        "Sensor"
+                    ],
+                    "paramTypes": [],
+                    "stateTypes": [
+                        {
+                            "id": "63eb7cdd-d16e-4baf-820b-7ad9f0a2b2a8",
+                            "name": "soilMoisture",
+                            "displayName": "Soil moisture",
+                            "displayNameEvent": "Soil moisture changed",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "169d7a2a-d1c9-4578-bb30-fc7d25690e59",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "de  faultValue": 0
+                        },
+                        {
+                            "id": "45c0de32-b519-47d7-9f82-e5f09d1542d4",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "295b9a17-a4b1-4cc9-8ebb-2309b72c75f6",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        }
+                    ]
+                },
+                {
+                    "id": "8fc2e79b-1770-4b18-bf01-78ed15893a81",
+                    "name": "waterValve",
+                    "displayName": "Water valve",
+                    "createMethods": ["user"],
+                    "deviceIcon": "None",
+                    "basicTags": [
+                        "Device",
+                        "Actuator"
+                    ],
+                    "paramTypes": [ ],
+                    "stateTypes": [
+                        {
+                            "id": "b7ff029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
                 }
             ]
         }
