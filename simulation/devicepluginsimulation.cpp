@@ -239,6 +239,16 @@ void DevicePluginSimulation::onPluginTimer()
             device->setStateValue(motionDetectorConnectedStateTypeId, true);
         } else if(device->deviceClassId() == evChargerDeviceClassId){
 
+        } else if (device->deviceClassId() == gardenSensorDeviceClassId) {
+
+            //generate Random Number
+            double temperature = ((double)getRandomNumber(200, 230)/10.0);
+            device->setStateValue(gardenSensorTemperatureStateTypeId, temperature);
+            device->setStateValue(gardenSensorSoilMoistureStateTypeId, getRandomNumber(40, 60));
+            device->setStateValue(gardenSensorLightIntensityStateTypeId, getRandomNumber(40, 60));
+            device->setStateValue(gardenSensorBatteryLevelStateTypeId, getRandomNumber(10, 100));
+            device->setStateValue(gardenSensorBatteryCriticalStateTypeId, device->stateValue(temperatureSensorBatteryLevelStateTypeId).toDouble() <= 30);
+            device->setStateValue(gardenSensorConnectedStateTypeId, true);
         }
     }
 }

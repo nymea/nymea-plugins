@@ -675,7 +675,16 @@
                             "displayNameEvent": "Temperature changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "de  faultValue": 0
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "9781f0a5-3478-4291-ab51-9daa1ba0e44e",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "unit": "Candela",
+                            "defaultValue": 0
                         },
                         {
                             "id": "45c0de32-b519-47d7-9f82-e5f09d1542d4",
