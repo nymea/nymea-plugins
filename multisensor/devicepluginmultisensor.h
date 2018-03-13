@@ -1,7 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2015-2018 Simon Stuerz <simon.stuerz@guh.io>             *
- *  Copyright (C) 2016 nicc                                                *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -60,7 +59,7 @@ private:
 private slots:
     void onPluginTimer();
     void onBluetoothDiscoveryFinished();
-    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
+
 };
 
 #endif // DEVICEPLUGINMULTISENSOR_H

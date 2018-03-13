@@ -1,86 +1,7 @@
 {
-    "displayName": "MultiSensor",
+    "displayName": "Multi Sensor",
     "name": "MultiSensor",
     "id": "23bf0d8d-df7d-4bee-80ee-f015c5a7f52e",
-    "paramTypes": [
-        {
-            "id": "6f0e40a2-0f97-4c1e-8229-757e3c18b345",
-            "name": "temperatureEnabled",
-            "displayName": "Temperature sensor enabled",
-            "type": "bool",
-            "defaultValue": true
-        },
-        {
-            "id": "29881172-626a-42d5-83b8-3e2e5ca533be",
-            "name": "humidityEnabled",
-            "displayName": "Humidity sensor enabled",
-            "type": "bool",
-            "defaultValue": true
-        },
-        {
-            "id": "50e5e282-9707-4b31-bb3f-a6ca30a7e1ff",
-            "name": "pressureEnabled",
-            "displayName": "Pressure sensor enabled",
-            "type": "bool",
-            "defaultValue": true
-        },
-        {
-            "id": "1460a6d6-9fb4-4385-b27b-ee4b7594e454",
-            "name": "opticalEnabled",
-            "displayName": "Optical sensor enabled",
-            "type": "bool",
-            "defaultValue": true
-        },
-        {
-            "id": "5786c91a-d94d-461a-8d22-f978dd1438ab",
-            "name": "accelerometerEnabled",
-            "displayName": "Accelerometer enabled",
-            "type": "bool",
-            "defaultValue": true
-        },
-        {
-            "id": "94517544-cb97-4816-8993-cb4cf2651a1e",
-            "name": "gyroscopeEnabled",
-            "displayName": "Gyroscope enabled",
-            "type": "bool",
-            "defaultValue": false
-        },
-        {
-            "id": "96aae111-b1c1-48a1-9b1f-b56efa546d0d",
-            "name": "magnetometerEnabled",
-            "displayName": "Magnetometer enabled",
-            "type": "bool",
-            "defaultValue": false
-        },
-        {
-            "id": "c5308565-5dc9-409e-ae99-577c212c7a92",
-            "name": "measurementPeriod",
-            "displayName": "Measurement period for enviromental sensors",
-            "type": "int",
-            "minValue": 10,
-            "maxValue": 2500,
-            "defaultValue": 2000
-        },
-        {
-            "id": "5237c89c-c21d-4d78-ac99-8be661b40da7",
-            "name": "measurementPeriodMovement",
-            "displayName": "Measurement period movement sensor",
-            "type": "int",
-            "minValue": 10,
-            "maxValue": 2500,
-            "defaultValue": 300
-        },
-        {
-            "id": "a3298d16-eea6-4474-9061-90466e92d476",
-            "name": "movementSensitivity",
-            "displayName": "Movement sensitivity",
-            "type": "int",
-            "unit": "Percentage",
-            "minValue": 0,
-            "maxValue": 100,
-            "defaultValue": 40
-        }
-    ],
     "vendors": [
         {
             "id": "2edf543e-dc2c-4693-bb0c-e76c0d305fad",
@@ -89,7 +10,7 @@
             "deviceClasses": [
                 {
                     "id": "158a06b6-b27f-4951-957e-6f1e3b44f604",
-                    "name": "sensortag",
+                    "name": "sensorTag",
                     "displayName": "Sensor Tag (CC2650)",
                     "createMethods": ["discovery"],
                     "deviceIcon": "Thermometer",
@@ -238,6 +159,113 @@
                             "type": "bool",
                             "cached": false,
                             "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "6f0e40a2-0f97-4c1e-8229-757e3c18b345",
+                            "name": "temperatureSensorEnabled",
+                            "displayName": "Temperature sensor enabled",
+                            "displayNameEvent": "Temperature sensor enabled changed",
+                            "displayNameAction": "Set temperature sensor enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "29881172-626a-42d5-83b8-3e2e5ca533be",
+                            "name": "humiditySensorEnabled",
+                            "displayName": "Humidity sensor enabled",
+                            "displayNameEvent": "Humidity sensor enabled changed",
+                            "displayNameAction": "Set humidity sensor enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "50e5e282-9707-4b31-bb3f-a6ca30a7e1ff",
+                            "name": "pressureSensorEnabled",
+                            "displayName": "Pressure sensor enabled",
+                            "displayNameEvent": "Pressure sensor enabled changed",
+                            "displayNameAction": "Set pressure sensor enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "1460a6d6-9fb4-4385-b27b-ee4b7594e454",
+                            "name": "opticalSensorEnabled",
+                            "displayName": "Optical sensor enabled",
+                            "displayNameEvent": "Optical sensor enabled changed",
+                            "displayNameAction": "Set optical sensor enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "5786c91a-d94d-461a-8d22-f978dd1438ab",
+                            "name": "accelerometerEnabled",
+                            "displayName": "Accelerometer enabled",
+                            "displayNameEvent": "Accelerometer enabled changed",
+                            "displayNameAction": "Set accelerometer enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "94517544-cb97-4816-8993-cb4cf2651a1e",
+                            "name": "gyroscopeEnabled",
+                            "displayName": "Gyroscope enabled",
+                            "displayNameEvent": "Gyroscope enabled changed",
+                            "displayNameAction": "Set gyroscope enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "96aae111-b1c1-48a1-9b1f-b56efa546d0d",
+                            "name": "magnetometerEnabled",
+                            "displayName": "Magnetometer enabled",
+                            "displayNameEvent": "Magnetometer enabled changed",
+                            "displayNameAction": "Set magnetometer enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "c5308565-5dc9-409e-ae99-577c212c7a92",
+                            "name": "measurementPeriod",
+                            "displayName": "Measurement period for enviromental sensors",
+                            "displayNameEvent": "Measurement period for enviromental sensors changed",
+                            "displayNameAction": "Set measurement period for enviromental sensors",
+                            "type": "int",
+                            "minValue": 10,
+                            "maxValue": 2500,
+                            "defaultValue": 2000,
+                            "writable": true
+                        },
+                        {
+                            "id": "5237c89c-c21d-4d78-ac99-8be661b40da7",
+                            "name": "measurementPeriodMovement",
+                            "displayName": "Measurement period movement sensor",
+                            "displayNameEvent": "Measurement period movement sensor changed",
+                            "displayNameAction": "Set measurement period movement sensor",
+                            "type": "int",
+                            "minValue": 10,
+                            "maxValue": 2500,
+                            "defaultValue": 300,
+                            "writable": true
+                        },
+                        {
+                            "id": "a3298d16-eea6-4474-9061-90466e92d476",
+                            "name": "movementSensitivity",
+                            "displayName": "Movement sensitivity",
+                            "displayNameEvent": "Movement sensitivity changed",
+                            "displayNameAction": "Set movement sensitivity",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 40,
                             "writable": true
                         }
                     ],

@@ -190,7 +190,7 @@ void SensorTag::setGreenLedPower(bool power)
     m_greenLedEnabled = power;
     qCDebug(dcMultiSensor()) << "Green LED" << (power ? "enabled" : "disabled");
     configureIo();
-    m_device->setStateValue(sensortagGreenLedStateTypeId, m_greenLedEnabled);
+    m_device->setStateValue(sensorTagGreenLedStateTypeId, m_greenLedEnabled);
 }
 
 void SensorTag::setRedLedPower(bool power)
@@ -198,7 +198,7 @@ void SensorTag::setRedLedPower(bool power)
     m_redLedEnabled = power;
     qCDebug(dcMultiSensor()) << "Red LED" << (power ? "enabled" : "disabled");
     configureIo();
-    m_device->setStateValue(sensortagRedLedStateTypeId, m_redLedEnabled);
+    m_device->setStateValue(sensorTagRedLedStateTypeId, m_redLedEnabled);
 }
 
 void SensorTag::setBuzzerPower(bool power)
@@ -206,7 +206,7 @@ void SensorTag::setBuzzerPower(bool power)
     m_buzzerEnabled = power;
     qCDebug(dcMultiSensor()) << "Buzzer" << (power ? "enabled" : "disabled");
     configureIo();
-    m_device->setStateValue(sensortagBuzzerStateTypeId, m_buzzerEnabled);
+    m_device->setStateValue(sensorTagBuzzerStateTypeId, m_buzzerEnabled);
 }
 
 void SensorTag::buzzerImpulse()
@@ -360,7 +360,7 @@ void SensorTag::setOpticalSensorPower(bool power)
 void SensorTag::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcMultiSensor()) << "Sensor" << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
-    m_device->setStateValue(sensortagConnectedStateTypeId, connected);
+    m_device->setStateValue(sensorTagConnectedStateTypeId, connected);
 
     if (!connected) {
         // Clean up services
