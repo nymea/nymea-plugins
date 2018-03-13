@@ -1,20 +1,23 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
+ *  Copyright (C) 2018 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
- *  Guh is free software: you can redistribute it and/or modify            *
- *  it under the terms of the GNU General Public License as published by   *
- *  the Free Software Foundation, version 2 of the License.                *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
  *                                                                         *
- *  Guh is distributed in the hope that it will be useful,                 *
+ *  This library is distributed in the hope that it will be useful,        *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the           *
- *  GNU General Public License for more details.                           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
  *                                                                         *
- *  You should have received a copy of the GNU General Public License      *
- *  along with guh. If not, see <http://www.gnu.org/licenses/>.            *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -22,18 +25,156 @@
 #include "plugininfo.h"
 #include <QJsonDocument>
 
-
-
 DevicePluginUniPi::DevicePluginUniPi()
 {
+
 }
 
+DevicePluginUniPi::~DevicePluginUniPi()
+{
+
+}
 
 void DevicePluginUniPi::init()
 {
 
 }
 
+DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
+{
+    if (device->deviceClassId() == neuronDeviceClassId) {
+
+        int port = device->paramValue(neuronPortParamTypeId).toInt();
+
+        m_webSocket = new QWebSocket();
+        connect(m_webSocket, &QWebSocket::connected, this, &DevicePluginUniPi::onWebSocketConnected);
+        connect(m_webSocket, &QWebSocket::disconnected, this, &DevicePluginUniPi::onWebSocketDisconnected);
+
+        QUrl url = QUrl("ws://localhost/ws");
+        url.setPort(port);
+        qCDebug(dcUniPi()) << "Conneting to:" << url.toString();
+        m_webSocket->open(url);
+        m_parentId = device->id();
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == relayOutputDeviceClassId) {
+
+        device->setName(QString("Relay Ouput %1").arg(device->paramValue(relayOutputRelayNumberParamTypeId).toString()));
+        device->setParentId(device->paramValue(relayOutputParentIdParamTypeId).toString());
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == digitalOutputDeviceClassId) {
+
+        device->setName(QString("Digital Output %1").arg(device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString()));
+        device->setParentId(device->paramValue(digitalOutputParentIdParamTypeId).toString());
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == digitalInputDeviceClassId) {
+
+        device->setName(QString("Digital Input %1").arg(device->paramValue(digitalInputDigitalInputNumberParamTypeId).toString()));
+        device->setParentId(device->paramValue(digitalInputParentIdParamTypeId).toString());
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == analogInputDeviceClassId) {
+
+        device->setName(QString("Analog Input %1").arg(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString()));
+        device->setParentId(device->paramValue(analogInputParentIdParamTypeId).toString());
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == analogOutputDeviceClassId) {
+
+        device->setName(QString("Analog Output %1").arg(device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString()));
+        device->setParentId(device->paramValue(analogOutputParentIdParamTypeId).toString());
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    return DeviceManager::DeviceSetupStatusFailure;
+}
+
+void DevicePluginUniPi::postSetupDevice(Device *device)
+{
+    Q_UNUSED(device);
+}
+
+void DevicePluginUniPi::deviceRemoved(Device *device)
+{
+    Q_UNUSED(device);
+
+    m_webSocket->close();
+    m_webSocket->deleteLater();
+}
+
+DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
+{
+
+    if (device->deviceClassId() == relayOutputDeviceClassId) {
+
+        if (action.actionTypeId() == relayOutputRelayStatusActionTypeId) {
+            QString relayNumber = device->paramValue(relayOutputRelayNumberParamTypeId).toString();
+            int stateValue = action.param(relayOutputRelayStatusStateParamTypeId).value().toInt();
+
+            QJsonObject json;
+            json["cmd"] = "set";
+            json["dev"] = "relay";
+            json["circuit"] = relayNumber;
+            json["value"] = stateValue;
+
+            QJsonDocument doc(json);
+            QByteArray bytes = doc.toJson(QJsonDocument::Compact);
+            qCDebug(dcUniPi()) << "Send command" << bytes;
+            m_webSocket->sendBinaryMessage(bytes);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        return DeviceManager::DeviceErrorActionTypeNotFound;
+    }
+
+
+    if (device->deviceClassId() == digitalOutputDeviceClassId) {
+        if (action.actionTypeId() == digitalOutputDigitalOutputStatusActionTypeId) {
+            int digitalOutputNumber = device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toInt();
+            int stateValue = action.param(digitalOutputDigitalOutputStatusStateParamTypeId).value().toInt();
+
+            QJsonObject json;
+            json["cmd"] = "set";
+            json["dev"] = "do";
+            json["circuit"] = digitalOutputNumber;
+            json["value"] = stateValue;
+
+            QJsonDocument doc(json);
+            QByteArray bytes = doc.toJson();
+            m_webSocket->sendTextMessage(bytes);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        return DeviceManager::DeviceErrorActionTypeNotFound;
+    }
+
+    if (device->deviceClassId() == analogOutputDeviceClassId) {
+
+        if (action.actionTypeId() == analogOutputAnalogOutputValueActionTypeId) {
+            int analogOutputNumber = device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toInt();
+            double analogValue = device->paramValue(analogOutputAnalogOutputValueStateParamTypeId).toDouble();
+
+            QJsonObject json;
+            json["cmd"] = "set";
+            json["dev"] = "ao";
+            json["circuit"] = analogOutputNumber;
+            json["value"] = analogValue;
+
+            QJsonDocument doc(json);
+            QByteArray bytes = doc.toJson();
+            m_webSocket->sendTextMessage(bytes);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        return DeviceManager::DeviceErrorActionTypeNotFound;
+    }
+    return DeviceManager::DeviceErrorDeviceClassNotFound;
+}
 
 void DevicePluginUniPi::createAutoDevice(GPIOType gpioType, DeviceId parentDeviceId, QString deviceName)
 {
@@ -101,147 +242,9 @@ void DevicePluginUniPi::createAutoDevice(GPIOType gpioType, DeviceId parentDevic
     }
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
-{
-    if (device->deviceClassId() == neuronDeviceClassId) {
-
-        int port = device->paramValue(neuronPortParamTypeId).toInt();
-
-        m_webSocket = new QWebSocket();
-        connect(m_webSocket, &QWebSocket::connected, this, &DevicePluginUniPi::onWebSocketConnected);
-        connect(m_webSocket, &QWebSocket::disconnected, this, &DevicePluginUniPi::onWebSocketDisconnected);
-
-        QUrl url = QUrl("ws://localhost/ws");
-        url.setPort(port);
-        qDebug(dcUniPi()) << "Conneting to:" << url.toString();
-        m_webSocket->open(url);
-        m_parentId = device->id();
-
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == relayOutputDeviceClassId) {
-
-        device->setName(QString("Relay Ouput %1").arg(device->paramValue(relayOutputRelayNumberParamTypeId).toString()));
-        device->setParentId(device->paramValue(relayOutputParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == digitalOutputDeviceClassId) {
-
-        device->setName(QString("Digital Output %1").arg(device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString()));
-        device->setParentId(device->paramValue(digitalOutputParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == digitalInputDeviceClassId) {
-
-        device->setName(QString("Digital Input %1").arg(device->paramValue(digitalInputDigitalInputNumberParamTypeId).toString()));
-        device->setParentId(device->paramValue(digitalInputParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == analogInputDeviceClassId) {
-
-        device->setName(QString("Analog Input %1").arg(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString()));
-        device->setParentId(device->paramValue(analogInputParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == analogOutputDeviceClassId) {
-
-        device->setName(QString("Analog Output %1").arg(device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString()));
-        device->setParentId(device->paramValue(analogOutputParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    return DeviceManager::DeviceSetupStatusFailure;
-}
-
-void DevicePluginUniPi::postSetupDevice(Device *device)
-{
-    Q_UNUSED(device);
-}
-
-DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
-{
-
-    if (device->deviceClassId() == relayOutputDeviceClassId) {
-
-        if (action.actionTypeId() == relayOutputRelayStatusActionTypeId) {
-            QString relayNumber = device->paramValue(relayOutputRelayNumberParamTypeId).toString();
-            int stateValue = action.param(relayOutputRelayStatusStateParamTypeId).value().toInt();
-
-            QJsonObject json;
-            json["cmd"] = "set";
-            json["dev"] = "relay";
-            json["circuit"] = relayNumber;
-            json["value"] = stateValue;
-
-            QJsonDocument doc(json);
-            QByteArray bytes = doc.toJson(QJsonDocument::Compact);
-            qDebug(dcUniPi()) << "Send command" << bytes;
-            m_webSocket->sendBinaryMessage(bytes);
-            return DeviceManager::DeviceErrorNoError;
-        }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
-    }
-
-
-    if (device->deviceClassId() == digitalOutputDeviceClassId) {
-        if (action.actionTypeId() == digitalOutputDigitalOutputStatusActionTypeId) {
-            int digitalOutputNumber = device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toInt();
-            int stateValue = action.param(digitalOutputDigitalOutputStatusStateParamTypeId).value().toInt();
-
-            QJsonObject json;
-            json["cmd"] = "set";
-            json["dev"] = "do";
-            json["circuit"] = digitalOutputNumber;
-            json["value"] = stateValue;
-
-            QJsonDocument doc(json);
-            QByteArray bytes = doc.toJson();
-            m_webSocket->sendTextMessage(bytes);
-            return DeviceManager::DeviceErrorNoError;
-        }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
-    }
-
-    if (device->deviceClassId() == analogOutputDeviceClassId) {
-
-        if (action.actionTypeId() == analogOutputAnalogOutputValueActionTypeId) {
-            int analogOutputNumber = device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toInt();
-            double analogValue = device->paramValue(analogOutputAnalogOutputValueStateParamTypeId).toDouble();
-
-            QJsonObject json;
-            json["cmd"] = "set";
-            json["dev"] = "ao";
-            json["circuit"] = analogOutputNumber;
-            json["value"] = analogValue;
-
-            QJsonDocument doc(json);
-            QByteArray bytes = doc.toJson();
-            m_webSocket->sendTextMessage(bytes);
-            return DeviceManager::DeviceErrorNoError;
-        }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
-    }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
-}
-
-
-void DevicePluginUniPi::deviceRemoved(Device *device)
-{
-    Q_UNUSED(device);
-
-    m_webSocket->close();
-    m_webSocket->deleteLater();
-}
-
-
 void DevicePluginUniPi::onWebSocketConnected()
 {
-    qDebug(dcUniPi()) << "WebSocket connected";
+    qCDebug(dcUniPi()) << "WebSocket connected";
 
     connect(m_webSocket, &QWebSocket::textMessageReceived,
             this, &DevicePluginUniPi::onWebSocketTextMessageReceived);
@@ -256,7 +259,7 @@ void DevicePluginUniPi::onWebSocketConnected()
 
 void DevicePluginUniPi::onWebSocketDisconnected()
 {
-    qDebug(dcUniPi())  << "WebSocket disconnected";
+    qCDebug(dcUniPi())  << "WebSocket disconnected";
 
     //send signal device Setup was successfull
 }
@@ -275,10 +278,10 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         } else if (doc.isArray()){
             array = doc.array();
         }else {
-            qDebug(dcUniPi()) << "Document is not an object nor an array";
+            qCDebug(dcUniPi()) << "Document is not an object nor an array";
         }
     } else {
-        qDebug(dcUniPi()) << "Invalid JSON";
+        qCDebug(dcUniPi()) << "Invalid JSON";
     }
 
     for (int levelIndex = 0; levelIndex < array.size(); ++levelIndex) {
@@ -286,12 +289,12 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
 
         if (obj["cmd"] == "all") {
             //read model number
-            qDebug(dcUniPi()) << message;
+            qCDebug(dcUniPi()) << message;
 
         }
 
         if (obj["dev"] == "relay") {
-            qDebug(dcUniPi()) << "Relay:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
+            qCDebug(dcUniPi()) << "Relay:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
 
             bool newDevice = true;
             foreach (Device *device, myDevices()) {
@@ -304,13 +307,13 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                 }
             }
             if (newDevice) {
-                qDebug(dcUniPi()) << "New Device detected";
+                qCDebug(dcUniPi()) << "New Device detected";
                 createAutoDevice(GPIOType::relay, m_parentId, obj["circuit"].toString());
             }
         }
 
         if (obj["dev"] == "input") {
-            qDebug(dcUniPi()) << "Input:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
+            qCDebug(dcUniPi()) << "Input:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
 
             bool newDevice = true;
             foreach (Device *device, myDevices()) {
@@ -329,7 +332,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         }
 
         if (obj["dev"] == "output") {
-            qDebug(dcUniPi()) << "Output:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
+            qCDebug(dcUniPi()) << "Output:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
 
             bool newDevice = true;
             foreach (Device *device, myDevices()) {
@@ -349,7 +352,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         }
 
         if (obj["dev"] == "ao") {
-            qDebug(dcUniPi()) << "Analog Output:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
+            qCDebug(dcUniPi()) << "Analog Output:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
 
             bool newDevice = true;
             foreach (Device *device, myDevices()) {
@@ -369,7 +372,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         }
 
         if (obj["dev"] == "ai") {
-            qDebug(dcUniPi()) << "Analog Input:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
+            qCDebug(dcUniPi()) << "Analog Input:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
 
             bool newDevice = true;
             foreach (Device *device, myDevices()) {
