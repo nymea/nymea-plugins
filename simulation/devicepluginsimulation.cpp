@@ -220,6 +220,15 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
+    if (device->deviceClassId() == waterValveDeviceClassId) {
+        if (action.actionTypeId() == waterValvePowerActionTypeId) {
+            bool power = action.param(waterValvePowerStateParamTypeId).value().toBool();
+            device->setStateValue(waterValvePowerStateTypeId, power);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        return DeviceManager::DeviceErrorActionTypeNotFound;
+    }
+
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
@@ -263,6 +272,14 @@ void DevicePluginSimulation::onPluginTimer20Seconds()
             device->setStateValue(motionDetectorBatteryLevelStateTypeId, generateRandomIntValue(25, 40));
             device->setStateValue(motionDetectorBatteryCriticalStateTypeId, device->stateValue(motionDetectorBatteryLevelStateTypeId).toInt() <= 30);
             device->setStateValue(motionDetectorConnectedStateTypeId, true);
+        } else if (device->deviceClassId() == gardenSensorDeviceClassId) {
+            // Garden sensor
+            device->setStateValue(gardenSensorTemperatureStateTypeId, generateRandomDoubleValue(20, 23));
+            device->setStateValue(gardenSensorSoilMoistureStateTypeId, generateRandomIntValue(40, 60));
+            device->setStateValue(gardenSensorLightIntensityStateTypeId, generateRandomIntValue(40, 60));
+            device->setStateValue(gardenSensorBatteryLevelStateTypeId, generateRandomIntValue(25, 90));
+            device->setStateValue(gardenSensorBatteryCriticalStateTypeId, device->stateValue(gardenSensorBatteryLevelStateTypeId).toDouble() <= 30);
+            device->setStateValue(gardenSensorConnectedStateTypeId, true);
         } else if(device->deviceClassId() == netatmoIndoorDeviceClassId) {
             // Netatmo
             device->setStateValue(netatmoIndoorUpdateTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
