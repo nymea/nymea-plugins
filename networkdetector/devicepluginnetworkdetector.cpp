@@ -141,9 +141,9 @@ void DevicePluginNetworkDetector::deviceReachableChanged(bool reachable)
 {
     DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
     Device *device = m_monitors.value(monitor);
-    if (device->stateValue(networkDeviceInRangeStateTypeId).toBool() != reachable) {
+    if (device->stateValue(networkDeviceConnectedStateTypeId).toBool() != reachable) {
         qCDebug(dcNetworkDetector()) << "Device" << device->paramValue(networkDeviceMacAddressParamTypeId).toString() << "reachable changed" << reachable;
-        device->setStateValue(networkDeviceInRangeStateTypeId, reachable);
+        device->setStateValue(networkDeviceConnectedStateTypeId, reachable);
     }
 }
 
