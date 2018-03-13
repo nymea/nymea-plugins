@@ -17,6 +17,7 @@
                         "Device",
                         "Sensor"
                     ],
+                    "interfaces": ["connectable"],
                     "primaryStateTypeId": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
                     "createMethods": ["user", "discovery"],
                     "paramTypes": [
@@ -38,11 +39,12 @@
                     "stateTypes": [
                         {
                             "id": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
-                            "name": "inRange",
+                            "name": "connected",
                             "displayName": "Device in network",
                             "displayNameEvent": "Device in network changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "cached": false
                         }
                     ]
                 }
