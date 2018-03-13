@@ -228,7 +228,7 @@ void DevicePluginSimulation::onPluginTimer()
             device->setStateValue(temperatureSensorBatteryCriticalStateTypeId, device->stateValue(temperatureSensorBatteryLevelStateTypeId).toDouble() <= 30);
             device->setStateValue(temperatureSensorConnectedStateTypeId, true);
 
-        } else if(device->deviceClassId() == motionDetectorDeviceClassId){
+        } else if (device->deviceClassId() == motionDetectorDeviceClassId) {
             bool active = true;
             if(getRandomNumber(0, 60)){
                 active = false;
@@ -237,7 +237,8 @@ void DevicePluginSimulation::onPluginTimer()
             device->setStateValue(motionDetectorBatteryLevelStateTypeId, getRandomNumber(10, 100));
             device->setStateValue(motionDetectorBatteryCriticalStateTypeId, device->stateValue(motionDetectorBatteryLevelStateTypeId).toDouble() <= 30);
             device->setStateValue(motionDetectorConnectedStateTypeId, true);
-        } else if(device->deviceClassId() == evChargerDeviceClassId){
+        } else if (device->deviceClassId() == evChargerDeviceClassId) {
+
 
         } else if (device->deviceClassId() == gardenSensorDeviceClassId) {
 
@@ -247,7 +248,7 @@ void DevicePluginSimulation::onPluginTimer()
             device->setStateValue(gardenSensorSoilMoistureStateTypeId, getRandomNumber(40, 60));
             device->setStateValue(gardenSensorLightIntensityStateTypeId, getRandomNumber(40, 60));
             device->setStateValue(gardenSensorBatteryLevelStateTypeId, getRandomNumber(10, 100));
-            device->setStateValue(gardenSensorBatteryCriticalStateTypeId, device->stateValue(temperatureSensorBatteryLevelStateTypeId).toDouble() <= 30);
+            device->setStateValue(gardenSensorBatteryCriticalStateTypeId, device->stateValue(gardenSensorBatteryLevelStateTypeId).toDouble() <= 30);
             device->setStateValue(gardenSensorConnectedStateTypeId, true);
         }
     }
