@@ -32,7 +32,7 @@ class DevicePluginHttpCommander : public DevicePlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "guru.guh.DevicePlugin" FILE "devicepluginhttpcommander.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginhttpcommander.json")
     Q_INTERFACES(DevicePlugin)
 
 public:
