@@ -197,6 +197,17 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
+    if (device->deviceClassId() == waterValveDeviceClassId) {
+        if (action.actionTypeId() == waterValvePowerActionTypeId) {
+            Param powerParam = action.param(waterValvePowerStateParamTypeId);
+            bool power = powerParam.value().toBool();
+            device->setStateValue(waterValvePowerStateTypeId, power);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        return DeviceManager::DeviceErrorActionTypeNotFound;
+
+    }
+
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
@@ -217,7 +228,7 @@ void DevicePluginSimulation::onPluginTimer()
             device->setStateValue(temperatureSensorBatteryCriticalStateTypeId, device->stateValue(temperatureSensorBatteryLevelStateTypeId).toDouble() <= 30);
             device->setStateValue(temperatureSensorConnectedStateTypeId, true);
 
-        } else if(device->deviceClassId() == motionDetectorDeviceClassId){
+        } else if (device->deviceClassId() == motionDetectorDeviceClassId) {
             bool active = true;
             if(getRandomNumber(0, 60)){
                 active = false;
@@ -226,8 +237,19 @@ void DevicePluginSimulation::onPluginTimer()
             device->setStateValue(motionDetectorBatteryLevelStateTypeId, getRandomNumber(10, 100));
             device->setStateValue(motionDetectorBatteryCriticalStateTypeId, device->stateValue(motionDetectorBatteryLevelStateTypeId).toDouble() <= 30);
             device->setStateValue(motionDetectorConnectedStateTypeId, true);
-        } else if(device->deviceClassId() == evChargerDeviceClassId){
+        } else if (device->deviceClassId() == evChargerDeviceClassId) {
 
+
+        } else if (device->deviceClassId() == gardenSensorDeviceClassId) {
+
+            //generate Random Number
+            double temperature = ((double)getRandomNumber(200, 230)/10.0);
+            device->setStateValue(gardenSensorTemperatureStateTypeId, temperature);
+            device->setStateValue(gardenSensorSoilMoistureStateTypeId, getRandomNumber(40, 60));
+            device->setStateValue(gardenSensorLightIntensityStateTypeId, getRandomNumber(40, 60));
+            device->setStateValue(gardenSensorBatteryLevelStateTypeId, getRandomNumber(10, 100));
+            device->setStateValue(gardenSensorBatteryCriticalStateTypeId, device->stateValue(gardenSensorBatteryLevelStateTypeId).toDouble() <= 30);
+            device->setStateValue(gardenSensorConnectedStateTypeId, true);
         }
     }
 }
