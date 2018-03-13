@@ -27,6 +27,8 @@
 
 #include "plugin/device.h"
 #include "extern-plugininfo.h"
+#include "sensordataprocessor.h"
+
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 // http://processors.wiki.ti.com/index.php/CC2650_SensorTag_User's_Guide
@@ -89,10 +91,15 @@ public:
     BluetoothLowEnergyDevice *bluetoothDevice();
 
     // Configurations
+    void setTemperatureSensorEnabled(bool enabled);
+    void setHumiditySensorEnabled(bool enabled);
+    void setPressureSensorEnabled(bool enabled);
+    void setOpticalSensorEnabled(bool enabled);
     void setAccelerometerEnabled(bool enabled);
-    void setAccelerometerRange(const SensorAccelerometerRange &range);
     void setGyroscopeEnabled(bool enabled);
     void setMagnetometerEnabled(bool enabled);
+
+    void setAccelerometerRange(const SensorAccelerometerRange &range);
     void setMeasurementPeriod(int period);
     void setMeasurementPeriodMovement(int period);
     void setMovementSensitivity(int percentage);
@@ -152,48 +159,42 @@ private:
     SensorAccelerometerRange m_accelerometerRange = SensorAccelerometerRange16G;
 
     // States
-    bool m_leftButtonPressed = false;
-    bool m_rightButtonPressed = false;
-    bool m_magnetDetected = false;
     bool m_greenLedEnabled = false;
     bool m_redLedEnabled = false;
     bool m_buzzerEnabled = false;
-    double m_lastAccelerometerVectorLenght = -99999;
 
     // Plugin configs
+    bool m_temperatureEnabled = true;
+    bool m_humidityEnabled = true;
+    bool m_pressureEnabled = true;
+    bool m_opticalEnabled = true;
     bool m_accelerometerEnabled = true;
     bool m_gyroscopeEnabled = false;
     bool m_magnetometerEnabled = false;
 
+    SensorDataProcessor *m_dataProcessor = nullptr;
+
+    // Configuration methods
     void configurePeriod(QLowEnergyService *serice, const QLowEnergyCharacteristic &characteristic, int measurementPeriod);
     void configureMovement();
     void configureSensorMode(const SensorMode &mode);
     void configureIo();
 
-    void processTemperatureData(const QByteArray &data);
-    void processKeyData(const QByteArray &data);
-    void processHumidityData(const QByteArray &data);
-    void processPressureData(const QByteArray &data);
-    void processOpticalData(const QByteArray &data);
-    void processMovementData(const QByteArray &data);
-
-    // Set methods
-    void setLeftButtonPressed(bool pressed);
-    void setRightButtonPressed(bool pressed);
-    void setMagnetDetected(bool detected);
-
-    // Helper
-    bool testBitUint8(quint8 value, int bitPosition);
-    double roundValue(float value);
+    void setTemperatureSensorPower(bool power);
+    void setHumiditySensorPower(bool power);
+    void setPressureSensorPower(bool power);
+    void setOpticalSensorPower(bool power);
 
 signals:
-    void leftButtonPressedChainged(bool pressed);
-    void rightButtonPressedChainged(bool pressed);
-    void magnetDetectedChainged(bool detected);
+    void leftButtonPressedChanged(bool pressed);
+    void rightButtonPressedChanged(bool pressed);
+    void magnetDetectedChanged(bool detected);
 
 private slots:
     void onConnectedChanged(const bool &connected);
     void onServiceDiscoveryFinished();
+
+    void onBuzzerImpulseTimeout();
 
     // Temperature sensor service
     void onTemperatureServiceStateChanged(const QLowEnergyService::ServiceState &state);
@@ -222,8 +223,6 @@ private slots:
     // IO service
     void onIoServiceStateChanged(const QLowEnergyService::ServiceState &state);
     void onIoServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
-
-    void onBuzzerImpulseTimeout();
 };
 
 #endif // SENSORTAG_H

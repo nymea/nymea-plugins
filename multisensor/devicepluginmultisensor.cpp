@@ -97,6 +97,10 @@ DeviceManager::DeviceSetupStatus DevicePluginMultiSensor::setupDevice(Device *de
 
         SensorTag *sensor = new SensorTag(device, bluetoothDevice, this);
         // Preconfigure with plugin configurations
+        sensor->setTemperatureSensorEnabled(configValue(MultiSensorTemperatureEnabledParamTypeId).toBool());
+        sensor->setHumiditySensorEnabled(configValue(MultiSensorHumidityEnabledParamTypeId).toBool());
+        sensor->setPressureSensorEnabled(configValue(MultiSensorPressureEnabledParamTypeId).toBool());
+        sensor->setOpticalSensorEnabled(configValue(MultiSensorOpticalEnabledParamTypeId).toBool());
         sensor->setAccelerometerEnabled(configValue(MultiSensorAccelerometerEnabledParamTypeId).toBool());
         sensor->setGyroscopeEnabled(configValue(MultiSensorGyroscopeEnabledParamTypeId).toBool());
         sensor->setMagnetometerEnabled(configValue(MultiSensorMagnetometerEnabledParamTypeId).toBool());
@@ -200,7 +204,15 @@ void DevicePluginMultiSensor::onPluginConfigurationChanged(const ParamTypeId &pa
     qCDebug(dcMultiSensor()) << "Plugin configuration changed" << paramTypeId.toString() << value;
 
     foreach (SensorTag *sensor, m_sensors.values()) {
-        if (paramTypeId == MultiSensorAccelerometerEnabledParamTypeId) {
+        if (paramTypeId == MultiSensorTemperatureEnabledParamTypeId) {
+            sensor->setTemperatureSensorEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorHumidityEnabledParamTypeId) {
+            sensor->setHumiditySensorEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorPressureEnabledParamTypeId) {
+            sensor->setPressureSensorEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorOpticalEnabledParamTypeId) {
+            sensor->setOpticalSensorEnabled(value.toBool());
+        } else if (paramTypeId == MultiSensorAccelerometerEnabledParamTypeId) {
             sensor->setAccelerometerEnabled(value.toBool());
         } else if (paramTypeId == MultiSensorGyroscopeEnabledParamTypeId) {
             sensor->setGyroscopeEnabled(value.toBool());

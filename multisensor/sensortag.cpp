@@ -31,7 +31,8 @@
 SensorTag::SensorTag(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
     QObject(parent),
     m_device(device),
-    m_bluetoothDevice(bluetoothDevice)
+    m_bluetoothDevice(bluetoothDevice),
+    m_dataProcessor(new SensorDataProcessor(m_device, this))
 {
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::connectedChanged, this, &SensorTag::onConnectedChanged);
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::servicesDiscoveryFinished, this, &SensorTag::onServiceDiscoveryFinished);
@@ -45,6 +46,50 @@ Device *SensorTag::device()
 BluetoothLowEnergyDevice *SensorTag::bluetoothDevice()
 {
     return m_bluetoothDevice;
+}
+
+void SensorTag::setTemperatureSensorEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Temperature sensor" << (enabled ? "enabled" : "disabled");
+
+    if (m_temperatureEnabled == enabled)
+        return;
+
+    m_temperatureEnabled = enabled;
+    setTemperatureSensorPower(m_temperatureEnabled);
+}
+
+void SensorTag::setHumiditySensorEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Humidity sensor" << (enabled ? "enabled" : "disabled");
+
+    if (m_humidityEnabled == enabled)
+        return;
+
+    m_humidityEnabled = enabled;
+    setHumiditySensorPower(m_humidityEnabled);
+}
+
+void SensorTag::setPressureSensorEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Pressure sensor" << (enabled ? "enabled" : "disabled");
+
+    if (m_pressureEnabled == enabled)
+        return;
+
+    m_pressureEnabled = enabled;
+    setPressureSensorPower(m_pressureEnabled);
+}
+
+void SensorTag::setOpticalSensorEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Optical sensor" << (enabled ? "enabled" : "disabled");
+
+    if (m_opticalEnabled == enabled)
+        return;
+
+    m_opticalEnabled = enabled;
+    setOpticalSensorPower(m_opticalEnabled);
 }
 
 void SensorTag::setAccelerometerEnabled(bool enabled)
@@ -275,203 +320,42 @@ void SensorTag::configureIo()
     m_ioService->writeCharacteristic(m_ioDataCharacteristic, payload);
 }
 
-void SensorTag::processTemperatureData(const QByteArray &data)
+void SensorTag::setTemperatureSensorPower(bool power)
 {
-    Q_ASSERT(data.count() == 4);
-
-    quint16 rawObjectTemperature = 0;
-    quint16 rawAmbientTemperature = 0;
-
-    QByteArray payload(data);
-    QDataStream stream(&payload, QIODevice::ReadOnly);
-    stream.setByteOrder(QDataStream::LittleEndian);
-    stream >> rawObjectTemperature >> rawAmbientTemperature ;
-
-    float scaleFactor = 0.03125;
-    float objectTemperature = static_cast<float>(rawObjectTemperature) / 4 * scaleFactor;
-    float ambientTemperature = static_cast<float>(rawAmbientTemperature) / 4 * scaleFactor;
-
-    //qCDebug(dcMultiSensor()) << "Temperature value" << data.toHex();
-    //qCDebug(dcMultiSensor()) << "Object temperature" << roundValue(objectTemperature) << "°C";
-    //qCDebug(dcMultiSensor()) << "Ambient temperature" << roundValue(ambientTemperature) << "°C";
-
-    m_device->setStateValue(sensortagObjectTemperatureStateTypeId, roundValue(objectTemperature));
-    m_device->setStateValue(sensortagTemperatureStateTypeId, roundValue(ambientTemperature));
-}
-
-void SensorTag::processKeyData(const QByteArray &data)
-{
-    Q_ASSERT(data.count() == 1);
-    quint8 flags = static_cast<quint8>(data.at(0));
-    setLeftButtonPressed(testBitUint8(flags, 0));
-    setRightButtonPressed(testBitUint8(flags, 1));
-    setMagnetDetected(testBitUint8(flags, 2));
-}
-
-void SensorTag::processHumidityData(const QByteArray &data)
-{
-    Q_ASSERT(data.count() == 4);
-    quint16 rawHumidityTemperature = 0;
-    quint16 rawHumidity = 0;
-
-    QByteArray payload(data);
-    QDataStream stream(&payload, QIODevice::ReadOnly);
-    stream.setByteOrder(QDataStream::LittleEndian);
-    stream >> rawHumidityTemperature >> rawHumidity ;
-
-    // Note: we don't need the temperature measurement from the humidity sensor
-    //double humidityTemperature = (rawHumidityTemperature / 65536.0 * 165.0) - 40;
-    double humidity = rawHumidity / 65536.0 * 100.0;
-
-    //qCDebug(dcMultiSensor()) << "Humidity" << humidity << "%" << humidityTemperature << "°C";
-    m_device->setStateValue(sensortagHumidityStateTypeId, roundValue(humidity));
-}
-
-void SensorTag::processPressureData(const QByteArray &data)
-{
-    Q_ASSERT(data.count() == 6);
-
-    QByteArray temperatureData(data.left(3));
-    quint32 rawTemperature = static_cast<quint8>(temperatureData.at(2));
-    rawTemperature <<= 8;
-    rawTemperature |= static_cast<quint8>(temperatureData.at(1));
-    rawTemperature <<= 8;
-    rawTemperature |= static_cast<quint8>(temperatureData.at(0));
-
-    QByteArray pressureData(data.right(3));
-    quint32 rawPressure = static_cast<quint8>(pressureData.at(2));
-    rawPressure <<= 8;
-    rawPressure |= static_cast<quint8>(pressureData.at(1));
-    rawPressure <<= 8;
-    rawPressure |= static_cast<quint8>(pressureData.at(0));
-
-    // Note: we don't need the temperature measurement from the barometic pressure sensor
-    //qCDebug(dcMultiSensor()) << "Pressure temperature:" << roundValue(rawTemperature / 100.0) << "°C";
-    //qCDebug(dcMultiSensor()) << "Pressure:" << roundValue(rawPressure / 100.0) << "mBar";
-    m_device->setStateValue(sensortagPressureStateTypeId, roundValue(rawPressure / 100.0));
-}
-
-void SensorTag::processOpticalData(const QByteArray &data)
-{
-    Q_ASSERT(data.count() == 2);
-
-    quint16 rawOptical = 0;
-    QByteArray payload(data);
-    QDataStream stream(&payload, QIODevice::ReadOnly);
-    stream.setByteOrder(QDataStream::LittleEndian);
-    stream >> rawOptical;
-
-    quint16 lumm = rawOptical & 0x0FFF;
-    quint16 lume = (rawOptical & 0xF000) >> 12;
-
-    double lux = lumm * (0.01 * pow(2,lume));
-
-    //qCDebug(dcMultiSensor()) << "Lux:" << lux;
-    device()->setStateValue(sensortagLightIntensityStateTypeId, roundValue(lux));
-}
-
-void SensorTag::processMovementData(const QByteArray &data)
-{
-    //qCDebug(dcMultiSensor()) << "--> Movement value" << data.toHex();
-
-    QByteArray payload(data);
-    QDataStream stream(&payload, QIODevice::ReadOnly);
-    stream.setByteOrder(QDataStream::LittleEndian);
-
-    qint16 gyroXRaw = 0; qint16 gyroYRaw = 0; qint16 gyroZRaw = 0;
-    stream >> gyroXRaw >> gyroYRaw >> gyroZRaw;
-
-    qint16 accXRaw = 0; qint16 accYRaw = 0; qint16 accZRaw = 0;
-    stream >> accXRaw >> accYRaw >> accZRaw;
-
-    qint16 magXRaw = 0; qint16 magYRaw = 0; qint16 magZRaw = 0;
-    stream >> magXRaw >> magYRaw >> magZRaw;
-
-
-    // Calculate rotation [deg/s], Range +- 250
-    double gyroX = static_cast<double>(gyroXRaw) / (65536 / 500);
-    double gyroY = static_cast<double>(gyroYRaw) / (65536 / 500);
-    double gyroZ = static_cast<double>(gyroZRaw) / (65536 / 500);
-
-    // Calculate acceleration [G], Range +- m_accelerometerRange
-    double accX = static_cast<double>(accXRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
-    double accY = static_cast<double>(accYRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
-    double accZ = static_cast<double>(accZRaw)  / (32768 / static_cast<int>(m_accelerometerRange));
-
-    // Calculate magnetism [uT], Range +- 4900
-    double magX = static_cast<double>(magXRaw);
-    double magY = static_cast<double>(magYRaw);
-    double magZ = static_cast<double>(magZRaw);
-
-
-    //qCDebug(dcMultiSensor()) << "Accelerometer x:" << accX << "   y:" << accY << "    z:" << accZ;
-    //qCDebug(dcMultiSensor()) << "Gyroscope     x:" << gyroX << "   y:" << gyroY << "    z:" << gyroZ;
-    //qCDebug(dcMultiSensor()) << "Magnetometer  x:" << magX << "   y:" << magY << "    z:" << magZ;
-
-    QVector3D accelerometerVector(accX, accY, accZ);
-    QVector3D gyroscopeVector(gyroX, gyroY, gyroZ);
-    QVector3D magnetometerVector(magX, magY, magZ);
-
-    Q_UNUSED(gyroscopeVector)
-    Q_UNUSED(magnetometerVector)
-
-    // Initialize the accelerometer value if no data known yet
-    if (m_lastAccelerometerVectorLenght == -99999) {
-        m_lastAccelerometerVectorLenght = accelerometerVector.length();
-        return;
-    }
-
-
-    double delta = qAbs(qAbs(m_lastAccelerometerVectorLenght) - qAbs(accelerometerVector.length()));
-    bool motionDetected = (delta >= m_movementSensitivity);
-    //qCDebug(dcMultiSensor()) <<  accelerometerVector.length() << "  |  " << delta << m_movementSensitivity << (motionDetected ? "motion" : "-");
-    m_device->setStateValue(sensortagMovingStateTypeId, motionDetected);
-    m_lastAccelerometerVectorLenght = accelerometerVector.length();
-}
-
-void SensorTag::setLeftButtonPressed(bool pressed)
-{
-    if (m_leftButtonPressed == pressed)
+    if (!m_temperatureService || !m_temperatureConfigurationCharacteristic.isValid())
         return;
 
-    qCDebug(dcMultiSensor()) << "Left button" << (pressed ? "pressed" : "released");
-    m_leftButtonPressed = pressed;
-    emit leftButtonPressedChainged(m_leftButtonPressed);
-    m_device->setStateValue(sensortagLeftButtonPressedStateTypeId, m_leftButtonPressed);
+    QByteArray payload = (power ? QByteArray::fromHex("01") : QByteArray::fromHex("00"));
+    m_temperatureService->writeCharacteristic(m_temperatureConfigurationCharacteristic, payload);
 }
 
-void SensorTag::setRightButtonPressed(bool pressed)
+void SensorTag::setHumiditySensorPower(bool power)
 {
-    if (m_rightButtonPressed == pressed)
+    if (!m_humidityService || !m_humidityConfigurationCharacteristic.isValid())
         return;
 
-    qCDebug(dcMultiSensor()) << "Right button" << (pressed ? "pressed" : "released");
-    m_rightButtonPressed = pressed;
-    emit rightButtonPressedChainged(m_rightButtonPressed);
-    m_device->setStateValue(sensortagRightButtonPressedStateTypeId, m_rightButtonPressed);
+    QByteArray payload = (power ? QByteArray::fromHex("01") : QByteArray::fromHex("00"));
+    m_humidityService->writeCharacteristic(m_humidityConfigurationCharacteristic, payload);
 }
 
-void SensorTag::setMagnetDetected(bool detected)
+void SensorTag::setPressureSensorPower(bool power)
 {
-    if (m_magnetDetected == detected)
+    if (!m_pressureService || !m_pressureConfigurationCharacteristic.isValid())
         return;
 
-    qCDebug(dcMultiSensor()) << "Magnet detector" << (detected ? "active" : "inactive");
-    m_magnetDetected = detected;
-    emit magnetDetectedChainged(m_magnetDetected);
-    m_device->setStateValue(sensortagMagnetDetectedStateTypeId, m_magnetDetected);
+    QByteArray payload = (power ? QByteArray::fromHex("01") : QByteArray::fromHex("00"));
+    m_pressureService->writeCharacteristic(m_pressureConfigurationCharacteristic, payload);
 }
 
-bool SensorTag::testBitUint8(quint8 value, int bitPosition)
+void SensorTag::setOpticalSensorPower(bool power)
 {
-    return (((value)>> (bitPosition)) & 1);
+    if (!m_opticalService || !m_opticalConfigurationCharacteristic.isValid())
+        return;
+
+    QByteArray payload = (power ? QByteArray::fromHex("01") : QByteArray::fromHex("00"));
+    m_opticalService->writeCharacteristic(m_opticalConfigurationCharacteristic, payload);
 }
 
-double SensorTag::roundValue(float value)
-{
-    int tmpValue = static_cast<int>(value * 10);
-    return static_cast<double>(tmpValue) / 10.0;
-}
 
 void SensorTag::onConnectedChanged(const bool &connected)
 {
@@ -496,7 +380,7 @@ void SensorTag::onConnectedChanged(const bool &connected)
         m_movementService = nullptr;
         m_ioService = nullptr;
 
-        m_lastAccelerometerVectorLenght = -99999;
+        m_dataProcessor->reset();
     }
 }
 
@@ -667,6 +551,11 @@ void SensorTag::onServiceDiscoveryFinished()
     }
 }
 
+void SensorTag::onBuzzerImpulseTimeout()
+{
+    setBuzzerPower(false);
+}
+
 void SensorTag::onTemperatureServiceStateChanged(const QLowEnergyService::ServiceState &state)
 {
     // Only continue if discovered
@@ -713,17 +602,14 @@ void SensorTag::onTemperatureServiceStateChanged(const QLowEnergyService::Servic
 
     configurePeriod(m_temperatureService, m_temperaturePeriodCharacteristic, m_temperaturePeriod);
 
-    // Enable measuring
-    m_temperatureService->writeCharacteristic(m_temperatureConfigurationCharacteristic, QByteArray::fromHex("01"));
+    // Enable/disable measuring
+    setTemperatureSensorPower(m_temperatureEnabled);
 }
 
 void SensorTag::onTemperatureServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic == m_temperatureDataCharacteristic) {
-        processTemperatureData(value);
-
-        // FIXME: Disable measuring
-        // m_temperatureService->writeCharacteristic(m_temperatureConfigCharacteristic, QByteArray::fromHex("00"));
+        m_dataProcessor->processTemperatureData(value);
     }
 }
 
@@ -779,9 +665,7 @@ void SensorTag::onHumidityServiceStateChanged(const QLowEnergyService::ServiceSt
 void SensorTag::onHumidityServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic == m_humidityDataCharacteristic) {
-        processHumidityData(value);
-        // FIXME: Disable measuring
-        // m_humidityService->writeCharacteristic(m_humidityConfigCharacteristic, QByteArray::fromHex("00"));
+        m_dataProcessor->processHumidityData(value);
     }
 }
 
@@ -837,9 +721,7 @@ void SensorTag::onPressureServiceStateChanged(const QLowEnergyService::ServiceSt
 void SensorTag::onPressureServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic == m_pressureDataCharacteristic) {
-        processPressureData(value);
-        // FIXME: Disable measuring
-        // m_pressureService->writeCharacteristic(m_pressureConfigCharacteristic, QByteArray::fromHex("00"));
+        m_dataProcessor->processPressureData(value);
     }
 }
 
@@ -894,11 +776,8 @@ void SensorTag::onOpticalServiceStateChanged(const QLowEnergyService::ServiceSta
 void SensorTag::onOpticalServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic == m_opticalDataCharacteristic) {
-        processOpticalData(value);
-        // FIXME: Disable measuring
-        // m_opticalService->writeCharacteristic(m_pressureopticalCharacteristic, QByteArray::fromHex("00"));
+        m_dataProcessor->processOpticalData(value);
     }
-
 }
 
 void SensorTag::onKeyServiceStateChanged(const QLowEnergyService::ServiceState &state)
@@ -930,7 +809,7 @@ void SensorTag::onKeyServiceStateChanged(const QLowEnergyService::ServiceState &
 void SensorTag::onKeyServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic == m_keyDataCharacteristic) {
-        processKeyData(value);
+        m_dataProcessor->processKeyData(value);
     }
 }
 
@@ -985,7 +864,7 @@ void SensorTag::onMovementServiceStateChanged(const QLowEnergyService::ServiceSt
 void SensorTag::onMovementServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic == m_movementDataCharacteristic) {
-        processMovementData(value);
+        m_dataProcessor->processMovementData(value);
     }
 }
 
@@ -1030,9 +909,4 @@ void SensorTag::onIoServiceStateChanged(const QLowEnergyService::ServiceState &s
 void SensorTag::onIoServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     qCDebug(dcMultiSensor()) << characteristic.uuid().toString() << value.toHex();
-}
-
-void SensorTag::onBuzzerImpulseTimeout()
-{
-    setBuzzerPower(false);
 }

@@ -4,6 +4,34 @@
     "id": "23bf0d8d-df7d-4bee-80ee-f015c5a7f52e",
     "paramTypes": [
         {
+            "id": "6f0e40a2-0f97-4c1e-8229-757e3c18b345",
+            "name": "temperatureEnabled",
+            "displayName": "Temperature sensor enabled",
+            "type": "bool",
+            "defaultValue": true
+        },
+        {
+            "id": "29881172-626a-42d5-83b8-3e2e5ca533be",
+            "name": "humidityEnabled",
+            "displayName": "Humidity sensor enabled",
+            "type": "bool",
+            "defaultValue": true
+        },
+        {
+            "id": "50e5e282-9707-4b31-bb3f-a6ca30a7e1ff",
+            "name": "pressureEnabled",
+            "displayName": "Pressure sensor enabled",
+            "type": "bool",
+            "defaultValue": true
+        },
+        {
+            "id": "1460a6d6-9fb4-4385-b27b-ee4b7594e454",
+            "name": "opticalEnabled",
+            "displayName": "Optical sensor enabled",
+            "type": "bool",
+            "defaultValue": true
+        },
+        {
             "id": "5786c91a-d94d-461a-8d22-f978dd1438ab",
             "name": "accelerometerEnabled",
             "displayName": "Accelerometer enabled",
