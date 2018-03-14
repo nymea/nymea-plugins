@@ -14,7 +14,7 @@
                     "displayName": "Sensor Tag (CC2650)",
                     "createMethods": ["discovery"],
                     "deviceIcon": "Thermometer",
-                    "interfaces": ["connectable", "humiditysensor", "temperaturesensor"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "connectable"],
                     "basicTags": [
                         "Device",
                         "Sensor"
