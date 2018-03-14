@@ -40,7 +40,13 @@ void HueRemote::setBattery(const int &battery)
 
 void HueRemote::updateStates(const QVariantMap &statesMap, const QVariantMap &configMap)
 {
-    setReachable(configMap.value("reachable", false).toBool());
+    if (configMap.contains("reachable")) {
+        setReachable(configMap.value("reachable", false).toBool());
+    } else {
+        // Hue Tap doesn't have a reachable property as it's a ultra low power device. Let's mark it reachable by default as we only
+        // get this response if the bridge is reachable.
+        setReachable(true);
+    }
     setBattery(configMap.value("battery", 0).toInt());
 
     emit stateChanged();
