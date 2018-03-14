@@ -63,13 +63,38 @@ DevicePluginPhilipsHue::DevicePluginPhilipsHue()
 
 DevicePluginPhilipsHue::~DevicePluginPhilipsHue()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer1Sec);
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer5Sec);
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer15Sec);
 }
 
 void DevicePluginPhilipsHue::init()
 {
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(5);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginPhilipsHue::onPluginTimer);
+    m_pluginTimer1Sec = hardwareManager()->pluginTimerManager()->registerTimer(1);
+    connect(m_pluginTimer1Sec, &PluginTimer::timeout, this, [this]() {
+        // refresh sensors every second
+        if (m_remotes.isEmpty()) {
+            return;
+        }
+        foreach (HueBridge *bridge, m_bridges.keys()) {
+            refreshSensors(bridge);
+        }
+    });
+    m_pluginTimer5Sec = hardwareManager()->pluginTimerManager()->registerTimer(5);
+    connect(m_pluginTimer5Sec, &PluginTimer::timeout, this, [this]() {
+        // refresh lights every 5 seconds
+        foreach (HueBridge *bridge, m_bridges.keys()) {
+            refreshLights(bridge);
+        }
+    });
+    m_pluginTimer15Sec = hardwareManager()->pluginTimerManager()->registerTimer(15);
+    connect(m_pluginTimer15Sec, &PluginTimer::timeout, this, [this]() {
+        // refresh bridges every 15 seconds
+        foreach (Device *device, m_bridges.values()) {
+            refreshBridge(device);
+        }
+    });
+
 }
 
 DeviceManager::DeviceError DevicePluginPhilipsHue::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -656,13 +681,6 @@ void DevicePluginPhilipsHue::onRemoteButtonEvent(const int &buttonCode)
     emitEvent(Event(id, m_remotes.value(remote)->id(), ParamList() << param));
 }
 
-void DevicePluginPhilipsHue::onPluginTimer()
-{
-    foreach (Device *device, m_bridges.values()) {
-        refreshBridge(device);
-    }
-}
-
 void DevicePluginPhilipsHue::onUpnpDiscoveryFinished()
 {
     qCDebug(dcPhilipsHue()) << "Upnp discovery finished";
@@ -1032,10 +1050,6 @@ void DevicePluginPhilipsHue::processBridgeRefreshResponse(Device *device, const 
     default:
         break;
     }
-
-    // do lights/sensor update right after successful bridge update
-    HueBridge *bridge = m_bridges.key(device);
-    refreshLights(bridge);
 }
 
 void DevicePluginPhilipsHue::processLightsRefreshResponse(Device *device, const QByteArray &data)
@@ -1070,9 +1084,6 @@ void DevicePluginPhilipsHue::processLightsRefreshResponse(Device *device, const 
             }
         }
     }
-
-    if (!m_remotes.isEmpty())
-        refreshSensors(m_bridges.key(device));
 }
 
 void DevicePluginPhilipsHue::processSensorsRefreshResponse(Device *device, const QByteArray &data)
