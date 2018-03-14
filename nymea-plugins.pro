@@ -34,7 +34,8 @@ PLUGIN_DIRS = \
     gpio                \
     snapd               \
     simulation          \
-    keba                \ 
+    keba                \
+    remotessh           \
 
 
 CONFIG+=all
