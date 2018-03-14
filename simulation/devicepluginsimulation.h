@@ -36,18 +36,23 @@ class DevicePluginSimulation : public DevicePlugin
 
 public:
     explicit DevicePluginSimulation();
+    ~DevicePluginSimulation();
 
     void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_pluginTimer20Seconds = nullptr;
+    PluginTimer *m_pluginTimer5Min = nullptr;
 
-    int getRandomNumber(const int min, const int max);
+    int generateRandomIntValue(int min, int max);
+    double generateRandomDoubleValue(double min, double max);
+    bool generateRandomBoolValue();
 
 private slots:
-    void onPluginTimer();
+    void onPluginTimer20Seconds();
+    void onPluginTimer5Minutes();
 
 };
 

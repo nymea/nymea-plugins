@@ -564,7 +564,7 @@
                             "type": "int",
                             "unit": "Watt",
                             "defaultValue": 700,
-                            "minValue": 0,
+                            "minValue": 200,
                             "maxValue": 2000,
                             "writable": true
                         },
@@ -641,6 +641,182 @@
                             "displayNameEvent": "Active status changed",
                             "type": "bool",
                             "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "7f1696e3-3145-421e-9a42-5bd3b2fd0e2c",
+                    "name": "netatmoIndoor",
+                    "displayName": "Netatmo Indoor Station",
+                    "deviceIcon": "Thermometer",
+                    "basicTags": [
+                        "Device",
+                        "Weather",
+                        "Sensor"
+                    ],
+                    "createMethods": ["user"],
+                    "paramTypes": [ ],
+                    "stateTypes": [
+                        {
+                            "id": "29a95a72-f897-4027-99a8-ab1aee1ebe2b",
+                            "name": "updateTime",
+                            "displayName": "Last update",
+                            "displayNameEvent": "Last update changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "ruleRelevant": false,
+                            "eventRuleRelevant": false,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b5244e65-0811-4dc2-afd2-6bf3092d44c7",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "unit": "DegreeCelsius",
+                            "graphRelevant": true,
+                            "type": "double",
+                            "defaultValue": 22.7
+                        },
+                        {
+                            "id": "b2225720-dfdc-40f8-a24a-20247e69e575",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "graphRelevant": true,
+                            "unit": "Percentage",
+                            "type": "int",
+                            "defaultValue": 37
+                        },
+                        {
+                            "id": "b13fa34e-b63d-4fa4-a786-e82776ee9cbe",
+                            "name": "pressure",
+                            "displayName": "Pressure",
+                            "displayNameEvent": "Pressure changed",
+                            "unit": "MilliBar",
+                            "graphRelevant": true,
+                            "type": "int",
+                            "defaultValue": 1006
+                        },
+                        {
+                            "id": "b16ea43e-75ef-4bee-ade6-839682ec3068",
+                            "name": "noise",
+                            "displayName": "Noise",
+                            "displayNameEvent": "Noise changed",
+                            "graphRelevant": true,
+                            "unit": "Dezibel",
+                            "type": "int",
+                            "defaultValue": 68
+                        },
+                        {
+                            "id": "c5ebe5c0-b030-4eb6-a3f8-3a400061d09c",
+                            "name": "co2",
+                            "displayName": "CO2",
+                            "displayNameEvent": "CO2 changed",
+                            "graphRelevant": true,
+                            "unit": "PartsPerMillion",
+                            "type": "int",
+                            "defaultValue": 350
+                        },
+                        {
+                            "id": "3b8fb712-ff4c-4c0f-83bc-2edac54fede7",
+                            "name": "wifiStrength",
+                            "displayName": "Wifi signal strength",
+                            "displayNameEvent": "Wifi signal strength changed",
+                            "ruleRelevant": false,
+                            "eventRuleRelevant": false,
+                            "unit": "Percentage",
+                            "type": "int",
+                            "defaultValue": 87
+                        }
+                    ]
+                },
+                {
+                    "id": "b759f558-b484-45b6-9132-218d135c27d6",
+                    "name": "gardenSensor",
+                    "displayName": "Garden sensor",
+                    "createMethods": ["user"],
+                    "deviceIcon": "Thermometer",
+                    "interfaces": ["temperaturesensor", "battery", "connectable"],
+                    "basicTags": ["Device", "Sensor" ],
+                    "paramTypes": [ ],
+                    "stateTypes": [
+                        {
+                            "id": "63eb7cdd-d16e-4baf-820b-7ad9f0a2b2a8",
+                            "name": "soilMoisture",
+                            "displayName": "Soil moisture",
+                            "displayNameEvent": "Soil moisture changed",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "169d7a2a-d1c9-4578-bb30-fc7d25690e59",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "9781f0a5-3478-4291-ab51-9daa1ba0e44e",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "unit": "Candela",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "45c0de32-b519-47d7-9f82-e5f09d1542d4",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "295b9a17-a4b1-4cc9-8ebb-2309b72c75f6",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        }
+                    ]
+                },
+                {
+                    "id": "8fc2e79b-1770-4b18-bf01-78ed15893a81",
+                    "name": "waterValve",
+                    "displayName": "Water valve",
+                    "createMethods": ["user"],
+                    "deviceIcon": "None",
+                    "basicTags": ["Device", "Actuator"],
+                    "paramTypes": [ ],
+                    "stateTypes": [
+                        {
+                            "id": "b7ff029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
                         }
                     ]
                 }
