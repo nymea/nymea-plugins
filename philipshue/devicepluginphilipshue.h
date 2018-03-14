@@ -59,14 +59,15 @@ private slots:
     void lightStateChanged();
     void remoteStateChanged();
     void onRemoteButtonEvent(const int &buttonCode);
-    void onPluginTimer();
 
 private slots:
     void onUpnpDiscoveryFinished();
     void networkManagerReplyReady();
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_pluginTimer1Sec = nullptr;
+    PluginTimer *m_pluginTimer5Sec = nullptr;
+    PluginTimer *m_pluginTimer15Sec = nullptr;
 
     QHash<QNetworkReply *, PairingInfo *> m_pairingRequests;
     QHash<QNetworkReply *, PairingInfo *> m_informationRequests;
