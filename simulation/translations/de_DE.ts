@@ -55,7 +55,9 @@ The name of the ParamType of StateType (9faaffe5-6a76-47d2-a14a-550f60390245) of
 ----------
 The name of the ParamType of StateType (b7ff029d-f3a6-4b47-978a-ac1a581aac0f) of DeviceClass socket
 ----------
-The name of the ParamType of StateType (e1910c53-a6bc-434b-9caa-0d08e214c122) of DeviceClass heatingRod</extracomment>
+The name of the ParamType of StateType (e1910c53-a6bc-434b-9caa-0d08e214c122) of DeviceClass heatingRod
+----------
+The name of the ParamType of StateType (b7ff029d-f3a6-4b47-978a-ac1a581aac0f) of DeviceClass waterValve</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -78,22 +80,32 @@ The name of the autocreated ActionType (b7ff029d-f3a6-4b47-978a-ac1a581aac0f)</e
     </message>
     <message>
         <source>Temperature changed</source>
-        <extracomment>The name of the autocreated EventType (169d7a2a-d1c9-4578-bb30-fc7d25690e59)</extracomment>
+        <extracomment>The name of the autocreated EventType (169d7a2a-d1c9-4578-bb30-fc7d25690e59)
+----------
+The name of the autocreated EventType (b5244e65-0811-4dc2-afd2-6bf3092d44c7)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>temperature</source>
-        <extracomment>The name of the ParamType of StateType (169d7a2a-d1c9-4578-bb30-fc7d25690e59) of DeviceClass temperatureSensor</extracomment>
+        <extracomment>The name of the ParamType of StateType (169d7a2a-d1c9-4578-bb30-fc7d25690e59) of DeviceClass temperatureSensor
+----------
+The name of the ParamType of StateType (b5244e65-0811-4dc2-afd2-6bf3092d44c7) of DeviceClass netatmoIndoor
+----------
+The name of the ParamType of StateType (169d7a2a-d1c9-4578-bb30-fc7d25690e59) of DeviceClass gardenSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Humidity changed</source>
-        <extracomment>The name of the autocreated EventType (10c735fd-7b81-484a-a148-76ea0da840f0)</extracomment>
+        <extracomment>The name of the autocreated EventType (10c735fd-7b81-484a-a148-76ea0da840f0)
+----------
+The name of the autocreated EventType (b2225720-dfdc-40f8-a24a-20247e69e575)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>humidity</source>
-        <extracomment>The name of the ParamType of StateType (10c735fd-7b81-484a-a148-76ea0da840f0) of DeviceClass temperatureSensor</extracomment>
+        <extracomment>The name of the ParamType of StateType (10c735fd-7b81-484a-a148-76ea0da840f0) of DeviceClass temperatureSensor
+----------
+The name of the ParamType of StateType (b2225720-dfdc-40f8-a24a-20247e69e575) of DeviceClass netatmoIndoor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -111,7 +123,9 @@ The name of the autocreated EventType (30fd9fd9-1a6b-4698-93ac-6b2a1ba18500)</ex
 ----------
 The name of the ParamType of StateType (4d66c81e-6293-4997-9685-8b44d7e5c1bd) of DeviceClass motionDetector
 ----------
-The name of the ParamType of StateType (30fd9fd9-1a6b-4698-93ac-6b2a1ba18500) of DeviceClass battery</extracomment>
+The name of the ParamType of StateType (30fd9fd9-1a6b-4698-93ac-6b2a1ba18500) of DeviceClass battery
+----------
+The name of the ParamType of StateType (45c0de32-b519-47d7-9f82-e5f09d1542d4) of DeviceClass gardenSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -129,7 +143,9 @@ The name of the autocreated EventType (4857f2b4-0840-4c7e-82ff-bd881ae32cf9)</ex
 ----------
 The name of the ParamType of StateType (1c621a6f-86fe-4351-bf9e-03c3deaef6ad) of DeviceClass motionDetector
 ----------
-The name of the ParamType of StateType (4857f2b4-0840-4c7e-82ff-bd881ae32cf9) of DeviceClass battery</extracomment>
+The name of the ParamType of StateType (4857f2b4-0840-4c7e-82ff-bd881ae32cf9) of DeviceClass battery
+----------
+The name of the ParamType of StateType (295b9a17-a4b1-4cc9-8ebb-2309b72c75f6) of DeviceClass gardenSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -151,7 +167,9 @@ The name of the ParamType of StateType (e66aba37-2647-4b6b-8740-d59eb98d846c) of
 ----------
 The name of the ParamType of StateType (e66aba37-2647-4b6b-8740-d59eb98d846c) of DeviceClass battery
 ----------
-The name of the ParamType of StateType (e66aba37-2647-4b6b-8740-d59eb98d846c) of DeviceClass heatingRod</extracomment>
+The name of the ParamType of StateType (e66aba37-2647-4b6b-8740-d59eb98d846c) of DeviceClass heatingRod
+----------
+The name of the ParamType of StateType (e66aba37-2647-4b6b-8740-d59eb98d846c) of DeviceClass gardenSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -456,6 +474,91 @@ The name of the ActionType 17860291-f3a6-4b47-978a-ac1a581aac0f of deviceClass r
     <message>
         <source>Set target water temperature</source>
         <extracomment>The name of the autocreated ActionType (49388b11-8076-4698-8091-5c5f5762fd08)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Netatmo Indoor Station</source>
+        <extracomment>The name of the DeviceClass (7f1696e3-3145-421e-9a42-5bd3b2fd0e2c)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Last update changed</source>
+        <extracomment>The name of the autocreated EventType (29a95a72-f897-4027-99a8-ab1aee1ebe2b)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>updateTime</source>
+        <extracomment>The name of the ParamType of StateType (29a95a72-f897-4027-99a8-ab1aee1ebe2b) of DeviceClass netatmoIndoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pressure changed</source>
+        <extracomment>The name of the autocreated EventType (b13fa34e-b63d-4fa4-a786-e82776ee9cbe)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>pressure</source>
+        <extracomment>The name of the ParamType of StateType (b13fa34e-b63d-4fa4-a786-e82776ee9cbe) of DeviceClass netatmoIndoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Noise changed</source>
+        <extracomment>The name of the autocreated EventType (b16ea43e-75ef-4bee-ade6-839682ec3068)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>noise</source>
+        <extracomment>The name of the ParamType of StateType (b16ea43e-75ef-4bee-ade6-839682ec3068) of DeviceClass netatmoIndoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CO2 changed</source>
+        <extracomment>The name of the autocreated EventType (c5ebe5c0-b030-4eb6-a3f8-3a400061d09c)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>co2</source>
+        <extracomment>The name of the ParamType of StateType (c5ebe5c0-b030-4eb6-a3f8-3a400061d09c) of DeviceClass netatmoIndoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wifi signal strength changed</source>
+        <extracomment>The name of the autocreated EventType (3b8fb712-ff4c-4c0f-83bc-2edac54fede7)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>wifiStrength</source>
+        <extracomment>The name of the ParamType of StateType (3b8fb712-ff4c-4c0f-83bc-2edac54fede7) of DeviceClass netatmoIndoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Garden sensor</source>
+        <extracomment>The name of the DeviceClass (b759f558-b484-45b6-9132-218d135c27d6)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Soil moisture changed</source>
+        <extracomment>The name of the autocreated EventType (63eb7cdd-d16e-4baf-820b-7ad9f0a2b2a8)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>soilMoisture</source>
+        <extracomment>The name of the ParamType of StateType (63eb7cdd-d16e-4baf-820b-7ad9f0a2b2a8) of DeviceClass gardenSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Light intensity changed</source>
+        <extracomment>The name of the autocreated EventType (9781f0a5-3478-4291-ab51-9daa1ba0e44e)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>lightIntensity</source>
+        <extracomment>The name of the ParamType of StateType (9781f0a5-3478-4291-ab51-9daa1ba0e44e) of DeviceClass gardenSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Water valve</source>
+        <extracomment>The name of the DeviceClass (8fc2e79b-1770-4b18-bf01-78ed15893a81)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
