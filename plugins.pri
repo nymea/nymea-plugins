@@ -1,8 +1,6 @@
 TEMPLATE = lib
 CONFIG += plugin
 
-QT += network bluetooth
-
 QMAKE_CXXFLAGS += -Werror -std=c++11 -g
 QMAKE_LFLAGS += -std=c++11
 

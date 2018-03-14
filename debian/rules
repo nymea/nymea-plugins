@@ -19,5 +19,6 @@ override_dh_install: $(PREPROCESS_FILES:.in=)
 
 override_dh_auto_clean:
 	dh_auto_clean
+	find -name *plugininfo.h -exec {} \;
 	rm -rf $(PREPROCESS_FILES:.in=)
 
