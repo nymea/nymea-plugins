@@ -1,10 +1,38 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *  Copyright (C) 2015-2018 Simon Stuerz <simon.stuerz@guh.io>             *
+ *                                                                         *
+ *  This file is part of guh.                                              *
+ *                                                                         *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
+ *                                                                         *
+ *  This library is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
+ *                                                                         *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #include "sensortag.h"
 #include "extern-plugininfo.h"
+#include "math.h"
+
+#include <QTimer>
+#include <QVector3D>
+#include <QDataStream>
 
 SensorTag::SensorTag(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
     QObject(parent),
     m_device(device),
-    m_bluetoothDevice(bluetoothDevice)
+    m_bluetoothDevice(bluetoothDevice),
+    m_dataProcessor(new SensorDataProcessor(m_device, this))
 {
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::connectedChanged, this, &SensorTag::onConnectedChanged);
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::servicesDiscoveryFinished, this, &SensorTag::onServiceDiscoveryFinished);
@@ -20,111 +48,404 @@ BluetoothLowEnergyDevice *SensorTag::bluetoothDevice()
     return m_bluetoothDevice;
 }
 
-void SensorTag::updateInfraredValue(const QByteArray &value)
+void SensorTag::setTemperatureSensorEnabled(bool enabled)
 {
-    qCDebug(dcMultiSensor()) << "Infrared value" << value;
+    qCDebug(dcMultiSensor()) << "Temperature sensor" << (enabled ? "enabled" : "disabled");
+
+    if (m_temperatureEnabled == enabled)
+        return;
+
+    m_temperatureEnabled = enabled;
+    setTemperatureSensorPower(m_temperatureEnabled);
 }
 
-void SensorTag::updateButtonValue(const QByteArray &value)
+void SensorTag::setHumiditySensorEnabled(bool enabled)
 {
-    const quint8 *data = reinterpret_cast<const quint8 *>(value.constData());
-    if (*data & 1)
-        emit leftKeyPressed();
-    if (*data & 2)
-        emit rightKeyPressed();
+    qCDebug(dcMultiSensor()) << "Humidity sensor" << (enabled ? "enabled" : "disabled");
+
+    if (m_humidityEnabled == enabled)
+        return;
+
+    m_humidityEnabled = enabled;
+    setHumiditySensorPower(m_humidityEnabled);
 }
 
-void SensorTag::updateHumidityValue(const QByteArray &value)
+void SensorTag::setPressureSensorEnabled(bool enabled)
 {
-    qCDebug(dcMultiSensor()) << "Humidity value" << value;
+    qCDebug(dcMultiSensor()) << "Pressure sensor" << (enabled ? "enabled" : "disabled");
+
+    if (m_pressureEnabled == enabled)
+        return;
+
+    m_pressureEnabled = enabled;
+    setPressureSensorPower(m_pressureEnabled);
 }
 
-void SensorTag::updatePressureValue(const QByteArray &value)
+void SensorTag::setOpticalSensorEnabled(bool enabled)
 {
-    qCDebug(dcMultiSensor()) << "Pressure value" << value;
+    qCDebug(dcMultiSensor()) << "Optical sensor" << (enabled ? "enabled" : "disabled");
+
+    if (m_opticalEnabled == enabled)
+        return;
+
+    m_opticalEnabled = enabled;
+    setOpticalSensorPower(m_opticalEnabled);
 }
+
+void SensorTag::setAccelerometerEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Accelerometer" << (enabled ? "enabled" : "disabled");
+
+    if (m_accelerometerEnabled == enabled)
+        return;
+
+    m_accelerometerEnabled = enabled;
+    configureMovement();
+}
+
+void SensorTag::setAccelerometerRange(const SensorTag::SensorAccelerometerRange &range)
+{
+    qCDebug(dcMultiSensor()) << "Accelerometer" << range;
+
+    if (m_accelerometerRange == range)
+        return;
+
+    m_accelerometerRange = range;
+    configureMovement();
+}
+
+void SensorTag::setGyroscopeEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Gyroscope" << (enabled ? "enabled" : "disabled");
+
+    if (m_gyroscopeEnabled == enabled)
+        return;
+
+    m_gyroscopeEnabled = enabled;
+    configureMovement();
+}
+
+void SensorTag::setMagnetometerEnabled(bool enabled)
+{
+    qCDebug(dcMultiSensor()) << "Magnetometer" << (enabled ? "enabled" : "disabled");
+
+    if (m_magnetometerEnabled == enabled)
+        return;
+
+    m_magnetometerEnabled = enabled;
+    configureMovement();
+}
+
+void SensorTag::setMeasurementPeriod(int period)
+{
+    qCDebug(dcMultiSensor()) << "Set sensor measurement period to" << period << "ms";
+
+    if (period % 10 != 0) {
+        int adjustedValue = qRound(static_cast<float>(period) / 10.0) * 10;
+        qCWarning(dcMultiSensor()) << "Measurement period of sensors" << period << "must be a multiple of 10ms. Adjusting it to" << adjustedValue;
+        period = adjustedValue;
+    }
+
+    m_temperaturePeriod = period;
+    if (m_temperatureService && m_temperaturePeriodCharacteristic.isValid())
+        configurePeriod(m_temperatureService, m_temperaturePeriodCharacteristic, m_temperaturePeriod);
+
+    m_humidityPeriod = period;
+    if (m_humidityService && m_humidityPeriodCharacteristic.isValid())
+        configurePeriod(m_humidityService, m_humidityPeriodCharacteristic, m_humidityPeriod);
+
+    m_pressurePeriod = period;
+    if (m_pressureService && m_pressurePeriodCharacteristic.isValid())
+        configurePeriod(m_pressureService, m_pressurePeriodCharacteristic, m_pressurePeriod);
+
+    m_opticalPeriod = period;
+    if (m_opticalService && m_opticalPeriodCharacteristic.isValid())
+        configurePeriod(m_opticalService, m_opticalPeriodCharacteristic, m_opticalPeriod);
+
+}
+
+void SensorTag::setMeasurementPeriodMovement(int period)
+{
+    qCDebug(dcMultiSensor()) << "Set movement sensor measurement period to" << period << "ms";
+
+    if (period % 10 != 0) {
+        int adjustedValue = qRound(static_cast<float>(period) / 10.0) * 10;
+        qCWarning(dcMultiSensor()) << "Measurement period of movement sensor" << period << "must be a multiple of 10ms. Adjusting it to" << adjustedValue;
+        period = adjustedValue;
+    }
+
+    m_movementPeriod = period;
+    if (m_movementService && m_movementPeriodCharacteristic.isValid())
+        configurePeriod(m_movementService, m_movementPeriodCharacteristic, m_movementPeriod);
+
+}
+
+void SensorTag::setMovementSensitivity(int percentage)
+{
+    m_movementSensitivity = static_cast<double>(percentage) / 100.0;
+}
+
+void SensorTag::setGreenLedPower(bool power)
+{
+    m_greenLedEnabled = power;
+    qCDebug(dcMultiSensor()) << "Green LED" << (power ? "enabled" : "disabled");
+    configureIo();
+    m_device->setStateValue(sensorTagGreenLedStateTypeId, m_greenLedEnabled);
+}
+
+void SensorTag::setRedLedPower(bool power)
+{
+    m_redLedEnabled = power;
+    qCDebug(dcMultiSensor()) << "Red LED" << (power ? "enabled" : "disabled");
+    configureIo();
+    m_device->setStateValue(sensorTagRedLedStateTypeId, m_redLedEnabled);
+}
+
+void SensorTag::setBuzzerPower(bool power)
+{
+    m_buzzerEnabled = power;
+    qCDebug(dcMultiSensor()) << "Buzzer" << (power ? "enabled" : "disabled");
+    configureIo();
+    m_device->setStateValue(sensorTagBuzzerStateTypeId, m_buzzerEnabled);
+}
+
+void SensorTag::buzzerImpulse()
+{
+    qCDebug(dcMultiSensor()) << "Buzzer impulse";
+    setBuzzerPower(true);
+    QTimer::singleShot(1000, this, &SensorTag::onBuzzerImpulseTimeout);
+}
+
+void SensorTag::configurePeriod(QLowEnergyService *serice, const QLowEnergyCharacteristic &characteristic, int measurementPeriod)
+{
+    Q_ASSERT(measurementPeriod % 10 == 0);
+    QByteArray payload;
+    QDataStream stream(&payload, QIODevice::WriteOnly);
+    stream << static_cast<quint8>(measurementPeriod / 10);
+
+    qCDebug(dcMultiSensor()) << "Configure period to" << measurementPeriod << payload.toHex();
+    serice->writeCharacteristic(characteristic, payload);
+}
+
+void SensorTag::configureMovement()
+{
+    if (!m_movementService || !m_movementConfigurationCharacteristic.isValid())
+        return;
+
+    quint16 configuration = 0;
+    if (m_gyroscopeEnabled) {
+        configuration |= (1 << 0); // enable x-axis
+        configuration |= (1 << 1); // enable y-axis
+        configuration |= (1 << 2); // enable z-axis
+    }
+
+    if (m_accelerometerEnabled) {
+        configuration |= (1 << 3); // enable x-axis
+        configuration |= (1 << 4); // enable y-axis
+        configuration |= (1 << 5); // enable z-axis
+    }
+
+    if (m_magnetometerEnabled) {
+        configuration |= (1 << 6); // enable all axis
+    }
+
+    // Always enable wake on movement in order to save energy
+    configuration |= (1 << 8); // enable
+
+    // Accelerometer range 2 Bit ( 0 = 2G, 1 = 4G, 2 = 8G, 3 = 16G)
+    switch (m_accelerometerRange) {
+    case SensorAccelerometerRange2G:
+        // Bit 9 = 0
+        // Bit 10 = 0
+        break;
+    case SensorAccelerometerRange4G:
+        configuration |= (1 << 11);
+        // Bit 12 = 0
+        break;
+    case SensorAccelerometerRange8G:
+        // Bit 13 = 0
+        configuration |= (1 << 14);
+        break;
+    case SensorAccelerometerRange16G:
+        configuration |= (1 << 15);
+        configuration |= (1 << 16);
+        break;
+    default:
+        break;
+    }
+
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::LittleEndian);
+    stream << configuration;
+
+    qCDebug(dcMultiSensor()) << "Configure movement sensor" << data.toHex();
+    m_movementService->writeCharacteristic(m_movementConfigurationCharacteristic, data);
+}
+
+void SensorTag::configureSensorMode(const SensorTag::SensorMode &mode)
+{
+    if (!m_ioService || !m_ioDataCharacteristic.isValid())
+        return;
+
+    qCDebug(dcMultiSensor()) << "Setting" << mode;
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::LittleEndian);
+    stream << static_cast<quint8>(mode);
+
+    m_ioService->writeCharacteristic(m_ioConfigurationCharacteristic, data);
+}
+
+void SensorTag::configureIo()
+{
+    if (!m_ioService || !m_ioDataCharacteristic.isValid())
+        return;
+
+    // Write value to IO
+    quint8 configuration = 0;
+    if (m_redLedEnabled)
+        configuration |= (1 << 0); // Red LED
+
+    if (m_greenLedEnabled)
+        configuration |= (1 << 1); // Green LED
+
+    if (m_buzzerEnabled)
+        configuration |= (1 << 2); // Buzzer
+
+    QByteArray payload;
+    QDataStream stream(&payload, QIODevice::WriteOnly);
+    stream << configuration;
+
+    m_ioService->writeCharacteristic(m_ioDataCharacteristic, payload);
+}
+
+void SensorTag::setTemperatureSensorPower(bool power)
+{
+    if (!m_temperatureService || !m_temperatureConfigurationCharacteristic.isValid())
+        return;
+
+    QByteArray payload = (power ? QByteArray::fromHex("01") : QByteArray::fromHex("00"));
+    m_temperatureService->writeCharacteristic(m_temperatureConfigurationCharacteristic, payload);
+}
+
+void SensorTag::setHumiditySensorPower(bool power)
+{
+    if (!m_humidityService || !m_humidityConfigurationCharacteristic.isValid())
+        return;
+
+    QByteArray payload = (power ? QByteArray::fromHex("01") : QByteArray::fromHex("00"));
+    m_humidityService->writeCharacteristic(m_humidityConfigurationCharacteristic, payload);
+}
+
+void SensorTag::setPressureSensorPower(bool power)
+{
+    if (!m_pressureService || !m_pressureConfigurationCharacteristic.isValid())
+        return;
+
+    QByteArray payload = (power ? QByteArray::fromHex("01") : QByteArray::fromHex("00"));
+    m_pressureService->writeCharacteristic(m_pressureConfigurationCharacteristic, payload);
+}
+
+void SensorTag::setOpticalSensorPower(bool power)
+{
+    if (!m_opticalService || !m_opticalConfigurationCharacteristic.isValid())
+        return;
+
+    QByteArray payload = (power ? QByteArray::fromHex("01") : QByteArray::fromHex("00"));
+    m_opticalService->writeCharacteristic(m_opticalConfigurationCharacteristic, payload);
+}
+
 
 void SensorTag::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcMultiSensor()) << "Sensor" << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
-    m_device->setStateValue(sensortagConnectedStateTypeId, connected);
+    m_device->setStateValue(sensorTagConnectedStateTypeId, connected);
 
     if (!connected) {
         // Clean up services
-        m_infraredService->deleteLater();
-        m_buttonService->deleteLater();
+        m_temperatureService->deleteLater();
         m_humidityService->deleteLater();
         m_pressureService->deleteLater();
+        m_opticalService->deleteLater();
+        m_keyService->deleteLater();
+        m_movementService->deleteLater();
+        m_ioService->deleteLater();
 
-        m_infraredService = nullptr;
-        m_buttonService = nullptr;
+        m_temperatureService = nullptr;
         m_humidityService = nullptr;
         m_pressureService = nullptr;
-    }
+        m_opticalService = nullptr;
+        m_keyService = nullptr;
+        m_movementService = nullptr;
+        m_ioService = nullptr;
 
+        m_dataProcessor->reset();
+    }
 }
 
 void SensorTag::onServiceDiscoveryFinished()
 {
-    if (!m_bluetoothDevice->serviceUuids().contains(infraredServiceUuid)) {
-        qCWarning(dcMultiSensor()) << "Could not find infrared service";
-        return;
+    foreach (const QBluetoothUuid serviceUuid, m_bluetoothDevice->serviceUuids()) {
+        qCDebug(dcMultiSensor()) << "-->" << serviceUuid;
     }
 
-    if (!m_bluetoothDevice->serviceUuids().contains(accelerometerServiceUuid)) {
-        qCWarning(dcMultiSensor()) << "Could not find accelereometer service";
+    if (!m_bluetoothDevice->serviceUuids().contains(temperatureServiceUuid)) {
+        qCWarning(dcMultiSensor()) << "Could not find temperature service";
+        m_bluetoothDevice->disconnectDevice();
         return;
     }
 
     if (!m_bluetoothDevice->serviceUuids().contains(humidityServiceUuid)) {
         qCWarning(dcMultiSensor()) << "Could not find humidity service";
-        return;
-    }
-
-    if (!m_bluetoothDevice->serviceUuids().contains(magnetometerServiceUuid)) {
-        qCWarning(dcMultiSensor()) << "Could not find magnetometer service";
+        m_bluetoothDevice->disconnectDevice();
         return;
     }
 
     if (!m_bluetoothDevice->serviceUuids().contains(pressureServiceUuid)) {
         qCWarning(dcMultiSensor()) << "Could not find pressure service";
+        m_bluetoothDevice->disconnectDevice();
         return;
     }
 
-    if (!m_bluetoothDevice->serviceUuids().contains(gyroscopeServiceUuid)) {
-        qCWarning(dcMultiSensor()) << "Could not find magnetometer service";
+    if (!m_bluetoothDevice->serviceUuids().contains(opticalServiceUuid)) {
+        qCWarning(dcMultiSensor()) << "Could not find optical service";
+        m_bluetoothDevice->disconnectDevice();
+        return;
+    }
+
+    if (!m_bluetoothDevice->serviceUuids().contains(keyServiceUuid)) {
+        qCWarning(dcMultiSensor()) << "Could not find key service";
+        m_bluetoothDevice->disconnectDevice();
+        return;
+    }
+
+    if (!m_bluetoothDevice->serviceUuids().contains(movementServiceUuid)) {
+        qCWarning(dcMultiSensor()) << "Could not find movement service";
+        m_bluetoothDevice->disconnectDevice();
+        return;
+    }
+
+    if (!m_bluetoothDevice->serviceUuids().contains(ioServiceUuid)) {
+        qCWarning(dcMultiSensor()) << "Could not find IO service";
+        m_bluetoothDevice->disconnectDevice();
         return;
     }
 
     // IR Temperature
-    if (!m_infraredService) {
-        m_infraredService = m_bluetoothDevice->controller()->createServiceObject(infraredServiceUuid, this);
-        if (!m_infraredService) {
-            qCWarning(dcMultiSensor()) << "Could not create infrared service.";
+    if (!m_temperatureService) {
+        m_temperatureService = m_bluetoothDevice->controller()->createServiceObject(temperatureServiceUuid, this);
+        if (!m_temperatureService) {
+            qCWarning(dcMultiSensor()) << "Could not create temperature service.";
+            m_bluetoothDevice->disconnectDevice();
             return;
         }
 
-        connect(m_infraredService, &QLowEnergyService::stateChanged, this, &SensorTag::onInfraredServiceStateChanged);
-        connect(m_infraredService, &QLowEnergyService::characteristicChanged, this, &SensorTag::onInfraredServiceCharacteristicChanged);
+        connect(m_temperatureService, &QLowEnergyService::stateChanged, this, &SensorTag::onTemperatureServiceStateChanged);
+        connect(m_temperatureService, &QLowEnergyService::characteristicChanged, this, &SensorTag::onTemperatureServiceCharacteristicChanged);
 
-        if (m_infraredService->state() == QLowEnergyService::DiscoveryRequired) {
-            m_infraredService->discoverDetails();
-        }
-    }
-
-    // Buttons
-    if (!m_buttonService) {
-        m_buttonService = m_bluetoothDevice->controller()->createServiceObject(buttonServiceUuid, this);
-        if (!m_buttonService) {
-            qCWarning(dcMultiSensor()) << "Could not create button service.";
-            return;
-        }
-
-        connect(m_buttonService, &QLowEnergyService::stateChanged, this, &SensorTag::onButtonServiceStateChanged);
-        connect(m_buttonService, &QLowEnergyService::characteristicChanged, this, &SensorTag::onButtonServiceCharacteristicChanged);
-
-        if (m_buttonService->state() == QLowEnergyService::DiscoveryRequired) {
-            m_buttonService->discoverDetails();
+        if (m_temperatureService->state() == QLowEnergyService::DiscoveryRequired) {
+            m_temperatureService->discoverDetails();
         }
     }
 
@@ -133,6 +454,7 @@ void SensorTag::onServiceDiscoveryFinished()
         m_humidityService = m_bluetoothDevice->controller()->createServiceObject(humidityServiceUuid, this);
         if (!m_humidityService) {
             qCWarning(dcMultiSensor()) << "Could not create humidity service.";
+            m_bluetoothDevice->disconnectDevice();
             return;
         }
 
@@ -148,6 +470,7 @@ void SensorTag::onServiceDiscoveryFinished()
         m_pressureService = m_bluetoothDevice->controller()->createServiceObject(pressureServiceUuid, this);
         if (!m_pressureService) {
             qCWarning(dcMultiSensor()) << "Could not create pressure service.";
+            m_bluetoothDevice->disconnectDevice();
             return;
         }
 
@@ -157,17 +480,91 @@ void SensorTag::onServiceDiscoveryFinished()
             m_pressureService->discoverDetails();
         }
     }
+
+
+    // Optical
+    if (!m_opticalService) {
+        m_opticalService = m_bluetoothDevice->controller()->createServiceObject(opticalServiceUuid, this);
+        if (!m_opticalService) {
+            qCWarning(dcMultiSensor()) << "Could not create optical service.";
+            m_bluetoothDevice->disconnectDevice();
+            return;
+        }
+
+        connect(m_opticalService, &QLowEnergyService::stateChanged, this, &SensorTag::onOpticalServiceStateChanged);
+        connect(m_opticalService, &QLowEnergyService::characteristicChanged, this, &SensorTag::onOpticalServiceCharacteristicChanged);
+
+        if (m_opticalService->state() == QLowEnergyService::DiscoveryRequired) {
+            m_opticalService->discoverDetails();
+        }
+    }
+
+    // Key
+    if (!m_keyService) {
+        m_keyService = m_bluetoothDevice->controller()->createServiceObject(keyServiceUuid, this);
+        if (!m_keyService) {
+            qCWarning(dcMultiSensor()) << "Could not create key service.";
+            m_bluetoothDevice->disconnectDevice();
+            return;
+        }
+
+        connect(m_keyService, &QLowEnergyService::stateChanged, this, &SensorTag::onKeyServiceStateChanged);
+        connect(m_keyService, &QLowEnergyService::characteristicChanged, this, &SensorTag::onKeyServiceCharacteristicChanged);
+
+        if (m_keyService->state() == QLowEnergyService::DiscoveryRequired) {
+            m_keyService->discoverDetails();
+        }
+    }
+
+    // Movement
+    if (!m_movementService) {
+        m_movementService = m_bluetoothDevice->controller()->createServiceObject(movementServiceUuid, this);
+        if (!m_movementService) {
+            qCWarning(dcMultiSensor()) << "Could not create movement service.";
+            m_bluetoothDevice->disconnectDevice();
+            return;
+        }
+
+        connect(m_movementService, &QLowEnergyService::stateChanged, this, &SensorTag::onMovementServiceStateChanged);
+        connect(m_movementService, &QLowEnergyService::characteristicChanged, this, &SensorTag::onMovementServiceCharacteristicChanged);
+
+        if (m_movementService->state() == QLowEnergyService::DiscoveryRequired) {
+            m_movementService->discoverDetails();
+        }
+    }
+
+    // IO
+    if (!m_ioService) {
+        m_ioService = m_bluetoothDevice->controller()->createServiceObject(ioServiceUuid, this);
+        if (!m_ioService) {
+            qCWarning(dcMultiSensor()) << "Could not create IO service.";
+            m_bluetoothDevice->disconnectDevice();
+            return;
+        }
+
+        connect(m_ioService, &QLowEnergyService::stateChanged, this, &SensorTag::onIoServiceStateChanged);
+        connect(m_ioService, &QLowEnergyService::characteristicChanged, this, &SensorTag::onIoServiceCharacteristicChanged);
+
+        if (m_ioService->state() == QLowEnergyService::DiscoveryRequired) {
+            m_ioService->discoverDetails();
+        }
+    }
 }
 
-void SensorTag::onInfraredServiceStateChanged(const QLowEnergyService::ServiceState &state)
+void SensorTag::onBuzzerImpulseTimeout()
+{
+    setBuzzerPower(false);
+}
+
+void SensorTag::onTemperatureServiceStateChanged(const QLowEnergyService::ServiceState &state)
 {
     // Only continue if discovered
     if (state != QLowEnergyService::ServiceDiscovered)
         return;
 
-    qCDebug(dcMultiSensor()) << "Infrared sensor service discovered.";
+    qCDebug(dcMultiSensor()) << "Temperature sensor service discovered.";
 
-    foreach (const QLowEnergyCharacteristic &characteristic, m_infraredService->characteristics()) {
+    foreach (const QLowEnergyCharacteristic &characteristic, m_temperatureService->characteristics()) {
         qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
         foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
             qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
@@ -175,66 +572,44 @@ void SensorTag::onInfraredServiceStateChanged(const QLowEnergyService::ServiceSt
     }
 
     // Data characteristic
-    m_infraredDataCharacteristic = m_infraredService->characteristic(QBluetoothUuid(QUuid("f000aa01-0451-4000-b000-000000000000")));
-    if (!m_infraredDataCharacteristic.isValid()) {
-        qCWarning(dcMultiSensor()) << "Invalid infrared data characteristic.";
+    m_temperatureDataCharacteristic = m_temperatureService->characteristic(QBluetoothUuid(QUuid("f000aa01-0451-4000-b000-000000000000")));
+    if (!m_temperatureDataCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid temperature data characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
     }
 
     // Enable notifications
-    QLowEnergyDescriptor notificationDescriptor = m_infraredDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-    m_infraredService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
+    QLowEnergyDescriptor notificationDescriptor = m_temperatureDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+    m_temperatureService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
 
     // Config characteristic
-    m_infraredConfigCharacteristic = m_infraredService->characteristic(QBluetoothUuid(QUuid("f000aa02-0451-4000-b000-000000000000")));
-    if (!m_infraredConfigCharacteristic.isValid()) {
-        qCWarning(dcMultiSensor()) << "Invalid infrared configuration characteristic.";
-    }
-
-    // Enable measuring
-    m_infraredService->writeCharacteristic(m_infraredConfigCharacteristic, QByteArray::fromHex("01"));
-}
-
-void SensorTag::onInfraredServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
-{
-    if (characteristic == m_infraredDataCharacteristic) {
-        updateInfraredValue(value);
-
-        // FIXME: Disable measuring
-        // m_infraredService->writeCharacteristic(m_infraredConfigCharacteristic, QByteArray::fromHex("00"));
-    }
-}
-
-void SensorTag::onButtonServiceStateChanged(const QLowEnergyService::ServiceState &state)
-{
-    // Only continue if discovered
-    if (state != QLowEnergyService::ServiceDiscovered)
+    m_temperatureConfigurationCharacteristic = m_temperatureService->characteristic(temperatureConfigurationCharacteristicUuid);
+    if (!m_temperatureConfigurationCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid temperature configuration characteristic.";
+        m_bluetoothDevice->disconnectDevice();
         return;
-
-    qCDebug(dcMultiSensor()) << "Button sensor service discovered.";
-
-    foreach (const QLowEnergyCharacteristic &characteristic, m_buttonService->characteristics()) {
-        qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
-        }
     }
 
-    // Data characteristic
-    m_buttonCharacteristic = m_buttonService->characteristic(QBluetoothUuid(QUuid("0000ffe1-0000-1000-8000-00805f9b34fb")));
-    if (!m_buttonCharacteristic.isValid()) {
-        qCWarning(dcMultiSensor()) << "Invalid button data characteristic.";
+    // Period characteristic
+    m_temperaturePeriodCharacteristic = m_temperatureService->characteristic(temperaturePeriodCharacteristicUuid);
+    if (!m_temperaturePeriodCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid temperature period characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
     }
 
-    // Enable notifications
-    QLowEnergyDescriptor notificationDescriptor = m_buttonCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-    m_buttonService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
+    configurePeriod(m_temperatureService, m_temperaturePeriodCharacteristic, m_temperaturePeriod);
+
+    // Enable/disable measuring
+    setTemperatureSensorPower(m_temperatureEnabled);
 }
 
-void SensorTag::onButtonServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+void SensorTag::onTemperatureServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
-    if (characteristic == m_buttonCharacteristic) {
-        updateButtonValue(value);
+    if (characteristic == m_temperatureDataCharacteristic) {
+        m_dataProcessor->processTemperatureData(value);
     }
 }
 
@@ -254,9 +629,11 @@ void SensorTag::onHumidityServiceStateChanged(const QLowEnergyService::ServiceSt
     }
 
     // Data characteristic
-    m_humidityDataCharacteristic = m_humidityService->characteristic(QBluetoothUuid(QUuid("f000aa21-0451-4000-b000-000000000000")));
+    m_humidityDataCharacteristic = m_humidityService->characteristic(humidityDataCharacteristicUuid);
     if (!m_humidityDataCharacteristic.isValid()) {
         qCWarning(dcMultiSensor()) << "Invalid humidity data characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
     }
 
     // Enable notifications
@@ -264,21 +641,31 @@ void SensorTag::onHumidityServiceStateChanged(const QLowEnergyService::ServiceSt
     m_humidityService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Config characteristic
-    m_humidityConfigCharacteristic = m_humidityService->characteristic(QBluetoothUuid(QUuid("f000aa22-0451-4000-b000-000000000000")));
-    if (!m_humidityConfigCharacteristic.isValid()) {
+    m_humidityConfigurationCharacteristic = m_humidityService->characteristic(humidityConfigurationCharacteristicUuid);
+    if (!m_humidityConfigurationCharacteristic.isValid()) {
         qCWarning(dcMultiSensor()) << "Invalid humidity configuration characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
     }
 
+    // Period characteristic
+    m_humidityPeriodCharacteristic = m_humidityService->characteristic(humidityPeriodCharacteristicUuid);
+    if (!m_humidityPeriodCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid humidity period characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
+    }
+
+    configurePeriod(m_humidityService, m_humidityPeriodCharacteristic, m_humidityPeriod);
+
     // Enable measuring
-    m_humidityService->writeCharacteristic(m_humidityConfigCharacteristic, QByteArray::fromHex("01"));
+    m_humidityService->writeCharacteristic(m_humidityConfigurationCharacteristic, QByteArray::fromHex("01"));
 }
 
 void SensorTag::onHumidityServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic == m_humidityDataCharacteristic) {
-        updateHumidityValue(value);
-        // FIXME: Disable measuring
-        // m_humidityService->writeCharacteristic(m_humidityConfigCharacteristic, QByteArray::fromHex("00"));
+        m_dataProcessor->processHumidityData(value);
     }
 }
 
@@ -298,9 +685,11 @@ void SensorTag::onPressureServiceStateChanged(const QLowEnergyService::ServiceSt
     }
 
     // Data characteristic
-    m_pressureDataCharacteristic = m_pressureService->characteristic(QBluetoothUuid(QUuid("f000aa41-0451-4000-b000-000000000000")));
+    m_pressureDataCharacteristic = m_pressureService->characteristic(pressureDataCharacteristicUuid);
     if (!m_pressureDataCharacteristic.isValid()) {
         qCWarning(dcMultiSensor()) << "Invalid pressure data characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
     }
 
     // Enable notifications
@@ -308,36 +697,216 @@ void SensorTag::onPressureServiceStateChanged(const QLowEnergyService::ServiceSt
     m_pressureService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
     // Config characteristic
-    m_pressureConfigCharacteristic = m_pressureService->characteristic(QBluetoothUuid(QUuid("f000aa42-0451-4000-b000-000000000000")));
-    if (!m_pressureConfigCharacteristic.isValid()) {
+    m_pressureConfigurationCharacteristic = m_pressureService->characteristic(pressureConfigurationCharacteristicUuid);
+    if (!m_pressureConfigurationCharacteristic.isValid()) {
         qCWarning(dcMultiSensor()) << "Invalid pressure configuration characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
     }
 
+    // Period characteristic
+    m_pressurePeriodCharacteristic = m_pressureService->characteristic(pressurePeriodCharacteristicUuid);
+    if (!m_pressurePeriodCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid pressure period characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
+    }
+
+    configurePeriod(m_pressureService, m_pressurePeriodCharacteristic, m_pressurePeriod);
+
     // Enable measuring
-    m_pressureService->writeCharacteristic(m_pressureConfigCharacteristic, QByteArray::fromHex("01"));
+    m_pressureService->writeCharacteristic(m_pressureConfigurationCharacteristic, QByteArray::fromHex("01"));
 }
 
 void SensorTag::onPressureServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic == m_pressureDataCharacteristic) {
-        updatePressureValue(value);
-        // FIXME: Disable measuring
-        // m_pressureService->writeCharacteristic(m_pressureConfigCharacteristic, QByteArray::fromHex("00"));
+        m_dataProcessor->processPressureData(value);
     }
 }
 
-void SensorTag::measure()
+void SensorTag::onOpticalServiceStateChanged(const QLowEnergyService::ServiceState &state)
 {
-    if (!m_bluetoothDevice->connected())
+    // Only continue if discovered
+    if (state != QLowEnergyService::ServiceDiscovered)
         return;
 
-    // TODO: measure using plugintimer to save energy
+    qCDebug(dcMultiSensor()) << "Optical sensor service discovered.";
 
-//    qCDebug(dcMultiSensor()) << "Measure data" << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString();
+    foreach (const QLowEnergyCharacteristic &characteristic, m_pressureService->characteristics()) {
+        qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
+        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        }
+    }
 
-//    m_infraredService->writeCharacteristic(m_infraredConfigCharacteristic, QByteArray::fromHex("01"));
-//    m_humidityService->writeCharacteristic(m_humidityConfigCharacteristic, QByteArray::fromHex("01"));
-//    m_pressureService->writeCharacteristic(m_pressureConfigCharacteristic, QByteArray::fromHex("01"));
+    // Data characteristic
+    m_opticalDataCharacteristic = m_opticalService->characteristic(opticalDataCharacteristicUuid);
+    if (!m_opticalDataCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid optical data characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+        return;
+    }
 
+    // Enable notifications
+    QLowEnergyDescriptor notificationDescriptor = m_opticalDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+    m_opticalService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
+
+    // Config characteristic
+    m_opticalConfigurationCharacteristic = m_opticalService->characteristic(opticalConfigurationCharacteristicUuid);
+    if (!m_opticalConfigurationCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid optical configuration characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    // Period characteristic
+    m_opticalPeriodCharacteristic = m_opticalService->characteristic(opticalPeriodCharacteristicUuid);
+    if (!m_opticalPeriodCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid optical period characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    // Set measurement period
+    configurePeriod(m_opticalService, m_opticalPeriodCharacteristic, m_opticalPeriod);
+
+    // Enable measuring
+    m_opticalService->writeCharacteristic(m_opticalConfigurationCharacteristic, QByteArray::fromHex("01"));
 }
 
+void SensorTag::onOpticalServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+{
+    if (characteristic == m_opticalDataCharacteristic) {
+        m_dataProcessor->processOpticalData(value);
+    }
+}
+
+void SensorTag::onKeyServiceStateChanged(const QLowEnergyService::ServiceState &state)
+{
+    // Only continue if discovered
+    if (state != QLowEnergyService::ServiceDiscovered)
+        return;
+
+    qCDebug(dcMultiSensor()) << "Key service discovered.";
+    foreach (const QLowEnergyCharacteristic &characteristic, m_keyService->characteristics()) {
+        qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
+        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        }
+    }
+
+    // Data characteristic
+    m_keyDataCharacteristic = m_keyService->characteristic(keyDataCharacteristicUuid);
+    if (!m_keyDataCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid button data characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    // Enable notifications
+    QLowEnergyDescriptor notificationDescriptor = m_keyDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+    m_keyService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
+}
+
+void SensorTag::onKeyServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+{
+    if (characteristic == m_keyDataCharacteristic) {
+        m_dataProcessor->processKeyData(value);
+    }
+}
+
+void SensorTag::onMovementServiceStateChanged(const QLowEnergyService::ServiceState &state)
+{
+    // Only continue if discovered
+    if (state != QLowEnergyService::ServiceDiscovered)
+        return;
+
+    qCDebug(dcMultiSensor()) << "Movement sensor service discovered.";
+
+    foreach (const QLowEnergyCharacteristic &characteristic, m_pressureService->characteristics()) {
+        qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
+        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        }
+    }
+
+    // Data characteristic
+    m_movementDataCharacteristic = m_movementService->characteristic(movementDataCharacteristicUuid);
+    if (!m_movementDataCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid movement data characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    // Enable notifications
+    QLowEnergyDescriptor notificationDescriptor = m_movementDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+    m_movementService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
+
+    // Config characteristic
+    m_movementConfigurationCharacteristic = m_movementService->characteristic(movementConfigurationCharacteristicUuid);
+    if (!m_movementConfigurationCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid movement configuration characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    // Period characteristic
+    m_movementPeriodCharacteristic = m_movementService->characteristic(movementPeriodCharacteristicUuid);
+    if (!m_movementPeriodCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid movement period characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    // Set measurement period
+    configurePeriod(m_movementService, m_movementPeriodCharacteristic, m_movementPeriod);
+    configureMovement();
+
+    // Enable measuring
+    m_movementService->writeCharacteristic(m_movementConfigurationCharacteristic, QByteArray::fromHex("01"));
+}
+
+void SensorTag::onMovementServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+{
+    if (characteristic == m_movementDataCharacteristic) {
+        m_dataProcessor->processMovementData(value);
+    }
+}
+
+void SensorTag::onIoServiceStateChanged(const QLowEnergyService::ServiceState &state)
+{
+    // Only continue if discovered
+    if (state != QLowEnergyService::ServiceDiscovered)
+        return;
+
+    qCDebug(dcMultiSensor()) << "IO service discovered.";
+
+    foreach (const QLowEnergyCharacteristic &characteristic, m_pressureService->characteristics()) {
+        qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
+        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        }
+    }
+
+    // Data characteristic
+    m_ioDataCharacteristic = m_ioService->characteristic(ioDataCharacteristicUuid);
+    if (!m_ioDataCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid IO data characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    // Enable notifications
+    QLowEnergyDescriptor notificationDescriptor = m_ioDataCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+    m_ioService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
+
+    // Config characteristic
+    m_ioConfigurationCharacteristic = m_ioService->characteristic(ioConfigurationCharacteristicUuid);
+    if (!m_ioConfigurationCharacteristic.isValid()) {
+        qCWarning(dcMultiSensor()) << "Invalid IO configuration characteristic.";
+        m_bluetoothDevice->disconnectDevice();
+    }
+
+    configureIo();
+    configureSensorMode(SensorModeRemote);
+    configureIo();
+}
+
+void SensorTag::onIoServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+{
+    qCDebug(dcMultiSensor()) << characteristic.uuid().toString() << value.toHex();
+}

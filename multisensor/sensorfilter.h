@@ -20,46 +20,62 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINMULTISENSOR_H
-#define DEVICEPLUGINMULTISENSOR_H
+#ifndef SENSORFILTER_H
+#define SENSORFILTER_H
 
+#include <QObject>
+#include <QVector>
 
-#include <QPointer>
-#include <QHash>
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
-#include "plugintimer.h"
-#include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
-#include "sensortag.h"
-
-class DevicePluginMultiSensor : public DevicePlugin
+class SensorFilter : public QObject
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginmultisensor.json")
-    Q_INTERFACES(DevicePlugin)
-
 public:
-    explicit DevicePluginMultiSensor();
-    ~DevicePluginMultiSensor();
+    enum Type {
+        TypeLowPass,
+        TypeHighPass,
+        TypeAverage
+    };
+    Q_ENUM(Type)
 
-    void init() override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    void postSetupDevice(Device *device) override;
-    void deviceRemoved(Device *device) override;
+    explicit SensorFilter(Type filterType, QObject *parent = nullptr);
 
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    double filterValue(double value);
+
+    bool isReady() const;
+    void reset();
+
+    Type filterType() const;
+
+    QVector<double> inputData() const;
+    QVector<double> outputData() const;
+
+    // Filter configuration
+    uint windowSize() const;
+    void setFilterWindowSize(uint windowSize = 20);
+
+    double lowPassAlpha() const;
+    void setLowPassAlpha(double alpha = 0.2);
+
+    double highPassAlpha() const;
+    void setHighPassAlpha(double alpha = 0.2);
 
 private:
-    PluginTimer *m_reconnectTimer = nullptr;
-    QHash<Device *, SensorTag *> m_sensors;
+    Type m_filterType = TypeLowPass;
+    int m_filterWindowSize = 20;
+    double m_lowPassAlpha = 0.2;
+    double m_highPassAlpha = 0.2;
 
-    bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
+    double m_averageSum = 0;
 
-private slots:
-    void onPluginTimer();
-    void onBluetoothDiscoveryFinished();
+    QVector<double> m_inputData;
+    QVector<double> m_outputData;
 
+    void addInputValue(double value);
+
+    // Filter methods
+    double lowPassFilterValue(double value);
+    double highPassFilterValue(double value);
+    double averageFilterValue(double value);
 };
 
-#endif // DEVICEPLUGINMULTISENSOR_H
+#endif // SENSORFILTER_H
