@@ -41,7 +41,7 @@
     </message>
     <message>
         <location filename="../plugininfo.h" line="50"/>
-        <source>inRange</source>
+        <source>connected</source>
         <extracomment>The name of the ParamType of StateType (cb43e1b5-4f61-4538-bfa2-c33055c542cf) of DeviceClass networkDevice</extracomment>
         <translation type="unfinished"></translation>
     </message>
