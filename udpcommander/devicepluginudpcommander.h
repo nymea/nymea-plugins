@@ -1,6 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2015-2018 Simon Stürz <simon.stuerz@guh.io>              *
+ *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -41,7 +42,10 @@ public:
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
+    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+
 private:
+    QHash<QUdpSocket *, Device *> m_receiverList;
     QHash<QUdpSocket *, Device *> m_commanderList;
 
 private slots:

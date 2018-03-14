@@ -10,34 +10,86 @@
             "deviceClasses": [
                 {
                     "id": "6ecd5a8d-595a-4520-85e3-dcc9679edf66",
-                    "displayName": "UDP Commander",
-                    "name": "commander",
+                    "displayName": "UDP Receiver",
+                    "name": "udpReceiver",
                     "deviceIcon": "Network",
-                    "basicTags": [
-                        "Service",
-                        "Sensor"
-                    ],
+                    "basicTags": ["Service", "Sensor"],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
                             "id": "1843adcb-e377-44d1-8d70-ab4f9eeb32ec",
                             "name": "port",
-                            "displayName": "port",
-                            "type": "int"
+                            "displayName": "Port",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 65535,
+                            "defaultValue": 4242
                         },
                         {
                             "id": "d0f29961-1624-4b91-a0e8-9b1cc86c44c7",
                             "name": "command",
-                            "displayName": "command",
+                            "displayName": "Command",
                             "type": "QString",
-                            "inputType": "TextLine"
+                            "defaultValue": "Hello"
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "065a1a0a-d324-4ae6-a461-bef8143e8795",
+                            "name": "inputData",
+                            "displayName": "Received data",
+                            "displayNameEvent": "Received data changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "5fecbba3-ffbb-456b-872c-a2f571c681cb",
                             "name": "commandReceived",
-                            "displayName": "command received"
+                            "displayName": "Command received"
+                        }
+                    ]
+                },
+                {
+                    "id": "31b00639-8904-4522-84ed-54c46a54c63c",
+                    "name": "udpCommander",
+                    "displayName": "UDP Commander",
+                    "deviceIcon": "Network",
+                    "basicTags": ["Service", "Sensor"],
+                    "createMethods": ["user"],
+                    "paramTypes": [
+                        {
+                            "id": "eb204dfe-11f8-413f-8b68-8bffef3f9a7f",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 65535,
+                            "defaultValue": 4242
+                        },
+                        {
+                            "id": "ea1be9fc-9a9b-44ba-a28d-e021aef4f046",
+                            "name": "address",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "127.0.0.1"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "6bc52462-b192-46a4-a6df-92cc5a479c89",
+                            "name": "outputData",
+                            "displayName": "Send data",
+                            "paramTypes": [
+                                {
+                                    "id": "6604c852-6b24-4707-b8e5-1ddd8032efcc",
+                                    "name": "data",
+                                    "displayName": "Data",
+                                    "type": "QString"
+                                }
+                            ]
                         }
                     ]
                 }
