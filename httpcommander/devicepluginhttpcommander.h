@@ -21,8 +21,8 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINDHTTPCOMMANDER_H
-#define DEVICEPLUGINDHTTPCOMMANDER_H
+#ifndef DEVICEPLUGINHTTPCOMMANDER_H
+#define DEVICEPLUGINHTTPCOMMANDER_H
 
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
