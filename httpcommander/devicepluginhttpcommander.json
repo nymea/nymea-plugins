@@ -1,0 +1,185 @@
+{
+    "name": "HttpCommander",
+    "displayName": "Http Commander",
+    "id": "4e62670c-6268-4487-8dff-cccca498731a",
+    "vendors": [
+        {
+            "name": "httpCommander",
+            "displayName": "HTTP commander",
+            "id": "45d7c941-7690-43c9-92fc-fab36e1cebd0",
+            "deviceClasses": [
+                {
+                    "id": "b101abdf-86fd-4d2e-a657-ee76044235bd",
+                    "name": "httpPostCommander",
+                    "displayName": "HTTP post commander",
+                    "deviceIcon": "Network",
+                    "createMethods": ["user"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "020f672e-cc9a-4b74-92dd-a92a93ab1d23",
+                            "name": "url",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "inputType": "None",
+                            "defaultValue": "https://nymea.io"
+                        },
+                        {
+                            "id": "37830ea8-2249-46e6-aaca-12164928a81a",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type": "int",
+                            "defaultValue": "443"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachability changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "69f32ec8-114d-43f4-9241-1f6a57261f32",
+                            "name": "response",
+                            "displayName": "response",
+                            "displayNameEvent": "Response received",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "5a97ca56-b334-411b-adba-116496ffe83d",
+                            "name": "post",
+                            "displayName": "Post data",
+                            "paramTypes": [
+                                {
+                                    "id": "363119a3-c02c-4ed5-a915-11706198f3eb",
+                                    "name": "data",
+                                    "displayName": "Data",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "05bf65f5-ff13-43e3-b6ae-77019e79d8a1",
+                    "name": "httpPutCommander",
+                    "displayName": "HTTP put commander",
+                    "deviceIcon": "Network",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "1a3fcb23-931b-4ba1-b134-c49b656c76f7",
+                            "name": "url",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "inputType": "None",
+                            "defaultValue": "https://nymea.io"
+                        },
+                        {
+                            "id": "db994349-1105-4ce5-b6fe-6fd38fbc436a",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type": "int",
+                            "defaultValue": "443"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d102ff86-b773-48e3-a7a5-e138cb541f49",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachability changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "69f32ec8-114d-43f4-9241-1f6a57261f32",
+                            "name": "response",
+                            "displayName": "Response",
+                            "displayNameEvent": "Response received",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a9f165dc-cdf1-48f0-b4b6-7c24373cb77c",
+                            "name": "put",
+                            "displayName": "put",
+                            "paramTypes": [
+                                {
+                                    "id": "7742d445-8fc1-4b20-87f2-1bb35929fce1",
+                                    "name": "data",
+                                    "displayName": "Data",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "8f3f6dde-9db3-4237-800b-bb7f804098c9",
+                    "name": "httpGetCommander",
+                    "displayName": "HTTP get",
+                    "deviceIcon": "Network",
+                    "createMethods": ["user"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "477b544b-b631-4526-a4ef-c712ff5f955d",
+                            "name": "url",
+                            "displayName": "URL or IPv4 Address",
+                            "type": "QString",
+                            "inputType": "None",
+                            "defaultValue": "https://nymea.io"
+                        },
+                        {
+                            "id": "bee8b151-815a-4159-9d8a-42b76e99b42c",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type": "int",
+                            "defaultValue": "443"
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "0d63f815-efd1-488a-9bfa-e9f6bda540d2",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachability changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d81f0644-b94e-48ed-ae48-1b8ff6cebc0c",
+                            "name": "response",
+                            "displayName": "Response",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "displayNameEvent": "Response data received"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
