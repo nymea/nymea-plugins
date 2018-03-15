@@ -48,16 +48,6 @@ void HueDevice::setName(const QString &name)
     m_name = name;
 }
 
-DeviceId HueDevice::bridgeId() const
-{
-    return m_bridgeId;
-}
-
-void HueDevice::setBridgeId(const DeviceId &bridgeId)
-{
-    m_bridgeId = bridgeId;
-}
-
 QHostAddress HueDevice::hostAddress() const
 {
     return m_hostAddress;

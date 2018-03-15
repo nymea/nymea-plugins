@@ -163,13 +163,6 @@
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "33b01ab8-3811-4a06-ab3c-0a0ef2faa3ef",
-                            "name": "bridge",
-                            "displayName": "bridge",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
                             "displayName": "model id",
@@ -188,22 +181,6 @@
                             "name": "uuid",
                             "displayName": "uuid",
                             "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "99458d90-d171-4600-ba08-4818a4aaed68",
-                            "name": "apiKey",
-                            "displayName": "api key",
-                            "type" : "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "56d14f2f-1b20-4004-a333-87ac09fa54d2",
-                            "name": "host",
-                            "displayName": "host address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address",
                             "readOnly": true
                         },
                         {
@@ -337,13 +314,6 @@
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "33b01ab8-3811-4a06-ab3c-0a0ef2faa3ef",
-                            "name": "bridge",
-                            "displayName": "bridge",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
                             "displayName": "model id",
@@ -362,22 +332,6 @@
                             "name": "uuid",
                             "displayName": "uuid",
                             "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "99458d90-d171-4600-ba08-4818a4aaed68",
-                            "name": "apiKey",
-                            "displayName": "api key",
-                            "type" : "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "56d14f2f-1b20-4004-a333-87ac09fa54d2",
-                            "name": "host",
-                            "displayName": "host address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address",
                             "readOnly": true
                         },
                         {
@@ -465,13 +419,6 @@
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "33b01ab8-3811-4a06-ab3c-0a0ef2faa3ef",
-                            "name": "bridge",
-                            "displayName": "bridge",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
                             "displayName": "model id",
@@ -490,22 +437,6 @@
                             "name": "uuid",
                             "displayName": "uuid",
                             "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "99458d90-d171-4600-ba08-4818a4aaed68",
-                            "name": "apiKey",
-                            "displayName": "api key",
-                            "type" : "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "56d14f2f-1b20-4004-a333-87ac09fa54d2",
-                            "name": "host",
-                            "displayName": "host address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address",
                             "readOnly": true
                         },
                         {
@@ -632,13 +563,6 @@
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "c9e7483b-2f4e-4280-a437-8471f4dc9b22",
-                            "name": "bridge",
-                            "displayName": "bridge",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "62d92175-db3a-4da2-a72b-f58f34cb6911",
                             "name": "modelId",
                             "displayName": "model id",
@@ -657,22 +581,6 @@
                             "name": "uuid",
                             "displayName": "uuid",
                             "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "fb507641-9c78-4a28-937d-711775454e90",
-                            "name": "apiKey",
-                            "displayName": "api key",
-                            "type" : "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "6be56a1b-f64a-4188-a052-1fab11e01718",
-                            "name": "host",
-                            "displayName": "host address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address",
                             "readOnly": true
                         },
                         {
