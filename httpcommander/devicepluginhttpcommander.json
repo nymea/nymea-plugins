@@ -22,7 +22,7 @@
                         {
                             "id": "020f672e-cc9a-4b74-92dd-a92a93ab1d23",
                             "name": "url",
-                            "displayName": "URL or IPv4 address",
+                            "displayName": "Address",
                             "type": "QString",
                             "inputType": "None",
                             "defaultValue": "https://nymea.io"
@@ -30,7 +30,7 @@
                         {
                             "id": "37830ea8-2249-46e6-aaca-12164928a81a",
                             "name": "port",
-                            "displayName": "port",
+                            "displayName": "Port",
                             "type": "int",
                             "defaultValue": "443"
                         }
@@ -84,7 +84,7 @@
                         {
                             "id": "1a3fcb23-931b-4ba1-b134-c49b656c76f7",
                             "name": "url",
-                            "displayName": "URL or IPv4 address",
+                            "displayName": "Address",
                             "type": "QString",
                             "inputType": "None",
                             "defaultValue": "https://nymea.io"
