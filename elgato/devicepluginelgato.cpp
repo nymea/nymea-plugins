@@ -1,7 +1,5 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
- *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
@@ -410,17 +408,6 @@ DevicePluginElgato::DevicePluginElgato()
 
 }
 
-DevicePluginElgato::~DevicePluginElgato()
-{
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-}
-
-void DevicePluginElgato::init()
-{
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginElgato::onPluginTimer);
-}
-
 DeviceManager::DeviceError DevicePluginElgato::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
@@ -451,86 +438,31 @@ DeviceManager::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
 
         AveaBulb *bulb = new AveaBulb(device, bluetoothDevice, this);
+
         m_bulbs.insert(device, bulb);
+        bulb->bluetoothDevice()->connectDevice();
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
-void DevicePluginElgato::postSetupDevice(Device *device)
-{
-    AveaBulb *bulb = m_bulbs.value(device);
-    // Init values for restore
-    bulb->setBrightness(device->stateValue(aveaBrightnessStateTypeId).toInt());
-    bulb->setFade(device->stateValue(aveaFadeStateTypeId).toInt());
-    bulb->setWhite(device->stateValue(aveaWhiteStateTypeId).toInt());
-    bulb->setRed(device->stateValue(aveaRedStateTypeId).toInt());
-    bulb->setGreen(device->stateValue(aveaGreenStateTypeId).toInt());
-    bulb->setBlue(device->stateValue(aveaBlueStateTypeId).toInt());
-
-    bulb->bluetoothDevice()->connectDevice();
-}
-
 DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, const Action &action)
 {
+    Q_UNUSED(action)
+    // check deviceClassId
     if (device->deviceClassId() == aveaDeviceClassId) {
         AveaBulb *bulb = m_bulbs.value(device);
 
-        if (action.actionTypeId() == aveaPowerActionTypeId) {
-            bool power = action.param(aveaPowerStateParamTypeId).value().toBool();
-            device->setStateValue(aveaPowerStateTypeId, power);
-            if (!bulb->setPower(power))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+        Q_UNUSED(bulb)
+//        // check actionTypeId
+//        if (action.actionTypeId() == powerOffActionTypeId) {
+//            bulb->actionPowerOff(action.id());
+//            return DeviceManager::DeviceErrorAsync;
+//        } else if (action.actionTypeId() == colorActionTypeId) {
 
-            return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == aveaBrightnessActionTypeId) {
-            int percentage = action.param(aveaBrightnessStateParamTypeId).value().toInt();
-            if (!bulb->setBrightness(percentage))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
-
-            device->setStateValue(aveaBrightnessStateTypeId, percentage);
-            return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == aveaColorActionTypeId) {
-            QColor color = action.param(aveaColorStateParamTypeId).value().value<QColor>();
-            if (!bulb->setColor(color))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
-
-            device->setStateValue(aveaColorStateTypeId, color);
-            return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == aveaWhiteActionTypeId) {
-            int whiteValue = action.param(aveaWhiteStateParamTypeId).value().toInt();
-            if (!bulb->setWhite(whiteValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
-
-            device->setStateValue(aveaWhiteStateTypeId, whiteValue);
-            return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == aveaGreenActionTypeId) {
-            int greenValue = action.param(aveaGreenStateParamTypeId).value().toInt();
-            if (!bulb->setGreen(greenValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
-
-            return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == aveaRedActionTypeId) {
-            int redValue = action.param(aveaRedStateParamTypeId).value().toInt();
-            if (!bulb->setRed(redValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
-
-            return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == aveaBlueActionTypeId) {
-            int blueValue = action.param(aveaBlueStateParamTypeId).value().toInt();
-            if (!bulb->setBlue(blueValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
-
-            return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == aveaFadeActionTypeId) {
-            int fadeValue = action.param(aveaFadeStateParamTypeId).value().toInt();
-            device->setStateValue(aveaFadeStateTypeId, fadeValue);
-            if (!bulb->setFade(fadeValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
-
-            return DeviceManager::DeviceErrorNoError;
-        }
+//            return DeviceManager::DeviceErrorNoError;
+//        }
 
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
@@ -556,15 +488,6 @@ bool DevicePluginElgato::verifyExistingDevices(const QBluetoothDeviceInfo &devic
     }
 
     return false;
-}
-
-void DevicePluginElgato::onPluginTimer()
-{
-    foreach (AveaBulb *bulb, m_bulbs.values()) {
-        if (!bulb->bluetoothDevice()->connected()) {
-            bulb->bluetoothDevice()->connectDevice();
-        }
-    }
 }
 
 void DevicePluginElgato::onBluetoothDiscoveryFinished()

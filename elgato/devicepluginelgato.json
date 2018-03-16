@@ -1,33 +1,37 @@
 {
+    "displayName": "Elgato",
     "id": "c5c03ad4-bfdb-444a-8eca-2c234c46cc27",
     "name": "Elgato",
-    "displayName": "Elgato",
     "vendors": [
         {
-            "id": "90a3091d-1053-4f77-8dc3-92e27bbcebe7",
-            "name": "elgato",
             "displayName": "Elgato",
+            "name": "elgato",
+            "id": "90a3091d-1053-4f77-8dc3-92e27bbcebe7",
             "deviceClasses": [
                 {
                     "id": "164f9602-90ee-4693-bda3-9cafae37603e",
                     "name": "avea",
                     "displayName": "Avea",
                     "deviceIcon": "LightBulb",
-                    "basicTags": ["Device", "Actuator", "Lighting"],
-                    "interfaces": ["connectable"],
+                    "criticalStateTypeId": "6d5e792a-c786-40d2-ae35-a48ac6fafcbc",
+                    "basicTags": [
+                        "Device",
+                        "Actuator",
+                        "Lighting"
+                    ],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
                             "id": "d7a5d96f-33dc-4dc3-a171-b1e89a5e1a4b",
                             "name": "name",
-                            "displayName": "Name",
+                            "displayName": "name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "20932e39-00fd-40e3-8f39-850ba149844e",
                             "name": "macAddress",
-                            "displayName": "MAC address",
+                            "displayName": "mac address",
                             "type": "QString",
                             "inputType": "MacAddress"
                         }
@@ -36,27 +40,16 @@
                         {
                             "id": "6d5e792a-c786-40d2-ae35-a48ac6fafcbc",
                             "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected changed",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
                             "type": "bool",
-                            "cached": false,
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "2b779968-ff4f-4a05-a466-074e14288a8c",
-                            "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Power changed",
-                            "displayNameAction": "Set power",
-                            "type": "bool",
-                            "writable": true,
                             "defaultValue": false
                         },
                         {
                             "id": "c38181a0-e19b-423f-8b66-dedda94e89b5",
                             "name": "brightness",
                             "displayName": "Brightness",
-                            "displayNameEvent": "Brightness changed",
+                            "displayNameEvent": "brightness changed",
                             "displayNameAction": "Set brightness",
                             "type": "int",
                             "defaultValue": 100,
@@ -69,83 +62,13 @@
                         {
                             "id": "3f15637a-8272-4714-bd08-04806e05bbef",
                             "name": "color",
-                            "displayName": "Color",
-                            "displayNameEvent": "Color changed",
+                            "displayName": "color",
+                            "displayNameEvent": "color changed",
                             "displayNameAction": "Set color",
                             "type": "QColor",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "defaultValue": "#000000",
-                            "writable": true
-                        },
-                        {
-                            "id": "50f6a224-fb8d-487d-8774-1a0536e5b1aa",
-                            "name": "white",
-                            "displayName": "white",
-                            "displayNameEvent": "white changed",
-                            "displayNameAction": "Set white",
-                            "type": "int",
-                            "defaultValue": 0,
-                            "ruleRelevant": false,
-                            "minValue": 0,
-                            "maxValue": 4095,
-                            "eventRuleRelevant": false,
-                            "writable": true
-                        },
-                        {
-                            "id": "50ab71d1-8970-4531-b1ad-f387d01bab90",
-                            "name": "red",
-                            "displayName": "Red",
-                            "displayNameEvent": "Red changed",
-                            "displayNameAction": "Set red",
-                            "type": "int",
-                            "defaultValue": 0,
-                            "ruleRelevant": false,
-                            "minValue": 0,
-                            "maxValue": 4095,
-                            "eventRuleRelevant": false,
-                            "writable": true
-                        },
-                        {
-                            "id": "9e8ddebc-33fe-418a-895f-d8148fabcfee",
-                            "name": "green",
-                            "displayName": "Green",
-                            "displayNameEvent": "Green changed",
-                            "displayNameAction": "Set green",
-                            "type": "int",
-                            "defaultValue": 0,
-                            "ruleRelevant": false,
-                            "minValue": 0,
-                            "maxValue": 4095,
-                            "eventRuleRelevant": false,
-                            "writable": true
-                        },
-                        {
-                            "id": "f4310747-d468-4d2e-abe4-b5e4d0245dad",
-                            "name": "blue",
-                            "displayName": "Blue",
-                            "displayNameEvent": "Blue changed",
-                            "displayNameAction": "Set blue",
-                            "type": "int",
-                            "defaultValue": 0,
-                            "ruleRelevant": false,
-                            "minValue": 0,
-                            "maxValue": 4095,
-                            "eventRuleRelevant": false,
-                            "writable": true
-                        },
-                        {
-                            "id": "01ccda48-44c6-495b-b0a7-c2a0bf5a570d",
-                            "name": "fade",
-                            "displayName": "Fade",
-                            "displayNameEvent": "Fade changed",
-                            "displayNameAction": "Set fade",
-                            "type": "int",
-                            "defaultValue": 0,
-                            "ruleRelevant": false,
-                            "minValue": 0,
-                            "maxValue": 1000,
-                            "eventRuleRelevant": false,
                             "writable": true
                         }
                     ]
