@@ -1,5 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
+ *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
+ *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
@@ -21,9 +23,10 @@
 #ifndef DEVICEPLUGINELGATO_H
 #define DEVICEPLUGINELGATO_H
 
+#include "aveabulb.h"
+#include "plugintimer.h"
 #include "plugin/deviceplugin.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
-#include "aveabulb.h"
 
 class DevicePluginElgato : public DevicePlugin
 {
@@ -34,17 +37,23 @@ class DevicePluginElgato : public DevicePlugin
 
 public:
     explicit DevicePluginElgato();
+    ~DevicePluginElgato();
 
+    void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    void postSetupDevice(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
     void deviceRemoved(Device *device) override;
 
 private:
+    PluginTimer *m_pluginTimer = nullptr;
     QHash<Device *, AveaBulb *> m_bulbs;
+
     bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
 
 private slots:
+    void onPluginTimer();
     void onBluetoothDiscoveryFinished();
 
 };

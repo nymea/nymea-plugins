@@ -1,12 +1,57 @@
-#include "aveacolor.h"
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
+ *                                                                         *
+ *  This file is part of nymea.                                            *
+ *                                                                         *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
+ *                                                                         *
+ *  This library is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
+ *                                                                         *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-AveaColor::AveaColor(const QColor &color)
+#include "extern-plugininfo.h"
+
+AveaColor::AveaColor(const QColor &color):
+    m_color(color)
 {
     // Convert rgb to wrgb
 
-    ColorRgbw rgbw = rgbToRgbw(color.red(), color.green(), color.blue());
-    Q_UNUSED(rgbw)
+    qCDebug(dcElgato()) << "Convert color" << m_color.red() << m_color.green() << m_color.blue();
 
+    ColorRgbw rgbw = rgbToRgbw(m_color.red(), m_color.green(), m_color.blue());
+    m_white = rgbw.white;
+    m_red = rgbw.red;
+    m_green = rgbw.green;
+    m_blue = rgbw.blue;
+}
+
+AveaColor::AveaColor(uint white, uint red, uint green, uint blue):
+    m_white(white),
+    m_red(red),
+    m_green(green),
+    m_blue(blue)
+{
+    // Convert rgbw to rgb
+
+    // TODO
+
+
+}
+
+QColor AveaColor::color() const
+{
+    return m_color;
 }
 
 uint AveaColor::white() const
@@ -67,4 +112,10 @@ ColorRgbw AveaColor::rgbToRgbw(uint red, uint green, uint blue)
     ColorRgbw rgbw = {red, green, blue, white};
     rgbw.white = getWhite(rgbw);
     return rgbw;
+}
+
+QDebug operator<<(QDebug dbg, const AveaColor &color)
+{
+    dbg.nospace() << "AveaColor(" << color.color() << " | R:" << color.red() << " G:" << color.green() << "B:" << color.blue() << "W:" << color.white() << ")";
+    return dbg;
 }
