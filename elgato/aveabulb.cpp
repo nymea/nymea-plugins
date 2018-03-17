@@ -21,7 +21,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "aveabulb.h"
-#include "aveacolor.h"
 #include "extern-plugininfo.h"
 
 #include <QDataStream>
