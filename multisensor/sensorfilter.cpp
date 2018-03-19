@@ -123,7 +123,7 @@ double SensorFilter::lowPassFilterValue(double value)
 {
     addInputValue(value);
 
-    // Check if we have enought data for filtering
+    // Check if we have enough data for filtering
     if (m_inputData.size() < 2) {
         return value;
     }
@@ -144,7 +144,7 @@ double SensorFilter::highPassFilterValue(double value)
 {
     addInputValue(value);
 
-    // Check if we have enought data for filtering
+    // Check if we have enough data for filtering
     if (m_inputData.size() < 2) {
         return value;
     }

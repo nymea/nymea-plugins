@@ -47,8 +47,8 @@ public:
     bool informationValid() const;
     void setInformationValid(const bool &informationValid);
 
-    bool errorOccured() const;
-    void setErrorOccured(const bool &errorOccured);
+    bool errorOccurred() const;
+    void setErrorOccurred(const bool &errorOccurred);
 
     bool isAnswereToCommand() const;
     void setIsAnswereToCommand(const bool &isAnswereToCommand);
@@ -92,7 +92,7 @@ private:
     double m_minSetPointTemp;
 
     bool m_informationValid;
-    bool m_errorOccured;
+    bool m_errorOccurred;
     bool m_isAnswerToCommand;
     bool m_initialized;
     bool m_batteryLow;

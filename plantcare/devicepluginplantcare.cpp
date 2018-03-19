@@ -29,7 +29,7 @@
     \ingroup plugins
     \ingroup nymea-plugins-merkur
 
-    This allows to controll the nymea plantcare demo for 6LoWPAN networks.
+    This allows to control the nymea plantcare demo for 6LoWPAN networks.
 
     \chapter Plugin properties
     Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}

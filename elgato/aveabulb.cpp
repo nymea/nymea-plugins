@@ -286,8 +286,8 @@ void AveaBulb::onColorServiceStateChanged(const QLowEnergyService::ServiceState 
 
     foreach (const QLowEnergyCharacteristic &characteristic, m_colorService->characteristics()) {
         qCDebug(dcElgato()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcElgato()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcElgato()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 

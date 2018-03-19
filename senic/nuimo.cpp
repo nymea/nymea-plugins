@@ -213,8 +213,8 @@ void Nuimo::printService(QLowEnergyService *service)
 {
     foreach (const QLowEnergyCharacteristic &characteristic, service->characteristics()) {
         qCDebug(dcSenic()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcSenic()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcSenic()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 }

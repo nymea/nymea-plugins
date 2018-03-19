@@ -28,7 +28,7 @@
     \ingroup plugins
     \ingroup nymea-plugins
 
-    This plugin allows to find and controll devices from WeMo, the
+    This plugin allows to find and control devices from WeMo, the
     \l{http://www.belkin.com/de/PRODUKTE/home-automation/c/wemo-home-automation/}{Belkin}
     home automation system.
 
@@ -105,7 +105,7 @@ DeviceManager::DeviceError DevicePluginWemo::executeAction(Device *device, const
     if (action.actionTypeId() == wemoSwitchPowerActionTypeId) {
         // Check if wemo device is reachable
         if (device->stateValue(wemoSwitchReachableStateTypeId).toBool()) {
-            // setPower returns false, if the curent powerState is allready the new powerState
+            // setPower returns false, if the curent powerState is already the new powerState
             if (setPower(device, action.param(wemoSwitchPowerStateParamTypeId).value().toBool(), action.id())) {
                 return DeviceManager::DeviceErrorAsync;
             } else {

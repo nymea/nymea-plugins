@@ -28,7 +28,7 @@
     \ingroup plugins
     \ingroup nymea-plugins
 
-    This plugin allows to controll RF 433 MHz actors an receive remote signals from
+    This plugin allows to control RF 433 MHz actors an receive remote signals from
     \l{http://www.intertechno.at}{Intertechno} devices.
 
     \chapter Plugin properties

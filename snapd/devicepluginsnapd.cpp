@@ -114,7 +114,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSnapd::setupDevice(Device *device)
         }
 
         m_snapdControl = new SnapdControl(device, this);
-        m_snapdControl->setPreferedRefreshTime(configValue(SnapdRefreshScheduleParamTypeId).toInt());
+        m_snapdControl->setPreferredRefreshTime(configValue(SnapdRefreshScheduleParamTypeId).toInt());
         connect(m_snapdControl, &SnapdControl::snapListUpdated, this, &DevicePluginSnapd::onSnapListUpdated);
 
     } else if (device->deviceClassId() == snapDeviceClassId) {
@@ -208,7 +208,7 @@ void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTyp
 
         m_refreshTime = value.toInt();
         qCDebug(dcSnapd()) << "Refresh schedule start time" << QTime(m_refreshTime, 0, 0).toString("hh:mm");
-        m_snapdControl->setPreferedRefreshTime(m_refreshTime);
+        m_snapdControl->setPreferredRefreshTime(m_refreshTime);
     }
 }
 

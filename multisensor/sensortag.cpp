@@ -566,8 +566,8 @@ void SensorTag::onTemperatureServiceStateChanged(const QLowEnergyService::Servic
 
     foreach (const QLowEnergyCharacteristic &characteristic, m_temperatureService->characteristics()) {
         qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 
@@ -623,8 +623,8 @@ void SensorTag::onHumidityServiceStateChanged(const QLowEnergyService::ServiceSt
 
     foreach (const QLowEnergyCharacteristic &characteristic, m_humidityService->characteristics()) {
         qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 
@@ -679,8 +679,8 @@ void SensorTag::onPressureServiceStateChanged(const QLowEnergyService::ServiceSt
 
     foreach (const QLowEnergyCharacteristic &characteristic, m_pressureService->characteristics()) {
         qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 
@@ -735,8 +735,8 @@ void SensorTag::onOpticalServiceStateChanged(const QLowEnergyService::ServiceSta
 
     foreach (const QLowEnergyCharacteristic &characteristic, m_pressureService->characteristics()) {
         qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 
@@ -789,8 +789,8 @@ void SensorTag::onKeyServiceStateChanged(const QLowEnergyService::ServiceState &
     qCDebug(dcMultiSensor()) << "Key service discovered.";
     foreach (const QLowEnergyCharacteristic &characteristic, m_keyService->characteristics()) {
         qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 
@@ -823,8 +823,8 @@ void SensorTag::onMovementServiceStateChanged(const QLowEnergyService::ServiceSt
 
     foreach (const QLowEnergyCharacteristic &characteristic, m_pressureService->characteristics()) {
         qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 
@@ -878,8 +878,8 @@ void SensorTag::onIoServiceStateChanged(const QLowEnergyService::ServiceState &s
 
     foreach (const QLowEnergyCharacteristic &characteristic, m_pressureService->characteristics()) {
         qCDebug(dcMultiSensor()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcMultiSensor()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcMultiSensor()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 

@@ -124,7 +124,7 @@ void SensorDataProcessor::processTemperatureData(const QByteArray &data)
         m_device->setStateValue(sensorTagObjectTemperatureStateTypeId, roundValue(objectTemperatureFiltered));
     }
 
-    // Note: only change the state once the filter has collected enought data
+    // Note: only change the state once the filter has collected enough data
     if (m_temperatureFilter->isReady()) {
         m_device->setStateValue(sensorTagTemperatureStateTypeId, roundValue(ambientTemperatureFiltered));
     }

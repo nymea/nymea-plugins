@@ -168,14 +168,14 @@ void RadiatorThermostat::setInformationValid(const bool &informationValid)
     m_informationValid = informationValid;
 }
 
-bool RadiatorThermostat::errorOccured() const
+bool RadiatorThermostat::errorOccurred() const
 {
-    return m_errorOccured;
+    return m_errorOccurred;
 }
 
-void RadiatorThermostat::setErrorOccured(const bool &errorOccured)
+void RadiatorThermostat::setErrorOccurred(const bool &errorOccurred)
 {
-    m_errorOccured = errorOccured;
+    m_errorOccurred = errorOccurred;
 }
 
 bool RadiatorThermostat::isAnswereToCommand() const
