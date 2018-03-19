@@ -1033,7 +1033,7 @@ void DevicePluginPhilipsHue::processBridgeRefreshResponse(Device *device, const 
         break;
     }
 
-    // do lights/sensor update right after successfull bridge update
+    // do lights/sensor update right after successful bridge update
     HueBridge *bridge = m_bridges.key(device);
     refreshLights(bridge);
 }

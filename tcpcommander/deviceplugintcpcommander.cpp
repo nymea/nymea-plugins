@@ -143,7 +143,7 @@ void DevicePluginTcpCommander::onTcpServerConnected()
     }
 
     connect(tcpServer, &TcpServer::textMessageReceived, this, &DevicePluginTcpCommander::onTcpServerTextMessageReceived);
-    //send signal device Setup was successfull
+    //send signal device Setup was successful
 }
 
 
@@ -167,7 +167,7 @@ void DevicePluginTcpCommander::onTcpServerTextMessageReceived(QByteArray data)
     device->setStateValue(tcpInputDataReceivedStateTypeId, data);
 
     if (device->paramValue(tcpInputComparisionParamTypeId).toString() == "Is exactly") {
-        qDebug(dcTCPCommander()) << "is exacly";
+        qDebug(dcTCPCommander()) << "is exactly";
         if (data == device->paramValue(tcpInputInputDataParamTypeId)) {
             qDebug(dcTCPCommander()) << "comparison successful";
             emitEvent(Event(tcpInputCommandReceivedEventTypeId, device->id()));

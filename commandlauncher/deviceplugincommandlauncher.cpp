@@ -51,7 +51,7 @@
     is finished, the \tt running \l{State} will change to \tt false.
 
     \section3 Example
-    An example for a very usefull script could be a backup scrip like following \tt backup.sh script.
+    An example for a very useful script could be a backup scrip like following \tt backup.sh script.
     \code
     #!/bin/sh
     # Directories to backup...

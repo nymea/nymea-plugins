@@ -53,7 +53,7 @@ private:
 
     bool m_timerBasedSchedule = false;
     QString m_currentRefreshSchedule;
-    QString m_preferedRefreshSchedule;
+    QString m_preferredRefreshSchedule;
 
     // Update calls
     void loadSystemInfo();
@@ -90,7 +90,7 @@ public slots:
     void snapRefresh();
     void checkForUpdates();
 
-    void setPreferedRefreshTime(int startTime);
+    void setPreferredRefreshTime(int startTime);
 
     void snapRevert(const QString &snapName);
     void changeSnapChannel(const QString &snapName, const QString &channel);

@@ -161,7 +161,7 @@ void DevicePluginOsdomotics::parseNodes(Device *device, const QByteArray &data)
 
     QHostAddress nodeAddress(QString(data.mid(index, delta - index)));
 
-    // check if we allready have found this node
+    // check if we already have found this node
     foreach (Device *device, myDevices()) {
         if (device->paramValue(merkurNodeHostParamTypeId).toString() == nodeAddress.toString()) {
             return;

@@ -78,14 +78,14 @@ void WallThermostat::setInformationValid(const bool &informationValid)
     m_informationValid = informationValid;
 }
 
-bool WallThermostat::errorOccured() const
+bool WallThermostat::errorOccurred() const
 {
-    return m_errorOccured;
+    return m_errorOccurred;
 }
 
-void WallThermostat::setErrorOccured(const bool &errorOccured)
+void WallThermostat::setErrorOccurred(const bool &errorOccurred)
 {
-    m_errorOccured = errorOccured;
+    m_errorOccurred = errorOccurred;
 }
 
 bool WallThermostat::isAnswereToCommand() const

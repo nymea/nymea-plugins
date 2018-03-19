@@ -217,7 +217,7 @@ void DevicePluginKodi::onUpnpDiscoveryFinished()
     foreach (const UpnpDeviceDescriptor &upnpDescriptor, reply->deviceDescriptors()) {
         if (upnpDescriptor.modelName().contains("Kodi")) {
 
-            // check if we allready found the kodi on this ip
+            // check if we already found the kodi on this ip
             bool alreadyAdded = false;
             foreach (const DeviceDescriptor dDescriptor, deviceDescriptors) {
                 if (dDescriptor.params().paramValue(kodiIpParamTypeId).toString() == upnpDescriptor.hostAddress().toString()) {

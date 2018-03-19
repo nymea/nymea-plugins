@@ -47,7 +47,7 @@
         from your yahoo account.
 
         \section2 Custom Mail
-        With the Custom Mail Notification you can set up a custom SMTP connection. The supported authentification
+        With the Custom Mail Notification you can set up a custom SMTP connection. The supported authentication
         methods are ["PLAIN", "LOGIN"], the supported encryption methods are ["NONE", "SSL", "TLS"].
 
     \chapter Plugin properties

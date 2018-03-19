@@ -24,7 +24,7 @@
 /*!
     \page ws2812.html
     \title ws2812
-    \brief Plugin to controll ws2812 LEDs based on 6LoWPAN networking.
+    \brief Plugin to control ws2812 LEDs based on 6LoWPAN networking.
 
     \ingroup plugins
     \ingroup nymea-plugins-merkur
