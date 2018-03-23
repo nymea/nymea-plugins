@@ -604,7 +604,8 @@ Depends: nymea-plugin-awattar,
          nymea-plugin-wakeonlan,
          nymea-plugin-wemo,
          nymea-plugin-elgato,
-         nymea-plugin-senic
+         nymea-plugin-senic,
+         nymea-plugin-keba,
 Replaces: guh-plugins
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
@@ -679,6 +680,8 @@ Package: nymea-plugins-all
 Section: libs
 Architecture: all
 Depends: nymea-plugins,
+         nymea-plugin-simulation,
+         nymea-plugin-snapd,
          nymea-plugins-433mhz,
          nymea-plugins-maker,
          nymea-plugins-merkurboard,
