@@ -763,12 +763,12 @@
                         },
                         {
                             "id": "9781f0a5-3478-4291-ab51-9daa1ba0e44e",
-                            "name": "lightIntensity",
-                            "displayName": "Light intensity",
-                            "displayNameEvent": "Light intensity changed",
+                            "name": "illuminance",
+                            "displayName": "Illuminance",
+                            "displayNameEvent": "Illuminance changed",
                             "type": "double",
-                            "unit": "Candela",
-                            "defaultValue": 0
+                            "unit": "Lux",
+                            "defaultValue": 20
                         },
                         {
                             "id": "45c0de32-b519-47d7-9f82-e5f09d1542d4",
