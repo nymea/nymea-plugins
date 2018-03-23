@@ -1109,7 +1109,6 @@ void DevicePluginPhilipsHue::processSensorsRefreshResponse(Device *device, const
         QVariantMap sensorMap = sensorsMap.value(sensorId).toMap();
         foreach (HueRemote *remote, m_remotes.keys()) {
             if (remote->id() == sensorId.toInt() && remote->bridgeId() == device->id()) {
-                qCDebug(dcPhilipsHue) << "update remote" << remote->id() << remote->name();
                 remote->updateStates(sensorMap.value("state").toMap(), sensorMap.value("config").toMap());
             }
         }
