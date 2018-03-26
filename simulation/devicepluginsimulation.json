@@ -63,7 +63,7 @@
                     "displayName": "Temperature sensor",
                     "createMethods": ["user"],
                     "deviceIcon": "Thermometer",
-                    "interfaces": ["temperaturesensor", "humiditysensor", "battery", "connectable"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "batterylevel", "connectable"],
                     "basicTags": [
                         "Device",
                         "Sensor"
