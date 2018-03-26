@@ -290,6 +290,8 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
+//    qCDebug(dcPhilipsHue()) << "Hue reply:" << status << reply->error() << reply->errorString();
+
     // create user finished
     if (m_pairingRequests.contains(reply)) {
         PairingInfo *pairingInfo = m_pairingRequests.take(reply);
@@ -440,7 +442,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         }
         processSetNameResponse(device, reply->readAll());
     } else {
-        qCWarning(dcPhilipsHue()) << "Unhandled bridge reply" << reply->readAll();
+        qCWarning(dcPhilipsHue()) << "Unhandled bridge reply" << reply->error() << reply->readAll();
     }
     reply->deleteLater();
 }
@@ -726,16 +728,8 @@ void DevicePluginPhilipsHue::refreshLight(Device *device)
 
 void DevicePluginPhilipsHue::refreshBridge(Device *device)
 {
-    if (m_bridgeRefreshRequests.values().contains(device)) {
-        qCWarning(dcPhilipsHue()) << "Old bridge refresh call pending. Cleaning up and marking device as unreachable.";
-        QNetworkReply *reply = m_bridgeRefreshRequests.key(device);
-        reply->abort();
-        m_bridgeRefreshRequests.remove(reply);
-        reply->deleteLater();
-        bridgeReachableChanged(device, false);
-    }
-
     HueBridge *bridge = m_bridges.key(device);
+//    qCDebug(dcPhilipsHue()) << "refreshing bridge";
 
     QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/config"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -747,6 +741,7 @@ void DevicePluginPhilipsHue::refreshBridge(Device *device)
 void DevicePluginPhilipsHue::refreshLights(HueBridge *bridge)
 {
     Device *device = m_bridges.value(bridge);
+//    qCDebug(dcPhilipsHue()) << "refreshing lights";
 
     QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/lights"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -758,6 +753,7 @@ void DevicePluginPhilipsHue::refreshLights(HueBridge *bridge)
 void DevicePluginPhilipsHue::refreshSensors(HueBridge *bridge)
 {
     Device *device = m_bridges.value(bridge);
+//    qCDebug(dcPhilipsHue()) << "refreshing sensors";
 
     QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/sensors"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -1094,7 +1090,6 @@ void DevicePluginPhilipsHue::processSensorsRefreshResponse(Device *device, const
         QVariantMap sensorMap = sensorsMap.value(sensorId).toMap();
         foreach (HueRemote *remote, m_remotes.keys()) {
             if (remote->id() == sensorId.toInt() && m_remotes.value(remote)->parentId() == device->id()) {
-                qCDebug(dcPhilipsHue) << "update remote" << remote->id() << remote->name();
                 remote->updateStates(sensorMap.value("state").toMap(), sensorMap.value("config").toMap());
             }
         }
