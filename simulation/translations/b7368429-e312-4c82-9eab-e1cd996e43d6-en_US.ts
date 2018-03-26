@@ -547,18 +547,18 @@ The name of the ActionType 17860291-f3a6-4b47-978a-ac1a581aac0f of deviceClass r
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Light intensity changed</source>
+        <source>Water valve</source>
+        <extracomment>The name of the DeviceClass (8fc2e79b-1770-4b18-bf01-78ed15893a81)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Illuminance changed</source>
         <extracomment>The name of the autocreated EventType (9781f0a5-3478-4291-ab51-9daa1ba0e44e)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>lightIntensity</source>
+        <source>illuminance</source>
         <extracomment>The name of the ParamType of StateType (9781f0a5-3478-4291-ab51-9daa1ba0e44e) of DeviceClass gardenSensor</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Water valve</source>
-        <extracomment>The name of the DeviceClass (8fc2e79b-1770-4b18-bf01-78ed15893a81)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
