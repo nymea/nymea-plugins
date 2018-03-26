@@ -234,8 +234,6 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
 
 int DevicePluginSimulation::generateRandomIntValue(int min, int max)
 {
-    // Seed the random generator with current time
-    qsrand(QDateTime::currentMSecsSinceEpoch() / 1000);
     int value = ((qrand() % ((max + 1) - min)) + min);
     // qCDebug(dcSimulation()) << "Generateed random int value: [" << min << ", " << max << "] -->" << value;
     return value;
@@ -276,7 +274,7 @@ void DevicePluginSimulation::onPluginTimer20Seconds()
             // Garden sensor
             device->setStateValue(gardenSensorTemperatureStateTypeId, generateRandomDoubleValue(20, 23));
             device->setStateValue(gardenSensorSoilMoistureStateTypeId, generateRandomIntValue(40, 60));
-            device->setStateValue(gardenSensorLightIntensityStateTypeId, generateRandomIntValue(40, 60));
+            device->setStateValue(gardenSensorIlluminanceStateTypeId, generateRandomIntValue(20, 80));
             device->setStateValue(gardenSensorBatteryLevelStateTypeId, generateRandomIntValue(25, 90));
             device->setStateValue(gardenSensorBatteryCriticalStateTypeId, device->stateValue(gardenSensorBatteryLevelStateTypeId).toDouble() <= 30);
             device->setStateValue(gardenSensorConnectedStateTypeId, true);
