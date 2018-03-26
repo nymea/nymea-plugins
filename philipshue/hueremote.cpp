@@ -52,6 +52,12 @@ void HueRemote::updateStates(const QVariantMap &statesMap, const QVariantMap &co
     emit stateChanged();
 
     QString lastUpdate = statesMap.value("lastupdated").toString();
+
+    // If we never polled, just store the lastUpdate time and not emit a falsely button pressed event
+    if (m_lastUpdate.isEmpty()) {
+        m_lastUpdate = lastUpdate;
+    }
+
     if (m_lastUpdate != lastUpdate) {
         m_lastUpdate = lastUpdate;
 
