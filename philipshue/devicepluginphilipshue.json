@@ -449,7 +449,7 @@
                     "name": "hueRemote",
                     "displayName": "Hue Remote",
                     "deviceIcon": "Switch",
-                    "interfaces": ["longpressmultibutton", "battery", "connectable"],
+                    "interfaces": ["longpressmultibutton", "batterylevel", "connectable"],
                     "basicTags": [
                         "Device",
                         "Sensor"
