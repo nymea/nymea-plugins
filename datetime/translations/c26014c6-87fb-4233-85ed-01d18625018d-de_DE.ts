@@ -109,7 +109,7 @@
         <location filename="../plugininfo.h" line="97"/>
         <source>Time</source>
         <extracomment>The name of the plugin DateTime (c26014c6-87fb-4233-85ed-01d18625018d)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zeit/Datum</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="109"/>
