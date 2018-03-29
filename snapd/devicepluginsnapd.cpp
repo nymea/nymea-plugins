@@ -39,8 +39,8 @@ DevicePluginSnapd::~DevicePluginSnapd()
 void DevicePluginSnapd::init()
 {
     // Initialize plugin configurations
-    m_advancedMode = configValue(SnapdAdvancedModeParamTypeId).toBool();
-    m_refreshTime = configValue(SnapdRefreshScheduleParamTypeId).toInt();
+    m_advancedMode = configValue(snapdAdvancedModeParamTypeId).toBool();
+    m_refreshTime = configValue(snapdRefreshScheduleParamTypeId).toInt();
     connect(this, &DevicePluginSnapd::configValueChanged, this, &DevicePluginSnapd::onPluginConfigurationChanged);
 
     // Refresh timer for snapd checks
@@ -114,7 +114,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSnapd::setupDevice(Device *device)
         }
 
         m_snapdControl = new SnapdControl(device, this);
-        m_snapdControl->setPreferredRefreshTime(configValue(SnapdRefreshScheduleParamTypeId).toInt());
+        m_snapdControl->setPreferredRefreshTime(configValue(snapdRefreshScheduleParamTypeId).toInt());
         connect(m_snapdControl, &SnapdControl::snapListUpdated, this, &DevicePluginSnapd::onSnapListUpdated);
 
     } else if (device->deviceClassId() == snapDeviceClassId) {
@@ -163,7 +163,7 @@ DeviceManager::DeviceError DevicePluginSnapd::executeAction(Device *device, cons
 
         if (action.actionTypeId() == snapChannelActionTypeId) {
             QString snapName = device->paramValue(snapNameParamTypeId).toString();
-            m_snapdControl->changeSnapChannel(snapName, action.param(snapChannelStateParamTypeId).value().toString());
+            m_snapdControl->changeSnapChannel(snapName, action.param(snapChannelActionParamTypeId).value().toString());
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == snapRevertActionTypeId) {
             QString snapName = device->paramValue(snapNameParamTypeId).toString();
@@ -182,7 +182,7 @@ void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     qCDebug(dcSnapd()) << "Plugin configuration changed";
 
     // Check advanced mode
-    if (paramTypeId == SnapdAdvancedModeParamTypeId) {
+    if (paramTypeId == snapdAdvancedModeParamTypeId) {
         qCDebug(dcSnapd()) << "Advanced mode" << (value.toBool() ? "enabled." : "disabled.");
         m_advancedMode = value.toBool();
 
@@ -202,7 +202,7 @@ void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     }
 
     // Check refresh schedule
-    if (paramTypeId == SnapdRefreshScheduleParamTypeId) {
+    if (paramTypeId == snapdRefreshScheduleParamTypeId) {
         if (!m_snapdControl)
             return;
 

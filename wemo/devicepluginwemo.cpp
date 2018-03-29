@@ -106,7 +106,7 @@ DeviceManager::DeviceError DevicePluginWemo::executeAction(Device *device, const
         // Check if wemo device is reachable
         if (device->stateValue(wemoSwitchReachableStateTypeId).toBool()) {
             // setPower returns false, if the curent powerState is already the new powerState
-            if (setPower(device, action.param(wemoSwitchPowerStateParamTypeId).value().toBool(), action.id())) {
+            if (setPower(device, action.param(wemoSwitchPowerActionParamTypeId).value().toBool(), action.id())) {
                 return DeviceManager::DeviceErrorAsync;
             } else {
                 return DeviceManager::DeviceErrorNoError;

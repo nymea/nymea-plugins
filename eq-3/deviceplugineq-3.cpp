@@ -162,7 +162,7 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
                 int roomId = device->paramValue(wallThermostateRoomParamTypeId).toInt();
 
                 if (action.actionTypeId() == wallThermostateDesiredTemperatureActionTypeId){
-                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostateDesiredTemperatureStateParamTypeId).value().toDouble(), action.id());
+                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostateDesiredTemperatureActionParamTypeId).value().toDouble(), action.id());
                 } else if (action.actionTypeId() == wallThermostateSetAutoModeActionTypeId){
                     cube->setDeviceAutoMode(rfAddress, roomId, action.id());
                 } else if (action.actionTypeId() == wallThermostateSetManualModeActionTypeId){
@@ -183,7 +183,7 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
                 int roomId = device->paramValue(radiatorThermostateRoomParamTypeId).toInt();
 
                 if (action.actionTypeId() == radiatorThermostateDesiredTemperatureActionTypeId){
-                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(radiatorThermostateDesiredTemperatureStateParamTypeId).value().toDouble(), action.id());
+                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(radiatorThermostateDesiredTemperatureActionParamTypeId).value().toDouble(), action.id());
                 } else if (action.actionTypeId() == radiatorThermostateSetAutoModeActionTypeId){
                     cube->setDeviceAutoMode(rfAddress, roomId, action.id());
                 } else if (action.actionTypeId() == radiatorThermostateSetManualModeActionTypeId){

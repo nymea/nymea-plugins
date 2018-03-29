@@ -147,7 +147,7 @@ DeviceManager::DeviceError DevicePluginOrderButton::executeAction(Device *device
         return DeviceManager::DeviceErrorAsync;
 
     } else if(action.actionTypeId() == orderbuttonLedActionTypeId) {
-        bool led = action.param(orderbuttonLedStateParamTypeId).value().toBool();
+        bool led = action.param(orderbuttonLedActionParamTypeId).value().toBool();
 
         QUrl url;
         url.setScheme("coap");
@@ -466,7 +466,7 @@ void DevicePluginOrderButton::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(orderbuttonLedStateTypeId, action.param(orderbuttonLedStateParamTypeId).value().toBool());
+        device->setStateValue(orderbuttonLedStateTypeId, action.param(orderbuttonLedActionParamTypeId).value().toBool());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 
