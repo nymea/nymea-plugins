@@ -55,7 +55,7 @@ DeviceManager::DeviceError DevicePluginRemoteSsh::executeAction(Device *device, 
 
         if (action.actionTypeId() == reverseSshConnectedActionTypeId) {
 
-            if (action.param(reverseSshConnectedStateParamTypeId).value().toBool() == true) {
+            if (action.param(reverseSshConnectedActionParamTypeId).value().toBool() == true) {
                 QProcess *process = startReverseSSHProcess(device);
                 m_reverseSSHProcess.insert(process, device);
                 m_startingProcess.insert(process, action.id());

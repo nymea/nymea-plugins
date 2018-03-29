@@ -297,7 +297,7 @@ DeviceManager::DeviceError DevicePluginGpio::executeAction(Device *device, const
     if (deviceClass.vendorId() == raspberryPiVendorId) {
         if (action.actionTypeId() == gpioOutputRpiPowerValueActionTypeId) {
             bool success = false;
-            if (action.param(gpioOutputRpiPowerValueStateParamTypeId).value().toBool()) {
+            if (action.param(gpioOutputRpiPowerValueActionParamTypeId).value().toBool()) {
                 success = gpio->setValue(Gpio::ValueHigh);
             } else {
                 success = gpio->setValue(Gpio::ValueLow);
@@ -309,14 +309,14 @@ DeviceManager::DeviceError DevicePluginGpio::executeAction(Device *device, const
             }
 
             // Set the current state
-            device->setStateValue(gpioOutputRpiPowerValueStateTypeId, action.param(gpioOutputRpiPowerValueStateParamTypeId).value());
+            device->setStateValue(gpioOutputRpiPowerValueStateTypeId, action.param(gpioOutputRpiPowerValueActionParamTypeId).value());
 
             return DeviceManager::DeviceErrorNoError;
         }
     } else if (deviceClass.vendorId() == beagleboneBlackVendorId) {
         if (action.actionTypeId() == gpioOutputBbbPowerValueActionTypeId) {
             bool success = false;
-            if (action.param(gpioOutputBbbPowerValueStateParamTypeId).value().toBool()) {
+            if (action.param(gpioOutputBbbPowerValueActionParamTypeId).value().toBool()) {
                 success = gpio->setValue(Gpio::ValueHigh);
             } else {
                 success = gpio->setValue(Gpio::ValueLow);
@@ -328,7 +328,7 @@ DeviceManager::DeviceError DevicePluginGpio::executeAction(Device *device, const
             }
 
             // Set the current state
-            device->setStateValue(gpioOutputBbbPowerValueStateTypeId, action.param(gpioOutputBbbPowerValueStateParamTypeId).value());
+            device->setStateValue(gpioOutputBbbPowerValueStateTypeId, action.param(gpioOutputBbbPowerValueActionParamTypeId).value());
 
             return DeviceManager::DeviceErrorNoError;
         }

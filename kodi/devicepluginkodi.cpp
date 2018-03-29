@@ -148,10 +148,10 @@ DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const
             kodi->showNotification(action.param(kodiMessageParamTypeId).value().toString(), 8000, action.param(kodiTypeParamTypeId).value().toString(), action.id());
             return DeviceManager::DeviceErrorAsync;
         } else if (action.actionTypeId() == kodiVolumeActionTypeId) {
-            kodi->setVolume(action.param(kodiVolumeStateParamTypeId).value().toInt(), action.id());
+            kodi->setVolume(action.param(kodiVolumeActionParamTypeId).value().toInt(), action.id());
             return DeviceManager::DeviceErrorAsync;
         } else if (action.actionTypeId() == kodiMuteActionTypeId) {
-            kodi->setMuted(action.param(kodiMuteStateParamTypeId).value().toBool(), action.id());
+            kodi->setMuted(action.param(kodiMuteActionParamTypeId).value().toBool(), action.id());
             return DeviceManager::DeviceErrorAsync;
         } else if (action.actionTypeId() == kodiPressButtonActionTypeId) {
             kodi->pressButton(action.param(kodiButtonParamTypeId).value().toString(), action.id());
