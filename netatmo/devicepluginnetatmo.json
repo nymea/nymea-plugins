@@ -75,14 +75,6 @@
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true
-                        },
-                        {
-                            "id": "c15e5dea-10f2-4c96-afab-649872f43d5c",
-                            "name": "connection",
-                            "displayName": "connection",
-                            "type": "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -202,14 +194,6 @@
                             "id": "157d470a-e579-4d0e-b879-6b5bfa8e34ae",
                             "name": "mac",
                             "displayName": "mac address",
-                            "type": "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "c15e5dea-10f2-4c96-afab-649872f43d5c",
-                            "name": "connection",
-                            "displayName": "connection",
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true

@@ -86,9 +86,8 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
         qCDebug(dcNetatmo) << "Setup netatmo indoor base station" << device->params();
         NetatmoBaseStation *indoor = new NetatmoBaseStation(device->paramValue(indoorNameParamTypeId).toString(),
                                                             device->paramValue(indoorMacParamTypeId).toString(),
-                                                            device->paramValue(indoorConnectionParamTypeId).toString(), this);
+                                                            this);
 
-        device->setParentId(DeviceId(indoor->connectionId()));
         m_indoorDevices.insert(indoor, device);
         connect(indoor, SIGNAL(statesChanged()), this, SLOT(onIndoorStatesChanged()));
 
@@ -97,10 +96,9 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
         qCDebug(dcNetatmo) << "Setup netatmo outdoor module" << device->params();
         NetatmoOutdoorModule *outdoor = new NetatmoOutdoorModule(device->paramValue(outdoorNameParamTypeId).toString(),
                                                                  device->paramValue(outdoorMacParamTypeId).toString(),
-                                                                 device->paramValue(outdoorConnectionParamTypeId).toString(),
-                                                                 device->paramValue(outdoorBaseStationParamTypeId).toString(),this);
+                                                                 device->paramValue(outdoorBaseStationParamTypeId).toString(),
+                                                                 this);
 
-        device->setParentId(DeviceId(outdoor->connectionId()));
         m_outdoorDevices.insert(outdoor, device);
         connect(outdoor, SIGNAL(statesChanged()), this, SLOT(onOutdoorStatesChanged()));
 
@@ -163,11 +161,10 @@ void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, const QStr
                     Device *indoorDevice = findIndoorDevice(deviceMap.value("_id").toString());
                     // check if we have to create the device (auto)
                     if (!indoorDevice) {
-                        DeviceDescriptor descriptor(indoorDeviceClassId, "Indoor Station", deviceMap.value("station_name").toString());
+                        DeviceDescriptor descriptor(indoorDeviceClassId, "Indoor Station", deviceMap.value("station_name").toString(), connectionId);
                         ParamList params;
                         params.append(Param(indoorNameParamTypeId, deviceMap.value("station_name").toString()));
                         params.append(Param(indoorMacParamTypeId, deviceMap.value("_id").toString()));
-                        params.append(Param(indoorConnectionParamTypeId, connectionId));
                         descriptor.setParams(params);
                         emit autoDevicesAppeared(indoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
                     } else {
@@ -190,11 +187,10 @@ void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, const QStr
                     Device *outdoorDevice = findOutdoorDevice(moduleMap.value("_id").toString());
                     // check if we have to create the device (auto)
                     if (!outdoorDevice) {
-                        DeviceDescriptor descriptor(outdoorDeviceClassId, "Outdoor Module", moduleMap.value("module_name").toString());
+                        DeviceDescriptor descriptor(outdoorDeviceClassId, "Outdoor Module", moduleMap.value("module_name").toString(), connectionId);
                         ParamList params;
                         params.append(Param(outdoorNameParamTypeId, moduleMap.value("module_name").toString()));
                         params.append(Param(outdoorMacParamTypeId, moduleMap.value("_id").toString()));
-                        params.append(Param(outdoorConnectionParamTypeId, connectionId));
                         params.append(Param(outdoorBaseStationParamTypeId, moduleMap.value("main_device").toString()));
                         descriptor.setParams(params);
                         emit autoDevicesAppeared(outdoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
