@@ -5,14 +5,11 @@
     <name>Osdomotics</name>
     <message>
         <location filename="../plugininfo.h" line="37"/>
-        <source>Osdomotics</source>
-        <extracomment>The name of the plugin Osdomotics (78927596-e266-4a23-8634-7311b2c5fe32)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="40"/>
         <source>OSDomotics</source>
-        <extracomment>The name of the vendor (e2912117-3b2f-4888-950e-6d259b699102)</extracomment>
+        <extracomment>The name of the plugin Osdomotics (78927596-e266-4a23-8634-7311b2c5fe32)
+----------
+The name of the vendor (e2912117-3b2f-4888-950e-6d259b699102)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -59,26 +56,15 @@ The name of the paramType (f46b08c7-06e7-4c51-bb28-57e07d19275d) of merkurNode</
     </message>
     <message>
         <location filename="../plugininfo.h" line="67"/>
-<<<<<<< HEAD
         <source>battery voltage</source>
-        <extracomment>The name of the ParamType of StateType (06cf4e66-f102-4a8e-ae76-fac250a07753) of DeviceClass Merkur Node</extracomment>
-        <translation>Batterie Spannung</translation>
-=======
-        <source>battery</source>
-        <extracomment>The name of the ParamType of StateType (06cf4e66-f102-4a8e-ae76-fac250a07753) of DeviceClass merkurNode</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (06cf4e66-f102-4a8e-ae76-fac250a07753) of DeviceClass merkurNode</extracomment>
         <translation type="unfinished"></translation>
->>>>>>> Automatic translations update by Jenkins
     </message>
     <message>
         <location filename="../plugininfo.h" line="70"/>
         <source>toggle led</source>
-<<<<<<< HEAD
-        <extracomment>The name of the ActionType a91db0e7-9d0f-4071-9a8f-2bda45ed4c9d of deviceClass Merkur Node</extracomment>
-        <translation>Schalte LED</translation>
-=======
         <extracomment>The name of the ActionType a91db0e7-9d0f-4071-9a8f-2bda45ed4c9d of deviceClass merkurNode</extracomment>
         <translation type="unfinished"></translation>
->>>>>>> Automatic translations update by Jenkins
     </message>
 </context>
 </TS>

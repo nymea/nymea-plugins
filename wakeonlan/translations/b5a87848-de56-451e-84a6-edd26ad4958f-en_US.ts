@@ -5,7 +5,7 @@
     <name>WakeOnLan</name>
     <message>
         <location filename="../plugininfo.h" line="29"/>
-        <source>WakeOnLan</source>
+        <source>Wake on Lan</source>
         <extracomment>The name of the plugin WakeOnLan (b5a87848-de56-451e-84a6-edd26ad4958f)</extracomment>
         <translation type="unfinished"></translation>
     </message>

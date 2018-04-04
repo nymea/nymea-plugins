@@ -4,11 +4,6 @@
 <context>
     <name>HttpCommander</name>
     <message>
-        <source>HttpCommander</source>
-        <extracomment>The name of the plugin HttpCommander (4e62670c-6268-4487-8dff-cccca498731a)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>HTTP commander</source>
         <extracomment>The name of the vendor (45d7c941-7690-43c9-92fc-fab36e1cebd0)</extracomment>
         <translation type="unfinished"></translation>
@@ -44,26 +39,13 @@ The name of the autocreated EventType (0d63f815-efd1-488a-9bfa-e9f6bda540d2)</ex
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>connected</source>
-        <extracomment>The name of the ParamType of StateType (8daac0e7-4c2f-4cdf-b528-02cfe04c6b39) of DeviceClass httpPostCommander
-----------
-The name of the ParamType of StateType (d102ff86-b773-48e3-a7a5-e138cb541f49) of DeviceClass httpPutCommander
-----------
-The name of the ParamType of StateType (0d63f815-efd1-488a-9bfa-e9f6bda540d2) of DeviceClass httpGetCommander</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Response received</source>
         <extracomment>The name of the autocreated EventType (69f32ec8-114d-43f4-9241-1f6a57261f32)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>response</source>
-        <extracomment>The name of the ParamType of StateType (69f32ec8-114d-43f4-9241-1f6a57261f32) of DeviceClass httpPostCommander
-----------
-The name of the ParamType of StateType (69f32ec8-114d-43f4-9241-1f6a57261f32) of DeviceClass httpPutCommander
-----------
-The name of the ParamType of StateType (d81f0644-b94e-48ed-ae48-1b8ff6cebc0c) of DeviceClass httpGetCommander</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (69f32ec8-114d-43f4-9241-1f6a57261f32) of DeviceClass httpPostCommander</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -101,6 +83,27 @@ The name of the paramType (7742d445-8fc1-4b20-87f2-1bb35929fce1) of httpPutComma
     <message>
         <source>Response data received</source>
         <extracomment>The name of the autocreated EventType (d81f0644-b94e-48ed-ae48-1b8ff6cebc0c)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Http Commander</source>
+        <extracomment>The name of the plugin HttpCommander (4e62670c-6268-4487-8dff-cccca498731a)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reachable</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (8daac0e7-4c2f-4cdf-b528-02cfe04c6b39) of DeviceClass httpPostCommander
+----------
+The name of the ParamType of the autocreated EventType (d102ff86-b773-48e3-a7a5-e138cb541f49) of DeviceClass httpPutCommander
+----------
+The name of the ParamType of the autocreated EventType (0d63f815-efd1-488a-9bfa-e9f6bda540d2) of DeviceClass httpGetCommander</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Response</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (69f32ec8-114d-43f4-9241-1f6a57261f32) of DeviceClass httpPutCommander
+----------
+The name of the ParamType of the autocreated EventType (d81f0644-b94e-48ed-ae48-1b8ff6cebc0c) of DeviceClass httpGetCommander</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
