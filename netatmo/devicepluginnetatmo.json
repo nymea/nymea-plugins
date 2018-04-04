@@ -12,7 +12,7 @@
                     "id": "728d5a67-27a3-400e-b83c-2765f5196f69",
                     "name": "connection",
                     "displayName": "Netatmo Connection",
-                    "critcalStateTypeId": "2f79bc1d-27ed-480a-b583-728363c83ea6",
+                    "criticalStateTypeId": "2f79bc1d-27ed-480a-b583-728363c83ea6",
                     "deviceIcon": "Network",
                     "interfaces": ["gateway"],
                     "basicTags": [

@@ -65,8 +65,7 @@
                             "name": "channel",
                             "displayName": "channel",
                             "type": "int",
-                            "readonly": true,
-                            "inputType": "None"
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -121,8 +120,7 @@
                             "name": "channel",
                             "displayName": "channel",
                             "type": "int",
-                            "readonly": true,
-                            "inputType": "None"
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [

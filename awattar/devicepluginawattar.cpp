@@ -133,9 +133,9 @@ DeviceManager::DeviceError DevicePluginAwattar::executeAction(Device *device, co
         return DeviceManager::DeviceErrorHardwareNotAvailable;
 
     if (action.actionTypeId() == awattarSgSyncModeActionTypeId) {
-        qCDebug(dcAwattar) << "Set sg sync mode to" << action.param(awattarSgSyncModeStateParamTypeId).value();
-        device->setStateValue(awattarSgSyncModeStateTypeId, action.param(awattarSgSyncModeStateParamTypeId).value());
-        if (action.param(awattarSgSyncModeStateParamTypeId).value() == "auto")
+        qCDebug(dcAwattar) << "Set sg sync mode to" << action.param(awattarSgSyncModeActionParamTypeId).value();
+        device->setStateValue(awattarSgSyncModeStateTypeId, action.param(awattarSgSyncModeActionParamTypeId).value());
+        if (action.param(awattarSgSyncModeActionParamTypeId).value() == "auto")
             setSgMode(m_autoSgMode);
 
         return DeviceManager::DeviceErrorNoError;

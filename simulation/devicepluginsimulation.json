@@ -7,7 +7,6 @@
             "name": "simulation",
             "displayName": "Simulation",
             "id": "fd2ae067-2c3d-4332-9c4b-ee0af653bcaf",
-            "interfaces": ["simplebutton"],
             "deviceClasses": [
                 {
                     "id": "73bb670b-e7a3-40da-bd6f-3260f017ec80",
@@ -54,7 +53,6 @@
                             "displayNameEvent": "Power changed",
                             "displayNameAction": "Set power",
                             "defaultValue": false,
-                            "index" : 0,
                             "writable": true
                         }
                     ]
@@ -284,20 +282,17 @@
                         {
                             "id": "1786029d-f3a6-4b47-978a-ac1a581aac0f",
                             "name": "open",
-                            "displayName": "Open",
-                            "type": "bool"
+                            "displayName": "Open"
                         },
                         {
                             "id": "2786029d-f3a6-4b47-978a-ac1a581aac0f",
                             "name": "stop",
-                            "displayName": "Stop",
-                            "type": "bool"
+                            "displayName": "Stop"
                         },
                         {
                             "id": "3786029d-f3a6-4b47-978a-ac1a581aac0f",
                             "name": "close",
-                            "displayName": "Close",
-                            "type": "bool"
+                            "displayName": "Close"
                         }
                     ]
                 },
@@ -328,20 +323,17 @@
                         {
                             "id": "17860291-f3a6-4b47-978a-ac1a581aac0f",
                             "name": "open",
-                            "displayName": "Open",
-                            "type": "bool"
+                            "displayName": "Open"
                         },
                         {
                             "id": "27860292-f3a6-4b47-978a-ac1a581aac0f",
                             "name": "stop",
-                            "displayName": "stop",
-                            "type": "bool"
+                            "displayName": "stop"
                         },
                         {
                             "id": "37860293-f3a6-4b47-978a-ac1a581aac0f",
                             "name": "close",
-                            "displayName": "close",
-                            "type": "bool"
+                            "displayName": "close"
                         }
                     ]
                 },

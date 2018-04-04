@@ -478,53 +478,53 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
         AveaBulb *bulb = m_bulbs.value(device);
 
         if (action.actionTypeId() == aveaPowerActionTypeId) {
-            bool power = action.param(aveaPowerStateParamTypeId).value().toBool();
+            bool power = action.param(aveaPowerActionParamTypeId).value().toBool();
             device->setStateValue(aveaPowerStateTypeId, power);
             if (!bulb->setPower(power))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaBrightnessActionTypeId) {
-            int percentage = action.param(aveaBrightnessStateParamTypeId).value().toInt();
+            int percentage = action.param(aveaBrightnessActionParamTypeId).value().toInt();
             if (!bulb->setBrightness(percentage))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             device->setStateValue(aveaBrightnessStateTypeId, percentage);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorActionTypeId) {
-            QColor color = action.param(aveaColorStateParamTypeId).value().value<QColor>();
+            QColor color = action.param(aveaColorActionParamTypeId).value().value<QColor>();
             if (!bulb->setColor(color))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             device->setStateValue(aveaColorStateTypeId, color);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaWhiteActionTypeId) {
-            int whiteValue = action.param(aveaWhiteStateParamTypeId).value().toInt();
+            int whiteValue = action.param(aveaWhiteActionParamTypeId).value().toInt();
             if (!bulb->setWhite(whiteValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             device->setStateValue(aveaWhiteStateTypeId, whiteValue);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaGreenActionTypeId) {
-            int greenValue = action.param(aveaGreenStateParamTypeId).value().toInt();
+            int greenValue = action.param(aveaGreenActionParamTypeId).value().toInt();
             if (!bulb->setGreen(greenValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaRedActionTypeId) {
-            int redValue = action.param(aveaRedStateParamTypeId).value().toInt();
+            int redValue = action.param(aveaRedActionParamTypeId).value().toInt();
             if (!bulb->setRed(redValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaBlueActionTypeId) {
-            int blueValue = action.param(aveaBlueStateParamTypeId).value().toInt();
+            int blueValue = action.param(aveaBlueActionParamTypeId).value().toInt();
             if (!bulb->setBlue(blueValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaFadeActionTypeId) {
-            int fadeValue = action.param(aveaFadeStateParamTypeId).value().toInt();
+            int fadeValue = action.param(aveaFadeActionParamTypeId).value().toInt();
             device->setStateValue(aveaFadeStateTypeId, fadeValue);
             if (!bulb->setFade(fadeValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;

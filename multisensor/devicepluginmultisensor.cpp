@@ -136,64 +136,64 @@ DeviceManager::DeviceError DevicePluginMultiSensor::executeAction(Device *device
 {
     SensorTag *sensor = m_sensors.value(device);
     if (action.actionTypeId() == sensorTagBuzzerActionTypeId) {
-        sensor->setBuzzerPower(action.param(sensorTagBuzzerStateParamTypeId).value().toBool());
+        sensor->setBuzzerPower(action.param(sensorTagBuzzerActionParamTypeId).value().toBool());
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagGreenLedActionTypeId) {
-        sensor->setGreenLedPower(action.param(sensorTagGreenLedStateParamTypeId).value().toBool());
+        sensor->setGreenLedPower(action.param(sensorTagGreenLedActionParamTypeId).value().toBool());
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagRedLedActionTypeId) {
-        sensor->setRedLedPower(action.param(sensorTagRedLedStateParamTypeId).value().toBool());
+        sensor->setRedLedPower(action.param(sensorTagRedLedActionParamTypeId).value().toBool());
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagBuzzerImpulseActionTypeId) {
         sensor->buzzerImpulse();
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagTemperatureSensorEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagTemperatureSensorEnabledStateParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagTemperatureSensorEnabledActionParamTypeId).value().toBool();
         device->setStateValue(sensorTagTemperatureSensorEnabledStateTypeId, enabled);
         sensor->setTemperatureSensorEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagHumiditySensorEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagHumiditySensorEnabledStateParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagHumiditySensorEnabledActionParamTypeId).value().toBool();
         device->setStateValue(sensorTagHumiditySensorEnabledStateTypeId, enabled);
         sensor->setHumiditySensorEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagPressureSensorEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagPressureSensorEnabledStateParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagPressureSensorEnabledActionParamTypeId).value().toBool();
         device->setStateValue(sensorTagPressureSensorEnabledStateTypeId, enabled);
         sensor->setPressureSensorEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagOpticalSensorEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagOpticalSensorEnabledStateParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagOpticalSensorEnabledActionParamTypeId).value().toBool();
         device->setStateValue(sensorTagOpticalSensorEnabledStateTypeId, enabled);
         sensor->setOpticalSensorEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagAccelerometerEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagAccelerometerEnabledStateParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagAccelerometerEnabledActionParamTypeId).value().toBool();
         device->setStateValue(sensorTagAccelerometerEnabledStateTypeId, enabled);
         sensor->setAccelerometerEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagGyroscopeEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagGyroscopeEnabledStateParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagGyroscopeEnabledActionParamTypeId).value().toBool();
         device->setStateValue(sensorTagGyroscopeEnabledStateTypeId, enabled);
         sensor->setGyroscopeEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMagnetometerEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagMagnetometerEnabledStateParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagMagnetometerEnabledActionParamTypeId).value().toBool();
         device->setStateValue(sensorTagMagnetometerEnabledStateTypeId, enabled);
         sensor->setMagnetometerEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMeasurementPeriodActionTypeId) {
-        int period = action.param(sensorTagMeasurementPeriodStateParamTypeId).value().toInt();
+        int period = action.param(sensorTagMeasurementPeriodActionParamTypeId).value().toInt();
         device->setStateValue(sensorTagMeasurementPeriodStateTypeId, period);
         sensor->setMeasurementPeriod(period);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMeasurementPeriodMovementActionTypeId) {
-        int period = action.param(sensorTagMeasurementPeriodMovementStateParamTypeId).value().toInt();
+        int period = action.param(sensorTagMeasurementPeriodMovementActionParamTypeId).value().toInt();
         device->setStateValue(sensorTagMeasurementPeriodMovementStateTypeId, period);
         sensor->setMeasurementPeriodMovement(period);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMovementSensitivityActionTypeId) {
-        int sensitivity = action.param(sensorTagMovementSensitivityStateParamTypeId).value().toInt();
+        int sensitivity = action.param(sensorTagMovementSensitivityActionParamTypeId).value().toInt();
         device->setStateValue(sensorTagMovementSensitivityStateTypeId, sensitivity);
         sensor->setMovementSensitivity(sensitivity);
         return DeviceManager::DeviceErrorNoError;
