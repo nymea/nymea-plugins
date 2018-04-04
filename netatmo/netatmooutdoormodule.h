@@ -29,12 +29,11 @@ class NetatmoOutdoorModule : public QObject
 {
     Q_OBJECT
 public:
-    explicit NetatmoOutdoorModule(const QString &name, const QString &macAddress, const QString &connectionId, const QString &baseStation, QObject *parent = 0);
+    explicit NetatmoOutdoorModule(const QString &name, const QString &macAddress, const QString &baseStation, QObject *parent = 0);
 
     // Params
     QString name() const;
     QString macAddress() const;
-    QString connectionId() const;
     QString baseStation() const;
 
     // States
@@ -52,7 +51,6 @@ private:
     // Params
     QString m_name;
     QString m_macAddress;
-    QString m_connectionId;
     QString m_baseStation;
 
     // States
