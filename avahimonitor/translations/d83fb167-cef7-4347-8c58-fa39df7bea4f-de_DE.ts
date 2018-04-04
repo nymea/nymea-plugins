@@ -4,15 +4,12 @@
 <context>
     <name>AvahiMonitor</name>
     <message>
+        <location filename="../plugininfo.h" line="32"/>
         <location filename="../plugininfo.h" line="38"/>
         <source>Avahi Monitor</source>
-        <extracomment>The name of the DeviceClass (97f0154d-6945-49b8-bd65-0a8cea0c6652)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="32"/>
-        <source>AvahiMonitor</source>
-        <extracomment>The name of the plugin AvahiMonitor (d83fb167-cef7-4347-8c58-fa39df7bea4f)</extracomment>
+        <extracomment>The name of the plugin AvahiMonitor (d83fb167-cef7-4347-8c58-fa39df7bea4f)
+----------
+The name of the DeviceClass (97f0154d-6945-49b8-bd65-0a8cea0c6652)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -42,7 +39,7 @@
     <message>
         <location filename="../plugininfo.h" line="50"/>
         <source>online</source>
-        <extracomment>The name of the ParamType of StateType (b5616fd3-da12-4613-9576-6516b2267180) of DeviceClass avahi</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (b5616fd3-da12-4613-9576-6516b2267180) of DeviceClass avahi</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

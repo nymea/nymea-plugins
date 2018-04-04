@@ -4,11 +4,6 @@
 <context>
     <name>RemoteSsh</name>
     <message>
-        <source>RemoteSsh</source>
-        <extracomment>The name of the plugin RemoteSsh (cd75d899-3f53-43fa-9ee8-f6b36646a27d)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Remote Access</source>
         <extracomment>The name of the vendor (e87ad7b1-1705-46b1-a962-282126646b4d)</extracomment>
         <translation type="unfinished"></translation>
@@ -49,18 +44,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>reachable</source>
-        <extracomment>The name of the ParamType of StateType (19f079f0-1654-44c3-ab10-e7d7f9742e09) of DeviceClass reverseSsh</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Connected changed</source>
         <extracomment>The name of the autocreated EventType (1ae425b2-d642-42ca-be41-4d06dff5c5cd)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>connected</source>
-        <extracomment>The name of the ParamType of StateType (1ae425b2-d642-42ca-be41-4d06dff5c5cd) of DeviceClass reverseSsh</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -74,8 +59,25 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>sshKey</source>
-        <extracomment>The name of the ParamType of StateType (d8bb619e-6602-4c89-8654-85e111520561) of DeviceClass reverseSsh</extracomment>
+        <source>Remote SSH</source>
+        <extracomment>The name of the plugin RemoteSsh (cd75d899-3f53-43fa-9ee8-f6b36646a27d)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server Reachable</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (19f079f0-1654-44c3-ab10-e7d7f9742e09) of DeviceClass reverseSsh</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (1ae425b2-d642-42ca-be41-4d06dff5c5cd) of DeviceClass reverseSsh
+----------
+The name of the autocreated ParamType of the writable StateType (1ae425b2-d642-42ca-be41-4d06dff5c5cd) of DeviceClass reverseSsh</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SSH public key</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (d8bb619e-6602-4c89-8654-85e111520561) of DeviceClass reverseSsh</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

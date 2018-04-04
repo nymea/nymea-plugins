@@ -4,15 +4,12 @@
 <context>
     <name>UdpCommander</name>
     <message>
+        <location filename="../plugininfo.h" line="38"/>
         <location filename="../plugininfo.h" line="62"/>
         <source>UDP Commander</source>
-        <extracomment>The name of the DeviceClass (31b00639-8904-4522-84ed-54c46a54c63c)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="38"/>
-        <source>UdpCommander</source>
-        <extracomment>The name of the plugin UdpCommander (24a8474c-1d86-499e-a76e-9cbfbf48dd72)</extracomment>
+        <extracomment>The name of the plugin UdpCommander (24a8474c-1d86-499e-a76e-9cbfbf48dd72)
+----------
+The name of the DeviceClass (31b00639-8904-4522-84ed-54c46a54c63c)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -50,8 +47,8 @@ The name of the paramType (eb204dfe-11f8-413f-8b68-8bffef3f9a7f) of udpCommander
     </message>
     <message>
         <location filename="../plugininfo.h" line="56"/>
-        <source>inputData</source>
-        <extracomment>The name of the ParamType of StateType (065a1a0a-d324-4ae6-a461-bef8143e8795) of DeviceClass udpReceiver</extracomment>
+        <source>Received data</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (065a1a0a-d324-4ae6-a461-bef8143e8795) of DeviceClass udpReceiver</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

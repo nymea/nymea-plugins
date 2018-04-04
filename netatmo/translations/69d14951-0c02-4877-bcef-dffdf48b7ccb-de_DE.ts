@@ -48,7 +48,7 @@ The name of the paramType (a97d256c-e159-4aa0-bc71-6bd7cd0688b3) of outdoor</ext
     <message>
         <location filename="../plugininfo.h" line="105"/>
         <source>available</source>
-        <extracomment>The name of the ParamType of StateType (2f79bc1d-27ed-480a-b583-728363c83ea6) of DeviceClass connection</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (2f79bc1d-27ed-480a-b583-728363c83ea6) of DeviceClass connection</extracomment>
         <translation>Verfügbar</translation>
     </message>
     <message>
@@ -74,6 +74,15 @@ The name of the paramType (157d470a-e579-4d0e-b879-6b5bfa8e34ae) of outdoor</ext
         <translation>Letztes Update geändert</translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="120"/>
+        <location filename="../plugininfo.h" line="186"/>
+        <source>last update</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (50da9f6b-c350-401c-a72e-2e4036f3975d) of DeviceClass indoor
+----------
+The name of the ParamType of the autocreated EventType (50da9f6b-c350-401c-a72e-2e4036f3975d) of DeviceClass outdoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="123"/>
         <location filename="../plugininfo.h" line="189"/>
         <source>temperature changed</source>
@@ -84,9 +93,9 @@ The name of the paramType (157d470a-e579-4d0e-b879-6b5bfa8e34ae) of outdoor</ext
         <location filename="../plugininfo.h" line="126"/>
         <location filename="../plugininfo.h" line="192"/>
         <source>temperature</source>
-        <extracomment>The name of the ParamType of StateType (3cb25538-e463-40ae-92f9-8f34f0c06b92) of DeviceClass indoor
+        <extracomment>The name of the ParamType of the autocreated EventType (3cb25538-e463-40ae-92f9-8f34f0c06b92) of DeviceClass indoor
 ----------
-The name of the ParamType of StateType (3cb25538-e463-40ae-92f9-8f34f0c06b92) of DeviceClass outdoor</extracomment>
+The name of the ParamType of the autocreated EventType (3cb25538-e463-40ae-92f9-8f34f0c06b92) of DeviceClass outdoor</extracomment>
         <translation>Temperatur</translation>
     </message>
     <message>
@@ -97,6 +106,15 @@ The name of the ParamType of StateType (3cb25538-e463-40ae-92f9-8f34f0c06b92) of
         <translation>Temperatur Minimum geändert</translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="132"/>
+        <location filename="../plugininfo.h" line="198"/>
+        <source>temperature minimum</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (ae8bb713-8805-4efd-89a1-bca44a1f1690) of DeviceClass indoor
+----------
+The name of the ParamType of the autocreated EventType (ae8bb713-8805-4efd-89a1-bca44a1f1690) of DeviceClass outdoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="135"/>
         <location filename="../plugininfo.h" line="201"/>
         <source>temperature maximum changed</source>
@@ -104,30 +122,18 @@ The name of the ParamType of StateType (3cb25538-e463-40ae-92f9-8f34f0c06b92) of
         <translation>Temperatur Maximum geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="120"/>
-        <location filename="../plugininfo.h" line="186"/>
-        <source>updateTime</source>
-        <extracomment>The name of the ParamType of StateType (50da9f6b-c350-401c-a72e-2e4036f3975d) of DeviceClass indoor
-----------
-The name of the ParamType of StateType (50da9f6b-c350-401c-a72e-2e4036f3975d) of DeviceClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="132"/>
-        <location filename="../plugininfo.h" line="198"/>
-        <source>temperatureMin</source>
-        <extracomment>The name of the ParamType of StateType (ae8bb713-8805-4efd-89a1-bca44a1f1690) of DeviceClass indoor
-----------
-The name of the ParamType of StateType (ae8bb713-8805-4efd-89a1-bca44a1f1690) of DeviceClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="138"/>
         <location filename="../plugininfo.h" line="204"/>
-        <source>temperatureMax</source>
-        <extracomment>The name of the ParamType of StateType (dd30507e-037b-4c74-bcca-e04b94c7c5fe) of DeviceClass indoor
+        <source>temperature maximum</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (dd30507e-037b-4c74-bcca-e04b94c7c5fe) of DeviceClass indoor
 ----------
-The name of the ParamType of StateType (dd30507e-037b-4c74-bcca-e04b94c7c5fe) of DeviceClass outdoor</extracomment>
+The name of the ParamType of the autocreated EventType (dd30507e-037b-4c74-bcca-e04b94c7c5fe) of DeviceClass outdoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="168"/>
+        <source>wifi signal strength</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (6ea906d4-5740-454d-a730-6fdb9fa0d624) of DeviceClass indoor</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -141,9 +147,9 @@ The name of the ParamType of StateType (dd30507e-037b-4c74-bcca-e04b94c7c5fe) of
         <location filename="../plugininfo.h" line="144"/>
         <location filename="../plugininfo.h" line="210"/>
         <source>humidity</source>
-        <extracomment>The name of the ParamType of StateType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of DeviceClass indoor
+        <extracomment>The name of the ParamType of the autocreated EventType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of DeviceClass indoor
 ----------
-The name of the ParamType of StateType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of DeviceClass outdoor</extracomment>
+The name of the ParamType of the autocreated EventType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of DeviceClass outdoor</extracomment>
         <translation>Luftfeuchtigkeit</translation>
     </message>
     <message>
@@ -155,7 +161,7 @@ The name of the ParamType of StateType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of
     <message>
         <location filename="../plugininfo.h" line="150"/>
         <source>pressure</source>
-        <extracomment>The name of the ParamType of StateType (03b0a7b7-987d-4d3b-b3f0-21d9f92ad326) of DeviceClass indoor</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (03b0a7b7-987d-4d3b-b3f0-21d9f92ad326) of DeviceClass indoor</extracomment>
         <translation>Luftdruck</translation>
     </message>
     <message>
@@ -167,7 +173,7 @@ The name of the ParamType of StateType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of
     <message>
         <location filename="../plugininfo.h" line="156"/>
         <source>noise</source>
-        <extracomment>The name of the ParamType of StateType (906cea9d-1daf-4e9c-90b9-e40f43052a34) of DeviceClass indoor</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (906cea9d-1daf-4e9c-90b9-e40f43052a34) of DeviceClass indoor</extracomment>
         <translation>Geräuschpegel</translation>
     </message>
     <message>
@@ -179,7 +185,7 @@ The name of the ParamType of StateType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of
     <message>
         <location filename="../plugininfo.h" line="162"/>
         <source>co2</source>
-        <extracomment>The name of the ParamType of StateType (e5710bd1-79fa-4bd4-9052-8416aae909b9) of DeviceClass indoor</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (e5710bd1-79fa-4bd4-9052-8416aae909b9) of DeviceClass indoor</extracomment>
         <translation>CO2 Wert</translation>
     </message>
     <message>
@@ -187,18 +193,6 @@ The name of the ParamType of StateType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of
         <source>wifi signal strength changed</source>
         <extracomment>The name of the autocreated EventType (6ea906d4-5740-454d-a730-6fdb9fa0d624)</extracomment>
         <translation>Wifi Signalstärke geändert</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="168"/>
-        <source>wifiStrength</source>
-        <extracomment>The name of the ParamType of StateType (6ea906d4-5740-454d-a730-6fdb9fa0d624) of DeviceClass indoor</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="216"/>
-        <source>signalStrength</source>
-        <extracomment>The name of the ParamType of StateType (0faa3d08-9004-46fb-a5aa-a59b75e454cc) of DeviceClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="171"/>
@@ -219,6 +213,12 @@ The name of the ParamType of StateType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of
         <translation>Signalstärke geändert</translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="216"/>
+        <source>signal strength</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (0faa3d08-9004-46fb-a5aa-a59b75e454cc) of DeviceClass outdoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="219"/>
         <source>battery changed</source>
         <extracomment>The name of the autocreated EventType (15d8fae1-ba47-42e1-994d-530e8017c965)</extracomment>
@@ -227,7 +227,7 @@ The name of the ParamType of StateType (e2db5f01-196a-48d1-8874-6b8cbfe0d8c9) of
     <message>
         <location filename="../plugininfo.h" line="222"/>
         <source>battery</source>
-        <extracomment>The name of the ParamType of StateType (15d8fae1-ba47-42e1-994d-530e8017c965) of DeviceClass outdoor</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (15d8fae1-ba47-42e1-994d-530e8017c965) of DeviceClass outdoor</extracomment>
         <translation>Batterie</translation>
     </message>
 </context>

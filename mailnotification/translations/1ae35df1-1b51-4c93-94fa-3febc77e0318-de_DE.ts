@@ -4,6 +4,12 @@
 <context>
     <name>MailNotification</name>
     <message>
+        <location filename="../plugininfo.h" line="54"/>
+        <source>Mail notification</source>
+        <extracomment>The name of the plugin MailNotification (1ae35df1-1b51-4c93-94fa-3febc77e0318)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="60"/>
         <source>Custom mail</source>
         <extracomment>The name of the DeviceClass (f4844c97-7ca6-4349-904e-ff9749a9fe74)</extracomment>
@@ -122,12 +128,6 @@ The name of the ActionType 054613b0-3666-4dad-9252-e0ebca187edc of deviceClass g
 ----------
 The name of the ActionType 054613b0-3666-4dad-9252-e0ebca187edc of deviceClass yahooMail</extracomment>
         <translation>Sende Mail</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="54"/>
-        <source>MailNotification</source>
-        <extracomment>The name of the plugin MailNotification (1ae35df1-1b51-4c93-94fa-3febc77e0318)</extracomment>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="57"/>
