@@ -1,8 +1,9 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2015-2018 Simon Stürz <simon.stuerz@guh.io>              *
+ *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,28 +27,28 @@
     \brief Plugin for catching UDP commands from the network.
 
     \ingroup plugins
-    \ingroup guh-plugins-maker
+    \ingroup nymea-plugins-maker
 
     This plugin allows to receive UDP packages over a certain UDP port and generates an \l{Event} if the message content matches
     the \l{Param} command.
 
-    \note This plugin is ment to be combined with a \l{guhserver::Rule}.
+    \note This plugin is ment to be combined with a \l{nymeaserver::Rule}.
 
     \section3 Example
 
-    If you create an UDP Commander on port 2323 and with the command \c{"Light 1 ON"}, following command will trigger an \l{Event} in guh
-    and allows you to connect this \l{Event} with a \l{guhserver::Rule}.
+    If you create an UDP Commander on port 2323 and with the command \c{"Light 1 ON"}, following command will trigger an \l{Event} in nymea
+    and allows you to connect this \l{Event} with a \l{nymeaserver::Rule}.
 
-    \note In this example guh is running on \c localhost
+    \note In this example nymea is running on \c localhost
 
     \code
     $ echo "Light 1 ON" | nc -u localhost 2323
     OK
     \endcode
 
-    This allows you to execute \l{Action}{Actions} in your home automation system when a certain UDP message will be sent to guh.
+    This allows you to execute \l{Action}{Actions} in your home automation system when a certain UDP message will be sent to nymea.
 
-    If the command will be recognized from guh, the sender will receive as answere a \c{"OK"} string.
+    If the command will be recognized from nymea, the sender will receive as answere a \c{"OK"} string.
 
     \chapter Plugin properties
     Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
@@ -69,41 +70,72 @@ DevicePluginUdpCommander::DevicePluginUdpCommander()
 
 DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *device)
 {
-    // check port
-    bool portOk = false;
-    int port = device->paramValue(commanderPortParamTypeId).toInt(&portOk);
-    if (!portOk || port <= 0 || port > 65535) {
-        qCWarning(dcUdpCommander) << device->name() << ": invalid port:" << device->paramValue(commanderPortParamTypeId).toString() << ".";
-        return DeviceManager::DeviceSetupStatusFailure;
+    qCDebug(dcUdpCommander()) << "Setup device" << device->name() << device->params();
+
+    if (device->deviceClassId() == udpReceiverDeviceClassId) {
+        QUdpSocket *udpSocket = new QUdpSocket(this);
+        int port = device->paramValue(udpReceiverPortParamTypeId).toInt();
+        if (!udpSocket->bind(QHostAddress::Any, port, QUdpSocket::ShareAddress)) {
+            qCWarning(dcUdpCommander()) << device->name() << "cannot bind to port" << port;
+            delete udpSocket;
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
+
+        connect(udpSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
+        m_receiverList.insert(udpSocket, device);
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    } else if (device->deviceClassId() == udpCommanderDeviceClassId) {
+        QUdpSocket *udpSocket = new QUdpSocket(this);
+        m_commanderList.insert(udpSocket, device);
+        return DeviceManager::DeviceSetupStatusSuccess;
     }
 
-    QUdpSocket *udpSocket = new QUdpSocket(this);
+    return DeviceManager::DeviceSetupStatusFailure;
+}
 
-    if (!udpSocket->bind(QHostAddress::Any, port)) {
-        qCWarning(dcUdpCommander) << device->name() << "can't bind to port" << port << ".";
-        delete udpSocket;
-        return DeviceManager::DeviceSetupStatusFailure;
+
+DeviceManager::DeviceError DevicePluginUdpCommander::executeAction(Device *device, const Action &action) {
+
+    if (device->deviceClassId() == udpCommanderDeviceClassId) {
+        if (action.actionTypeId() == udpCommanderOutputDataActionTypeId) {
+            QUdpSocket *udpSocket = m_commanderList.key(device);
+            int port = device->paramValue(udpCommanderPortParamTypeId).toInt();
+            QHostAddress address = QHostAddress(device->paramValue(udpCommanderAddressParamTypeId).toString());
+            QByteArray data = action.param(udpCommanderDataParamTypeId).value().toByteArray();
+            qDebug(dcUdpCommander()) << "Send UDP datagram:" << data << "address:" << address.toIPv4Address() << "port:" << port;
+            udpSocket->writeDatagram(data, address, port);
+
+            return DeviceManager::DeviceErrorNoError;
+        }
+        return DeviceManager::DeviceErrorActionTypeNotFound;
     }
-
-    connect(udpSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
-    m_commanderList.insert(udpSocket, device);
-
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginUdpCommander::deviceRemoved(Device *device)
 {
-    QUdpSocket *socket = m_commanderList.key(device);
-    m_commanderList.remove(socket);
+    if (device->deviceClassId() == udpReceiverDeviceClassId) {
+        QUdpSocket *socket = m_receiverList.key(device);
+        m_receiverList.remove(socket);
+        socket->close();
+        socket->deleteLater();
 
-    socket->close();
-    socket->deleteLater();
+    } else if (device->deviceClassId() == udpCommanderDeviceClassId) {
+        QUdpSocket *socket = m_commanderList.key(device);
+        m_commanderList.remove(socket);
+        socket->close();
+        socket->deleteLater();
+    }
 }
 
 void DevicePluginUdpCommander::readPendingDatagrams()
 {
-    QUdpSocket *socket= qobject_cast<QUdpSocket*>(sender());
-    Device *device = m_commanderList.value(socket);
+    QUdpSocket *socket= static_cast<QUdpSocket *>(sender());
+    Device *device = m_receiverList.value(socket);
+
+    if (!device)
+        return;
 
     QByteArray datagram;
     QHostAddress sender;
@@ -114,10 +146,14 @@ void DevicePluginUdpCommander::readPendingDatagrams()
         socket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
     }
 
-    if (datagram == device->paramValue(commanderCommandParamTypeId).toByteArray() ||
-            datagram == device->paramValue(commanderCommandParamTypeId).toByteArray() + "\n") {
-        qCDebug(dcUdpCommander) << device->name() << " got command from" << sender.toString() << senderPort;
-        emit emitEvent(Event(commanderCommandReceivedEventTypeId, device->id()));
+    device->setStateValue(udpReceiverInputDataStateTypeId, datagram);
+
+    if (datagram == device->paramValue(udpReceiverCommandParamTypeId).toByteArray() ||
+            datagram == device->paramValue(udpReceiverCommandParamTypeId).toByteArray() + "\n") {
+        qCDebug(dcUdpCommander()) << device->name() << "got command from" << sender.toString() << senderPort;
+        emit emitEvent(Event(udpReceiverCommandReceivedEventTypeId, device->id()));
+
+        // Send response for verification
         socket->writeDatagram("OK\n", sender, senderPort);
     }
 }

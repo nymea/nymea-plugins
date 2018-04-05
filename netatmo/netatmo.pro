@@ -1,6 +1,8 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginnetatmo)
+QT += network
+
+TARGET = $$qtLibraryTarget(nymea_devicepluginnetatmo)
 
 SOURCES += \
     devicepluginnetatmo.cpp \

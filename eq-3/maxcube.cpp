@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -416,7 +416,7 @@ void MaxCube::decodeDevicelistMessage(QByteArray data)
                     // init/valid code
                     QByteArray initCode = fillBin(QByteArray::number(rawData.mid(8,2).toInt(0,16),2),8);
                     device->setInformationValid((bool)initCode.mid(3,1).toInt());
-                    device->setErrorOccured((bool)initCode.mid(4,1).toInt());
+                    device->setErrorOccurred((bool)initCode.mid(4,1).toInt());
                     device->setIsAnswereToCommand((bool)initCode.mid(5,1).toInt());
                     device->setInitialized((bool)initCode.mid(6,1).toInt());
 
@@ -444,7 +444,7 @@ void MaxCube::decodeDevicelistMessage(QByteArray data)
                     qCDebug(dcEQ3) << "        RF address (hex) | " << device->rfAddress();
                     qCDebug(dcEQ3) << "                initCode | " << initCode;
                     qCDebug(dcEQ3) << "       information valid | " << device->informationValid();
-                    qCDebug(dcEQ3) << "           error occured | " << device->errorOccured();
+                    qCDebug(dcEQ3) << "          error occurred | " << device->errorOccurred();
                     qCDebug(dcEQ3) << " is answere to a command | " << device->isAnswereToCommand();
                     qCDebug(dcEQ3) << "             initialized | " << device->initialized();
                     qCDebug(dcEQ3) << "             battery low | " << device->batteryLow();
@@ -468,7 +468,7 @@ void MaxCube::decodeDevicelistMessage(QByteArray data)
 
                     QByteArray initCode = fillBin(QByteArray::number(rawData.mid(8,2).toInt(0,16),2),8);
                     device->setInformationValid((bool)initCode.mid(3,1).toInt());
-                    device->setErrorOccured((bool)initCode.mid(4,1).toInt());
+                    device->setErrorOccurred((bool)initCode.mid(4,1).toInt());
                     device->setIsAnswereToCommand((bool)initCode.mid(5,1).toInt());
                     device->setInitialized((bool)initCode.mid(6,1).toInt());
 
@@ -487,7 +487,7 @@ void MaxCube::decodeDevicelistMessage(QByteArray data)
                     qCDebug(dcEQ3) << "             device name | " << device->deviceName();
                     qCDebug(dcEQ3) << "        RF address (hex) | " << device->rfAddress();
                     qCDebug(dcEQ3) << "       information valid | " << device->informationValid();
-                    qCDebug(dcEQ3) << "           error occured | " << device->errorOccured();
+                    qCDebug(dcEQ3) << "          error occurred | " << device->errorOccurred();
                     qCDebug(dcEQ3) << " is answere to a command | " << device->isAnswereToCommand();
                     qCDebug(dcEQ3) << "             initialized | " << device->initialized();
                     qCDebug(dcEQ3) << "             battery low | " << device->batteryLow();
@@ -808,7 +808,7 @@ void MaxCube::setDeviceSetpointTemp(QByteArray rfAddress, int roomId, double tem
     temperatureData = fillBin(QByteArray::number((int)temperature*2,2),6);
 
     // set auto/ permanent/ temp
-    // 00 = auto (weekly programm...the hole tempererature byte to 0x00
+    // 00 = auto (weekly program...the hole tempererature byte to 0x00
     // 01 = Permanent
     // 10 = Temporary (date/time has to be set)
 

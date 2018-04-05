@@ -4,12 +4,6 @@
 <context>
     <name>DateTime</name>
     <message>
-        <location filename="../plugininfo.h" line="100"/>
-        <source>guh</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation>guh</translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="103"/>
         <source>Today</source>
         <extracomment>The name of the DeviceClass (fbf665fb-9aca-423f-a5f2-924e50ebe6ca)</extracomment>
@@ -30,7 +24,7 @@
     <message>
         <location filename="../plugininfo.h" line="115"/>
         <source>city</source>
-        <extracomment>The name of the ParamType of StateType (65d2a5ff-bcab-43a8-b043-f88cf01586f4) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (65d2a5ff-bcab-43a8-b043-f88cf01586f4) of DeviceClass today</extracomment>
         <translation>Stadt</translation>
     </message>
     <message>
@@ -42,7 +36,7 @@
     <message>
         <location filename="../plugininfo.h" line="121"/>
         <source>country</source>
-        <extracomment>The name of the ParamType of StateType (a534bd8b-6826-4d71-b9f9-df1433964b94) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (a534bd8b-6826-4d71-b9f9-df1433964b94) of DeviceClass today</extracomment>
         <translation>Land</translation>
     </message>
     <message>
@@ -54,7 +48,7 @@
     <message>
         <location filename="../plugininfo.h" line="127"/>
         <source>day</source>
-        <extracomment>The name of the ParamType of StateType (eb5231ea-6a1b-4d7e-a95f-d49e7b25122e) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (eb5231ea-6a1b-4d7e-a95f-d49e7b25122e) of DeviceClass today</extracomment>
         <translation>Tag</translation>
     </message>
     <message>
@@ -66,7 +60,7 @@
     <message>
         <location filename="../plugininfo.h" line="133"/>
         <source>month</source>
-        <extracomment>The name of the ParamType of StateType (fcd8ec96-4488-438a-8b30-58bfe2a7fae2) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (fcd8ec96-4488-438a-8b30-58bfe2a7fae2) of DeviceClass today</extracomment>
         <translation>Monat</translation>
     </message>
     <message>
@@ -84,7 +78,7 @@
     <message>
         <location filename="../plugininfo.h" line="145"/>
         <source>year</source>
-        <extracomment>The name of the ParamType of StateType (79d4ae9b-ea27-4346-8229-1d90f1ddfc9d) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (79d4ae9b-ea27-4346-8229-1d90f1ddfc9d) of DeviceClass today</extracomment>
         <translation>Jahr</translation>
     </message>
     <message>
@@ -96,7 +90,7 @@
     <message>
         <location filename="../plugininfo.h" line="151"/>
         <source>weekday</source>
-        <extracomment>The name of the ParamType of StateType (452c0388-7fa1-414e-aeb2-8c7c385824b4) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (452c0388-7fa1-414e-aeb2-8c7c385824b4) of DeviceClass today</extracomment>
         <translation>Wochentag</translation>
     </message>
     <message>
@@ -106,27 +100,33 @@
         <translation>Wochentag Name geändert</translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="100"/>
+        <source>guh GmbH</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="97"/>
-        <source>DateTime</source>
+        <source>Time</source>
         <extracomment>The name of the plugin DateTime (c26014c6-87fb-4233-85ed-01d18625018d)</extracomment>
         <translation>Zeit/Datum</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="109"/>
-        <source>timeZone</source>
-        <extracomment>The name of the ParamType of StateType (ab16997c-be29-438e-b588-2507d723d264) of DeviceClass today</extracomment>
+        <source>timezone</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (ab16997c-be29-438e-b588-2507d723d264) of DeviceClass today</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="139"/>
-        <source>monthName</source>
-        <extracomment>The name of the ParamType of StateType (a37acc9c-5cfb-4687-adce-e56beb32586f) of DeviceClass today</extracomment>
+        <source>month name</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (a37acc9c-5cfb-4687-adce-e56beb32586f) of DeviceClass today</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="157"/>
-        <source>weekdayName</source>
-        <extracomment>The name of the ParamType of StateType (f627d052-cee6-4727-b9c6-0e935d41e04a) of DeviceClass today</extracomment>
+        <source>weekday name</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (f627d052-cee6-4727-b9c6-0e935d41e04a) of DeviceClass today</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -138,7 +138,7 @@
     <message>
         <location filename="../plugininfo.h" line="163"/>
         <source>weekend</source>
-        <extracomment>The name of the ParamType of StateType (4de5b57b-bb1a-4d66-9ce3-22bb280b075d) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (4de5b57b-bb1a-4d66-9ce3-22bb280b075d) of DeviceClass today</extracomment>
         <translation>Wochenende</translation>
     </message>
     <message>
@@ -150,7 +150,7 @@
     <message>
         <location filename="../plugininfo.h" line="169"/>
         <source>dusk</source>
-        <extracomment>The name of the ParamType of StateType (44a99419-fbcd-4d8e-9441-897848b8f77c) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (44a99419-fbcd-4d8e-9441-897848b8f77c) of DeviceClass today</extracomment>
         <translation>Abenddämmerung </translation>
     </message>
     <message>
@@ -162,7 +162,7 @@
     <message>
         <location filename="../plugininfo.h" line="175"/>
         <source>sunrise</source>
-        <extracomment>The name of the ParamType of StateType (3a08824d-285b-412e-a515-9664b491a85c) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (3a08824d-285b-412e-a515-9664b491a85c) of DeviceClass today</extracomment>
         <translation>Sonnenaufgang</translation>
     </message>
     <message>
@@ -174,7 +174,7 @@
     <message>
         <location filename="../plugininfo.h" line="181"/>
         <source>noon</source>
-        <extracomment>The name of the ParamType of StateType (d92be29a-929c-4240-91a0-30153850f838) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (d92be29a-929c-4240-91a0-30153850f838) of DeviceClass today</extracomment>
         <translation>Sonnenhöchststand</translation>
     </message>
     <message>
@@ -186,7 +186,7 @@
     <message>
         <location filename="../plugininfo.h" line="187"/>
         <source>dawn</source>
-        <extracomment>The name of the ParamType of StateType (a5779b11-0499-4a6d-a7bd-8143dcc546b4) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (a5779b11-0499-4a6d-a7bd-8143dcc546b4) of DeviceClass today</extracomment>
         <translation>Morgendämmerung</translation>
     </message>
     <message>
@@ -198,7 +198,7 @@
     <message>
         <location filename="../plugininfo.h" line="193"/>
         <source>sunset</source>
-        <extracomment>The name of the ParamType of StateType (377f04a7-df58-42ad-a234-e9e23bdc2f85) of DeviceClass today</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (377f04a7-df58-42ad-a234-e9e23bdc2f85) of DeviceClass today</extracomment>
         <translation>Sonnenuntergang</translation>
     </message>
     <message>
@@ -312,7 +312,7 @@ The name of the paramType (0a54fe54-45a7-4fc5-a8d2-f9b6a92033de) of countdown</e
     <message>
         <location filename="../plugininfo.h" line="253"/>
         <source>running</source>
-        <extracomment>The name of the ParamType of StateType (b21ccd53-1ebd-41a0-a2a3-662874e79837) of DeviceClass countdown</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (b21ccd53-1ebd-41a0-a2a3-662874e79837) of DeviceClass countdown</extracomment>
         <translation>Läuft</translation>
     </message>
     <message>

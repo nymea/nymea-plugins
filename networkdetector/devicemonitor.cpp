@@ -14,6 +14,7 @@ DeviceMonitor::DeviceMonitor(const QString &macAddress, const QString &ipAddress
     connect(m_arpLookupProcess, SIGNAL(finished(int)), this, SLOT(arpLookupFinished(int)));
 
     m_pingProcess = new QProcess(this);
+    m_pingProcess->setReadChannelMode(QProcess::MergedChannels);
     connect(m_pingProcess, SIGNAL(finished(int)), this, SLOT(pingFinished(int)));
 }
 
@@ -29,11 +30,12 @@ void DeviceMonitor::update()
 
 void DeviceMonitor::lookupArpCache()
 {
-    m_arpLookupProcess->start("ip", {"-s", "neighbor", "list"});
+    m_arpLookupProcess->start("ip", {"-4", "-s", "neighbor", "list"});
 }
 
 void DeviceMonitor::ping()
 {
+//    qCDebug(dcNetworkDetector()) << "Running:" << "ping" << "-c" << "1" << m_host->address();
     m_pingProcess->start("ping", {"-c", "1", m_host->address()});
 }
 
@@ -66,14 +68,14 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                 }
             } else {
                 // ARP claims the device to be stale... try to ping it.
-                qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache but is marked as" << parts.last() << ". Trying to ping it...";
+                qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache but is marked as" << parts.last() << ". Trying to ping it on" << m_host->address();
                 ping();
             }
             break;
         }
     }
     if (!found) {
-        qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "not found in ARP cache. Trying to ping it...";
+        qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "not found in ARP cache. Trying to ping it on" << m_host->address();
         ping();
     }
 

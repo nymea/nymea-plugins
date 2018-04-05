@@ -1,6 +1,8 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginosdomotics)
+QT += network
+
+TARGET = $$qtLibraryTarget(nymea_devicepluginosdomotics)
 
 SOURCES += \
     devicepluginosdomotics.cpp

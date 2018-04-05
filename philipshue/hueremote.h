@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -44,7 +44,11 @@ public:
         DimDownLongPressed = 3001,
         DimDownPressed = 3002,
         OffLongPressed = 4001,
-        OffPressed = 4002
+        OffPressed = 4002,
+        TapButton1Pressed = 34,
+        TapButton2Pressed = 16,
+        TapButton3Pressed = 17,
+        TapButton4Pressed = 18
     };
 
     explicit HueRemote(QObject *parent = 0);

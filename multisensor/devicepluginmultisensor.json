@@ -1,5 +1,5 @@
 {
-    "displayName": "MultiSensor",
+    "displayName": "Multi Sensor",
     "name": "MultiSensor",
     "id": "23bf0d8d-df7d-4bee-80ee-f015c5a7f52e",
     "vendors": [
@@ -9,12 +9,12 @@
             "displayName": "Texas Instruments",
             "deviceClasses": [
                 {
-                    "displayName": "Sensor Tag",
-                    "name": "sensortag",
                     "id": "158a06b6-b27f-4951-957e-6f1e3b44f604",
+                    "name": "sensorTag",
+                    "displayName": "Sensor Tag (CC2650)",
                     "createMethods": ["discovery"],
                     "deviceIcon": "Thermometer",
-                    "criticalStateTypeId": "a9629b11-0f34-47f0-a0f0-f758a6aec2b4",
+                    "interfaces": ["temperaturesensor", "humiditysensor", "connectable"],
                     "basicTags": [
                         "Device",
                         "Sensor"
@@ -23,14 +23,14 @@
                         {
                             "id": "bdb9d684-2f98-45f5-889c-f184c1e73dc7",
                             "name": "name",
-                            "displayName": "name",
+                            "displayName": "Name",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "d51ed68e-c84a-4136-a5b5-be2f95fd5a0f",
                             "name": "mac",
-                            "displayName": "mac address",
+                            "displayName": "MAC address",
                             "type": "QString",
                             "inputType": "MacAddress"
                         }
@@ -39,28 +39,11 @@
                         {
                             "id": "a9629b11-0f34-47f0-a0f0-f758a6aec2b4",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "type": "bool",
+                            "cached": false,
                             "defaultValue": false
-                        },
-                        {
-                            "id": "c664e9ec-a045-49ba-add1-1642ceba7c4f",
-                            "name": "IRtemperature",
-                            "displayName": "IR temperature",
-                            "displayNameEvent": "IR temperature changed",
-                            "type": "double",
-                            "unit": "DegreeCelsius",
-                            "defaultValue": 0
-                        },
-                        {
-                            "id": "e83a50ff-96c9-4b6d-889f-f4238353e794",
-                            "name": "humidity",
-                            "displayName": "humidity",
-                            "displayNameEvent": "humidity changed",
-                            "type": "double",
-                            "unit": "Percentage",
-                            "defaultValue": 0
                         },
                         {
                             "id": "8359ada9-df1c-4e60-bb87-9e21d05ee2e2",
@@ -72,33 +55,225 @@
                             "defaultValue": 0
                         },
                         {
+                            "id": "c664e9ec-a045-49ba-add1-1642ceba7c4f",
+                            "name": "objectTemperature",
+                            "displayName": "Object temperature",
+                            "displayNameEvent": "Object temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e83a50ff-96c9-4b6d-889f-f4238353e794",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
                             "id": "645633ad-77d4-45b2-8be8-d6ca7a12eb7a",
                             "name": "pressure",
-                            "displayName": "pressure",
-                            "displayNameEvent": "pressure changed",
+                            "displayName": "Barometric pressure",
+                            "displayNameEvent": "Barometric pressure changed",
                             "type": "double",
                             "unit": "HectoPascal",
                             "defaultValue": 0
                         },
                         {
-                            "id": "4be5ca26-0565-419d-b18b-2a5a385d2a3d",
-                            "name": "moving",
-                            "displayName": "moving",
-                            "displayNameEvent": "moving changed",
-                            "type": "bool",
-                            "defaultValue": false
-                        }
-                    ],
-                    "eventTypes": [
-                        {
-                            "id": "61478490-bed0-4fed-9d58-f13c35b4f220",
-                            "name": "leftKey",
-                            "displayName": "left key pressed"
+                            "id": "6635dce4-2d8d-4608-a836-768c3014f356",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "unit": "Lux",
+                            "defaultValue": 0
                         },
                         {
-                            "id": "b7e927db-af28-4fdc-8eb7-edb02258ff5a",
-                            "name": "rightKey",
-                            "displayName": "right key pressed"
+                            "id": "4be5ca26-0565-419d-b18b-2a5a385d2a3d",
+                            "name": "moving",
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "758d9b39-7390-40f5-8e19-d8b0f4a0a0c6",
+                            "name": "magnetDetected",
+                            "displayName": "Magnet detected",
+                            "displayNameEvent": "Magnet detected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8995e49e-ca2d-4dd9-a22f-de6c566c2115",
+                            "name": "leftButtonPressed",
+                            "displayName": "Left button pressed",
+                            "displayNameEvent": "Left button pressed changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ef8eedc5-6a45-4dfb-bb55-ada1a931b20b",
+                            "name": "rightButtonPressed",
+                            "displayName": "Right button pressed",
+                            "displayNameEvent": "Right button pressed changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8d692132-f950-486f-b3dd-fe1ebc574e1d",
+                            "name": "greenLed",
+                            "displayName": "Green LED",
+                            "displayNameEvent": "Green LED power changed",
+                            "displayNameAction": "Set green LED power",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "bb585725-6393-42de-aea2-ea4f525ad348",
+                            "name": "redLed",
+                            "displayName": "Red LED",
+                            "displayNameEvent": "Red LED power changed",
+                            "displayNameAction": "Set red LED power",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "d522c536-4427-4c53-9980-7820b2649aad",
+                            "name": "buzzer",
+                            "displayName": "Buzzer",
+                            "displayNameEvent": "Buzzer power changed",
+                            "displayNameAction": "Set buzzer power",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "6f0e40a2-0f97-4c1e-8229-757e3c18b345",
+                            "name": "temperatureSensorEnabled",
+                            "displayName": "Temperature sensor enabled",
+                            "displayNameEvent": "Temperature sensor enabled changed",
+                            "displayNameAction": "Set temperature sensor enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "29881172-626a-42d5-83b8-3e2e5ca533be",
+                            "name": "humiditySensorEnabled",
+                            "displayName": "Humidity sensor enabled",
+                            "displayNameEvent": "Humidity sensor enabled changed",
+                            "displayNameAction": "Set humidity sensor enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "50e5e282-9707-4b31-bb3f-a6ca30a7e1ff",
+                            "name": "pressureSensorEnabled",
+                            "displayName": "Pressure sensor enabled",
+                            "displayNameEvent": "Pressure sensor enabled changed",
+                            "displayNameAction": "Set pressure sensor enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "1460a6d6-9fb4-4385-b27b-ee4b7594e454",
+                            "name": "opticalSensorEnabled",
+                            "displayName": "Optical sensor enabled",
+                            "displayNameEvent": "Optical sensor enabled changed",
+                            "displayNameAction": "Set optical sensor enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "5786c91a-d94d-461a-8d22-f978dd1438ab",
+                            "name": "accelerometerEnabled",
+                            "displayName": "Accelerometer enabled",
+                            "displayNameEvent": "Accelerometer enabled changed",
+                            "displayNameAction": "Set accelerometer enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "94517544-cb97-4816-8993-cb4cf2651a1e",
+                            "name": "gyroscopeEnabled",
+                            "displayName": "Gyroscope enabled",
+                            "displayNameEvent": "Gyroscope enabled changed",
+                            "displayNameAction": "Set gyroscope enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "96aae111-b1c1-48a1-9b1f-b56efa546d0d",
+                            "name": "magnetometerEnabled",
+                            "displayName": "Magnetometer enabled",
+                            "displayNameEvent": "Magnetometer enabled changed",
+                            "displayNameAction": "Set magnetometer enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "c5308565-5dc9-409e-ae99-577c212c7a92",
+                            "name": "measurementPeriod",
+                            "displayName": "Measurement period for enviromental sensors",
+                            "displayNameEvent": "Measurement period for enviromental sensors changed",
+                            "displayNameAction": "Set measurement period for enviromental sensors",
+                            "type": "int",
+                            "minValue": 10,
+                            "maxValue": 2500,
+                            "defaultValue": 2000,
+                            "writable": true
+                        },
+                        {
+                            "id": "5237c89c-c21d-4d78-ac99-8be661b40da7",
+                            "name": "measurementPeriodMovement",
+                            "displayName": "Measurement period movement sensor",
+                            "displayNameEvent": "Measurement period movement sensor changed",
+                            "displayNameAction": "Set measurement period movement sensor",
+                            "type": "int",
+                            "minValue": 10,
+                            "maxValue": 2500,
+                            "defaultValue": 300,
+                            "writable": true
+                        },
+                        {
+                            "id": "a3298d16-eea6-4474-9061-90466e92d476",
+                            "name": "movementSensitivity",
+                            "displayName": "Movement sensitivity",
+                            "displayNameEvent": "Movement sensitivity changed",
+                            "displayNameAction": "Set movement sensitivity",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 40,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a048ab2e-4f17-4467-a166-a7572156c07e",
+                            "name": "buzzerImpulse",
+                            "displayName": "Buzzer impulse"
                         }
                     ]
                 }

@@ -3,7 +3,7 @@
  *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -39,7 +39,7 @@ class DevicePluginPhilipsHue: public DevicePlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "guru.guh.DevicePlugin" FILE "devicepluginphilipshue.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginphilipshue.json")
     Q_INTERFACES(DevicePlugin)
 
 public:
@@ -59,14 +59,15 @@ private slots:
     void lightStateChanged();
     void remoteStateChanged();
     void onRemoteButtonEvent(const int &buttonCode);
-    void onPluginTimer();
 
 private slots:
     void onUpnpDiscoveryFinished();
     void networkManagerReplyReady();
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_pluginTimer1Sec = nullptr;
+    PluginTimer *m_pluginTimer5Sec = nullptr;
+    PluginTimer *m_pluginTimer15Sec = nullptr;
 
     QHash<QNetworkReply *, PairingInfo *> m_pairingRequests;
     QHash<QNetworkReply *, PairingInfo *> m_informationRequests;

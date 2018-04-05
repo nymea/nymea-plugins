@@ -1,6 +1,8 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_deviceplugindatetime)
+QT += network
+
+TARGET = $$qtLibraryTarget(nymea_deviceplugindatetime)
 
 SOURCES += \
     deviceplugindatetime.cpp \

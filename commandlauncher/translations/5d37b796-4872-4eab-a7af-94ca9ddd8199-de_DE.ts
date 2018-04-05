@@ -5,13 +5,13 @@
     <name>CommandLauncher</name>
     <message>
         <location filename="../plugininfo.h" line="40"/>
-        <source>CommandLauncher</source>
+        <source>Application and script launcher</source>
         <extracomment>The name of the plugin CommandLauncher (5d37b796-4872-4eab-a7af-94ca9ddd8199)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="43"/>
-        <source>guh</source>
+        <source>guh GmbH</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -38,9 +38,9 @@
         <location filename="../plugininfo.h" line="55"/>
         <location filename="../plugininfo.h" line="73"/>
         <source>running</source>
-        <extracomment>The name of the ParamType of StateType (28d7e933-ff05-4f4c-95a0-482689543de5) of DeviceClass application
+        <extracomment>The name of the ParamType of the autocreated EventType (28d7e933-ff05-4f4c-95a0-482689543de5) of DeviceClass application
 ----------
-The name of the ParamType of StateType (28d7e933-ff05-4f4c-95a0-482689543de5) of DeviceClass script</extracomment>
+The name of the ParamType of the autocreated EventType (28d7e933-ff05-4f4c-95a0-482689543de5) of DeviceClass script</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

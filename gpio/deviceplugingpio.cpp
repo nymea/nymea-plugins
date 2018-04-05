@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2016 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,7 +26,7 @@
     \brief Plugin to control gpios on different boards.
 
     \ingroup plugins
-    \ingroup guh-plugins-maker
+    \ingroup nymea-plugins-maker
 
     \chapter Raspberry Pi 2
 
@@ -68,14 +68,14 @@ DeviceManager::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
     }
 
     // GPIO Switch
-    if (device->deviceClassId() == gpioSwitchRpiDeviceClassId || device->deviceClassId() == gpioSwitchBbbDeviceClassId) {
+    if (device->deviceClassId() == gpioOutputRpiDeviceClassId || device->deviceClassId() == gpioOutputBbbDeviceClassId) {
         // Create and configure gpio
         int gpioId = -1;
-        if (device->deviceClassId() == gpioSwitchRpiDeviceClassId)
-            gpioId = device->paramValue(gpioSwitchRpiGpioParamTypeId).toInt();
+        if (device->deviceClassId() == gpioOutputRpiDeviceClassId)
+            gpioId = device->paramValue(gpioOutputRpiGpioParamTypeId).toInt();
 
-        if (device->deviceClassId() == gpioSwitchBbbDeviceClassId)
-            gpioId = device->paramValue(gpioSwitchBbbGpioParamTypeId).toInt();
+        if (device->deviceClassId() == gpioOutputBbbDeviceClassId)
+            gpioId = device->paramValue(gpioOutputBbbGpioParamTypeId).toInt();
 
         Gpio *gpio = new Gpio(gpioId, this);
 
@@ -96,23 +96,23 @@ DeviceManager::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
 
         m_gpioDevices.insert(gpio, device);
 
-        if (device->deviceClassId() == gpioSwitchRpiDeviceClassId)
+        if (device->deviceClassId() == gpioOutputRpiDeviceClassId)
             m_raspberryPiGpios.insert(gpio->gpioNumber(), gpio);
 
-        if (device->deviceClassId() == gpioSwitchBbbDeviceClassId)
+        if (device->deviceClassId() == gpioOutputBbbDeviceClassId)
             m_beagleboneBlackGpios.insert(gpio->gpioNumber(), gpio);
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
-    if (device->deviceClassId() == gpioButtonRpiDeviceClassId || device->deviceClassId() == gpioButtonBbbDeviceClassId) {
+    if (device->deviceClassId() == gpioInputRpiDeviceClassId || device->deviceClassId() == gpioInputBbbDeviceClassId) {
 
         int gpioId = -1;
-        if (device->deviceClassId() == gpioButtonRpiDeviceClassId)
-            gpioId = device->paramValue(gpioButtonRpiGpioParamTypeId).toInt();
+        if (device->deviceClassId() == gpioInputRpiDeviceClassId)
+            gpioId = device->paramValue(gpioInputRpiGpioParamTypeId).toInt();
 
-        if (device->deviceClassId() == gpioButtonBbbDeviceClassId)
-            gpioId = device->paramValue(gpioButtonBbbGpioParamTypeId).toInt();
+        if (device->deviceClassId() == gpioInputBbbDeviceClassId)
+            gpioId = device->paramValue(gpioInputBbbGpioParamTypeId).toInt();
 
         GpioMonitor *monior = new GpioMonitor(gpioId, this);
 
@@ -125,10 +125,10 @@ DeviceManager::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
 
         m_monitorDevices.insert(monior, device);
 
-        if (device->deviceClassId() == gpioSwitchRpiDeviceClassId)
+        if (device->deviceClassId() == gpioOutputRpiDeviceClassId)
             m_raspberryPiGpioMoniors.insert(monior->gpio()->gpioNumber(), monior);
 
-        if (device->deviceClassId() == gpioSwitchBbbDeviceClassId)
+        if (device->deviceClassId() == gpioOutputBbbDeviceClassId)
             m_beagleboneBlackGpioMoniors.insert(monior->gpio()->gpioNumber(), monior);
 
         return DeviceManager::DeviceSetupStatusSuccess;
@@ -174,14 +174,14 @@ DeviceManager::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId
 
             DeviceDescriptor descriptor(deviceClassId, QString("GPIO %1").arg(gpioDescriptor.gpio()), description);
             ParamList parameters;
-            if (deviceClass.id() == gpioSwitchRpiDeviceClassId) {
-                parameters.append(Param(gpioSwitchRpiGpioParamTypeId, gpioDescriptor.gpio()));
-                parameters.append(Param(gpioSwitchRpiPinParamTypeId, gpioDescriptor.pin()));
-                parameters.append(Param(gpioSwitchRpiDescriptionParamTypeId, gpioDescriptor.description()));
-            } else if (deviceClass.id() == gpioButtonRpiDeviceClassId) {
-                parameters.append(Param(gpioButtonRpiGpioParamTypeId, gpioDescriptor.gpio()));
-                parameters.append(Param(gpioButtonRpiPinParamTypeId, gpioDescriptor.pin()));
-                parameters.append(Param(gpioButtonRpiDescriptionParamTypeId, gpioDescriptor.description()));
+            if (deviceClass.id() == gpioOutputRpiDeviceClassId) {
+                parameters.append(Param(gpioOutputRpiGpioParamTypeId, gpioDescriptor.gpio()));
+                parameters.append(Param(gpioOutputRpiPinParamTypeId, gpioDescriptor.pin()));
+                parameters.append(Param(gpioOutputRpiDescriptionParamTypeId, gpioDescriptor.description()));
+            } else if (deviceClass.id() == gpioInputRpiDeviceClassId) {
+                parameters.append(Param(gpioInputRpiGpioParamTypeId, gpioDescriptor.gpio()));
+                parameters.append(Param(gpioInputRpiPinParamTypeId, gpioDescriptor.pin()));
+                parameters.append(Param(gpioInputRpiDescriptionParamTypeId, gpioDescriptor.description()));
             }
             descriptor.setParams(parameters);
 
@@ -217,14 +217,14 @@ DeviceManager::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId
 
             DeviceDescriptor descriptor(deviceClassId, QString("GPIO %1").arg(gpioDescriptor.gpio()), description);
             ParamList parameters;
-            if (deviceClass.id() == gpioSwitchBbbDeviceClassId) {
-                parameters.append(Param(gpioSwitchBbbGpioParamTypeId, gpioDescriptor.gpio()));
-                parameters.append(Param(gpioSwitchBbbPinParamTypeId, gpioDescriptor.pin()));
-                parameters.append(Param(gpioSwitchBbbDescriptionParamTypeId, gpioDescriptor.description()));
-            } else if (deviceClass.id() == gpioButtonBbbDeviceClassId) {
-                parameters.append(Param(gpioButtonBbbGpioParamTypeId, gpioDescriptor.gpio()));
-                parameters.append(Param(gpioButtonBbbPinParamTypeId, gpioDescriptor.pin()));
-                parameters.append(Param(gpioButtonBbbDescriptionParamTypeId, gpioDescriptor.description()));
+            if (deviceClass.id() == gpioOutputBbbDeviceClassId) {
+                parameters.append(Param(gpioOutputBbbGpioParamTypeId, gpioDescriptor.gpio()));
+                parameters.append(Param(gpioOutputBbbPinParamTypeId, gpioDescriptor.pin()));
+                parameters.append(Param(gpioOutputBbbDescriptionParamTypeId, gpioDescriptor.description()));
+            } else if (deviceClass.id() == gpioInputBbbDeviceClassId) {
+                parameters.append(Param(gpioInputBbbGpioParamTypeId, gpioDescriptor.gpio()));
+                parameters.append(Param(gpioInputBbbPinParamTypeId, gpioDescriptor.pin()));
+                parameters.append(Param(gpioInputBbbDescriptionParamTypeId, gpioDescriptor.description()));
             }
             descriptor.setParams(parameters);
 
@@ -282,10 +282,10 @@ DeviceManager::DeviceError DevicePluginGpio::executeAction(Device *device, const
 
     // Find the gpio in the corresponding hash
     if (deviceClass.vendorId() == raspberryPiVendorId)
-        gpio = m_raspberryPiGpios.value(device->paramValue(gpioSwitchRpiGpioParamTypeId).toInt());
+        gpio = m_raspberryPiGpios.value(device->paramValue(gpioOutputRpiGpioParamTypeId).toInt());
 
     if (deviceClass.vendorId() == beagleboneBlackVendorId)
-        gpio = m_beagleboneBlackGpios.value(device->paramValue(gpioSwitchBbbGpioParamTypeId).toInt());
+        gpio = m_beagleboneBlackGpios.value(device->paramValue(gpioOutputBbbGpioParamTypeId).toInt());
 
     // Check if gpio was found
     if (!gpio) {
@@ -295,9 +295,9 @@ DeviceManager::DeviceError DevicePluginGpio::executeAction(Device *device, const
 
     // GPIO Switch power action
     if (deviceClass.vendorId() == raspberryPiVendorId) {
-        if (action.actionTypeId() == gpioSwitchRpiPowerValueActionTypeId) {
+        if (action.actionTypeId() == gpioOutputRpiPowerValueActionTypeId) {
             bool success = false;
-            if (action.param(gpioSwitchRpiPowerValueStateParamTypeId).value().toBool()) {
+            if (action.param(gpioOutputRpiPowerValueActionParamTypeId).value().toBool()) {
                 success = gpio->setValue(Gpio::ValueHigh);
             } else {
                 success = gpio->setValue(Gpio::ValueLow);
@@ -309,14 +309,14 @@ DeviceManager::DeviceError DevicePluginGpio::executeAction(Device *device, const
             }
 
             // Set the current state
-            device->setStateValue(gpioSwitchRpiPowerValueStateTypeId, action.param(gpioSwitchRpiPowerValueStateParamTypeId).value());
+            device->setStateValue(gpioOutputRpiPowerValueStateTypeId, action.param(gpioOutputRpiPowerValueActionParamTypeId).value());
 
             return DeviceManager::DeviceErrorNoError;
         }
     } else if (deviceClass.vendorId() == beagleboneBlackVendorId) {
-        if (action.actionTypeId() == gpioSwitchBbbPowerValueActionTypeId) {
+        if (action.actionTypeId() == gpioOutputBbbPowerValueActionTypeId) {
             bool success = false;
-            if (action.param(gpioSwitchBbbPowerValueStateParamTypeId).value().toBool()) {
+            if (action.param(gpioOutputBbbPowerValueActionParamTypeId).value().toBool()) {
                 success = gpio->setValue(Gpio::ValueHigh);
             } else {
                 success = gpio->setValue(Gpio::ValueLow);
@@ -328,7 +328,7 @@ DeviceManager::DeviceError DevicePluginGpio::executeAction(Device *device, const
             }
 
             // Set the current state
-            device->setStateValue(gpioSwitchBbbPowerValueStateTypeId, action.param(gpioSwitchBbbPowerValueStateParamTypeId).value());
+            device->setStateValue(gpioOutputBbbPowerValueStateTypeId, action.param(gpioOutputBbbPowerValueActionParamTypeId).value());
 
             return DeviceManager::DeviceErrorNoError;
         }
@@ -339,29 +339,29 @@ DeviceManager::DeviceError DevicePluginGpio::executeAction(Device *device, const
 
 void DevicePluginGpio::postSetupDevice(Device *device)
 {
-    if (device->deviceClassId() == gpioSwitchRpiDeviceClassId || device->deviceClassId() == gpioSwitchBbbDeviceClassId) {
+    if (device->deviceClassId() == gpioOutputRpiDeviceClassId || device->deviceClassId() == gpioOutputBbbDeviceClassId) {
         Gpio *gpio = m_gpioDevices.key(device);
         if (!gpio)
             return;
 
         gpio->setValue(Gpio::ValueLow);
-        if (device->deviceClassId() == gpioSwitchRpiDeviceClassId) {
-            device->setStateValue(gpioSwitchRpiPowerValueStateTypeId, false);
+        if (device->deviceClassId() == gpioOutputRpiDeviceClassId) {
+            device->setStateValue(gpioOutputRpiPowerValueStateTypeId, false);
         }
-        if (device->deviceClassId() == gpioSwitchBbbDeviceClassId) {
-            device->setStateValue(gpioSwitchBbbPowerValueStateTypeId, false);
+        if (device->deviceClassId() == gpioOutputBbbDeviceClassId) {
+            device->setStateValue(gpioOutputBbbPowerValueStateTypeId, false);
         }
     }
 
-    if (device->deviceClassId() == gpioButtonRpiDeviceClassId || device->deviceClassId() == gpioButtonBbbDeviceClassId) {
+    if (device->deviceClassId() == gpioInputRpiDeviceClassId || device->deviceClassId() == gpioInputBbbDeviceClassId) {
         GpioMonitor *monitor = m_monitorDevices.key(device);
         if (!monitor)
             return;
 
-        if (device->deviceClassId() == gpioButtonRpiDeviceClassId) {
-            device->setStateValue(gpioButtonRpiPressedStateTypeId, monitor->value());
-        } else if (device->deviceClassId() == gpioButtonBbbDeviceClassId) {
-            device->setStateValue(gpioButtonBbbPressedStateTypeId, monitor->value());
+        if (device->deviceClassId() == gpioInputRpiDeviceClassId) {
+            device->setStateValue(gpioInputRpiPressedStateTypeId, monitor->value());
+        } else if (device->deviceClassId() == gpioInputBbbDeviceClassId) {
+            device->setStateValue(gpioInputBbbPressedStateTypeId, monitor->value());
         }
     }
 }
@@ -481,10 +481,10 @@ void DevicePluginGpio::onGpioValueChanged(const bool &value)
     if (!device)
         return;
 
-    if (device->deviceClassId() == gpioButtonRpiDeviceClassId) {
-        device->setStateValue(gpioButtonRpiPressedStateTypeId, value);
-    } else if (device->deviceClassId() == gpioButtonBbbDeviceClassId) {
-        device->setStateValue(gpioButtonBbbPressedStateTypeId, value);
+    if (device->deviceClassId() == gpioInputRpiDeviceClassId) {
+        device->setStateValue(gpioInputRpiPressedStateTypeId, value);
+    } else if (device->deviceClassId() == gpioInputBbbDeviceClassId) {
+        device->setStateValue(gpioInputBbbPressedStateTypeId, value);
     }
 }
 

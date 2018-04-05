@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,9 +26,9 @@
     \brief Plugin for Belkin WeMo sockets.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
-    This plugin allows to find and controll devices from WeMo, the
+    This plugin allows to find and control devices from WeMo, the
     \l{http://www.belkin.com/de/PRODUKTE/home-automation/c/wemo-home-automation/}{Belkin}
     home automation system.
 
@@ -105,8 +105,8 @@ DeviceManager::DeviceError DevicePluginWemo::executeAction(Device *device, const
     if (action.actionTypeId() == wemoSwitchPowerActionTypeId) {
         // Check if wemo device is reachable
         if (device->stateValue(wemoSwitchReachableStateTypeId).toBool()) {
-            // setPower returns false, if the curent powerState is allready the new powerState
-            if (setPower(device, action.param(wemoSwitchPowerStateParamTypeId).value().toBool(), action.id())) {
+            // setPower returns false, if the curent powerState is already the new powerState
+            if (setPower(device, action.param(wemoSwitchPowerActionParamTypeId).value().toBool(), action.id())) {
                 return DeviceManager::DeviceErrorAsync;
             } else {
                 return DeviceManager::DeviceErrorNoError;
@@ -145,7 +145,7 @@ void DevicePluginWemo::refresh(Device *device)
     QNetworkRequest request;
     request.setUrl(QUrl("http://" + device->paramValue(wemoSwitchHostParamTypeId).toString() + ":" + device->paramValue(wemoSwitchPortParamTypeId).toString() + "/upnp/control/basicevent1"));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("text/xml; charset=\"utf-8\""));
-    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("guh"));
+    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("nymea"));
     request.setRawHeader("SOAPACTION", "\"urn:Belkin:service:basicevent:1#GetBinaryState\"");
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, getBinarayStateMessage);
@@ -165,7 +165,7 @@ bool DevicePluginWemo::setPower(Device *device, const bool &power, const ActionI
     QNetworkRequest request;
     request.setUrl(QUrl("http://" + device->paramValue(wemoSwitchHostParamTypeId).toString() + ":" + device->paramValue(wemoSwitchPortParamTypeId).toString() + "/upnp/control/basicevent1"));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("text/xml; charset=\"utf-8\""));
-    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("guh"));
+    request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("nymea"));
     request.setRawHeader("SOAPACTION", "\"urn:Belkin:service:basicevent:1#SetBinaryState\"");
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, setPowerMessage);

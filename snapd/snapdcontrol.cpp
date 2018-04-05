@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2017-2018 Simon Stürz <simon.stuerz@guh.io               *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -52,17 +52,17 @@ bool SnapdControl::available() const
 {
     QFileInfo fileInfo(m_snapdSocketPath);
     if (!fileInfo.exists()) {
-        qCWarning(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "does not exist";
+        qCDebug(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "does not exist";
         return false;
     }
 
     if (!fileInfo.isReadable()) {
-        qCWarning(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "is not readable";
+        qCDebug(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "is not readable";
         return false;
     }
 
     if (!fileInfo.isWritable()) {
-        qCWarning(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "is not writable";
+        qCDebug(dcSnapd()) << "The socket descriptor" << m_snapdSocketPath << "is not writable";
         return false;
     }
 
@@ -129,11 +129,11 @@ void SnapdControl::configureRefreshSchedule()
         return;
 
     QVariantMap configuration; QVariantMap configMap;
-    configMap.insert("timer", m_preferedRefreshSchedule);
-    configMap.insert("schedule", m_preferedRefreshSchedule);
+    configMap.insert("timer", m_preferredRefreshSchedule);
+    configMap.insert("schedule", m_preferredRefreshSchedule);
     configuration.insert("refresh", configMap);
 
-    qCDebug(dcSnapd()) << "Configure refresh schedule from" << m_currentRefreshSchedule << "-->" << m_preferedRefreshSchedule;
+    qCDebug(dcSnapd()) << "Configure refresh schedule from" << m_currentRefreshSchedule << "-->" << m_preferredRefreshSchedule;
 
     SnapdReply *reply = m_snapConnection->put(QString("/v2/snaps/core/conf"), QJsonDocument::fromVariant(configuration).toJson(QJsonDocument::Compact), this);
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onConfigureRefreshScheduleFinished);
@@ -191,7 +191,7 @@ void SnapdControl::onLoadSystemInfoFinished()
     reply->deleteLater();
 
     // Check if the refresh schedule should be updated
-    if (m_currentRefreshSchedule != m_preferedRefreshSchedule) {
+    if (m_currentRefreshSchedule != m_preferredRefreshSchedule) {
         configureRefreshSchedule();
     }
 }
@@ -391,7 +391,7 @@ void SnapdControl::update()
         return;
     }
 
-    // Note: this makes sure the state is realy connected (including connection initialisation stuff)
+    // Note: this makes sure the state is really connected (including connection initialisation stuff)
     if (!m_snapConnection->isConnected())
         return;
 
@@ -453,13 +453,13 @@ void SnapdControl::checkForUpdates()
     connect(reply, &SnapdReply::finished, this, &SnapdControl::onCheckForUpdatesFinished);
 }
 
-void SnapdControl::setPreferedRefreshTime(int startTime)
+void SnapdControl::setPreferredRefreshTime(int startTime)
 {
     // Schedule the refresh between startTime and startTime + 59 minutes
     QTime start(startTime, 0, 0);
     QTime end = start.addSecs(3540);
-    m_preferedRefreshSchedule  = QString("%1-%2").arg(start.toString("h:mm")).arg(end.toString("h:mm"));
-    qCDebug(dcSnapd()) << "Set prefered refresh schedule to " << m_preferedRefreshSchedule;
+    m_preferredRefreshSchedule  = QString("%1-%2").arg(start.toString("h:mm")).arg(end.toString("h:mm"));
+    qCDebug(dcSnapd()) << "Set preferred refresh schedule to " << m_preferredRefreshSchedule;
 }
 
 void SnapdControl::snapRevert(const QString &snapName)

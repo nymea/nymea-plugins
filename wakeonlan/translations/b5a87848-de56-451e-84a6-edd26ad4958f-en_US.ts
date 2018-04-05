@@ -5,13 +5,13 @@
     <name>WakeOnLan</name>
     <message>
         <location filename="../plugininfo.h" line="29"/>
-        <source>WakeOnLan</source>
+        <source>Wake on Lan</source>
         <extracomment>The name of the plugin WakeOnLan (b5a87848-de56-451e-84a6-edd26ad4958f)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="32"/>
-        <source>guh</source>
+        <source>guh GmbH</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>

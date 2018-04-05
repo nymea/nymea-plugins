@@ -81,8 +81,8 @@
                             "displayNameEvent": "Last automatic system update time changed",
                             "unit": "UnixTime",
                             "type": "int",
+                            "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "stateRuleRelevant": false,
                             "defaultValue": 0
                         },
                         {
@@ -92,8 +92,8 @@
                             "displayNameEvent": "Next automatic system update time changed",
                             "unit": "UnixTime",
                             "type": "int",
+                            "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "stateRuleRelevant": false,
                             "defaultValue": 0
                         },
                         {
@@ -102,8 +102,8 @@
                             "displayName": "Status",
                             "displayNameEvent": "Status changed",
                             "type": "QString",
+                            "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "stateRuleRelevant": false,
                             "defaultValue": "-"
                         }
                     ]
@@ -167,8 +167,8 @@
                             "displayNameEvent": "Channel changed",
                             "displayNameAction": "Set channel",
                             "type": "QString",
+                            "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "stateRuleRelevant": false,
                             "defaultValue": "stable",
                             "writable": true,
                             "possibleValues": [
@@ -184,8 +184,8 @@
                             "displayName": "Version",
                             "displayNameEvent": "Version changed",
                             "type": "QString",
+                            "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "stateRuleRelevant": false,
                             "defaultValue": "-"
                         },
                         {
@@ -194,8 +194,8 @@
                             "displayName": "Revision",
                             "displayNameEvent": "Revision changed",
                             "type": "QString",
+                            "ruleRelevant": false,
                             "eventRuleRelevant": false,
-                            "stateRuleRelevant": false,
                             "defaultValue": "-"
                         }
                     ]

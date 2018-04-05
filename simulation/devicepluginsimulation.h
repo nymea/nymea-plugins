@@ -3,19 +3,19 @@
  *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
  *  Copyright (C) 2018 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
- *  Guh is free software: you can redistribute it and/or modify            *
+ *  nymea is free software: you can redistribute it and/or modify          *
  *  it under the terms of the GNU General Public License as published by   *
  *  the Free Software Foundation, version 2 of the License.                *
  *                                                                         *
- *  Guh is distributed in the hope that it will be useful,                 *
+ *  nymea is distributed in the hope that it will be useful,               *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the           *
  *  GNU General Public License for more details.                           *
  *                                                                         *
  *  You should have received a copy of the GNU General Public License      *
- *  along with guh. If not, see <http://www.gnu.org/licenses/>.            *
+ *  along with nymea. If not, see <http://www.gnu.org/licenses/>.          *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -30,24 +30,29 @@ class DevicePluginSimulation : public DevicePlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "guru.guh.DevicePlugin" FILE "devicepluginsimulation.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginsimulation.json")
     Q_INTERFACES(DevicePlugin)
 
 
 public:
     explicit DevicePluginSimulation();
+    ~DevicePluginSimulation();
 
     void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_pluginTimer20Seconds = nullptr;
+    PluginTimer *m_pluginTimer5Min = nullptr;
 
-    int getRandomNumber(const int min, const int max);
+    int generateRandomIntValue(int min, int max);
+    double generateRandomDoubleValue(double min, double max);
+    bool generateRandomBoolValue();
 
 private slots:
-    void onPluginTimer();
+    void onPluginTimer20Seconds();
+    void onPluginTimer5Minutes();
 
 };
 

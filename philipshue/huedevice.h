@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -29,8 +29,6 @@
 #include <QNetworkRequest>
 #include <QJsonDocument>
 
-#include "typeutils.h"
-
 class HueDevice : public QObject
 {
     Q_OBJECT
@@ -42,9 +40,6 @@ public:
 
     QString name() const;
     void setName(const QString &name);
-
-    DeviceId bridgeId() const;
-    void setBridgeId(const DeviceId &bridgeId);
 
     QHostAddress hostAddress() const;
     void setHostAddress(const QHostAddress hostAddress);
@@ -74,7 +69,6 @@ private:
     QString m_apiKey;
     QString m_modelId;
     QString m_uuid;
-    DeviceId m_bridgeId;
     QString m_type;
     QString m_softwareVersion;
 

@@ -1,6 +1,8 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginawattar)
+QT += network
+
+TARGET = $$qtLibraryTarget(nymea_devicepluginawattar)
 
 SOURCES += \
     devicepluginawattar.cpp \

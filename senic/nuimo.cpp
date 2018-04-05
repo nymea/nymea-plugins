@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -213,8 +213,8 @@ void Nuimo::printService(QLowEnergyService *service)
 {
     foreach (const QLowEnergyCharacteristic &characteristic, service->characteristics()) {
         qCDebug(dcSenic()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
-        foreach (const QLowEnergyDescriptor &desciptor, characteristic.descriptors()) {
-            qCDebug(dcSenic()) << "        -->" << desciptor.name() << desciptor.uuid().toString() << desciptor.value();
+        foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
+            qCDebug(dcSenic()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 }

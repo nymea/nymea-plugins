@@ -1,9 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stuerz <simon.stuerz@guh.io>                  *
- *  Copyright (C) 2016 nicc                                                *
+ *  Copyright (C) 2015-2018 Simon Stuerz <simon.stuerz@guh.io>             *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -36,30 +35,31 @@
 class DevicePluginMultiSensor : public DevicePlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "guru.guh.DevicePlugin" FILE "devicepluginmultisensor.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginmultisensor.json")
     Q_INTERFACES(DevicePlugin)
 
 public:
     explicit DevicePluginMultiSensor();
+    ~DevicePluginMultiSensor();
 
     void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
+    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+
 private:
-    PluginTimer *m_measureTimer = nullptr;
+    PluginTimer *m_reconnectTimer = nullptr;
     QHash<Device *, SensorTag *> m_sensors;
 
     bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
 
 private slots:
     void onPluginTimer();
-
-    void onSensorLeftButtonPressed();
-    void onSensorRightButtonPressed();
-
     void onBluetoothDiscoveryFinished();
+
 };
 
 #endif // DEVICEPLUGINMULTISENSOR_H

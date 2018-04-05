@@ -4,9 +4,12 @@
 <context>
     <name>LgSmartTv</name>
     <message>
+        <location filename="../plugininfo.h" line="82"/>
         <location filename="../plugininfo.h" line="91"/>
         <source>LG Smart Tv</source>
-        <extracomment>The name of the DeviceClass (1d41b5a8-74ff-4a12-b365-c7bbe610848f)</extracomment>
+        <extracomment>The name of the plugin LgSmartTv (4ef7a68b-9da0-4c62-b9ac-f478dc6f9f52)
+----------
+The name of the DeviceClass (1d41b5a8-74ff-4a12-b365-c7bbe610848f)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -66,7 +69,7 @@
     <message>
         <location filename="../plugininfo.h" line="115"/>
         <source>reachable</source>
-        <extracomment>The name of the ParamType of StateType (b056c36b-df87-4177-8d5d-1e7c1e8cdc7a) of DeviceClass lgSmartTv</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (b056c36b-df87-4177-8d5d-1e7c1e8cdc7a) of DeviceClass lgSmartTv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -76,9 +79,21 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="121"/>
+        <source>3D mode</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (8ad3d77f-d340-495d-8c2a-5569a80e9d36) of DeviceClass lgSmartTv</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="124"/>
         <source>volume changed</source>
         <extracomment>The name of the autocreated EventType (07d39a6e-7eab-42d0-851d-9f3bcd3bbb57)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="127"/>
+        <source>volume</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (07d39a6e-7eab-42d0-851d-9f3bcd3bbb57) of DeviceClass lgSmartTv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -88,9 +103,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="133"/>
         <location filename="../plugininfo.h" line="178"/>
         <source>mute</source>
-        <extracomment>The name of the ActionType 1aa9d7f0-0f66-4b90-bb72-f6b7b2118221 of deviceClass lgSmartTv</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (a6ac9061-3de7-403a-a646-790ca5d73764) of DeviceClass lgSmartTv
+----------
+The name of the ActionType 1aa9d7f0-0f66-4b90-bb72-f6b7b2118221 of deviceClass lgSmartTv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -100,9 +118,21 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="139"/>
+        <source>tv channel type</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (84c86670-77c7-4fc6-9e23-abca066e76aa) of DeviceClass lgSmartTv</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="142"/>
         <source>channel name changed</source>
         <extracomment>The name of the autocreated EventType (265dc5f7-3f4d-4002-a6fe-2a53986bcf1d)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="145"/>
+        <source>channel name</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (265dc5f7-3f4d-4002-a6fe-2a53986bcf1d) of DeviceClass lgSmartTv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -112,9 +142,21 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="151"/>
+        <source>channel number</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (881629a3-4ce2-42ba-8ce6-10d90c383799) of DeviceClass lgSmartTv</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="154"/>
         <source>program changed</source>
         <extracomment>The name of the autocreated EventType (3f53e52e-1ad7-40e7-8080-76908e720cac)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="157"/>
+        <source>program</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (3f53e52e-1ad7-40e7-8080-76908e720cac) of DeviceClass lgSmartTv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -124,81 +166,30 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="163"/>
+        <source>input source index</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (e895017a-139f-410c-bfb2-4d008104e164) of DeviceClass lgSmartTv</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="166"/>
         <source>input source changed</source>
         <extracomment>The name of the autocreated EventType (58b734ec-2269-4c57-99e1-e1eeee401053)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="169"/>
         <location filename="../plugininfo.h" line="214"/>
         <source>input source</source>
-        <extracomment>The name of the ActionType 9a6e5111-95d3-49ac-8056-249e704b1509 of deviceClass lgSmartTv</extracomment>
+        <extracomment>The name of the ParamType of the autocreated EventType (58b734ec-2269-4c57-99e1-e1eeee401053) of DeviceClass lgSmartTv
+----------
+The name of the ActionType 9a6e5111-95d3-49ac-8056-249e704b1509 of deviceClass lgSmartTv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="172"/>
         <source>volume up</source>
         <extracomment>The name of the ActionType ac5d7dcd-dfe8-4a94-9ab9-21b3f804b39e of deviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="82"/>
-        <source>LgSmartTv</source>
-        <extracomment>The name of the plugin LgSmartTv (4ef7a68b-9da0-4c62-b9ac-f478dc6f9f52)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="121"/>
-        <source>tv3DMode</source>
-        <extracomment>The name of the ParamType of StateType (8ad3d77f-d340-495d-8c2a-5569a80e9d36) of DeviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="127"/>
-        <source>tvVolumeLevel</source>
-        <extracomment>The name of the ParamType of StateType (07d39a6e-7eab-42d0-851d-9f3bcd3bbb57) of DeviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="133"/>
-        <source>tvMute</source>
-        <extracomment>The name of the ParamType of StateType (a6ac9061-3de7-403a-a646-790ca5d73764) of DeviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="139"/>
-        <source>tvChannelType</source>
-        <extracomment>The name of the ParamType of StateType (84c86670-77c7-4fc6-9e23-abca066e76aa) of DeviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="145"/>
-        <source>tvChannelName</source>
-        <extracomment>The name of the ParamType of StateType (265dc5f7-3f4d-4002-a6fe-2a53986bcf1d) of DeviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="151"/>
-        <source>tvChannelNumber</source>
-        <extracomment>The name of the ParamType of StateType (881629a3-4ce2-42ba-8ce6-10d90c383799) of DeviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="157"/>
-        <source>tvProgramName</source>
-        <extracomment>The name of the ParamType of StateType (3f53e52e-1ad7-40e7-8080-76908e720cac) of DeviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="163"/>
-        <source>tvInputSourceIndex</source>
-        <extracomment>The name of the ParamType of StateType (e895017a-139f-410c-bfb2-4d008104e164) of DeviceClass lgSmartTv</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="169"/>
-        <source>tvInputSourceLabelName</source>
-        <extracomment>The name of the ParamType of StateType (58b734ec-2269-4c57-99e1-e1eeee401053) of DeviceClass lgSmartTv</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

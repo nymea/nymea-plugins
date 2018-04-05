@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -168,14 +168,14 @@ void RadiatorThermostat::setInformationValid(const bool &informationValid)
     m_informationValid = informationValid;
 }
 
-bool RadiatorThermostat::errorOccured() const
+bool RadiatorThermostat::errorOccurred() const
 {
-    return m_errorOccured;
+    return m_errorOccurred;
 }
 
-void RadiatorThermostat::setErrorOccured(const bool &errorOccured)
+void RadiatorThermostat::setErrorOccurred(const bool &errorOccurred)
 {
-    m_errorOccured = errorOccured;
+    m_errorOccurred = errorOccurred;
 }
 
 bool RadiatorThermostat::isAnswereToCommand() const

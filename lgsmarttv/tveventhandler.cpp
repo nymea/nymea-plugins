@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -69,7 +69,7 @@ void TvEventHandler::readClient()
             textStream.setAutoDetectUnicode(true);
             textStream << "HTTP/1.0 200 OK\r\n"
                           "Content-Type: text/html; charset=\"utf-8\"\r\n"
-                          "User-Agent: UDAP/2.0 guh\r\n"
+                          "User-Agent: UDAP/2.0 nymea\r\n"
                        << "Date: " << QDateTime::currentDateTime().toString() << "\n";
 
             emit eventOccured(data);

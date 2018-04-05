@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -27,7 +27,7 @@
     \brief Plugin to monitor zeroconf devices in the local network.
 
     \ingroup plugins
-    \ingroup guh-plugins-maker
+    \ingroup nymea-plugins-maker
 
     \chapter Plugin properties
     Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}

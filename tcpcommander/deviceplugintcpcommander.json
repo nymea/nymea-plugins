@@ -26,16 +26,14 @@
                             "displayName": "IPv4 Address",
                             "type": "QString",
                             "inputType": "IPv4Address",
-                            "defaultValue": "127.0.0.1",
-                            "index" : 0
+                            "defaultValue": "127.0.0.1"
                         },
                         {
                             "id": "bee8b151-815a-4159-9d8a-42b76e99b42c",
                             "name": "port",
                             "displayName": "Port",
                             "type": "int",
-                            "defaultValue": "22",
-                            "index" : 1
+                            "defaultValue": "22"
                         }
                     ],
                     "stateTypes":[
@@ -45,8 +43,7 @@
                             "displayName": "connected",
                             "type": "bool",
                             "defaultValue": false,
-                            "displayNameEvent": "connection status changed",
-                            "index" : 0
+                            "displayNameEvent": "connection status changed"
                         }
                     ],
                     "actionTypes": [
@@ -54,14 +51,12 @@
                             "id": "6bc52462-b192-46a4-a6df-92cc5a479c89",
                             "name": "outputData",
                             "displayName": "Send Data",
-                            "index": 0,
                             "paramTypes": [
                                 {
                                     "id": "6604c852-6b24-4707-b8e5-1ddd8032efcc",
                                     "name": "outputDataArea",
                                     "displayName": "Data",
                                     "type": "QString",
-                                    "index": 0,
                                     "inputType": "TextArea"
                                 }
                             ]
@@ -84,8 +79,7 @@
                             "name": "port",
                             "displayName": "Port",
                             "type": "int",
-                            "defaultValue": "22",
-                            "index" : 0
+                            "defaultValue": "22"
                         },
                         {
                             "id": "d99f55c7-0e14-45ee-b0f0-33f2d1d2e674",
@@ -99,8 +93,7 @@
                                 "Starts with",
                                 "Ends with"
                             ],
-                            "defaultValue": "Exactly",
-                            "index" : 1
+                            "defaultValue": "Exactly"
                         },
                         {
                             "id": "23051bdf-3f50-41fa-abde-bc4fe0bcc4fc",
@@ -108,8 +101,7 @@
                             "displayName": "Command",
                             "type": "QString",
                             "inputType": "TextArea",
-                            "defaultValue": "",
-                            "index" : 2
+                            "defaultValue": ""
                         }
                     ],
                     "stateTypes": [
@@ -119,26 +111,22 @@
                             "displayName": "connected",
                             "type": "bool",
                             "defaultValue": false,
-                            "displayNameEvent": "connection status changed",
-                            "index" : 0
+                            "displayNameEvent": "connection status changed"
                         },
                         {
                             "id": "b98fdacc-59d7-41c4-b790-1fdca50dfb22",
                             "name": "dataReceived",
                             "displayName": "Data Received",
                             "type": "QString",
-                            "inputType": "TextArea",
                             "defaultValue": "",
-                            "displayNameEvent": "Data received",
-                            "index" : 1
+                            "displayNameEvent": "Data received"
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "6d7c6df6-cb61-4d9e-b0d7-37c43911ca4b",
                             "name": "commandReceived",
-                            "displayName": "Command Received",
-                            "index": 0
+                            "displayName": "Command Received"
                         }
                     ]
                 }

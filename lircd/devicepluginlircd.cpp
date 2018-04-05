@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -27,11 +27,11 @@
     \brief Plugin for the LIRC infrared daemon.
 
     \ingroup plugins
-    \ingroup guh-plugins-maker
+    \ingroup nymea-plugins-maker
 
     This plugin allows to interact with \l{http://www.lirc.org/}{LIRC} daemon and controll commonly used remote controls.
-    If lircd (LIRC daemon) is configured on your system, guh will connect to the lirc daemon and all configured remote
-    controls of lircd will appear in guh.
+    If lircd (LIRC daemon) is configured on your system, nymea will connect to the lirc daemon and all configured remote
+    controls of lircd will appear in nymea.
 
     \chapter Plugin properties
     Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}

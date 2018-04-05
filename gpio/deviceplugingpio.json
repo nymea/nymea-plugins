@@ -4,19 +4,16 @@
     "id": "127ead55-996a-44ac-ba82-fc3c634e018a",
     "vendors": [
         {
-            "displayName": "Raspberry Pi 2",
+            "displayName": "Raspberry Pi 2/3",
             "name": "raspberryPi",
             "id": "f0d00b66-bbd8-4a07-8591-ea48a61b229e",
             "deviceClasses": [
                 {
                     "id": "3885c520-e202-4435-88f6-3c35c362b2e6",
-                    "displayName": "GPIO Switch",
-                    "name": "gpioSwitchRpi",
+                    "displayName": "GPIO Output",
+                    "name": "gpioOutputRpi",
                     "deviceIcon": "Switch",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
+                    "basicTags": ["Device", "Actuator"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
@@ -56,13 +53,10 @@
                 },
                 {
                     "id": "6aff228b-0410-4ef9-9593-51e8639aacea",
-                    "displayName": "GPIO Button",
-                    "name": "gpioButtonRpi",
+                    "displayName": "GPIO Input",
+                    "name": "gpioInputRpi",
                     "deviceIcon": "Power",
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
+                    "basicTags": ["Device", "Sensor"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
@@ -107,13 +101,10 @@
             "deviceClasses": [
                 {
                     "id": "75d54a59-f9b0-4bc4-a86c-6b1fc47e0663",
-                    "displayName": "GPIO Switch",
-                    "name": "gpioSwitchBbb",
+                    "displayName": "GPIO Output",
+                    "name": "gpioOutputBbb",
                     "deviceIcon": "Switch",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
+                    "basicTags": ["Device", "Actuator"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
@@ -153,13 +144,10 @@
                 },
                 {
                     "id": "ffd2aa29-55cc-4824-ba95-c311784f7824",
-                    "displayName": "GPIO Button",
-                    "name": "gpioButtonBbb",
+                    "displayName": "GPIO Input",
+                    "name": "gpioInputBbb",
                     "deviceIcon": "Power",
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
+                    "basicTags": ["Device", "Sensor"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {

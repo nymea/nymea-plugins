@@ -5,7 +5,7 @@
     <name>TCPCommander</name>
     <message>
         <location filename="../plugininfo.h" line="45"/>
-        <source>TCPCommander</source>
+        <source>tcp commander</source>
         <extracomment>The name of the plugin TCPCommander (741b7b0a-0c9c-4c93-be99-0d0bcf5a4643)</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -47,9 +47,9 @@ The name of the paramType (bee8b151-815a-4159-9d8a-42b76e99b42c) of tcpInput</ex
         <location filename="../plugininfo.h" line="63"/>
         <location filename="../plugininfo.h" line="87"/>
         <source>connected</source>
-        <extracomment>The name of the ParamType of StateType (725b541a-9e0c-4634-81eb-e415c0b8f025) of DeviceClass tcpOutput
+        <extracomment>The name of the ParamType of the autocreated EventType (725b541a-9e0c-4634-81eb-e415c0b8f025) of DeviceClass tcpOutput
 ----------
-The name of the ParamType of StateType (725b541a-9e0c-4634-81eb-e415c0b8f025) of DeviceClass tcpInput</extracomment>
+The name of the ParamType of the autocreated EventType (725b541a-9e0c-4634-81eb-e415c0b8f025) of DeviceClass tcpInput</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -90,8 +90,8 @@ The name of the ParamType of StateType (725b541a-9e0c-4634-81eb-e415c0b8f025) of
     </message>
     <message>
         <location filename="../plugininfo.h" line="93"/>
-        <source>dataReceived</source>
-        <extracomment>The name of the ParamType of StateType (b98fdacc-59d7-41c4-b790-1fdca50dfb22) of DeviceClass tcpInput</extracomment>
+        <source>Data Received</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (b98fdacc-59d7-41c4-b790-1fdca50dfb22) of DeviceClass tcpInput</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

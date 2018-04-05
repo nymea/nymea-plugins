@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -46,16 +46,6 @@ QString HueDevice::name() const
 void HueDevice::setName(const QString &name)
 {
     m_name = name;
-}
-
-DeviceId HueDevice::bridgeId() const
-{
-    return m_bridgeId;
-}
-
-void HueDevice::setBridgeId(const DeviceId &bridgeId)
-{
-    m_bridgeId = bridgeId;
 }
 
 QHostAddress HueDevice::hostAddress() const

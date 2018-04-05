@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -30,7 +30,7 @@ class NetatmoBaseStation : public QObject
 {
     Q_OBJECT
 public:
-    explicit NetatmoBaseStation(const QString &name, const QString &macAddress, const QString &connectionId, QObject *parent = 0);
+    explicit NetatmoBaseStation(const QString &name, const QString &macAddress, QObject *parent = 0);
 
     // Params
     QString name() const;
@@ -54,7 +54,6 @@ private:
     // Params
     QString m_name;
     QString m_macAddress;
-    QString m_connectionId;
 
     // States
     int m_lastUpdate;

@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -26,9 +26,9 @@
     \brief Plugin for the OSDomotics Merkur board based on the OSDomotics tutorials.
 
     \ingroup plugins
-    \ingroup guh-plugins-merkur
+    \ingroup nymea-plugins-merkur
 
-    This plugin allows you to connect guh to a 6LoWPAN network by adding a Mercury Board from OSDomotics
+    This plugin allows you to connect nymea to a 6LoWPAN network by adding a Mercury Board from OSDomotics
     as a RPL router to your devices \l{http://osdwiki.open-entry.com/doku.php/de:tutorials:contiki:merkur_board_rpl_usb_router}{OSDomotics Tutorial- RPL Router}.
     All nodes in the 6LoWPAN network of the added RPL router will appear automatically in the system.
 
@@ -161,7 +161,7 @@ void DevicePluginOsdomotics::parseNodes(Device *device, const QByteArray &data)
 
     QHostAddress nodeAddress(QString(data.mid(index, delta - index)));
 
-    // check if we allready have found this node
+    // check if we already have found this node
     foreach (Device *device, myDevices()) {
         if (device->paramValue(merkurNodeHostParamTypeId).toString() == nodeAddress.toString()) {
             return;

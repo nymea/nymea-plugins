@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -23,15 +23,15 @@
 /*!
     \page mailnotification.html
     \title Mail Notification
-    \brief Plugin which allows to get mail notification from guh.
+    \brief Plugin which allows to get mail notification from nymea.
 
     \ingroup plugins
-    \ingroup guh-plugins
+    \ingroup nymea-plugins
 
     The mail notification plugin allows you to send a mail notification from a mail
     account by performing an \l{Action}.
 
-    ATTENTION: The password currently will be saved as plain text in the guh settings file.
+    ATTENTION: The password currently will be saved as plain text in the nymea settings file.
     This will be changed soon...
 
     \chapter Supported services
@@ -47,7 +47,7 @@
         from your yahoo account.
 
         \section2 Custom Mail
-        With the Custom Mail Notification you can set up a custom SMTP connection. The supported authentification
+        With the Custom Mail Notification you can set up a custom SMTP connection. The supported authentication
         methods are ["PLAIN", "LOGIN"], the supported encryption methods are ["NONE", "SSL", "TLS"].
 
     \chapter Plugin properties

@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2016 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -24,12 +24,12 @@
 /*!
     \page plantcare.html
     \title Plantcare
-    \brief Plugin for the guh Plantcare example based on 6LoWPAN networking.
+    \brief Plugin for the nymea Plantcare example based on 6LoWPAN networking.
 
     \ingroup plugins
-    \ingroup guh-plugins-merkur
+    \ingroup nymea-plugins-merkur
 
-    This allows to controll the guh plantcare demo for 6LoWPAN networks.
+    This allows to control the nymea plantcare demo for 6LoWPAN networks.
 
     \chapter Plugin properties
     Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
@@ -102,7 +102,7 @@ DeviceManager::DeviceError DevicePluginPlantCare::discoverDevices(const DeviceCl
     Q_UNUSED(params)
 
     // Perform a HTTP GET on the RPL router address
-    QHostAddress address(configuration().paramValue(PlantCareRplParamTypeId).toString());
+    QHostAddress address(configuration().paramValue(plantCareRplParamTypeId).toString());
     qCDebug(dcPlantCare) << "Scan for new nodes on RPL" << address.toString();
 
     QUrl url;
@@ -148,7 +148,7 @@ DeviceManager::DeviceError DevicePluginPlantCare::executeAction(Device *device, 
         return DeviceManager::DeviceErrorAsync;
 
     } else if(action.actionTypeId() == plantCareLedPowerActionTypeId) {
-        int power = action.param(plantCareLedPowerStateParamTypeId).value().toInt();
+        int power = action.param(plantCareLedPowerActionParamTypeId).value().toInt();
 
         QUrl url;
         url.setScheme("coap");
@@ -170,7 +170,7 @@ DeviceManager::DeviceError DevicePluginPlantCare::executeAction(Device *device, 
         return DeviceManager::DeviceErrorAsync;
 
     } else if(action.actionTypeId() == plantCareWaterPumpActionTypeId) {
-        bool pump = action.param(plantCareWaterPumpStateParamTypeId).value().toBool();
+        bool pump = action.param(plantCareWaterPumpActionParamTypeId).value().toBool();
 
         QUrl url;
         url.setScheme("coap");
@@ -517,7 +517,7 @@ void DevicePluginPlantCare::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(plantCareLedPowerStateTypeId, action.param(plantCareLedPowerStateParamTypeId).value().toBool());
+        device->setStateValue(plantCareLedPowerStateTypeId, action.param(plantCareLedPowerActionParamTypeId).value().toBool());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 
@@ -543,7 +543,7 @@ void DevicePluginPlantCare::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(plantCareWaterPumpStateTypeId, action.param(plantCareWaterPumpStateParamTypeId).value().toBool());
+        device->setStateValue(plantCareWaterPumpStateTypeId, action.param(plantCareWaterPumpActionParamTypeId).value().toBool());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 

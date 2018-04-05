@@ -1,6 +1,8 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginorderbutton)
+QT += network
+
+TARGET = $$qtLibraryTarget(nymea_devicepluginorderbutton)
 
 SOURCES += \
     devicepluginorderbutton.cpp

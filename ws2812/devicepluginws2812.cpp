@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2016 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -24,10 +24,10 @@
 /*!
     \page ws2812.html
     \title ws2812
-    \brief Plugin to controll ws2812 LEDs based on 6LoWPAN networking.
+    \brief Plugin to control ws2812 LEDs based on 6LoWPAN networking.
 
     \ingroup plugins
-    \ingroup guh-plugins-merkur
+    \ingroup nymea-plugins-merkur
 
     The plugin for the \l{http://cdn.sparkfun.com/datasheets/Components/LED/WS2812.pdf}{ws2812} led module. This plugin allows to control a ws2812 module over a 6LoWPAN network.
 
@@ -101,7 +101,7 @@ DeviceManager::DeviceError DevicePluginWs2812::discoverDevices(const DeviceClass
     Q_UNUSED(params)
 
     // Perform a HTTP GET on the RPL router address
-    QHostAddress address(configuration().paramValue(Ws2812RplParamTypeId).toString());
+    QHostAddress address(configuration().paramValue(ws2812RplParamTypeId).toString());
     qCDebug(dcWs2812) << "Scan for new nodes on RPL" << address.toString();
 
     QUrl url;
@@ -140,7 +140,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         url.setHost(device->paramValue(ws2812HostParamTypeId).toString());
         url.setPath("/a/color");
 
-        QColor newColor = action.param(ws2812EffectModeStateParamTypeId).value().value<QColor>().toRgb();
+        QColor newColor = action.param(ws2812EffectModeActionParamTypeId).value().value<QColor>().toRgb();
         QByteArray message = "color=" + newColor.name().remove("#").toUtf8();
 
         qCDebug(dcWs2812) << "Sending" << url.toString() << message;
@@ -164,7 +164,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         url.setHost(device->paramValue(ws2812HostParamTypeId).toString());
         url.setPath("/a/speed");
 
-        int speed = action.param(ws2812SpeedStateParamTypeId).value().toInt();
+        int speed = action.param(ws2812SpeedActionParamTypeId).value().toInt();
 
         qCDebug(dcWs2812) << "Set Speed:" << speed;
 
@@ -190,7 +190,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         url.setPath("/a/brightness");
 
 
-        int brightness = action.param(ws2812BrightnessStateParamTypeId).value().toInt();
+        int brightness = action.param(ws2812BrightnessActionParamTypeId).value().toInt();
 
         qCDebug(dcWs2812) << "Set brightness:" << brightness;
 
@@ -220,7 +220,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
         //QColor newColor = QColor::fromHsv(color.hue(), color.saturation(), 100 * light->brightness() / 255.0);
         //QByteArray message = "color=" + newColor.toRgb().name().remove("#").toUtf8();
 
-        int max = action.param(ws2812MaxPixStateParamTypeId).value().toInt();
+        int max = action.param(ws2812MaxPixActionParamTypeId).value().toInt();
 
         qCDebug(dcWs2812) << "Max Pix" << max;
 
@@ -246,7 +246,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
 
         int effectmode = 0;
 
-        QString effectModeString = action.param(ws2812EffectModeStateParamTypeId).value().toString();
+        QString effectModeString = action.param(ws2812EffectModeActionParamTypeId).value().toString();
 
 
         QUrl url;
@@ -311,11 +311,11 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
          */
 
         if(action.actionTypeId() == ws2812Tcolor1ActionTypeId) {
-            tColor1 = action.param(ws2812Tcolor1StateParamTypeId).value().value<QColor>().toRgb();
+            tColor1 = action.param(ws2812Tcolor1ActionParamTypeId).value().value<QColor>().toRgb();
         } else if(action.actionTypeId() == ws2812Tcolor2ActionTypeId){
-            tColor2 = action.param(ws2812Tcolor2StateParamTypeId).value().value<QColor>().toRgb();
+            tColor2 = action.param(ws2812Tcolor2ActionParamTypeId).value().value<QColor>().toRgb();
         } else if(action.actionTypeId() == ws2812Tcolor3ActionTypeId){
-            tColor3 = action.param(ws2812Tcolor3StateParamTypeId).value().value<QColor>().toRgb();
+            tColor3 = action.param(ws2812Tcolor3ActionParamTypeId).value().value<QColor>().toRgb();
         }
 
         QByteArray message = "color=" + tColor1.name().remove("#").toUtf8() + tColor2.name().remove("#").toUtf8() + tColor3.name().remove("#").toUtf8();
@@ -704,7 +704,7 @@ void DevicePluginWs2812::coapReplyFinished(CoapReply *reply)
             emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
             return;
         }
-        QString tcolor = action.param(ws2812EffectColorStateParamTypeId).value().toByteArray();
+        QString tcolor = action.param(ws2812EffectColorActionParamTypeId).value().toByteArray();
 
         // Update the state here, so we don't have to wait for the notification
         device->setStateValue(ws2812Tcolor1StateTypeId, tcolor.left(6));
@@ -736,7 +736,7 @@ void DevicePluginWs2812::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(ws2812EffectColorStateTypeId, action.param(ws2812EffectColorStateParamTypeId).value().toInt());
+        device->setStateValue(ws2812EffectColorStateTypeId, action.param(ws2812EffectColorActionParamTypeId).value().toInt());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 
@@ -762,7 +762,7 @@ void DevicePluginWs2812::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(ws2812BrightnessStateTypeId, action.param(ws2812BrightnessStateParamTypeId).value().toInt());
+        device->setStateValue(ws2812BrightnessStateTypeId, action.param(ws2812BrightnessActionParamTypeId).value().toInt());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 
@@ -788,7 +788,7 @@ void DevicePluginWs2812::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(ws2812SpeedStateTypeId, action.param(ws2812SpeedStateParamTypeId).value().toInt());
+        device->setStateValue(ws2812SpeedStateTypeId, action.param(ws2812SpeedActionParamTypeId).value().toInt());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 
@@ -814,7 +814,7 @@ void DevicePluginWs2812::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(ws2812MaxPixStateTypeId, action.param(ws2812MaxPixStateParamTypeId).value().toInt());
+        device->setStateValue(ws2812MaxPixStateTypeId, action.param(ws2812MaxPixActionParamTypeId).value().toInt());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 

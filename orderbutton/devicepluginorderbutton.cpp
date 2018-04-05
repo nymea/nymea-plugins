@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2016 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -27,7 +27,7 @@
     \brief Demonstration of an orderbutton based on 6LoWPAN networking.
 
     \ingroup plugins
-    \ingroup guh-plugins-merkur
+    \ingroup nymea-plugins-merkur
 
 
     \chapter Plugin properties
@@ -147,7 +147,7 @@ DeviceManager::DeviceError DevicePluginOrderButton::executeAction(Device *device
         return DeviceManager::DeviceErrorAsync;
 
     } else if(action.actionTypeId() == orderbuttonLedActionTypeId) {
-        bool led = action.param(orderbuttonLedStateParamTypeId).value().toBool();
+        bool led = action.param(orderbuttonLedActionParamTypeId).value().toBool();
 
         QUrl url;
         url.setScheme("coap");
@@ -466,7 +466,7 @@ void DevicePluginOrderButton::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(orderbuttonLedStateTypeId, action.param(orderbuttonLedStateParamTypeId).value().toBool());
+        device->setStateValue(orderbuttonLedStateTypeId, action.param(orderbuttonLedActionParamTypeId).value().toBool());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 

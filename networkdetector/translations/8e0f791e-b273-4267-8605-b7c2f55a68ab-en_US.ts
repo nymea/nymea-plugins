@@ -5,13 +5,13 @@
     <name>NetworkDetector</name>
     <message>
         <location filename="../plugininfo.h" line="32"/>
-        <source>NetworkDetector</source>
+        <source>Network Detector</source>
         <extracomment>The name of the plugin NetworkDetector (8e0f791e-b273-4267-8605-b7c2f55a68ab)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="35"/>
-        <source>guh</source>
+        <source>guh GmbH</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -41,8 +41,8 @@
     </message>
     <message>
         <location filename="../plugininfo.h" line="50"/>
-        <source>inRange</source>
-        <extracomment>The name of the ParamType of StateType (cb43e1b5-4f61-4538-bfa2-c33055c542cf) of DeviceClass networkDevice</extracomment>
+        <source>Device in network</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (cb43e1b5-4f61-4538-bfa2-c33055c542cf) of DeviceClass networkDevice</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

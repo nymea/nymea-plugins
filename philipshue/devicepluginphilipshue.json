@@ -163,13 +163,6 @@
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "33b01ab8-3811-4a06-ab3c-0a0ef2faa3ef",
-                            "name": "bridge",
-                            "displayName": "bridge",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
                             "displayName": "model id",
@@ -188,22 +181,6 @@
                             "name": "uuid",
                             "displayName": "uuid",
                             "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "99458d90-d171-4600-ba08-4818a4aaed68",
-                            "name": "apiKey",
-                            "displayName": "api key",
-                            "type" : "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "56d14f2f-1b20-4004-a333-87ac09fa54d2",
-                            "name": "host",
-                            "displayName": "host address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address",
                             "readOnly": true
                         },
                         {
@@ -337,13 +314,6 @@
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "33b01ab8-3811-4a06-ab3c-0a0ef2faa3ef",
-                            "name": "bridge",
-                            "displayName": "bridge",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
                             "displayName": "model id",
@@ -362,22 +332,6 @@
                             "name": "uuid",
                             "displayName": "uuid",
                             "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "99458d90-d171-4600-ba08-4818a4aaed68",
-                            "name": "apiKey",
-                            "displayName": "api key",
-                            "type" : "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "56d14f2f-1b20-4004-a333-87ac09fa54d2",
-                            "name": "host",
-                            "displayName": "host address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address",
                             "readOnly": true
                         },
                         {
@@ -465,13 +419,6 @@
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "33b01ab8-3811-4a06-ab3c-0a0ef2faa3ef",
-                            "name": "bridge",
-                            "displayName": "bridge",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
                             "displayName": "model id",
@@ -493,22 +440,6 @@
                             "readOnly": true
                         },
                         {
-                            "id": "99458d90-d171-4600-ba08-4818a4aaed68",
-                            "name": "apiKey",
-                            "displayName": "api key",
-                            "type" : "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "56d14f2f-1b20-4004-a333-87ac09fa54d2",
-                            "name": "host",
-                            "displayName": "host address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address",
-                            "readOnly": true
-                        },
-                        {
                             "id": "2ddb571b-149f-4f08-a76a-78b7d3aa27e0",
                             "name": "sensorId",
                             "displayName": "sensor id",
@@ -527,15 +458,22 @@
                         },
                         {
                             "id": "683e493a-9796-4d5e-b0e3-61cb178d5819",
-                            "name": "battery",
+                            "name": "batteryLevel",
                             "displayName": "battery",
                             "displayNameEvent": "battery changed",
-                            "displayNameAction": "Set battery",
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
                             "maxValue": 100
+                        },
+                        {
+                            "id": "f8516899-6312-4110-bb97-70ffa81dc530",
+                            "name": "batteryCritical",
+                            "displayName": "battery critical",
+                            "displayNameEvent": "battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "eventTypes": [
@@ -589,7 +527,7 @@
                                     "name": "buttonName",
                                     "displayName": "Button name",
                                     "type": "QString",
-                                    "possibleValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                    "allowedValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
                                 }
                             ]
                         },
@@ -603,7 +541,78 @@
                                     "name": "buttonName",
                                     "displayName": "Button name",
                                     "type": "QString",
-                                    "possibleValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                    "allowedValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e",
+                    "name": "hueTap",
+                    "displayName": "Hue Tap",
+                    "deviceIcon": "Switch",
+                    "interfaces": ["simplemultibutton", "connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "3d450f00-b521-4a2c-985f-046fad5122cb",
+                            "name": "name",
+                            "displayName": "name",
+                            "type" : "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "62d92175-db3a-4da2-a72b-f58f34cb6911",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "eace85b9-5369-466f-89eb-46c4de718305",
+                            "name": "type",
+                            "displayName": "type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "25cf4167-6c28-4497-9fa9-3d02faf4f3ed",
+                            "name": "uuid",
+                            "displayName": "uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "5eca2b24-8986-4487-bc12-50e91d023d97",
+                            "name": "sensorId",
+                            "displayName": "sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5e21b032-1230-4e93-8543-0c4773da17d3",
+                            "name": "connected",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "c45dd703-7cbd-48f7-88dc-31045cc3d39c",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "8ed643c0-1b8a-4709-8abf-717cf213f4a4",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["•", "••", "•••", "••••"]
                                 }
                             ]
                         }

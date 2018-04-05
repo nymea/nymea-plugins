@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_deviceplugincommandlauncher)
+TARGET = $$qtLibraryTarget(nymea_deviceplugincommandlauncher)
 
 SOURCES += \
     deviceplugincommandlauncher.cpp

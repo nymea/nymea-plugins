@@ -2,7 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -24,11 +24,10 @@
 
 #include <QVariantMap>
 
-NetatmoOutdoorModule::NetatmoOutdoorModule(const QString &name, const QString &macAddress, const QString &connectionId, const QString &baseStation, QObject *parent) :
+NetatmoOutdoorModule::NetatmoOutdoorModule(const QString &name, const QString &macAddress, const QString &baseStation, QObject *parent) :
     QObject(parent),
     m_name(name),
     m_macAddress(macAddress),
-    m_connectionId(connectionId),
     m_baseStation(baseStation)
 {
 }
@@ -41,11 +40,6 @@ QString NetatmoOutdoorModule::name() const
 QString NetatmoOutdoorModule::macAddress() const
 {
     return m_macAddress;
-}
-
-QString NetatmoOutdoorModule::connectionId() const
-{
-    return m_connectionId;
 }
 
 QString NetatmoOutdoorModule::baseStation() const

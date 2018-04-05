@@ -12,7 +12,7 @@
                     "id": "728d5a67-27a3-400e-b83c-2765f5196f69",
                     "name": "connection",
                     "displayName": "Netatmo Connection",
-                    "critcalStateTypeId": "2f79bc1d-27ed-480a-b583-728363c83ea6",
+                    "criticalStateTypeId": "2f79bc1d-27ed-480a-b583-728363c83ea6",
                     "deviceIcon": "Network",
                     "interfaces": ["gateway"],
                     "basicTags": [
@@ -72,14 +72,6 @@
                             "id": "157d470a-e579-4d0e-b879-6b5bfa8e34ae",
                             "name": "mac",
                             "displayName": "mac address",
-                            "type": "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "c15e5dea-10f2-4c96-afab-649872f43d5c",
-                            "name": "connection",
-                            "displayName": "connection",
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true
@@ -202,14 +194,6 @@
                             "id": "157d470a-e579-4d0e-b879-6b5bfa8e34ae",
                             "name": "mac",
                             "displayName": "mac address",
-                            "type": "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "c15e5dea-10f2-4c96-afab-649872f43d5c",
-                            "name": "connection",
-                            "displayName": "connection",
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true

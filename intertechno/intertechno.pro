@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(guh_devicepluginintertechno)
+TARGET = $$qtLibraryTarget(nymea_devicepluginintertechno)
 
 SOURCES += \
     devicepluginintertechno.cpp

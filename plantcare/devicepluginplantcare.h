@@ -3,7 +3,7 @@
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2015 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
  *                                                                         *
- *  This file is part of guh.                                              *
+ *  This file is part of nymea.                                            *
  *                                                                         *
  *  This library is free software; you can redistribute it and/or          *
  *  modify it under the terms of the GNU Lesser General Public             *
@@ -35,7 +35,7 @@
 class DevicePluginPlantCare : public DevicePlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "guru.guh.DevicePlugin" FILE "devicepluginplantcare.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginplantcare.json")
     Q_INTERFACES(DevicePlugin)
 
 public:
