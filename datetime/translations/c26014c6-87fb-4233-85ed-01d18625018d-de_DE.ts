@@ -103,7 +103,7 @@
         <location filename="../plugininfo.h" line="100"/>
         <source>guh GmbH</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>guh GmbH</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="97"/>
@@ -115,19 +115,19 @@
         <location filename="../plugininfo.h" line="109"/>
         <source>timezone</source>
         <extracomment>The name of the ParamType of the autocreated EventType (ab16997c-be29-438e-b588-2507d723d264) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zeitzone</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="139"/>
         <source>month name</source>
         <extracomment>The name of the ParamType of the autocreated EventType (a37acc9c-5cfb-4687-adce-e56beb32586f) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Monatsname</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="157"/>
         <source>weekday name</source>
         <extracomment>The name of the ParamType of the autocreated EventType (f627d052-cee6-4727-b9c6-0e935d41e04a) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wochentag Name</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="160"/>
