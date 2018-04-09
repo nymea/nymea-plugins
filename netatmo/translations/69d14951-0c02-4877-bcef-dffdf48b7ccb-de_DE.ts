@@ -80,7 +80,7 @@ The name of the paramType (157d470a-e579-4d0e-b879-6b5bfa8e34ae) of outdoor</ext
         <extracomment>The name of the ParamType of the autocreated EventType (50da9f6b-c350-401c-a72e-2e4036f3975d) of DeviceClass indoor
 ----------
 The name of the ParamType of the autocreated EventType (50da9f6b-c350-401c-a72e-2e4036f3975d) of DeviceClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Letztes Update</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="123"/>
@@ -112,7 +112,7 @@ The name of the ParamType of the autocreated EventType (3cb25538-e463-40ae-92f9-
         <extracomment>The name of the ParamType of the autocreated EventType (ae8bb713-8805-4efd-89a1-bca44a1f1690) of DeviceClass indoor
 ----------
 The name of the ParamType of the autocreated EventType (ae8bb713-8805-4efd-89a1-bca44a1f1690) of DeviceClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur Minimum</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="135"/>
@@ -128,13 +128,13 @@ The name of the ParamType of the autocreated EventType (ae8bb713-8805-4efd-89a1-
         <extracomment>The name of the ParamType of the autocreated EventType (dd30507e-037b-4c74-bcca-e04b94c7c5fe) of DeviceClass indoor
 ----------
 The name of the ParamType of the autocreated EventType (dd30507e-037b-4c74-bcca-e04b94c7c5fe) of DeviceClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur Maximum</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="168"/>
         <source>wifi signal strength</source>
         <extracomment>The name of the ParamType of the autocreated EventType (6ea906d4-5740-454d-a730-6fdb9fa0d624) of DeviceClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wi-Fi Signalstärke</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="141"/>
@@ -216,7 +216,7 @@ The name of the ParamType of the autocreated EventType (e2db5f01-196a-48d1-8874-
         <location filename="../plugininfo.h" line="216"/>
         <source>signal strength</source>
         <extracomment>The name of the ParamType of the autocreated EventType (0faa3d08-9004-46fb-a5aa-a59b75e454cc) of DeviceClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Signalstärke</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="219"/>
