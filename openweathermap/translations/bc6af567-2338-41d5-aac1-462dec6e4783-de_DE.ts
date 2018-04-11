@@ -46,7 +46,7 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../plugininfo.h" line="98"/>
         <source>weather condition</source>
         <extracomment>The name of the ParamType of the autocreated EventType (f16891f3-1174-44f6-a940-cffc8b64bdc1) of DeviceClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wetterbedingung</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="101"/>
@@ -64,13 +64,13 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../plugininfo.h" line="95"/>
         <source>weather condition changed</source>
         <extracomment>The name of the autocreated EventType (f16891f3-1174-44f6-a940-cffc8b64bdc1)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wetterbedingung geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="104"/>
         <source>last update</source>
         <extracomment>The name of the ParamType of the autocreated EventType (36b2f09b-7d77-4fbc-a68f-23d735dda0b1) of DeviceClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Letztes Update</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="110"/>
@@ -88,7 +88,7 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../plugininfo.h" line="116"/>
         <source>temperature minimum</source>
         <extracomment>The name of the ParamType of the autocreated EventType (14ec2781-cb04-4bbf-b097-7d01ef982630) of DeviceClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur Minimum</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="119"/>
@@ -100,7 +100,7 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../plugininfo.h" line="122"/>
         <source>temperature maximum</source>
         <extracomment>The name of the ParamType of the autocreated EventType (fefe5563-452f-4833-b5cf-49c3cc67c772) of DeviceClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur Maximum</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="125"/>
@@ -136,7 +136,7 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../plugininfo.h" line="140"/>
         <source>wind speed</source>
         <extracomment>The name of the ParamType of the autocreated EventType (2bf63430-e9e2-4fbf-88e6-6f1b4770f287) of DeviceClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Windgeschwindigkeit</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="143"/>
@@ -148,7 +148,7 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../plugininfo.h" line="146"/>
         <source>wind direction</source>
         <extracomment>The name of the ParamType of the autocreated EventType (589e2ea5-65b2-4afd-9b72-e3708a589a12) of DeviceClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Windrichtung</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="149"/>
@@ -184,7 +184,7 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../plugininfo.h" line="164"/>
         <source>weather description</source>
         <extracomment>The name of the ParamType of the autocreated EventType (f9539108-0e0e-4736-a306-6408f8e20a26) of DeviceClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wetter Beschreibung</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="167"/>
