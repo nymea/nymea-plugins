@@ -22,7 +22,7 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="63"/>
         <source>name</source>
         <extracomment>The name of the paramType (db67d1e6-26fa-44ed-ad55-c6aef45ea2ea) of nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Name</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="66"/>
@@ -100,49 +100,49 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="90"/>
         <source>Software revision</source>
         <extracomment>The name of the ParamType of the autocreated EventType (be42cbd3-12e9-44ec-8f9d-141e10d9573a) of DeviceClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Software Version</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="105"/>
         <source>Show logo</source>
         <extracomment>The name of the ActionType d44ca5b7-f8d6-4413-9d2e-cef89282c039 of deviceClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zeige Logo</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="108"/>
         <source>logo</source>
         <extracomment>The name of the paramType (a8f72c37-9cb5-4885-a7e4-b2b396f8e4cd) of nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Logo</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="111"/>
         <source>clicked</source>
         <extracomment>The name of the EventType 5b9e08e8-7a6c-4311-9db6-82547847708c of deviceClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gedrückt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="114"/>
         <source>Swipe left</source>
         <extracomment>The name of the EventType 2be36aa0-e2fe-4192-81c5-cf0bb7f08dd4 of deviceClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Links gewischt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="117"/>
         <source>Swipe right</source>
         <extracomment>The name of the EventType 81fb61ab-6d3d-4c1b-85fe-3dbd5c8dead7 of deviceClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rechts gewischt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="120"/>
         <source>Swipe up</source>
         <extracomment>The name of the EventType ab5c575b-b265-491c-93ca-ad9212374bc1 of deviceClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rauf gewischt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="123"/>
         <source>Swipe down</source>
         <extracomment>The name of the EventType 4d97cf28-1030-4a30-bed5-411102dd4b9b of deviceClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Runter gewischt</translation>
     </message>
 </context>
 </TS>
