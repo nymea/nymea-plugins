@@ -99,7 +99,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *d
 DeviceManager::DeviceError DevicePluginUdpCommander::executeAction(Device *device, const Action &action) {
 
     if (device->deviceClassId() == udpCommanderDeviceClassId) {
-        if (action.actionTypeId() == udpCommanderOutputDataActionTypeId) {
+        if (action.actionTypeId() == udpCommanderTriggerActionTypeId) {
             QUdpSocket *udpSocket = m_commanderList.key(device);
             int port = device->paramValue(udpCommanderPortParamTypeId).toInt();
             QHostAddress address = QHostAddress(device->paramValue(udpCommanderAddressParamTypeId).toString());
@@ -151,7 +151,7 @@ void DevicePluginUdpCommander::readPendingDatagrams()
     }
 
     qCDebug(dcUdpCommander()) << device->name() << "got command from" << sender.toString() << senderPort;
-    Event ev = Event(udpReceiverDataReceivedEventTypeId, device->id());
+    Event ev = Event(udpReceiverTriggeredEventTypeId, device->id());
     ParamList params;
     params.append(Param(udpReceiverDataParamTypeId, datagram));
     ev.setParams(params);
