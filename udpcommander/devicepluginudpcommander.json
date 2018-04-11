@@ -13,6 +13,7 @@
                     "displayName": "UDP Receiver",
                     "name": "udpReceiver",
                     "deviceIcon": "Network",
+                    "interfaces": ["inputtrigger"],
                     "basicTags": ["Service", "Sensor"],
                     "createMethods": ["user"],
                     "paramTypes": [
@@ -29,7 +30,7 @@
                     "eventTypes": [
                         {
                             "id": "5fecbba3-ffbb-456b-872c-a2f571c681cb",
-                            "name": "dataReceived",
+                            "name": "triggered",
                             "displayName": "Data received",
                             "paramTypes": [
                                 {
@@ -48,6 +49,7 @@
                     "displayName": "UDP Commander",
                     "deviceIcon": "Network",
                     "basicTags": ["Service", "Sensor"],
+                    "interfaces": ["outputtrigger"],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
@@ -71,7 +73,7 @@
                     "actionTypes": [
                         {
                             "id": "6bc52462-b192-46a4-a6df-92cc5a479c89",
-                            "name": "outputData",
+                            "name": "trigger",
                             "displayName": "Send data",
                             "paramTypes": [
                                 {
