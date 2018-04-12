@@ -13,7 +13,7 @@
         <location filename="../plugininfo.h" line="106"/>
         <source>timezone changed</source>
         <extracomment>The name of the autocreated EventType (ab16997c-be29-438e-b588-2507d723d264)</extracomment>
-        <translation>Zeitzohne geändert</translation>
+        <translation>Zeitzone geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="112"/>
