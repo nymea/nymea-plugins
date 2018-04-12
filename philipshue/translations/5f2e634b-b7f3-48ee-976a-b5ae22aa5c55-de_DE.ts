@@ -208,7 +208,7 @@ The name of the autocreated ParamType of the writable StateType (90aaffe5-6a76-4
 The name of the ParamType of the autocreated EventType (90aaffe5-6a76-47d2-a14a-550f60390245) of DeviceClass hueWhiteLight
 ----------
 The name of the autocreated ParamType of the writable StateType (90aaffe5-6a76-47d2-a14a-550f60390245) of DeviceClass hueWhiteLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeschalten</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="239"/>
@@ -242,7 +242,7 @@ The name of the autocreated ParamType of the writable StateType (90aaffe5-6a76-4
         <extracomment>The name of the ParamType of the autocreated EventType (d25423e7-b924-4b20-80b6-77eecc65d089) of DeviceClass hueLight
 ----------
 The name of the autocreated ParamType of the writable StateType (d25423e7-b924-4b20-80b6-77eecc65d089) of DeviceClass hueLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="263"/>
@@ -270,7 +270,7 @@ The name of the autocreated ParamType of the writable StateType (90e91f64-a208-4
 The name of the ParamType of the autocreated EventType (90e91f64-a208-468c-a5a2-7f47e08859e2) of DeviceClass hueWhiteLight
 ----------
 The name of the autocreated ParamType of the writable StateType (90e91f64-a208-468c-a5a2-7f47e08859e2) of DeviceClass hueWhiteLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Helligkeit</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="275"/>
@@ -288,7 +288,7 @@ The name of the autocreated ParamType of the writable StateType (90e91f64-a208-4
         <location filename="../plugininfo.h" line="383"/>
         <source>battery critical changed</source>
         <extracomment>The name of the autocreated EventType (f8516899-6312-4110-bb97-70ffa81dc530)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie Ladestatus kritisch geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="413"/>
@@ -297,7 +297,7 @@ The name of the autocreated ParamType of the writable StateType (90e91f64-a208-4
         <extracomment>The name of the EventType 8da28cf1-2457-451e-953e-2685f8daeda8 of deviceClass hueRemote
 ----------
 The name of the EventType c45dd703-7cbd-48f7-88dc-31045cc3d39c of deviceClass hueTap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Taste gedrückt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="416"/>
@@ -306,25 +306,25 @@ The name of the EventType c45dd703-7cbd-48f7-88dc-31045cc3d39c of deviceClass hu
         <extracomment>The name of the paramType (e4e3eb3a-a7c4-49e3-9344-0b3f213e0b42) of hueRemote
 ----------
 The name of the paramType (8ed643c0-1b8a-4709-8abf-717cf213f4a4) of hueTap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Taste Name</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="419"/>
         <source>Button longpressed</source>
         <extracomment>The name of the EventType 2c64561b-2381-4769-8e21-0e206c84bbcc of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Taste lange gedrückt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="422"/>
         <source>Hue Tap</source>
         <extracomment>The name of the DeviceClass (2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Tap</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="143"/>
         <source>Philips Hue</source>
         <extracomment>The name of the plugin PhilipsHue (5f2e634b-b7f3-48ee-976a-b5ae22aa5c55)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="179"/>
@@ -342,19 +342,19 @@ The name of the ParamType of the autocreated EventType (19bb8d10-1b28-4ba3-99b7-
 The name of the ParamType of the autocreated EventType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of DeviceClass hueRemote
 ----------
 The name of the ParamType of the autocreated EventType (5e21b032-1230-4e93-8543-0c4773da17d3) of DeviceClass hueTap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Erreichbar</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="185"/>
         <source>api version</source>
         <extracomment>The name of the ParamType of the autocreated EventType (7a230e89-c4ce-4276-90e0-6a9ddb890603) of DeviceClass hueBridge</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>API Version</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="197"/>
         <source>update status</source>
         <extracomment>The name of the ParamType of the autocreated EventType (16a126f3-0cef-4931-bb2b-9e1b49bec7fc) of DeviceClass hueBridge</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Update Status</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="248"/>
@@ -363,7 +363,7 @@ The name of the ParamType of the autocreated EventType (5e21b032-1230-4e93-8543-
         <extracomment>The name of the ParamType of the autocreated EventType (c0f4206f-f219-4f06-93c4-4ca515a56f79) of DeviceClass hueLight
 ----------
 The name of the autocreated ParamType of the writable StateType (c0f4206f-f219-4f06-93c4-4ca515a56f79) of DeviceClass hueLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbtemperatur</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="284"/>
@@ -372,7 +372,7 @@ The name of the autocreated ParamType of the writable StateType (c0f4206f-f219-4
         <extracomment>The name of the ParamType of the autocreated EventType (0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc) of DeviceClass hueLight
 ----------
 The name of the autocreated ParamType of the writable StateType (0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc) of DeviceClass hueLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Effekt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="287"/>
@@ -408,7 +408,7 @@ The name of the paramType (8ace6f8c-b2c7-4d0d-a407-52a54ad0ab05) of hueWhiteLigh
         <location filename="../plugininfo.h" line="341"/>
         <source>Set brightness</source>
         <extracomment>The name of the autocreated ActionType (90e91f64-a208-468c-a5a2-7f47e08859e2)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Helligkeit</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="353"/>
@@ -435,13 +435,13 @@ The name of the paramType (5eca2b24-8986-4487-bc12-50e91d023d97) of hueTap</extr
         <location filename="../plugininfo.h" line="380"/>
         <source>battery</source>
         <extracomment>The name of the ParamType of the autocreated EventType (683e493a-9796-4d5e-b0e3-61cb178d5819) of DeviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="386"/>
         <source>battery critical</source>
         <extracomment>The name of the ParamType of the autocreated EventType (f8516899-6312-4110-bb97-70ffa81dc530) of DeviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie Ladestatus kritisch</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="389"/>
