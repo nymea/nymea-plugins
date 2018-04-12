@@ -67,7 +67,7 @@
         <location filename="../plugininfo.h" line="136"/>
         <source>month name changed</source>
         <extracomment>The name of the autocreated EventType (a37acc9c-5cfb-4687-adce-e56beb32586f)</extracomment>
-        <translation>Monat Name geändert</translation>
+        <translation>Monatsname geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="142"/>
@@ -97,7 +97,7 @@
         <location filename="../plugininfo.h" line="154"/>
         <source>weekday name changed</source>
         <extracomment>The name of the autocreated EventType (f627d052-cee6-4727-b9c6-0e935d41e04a)</extracomment>
-        <translation>Wochentag Name geändert</translation>
+        <translation>Wochentagsname geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="100"/>
