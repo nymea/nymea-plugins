@@ -151,7 +151,7 @@
         <location filename="../plugininfo.h" line="169"/>
         <source>dusk</source>
         <extracomment>The name of the ParamType of the autocreated EventType (44a99419-fbcd-4d8e-9441-897848b8f77c) of DeviceClass today</extracomment>
-        <translation>Abenddämmerung </translation>
+        <translation>Abenddämmerung</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="172"/>
