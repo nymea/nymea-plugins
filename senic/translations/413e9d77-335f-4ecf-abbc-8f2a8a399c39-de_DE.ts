@@ -10,7 +10,7 @@
         <extracomment>The name of the plugin Senic (413e9d77-335f-4ecf-abbc-8f2a8a399c39)
 ----------
 The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Senic</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="60"/>
@@ -34,7 +34,7 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="75"/>
         <source>Hardware revision changed</source>
         <extracomment>The name of the autocreated EventType (5c400da4-a14e-4e0a-be9f-c82ffe7e1972)</extracomment>
-        <translation>Hardwarerevision geändert</translation>
+        <translation>Hardware-Revision geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="93"/>
@@ -76,31 +76,31 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="78"/>
         <source>Hardware revision</source>
         <extracomment>The name of the ParamType of the autocreated EventType (5c400da4-a14e-4e0a-be9f-c82ffe7e1972) of DeviceClass nuimo</extracomment>
-        <translation>Hardwarerevision</translation>
+        <translation>Hardware-Revision</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="81"/>
         <source>Firmware revision changed</source>
         <extracomment>The name of the autocreated EventType (edcf76c6-9fed-4c26-9853-c284cf887adb)</extracomment>
-        <translation>Firmwarerevision geändert</translation>
+        <translation>Firmware-Revision geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="84"/>
         <source>Firmware revision</source>
         <extracomment>The name of the ParamType of the autocreated EventType (edcf76c6-9fed-4c26-9853-c284cf887adb) of DeviceClass nuimo</extracomment>
-        <translation>Firmwarerevision</translation>
+        <translation>Firmware-Revision</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="87"/>
         <source>Software revision changed</source>
         <extracomment>The name of the autocreated EventType (be42cbd3-12e9-44ec-8f9d-141e10d9573a)</extracomment>
-        <translation>Softwarerevision geändert</translation>
+        <translation>Software-Revision geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="90"/>
         <source>Software revision</source>
         <extracomment>The name of the ParamType of the autocreated EventType (be42cbd3-12e9-44ec-8f9d-141e10d9573a) of DeviceClass nuimo</extracomment>
-        <translation>Software Version</translation>
+        <translation>Software-Version</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="105"/>
