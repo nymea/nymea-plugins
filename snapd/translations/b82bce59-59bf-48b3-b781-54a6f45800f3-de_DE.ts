@@ -13,7 +13,7 @@
         <location filename="../plugininfo.h" line="70"/>
         <source>Advanced mode</source>
         <extracomment>The name of the paramType (017fe4c5-fc41-41fe-8e67-08fdaccb89ea) of snapd</extracomment>
-        <translation>Fortgeschrittener Modus</translation>
+        <translation>Erweiterter Modus</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="73"/>
