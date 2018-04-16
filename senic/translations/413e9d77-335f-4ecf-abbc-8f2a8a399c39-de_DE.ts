@@ -10,7 +10,7 @@
         <extracomment>The name of the plugin Senic (413e9d77-335f-4ecf-abbc-8f2a8a399c39)
 ----------
 The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Senic</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="60"/>
