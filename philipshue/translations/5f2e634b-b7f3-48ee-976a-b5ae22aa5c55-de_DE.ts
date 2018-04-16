@@ -13,7 +13,7 @@
         <location filename="../plugininfo.h" line="149"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
         <extracomment>The pairing info of deviceClass hueBridge</extracomment>
-        <translation>Bitte drücken sie den Knopf auf der Hue Bridge innerhalb von 30 Sekunden bevor sie fortfahren</translation>
+        <translation>Bitte drücke den Knopf auf der Hue Bridge innerhalb von 30 Sekunden bevor du fortfährst</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="152"/>
@@ -477,7 +477,7 @@ The name of the paramType (5eca2b24-8986-4487-bc12-50e91d023d97) of hueTap</extr
         <location filename="../plugininfo.h" line="404"/>
         <source>dim down long pressed</source>
         <extracomment>The name of the EventType 1986d4c6-4c9f-4e43-ba70-0ff06c6f177b of deviceClass hueRemote</extracomment>
-        <translation>Runter dimmen lange gedrückt</translation>
+        <translation>Herunterdimmen lange gedrückt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="407"/>
