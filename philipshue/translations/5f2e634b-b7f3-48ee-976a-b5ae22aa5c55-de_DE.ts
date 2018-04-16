@@ -70,7 +70,7 @@ The name of the paramType (3d450f00-b521-4a2c-985f-046fad5122cb) of hueTap</extr
         <extracomment>The name of the paramType (ea228c4d-975c-4b43-9445-7c9a907c29d6) of hueBridge
 ----------
 The name of the ParamType of the autocreated EventType (4c707b18-6604-4e6d-b6bc-4e27769c2adc) of DeviceClass hueBridge</extracomment>
-        <translation>Software Version</translation>
+        <translation>Software-Version</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="173"/>
@@ -102,7 +102,7 @@ The name of the autocreated EventType (5e21b032-1230-4e93-8543-0c4773da17d3)</ex
         <location filename="../plugininfo.h" line="188"/>
         <source>software version changed</source>
         <extracomment>The name of the autocreated EventType (4c707b18-6604-4e6d-b6bc-4e27769c2adc)</extracomment>
-        <translation>Software Version geändert</translation>
+        <translation>Software-Version geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="194"/>
@@ -208,7 +208,7 @@ The name of the autocreated ParamType of the writable StateType (90aaffe5-6a76-4
 The name of the ParamType of the autocreated EventType (90aaffe5-6a76-47d2-a14a-550f60390245) of DeviceClass hueWhiteLight
 ----------
 The name of the autocreated ParamType of the writable StateType (90aaffe5-6a76-47d2-a14a-550f60390245) of DeviceClass hueWhiteLight</extracomment>
-        <translation>Eingeschalten</translation>
+        <translation>Eingeschaltet</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="239"/>
@@ -221,13 +221,13 @@ The name of the autocreated ParamType of the writable StateType (90aaffe5-6a76-4
         <location filename="../plugininfo.h" line="245"/>
         <source>color temperature changed</source>
         <extracomment>The name of the autocreated EventType (c0f4206f-f219-4f06-93c4-4ca515a56f79)</extracomment>
-        <translation>Lichtfarben Temperatur geändert</translation>
+        <translation>Farbtemperatur geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="251"/>
         <source>Set color temperature</source>
         <extracomment>The name of the autocreated ActionType (c0f4206f-f219-4f06-93c4-4ca515a56f79)</extracomment>
-        <translation>Setze Lichtfarben Temperatur</translation>
+        <translation>Setze Farbtemperatur</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="257"/>
@@ -459,19 +459,19 @@ The name of the paramType (5eca2b24-8986-4487-bc12-50e91d023d97) of hueTap</extr
         <location filename="../plugininfo.h" line="395"/>
         <source>dim up pressed</source>
         <extracomment>The name of the EventType 8e3d6a62-6a19-4e9a-a25b-e1da2e56ede9 of deviceClass hueRemote</extracomment>
-        <translation>Hochdimmen</translation>
+        <translation>Hochdimmen gedrückt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="398"/>
         <source>dim up long pressed</source>
         <extracomment>The name of the EventType 53d3c9af-3e25-4116-b22b-38d897bc20aa of deviceClass hueRemote</extracomment>
-        <translation>Runterdimmen</translation>
+        <translation>Hochdimmen lange gedrückt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="401"/>
         <source>dim down pressed</source>
         <extracomment>The name of the EventType efd8b972-9a37-43f2-b9bc-f9dfe144a96d of deviceClass hueRemote</extracomment>
-        <translation>Runter dimmen gedrückt</translation>
+        <translation>Herunterdimmen gedrückt</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="404"/>
