@@ -499,10 +499,16 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             device->setStateValue(aveaColorStateTypeId, color);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorTemperatureActionTypeId) {
-            // (ct-153) : x = (500-153) : 255
             int ctValue = action.param(aveaColorTemperatureActionParamTypeId).value().toInt();
-            int blue = (ctValue - 153) * 255 / (500-153);
-            int red = 255 - blue;
+            // normalize from 0 to 347 instead of 153 to 500
+            int ct = ctValue - 153;
+            // for blue: lower half fades blue from 255 to 0
+            // ct : (255-blue) = (347 / 2) : 255
+            int blue = qMax(0, 255 - (ct * 255 / (347 / 2)));
+            // for red: upper half fades red from 0 255
+            // ct - (347/2) : red = (347 / 2) : 255
+            int red = qMax(0, (ct - (347/2)) * 255 / ((500-153)/2));
+
             QColor color;
             color.setRed(red);
             color.setGreen(0);
