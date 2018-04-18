@@ -7,7 +7,7 @@
         <location filename="../plugininfo.h" line="146"/>
         <source>Philips</source>
         <extracomment>The name of the vendor (0ae1e001-2aa6-47ed-b8c0-334c3728a68f)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Philips</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="149"/>
