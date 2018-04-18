@@ -324,7 +324,7 @@ The name of the paramType (8ed643c0-1b8a-4709-8abf-717cf213f4a4) of hueTap</extr
         <location filename="../plugininfo.h" line="143"/>
         <source>Philips Hue</source>
         <extracomment>The name of the plugin PhilipsHue (5f2e634b-b7f3-48ee-976a-b5ae22aa5c55)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="179"/>
