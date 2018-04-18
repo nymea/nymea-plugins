@@ -342,19 +342,19 @@ The name of the ParamType of the autocreated EventType (19bb8d10-1b28-4ba3-99b7-
 The name of the ParamType of the autocreated EventType (19bb8d10-1b28-4ba3-99b7-a634138dcfde) of DeviceClass hueRemote
 ----------
 The name of the ParamType of the autocreated EventType (5e21b032-1230-4e93-8543-0c4773da17d3) of DeviceClass hueTap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Accessible</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="185"/>
         <source>api version</source>
         <extracomment>The name of the ParamType of the autocreated EventType (7a230e89-c4ce-4276-90e0-6a9ddb890603) of DeviceClass hueBridge</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>API version</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="197"/>
         <source>update status</source>
         <extracomment>The name of the ParamType of the autocreated EventType (16a126f3-0cef-4931-bb2b-9e1b49bec7fc) of DeviceClass hueBridge</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Satut mise à jour</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="248"/>
@@ -363,7 +363,7 @@ The name of the ParamType of the autocreated EventType (5e21b032-1230-4e93-8543-
         <extracomment>The name of the ParamType of the autocreated EventType (c0f4206f-f219-4f06-93c4-4ca515a56f79) of DeviceClass hueLight
 ----------
 The name of the autocreated ParamType of the writable StateType (c0f4206f-f219-4f06-93c4-4ca515a56f79) of DeviceClass hueLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Températur de couleur</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="284"/>
@@ -372,13 +372,13 @@ The name of the autocreated ParamType of the writable StateType (c0f4206f-f219-4
         <extracomment>The name of the ParamType of the autocreated EventType (0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc) of DeviceClass hueLight
 ----------
 The name of the autocreated ParamType of the writable StateType (0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc) of DeviceClass hueLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Effet</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="287"/>
         <source>Set effect</source>
         <extracomment>The name of the autocreated ActionType (0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Définir effet de luminosité</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="293"/>
@@ -387,7 +387,7 @@ The name of the autocreated ParamType of the writable StateType (0b7cdd8d-4db8-4
         <extracomment>The name of the ActionType d25dcfbc-d28c-4905-80e3-300ffb1248f5 of deviceClass hueLight
 ----------
 The name of the ActionType d25dcfbc-d28c-4905-80e3-300ffb1248f5 of deviceClass hueWhiteLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>S&apos;allumer</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="296"/>
@@ -396,25 +396,25 @@ The name of the ActionType d25dcfbc-d28c-4905-80e3-300ffb1248f5 of deviceClass h
         <extracomment>The name of the paramType (8ace6f8c-b2c7-4d0d-a407-52a54ad0ab05) of hueLight
 ----------
 The name of the paramType (8ace6f8c-b2c7-4d0d-a407-52a54ad0ab05) of hueWhiteLight</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Alarme</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="299"/>
         <source>Hue White Light</source>
         <extracomment>The name of the DeviceClass (4fa568ef-7a3a-422b-b0c0-206d37cb4eed)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue lumiére blanc</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="341"/>
         <source>Set brightness</source>
         <extracomment>The name of the autocreated ActionType (90e91f64-a208-468c-a5a2-7f47e08859e2)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Définir luminosité</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="353"/>
         <source>Hue Remote</source>
         <extracomment>The name of the DeviceClass (bb482d39-67ef-46dc-88e9-7b181d642b28)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue télécommande</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="368"/>
@@ -423,73 +423,73 @@ The name of the paramType (8ace6f8c-b2c7-4d0d-a407-52a54ad0ab05) of hueWhiteLigh
         <extracomment>The name of the paramType (2ddb571b-149f-4f08-a76a-78b7d3aa27e0) of hueRemote
 ----------
 The name of the paramType (5eca2b24-8986-4487-bc12-50e91d023d97) of hueTap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Senseur ID</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="377"/>
         <source>battery changed</source>
         <extracomment>The name of the autocreated EventType (683e493a-9796-4d5e-b0e3-61cb178d5819)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="380"/>
         <source>battery</source>
         <extracomment>The name of the ParamType of the autocreated EventType (683e493a-9796-4d5e-b0e3-61cb178d5819) of DeviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="386"/>
         <source>battery critical</source>
         <extracomment>The name of the ParamType of the autocreated EventType (f8516899-6312-4110-bb97-70ffa81dc530) of DeviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Satut du chargement batterie critique</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="389"/>
         <source>on pressed</source>
         <extracomment>The name of the EventType de769db0-4c31-46cf-9760-dbc6f9209c26 of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Quand appuyer</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="392"/>
         <source>on long pressed</source>
         <extracomment>The name of the EventType 6c5e596b-7c15-40bb-af9d-c778a6b0f30e of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Quand appuyer trés long</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="395"/>
         <source>dim up pressed</source>
         <extracomment>The name of the EventType 8e3d6a62-6a19-4e9a-a25b-e1da2e56ede9 of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Varier l&apos;intensité de lumière appuyer</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="398"/>
         <source>dim up long pressed</source>
         <extracomment>The name of the EventType 53d3c9af-3e25-4116-b22b-38d897bc20aa of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Varier l&apos;intensité de lumière appuyer trés long</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="401"/>
         <source>dim down pressed</source>
         <extracomment>The name of the EventType efd8b972-9a37-43f2-b9bc-f9dfe144a96d of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Varier l&apos;intensité de lumière en bas appuyer</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="404"/>
         <source>dim down long pressed</source>
         <extracomment>The name of the EventType 1986d4c6-4c9f-4e43-ba70-0ff06c6f177b of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Varier l&apos;intensité de lumière en bas appuyer trés long</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="407"/>
         <source>off pressed</source>
         <extracomment>The name of the EventType 7c2a58f1-137c-4bf3-8f9e-453dff020487 of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Appuyer pour déclencher</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="410"/>
         <source>off long pressed</source>
         <extracomment>The name of the EventType d69306eb-ea52-4841-9e26-89c69e9cf6fc of deviceClass hueRemote</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Appuyer plus longtemps pour déclencher</translation>
     </message>
 </context>
 </TS>
