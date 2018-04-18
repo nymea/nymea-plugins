@@ -16,7 +16,7 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="60"/>
         <source>Nuimo</source>
         <extracomment>The name of the DeviceClass (315ece51-053e-49f9-831f-b09f9f27fb9f)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Nuimo</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="63"/>
