@@ -7,103 +7,103 @@
         <location filename="../plugininfo.h" line="103"/>
         <source>Today</source>
         <extracomment>The name of the DeviceClass (fbf665fb-9aca-423f-a5f2-924e50ebe6ca)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>aujourd&apos;hui</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="106"/>
         <source>timezone changed</source>
         <extracomment>The name of the autocreated EventType (ab16997c-be29-438e-b588-2507d723d264)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Fuseau horaire modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="112"/>
         <source>city changed</source>
         <extracomment>The name of the autocreated EventType (65d2a5ff-bcab-43a8-b043-f88cf01586f4)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Domicile modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="115"/>
         <source>city</source>
         <extracomment>The name of the ParamType of the autocreated EventType (65d2a5ff-bcab-43a8-b043-f88cf01586f4) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>ville</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="118"/>
         <source>country changed</source>
         <extracomment>The name of the autocreated EventType (a534bd8b-6826-4d71-b9f9-df1433964b94)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Pays modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="121"/>
         <source>country</source>
         <extracomment>The name of the ParamType of the autocreated EventType (a534bd8b-6826-4d71-b9f9-df1433964b94) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>pays</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="124"/>
         <source>day changed</source>
         <extracomment>The name of the autocreated EventType (eb5231ea-6a1b-4d7e-a95f-d49e7b25122e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Jour modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="127"/>
         <source>day</source>
         <extracomment>The name of the ParamType of the autocreated EventType (eb5231ea-6a1b-4d7e-a95f-d49e7b25122e) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>jour</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="130"/>
         <source>month changed</source>
         <extracomment>The name of the autocreated EventType (fcd8ec96-4488-438a-8b30-58bfe2a7fae2)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Mois modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="133"/>
         <source>month</source>
         <extracomment>The name of the ParamType of the autocreated EventType (fcd8ec96-4488-438a-8b30-58bfe2a7fae2) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>mois</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="136"/>
         <source>month name changed</source>
         <extracomment>The name of the autocreated EventType (a37acc9c-5cfb-4687-adce-e56beb32586f)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Nom du mois modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="142"/>
         <source>year changed</source>
         <extracomment>The name of the autocreated EventType (79d4ae9b-ea27-4346-8229-1d90f1ddfc9d)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;année modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="145"/>
         <source>year</source>
         <extracomment>The name of the ParamType of the autocreated EventType (79d4ae9b-ea27-4346-8229-1d90f1ddfc9d) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>an</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="148"/>
         <source>weekday changed</source>
         <extracomment>The name of the autocreated EventType (452c0388-7fa1-414e-aeb2-8c7c385824b4)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Jour de semaine modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="151"/>
         <source>weekday</source>
         <extracomment>The name of the ParamType of the autocreated EventType (452c0388-7fa1-414e-aeb2-8c7c385824b4) of DeviceClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>jour de la semaine</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="154"/>
         <source>weekday name changed</source>
         <extracomment>The name of the autocreated EventType (f627d052-cee6-4727-b9c6-0e935d41e04a)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Nom du jour modifié</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="100"/>
         <source>guh GmbH</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>guh GmbH</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="97"/>
