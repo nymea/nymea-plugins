@@ -498,12 +498,26 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
 
             device->setStateValue(aveaColorStateTypeId, color);
             return DeviceManager::DeviceErrorNoError;
+        } else if (action.actionTypeId() == aveaColorTemperatureActionTypeId) {
+            // (ct-153) : x = (500-153) : 255
+            int ctValue = action.param(aveaColorTemperatureActionParamTypeId).value().toInt();
+            int blue = (ctValue - 153) * 255 / (500-153);
+            int red = 255 - blue;
+            QColor color;
+            color.setRed(red);
+            color.setGreen(0);
+            color.setBlue(blue);
+            if (!bulb->setWhite(4095) || !bulb->setColor(color)) {
+                return DeviceManager::DeviceErrorHardwareNotAvailable;
+            }
+            device->setStateValue(aveaColorStateTypeId, color);
+            device->setStateValue(aveaColorTemperatureStateTypeId, ctValue);
+            return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaWhiteActionTypeId) {
             int whiteValue = action.param(aveaWhiteActionParamTypeId).value().toInt();
             if (!bulb->setWhite(whiteValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
-            device->setStateValue(aveaWhiteStateTypeId, whiteValue);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaGreenActionTypeId) {
             int greenValue = action.param(aveaGreenActionParamTypeId).value().toInt();

@@ -14,7 +14,7 @@
                     "displayName": "Avea",
                     "deviceIcon": "LightBulb",
                     "basicTags": ["Device", "Actuator", "Lighting"],
-                    "interfaces": ["connectable"],
+                    "interfaces": ["connectable", "light", "colorlight"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
@@ -76,6 +76,19 @@
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "8932ddac-d718-4345-94aa-f4c9611f132f",
+                            "name": "colorTemperature",
+                            "displayName": "color temperature",
+                            "displayNameEvent": "color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "minValue": 153,
+                            "maxValue": 500,
                             "writable": true
                         },
                         {
