@@ -92,13 +92,13 @@ The name of the ParamType of the autocreated EventType (725b541a-9e0c-4634-81eb-
         <location filename="../plugininfo.h" line="93"/>
         <source>Data Received</source>
         <extracomment>The name of the ParamType of the autocreated EventType (b98fdacc-59d7-41c4-b790-1fdca50dfb22) of DeviceClass tcpInput</extracomment>
-        <translation>Daten Empfangen</translation>
+        <translation>Daten empfangen</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="96"/>
         <source>Command Received</source>
         <extracomment>The name of the EventType 6d7c6df6-cb61-4d9e-b0d7-37c43911ca4b of deviceClass tcpInput</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Kommando empfangen</translation>
     </message>
 </context>
 </TS>
