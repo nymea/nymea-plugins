@@ -7,13 +7,13 @@
         <location filename="../plugininfo.h" line="45"/>
         <source>tcp commander</source>
         <extracomment>The name of the plugin TCPCommander (741b7b0a-0c9c-4c93-be99-0d0bcf5a4643)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>TCP Commander</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="48"/>
         <source>TCP Commander</source>
         <extracomment>The name of the vendor (9181278e-7812-4a3e-a9ce-f00f3f8b8afd)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>TCP Commander</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="51"/>
