@@ -23,9 +23,9 @@
     </message>
     <message>
         <location filename="../plugininfo.h" line="38"/>
-        <source>mac</source>
+        <source>MAC address</source>
         <extracomment>The name of the paramType (e2ba04ac-9fe1-4f9d-8152-024c27030cde) of wol</extracomment>
-        <translation>MAC Adresse</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="41"/>
