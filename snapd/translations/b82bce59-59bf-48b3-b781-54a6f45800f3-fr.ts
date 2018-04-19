@@ -178,31 +178,31 @@ The name of the autocreated ParamType of the writable StateType (7be2b61e-3f59-4
         <location filename="../plugininfo.h" line="94"/>
         <source>System update running changed</source>
         <extracomment>The name of the autocreated EventType (01ca7a22-5607-4c5e-a465-a2ae7e8b529c)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">La mise à jour du système a changé</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="112"/>
         <source>Status changed</source>
         <extracomment>The name of the autocreated EventType (4987aca3-3916-4cb3-938f-df6c99d04dbf)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Statut changé</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="127"/>
         <source>Name</source>
         <extracomment>The name of the paramType (4f38614d-8be0-48dc-a24d-cee9ff1f2a89) of snap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Prénom</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="142"/>
         <source>Channel changed</source>
         <extracomment>The name of the autocreated EventType (7be2b61e-3f59-4b92-b2bb-50d027bb92ff)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Canal changé</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="121"/>
         <source>Check for updates</source>
         <extracomment>The name of the ActionType 4738f2c9-666e-45b9-91d3-7bcbf722b669 of deviceClass snapdControl</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vérifier les mises à jour</translation>
     </message>
 </context>
 </TS>
