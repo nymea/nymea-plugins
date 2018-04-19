@@ -108,6 +108,21 @@ Description: nymea.io plugin for denon
  This package will install the nymea.io plugin for denon
 
 
+Package: nymea-plugin-dweetio
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for dweet.io
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for dweet.io
+
+
 Package: nymea-plugin-elro
 Architecture: any
 Depends: ${shlibs:Depends},
