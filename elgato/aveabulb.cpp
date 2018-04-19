@@ -205,7 +205,7 @@ bool AveaBulb::syncColor()
         return false;
     }
 
-    m_device->setStateValue(aveaBlueStateTypeId, m_white);
+    m_device->setStateValue(aveaWhiteStateTypeId, m_white);
     m_device->setStateValue(aveaRedStateTypeId, m_red);
     m_device->setStateValue(aveaGreenStateTypeId, m_green);
     m_device->setStateValue(aveaBlueStateTypeId, m_blue);
