@@ -74,7 +74,7 @@ The name of the ParamType of the autocreated EventType (725b541a-9e0c-4634-81eb-
         <location filename="../plugininfo.h" line="78"/>
         <source>Data Comparison</source>
         <extracomment>The name of the paramType (d99f55c7-0e14-45ee-b0f0-33f2d1d2e674) of tcpInput</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Datenvergleich</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="81"/>
