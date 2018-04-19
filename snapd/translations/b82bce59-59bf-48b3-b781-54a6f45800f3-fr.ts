@@ -13,19 +13,19 @@
         <location filename="../plugininfo.h" line="70"/>
         <source>Advanced mode</source>
         <extracomment>The name of the paramType (017fe4c5-fc41-41fe-8e67-08fdaccb89ea) of snapd</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mode avancé</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="73"/>
         <source>Automatic daily refresh schedule</source>
         <extracomment>The name of the paramType (d2e697d1-9a68-4666-bf40-8d70fa694eec) of snapd</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Calendrier de rafraîchissement quotidien automatique</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="76"/>
         <source>Canonical</source>
         <extracomment>The name of the vendor (60582ddf-32ea-4fcd-a6f2-f3beaaf21517)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Canonical</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="88"/>
