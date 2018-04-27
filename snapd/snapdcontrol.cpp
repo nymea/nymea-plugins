@@ -243,7 +243,7 @@ void SnapdControl::onLoadRunningChangesFinished()
         QString changeStatus = changeMap.value("status").toString();
         QString changeSummary = changeMap.value("summary").toString();
 
-        // If there is a change kind "doing" or "Do"
+        // If there is a change kind "Doing" or "Do"
         if ( (changeStatus == "Doing" || changeStatus == "Do") && m_updateChangeKinds.contains(changeKind)) {
             // Set the status of the current running change
             updateRunning = true;
@@ -251,8 +251,14 @@ void SnapdControl::onLoadRunningChangesFinished()
                 updateStatus = changeSummary;
                 qCDebug(dcSnapd()).noquote() << "Current change:" << changeId << (changeReady ? "ready" : "not ready") << changeStatus << changeKind << changeSummary;
 
+                // TODO: calculate the overall percentage of the update process (Do + Doing / Done)
             }
         }
+    }
+
+    // If currently an update is running, lets force update available to false if set to true
+    if (updateRunning && device()->stateValue(snapdControlUpdateAvailableStateTypeId).toBool()) {
+        device()->setStateValue(snapdControlUpdateAvailableStateTypeId, false);
     }
 
     device()->setStateValue(snapdControlUpdateRunningStateTypeId, updateRunning);
