@@ -256,13 +256,16 @@ void SnapdControl::onLoadRunningChangesFinished()
         }
     }
 
+    device()->setStateValue(snapdControlUpdateRunningStateTypeId, updateRunning);
+    device()->setStateValue(snapdControlStatusStateTypeId, updateStatus);
+
     // If currently an update is running, lets force update available to false if set to true
+    // keep this below the setStateValue for updateRunning or we might have intermediate states indicating
+    // no update running and none available
     if (updateRunning && device()->stateValue(snapdControlUpdateAvailableStateTypeId).toBool()) {
         device()->setStateValue(snapdControlUpdateAvailableStateTypeId, false);
     }
 
-    device()->setStateValue(snapdControlUpdateRunningStateTypeId, updateRunning);
-    device()->setStateValue(snapdControlStatusStateTypeId, updateStatus);
 }
 
 void SnapdControl::onConfigureRefreshScheduleFinished()
