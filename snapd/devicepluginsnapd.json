@@ -64,6 +64,7 @@
                             "displayName": "System update available",
                             "displayNameEvent": "System update available changed",
                             "type": "bool",
+                            "cached": false,
                             "defaultValue": false
                         },
                         {

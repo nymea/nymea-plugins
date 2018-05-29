@@ -13,6 +13,7 @@
                     "displayName": "UDP Receiver",
                     "name": "udpReceiver",
                     "deviceIcon": "Network",
+                    "interfaces": ["inputtrigger"],
                     "basicTags": ["Service", "Sensor"],
                     "createMethods": ["user"],
                     "paramTypes": [
@@ -24,30 +25,21 @@
                             "minValue": 0,
                             "maxValue": 65535,
                             "defaultValue": 4242
-                        },
-                        {
-                            "id": "d0f29961-1624-4b91-a0e8-9b1cc86c44c7",
-                            "name": "command",
-                            "displayName": "Command",
-                            "type": "QString",
-                            "defaultValue": "Hello"
-                        }
-                    ],
-                    "stateTypes":[
-                        {
-                            "id": "065a1a0a-d324-4ae6-a461-bef8143e8795",
-                            "name": "inputData",
-                            "displayName": "Received data",
-                            "displayNameEvent": "Received data changed",
-                            "type": "QString",
-                            "defaultValue": ""
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "5fecbba3-ffbb-456b-872c-a2f571c681cb",
-                            "name": "commandReceived",
-                            "displayName": "Command received"
+                            "name": "triggered",
+                            "displayName": "Data received",
+                            "paramTypes": [
+                                {
+                                    "id": "93c379e3-4707-46b7-9be0-2d6ff88f5d21",
+                                    "name": "data",
+                                    "displayName": "Data",
+                                    "type": "QString"
+                                }
+                            ]
                         }
                     ]
                 },
@@ -57,6 +49,7 @@
                     "displayName": "UDP Commander",
                     "deviceIcon": "Network",
                     "basicTags": ["Service", "Sensor"],
+                    "interfaces": ["outputtrigger"],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
@@ -80,7 +73,7 @@
                     "actionTypes": [
                         {
                             "id": "6bc52462-b192-46a4-a6df-92cc5a479c89",
-                            "name": "outputData",
+                            "name": "trigger",
                             "displayName": "Send data",
                             "paramTypes": [
                                 {
