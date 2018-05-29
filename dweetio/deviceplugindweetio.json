@@ -1,0 +1,130 @@
+{
+    "displayName": "Dweetio",
+    "name": "Dweetio",
+    "id": "9338f22c-df47-414e-a33c-9b6d40c953c9",
+    "vendors": [
+        {
+            "id": "23ff381d-c580-4ba1-85bd-30598f893a43",
+            "displayName": "Dweetio",
+            "name": "dweetio",
+            "deviceClasses": [
+                {
+                    "id": "5036030e-adc7-403b-b9b6-a27a4a5afea8",
+                    "name": "post",
+                    "displayName": "Post",
+                    "createMethods": ["user"],
+                    "criticalStateTypeId": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
+                    "deviceIcon": "Network",
+                    "interfaces": [],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "b50b3682-fb2e-4185-b7aa-31741648d9bb",
+                            "name": "thing",
+                            "displayName": "Thing",
+                            "type" : "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "892b7323-ee85-4520-9160-f206f11b344e",
+                            "name": "key",
+                            "displayName": "key",
+                            "defaultValue": "none",
+                            "type" : "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "f2b2c3ae-a915-4dd9-a9dd-9545d9dd3d4e",
+                            "name": "contentName",
+                            "displayName": "Content Name",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "76472328-dbaa-458f-90c9-0b46968af511",
+                            "name": "contentData",
+                            "displayName": "Send Content",
+                            "paramTypes": [
+                                {
+                                    "id": "13760d36-26eb-40b5-85b3-450ca7937666",
+                                    "name": "contentDataArea",
+                                    "displayName": "Content",
+                                    "type": "QString",
+                                    "inputType": "TextArea"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "8318f86c-061a-450f-978d-f42e3513ca8c",
+                    "name": "get",
+                    "displayName": "Get",
+                    "createMethods": ["user"],
+                    "criticalStateTypeId": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
+                    "deviceIcon": "Network",
+                    "interfaces": [],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "b50b3682-fb2e-4185-b7aa-31741648d9bb",
+                            "name": "thing",
+                            "displayName": "Thing",
+                            "type" : "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "892b7323-ee85-4520-9160-f206f11b344e",
+                            "name": "key",
+                            "displayName": "Key",
+                            "type" : "QString",
+                            "defaultValue": "none",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "f2b2c3ae-a915-4dd9-a9dd-9545d9dd3d4e",
+                            "name": "contentName",
+                            "displayName": "Content name",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "53dfe2bc-792d-420e-bc1f-2890ad715b27",
+                            "name": "content",
+                            "displayName": "Content",
+                            "displayNameEvent": "content changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

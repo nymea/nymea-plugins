@@ -23,7 +23,7 @@
                         {
                             "id": "e2ba04ac-9fe1-4f9d-8152-024c27030cde",
                             "name": "mac",
-                            "displayName": "mac",
+                            "displayName": "MAC address",
                             "type": "QString",
                             "inputType": "MacAddress"
                         }
