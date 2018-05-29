@@ -34,7 +34,23 @@ DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *dev
 {
     qCDebug(dcPushbullet()) << "Setup" << device->name();
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    QUrlQuery urlParams;
+    urlParams.addQueryItem("limit", "1");
+
+    QUrl requestUrl("https://api.pushbullet.com/v2/pushes");
+    requestUrl.setQuery(urlParams);
+
+    QNetworkRequest request(requestUrl);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(pushNotificationTokenParamTypeId).toByteArray());
+
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, device](){
+        emit deviceSetupFinished(device, reply->error() == QNetworkReply::NoError ? DeviceManager::DeviceSetupStatusSuccess : DeviceManager::DeviceSetupStatusFailure);
+        reply->deleteLater();
+    });
+
+    return DeviceManager::DeviceSetupStatusAsync;
 }
 
 DeviceManager::DeviceError DevicePluginPushbullet::executeAction(Device *device, const Action &action) {
