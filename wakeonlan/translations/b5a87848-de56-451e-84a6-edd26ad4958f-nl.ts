@@ -7,19 +7,19 @@
         <location filename="../plugininfo.h" line="29"/>
         <source>Wake on Lan</source>
         <extracomment>The name of the plugin WakeOnLan (b5a87848-de56-451e-84a6-edd26ad4958f)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wake on Lan</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="32"/>
         <source>guh GmbH</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>guh GmbH</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="35"/>
         <source>Wake On Lan</source>
         <extracomment>The name of the DeviceClass (3c8f2447-dcd0-4882-8c09-99e579e4d24c)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wake on Lan</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="38"/>
@@ -31,7 +31,7 @@
         <location filename="../plugininfo.h" line="41"/>
         <source>wake up device</source>
         <extracomment>The name of the ActionType fb9b9d87-218f-4f0d-9e16-39f8a105029a of deviceClass wol</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>ontwaak-apparaat</translation>
     </message>
 </context>
 </TS>
