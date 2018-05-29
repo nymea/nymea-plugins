@@ -39,6 +39,7 @@ PLUGIN_DIRS = \
     simulation          \
     keba                \
     remotessh           \
+    dweetio             \ 
 
 
 CONFIG+=all
