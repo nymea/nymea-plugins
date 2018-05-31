@@ -77,14 +77,18 @@ void DevicePluginPhilipsHue::init()
             return;
         }
         foreach (HueBridge *bridge, m_bridges.keys()) {
-            refreshSensors(bridge);
+            if (m_bridges.value(bridge)->stateValue(hueBridgeConnectedStateTypeId).toBool()) {
+                refreshSensors(bridge);
+            }
         }
     });
     m_pluginTimer5Sec = hardwareManager()->pluginTimerManager()->registerTimer(5);
     connect(m_pluginTimer5Sec, &PluginTimer::timeout, this, [this]() {
         // refresh lights every 5 seconds
         foreach (HueBridge *bridge, m_bridges.keys()) {
-            refreshLights(bridge);
+            if (m_bridges.value(bridge)->stateValue(hueBridgeConnectedStateTypeId).toBool()) {
+                refreshLights(bridge);
+            }
         }
     });
     m_pluginTimer15Sec = hardwareManager()->pluginTimerManager()->registerTimer(15);
@@ -729,7 +733,7 @@ void DevicePluginPhilipsHue::refreshLight(Device *device)
 void DevicePluginPhilipsHue::refreshBridge(Device *device)
 {
     HueBridge *bridge = m_bridges.key(device);
-//    qCDebug(dcPhilipsHue()) << "refreshing bridge";
+    qCDebug(dcPhilipsHue()) << "refreshing bridge";
 
     QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/config"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
