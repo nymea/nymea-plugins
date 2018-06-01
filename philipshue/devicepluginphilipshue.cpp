@@ -292,9 +292,10 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::confirmPairing(const Pa
 void DevicePluginPhilipsHue::networkManagerReplyReady()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-//    qCDebug(dcPhilipsHue()) << "Hue reply:" << status << reply->error() << reply->errorString();
+    qCDebug(dcPhilipsHue()) << "Hue reply:" << reply << status << reply->error() << reply->errorString();
 
     // create user finished
     if (m_pairingRequests.contains(reply)) {
@@ -304,7 +305,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "Request error:" << status << reply->errorString();
             pairingInfo->deleteLater();
-            reply->deleteLater();
             return;
         }
         processPairingResponse(pairingInfo, reply->readAll());
@@ -315,7 +315,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "Request error:" << status << reply->errorString();
-            reply->deleteLater();
             pairingInfo->deleteLater();
             return;
         }
@@ -326,7 +325,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "N-UPNP discovery error:" << status << reply->errorString();
-            reply->deleteLater();
             return;
         }
         processNUpnpResponse(reply->readAll());
@@ -338,7 +336,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "Bridge light discovery error:" << status << reply->errorString();
             bridgeReachableChanged(device, false);
-            reply->deleteLater();
             return;
         }
         processBridgeLightDiscoveryResponse(device, reply->readAll());
@@ -350,7 +347,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "Bridge sensor discovery error:" << status << reply->errorString();
             bridgeReachableChanged(device, false);
-            reply->deleteLater();
             return;
         }
         processBridgeSensorDiscoveryResponse(device, reply->readAll());
@@ -362,7 +358,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "Bridge search new devices error:" << status << reply->errorString();
             bridgeReachableChanged(device, false);
-            reply->deleteLater();
             return;
         }
         discoverBridgeDevices(m_bridges.key(device));
@@ -376,7 +371,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
                 qCWarning(dcPhilipsHue) << "Refresh Hue Bridge request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
-            reply->deleteLater();
             return;
         }
         processBridgeRefreshResponse(device, reply->readAll());
@@ -388,7 +382,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "Refresh Hue Light request error:" << status << reply->errorString();
             bridgeReachableChanged(device, false);
-            reply->deleteLater();
             return;
         }
         processLightRefreshResponse(device, reply->readAll());
@@ -402,7 +395,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
                 qCWarning(dcPhilipsHue) << "Refresh Hue lights request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
-            reply->deleteLater();
             return;
         }
         processLightsRefreshResponse(device, reply->readAll());
@@ -416,7 +408,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
                 qCWarning(dcPhilipsHue) << "Refresh Hue sensors request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
-            reply->deleteLater();
             return;
         }
         processSensorsRefreshResponse(device, reply->readAll());
@@ -429,9 +420,9 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
             qCWarning(dcPhilipsHue) << "Execute Hue Light action request error:" << status << reply->errorString();
             bridgeReachableChanged(actionInfo.first, false);
             emit actionExecutionFinished(actionInfo.second, DeviceManager::DeviceErrorHardwareNotAvailable);
-            reply->deleteLater();
             return;
         }
+        qCDebug(dcPhilipsHue()) << "execute action success reply";
         processActionResponse(actionInfo.first, actionInfo.second, reply->readAll());
 
     } else if (m_lightSetNameRequests.contains(reply)) {
@@ -441,14 +432,12 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "Set name of Hue Light request error:" << status << reply->errorString();
             bridgeReachableChanged(device, false);
-            reply->deleteLater();
             return;
         }
         processSetNameResponse(device, reply->readAll());
     } else {
         qCWarning(dcPhilipsHue()) << "Unhandled bridge reply" << reply->error() << reply->readAll();
     }
-    reply->deleteLater();
 }
 
 DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device, const Action &action)
@@ -467,6 +456,7 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
         if (action.actionTypeId() == hueLightPowerActionTypeId) {
             QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(hueLightPowerActionParamTypeId).value().toBool());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
+            qCDebug(dcPhilipsHue()) << "execute action sent:" << reply->isRunning() << reply->isFinished()  << reply->error();
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
@@ -726,6 +716,7 @@ void DevicePluginPhilipsHue::refreshLight(Device *device)
     QNetworkRequest request(QUrl("http://" + light->hostAddress().toString() + "/api/" + light->apiKey() + "/lights/" + QString::number(light->id())));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    qCDebug(dcPhilipsHue()) << "Refreshing light" << device->name() << "Networkmanager request:" << reply;
     connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
     m_lightRefreshRequests.insert(reply, device);
 }
@@ -738,6 +729,7 @@ void DevicePluginPhilipsHue::refreshBridge(Device *device)
     QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/config"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    qCDebug(dcPhilipsHue()) << "Refreshing bridge" << device->name() << "Networkmanager request:" << reply;
     connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
     m_bridgeRefreshRequests.insert(reply, device);
 }
@@ -750,6 +742,7 @@ void DevicePluginPhilipsHue::refreshLights(HueBridge *bridge)
     QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/lights"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    qCDebug(dcPhilipsHue()) << "Refreshing lights" << device->name() << "Networkmanager request:" << reply;
     connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
     m_lightsRefreshRequests.insert(reply, device);
 }
@@ -762,6 +755,7 @@ void DevicePluginPhilipsHue::refreshSensors(HueBridge *bridge)
     QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/sensors"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    qCDebug(dcPhilipsHue()) << "Refreshing sensors" << device->name() << "Networkmanager request:" << reply;
     connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
     m_sensorsRefreshRequests.insert(reply, device);
 }
