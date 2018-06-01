@@ -280,6 +280,11 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             qCDebug(dcSimulation()) << "Garage gate not moving";
             return DeviceManager::DeviceErrorNoError;
         }
+        if (action.actionTypeId() == garageGatePowerActionTypeId) {
+            bool power = action.param(garageGatePowerActionParamTypeId).value().toBool();
+            device->setStateValue(garageGatePowerStateTypeId, power);
+            return DeviceManager::DeviceErrorNoError;
+        }
     }
 
     if (device->deviceClassId() == rollerShutterDeviceClassId) {
