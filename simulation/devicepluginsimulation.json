@@ -263,7 +263,7 @@
                     "displayName": "Garage gate",
                     "createMethods": ["user"],
                     "deviceIcon": "Garage",
-                    "interfaces": [ "garagegate" ],
+                    "interfaces": [ "garagegate", "light" ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -282,6 +282,16 @@
                             "displayNameEvent": "Intermediate position changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "46543561-2690-4072-a6a3-795e1c4f49a8",
+                            "name": "power",
+                            "displayName": "Light power",
+                            "displayNameEvent": "Light power changed",
+                            "displayNameAction": "Set light power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
                         }
                     ],
                     "actionTypes": [
