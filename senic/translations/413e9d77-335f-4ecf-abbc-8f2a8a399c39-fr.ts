@@ -28,19 +28,19 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="66"/>
         <source>mac address</source>
         <extracomment>The name of the paramType (71553f6a-2ed4-4896-bb7b-52e7dca948b2) of nuimo</extracomment>
-        <translation>MAC adresse</translation>
+        <translation>Adresse MAC</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="75"/>
         <source>Hardware revision changed</source>
         <extracomment>The name of the autocreated EventType (5c400da4-a14e-4e0a-be9f-c82ffe7e1972)</extracomment>
-        <translation>Revision matériel modifié</translation>
+        <translation>Révision de matériel (hardware) modifiée</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="93"/>
         <source>battery changed</source>
         <extracomment>The name of the autocreated EventType (b5ee2465-7fa1-450b-8073-f115537d3409)</extracomment>
-        <translation>Batterie modifié</translation>
+        <translation>Batterie changée</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="96"/>
@@ -52,7 +52,7 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="99"/>
         <source>rotation changed</source>
         <extracomment>The name of the autocreated EventType (69a5f495-5452-434b-8fb8-b73d992c5446)</extracomment>
-        <translation>Rotation modifié</translation>
+        <translation>Rotation modifiée</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="102"/>
@@ -64,37 +64,37 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="69"/>
         <source>Connected changed</source>
         <extracomment>The name of the autocreated EventType (5286976a-f5dc-4662-872a-438ac5d491cb)</extracomment>
-        <translation>Connexion modifié</translation>
+        <translation>Connexion modifiée</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="72"/>
         <source>Connected</source>
         <extracomment>The name of the ParamType of the autocreated EventType (5286976a-f5dc-4662-872a-438ac5d491cb) of DeviceClass nuimo</extracomment>
-        <translation>Connecter</translation>
+        <translation>Connecté</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="78"/>
         <source>Hardware revision</source>
         <extracomment>The name of the ParamType of the autocreated EventType (5c400da4-a14e-4e0a-be9f-c82ffe7e1972) of DeviceClass nuimo</extracomment>
-        <translation>Revision matériel</translation>
+        <translation>Révision de matériel (hardware)</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="81"/>
         <source>Firmware revision changed</source>
         <extracomment>The name of the autocreated EventType (edcf76c6-9fed-4c26-9853-c284cf887adb)</extracomment>
-        <translation>Revision logiciel modifié</translation>
+        <translation>Révision de progiciel modifiée</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="84"/>
         <source>Firmware revision</source>
         <extracomment>The name of the ParamType of the autocreated EventType (edcf76c6-9fed-4c26-9853-c284cf887adb) of DeviceClass nuimo</extracomment>
-        <translation>Revision logiciel</translation>
+        <translation>Révision de progiciel</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="87"/>
         <source>Software revision changed</source>
         <extracomment>The name of the autocreated EventType (be42cbd3-12e9-44ec-8f9d-141e10d9573a)</extracomment>
-        <translation>Revision logiciel modifié</translation>
+        <translation>Révision de logiciel modifiée</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="90"/>
@@ -106,7 +106,7 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="105"/>
         <source>Show logo</source>
         <extracomment>The name of the ActionType d44ca5b7-f8d6-4413-9d2e-cef89282c039 of deviceClass nuimo</extracomment>
-        <translation>Afficher Logo</translation>
+        <translation>Afficher le logo</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="108"/>
@@ -118,31 +118,31 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
         <location filename="../plugininfo.h" line="111"/>
         <source>clicked</source>
         <extracomment>The name of the EventType 5b9e08e8-7a6c-4311-9db6-82547847708c of deviceClass nuimo</extracomment>
-        <translation>Appuyer</translation>
+        <translation>cliqué</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="114"/>
         <source>Swipe left</source>
         <extracomment>The name of the EventType 2be36aa0-e2fe-4192-81c5-cf0bb7f08dd4 of deviceClass nuimo</extracomment>
-        <translation>Balayer a gauche</translation>
+        <translation>Balayer à gauche</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="117"/>
         <source>Swipe right</source>
         <extracomment>The name of the EventType 81fb61ab-6d3d-4c1b-85fe-3dbd5c8dead7 of deviceClass nuimo</extracomment>
-        <translation>Balayer a droite</translation>
+        <translation>Balayer à droite</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="120"/>
         <source>Swipe up</source>
         <extracomment>The name of the EventType ab5c575b-b265-491c-93ca-ad9212374bc1 of deviceClass nuimo</extracomment>
-        <translation>Balayer en haut</translation>
+        <translation>Balayer vers le haut</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="123"/>
         <source>Swipe down</source>
         <extracomment>The name of the EventType 4d97cf28-1030-4a30-bed5-411102dd4b9b of deviceClass nuimo</extracomment>
-        <translation>Balayer en bas</translation>
+        <translation>Balayer vers le bas</translation>
     </message>
 </context>
 </TS>
