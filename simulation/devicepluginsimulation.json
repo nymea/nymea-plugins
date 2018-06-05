@@ -259,23 +259,39 @@
                 },
                 {
                     "id": "cfb44bcf-b4b9-4bef-89f7-3a55baf35668",
-                    "name": "garageDoor",
-                    "displayName": "Garage Door",
+                    "name": "garageGate",
+                    "displayName": "Garage gate",
                     "createMethods": ["user"],
                     "deviceIcon": "Garage",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
+                    "interfaces": [ "garagegate", "light" ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
                             "id": "f786029d-f3a6-4b47-978a-ac1a581aac0f",
-                            "name": "door",
-                            "displayName": "Garage door",
-                            "displayNameEvent": "Garage door status changed",
+                            "name": "state",
+                            "displayName": "Garage gate state",
+                            "displayNameEvent": "Garage gate state changed",
+                            "type": "QString",
+                            "possibleValues": ["open", "closed", "opening", "closing"],
+                            "defaultValue": "open"
+                        },
+                        {
+                            "id": "324150cc-0357-4797-a746-37b554d82c44",
+                            "name": "intermediatePosition",
+                            "displayName": "Intermediate position",
+                            "displayNameEvent": "Intermediate position changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "46543561-2690-4072-a6a3-795e1c4f49a8",
+                            "name": "power",
+                            "displayName": "Light power",
+                            "displayNameEvent": "Light power changed",
+                            "displayNameAction": "Set light power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
                         }
                     ],
                     "actionTypes": [
@@ -302,11 +318,7 @@
                     "displayName": "Roller Shutter",
                     "createMethods": ["user"],
                     "deviceIcon": "RollerShutter",
-                    "basicTags": [
-                        "Device",
-                        "Actuator",
-                        "Shading"
-                    ],
+                    "interfaces": ["shutter"],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
