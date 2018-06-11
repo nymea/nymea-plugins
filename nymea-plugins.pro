@@ -37,6 +37,7 @@ PLUGIN_DIRS = \
     gpio                \
     snapd               \
     simulation          \
+    systemmonitor       \
     keba                \
     remotessh           \
     dweetio             \ 

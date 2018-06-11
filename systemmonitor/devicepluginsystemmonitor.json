@@ -1,0 +1,31 @@
+{
+    "name": "systemMonitor",
+    "displayName": "System Monitor",
+    "id": "908b4f18-dc0c-4940-a6f7-c0c01a2861b8",
+    "vendors": [
+        {
+            "displayName": "guh GmbH",
+            "name": "guh",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "deviceClasses": [
+                {
+                    "id": "a3a15700-c251-4803-a608-0f3ddfcbd7a8",
+                    "name": "systemMonitor",
+                    "displayName": "System monitor",
+                    "createMethods": [ "manual" ],
+                    "paramTypes": [ ],
+                    "stateTypes": [
+                        {
+                            "id": "d9671ee3-51be-4cf8-8601-125c0684aec9",
+                            "name": "rssMemory",
+                            "displayName": "RSS memory usage",
+                            "displayNameEvent": "RSS memory usage changed",
+                            "type": "double",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
