@@ -27,6 +27,7 @@
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
 #include <QtWebSockets/QtWebSockets>
+#include "plugintimer.h"
 
 class DevicePluginUniPi : public DevicePlugin
 {
@@ -42,7 +43,6 @@ public:
 
     void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
@@ -63,7 +63,7 @@ private:
     QHash<QString, Device*> m_usedDigitalInputs;
     QHash<QString, Device*> m_usedAnalogOutputs;
     QHash<QString, Device*> m_usedAnalogInputs;
-    QHash<QString, Device*> m_usedTemperatureSensors;
+    QHash<QString, Device*> m_usedSensors;
     QHash<QString, Device*> m_usedLeds;
 
     QList<QString> m_relais;
@@ -71,17 +71,21 @@ private:
     QList<QString> m_digitalInputs;
     QList<QString> m_analogOutputs;
     QList<QString> m_analogInputs;
-    QList<QString> m_temperatureSensors;
+    QList<QString> m_sensors;
     QList<QString> m_leds;
 
     QWebSocket *m_webSocket = nullptr;
 
-    void setOutput(const QString &circuit, const GPIOType &type, bool value);
+    PluginTimer *m_refreshTimer = nullptr;
+
+    void setOutput(const QString &circuit, bool value);
+    void connectToEvok();
 
 private slots:
     void onWebSocketConnected();
     void onWebSocketDisconnected();
     void onWebSocketTextMessageReceived(QString message);
+    void onRefreshTimer();
 };
 
 #endif // DEVICEPLUGINUNIPI_H
