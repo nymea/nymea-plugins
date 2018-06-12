@@ -227,7 +227,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 if (m_usedRelais.contains(openingCircuit)){
                     continue;
                 }
-                for (int a = i; a < (m_relais.count()); a++) {
+                for (int a = (i+1); a < (m_relais.count()); a++) {
 
                     const QString closingCircuit = m_relais.at(a);
                     // Offer only relais which aren't in use already
@@ -254,7 +254,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 if (m_usedDigitalOutputs.contains(openingCircuit)){
                     continue;
                 }
-                for (int a = i; a < (m_digitalOutputs.count()); a++) {
+                for (int a = (i+1); a < (m_digitalOutputs.count()); a++) {
 
                     const QString closingCircuit = m_digitalOutputs.at(a);
                     // Offer only relais which aren't in use already
