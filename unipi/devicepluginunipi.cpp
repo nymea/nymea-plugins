@@ -37,14 +37,9 @@ DevicePluginUniPi::~DevicePluginUniPi()
 
 void DevicePluginUniPi::init()
 {
-
-}
-
-DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
-{
     if (m_webSocket == NULL) {
 
-        int port = device->paramValue(uniPiPortParamTypeId).toInt();
+        int port = configValue(uniPiPortParamTypeId).toInt();
 
         m_webSocket = new QWebSocket();
         connect(m_webSocket, &QWebSocket::connected, this, &DevicePluginUniPi::onWebSocketConnected);
@@ -54,10 +49,11 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         url.setPort(port);
         qCDebug(dcUniPi()) << "Conneting to:" << url.toString();
         m_webSocket->open(url);
-
-        return DeviceManager::DeviceSetupStatusSuccess;
     }
+}
 
+DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
+{
     if (device->deviceClassId() == relayOutputDeviceClassId) {
 
         m_usedGpios.insert(device->paramValue(relayOutputRelayNumberParamTypeId).toString(), device);
