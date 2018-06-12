@@ -58,7 +58,12 @@ private:
         analogOutput
     };
 
-    QHash<QString, Device*> m_usedGpios;
+    QHash<QString, Device*> m_usedRelais;
+    QHash<QString, Device*> m_usedDigitalOutputs;
+    QHash<QString, Device*> m_usedDigitalInputs;
+    QHash<QString, Device*> m_usedAnalogOutputs;
+    QHash<QString, Device*> m_usedAnalogInputs;
+    QHash<QString, Device*> m_usedTemperatureSensors;
 
     QList<QString> m_relais;
     QList<QString> m_digitalOutputs;

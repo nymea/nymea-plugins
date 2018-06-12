@@ -56,44 +56,58 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
     if (device->deviceClassId() == relayOutputDeviceClassId) {
 
-        m_usedGpios.insert(device->paramValue(relayOutputRelayNumberParamTypeId).toString(), device);
+        m_usedRelais.insert(device->paramValue(relayOutputRelayNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == digitalOutputDeviceClassId) {
 
-        m_usedGpios.insert(device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString(), device);
+        m_usedDigitalOutputs.insert(device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == digitalInputDeviceClassId) {
 
-        m_usedGpios.insert(device->paramValue(digitalInputDigitalInputNumberParamTypeId).toString(), device);
+        m_usedDigitalInputs.insert(device->paramValue(digitalInputDigitalInputNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == analogInputDeviceClassId) {
 
-        m_usedGpios.insert(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString(), device);
+        m_usedAnalogInputs.insert(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == analogOutputDeviceClassId) {
 
-        m_usedGpios.insert(device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString(), device);
+        m_usedAnalogOutputs.insert(device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == shutterDeviceClassId) {
 
-        m_usedGpios.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
-        m_usedGpios.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
+        if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::relay) {
+            m_usedRelais.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
+        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GPIOType::digitalOutput) {
+            m_usedDigitalOutputs.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
+        }
+
+        if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GPIOType::relay) {
+            m_usedRelais.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
+        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GPIOType::digitalOutput) {
+            m_usedDigitalOutputs.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
+        }
+
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == lightDeviceClassId) {
 
-        m_usedGpios.insert(device->paramValue(relayOutputRelayNumberParamTypeId).toString(), device);
+        if (device->paramValue(lightOutputTypeParamTypeId) == GPIOType::relay) {
+            m_usedRelais.insert(device->paramValue(lightOutputParamTypeId).toString(), device);
+        } else if (device->paramValue(lightOutputParamTypeId) == GPIOType::digitalOutput) {
+            m_usedDigitalOutputs.insert(device->paramValue(lightOutputParamTypeId).toString(), device);
+        }
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -108,13 +122,13 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
     if (deviceClass.vendorId() == unipiVendorId) {
 
         if (deviceClassId == relayOutputDeviceClassId) {
-            // Create the list of available gpios
+            // Create the list of available relais
             QList<DeviceDescriptor> deviceDescriptors;
             for (int i = 0; i < m_relais.count(); i++) {
                 const QString circuit = m_relais.at(i);
 
                 // Offer only gpios which arn't in use already
-                if (m_usedGpios.contains(circuit)){
+                if (m_usedRelais.contains(circuit)){
                     continue;
                 }
                 DeviceDescriptor descriptor(deviceClassId, QString("Relay %1").arg(circuit), circuit);
@@ -129,18 +143,82 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
         }
 
         if (deviceClassId == digitalOutputDeviceClassId) {
+            // Create the list of available digital outputs
+            QList<DeviceDescriptor> deviceDescriptors;
+            for (int i = 0; i < m_digitalOutputs.count(); i++) {
+                const QString circuit = m_digitalOutputs.at(i);
+
+                // Offer only gpios which arn't in use already
+                if (m_usedDigitalOutputs.contains(circuit)){
+                    continue;
+                }
+                DeviceDescriptor descriptor(deviceClassId, QString("Digital output %1").arg(circuit), circuit);
+                ParamList parameters;
+                parameters.append(Param(digitalOutputDigitalOutputNumberParamTypeId, circuit));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+            emit devicesDiscovered(deviceClassId, deviceDescriptors);
             return DeviceManager::DeviceErrorAsync;
         }
 
         if (deviceClassId == digitalInputDeviceClassId) {
+            // Create the list of available digital inputs
+            QList<DeviceDescriptor> deviceDescriptors;
+            for (int i = 0; i < m_digitalInputs.count(); i++) {
+                const QString circuit = m_digitalInputs.at(i);
+
+                // Offer only digital inputs which arn't in use already
+                if (m_usedDigitalInputs.contains(circuit)){
+                    continue;
+                }
+                DeviceDescriptor descriptor(deviceClassId, QString("Digital input %1").arg(circuit), circuit);
+                ParamList parameters;
+                parameters.append(Param(digitalInputDigitalInputNumberParamTypeId, circuit));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+            emit devicesDiscovered(deviceClassId, deviceDescriptors);
             return DeviceManager::DeviceErrorAsync;
         }
 
         if (deviceClassId == analogInputDeviceClassId) {
+            // Create the list of available digital inputs
+            QList<DeviceDescriptor> deviceDescriptors;
+            for (int i = 0; i < m_analogInputs.count(); i++) {
+                const QString circuit = m_analogInputs.at(i);
+
+                // Offer only analog inputs which arn't in use already
+                if (m_usedAnalogInputs.contains(circuit)){
+                    continue;
+                }
+                DeviceDescriptor descriptor(deviceClassId, QString("Analog input %1").arg(circuit), circuit);
+                ParamList parameters;
+                parameters.append(Param(analogInputAnalogInputNumberParamTypeId, circuit));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+            emit devicesDiscovered(deviceClassId, deviceDescriptors);
             return DeviceManager::DeviceErrorAsync;
         }
 
         if (deviceClassId == analogOutputDeviceClassId) {
+            // Create the list of available digital inputs
+            QList<DeviceDescriptor> deviceDescriptors;
+            for (int i = 0; i < m_analogOutputs.count(); i++) {
+                const QString circuit = m_analogOutputs.at(i);
+
+                // Offer only digital inputs which arn't in use already
+                if (m_usedAnalogOutputs.contains(circuit)){
+                    continue;
+                }
+                DeviceDescriptor descriptor(deviceClassId, QString("Analog Output %1").arg(circuit), circuit);
+                ParamList parameters;
+                parameters.append(Param(analogOutputAnalogOutputNumberParamTypeId, circuit));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+            emit devicesDiscovered(deviceClassId, deviceDescriptors);
             return DeviceManager::DeviceErrorAsync;
         }
 
@@ -152,18 +230,18 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 const QString circuit = m_relais.at(i);
 
                 // Offer only gpios which aren't in use already
-                if (m_usedGpios.contains(circuit)){
+                if (m_usedRelais.contains(circuit)){
                     continue;
                 }
 
-                DeviceDescriptor descriptor(deviceClassId, QString("Opening relay %1 | Closing relay %2").arg(circuit, m_relais.at(i+1)), circuit);
+                DeviceDescriptor descriptor(deviceClassId, "Roller shutter", QString("Opening relay %1 | Closing relay %2").arg(circuit, m_relais.at(i+1)));
                 ParamList parameters;
                 parameters.append(Param(shutterOutputOpenParamTypeId, circuit));
                 for (int a = i; a < (m_relais.count()); a++) {
 
                     const QString circuit = m_relais.at(a);
                     // Offer only gpios which aren't in use already
-                    if (m_usedGpios.contains(circuit)){
+                    if (m_usedRelais.contains(circuit)){
                         continue;
                     }
                     parameters.append(Param(shutterOutputCloseParamTypeId, m_relais.at(a)));
@@ -184,7 +262,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 const QString circuit = m_relais.at(i);
 
                 // Offer only gpios which arn't in use already
-                if (m_usedGpios.contains(circuit)){
+                if (m_usedRelais.contains(circuit)){
                     continue;
                 }
                 DeviceDescriptor descriptor(deviceClassId, QString("Relay %1").arg(circuit), circuit);
@@ -199,7 +277,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 const QString circuit =  m_digitalOutputs.at(i);
 
                 // Offer only gpios which arn't in use already
-                if (m_usedGpios.contains(circuit)){
+                if (m_usedDigitalOutputs.contains(circuit)){
                     continue;
                 }
                 DeviceDescriptor descriptor(deviceClassId, QString("Digital output %1").arg(circuit), circuit);
@@ -237,7 +315,36 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
 
 void DevicePluginUniPi::deviceRemoved(Device *device)
 {
-    m_usedGpios.remove(m_usedGpios.key(device)); //TODO remove multible IOs associated to a single device
+    if(device->deviceClassId() == relayOutputDeviceClassId) {
+        m_usedRelais.remove(device->paramValue(relayOutputRelayNumberParamTypeId).toString());
+    } else if(device->deviceClassId() == digitalOutputDeviceClassId) {
+        m_usedDigitalOutputs.remove(device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString());
+    } else if(device->deviceClassId() == digitalInputDeviceClassId) {
+        m_usedDigitalOutputs.remove(device->paramValue(digitalInputDigitalInputNumberParamTypeId).toString());
+    } else if (device->deviceClassId() == analogOutputDeviceClassId) {
+        m_usedDigitalOutputs.remove(device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString());
+    } else if (device->deviceClassId() == analogInputDeviceClassId) {
+        m_usedDigitalOutputs.remove(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString());
+
+    } else if (device->deviceClassId() == shutterDeviceClassId) {
+        if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::relay) {
+            m_usedRelais.remove(device->paramValue(shutterOutputOpenParamTypeId).toString());
+        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GPIOType::digitalOutput) {
+            m_usedDigitalOutputs.remove(device->paramValue(shutterOutputOpenParamTypeId).toString());
+        }
+        if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GPIOType::relay) {
+            m_usedRelais.remove(device->paramValue(shutterOutputCloseParamTypeId).toString());
+        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GPIOType::digitalOutput) {
+            m_usedDigitalOutputs.remove(device->paramValue(shutterOutputCloseParamTypeId).toString());
+        }
+
+    } else if (device->deviceClassId() == lightDeviceClassId) {
+        if (device->paramValue(lightOutputTypeParamTypeId) == GPIOType::relay) {
+            m_usedRelais.remove(device->paramValue(lightOutputParamTypeId).toString());
+        } else if (device->paramValue(lightOutputParamTypeId) == GPIOType::digitalOutput) {
+            m_usedDigitalOutputs.remove(device->paramValue(lightOutputParamTypeId).toString());
+        }
+    }
 
     if (myDevices().isEmpty()) {
         m_webSocket->close();
