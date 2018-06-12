@@ -28,6 +28,7 @@
 #include "devicemanager.h"
 #include <QtWebSockets/QtWebSockets>
 #include "plugintimer.h"
+#include "dimmerswitch.h"
 
 class DevicePluginUniPi : public DevicePlugin
 {
@@ -66,6 +67,8 @@ private:
     QHash<QString, Device*> m_usedSensors;
     QHash<QString, Device*> m_usedLeds;
 
+    QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
+
     QList<QString> m_relais;
     QList<QString> m_digitalOutputs;
     QList<QString> m_digitalInputs;
@@ -86,6 +89,11 @@ private slots:
     void onWebSocketDisconnected();
     void onWebSocketTextMessageReceived(QString message);
     void onRefreshTimer();
+
+    void onDimmerSwitchPressed();
+    void onDimmerSwitchLongPressed();
+    void onDimmerSwitchDoublePressed();
+    void onDimmerSwitchDimValueChanged(int dimValue);
 };
 
 #endif // DEVICEPLUGINUNIPI_H

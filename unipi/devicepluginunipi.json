@@ -23,7 +23,7 @@
                     "displayName": "Relay output",
                     "deviceIcon": "Power",
                     "createMethods": ["discovery"],
-                    "interfaces": [ ],
+                    "interfaces": ["power"],
                     "basicTags": ["Device"],
                     "paramTypes": [
                         {
@@ -36,8 +36,8 @@
                     "stateTypes": [
                         {
                             "id": "f9c01e7b-0523-4cac-905a-d5b20028e021",
-                            "name": "relayStatus",
-                            "displayName": "Relay",
+                            "name": "power",
+                            "displayName": "Power",
                             "displayNameEvent": "Relay power changed",
                             "displayNameAction": "Set relay power",
                             "type": "bool",
@@ -74,12 +74,65 @@
                     ]
                 },
                 {
+                    "id": "71e03d00-1b62-412b-b55d-ab90ad2eddff",
+                    "name": "dimmerSwitch",
+                    "displayName": "Dimmer switch",
+                    "deviceIcon": "Switch",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["longpressbutton"],
+                    "basicTags": ["Sensor"],
+                    "paramTypes": [
+                        {
+                            "id": "2344dedb-3e21-4f59-a016-0fc6233a38ac",
+                            "name": "inputNumber",
+                            "displayName": "Input number",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b39a84ff-45c8-4ec1-b3a9-b99aeefc7221",
+                            "name": "status",
+                            "displayName": "Digital input",
+                            "displayNameEvent": "Digital input changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "3e566b7c-11e6-4e97-9d9f-9636c465639e",
+                            "name": "dimValue",
+                            "displayName": "Dim value",
+                            "displayNameEvent": "Dim value changed",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "unit": "Percentage"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "44be91cd-cbeb-477b-bb8c-6a6d4f9aaaf3",
+                            "name": "pressed",
+                            "displayName": "Pressed"
+                        },
+                        {
+                            "id": "a4748afe-dcd6-45ea-8574-7b9c0e925f35",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
+                        },
+                        {
+                            "id": "7e7b36f5-b871-43a3-a7f0-6cef1e550ad7",
+                            "name": "doublePressed",
+                            "displayName": "Double pressed"
+                        }
+                    ]
+                },
+                {
                     "id": "f3a3c5ed-461a-4ca8-930b-df3af821b9e0",
                     "name": "digitalOutput",
                     "displayName": "Digital output",
                     "deviceIcon": "Power",
                     "createMethods": ["discovery"],
-                    "interfaces": [ ],
+                    "interfaces": ["power"],
                     "basicTags": ["Device"],
                     "paramTypes": [
                         {
@@ -92,8 +145,8 @@
                     "stateTypes": [
                         {
                             "id": "470a0e30-a170-47ed-9ed3-c41db919555f",
-                            "name": "digitalOutputStatus",
-                            "displayName": "digital output",
+                            "name": "power",
+                            "displayName": "Power",
                             "displayNameAction": "set digital output",
                             "displayNameEvent": "digital output changed",
                             "type": "bool",
@@ -264,6 +317,30 @@
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "fe3d7d2f-3cee-4f2b-b6f8-4381ff1a2825",
+                    "name": "temperatureSensor",
+                    "displayName": "1-Wire Temperature Sensor",
+                    "deviceIcon": "Thermometer",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["temperaturesensor"],
+                    "basicTags": ["Actuator"],
+                    "paramTypes": [
+                        {
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "a11e8108-d16e-4972-820a-f3611ba6fe24",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "DegreeCelsius"
                         }
                     ]
                 }
