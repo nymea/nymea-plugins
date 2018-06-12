@@ -113,6 +113,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         connect(dimmerSwitch, &DimmerSwitch::doublePressed, this, &DevicePluginUniPi::onDimmerSwitchDoublePressed);
         connect(dimmerSwitch, &DimmerSwitch::dimValueChanged, this, &DevicePluginUniPi::onDimmerSwitchDimValueChanged);
         m_dimmerSwitches.insert(dimmerSwitch, device);
+        return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     return DeviceManager::DeviceSetupStatusFailure;
@@ -336,7 +337,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, "Dimmer switch", QString("Digital Input %1").arg(circuit));
                 ParamList parameters;
-                parameters.append(Param(digitalInputDigitalInputNumberParamTypeId, circuit));
+                parameters.append(Param(dimmerSwitchInputNumberParamTypeId, circuit));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
