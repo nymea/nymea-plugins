@@ -64,6 +64,7 @@ private:
     QHash<QString, Device*> m_usedAnalogOutputs;
     QHash<QString, Device*> m_usedAnalogInputs;
     QHash<QString, Device*> m_usedTemperatureSensors;
+    QHash<QString, Device*> m_usedLeds;
 
     QList<QString> m_relais;
     QList<QString> m_digitalOutputs;
@@ -71,10 +72,11 @@ private:
     QList<QString> m_analogOutputs;
     QList<QString> m_analogInputs;
     QList<QString> m_temperatureSensors;
+    QList<QString> m_leds;
 
     QWebSocket *m_webSocket = nullptr;
 
-    void setOutput(const QString &circuit, const QString &type, bool value);
+    void setOutput(const QString &circuit, const GPIOType &type, bool value);
 
 private slots:
     void onWebSocketConnected();
