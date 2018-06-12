@@ -81,13 +81,13 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
         if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::relay) {
             m_usedRelais.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
-        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GPIOType::digitalOutput) {
+        } else if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::digitalOutput) {
             m_usedDigitalOutputs.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
         }
 
         if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GPIOType::relay) {
             m_usedRelais.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
-        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GPIOType::digitalOutput) {
+        } else if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::digitalOutput) {
             m_usedDigitalOutputs.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
         }
 
