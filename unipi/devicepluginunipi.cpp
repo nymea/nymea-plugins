@@ -294,11 +294,17 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
-void DevicePluginUniPi::setOutput(const QString &circuit, const QString &type, bool value)
+void DevicePluginUniPi::setOutput(const QString &circuit, const GPIOType &type, bool value)
 {
     QJsonObject json;
     json["cmd"] = "set";
-    json["dev"] = type;
+
+    if (type == GPIOType::relay) {
+        json["dev"] = "relay";
+    } else if (type == GPIOType::relay) {
+        json["dev"] = "do"; //TODO check if
+    }
+
     json["circuit"] = circuit;
     json["value"] = value;
 
@@ -360,17 +366,8 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         if (action.actionTypeId() == relayOutputRelayStatusActionTypeId) {
             QString relayNumber = device->paramValue(relayOutputRelayNumberParamTypeId).toString();
             int stateValue = action.param(relayOutputRelayStatusActionParamTypeId).value().toInt();
+            setOutput(relayNumber, GPIOType::relay, stateValue);
 
-            QJsonObject json;
-            json["cmd"] = "set";
-            json["dev"] = "relay";
-            json["circuit"] = relayNumber;
-            json["value"] = stateValue;
-
-            QJsonDocument doc(json);
-            QByteArray bytes = doc.toJson(QJsonDocument::Compact);
-            qCDebug(dcUniPi()) << "Send command" << bytes;
-            m_webSocket->sendBinaryMessage(bytes);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -379,18 +376,10 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 
     if (device->deviceClassId() == digitalOutputDeviceClassId) {
         if (action.actionTypeId() == digitalOutputDigitalOutputStatusActionTypeId) {
-            int digitalOutputNumber = device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toInt();
-            int stateValue = action.param(digitalOutputDigitalOutputStatusActionParamTypeId).value().toInt();
+            QString digitalOutputNumber = device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString();
+            bool stateValue = action.param(digitalOutputDigitalOutputStatusActionParamTypeId).value().toBool();
+            setOutput(digitalOutputNumber, GPIOType::digitalOutput, stateValue);
 
-            QJsonObject json;
-            json["cmd"] = "set";
-            json["dev"] = "do";
-            json["circuit"] = digitalOutputNumber;
-            json["value"] = stateValue;
-
-            QJsonDocument doc(json);
-            QByteArray bytes = doc.toJson();
-            m_webSocket->sendTextMessage(bytes);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -399,7 +388,7 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
     if (device->deviceClassId() == analogOutputDeviceClassId) {
 
         if (action.actionTypeId() == analogOutputAnalogOutputValueActionTypeId) {
-            int analogOutputNumber = device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toInt();
+            QString analogOutputNumber = device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString();
             double analogValue = action.param(analogOutputAnalogOutputValueActionParamTypeId).value().toDouble();
 
             QJsonObject json;
@@ -409,7 +398,8 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             json["value"] = analogValue;
 
             QJsonDocument doc(json);
-            QByteArray bytes = doc.toJson();
+            QByteArray bytes = doc.toJson(QJsonDocument::Compact);
+            qCDebug(dcUniPi()) << "Send command" << bytes;
             m_webSocket->sendTextMessage(bytes);
             return DeviceManager::DeviceErrorNoError;
         }
@@ -418,31 +408,42 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 
     if (device->deviceClassId() == shutterDeviceClassId) {
         QString circuitOpen = device->paramValue(shutterOutputOpenParamTypeId).toString();
-        QString typeOpen = device->paramValue(shutterOutputTypeOpenParamTypeId).toString();
+        int typeOpen = device->paramValue(shutterOutputTypeOpenParamTypeId).toInt();
 
         QString circuitClose = device->paramValue(shutterOutputCloseParamTypeId).toString();
-        QString typeClose = device->paramValue(shutterOutputTypeCloseParamTypeId).toString();
+        int typeClose = device->paramValue(shutterOutputTypeCloseParamTypeId).toInt();
 
         if (action.actionTypeId() == shutterCloseActionTypeId) {
 
-            setOutput(circuitOpen, typeOpen, false);
-            setOutput(circuitClose, typeClose, true);
+            setOutput(circuitOpen, GPIOType(typeOpen), false);
+            setOutput(circuitClose, GPIOType(typeClose), true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == shutterOpenActionTypeId) {
 
-            setOutput(circuitClose, typeClose, false);
-            setOutput(circuitOpen, typeOpen, true);
+            setOutput(circuitClose, GPIOType(typeClose), false);
+            setOutput(circuitOpen, GPIOType(typeOpen), true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == shutterStopActionTypeId) {
-            setOutput(circuitOpen, typeOpen, false);
-            setOutput(circuitClose, typeClose, false);
+            setOutput(circuitOpen, GPIOType(typeOpen), false);
+            setOutput(circuitClose, GPIOType(typeClose), false);
 
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
+
+    if (device->deviceClassId() == shutterDeviceClassId) {
+
+        QString circuit = device->paramValue(lightOutputParamTypeId).toString();
+        int type = device->paramValue(lightOutputTypeParamTypeId).toInt();
+        bool stateValue = action.param(digitalOutputDigitalOutputStatusActionParamTypeId).value().toBool();
+
+        setOutput(circuit, GPIOType(type), stateValue);
+        return DeviceManager::DeviceErrorNoError;
+    }
+
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
@@ -497,7 +498,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         }
 
         if (obj["dev"] == "relay") {
-            qCDebug(dcUniPi()) << "Relay:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
+            qCDebug(dcUniPi()) << "Relay:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt() << "Relay Type:" << obj["relay_type"].toInt() ;
 
             QString circuit = obj["circuit"].toString();
             bool value = QVariant(obj["value"].toInt()).toBool();
@@ -608,7 +609,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             qCDebug(dcUniPi()) << "Analog Input:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
 
             if (!m_analogInputs.contains(obj["circuit"].toString())){
-                //New Device detected
+                //New analog output detected
                 m_analogInputs.append(obj["circuit"].toString());
             } else {
                 foreach (Device *device, myDevices()) {
@@ -620,6 +621,15 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                         }
                     }
                 }
+            }
+        }
+
+        if (obj["dev"] == "led") {
+            qCDebug(dcUniPi()) << "Led:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
+
+            if (!m_leds.contains(obj["circuit"].toString())){
+                //New led detected
+                m_leds.append(obj["circuit"].toString());
             }
         }
     }
