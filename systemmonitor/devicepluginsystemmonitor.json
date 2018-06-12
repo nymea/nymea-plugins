@@ -21,6 +21,7 @@
                             "displayName": "RSS memory usage",
                             "displayNameEvent": "RSS memory usage changed",
                             "type": "double",
+                            "unit": "KiloByte",
                             "defaultValue": 0
                         }
                     ]
