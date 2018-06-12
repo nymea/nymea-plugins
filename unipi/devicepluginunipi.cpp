@@ -88,10 +88,10 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
-    if (device->deviceClassId() == shadingDeviceClassId) {
+    if (device->deviceClassId() == shutterDeviceClassId) {
 
-        m_usedGpios.insert(device->paramValue(shadingOutputUpParamTypeId).toString(), device);
-        m_usedGpios.insert(device->paramValue(shadingOutputDownParamTypeId).toString(), device);
+        m_usedGpios.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
+        m_usedGpios.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -151,7 +151,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
             return DeviceManager::DeviceErrorAsync;
         }
 
-        if (deviceClassId == shadingDeviceClassId) {
+        if (deviceClassId == shutterDeviceClassId) {
             // Create the list of available gpios
             QList<DeviceDescriptor> deviceDescriptors;
 
@@ -165,10 +165,10 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
 
                 DeviceDescriptor descriptor(deviceClassId, QString("Up Relay %1 + Down Relay %2").arg(circuit, m_relais.at(i+1)), circuit);
                 ParamList parameters;
-                parameters.append(Param(shadingOutputUpParamTypeId, circuit));
-                parameters.append(Param(shadingOutputDownParamTypeId, m_relais.at(i+1)));
-                parameters.append(Param(shadingOutputTypeUpParamTypeId, GPIOType::relay));
-                parameters.append(Param(shadingOutputTypeDownParamTypeId, GPIOType::relay));
+                parameters.append(Param(shutterOutputOpenParamTypeId, circuit));
+                parameters.append(Param(shutterOutputCloseParamTypeId, m_relais.at(i+1)));
+                parameters.append(Param(shutterOutputTypeOpenParamTypeId, GPIOType::relay));
+                parameters.append(Param(shutterOutputTypeCloseParamTypeId, GPIOType::relay));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -276,29 +276,28 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
-    if (device->deviceClassId() == shadingDeviceClassId) {
+    if (device->deviceClassId() == shutterDeviceClassId) {
+        QString circuitOpen = device->paramValue(shutterOutputOpenParamTypeId).toString();
+        QString typeOpen = device->paramValue(shutterOutputTypeOpenParamTypeId).toString();
 
-        if (action.actionTypeId() == shadingDownActionTypeId) {
-            QString circuit = device->paramValue(shadingOutputDownParamTypeId).toString();
-            QString type = device->paramValue(shadingOutputTypeDownParamTypeId).toString();
-            setOutput(circuit, type, false);
+        QString circuitClose = device->paramValue(shutterOutputCloseParamTypeId).toString();
+        QString typeClose = device->paramValue(shutterOutputTypeCloseParamTypeId).toString();
+
+        if (action.actionTypeId() == shutterCloseActionTypeId) {
+
+            setOutput(circuitOpen, typeOpen, false);
+            setOutput(circuitClose, typeClose, true);
             return DeviceManager::DeviceErrorNoError;
         }
-        if (action.actionTypeId() == shadingUpActionTypeId) {
-            QString circuit = device->paramValue(shadingOutputDownParamTypeId).toString();
-            QString type = device->paramValue(shadingOutputTypeDownParamTypeId).toString();
-            setOutput(circuit, type, false);
+        if (action.actionTypeId() == shutterOpenActionTypeId) {
+
+            setOutput(circuitClose, typeClose, false);
+            setOutput(circuitOpen, typeOpen, true);
             return DeviceManager::DeviceErrorNoError;
         }
-
-        if (action.actionTypeId() == shadingStopActionTypeId) {
-            QString circuitUp = device->paramValue(shadingOutputDownParamTypeId).toString();
-            QString typeUp = device->paramValue(shadingOutputTypeDownParamTypeId).toString();
-            setOutput(circuitUp, typeUp, false);
-
-            QString circuitDown = device->paramValue(shadingOutputDownParamTypeId).toString();
-            QString typeDown = device->paramValue(shadingOutputTypeDownParamTypeId).toString();
-            setOutput(circuitDown, typeDown, false);
+        if (action.actionTypeId() == shutterStopActionTypeId) {
+            setOutput(circuitOpen, typeOpen, false);
+            setOutput(circuitClose, typeClose, false);
 
             return DeviceManager::DeviceErrorNoError;
         }
@@ -375,32 +374,32 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                             device->setStateValue(relayOutputRelayStatusStateTypeId, value);
                             break;
                         }
-                    } else if (device->deviceClassId() == shadingDeviceClassId) {
-                        if (circuit == device->paramValue(shadingOutputUpParamTypeId).toString()) {
-                            if (value && device->stateValue(shadingStatusStateTypeId).toString().contains("stop")) {
-                                device->setStateValue(shadingStatusStateTypeId, "up");
-                            } else if (!value && device->stateValue(shadingStatusStateTypeId).toString().contains("up")) {
-                                device->setStateValue(shadingStatusStateTypeId, "stop");
+                    } else if (device->deviceClassId() == shutterDeviceClassId) {
+                        if (circuit == device->paramValue(shutterOutputOpenParamTypeId).toString()) {
+                            if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
+                                device->setStateValue(shutterStatusStateTypeId, "open");
+                            } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("open")) {
+                                device->setStateValue(shutterStatusStateTypeId, "stop");
                             } else {
-                                qWarning(dcUniPi()) << "Shading" << device << "Output Up:" << value << "Status: " << device->stateValue(shadingStatusStateTypeId).toString();
+                                qWarning(dcUniPi()) << "shutter" << device << "Output open:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
                             }
 
                             break;
                         }
-                        if (circuit == device->paramValue(shadingOutputDownParamTypeId).toString()) {
-                            if (value && device->stateValue(shadingStatusStateTypeId).toString().contains("stop")) {
-                                device->setStateValue(shadingStatusStateTypeId, "down");
-                            } else if (!value && device->stateValue(shadingStatusStateTypeId).toString().contains("down")) {
-                                device->setStateValue(shadingStatusStateTypeId, "stop");
+                        if (circuit == device->paramValue(shutterOutputCloseParamTypeId).toString()) {
+                            if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
+                                device->setStateValue(shutterStatusStateTypeId, "close");
+                            } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("close")) {
+                                device->setStateValue(shutterStatusStateTypeId, "stop");
                             } else {
-                                qWarning(dcUniPi()) << "Shading" << device << "Output Down:" << value << "Status: " << device->stateValue(shadingStatusStateTypeId).toString();
+                                qWarning(dcUniPi()) << "shutter" << device << "Output close:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
                             }
                             break;
                         }
 
                     } else if (device->deviceClassId() == lightDeviceClassId) {
                         if (circuit == device->paramValue(lightOutputParamTypeId).toString()) {
-                            device->setStateValue(lightStatusStateTypeId, value);
+                            device->setStateValue(lightPowerStateTypeId, value);
                             break;
                         }
                     }
