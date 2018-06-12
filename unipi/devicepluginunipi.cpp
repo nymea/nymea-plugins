@@ -498,49 +498,67 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         }
 
         if (obj["dev"] == "relay") {
-            qCDebug(dcUniPi()) << "Relay:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt() << "Relay Type:" << obj["relay_type"].toInt() ;
+            qCDebug(dcUniPi()) << "Relay:" << obj["dev"].toString() << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt() << "Relay Type:" << obj["relay_type"].toString() ;
 
             QString circuit = obj["circuit"].toString();
             bool value = QVariant(obj["value"].toInt()).toBool();
 
-            if (!m_relais.contains(circuit)) {
-                //New Device detected
-                m_relais.append(circuit);
-            } else {
+            if (obj["relay_type"].toString() == "physical") {
 
-                foreach (Device *device, myDevices()) {
-                    if (device->deviceClassId() == relayOutputDeviceClassId) {
-                        if (circuit == device->paramValue(relayOutputRelayNumberParamTypeId).toString()) {
-                            device->setStateValue(relayOutputRelayStatusStateTypeId, value);
-                            break;
-                        }
-                    } else if (device->deviceClassId() == shutterDeviceClassId) {
-                        if (circuit == device->paramValue(shutterOutputOpenParamTypeId).toString()) {
-                            if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
-                                device->setStateValue(shutterStatusStateTypeId, "open");
-                            } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("open")) {
-                                device->setStateValue(shutterStatusStateTypeId, "stop");
-                            } else {
-                                qWarning(dcUniPi()) << "shutter" << device << "Output open:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
+                if (!m_relais.contains(circuit)) {
+                    //New Device detected
+                    m_relais.append(circuit);
+                } else {
+
+                    foreach (Device *device, myDevices()) {
+                        if (device->deviceClassId() == relayOutputDeviceClassId) {
+                            if (circuit == device->paramValue(relayOutputRelayNumberParamTypeId).toString()) {
+                                device->setStateValue(relayOutputRelayStatusStateTypeId, value);
+                                break;
+                            }
+                        } else if (device->deviceClassId() == shutterDeviceClassId) {
+                            if (circuit == device->paramValue(shutterOutputOpenParamTypeId).toString()) {
+                                if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
+                                    device->setStateValue(shutterStatusStateTypeId, "open");
+                                } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("open")) {
+                                    device->setStateValue(shutterStatusStateTypeId, "stop");
+                                } else {
+                                    qWarning(dcUniPi()) << "shutter" << device << "Output open:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
+                                }
+
+                                break;
+                            }
+                            if (circuit == device->paramValue(shutterOutputCloseParamTypeId).toString()) {
+                                if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
+                                    device->setStateValue(shutterStatusStateTypeId, "close");
+                                } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("close")) {
+                                    device->setStateValue(shutterStatusStateTypeId, "stop");
+                                } else {
+                                    qWarning(dcUniPi()) << "shutter" << device << "Output close:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
+                                }
+                                break;
                             }
 
-                            break;
-                        }
-                        if (circuit == device->paramValue(shutterOutputCloseParamTypeId).toString()) {
-                            if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
-                                device->setStateValue(shutterStatusStateTypeId, "close");
-                            } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("close")) {
-                                device->setStateValue(shutterStatusStateTypeId, "stop");
-                            } else {
-                                qWarning(dcUniPi()) << "shutter" << device << "Output close:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
+                        } else if (device->deviceClassId() == lightDeviceClassId) {
+                            if (circuit == device->paramValue(lightOutputParamTypeId).toString()) {
+                                device->setStateValue(lightPowerStateTypeId, value);
+                                break;
                             }
-                            break;
                         }
+                    }
+                }
+            } else if (obj["relay_type"].toString() == "digtial") {
+                if (!m_digitalOutputs.contains(obj["circuit"].toString())){
+                    //New Device detected
+                    m_digitalOutputs.append(obj["circuit"].toString());
+                } else {
 
-                    } else if (device->deviceClassId() == lightDeviceClassId) {
-                        if (circuit == device->paramValue(lightOutputParamTypeId).toString()) {
-                            device->setStateValue(lightPowerStateTypeId, value);
-                            break;
+                    foreach (Device *device, myDevices()) {
+                        if (device->deviceClassId() == digitalOutputDeviceClassId) {
+                            if (obj["circuit"] == device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString()) {
+                                device->setStateValue(digitalOutputDigitalOutputStatusStateTypeId, QVariant(obj["value"].toInt()).toBool());
+                                break;
+                            }
                         }
                     }
                 }
