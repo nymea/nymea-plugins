@@ -28,7 +28,7 @@ void DimmerSwitch::setPower(const bool power)
 
     m_power = power;
     if(power){
-        m_dimmerTimer->start(150);
+        m_dimmerTimer->start(250);
         m_longPressedTimer->start(2000);
 
         if (m_doublePressedTimer->isActive()) {
@@ -63,20 +63,23 @@ int DimmerSwitch::getDimValue()
 
 void DimmerSwitch::onDimmerTimeout()
 {
-    if (m_countingUp) {
-        m_dimValue += 3;
-        if(m_dimValue >= 100) {
-            m_dimValue = 100;
-            m_countingUp = false;
+    if(!m_longPressedTimer->isActive()) {
+        if (m_countingUp) {
+            m_dimValue += 5;
+            if(m_dimValue >= 100) {
+                m_dimValue = 100;
+                m_countingUp = false;
+            }
+        } else {
+            m_dimValue -= 5;
+            if(m_dimValue <= 0) {
+                m_dimValue = 0;
+                m_countingUp = true;
+            }
         }
-    } else {
-        m_dimValue -= 3;
-        if(m_dimValue <= 0) {
-            m_dimValue = 0;
-            m_countingUp = true;
-        }
+        emit dimValueChanged(m_dimValue);
     }
-    emit dimValueChanged(m_dimValue);
+
 }
 
 void DimmerSwitch::onLongPressedTimeout()
