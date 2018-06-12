@@ -22,8 +22,8 @@
                     "name": "relayOutput",
                     "displayName": "Relay output",
                     "deviceIcon": "Power",
-                    "createMethods": ["discover"],
-                    "interface": [ ],
+                    "createMethods": ["discovery"],
+                    "interfaces": [ ],
                     "basicTags": ["Device"],
                     "paramTypes": [
                         {
@@ -51,8 +51,8 @@
                     "name": "digitalInput",
                     "displayName": "Digital input",
                     "deviceIcon": "Switch",
-                    "createMethods": ["discover"],
-                    "interface": [ ],
+                    "createMethods": ["discovery"],
+                    "interfaces": [ ],
                     "basicTags": ["Sensor"],
                     "paramTypes": [
                         {
@@ -78,8 +78,8 @@
                     "name": "digitalOutput",
                     "displayName": "Digital output",
                     "deviceIcon": "Power",
-                    "createMethods": ["discover"],
-                    "interface": [ ],
+                    "createMethods": ["discovery"],
+                    "interfaces": [ ],
                     "basicTags": ["Device"],
                     "paramTypes": [
                         {
@@ -107,8 +107,8 @@
                     "name": "analogOutput",
                     "displayName": "Analog output",
                     "deviceIcon": "Power",
-                    "createMethods": ["discover"],
-                    "interface": [ ],
+                    "createMethods": ["discovery"],
+                    "interfaces": [ ],
                     "basicTags": ["Device"],
                     "paramTypes": [
                         {
@@ -139,8 +139,8 @@
                     "name": "analogInput",
                     "displayName": "Analog Input",
                     "deviceIcon": "Power",
-                    "createMethods": ["discover"],
-                    "interface": [ ],
+                    "createMethods": ["discovery"],
+                    "interfaces": [ ],
                     "basicTags": ["Sensor"],
                     "paramTypes": [
                         {
@@ -164,36 +164,36 @@
                 },
                 {
                     "id": "eadddc99-ce7d-4169-a2f9-a829fa105ad2",
-                    "name": "shading",
-                    "displayName": "Shading",
-                    "deviceIcon": "Blinds",
-                    "createMethods": ["discover"],
-                    "interface": [ ],
+                    "name": "shutter",
+                    "displayName": "Shutter",
+                    "deviceIcon": "RollerShutter",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["shutter"],
                     "basicTags": ["Actuator"],
                     "paramTypes": [
                         {
                             "id": "7878ef4b-2395-4995-b17d-b69cb7d280e1",
-                            "name": "outputUp",
-                            "displayName": "Output Up",
+                            "name": "outputOpen",
+                            "displayName": "Output open",
                             "type": "QString"
                         },
                         {
                             "id": "4aa113d0-294b-403d-9dd1-ad0abe833176",
-                            "name": "outputDown",
-                            "displayName": "Output Down",
+                            "name": "outputClose",
+                            "displayName": "Output close",
                             "type": "QString"
                         },
                         {
                             "id": "a030f030-4f26-4f33-aadf-ec3c3a5141a7",
-                            "name": "outputTypeUp",
-                            "displayName": "Output Type Up",
+                            "name": "outputTypeOpen",
+                            "displayName": "Output type open",
                             "type": "QString",
                             "readOnly": true
                         },
                         {
                             "id": "fde509c5-8db1-411b-9e71-36997c39ee6b",
-                            "name": "outputTypeDown",
-                            "displayName": "Output Type Down",
+                            "name": "outputTypeClose",
+                            "displayName": "Output type close",
                             "type": "QString",
                             "readOnly": true
                         }
@@ -203,11 +203,12 @@
                             "id": "b8955f33-780a-48a5-9c50-c1bccf09918f",
                             "name": "status",
                             "displayName": "Status",
+                            "displayNameEvent": "Status changed",
                             "type": "QString",
                             "possibleValues":[
-                                "up",
+                                "open",
                                 "stop",
-                                "down"
+                                "close"
                             ],
                             "defaultValue": "stop"
                         }
@@ -215,21 +216,18 @@
                     "actionTypes":[
                         {
                             "id": "cc8a13ae-2a3d-440a-a127-962fb912e511",
-                            "name": "up",
-                            "displayName": "Up",
-                            "type": "bool"
+                            "name": "open",
+                            "displayName": "Open"
                         },
                         {
                             "id": "19bda8bb-1a78-4f2f-9927-ff543012462e",
                             "name": "stop",
-                            "displayName": "Stop",
-                            "type": "bool"
+                            "displayName": "Stop"
                         },
                         {
                             "id": "7dc32e36-6a5c-46e1-8507-d9283067ac21",
-                            "name": "down",
-                            "displayName": "Down",
-                            "type": "bool"
+                            "name": "close",
+                            "displayName": "Close"
                         }
                     ]
                 },
@@ -237,9 +235,9 @@
                     "id": "34fc941e-3465-4618-acf6-dda9c7242e27",
                     "name": "light",
                     "displayName": "Light",
-                    "deviceIcon": "Light",
-                    "createMethods": ["discover"],
-                    "interface": [""],
+                    "deviceIcon": "LightBulb",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["light"],
                     "basicTags": ["Actuator"],
                     "paramTypes": [
                         {
@@ -259,10 +257,10 @@
                     "stateTypes":[
                         {
                             "id": "3d0d6abc-87b9-42af-820e-e3bc7bde1743",
-                            "name": "status",
-                            "displayName": "Light",
-                            "displayNameEvent": "Light power changed",
-                            "displayNameAction": "Set light power",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
