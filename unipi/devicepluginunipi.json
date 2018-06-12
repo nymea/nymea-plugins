@@ -1,7 +1,16 @@
 {
-    "displayName": "Uni pi",
+    "displayName": "UniPi",
     "name": "UniPi",
     "id": "26cba644-35ae-40a6-9c48-924198893a5f",
+    "paramTypes": [
+        {
+            "id": "5329655d-7e91-4b16-9abf-2abc82bf1b3c",
+            "name": "port",
+            "displayName": "Port",
+            "type": "int",
+            "defaultValue": "8080"
+        }
+    ],
     "vendors": [
         {
             "displayName": "UniPi",
@@ -9,31 +18,11 @@
             "id": "c82bfe27-d14d-40bd-b12f-ddba214b5fc5",
             "deviceClasses": [
                 {
-                    "id": "f1663756-657d-4dbd-9568-e2edf513589f",
-                    "name": "neuron",
-                    "displayName": "Neuron",
-                    "deviceIcon": "Gateway",
-                    "createMethods": ["user"],
-                    "interface": [ ],
-                    "basicTags": ["Device", "Gateway"],
-                    "paramTypes": [                
-                        {
-                            "id": "5329655d-7e91-4b16-9abf-2abc82bf1b3c",
-                            "name": "port",
-                            "displayName": "Port",
-                            "type": "int",
-                            "defaultValue": "8080"
-                        }
-                    ],
-                    "actionTypes": [ ],
-                    "stateTypes": [ ]
-                },
-                {
                     "id": "58f9db7f-fd33-45af-8c98-047b67ae5267",
                     "name": "relayOutput",
                     "displayName": "Relay output",
                     "deviceIcon": "Power",
-                    "createMethods": ["auto"],
+                    "createMethods": ["discover"],
                     "interface": [ ],
                     "basicTags": ["Device"],
                     "paramTypes": [
@@ -41,12 +30,6 @@
                             "id": "7a09e3ad-452c-4bf4-a00c-f8114ed9a7a1",
                             "name": "relayNumber",
                             "displayName": "Relay number",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "84d4474b-86b4-4da1-8776-61d587cb9d0f",
-                            "name": "parentId",
-                            "displayName": "Parent ID",
                             "type": "QString"
                         }
                     ],
@@ -68,20 +51,14 @@
                     "name": "digitalInput",
                     "displayName": "Digital input",
                     "deviceIcon": "Switch",
-                    "createMethods": ["auto"],
+                    "createMethods": ["discover"],
                     "interface": [ ],
                     "basicTags": ["Sensor"],
                     "paramTypes": [
                         {
                             "id": "9c84d9b8-fdc7-41c1-9559-08f061ffc7a6",
                             "name": "digitalInputNumber",
-                            "displayName": "input number",
-                            "type": "int"
-                        },
-                        {
-                            "id": "ebbf4c9c-25a9-45c1-be72-cc01aaea959c",
-                            "name": "parentId",
-                            "displayName": "parent ID",
+                            "displayName": "Input number",
                             "type": "QString"
                         }
                     ],
@@ -101,20 +78,14 @@
                     "name": "digitalOutput",
                     "displayName": "Digital output",
                     "deviceIcon": "Power",
-                    "createMethods": ["auto"],
+                    "createMethods": ["discover"],
                     "interface": [ ],
                     "basicTags": ["Device"],
                     "paramTypes": [
                         {
                             "id": "c01d5bde-de5d-42c5-b462-79745827875a",
                             "name": "digitalOutputNumber",
-                            "displayName": "Input number",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "c697d10d-28ba-4680-9db9-094d4af7c6da",
-                            "name": "parentId",
-                            "displayName": "Parent ID",
+                            "displayName": "Output number",
                             "type": "QString"
                         }
                     ],
@@ -136,7 +107,7 @@
                     "name": "analogOutput",
                     "displayName": "Analog output",
                     "deviceIcon": "Power",
-                    "createMethods": ["auto"],
+                    "createMethods": ["discover"],
                     "interface": [ ],
                     "basicTags": ["Device"],
                     "paramTypes": [
@@ -144,12 +115,6 @@
                             "id": "46e606cc-67ee-4891-bc39-8fb0565c87da",
                             "name": "analogOutputNumber",
                             "displayName": "Analog output number",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "120ed3a4-bd76-4e86-b550-3b1f1daabfa2",
-                            "name": "parentId",
-                            "displayName": "Parent ID",
                             "type": "QString"
                         }
                     ],
@@ -174,7 +139,7 @@
                     "name": "analogInput",
                     "displayName": "Analog Input",
                     "deviceIcon": "Power",
-                    "createMethods": ["auto"],
+                    "createMethods": ["discover"],
                     "interface": [ ],
                     "basicTags": ["Sensor"],
                     "paramTypes": [
@@ -182,12 +147,6 @@
                             "id": "cc6eb664-9fd2-457d-9d0d-0eb9703db4a2",
                             "name": "analogInputNumber",
                             "displayName": "Analog input number",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "a4688cb3-54fa-478c-a108-d48cbb3d10e1",
-                            "name": "parentId",
-                            "displayName": "Parent ID",
                             "type": "QString"
                         }
                     ],
@@ -200,6 +159,113 @@
                             "type": "double",
                             "unit": "Volt",
                             "defaultValue": 0.00
+                        }
+                    ]
+                },
+                {
+                    "id": "eadddc99-ce7d-4169-a2f9-a829fa105ad2",
+                    "name": "shading",
+                    "displayName": "Shading",
+                    "deviceIcon": "Blinds",
+                    "createMethods": ["discover"],
+                    "interface": [ ],
+                    "basicTags": ["Actuator"],
+                    "paramTypes": [
+                        {
+                            "id": "7878ef4b-2395-4995-b17d-b69cb7d280e1",
+                            "name": "outputUp",
+                            "displayName": "Output Up",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "4aa113d0-294b-403d-9dd1-ad0abe833176",
+                            "name": "outputDown",
+                            "displayName": "Output Down",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "a030f030-4f26-4f33-aadf-ec3c3a5141a7",
+                            "name": "outputTypeUp",
+                            "displayName": "Output Type Up",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "fde509c5-8db1-411b-9e71-36997c39ee6b",
+                            "name": "outputTypeDown",
+                            "displayName": "Output Type Down",
+                            "type": "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "b8955f33-780a-48a5-9c50-c1bccf09918f",
+                            "name": "status",
+                            "displayName": "Status",
+                            "type": "QString",
+                            "possibleValues":[
+                                "up",
+                                "stop",
+                                "down"
+                            ],
+                            "defaultValue": "stop"
+                        }
+                    ],
+                    "actionTypes":[
+                        {
+                            "id": "cc8a13ae-2a3d-440a-a127-962fb912e511",
+                            "name": "up",
+                            "displayName": "Up",
+                            "type": "bool"
+                        },
+                        {
+                            "id": "19bda8bb-1a78-4f2f-9927-ff543012462e",
+                            "name": "stop",
+                            "displayName": "Stop",
+                            "type": "bool"
+                        },
+                        {
+                            "id": "7dc32e36-6a5c-46e1-8507-d9283067ac21",
+                            "name": "down",
+                            "displayName": "Down",
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "34fc941e-3465-4618-acf6-dda9c7242e27",
+                    "name": "light",
+                    "displayName": "Light",
+                    "deviceIcon": "Light",
+                    "createMethods": ["discover"],
+                    "interface": [""],
+                    "basicTags": ["Actuator"],
+                    "paramTypes": [
+                        {
+                            "id": "e1375def-edd6-4886-8e87-73cf3ebc819d",
+                            "name": "output",
+                            "displayName": "Output",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "5853de25-94c6-4f50-95cd-f1e3ef2ebc59",
+                            "name": "outputType",
+                            "displayName": "Output Type",
+                            "type": "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "3d0d6abc-87b9-42af-820e-e3bc7bde1743",
+                            "name": "status",
+                            "displayName": "Light",
+                            "displayNameEvent": "Light power changed",
+                            "displayNameAction": "Set light power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
                         }
                     ]
                 }

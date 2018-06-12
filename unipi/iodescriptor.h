@@ -21,60 +21,20 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINUNIPI_H
-#define DEVICEPLUGINUNIPI_H
+#ifndef IODESCRIPTOR_H
+#define IODESCRIPTOR_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
-#include <QtWebSockets/QtWebSockets>
+#include <QObject>
 
-class DevicePluginUniPi : public DevicePlugin
+class ioDescriptor : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginunipi.json")
-    Q_INTERFACES(DevicePlugin)
-
 public:
+    explicit ioDescriptor(QObject *parent = 0);
 
-    explicit DevicePluginUniPi();
-    ~DevicePluginUniPi();
+signals:
 
-    void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    void postSetupDevice(Device *device) override;
-    void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-
-
-private:
-
-    enum GPIOType {
-        relay,
-        digitalInput,
-        digitalOutput,
-        analogInput,
-        analogOutput
-    };
-
-    QHash<QString, Device*> m_usedGpios;
-
-    QList<QString> m_relais;
-    QList<QString> m_digitalOutputs;
-    QList<QString> m_digitalInputs;
-    QList<QString> m_analogOutputs;
-    QList<QString> m_analogInputs;
-    QList<QString> m_temperatureSensors;
-
-    QWebSocket *m_webSocket = nullptr;
-
-    void setOutput(const QString &circuit, const QString &type, bool value);
-
-private slots:
-    void onWebSocketConnected();
-    void onWebSocketDisconnected();
-    void onWebSocketTextMessageReceived(QString message);
+public slots:
 };
 
-#endif // DEVICEPLUGINUNIPI_H
+#endif // IODESCRIPTOR_H
