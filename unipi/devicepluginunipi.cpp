@@ -39,7 +39,7 @@ void DevicePluginUniPi::init()
 {
     if (m_webSocket == NULL) {
 
-        int port = configValue(uniPiPortParamTypeId).toInt();
+        int port = 8080; //configValue(uniPiPortParamTypeId).toInt();
 
         m_webSocket = new QWebSocket();
         connect(m_webSocket, &QWebSocket::connected, this, &DevicePluginUniPi::onWebSocketConnected);
@@ -108,10 +108,8 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
     if (deviceClass.vendorId() == unipiVendorId) {
 
         if (deviceClassId == relayOutputDeviceClassId) {
-
             // Create the list of available gpios
             QList<DeviceDescriptor> deviceDescriptors;
-
             for (int i = 0; i < m_relais.count(); i++) {
                 const QString circuit = m_relais.at(i);
 
@@ -119,7 +117,6 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 if (m_usedGpios.contains(circuit)){
                     continue;
                 }
-
                 DeviceDescriptor descriptor(deviceClassId, QString("Relay %1").arg(circuit), circuit);
                 ParamList parameters;
                 parameters.append(Param(relayOutputRelayNumberParamTypeId, circuit));
@@ -151,7 +148,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
             // Create the list of available gpios
             QList<DeviceDescriptor> deviceDescriptors;
 
-            for (int i = 0; i < m_relais.count(); i++) {
+            for (int i = 0; i < (m_relais.count()-1); i++) {
                 const QString circuit = m_relais.at(i);
 
                 // Offer only gpios which aren't in use already
@@ -159,10 +156,18 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                     continue;
                 }
 
-                DeviceDescriptor descriptor(deviceClassId, QString("Up Relay %1 + Down Relay %2").arg(circuit, m_relais.at(i+1)), circuit);
+                DeviceDescriptor descriptor(deviceClassId, QString("Opening relay %1 | Closing relay %2").arg(circuit, m_relais.at(i+1)), circuit);
                 ParamList parameters;
                 parameters.append(Param(shutterOutputOpenParamTypeId, circuit));
-                parameters.append(Param(shutterOutputCloseParamTypeId, m_relais.at(i+1)));
+                for (int a = i; a < (m_relais.count()); a++) {
+
+                    const QString circuit = m_relais.at(a);
+                    // Offer only gpios which aren't in use already
+                    if (m_usedGpios.contains(circuit)){
+                        continue;
+                    }
+                    parameters.append(Param(shutterOutputCloseParamTypeId, m_relais.at(a)));
+                }
                 parameters.append(Param(shutterOutputTypeOpenParamTypeId, GPIOType::relay));
                 parameters.append(Param(shutterOutputTypeCloseParamTypeId, GPIOType::relay));
                 descriptor.setParams(parameters);
@@ -173,6 +178,38 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
         }
 
         if (deviceClassId == lightDeviceClassId) {
+            // Create the list of available gpios
+            QList<DeviceDescriptor> deviceDescriptors;
+            for (int i = 0; i < m_relais.count(); i++) {
+                const QString circuit = m_relais.at(i);
+
+                // Offer only gpios which arn't in use already
+                if (m_usedGpios.contains(circuit)){
+                    continue;
+                }
+                DeviceDescriptor descriptor(deviceClassId, QString("Relay %1").arg(circuit), circuit);
+                ParamList parameters;
+                parameters.append(Param(lightOutputParamTypeId, circuit));
+                parameters.append(Param(lightOutputTypeParamTypeId, GPIOType::relay));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+
+            for (int i = 0; i < m_digitalOutputs.count(); i++) {
+                const QString circuit =  m_digitalOutputs.at(i);
+
+                // Offer only gpios which arn't in use already
+                if (m_usedGpios.contains(circuit)){
+                    continue;
+                }
+                DeviceDescriptor descriptor(deviceClassId, QString("Digital output %1").arg(circuit), circuit);
+                ParamList parameters;
+                parameters.append(Param(lightOutputParamTypeId, circuit));
+                parameters.append(Param(lightOutputTypeParamTypeId, GPIOType::digitalOutput));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+            emit devicesDiscovered(deviceClassId, deviceDescriptors);
             return DeviceManager::DeviceErrorAsync;
         }
     }
@@ -322,7 +359,6 @@ void DevicePluginUniPi::onWebSocketDisconnected()
 {
     qCDebug(dcUniPi())  << "WebSocket disconnected";
 
-    //send signal device Setup was successfull
 }
 
 
@@ -440,44 +476,45 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                     }
                 }
             }
+        }
 
-            if (obj["dev"] == "ao") {
-                qCDebug(dcUniPi()) << "Analog Output:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
+        if (obj["dev"] == "ao") {
+            qCDebug(dcUniPi()) << "Analog Output:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
 
-                if (!m_analogOutputs.contains(obj["circuit"].toString())){
-                    //New Device detected
-                    m_analogOutputs.append(obj["circuit"].toString());
+            if (!m_analogOutputs.contains(obj["circuit"].toString())){
+                //New Device detected
+                m_analogOutputs.append(obj["circuit"].toString());
 
-                } else {
-                    foreach (Device *device, myDevices()) {
-                        if (device->deviceClassId() == analogOutputDeviceClassId) {
-                            if (obj["circuit"] == device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString()) {
-                                device->setStateValue(analogOutputAnalogOutputValueStateTypeId, obj["value"].toDouble());
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (obj["dev"] == "ai") {
-                qCDebug(dcUniPi()) << "Analog Input:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
-
-                if (!m_analogInputs.contains(obj["circuit"].toString())){
-                    //New Device detected
-                    m_analogInputs.append(obj["circuit"].toString());
-                } else {
-                    foreach (Device *device, myDevices()) {
-                        if (device->deviceClassId() == analogInputDeviceClassId) {
-
-                            if (obj["circuit"] == device->paramValue(analogInputAnalogInputNumberParamTypeId).toString()) {
-                                device->setStateValue(analogInputAnalogInputValueStateTypeId, obj["value"].toDouble());
-                                break;
-                            }
+            } else {
+                foreach (Device *device, myDevices()) {
+                    if (device->deviceClassId() == analogOutputDeviceClassId) {
+                        if (obj["circuit"] == device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString()) {
+                            device->setStateValue(analogOutputAnalogOutputValueStateTypeId, obj["value"].toDouble());
+                            break;
                         }
                     }
                 }
             }
         }
-    } // end for loop
+
+        if (obj["dev"] == "ai") {
+            qCDebug(dcUniPi()) << "Analog Input:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
+
+            if (!m_analogInputs.contains(obj["circuit"].toString())){
+                //New Device detected
+                m_analogInputs.append(obj["circuit"].toString());
+            } else {
+                foreach (Device *device, myDevices()) {
+                    if (device->deviceClassId() == analogInputDeviceClassId) {
+
+                        if (obj["circuit"] == device->paramValue(analogInputAnalogInputNumberParamTypeId).toString()) {
+                            device->setStateValue(analogInputAnalogInputValueStateTypeId, obj["value"].toDouble());
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
