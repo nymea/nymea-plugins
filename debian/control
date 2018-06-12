@@ -3,7 +3,7 @@ Section: utils
 Priority: options
 Maintainer: Michael Zanetti <michael.zanetti@guh.io>
 Build-depends: debhelper (>= 0.0.0),
-               libnymea1-dev,
+               libnymea-1-dev,
                libqt5serialport5-dev,
                python:any,
                qtbase5-dev,
