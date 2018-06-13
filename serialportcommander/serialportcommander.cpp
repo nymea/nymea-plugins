@@ -45,7 +45,7 @@ void SerialPortCommander::addOutputDevice(Device* device)
 
 void SerialPortCommander::removeOutputDevice()
 {
-    m_outputDevice = NULL;
+    m_outputDevice = nullptr;
 }
 
 
@@ -63,7 +63,7 @@ void SerialPortCommander::removeInputDevice(Device* device)
 
 bool SerialPortCommander::isEmpty()
 {
-    return(!hasOutputDevice() || m_inputDevices.empty());
+    return(!hasOutputDevice() && m_inputDevices.empty());
 }
 
 
