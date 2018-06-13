@@ -16,11 +16,42 @@
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
+                            "id": "56f8fac2-1021-4b96-bf15-23b21bb85b4c",
+                            "name": "cpuUsage",
+                            "displayName": "CPU usage",
+                            "displayNameEvent": "CPU usage changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "efe2d520-3b35-4668-b6f5-db3df0c8bf0d",
+                            "name": "percentMemory",
+                            "displayName": "memory usage",
+                            "displayNameEvent": "memory usage changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
                             "id": "d9671ee3-51be-4cf8-8601-125c0684aec9",
                             "name": "rssMemory",
                             "displayName": "RSS memory usage",
                             "displayNameEvent": "RSS memory usage changed",
-                            "type": "double",
+                            "type": "int",
+                            "unit": "KiloByte",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "6d71b001-c7fe-4f08-941d-47009b710d94",
+                            "name": "virtualMemory",
+                            "displayName": "virtual memory usage",
+                            "displayNameEvent": "virtual memory usage changed",
+                            "type": "int",
                             "unit": "KiloByte",
                             "defaultValue": 0
                         }

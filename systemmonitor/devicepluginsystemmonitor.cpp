@@ -64,7 +64,7 @@ void DevicePluginSystemMonitor::onRefreshTimer()
 {
     QProcess *p = new QProcess(this);
     connect(p, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(onProcessFinished(int,QProcess::ExitStatus)));
-    p->start("ps", {"-C", "nymead", "-o", "rss="});
+    p->start("ps", {"-C", "nymead", "-o", "%mem=,vsz=,rss=,pcpu="});
 }
 
 void DevicePluginSystemMonitor::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -76,15 +76,38 @@ void DevicePluginSystemMonitor::onProcessFinished(int exitCode, QProcess::ExitSt
             qWarning(dcSystemMonitor) << "Error reading process memory usage:" << p->readAllStandardError();
             return;
     }
-    QByteArray data = p->readAllStandardOutput().trimmed();
+    QString data = QString(p->readAllStandardOutput().trimmed()).replace(QRegExp("[ ]{2,}"), " ");
+    QStringList parts = data.split(' ');
+    if (parts.count() != 4) {
+        qCWarning(dcSystemMonitor()) << "Unexpected result from ps" << data << parts;
+        return;
+    }
     bool ok;
-    qreal rssMem = data.toDouble(&ok);
+    qreal percentMem = parts.at(0).toDouble(&ok);
+    if (!ok) {
+        qWarning(dcSystemMonitor) << "Failed to parse % memory value to a number:" << parts.at(0);
+        return;
+    }
+    qint64 virtualMem = parts.at(1).toLongLong(&ok);
+    if (!ok) {
+        qWarning(dcSystemMonitor) << "Failed to parse virtual memory value to a number:" << parts.at(1);
+        return;
+    }
+    quint64 rssMem = parts.at(2).toLongLong(&ok);
     if (!ok) {
         qWarning(dcSystemMonitor) << "Failed to parse RSS memory value to a number:" << data;
         return;
     }
+    qreal cpuUsage = parts.at(3).toDouble(&ok);
+    if (!ok) {
+        qWarning(dcSystemMonitor) << "Failed to parse CPU usage value to a number:" << parts.at(3);
+        return;
+    }
     foreach (Device *dev, myDevices()) {
         dev->setStateValue(systemMonitorRssMemoryStateTypeId, rssMem);
+        dev->setStateValue(systemMonitorPercentMemoryStateTypeId, percentMem);
+        dev->setStateValue(systemMonitorVirtualMemoryStateTypeId, virtualMem);
+        dev->setStateValue(systemMonitorCpuUsageStateTypeId, cpuUsage);
     }
 }
 
