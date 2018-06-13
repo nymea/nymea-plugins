@@ -34,6 +34,7 @@ PLUGIN_DIRS = \
     plantcare           \
     remotessh           \
     senic               \
+    serialportcommander \
     simulation          \
     snapd               \
     tasmota             \
