@@ -197,7 +197,6 @@ void DevicePluginSerialPortCommander::deviceRemoved(Device *device)
         serialPortCommander->removeInputDevice(device);
         if (serialPortCommander->isEmpty()) {
             m_serialPortCommanders.remove(interface);
-            serialPortCommander->serialPort()->close();
             serialPortCommander->deleteLater();
         }
     }
@@ -208,7 +207,6 @@ void DevicePluginSerialPortCommander::deviceRemoved(Device *device)
         serialPortCommander->removeOutputDevice();
         if (serialPortCommander->isEmpty()) {
             m_serialPortCommanders.remove(interface);
-            serialPortCommander->serialPort()->close();
             serialPortCommander->deleteLater();
         }
     }
