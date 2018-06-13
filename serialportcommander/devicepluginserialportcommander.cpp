@@ -55,7 +55,6 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
             qCDebug(dcSerialPortCommander()) << "Setup successfully serial port" << interface;
 
             SerialPortCommander *serialPortCommander = new SerialPortCommander(serialPort, this);
-            connect(serialPortCommander, &SerialPortCommander::commandReceived, this, &DevicePluginSerialPortCommander::onCommandReceived);
             m_serialPortCommanders.insert(interface, serialPortCommander);
 
         } else {
@@ -85,17 +84,15 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
                 qCWarning(dcSerialPortCommander()) << "Could not open serial port" << interface << serialPort->errorString();
                 return DeviceManager::DeviceSetupStatusFailure;
             }
-
             qCDebug(dcSerialPortCommander()) << "Setup successfully serial port" << interface;
-            connect(serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
-            connect(serialPort, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-
             SerialPortCommander *serialPortCommander = new SerialPortCommander(serialPort, this);
+            connect(serialPortCommander, SIGNAL(commandReceived(Device *)), this, SLOT(onCommandReceived(Device *)));
+            serialPortCommander->addInputDevice(device);
             m_serialPortCommanders.insert(interface, serialPortCommander);
 
         } else {
             SerialPortCommander *serialPortCommander = m_serialPortCommanders.value(interface);
-            //connect(serialPortCommander, SIGNAL(commandReceived(Device *), this, SLOT(onCommandReceived(Device *));
+            connect(serialPortCommander, SIGNAL(commandReceived(Device *)), this, SLOT(onCommandReceived(Device *)));
             serialPortCommander->addInputDevice(device);
         }
         return DeviceManager::DeviceSetupStatusSuccess;
@@ -138,8 +135,8 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(cons
             deviceDescriptors.append(descriptor);
         } else {
 
-            qCDebug(dcSerialPortCommander()) << "Found Serial interface:" << port.portName();
-            QString description = port.manufacturer() + " | " + port.description();
+            qCDebug(dcSerialPortCommander()) << "Found serial port:" << port.portName();
+            QString description = port.manufacturer() + " " + port.description();
             DeviceDescriptor descriptor(deviceClassId, port.portName(), description);
             ParamList parameters;
 
@@ -190,6 +187,7 @@ void DevicePluginSerialPortCommander::deviceRemoved(Device *device)
         serialPortCommander->removeInputDevice(device);
         if (serialPortCommander->isEmpty()) {
             m_serialPortCommanders.remove(interface);
+            serialPortCommander->serialPort()->close();
             serialPortCommander->deleteLater();
         }
     }
@@ -200,6 +198,7 @@ void DevicePluginSerialPortCommander::deviceRemoved(Device *device)
         serialPortCommander->removeOutputDevice();
         if (serialPortCommander->isEmpty()) {
             m_serialPortCommanders.remove(interface);
+            serialPortCommander->serialPort()->close();
             serialPortCommander->deleteLater();
         }
     }
