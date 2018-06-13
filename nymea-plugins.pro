@@ -36,6 +36,7 @@ PLUGIN_DIRS = \
     pushbullet          \
     remotessh           \
     senic               \
+    serialportcommander \
     simulation          \
     snapd               \
     tasmota             \
