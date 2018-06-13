@@ -112,52 +112,48 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(cons
     QList<DeviceDescriptor> deviceDescriptors;
 
     Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
-        qCDebug(dcSerialPortCommander()) << "Found Serial interface:" << port.systemLocation() << port.portName();
-        QString description = port.manufacturer() + " | " + port.description();
-        DeviceDescriptor descriptor(deviceClassId, port.systemLocation(), description);
-        ParamList parameters;
+        if (m_serialPortCommanders.contains(port.portName())){
+            SerialPortCommander *serialPortCommander = m_serialPortCommanders.value(port.portName());
+            QSerialPort *serialPort = serialPortCommander->serialPort();
+            QString description = "Note, this serial port is also used by another device";
+            DeviceDescriptor descriptor(deviceClassId, serialPort->portName(), description);
+            ParamList parameters;
 
-        if (deviceClassId == serialPortInputDeviceClassId) {
-            //TODO add all currenly used devices
-            parameters.append(Param(serialPortInputSerialPortParamTypeId, port.systemLocation()));
-        }
-
-        if (deviceClassId == serialPortOutputDeviceClassId) {
-            //TODO add currently only as input used devices
-           parameters.append(Param(serialPortOutputSerialPortParamTypeId, port.systemLocation()));
-        }
-        descriptor.setParams(parameters);
-        deviceDescriptors.append(descriptor);
-    }
-
-    Q_FOREACH(SerialPortCommander *serialPortCommander, m_serialPortCommanders.values()) {
-
-        QSerialPort *serialPort = serialPortCommander->serialPort();
-        QString description = "also used by another device";
-        DeviceDescriptor descriptor(deviceClassId, serialPort->portName(), description);
-        ParamList parameters;
-
-        if (deviceClassId == serialPortInputDeviceClassId) {
-            parameters.append(Param(serialPortInputSerialPortParamTypeId, serialPort->portName()));
-        }
-
-        if (deviceClassId == serialPortOutputDeviceClassId) {
-            if (serialPortCommander->hasOutputDevice()){
-                continue;
+            if (deviceClassId == serialPortInputDeviceClassId) {
+                parameters.append(Param(serialPortInputSerialPortParamTypeId, serialPort->portName()));
             }
 
-           parameters.append(Param(serialPortOutputSerialPortParamTypeId, serialPort->portName()));
-           parameters.append(Param(serialPortOutputBaudRateParamTypeId, serialPort->baudRate()));
-           parameters.append(Param(serialPortOutputDataBitsParamTypeId, serialPort->dataBits()));
-           parameters.append(Param(serialPortOutputFlowControlParamTypeId, serialPort->flowControl()));
-           parameters.append(Param(serialPortOutputStopBitsParamTypeId, serialPort->stopBits()));
-           parameters.append(Param(serialPortOutputParityParamTypeId, serialPort->parity()));
+            if (deviceClassId == serialPortOutputDeviceClassId) {
+                if (serialPortCommander->hasOutputDevice()){
+                    continue;
+                }
+            }
+            parameters.append(Param(serialPortOutputSerialPortParamTypeId, serialPort->portName()));
+            parameters.append(Param(serialPortOutputBaudRateParamTypeId, serialPort->baudRate()));
+            parameters.append(Param(serialPortOutputDataBitsParamTypeId, serialPort->dataBits()));
+            parameters.append(Param(serialPortOutputFlowControlParamTypeId, serialPort->flowControl()));
+            parameters.append(Param(serialPortOutputStopBitsParamTypeId, serialPort->stopBits()));
+            parameters.append(Param(serialPortOutputParityParamTypeId, serialPort->parity()));
+            descriptor.setParams(parameters);
+            deviceDescriptors.append(descriptor);
+        } else {
+
+            qCDebug(dcSerialPortCommander()) << "Found Serial interface:" << port.portName();
+            QString description = port.manufacturer() + " | " + port.description();
+            DeviceDescriptor descriptor(deviceClassId, port.portName(), description);
+            ParamList parameters;
+
+            if (deviceClassId == serialPortInputDeviceClassId) {
+                parameters.append(Param(serialPortInputSerialPortParamTypeId, port.portName()));
+            }
+
+            if (deviceClassId == serialPortOutputDeviceClassId) {
+                parameters.append(Param(serialPortOutputSerialPortParamTypeId, port.portName()));
+            }
+            descriptor.setParams(parameters);
+            deviceDescriptors.append(descriptor);
         }
-        descriptor.setParams(parameters);
-        deviceDescriptors.append(descriptor);
     }
-
-
 
     emit devicesDiscovered(deviceClassId, deviceDescriptors);
     return DeviceManager::DeviceErrorAsync;
@@ -192,16 +188,21 @@ void DevicePluginSerialPortCommander::deviceRemoved(Device *device)
         interface = device->paramValue(serialPortInputSerialPortParamTypeId).toString();
         serialPortCommander = m_serialPortCommanders.value(interface);
         serialPortCommander->removeInputDevice(device);
+        if (serialPortCommander->isEmpty()) {
+            m_serialPortCommanders.remove(interface);
+            serialPortCommander->deleteLater();
+        }
     }
 
     if (device->deviceClassId() == serialPortOutputDeviceClassId) {
         interface = device->paramValue(serialPortOutputSerialPortParamTypeId).toString();
         serialPortCommander = m_serialPortCommanders.value(interface);
         serialPortCommander->removeOutputDevice();
+        if (serialPortCommander->isEmpty()) {
+            m_serialPortCommanders.remove(interface);
+            serialPortCommander->deleteLater();
+        }
     }
-
-    if (serialPortCommander->isEmpty())
-        m_serialPortCommanders.remove(interface);
 }
 
 
