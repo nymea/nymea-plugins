@@ -45,8 +45,6 @@ public:
     void init() override;
 
 private:
-    //QHash<Device *, QSerialPort *> m_outputSerialPorts;
-    //QHash<Device *, QSerialPort *> m_inputSerialPorts;
     QHash<QString, SerialPortCommander *> m_serialPortCommanders;
 
 private slots:
