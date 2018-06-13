@@ -60,8 +60,14 @@ signals:
     void commandReceived(Device *device);
 
 public slots:
+
     void onReadyRead();
     void onSerialError(QSerialPort::SerialPortError error);
+    void onBaudRateChanged(qint32 baudRate, QSerialPort::Direction direction);
+    void onParityChanged(QSerialPort::Parity parity);
+    void onDataBitsChanged(QSerialPort::DataBits dataBits);
+    void onStopBitsChanged(QSerialPort::StopBits stopBits);
+    void onFlowControlChanged(QSerialPort::FlowControl flowControl);
 
 };
 

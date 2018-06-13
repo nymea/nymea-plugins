@@ -44,8 +44,9 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
 
             serialPort->setBaudRate(device->paramValue(serialPortInputBaudRateParamTypeId).toInt());
             serialPort->setDataBits(QSerialPort::DataBits(device->paramValue(serialPortInputDataBitsParamTypeId).toInt()));
-            serialPort->setParity(QSerialPort::Parity(device->paramValue(serialPortInputParityParamTypeId).toInt()));
+            //TODO set parity
             serialPort->setStopBits(QSerialPort::StopBits(device->paramValue(serialPortInputStopBitsParamTypeId).toInt()));
+            //TODO set flow control
 
             if (!serialPort->open(QIODevice::ReadWrite)) {
                 qCWarning(dcSerialPortCommander()) << "Could not open serial port" << interface << serialPort->errorString();
@@ -78,8 +79,9 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
 
             serialPort->setBaudRate(device->paramValue(serialPortInputBaudRateParamTypeId).toInt());
             serialPort->setDataBits(QSerialPort::DataBits(device->paramValue(serialPortInputDataBitsParamTypeId).toInt()));
-            serialPort->setParity(QSerialPort::Parity(device->paramValue(serialPortInputParityParamTypeId).toInt()));
+            //TODO set parity
             serialPort->setStopBits(QSerialPort::StopBits(device->paramValue(serialPortInputStopBitsParamTypeId).toInt()));
+            //TODO set flow control
 
             if (!serialPort->open(QIODevice::ReadWrite)) {
                 qCWarning(dcSerialPortCommander()) << "Could not open serial port" << interface << serialPort->errorString();
@@ -122,13 +124,13 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(cons
                 parameters.append(Param(serialPortInputSerialPortParamTypeId, serialPort->portName()));
                 parameters.append(Param(serialPortInputBaudRateParamTypeId, serialPort->baudRate()));
                 parameters.append(Param(serialPortInputDataBitsParamTypeId, serialPort->dataBits()));
-                parameters.append(Param(serialPortInputFlowControlParamTypeId, serialPort->flowControl()));
+                //TODO set flow control
                 parameters.append(Param(serialPortInputStopBitsParamTypeId, serialPort->stopBits()));
-                parameters.append(Param(serialPortInputParityParamTypeId, serialPort->parity()));
+                //TODO set parity
             }
 
             if (deviceClassId == serialPortOutputDeviceClassId) {
-                if (serialPortCommander->hasOutputDevice()){
+                if (serialPortCommander->hasOutputDevice()) {
                     //only one output per port is allowed
                     continue;
                 }
@@ -136,9 +138,9 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(cons
                 parameters.append(Param(serialPortOutputSerialPortParamTypeId, serialPort->portName()));
                 parameters.append(Param(serialPortOutputBaudRateParamTypeId, serialPort->baudRate()));
                 parameters.append(Param(serialPortOutputDataBitsParamTypeId, serialPort->dataBits()));
-                parameters.append(Param(serialPortOutputFlowControlParamTypeId, serialPort->flowControl()));
+                //TODO set flow control
                 parameters.append(Param(serialPortOutputStopBitsParamTypeId, serialPort->stopBits()));
-                parameters.append(Param(serialPortOutputParityParamTypeId, serialPort->parity()));
+                //TODO set parity
             }
 
             descriptor.setParams(parameters);
