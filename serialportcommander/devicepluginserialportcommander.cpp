@@ -55,6 +55,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
             qCDebug(dcSerialPortCommander()) << "Setup successfully serial port" << interface;
 
             SerialPortCommander *serialPortCommander = new SerialPortCommander(serialPort, this);
+            serialPortCommander->addOutputDevice(device);
             m_serialPortCommanders.insert(interface, serialPortCommander);
 
         } else {
@@ -117,24 +118,33 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(cons
             ParamList parameters;
 
             if (deviceClassId == serialPortInputDeviceClassId) {
+                //take the params from the already existing in/output device
                 parameters.append(Param(serialPortInputSerialPortParamTypeId, serialPort->portName()));
+                parameters.append(Param(serialPortInputBaudRateParamTypeId, serialPort->baudRate()));
+                parameters.append(Param(serialPortInputDataBitsParamTypeId, serialPort->dataBits()));
+                parameters.append(Param(serialPortInputFlowControlParamTypeId, serialPort->flowControl()));
+                parameters.append(Param(serialPortInputStopBitsParamTypeId, serialPort->stopBits()));
+                parameters.append(Param(serialPortInputParityParamTypeId, serialPort->parity()));
             }
 
             if (deviceClassId == serialPortOutputDeviceClassId) {
                 if (serialPortCommander->hasOutputDevice()){
+                    //only one output per port is allowed
                     continue;
                 }
+                //take the params from the already existing input device
+                parameters.append(Param(serialPortOutputSerialPortParamTypeId, serialPort->portName()));
+                parameters.append(Param(serialPortOutputBaudRateParamTypeId, serialPort->baudRate()));
+                parameters.append(Param(serialPortOutputDataBitsParamTypeId, serialPort->dataBits()));
+                parameters.append(Param(serialPortOutputFlowControlParamTypeId, serialPort->flowControl()));
+                parameters.append(Param(serialPortOutputStopBitsParamTypeId, serialPort->stopBits()));
+                parameters.append(Param(serialPortOutputParityParamTypeId, serialPort->parity()));
             }
-            parameters.append(Param(serialPortOutputSerialPortParamTypeId, serialPort->portName()));
-            parameters.append(Param(serialPortOutputBaudRateParamTypeId, serialPort->baudRate()));
-            parameters.append(Param(serialPortOutputDataBitsParamTypeId, serialPort->dataBits()));
-            parameters.append(Param(serialPortOutputFlowControlParamTypeId, serialPort->flowControl()));
-            parameters.append(Param(serialPortOutputStopBitsParamTypeId, serialPort->stopBits()));
-            parameters.append(Param(serialPortOutputParityParamTypeId, serialPort->parity()));
+
             descriptor.setParams(parameters);
             deviceDescriptors.append(descriptor);
         } else {
-
+            //Serial port is not yet used, create now a new one
             qCDebug(dcSerialPortCommander()) << "Found serial port:" << port.portName();
             QString description = port.manufacturer() + " " + port.description();
             DeviceDescriptor descriptor(deviceClassId, port.portName(), description);
