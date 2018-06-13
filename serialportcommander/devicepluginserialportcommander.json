@@ -26,7 +26,7 @@
                             "displayName": "Serial port",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue": "/dev/ttyAMA0"
+                            "defaultValue": "ttyAMA0"
                         },
                         {
                             "id": "45dfc828-f238-4263-89a3-9b35cf5dea39",
@@ -114,7 +114,7 @@
                             "displayName": "Serial Port",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue": "/dev/ttyAMA0"
+                            "defaultValue": "ttyAMA0"
                         },
                         {
                             "id": "45dfc828-f238-4263-89a3-9b35cf5dea39",

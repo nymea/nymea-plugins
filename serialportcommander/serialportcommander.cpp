@@ -26,6 +26,11 @@ SerialPortCommander::SerialPortCommander(QSerialPort *serialPort, QObject *paren
 {
     connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
     connect(m_serialPort, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+    connect(m_serialPort, SIGNAL(baudRateChanged(qint32, QSerialPort::Direction)), this, SLOT(onBaudRateChanged(qint32, QSerialPort::Direction)));
+    connect(m_serialPort, SIGNAL(parityChanged(QSerialPort::Parity)), this, SLOT(onParityChanged(QSerialPort::Parity)));
+    connect(m_serialPort, SIGNAL(dataBitsChanged(QSerialPort::DataBits)), this, SLOT(onDataBitsChanged(QSerialPort::DataBits)));
+    connect(m_serialPort, SIGNAL(stopBitsChanged(QSerialPort::StopBits)), this, SLOT(onStopBitsChanged(QSerialPort::StopBits)));
+    connect(m_serialPort, SIGNAL(flowControlChanged(QSerialPort::FlowControl)), this, SLOT(onFlowControlChanged(QSerialPort::FlowControl)));
 }
 
 
@@ -39,7 +44,6 @@ SerialPortCommander::~SerialPortCommander()
 void SerialPortCommander::addOutputDevice(Device* device)
 {
     m_outputDevice = device;
-    return;
 }
 
 
@@ -57,7 +61,7 @@ void SerialPortCommander::addInputDevice(Device* device)
 
 void SerialPortCommander::removeInputDevice(Device* device)
 {
-    m_inputDevices.removeOne(device);
+    m_inputDevices.removeAll(device);
 }
 
 
@@ -69,7 +73,7 @@ bool SerialPortCommander::isEmpty()
 
 bool SerialPortCommander::hasOutputDevice()
 {
-    if (m_outputDevice == NULL) {
+    if (m_outputDevice == nullptr) {
         return false;
     } else {
         return true;
@@ -125,6 +129,52 @@ void SerialPortCommander::onReadyRead()
 void SerialPortCommander::onSerialError(QSerialPort::SerialPortError error)
 {
     Q_UNUSED(error);
+}
+
+void SerialPortCommander::onBaudRateChanged(qint32 baudRate, QSerialPort::Direction direction)
+{
+    Q_UNUSED(direction);
+    foreach(Device *device, m_inputDevices) {
+        device->setParamValue(serialPortInputBaudRateParamTypeId, baudRate);
+    }
+    if(m_outputDevice != nullptr)
+        m_outputDevice->setParamValue(serialPortOutputBaudRateParamTypeId, baudRate);
+}
+
+void SerialPortCommander::onParityChanged(QSerialPort::Parity parity)
+{
+    foreach(Device *device, m_inputDevices) {
+        device->setParamValue(serialPortInputParityParamTypeId, parity); //TODO Strings not int
+    }
+    if(m_outputDevice != nullptr)
+        m_outputDevice->setParamValue(serialPortOutputBaudRateParamTypeId, parity);
+}
+
+void SerialPortCommander::onDataBitsChanged(QSerialPort::DataBits dataBits)
+{
+    foreach(Device *device, m_inputDevices) {
+        device->setParamValue(serialPortInputDataBitsParamTypeId, dataBits);
+    }
+    if(m_outputDevice != nullptr)
+        m_outputDevice->setParamValue(serialPortOutputDataBitsParamTypeId, dataBits);
+}
+
+void SerialPortCommander::onStopBitsChanged(QSerialPort::StopBits stopBits)
+{
+    foreach(Device *device, m_inputDevices) {
+        device->setParamValue(serialPortInputStopBitsParamTypeId, stopBits);
+    }
+    if(m_outputDevice != nullptr)
+        m_outputDevice->setParamValue(serialPortOutputStopBitsParamTypeId, stopBits);
+}
+
+void SerialPortCommander::onFlowControlChanged(QSerialPort::FlowControl flowControl)
+{
+    //foreach(Device *device, m_inputDevices) { //TODO enum to string
+        //device->setParamValue(serialPortInputFlowControlParamTypeId, QVariant::fromValue(QSerialPort::FlowControl).value<QString>());
+    //}
+    if(m_outputDevice != nullptr)
+        m_outputDevice->setParamValue(serialPortOutputFlowControlParamTypeId, flowControl);
 }
 
 void SerialPortCommander::sendCommand(QByteArray data)
