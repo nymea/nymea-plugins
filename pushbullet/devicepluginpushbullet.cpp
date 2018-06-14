@@ -42,7 +42,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *dev
 
     QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(pushNotificationTokenParamTypeId).toByteArray());
+    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(pushNotificationTokenParamTypeId).toByteArray().trimmed());
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, this, [this, reply, device](){
