@@ -25,7 +25,7 @@
         <location filename="../plugininfo.h" line="125"/>
         <source>Multi Sensor</source>
         <extracomment>The name of the plugin MultiSensor (23bf0d8d-df7d-4bee-80ee-f015c5a7f52e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Multi Sensor</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="134"/>
