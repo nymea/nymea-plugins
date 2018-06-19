@@ -322,55 +322,55 @@ The name of the autocreated ParamType of the writable StateType (a3298d16-eea6-4
         <location filename="../plugininfo.h" line="248"/>
         <source>Humidity sensor enabled changed</source>
         <extracomment>The name of the autocreated EventType (29881172-626a-42d5-83b8-3e2e5ca533be)</extracomment>
-        <translation>Feuchtigkeitssensor aktibiert geändert</translation>
+        <translation>Feuchtigkeitssensor aktiviert geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="254"/>
         <source>Set humidity sensor enabled</source>
         <extracomment>The name of the autocreated ActionType (29881172-626a-42d5-83b8-3e2e5ca533be)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Feuchtigkeitssensor aktiv</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="260"/>
         <source>Pressure sensor enabled changed</source>
         <extracomment>The name of the autocreated EventType (50e5e282-9707-4b31-bb3f-a6ca30a7e1ff)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Drucksensor aktiv geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="266"/>
         <source>Set pressure sensor enabled</source>
         <extracomment>The name of the autocreated ActionType (50e5e282-9707-4b31-bb3f-a6ca30a7e1ff)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Drucksensor aktiv</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="272"/>
         <source>Optical sensor enabled changed</source>
         <extracomment>The name of the autocreated EventType (1460a6d6-9fb4-4385-b27b-ee4b7594e454)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Optischer Sensor aktiv geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="278"/>
         <source>Set optical sensor enabled</source>
         <extracomment>The name of the autocreated ActionType (1460a6d6-9fb4-4385-b27b-ee4b7594e454)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze optischen Sensor aktiv</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="284"/>
         <source>Accelerometer enabled changed</source>
         <extracomment>The name of the autocreated EventType (5786c91a-d94d-461a-8d22-f978dd1438ab)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Beschleunigungssensor aktiv geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="290"/>
         <source>Set accelerometer enabled</source>
         <extracomment>The name of the autocreated ActionType (5786c91a-d94d-461a-8d22-f978dd1438ab)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Beschleunigungssensor aktiv</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="296"/>
         <source>Gyroscope enabled changed</source>
         <extracomment>The name of the autocreated EventType (94517544-cb97-4816-8993-cb4cf2651a1e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gyroscope aktiv geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="302"/>
