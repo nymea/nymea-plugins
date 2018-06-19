@@ -170,7 +170,7 @@ void SerialPortCommander::onStopBitsChanged(QSerialPort::StopBits stopBits)
 
 void SerialPortCommander::onFlowControlChanged(QSerialPort::FlowControl flowControl)
 {
-    //foreach(Device *device, m_inputDevices) { //TODO enum to string
+    //foreach(Device *device, m_inputDevices) { //TODO enum to stringau
         //device->setParamValue(serialPortInputFlowControlParamTypeId, QVariant::fromValue(QSerialPort::FlowControl).value<QString>());
     //}
     if(m_outputDevice != nullptr)
