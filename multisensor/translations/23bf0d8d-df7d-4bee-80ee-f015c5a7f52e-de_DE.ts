@@ -7,7 +7,7 @@
         <location filename="../plugininfo.h" line="128"/>
         <source>Texas Instruments</source>
         <extracomment>The name of the vendor (2edf543e-dc2c-4693-bb0c-e76c0d305fad)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Texas Instruments</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="146"/>
