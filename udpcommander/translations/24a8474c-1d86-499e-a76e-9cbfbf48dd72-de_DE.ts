@@ -10,7 +10,7 @@
         <extracomment>The name of the plugin UdpCommander (24a8474c-1d86-499e-a76e-9cbfbf48dd72)
 ----------
 The name of the DeviceClass (31b00639-8904-4522-84ed-54c46a54c63c)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>UDP Commander</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="38"/>
