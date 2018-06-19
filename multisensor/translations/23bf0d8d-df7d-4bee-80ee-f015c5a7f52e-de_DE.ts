@@ -13,13 +13,13 @@
         <location filename="../plugininfo.h" line="146"/>
         <source>temperature changed</source>
         <extracomment>The name of the autocreated EventType (8359ada9-df1c-4e60-bb87-9e21d05ee2e2)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="131"/>
         <source>Sensor Tag (CC2650)</source>
         <extracomment>The name of the DeviceClass (158a06b6-b27f-4951-957e-6f1e3b44f604)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sensor Tag (CC2650)</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="125"/>
