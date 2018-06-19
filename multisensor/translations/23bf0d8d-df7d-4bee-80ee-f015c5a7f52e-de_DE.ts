@@ -370,67 +370,67 @@ The name of the autocreated ParamType of the writable StateType (a3298d16-eea6-4
         <location filename="../plugininfo.h" line="296"/>
         <source>Gyroscope enabled changed</source>
         <extracomment>The name of the autocreated EventType (94517544-cb97-4816-8993-cb4cf2651a1e)</extracomment>
-        <translation>Gyroscope aktiv geändert</translation>
+        <translation>Gyroskop aktiv geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="302"/>
         <source>Set gyroscope enabled</source>
         <extracomment>The name of the autocreated ActionType (94517544-cb97-4816-8993-cb4cf2651a1e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Gyroskop aktiv</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="308"/>
         <source>Magnetometer enabled changed</source>
         <extracomment>The name of the autocreated EventType (96aae111-b1c1-48a1-9b1f-b56efa546d0d)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Magnetometer aktiv geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="314"/>
         <source>Set magnetometer enabled</source>
         <extracomment>The name of the autocreated ActionType (96aae111-b1c1-48a1-9b1f-b56efa546d0d)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Magnetometer aktiv</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="320"/>
         <source>Measurement period for enviromental sensors changed</source>
         <extracomment>The name of the autocreated EventType (c5308565-5dc9-409e-ae99-577c212c7a92)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Messperiode für Umgebungssensoren geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="326"/>
         <source>Set measurement period for enviromental sensors</source>
         <extracomment>The name of the autocreated ActionType (c5308565-5dc9-409e-ae99-577c212c7a92)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Messinterval für Umgebungssensoren</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="332"/>
         <source>Measurement period movement sensor changed</source>
         <extracomment>The name of the autocreated EventType (5237c89c-c21d-4d78-ac99-8be661b40da7)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Messinterval für Umgebungssensoren geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="338"/>
         <source>Set measurement period movement sensor</source>
         <extracomment>The name of the autocreated ActionType (5237c89c-c21d-4d78-ac99-8be661b40da7)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Messinterval für Bewegungssensoren</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="344"/>
         <source>Movement sensitivity changed</source>
         <extracomment>The name of the autocreated EventType (a3298d16-eea6-4474-9061-90466e92d476)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bewegungsempfindlichkeit geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="350"/>
         <source>Set movement sensitivity</source>
         <extracomment>The name of the autocreated ActionType (a3298d16-eea6-4474-9061-90466e92d476)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Bewegungsempfindlichkeit</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="356"/>
         <source>Buzzer impulse</source>
         <extracomment>The name of the ActionType a048ab2e-4f17-4467-a166-a7572156c07e of deviceClass sensorTag</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Summer Impuls</translation>
     </message>
 </context>
 </TS>
