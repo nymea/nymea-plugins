@@ -81,7 +81,6 @@
                                     "name": "data",
                                     "displayName": "write data",
                                     "type": "int",
-                                    "displayNameEvent": "data written",
                                     "defaultValue": 0
                                 }
                             ]
