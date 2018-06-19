@@ -151,30 +151,20 @@ The name of the autocreated EventType (b481b6e7-77c1-40b0-859a-286876b05959)</ex
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Garage Door</source>
-        <extracomment>The name of the DeviceClass (cfb44bcf-b4b9-4bef-89f7-3a55baf35668)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Garage door status changed</source>
-        <extracomment>The name of the autocreated EventType (f786029d-f3a6-4b47-978a-ac1a581aac0f)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Open</source>
-        <extracomment>The name of the ActionType 1786029d-f3a6-4b47-978a-ac1a581aac0f of deviceClass garageDoor
+        <extracomment>The name of the ActionType 1786029d-f3a6-4b47-978a-ac1a581aac0f of deviceClass garageGate
 ----------
 The name of the ActionType 17860291-f3a6-4b47-978a-ac1a581aac0f of deviceClass rollerShutter</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Stop</source>
-        <extracomment>The name of the ActionType 2786029d-f3a6-4b47-978a-ac1a581aac0f of deviceClass garageDoor</extracomment>
+        <extracomment>The name of the ActionType 2786029d-f3a6-4b47-978a-ac1a581aac0f of deviceClass garageGate</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Close</source>
-        <extracomment>The name of the ActionType 3786029d-f3a6-4b47-978a-ac1a581aac0f of deviceClass garageDoor</extracomment>
+        <extracomment>The name of the ActionType 3786029d-f3a6-4b47-978a-ac1a581aac0f of deviceClass garageGate</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -473,11 +463,6 @@ The name of the autocreated ParamType of the writable StateType (87600986-da37-4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Garage door</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (f786029d-f3a6-4b47-978a-ac1a581aac0f) of DeviceClass garageDoor</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Status</source>
         <extracomment>The name of the ParamType of the autocreated EventType (1386029d-f3a6-4b47-978a-ac1a581aac0f) of DeviceClass rollerShutter</extracomment>
         <translation type="unfinished"></translation>
@@ -586,6 +571,48 @@ The name of the autocreated ParamType of the writable StateType (49388b11-8076-4
     <message>
         <source>Illuminance</source>
         <extracomment>The name of the ParamType of the autocreated EventType (9781f0a5-3478-4291-ab51-9daa1ba0e44e) of DeviceClass gardenSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Garage gate</source>
+        <extracomment>The name of the DeviceClass (cfb44bcf-b4b9-4bef-89f7-3a55baf35668)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Garage gate state changed</source>
+        <extracomment>The name of the autocreated EventType (f786029d-f3a6-4b47-978a-ac1a581aac0f)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Garage gate state</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (f786029d-f3a6-4b47-978a-ac1a581aac0f) of DeviceClass garageGate</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Intermediate position changed</source>
+        <extracomment>The name of the autocreated EventType (324150cc-0357-4797-a746-37b554d82c44)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Intermediate position</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (324150cc-0357-4797-a746-37b554d82c44) of DeviceClass garageGate</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Light power changed</source>
+        <extracomment>The name of the autocreated EventType (46543561-2690-4072-a6a3-795e1c4f49a8)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Light power</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (46543561-2690-4072-a6a3-795e1c4f49a8) of DeviceClass garageGate
+----------
+The name of the autocreated ParamType of the writable StateType (46543561-2690-4072-a6a3-795e1c4f49a8) of DeviceClass garageGate</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set light power</source>
+        <extracomment>The name of the autocreated ActionType (46543561-2690-4072-a6a3-795e1c4f49a8)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

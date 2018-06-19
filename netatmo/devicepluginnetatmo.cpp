@@ -323,7 +323,8 @@ void DevicePluginNetatmo::onOutdoorStatesChanged()
     device->setStateValue(outdoorTemperatureMaxStateTypeId, outdoor->maxTemperature());
     device->setStateValue(outdoorHumidityStateTypeId, outdoor->humidity());
     device->setStateValue(outdoorSignalStrengthStateTypeId, outdoor->signalStrength());
-    device->setStateValue(outdoorBatteryStateTypeId, outdoor->battery());
+    device->setStateValue(outdoorBatteryLevelStateTypeId, outdoor->battery());
+    device->setStateValue(outdoorBatteryCriticalStateTypeId, outdoor->battery() < 10);
 }
 
 

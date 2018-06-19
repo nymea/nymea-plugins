@@ -58,6 +58,7 @@
                         "Weather",
                         "Sensor"
                     ],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "pressuresensor"],
                     "primaryStateTypeId": "3cb25538-e463-40ae-92f9-8f34f0c06b92",
                     "createMethods": ["auto"],
                     "paramTypes": [
@@ -124,8 +125,10 @@
                             "displayNameEvent": "humidity changed",
                             "graphRelevant": true,
                             "unit": "Percentage",
-                            "type": "int",
-                            "defaultValue": 0
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
                         },
                         {
                             "id": "03b0a7b7-987d-4d3b-b3f0-21d9f92ad326",
@@ -180,6 +183,7 @@
                         "Weather",
                         "Sensor"
                     ],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "batterylevel"],
                     "primaryStateTypeId": "3cb25538-e463-40ae-92f9-8f34f0c06b92",
                     "createMethods": ["auto"],
                     "paramTypes": [
@@ -254,8 +258,10 @@
                             "displayNameEvent": "humidity changed",
                             "graphRelevant": true,
                             "unit": "Percentage",
-                            "type": "int",
-                            "defaultValue": 0
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
                         },
                         {
                             "id": "0faa3d08-9004-46fb-a5aa-a59b75e454cc",
@@ -270,12 +276,22 @@
                         },
                         {
                             "id": "15d8fae1-ba47-42e1-994d-530e8017c965",
-                            "name": "battery",
+                            "name": "batteryLevel",
                             "displayName": "battery",
                             "displayNameEvent": "battery changed",
                             "unit": "Percentage",
                             "type": "int",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "f8aeb144-014d-4ccb-81db-64ffc70f1c97",
+                            "name": "batteryCritical",
+                            "displayName": "battery critical",
+                            "displayNameEvent": "battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ]
                 }

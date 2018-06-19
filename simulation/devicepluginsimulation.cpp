@@ -53,7 +53,18 @@ void DevicePluginSimulation::init()
 DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *device)
 {
     qCDebug(dcSimulation()) << "Set up device" << device->name();
+    if (device->deviceClassId() == garageGateDeviceClassId) {
+        m_simulationTimers.insert(device, new QTimer(device));
+        connect(m_simulationTimers[device], &QTimer::timeout, this, &DevicePluginSimulation::simulationTimerTimeout);
+    }
     return DeviceManager::DeviceSetupStatusSuccess;
+}
+
+void DevicePluginSimulation::deviceRemoved(Device *device)
+{
+    QTimer *t = m_simulationTimers.take(device);
+    t->stop();
+    t->deleteLater();
 }
 
 DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device, const Action &action)
@@ -229,6 +240,70 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
+    if (device->deviceClassId() == garageGateDeviceClassId) {
+        if (action.actionTypeId() == garageGateOpenActionTypeId) {
+            if (device->stateValue(garageGateStateStateTypeId).toString() == "opening") {
+                qCDebug(dcSimulation()) << "Garage gate already opening.";
+                return DeviceManager::DeviceErrorNoError;
+            }
+            if (device->stateValue(garageGateStateStateTypeId).toString() == "open" &&
+                    !device->stateValue(garageGateIntermediatePositionStateTypeId).toBool()) {
+                qCDebug(dcSimulation()) << "Garage gate already open.";
+                return DeviceManager::DeviceErrorNoError;
+            }
+            device->setStateValue(garageGateStateStateTypeId, "opening");
+            device->setStateValue(garageGateIntermediatePositionStateTypeId, true);
+            m_simulationTimers.value(device)->start(5000);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == garageGateCloseActionTypeId) {
+            if (device->stateValue(garageGateStateStateTypeId).toString() == "closing") {
+                qCDebug(dcSimulation()) << "Garage gate already closing.";
+                return DeviceManager::DeviceErrorNoError;
+            }
+            if (device->stateValue(garageGateStateStateTypeId).toString() == "closed" &&
+                    !device->stateValue(garageGateIntermediatePositionStateTypeId).toBool()) {
+                qCDebug(dcSimulation()) << "Garage gate already closed.";
+                return DeviceManager::DeviceErrorNoError;
+            }
+            device->setStateValue(garageGateStateStateTypeId, "closing");
+            device->setStateValue(garageGateIntermediatePositionStateTypeId, true);
+            m_simulationTimers.value(device)->start(5000);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == garageGateStopActionTypeId) {
+            if (device->stateValue(garageGateStateStateTypeId).toString() == "opening" ||
+                    device->stateValue(garageGateStateStateTypeId).toString() == "closing") {
+                device->setStateValue(garageGateStateStateTypeId, "open");
+                return DeviceManager::DeviceErrorNoError;
+            }
+            qCDebug(dcSimulation()) << "Garage gate not moving";
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == garageGatePowerActionTypeId) {
+            bool power = action.param(garageGatePowerActionParamTypeId).value().toBool();
+            device->setStateValue(garageGatePowerStateTypeId, power);
+            return DeviceManager::DeviceErrorNoError;
+        }
+    }
+
+    if (device->deviceClassId() == rollerShutterDeviceClassId) {
+        if (action.actionTypeId() == rollerShutterOpenActionTypeId) {
+            qCDebug(dcSimulation()) << "Opening roller shutter";
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == rollerShutterCloseActionTypeId) {
+            qCDebug(dcSimulation()) << "Closing roller shutter";
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == rollerShutterStopActionTypeId) {
+            qCDebug(dcSimulation()) << "Stopping roller shutter";
+            return DeviceManager::DeviceErrorNoError;
+        }
+    }
+
+    qCWarning(dcSimulation()) << "Unhandled device class" << device->deviceClassId() << "for device" << device->name();
+
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
@@ -304,3 +379,18 @@ void DevicePluginSimulation::onPluginTimer5Minutes()
     }
 }
 
+void DevicePluginSimulation::simulationTimerTimeout()
+{
+    QTimer *t = static_cast<QTimer*>(sender());
+    Device *device = m_simulationTimers.key(t);
+    if (device->deviceClassId() == garageGateDeviceClassId) {
+        if (device->stateValue(garageGateStateStateTypeId).toString() == "opening") {
+            device->setStateValue(garageGateIntermediatePositionStateTypeId, false);
+            device->setStateValue(garageGateStateStateTypeId, "open");
+        }
+        if (device->stateValue(garageGateStateStateTypeId).toString() == "closing") {
+            device->setStateValue(garageGateIntermediatePositionStateTypeId, false);
+            device->setStateValue(garageGateStateStateTypeId, "closed");
+        }
+    }
+}

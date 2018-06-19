@@ -40,6 +40,7 @@ public:
 
     void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    void deviceRemoved(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
@@ -50,9 +51,11 @@ private:
     double generateRandomDoubleValue(double min, double max);
     bool generateRandomBoolValue();
 
+    QHash<Device*, QTimer*> m_simulationTimers;
 private slots:
     void onPluginTimer20Seconds();
     void onPluginTimer5Minutes();
+    void simulationTimerTimeout();
 
 };
 
