@@ -36,9 +36,10 @@ License: LGPL-2.1
 Copyright: 2016, Bernhard Trinnes <bernhard.trinnes@guh.io>
 
 Files: plantcare/*
+       unipi/*
 License: LGPL-2.1
-Copyright: 2016-2017, Simon Stürz <simon.stuerz@guh.io>
-           2016, Bernhard Trinnes <bernhard.trinnes@guh.io>
+Copyright: 2016-2018, Simon Stürz <simon.stuerz@guh.io>
+           2016-2018, Bernhard Trinnes <bernhard.trinnes@guh.io>
 
 Files: avahimonitor/*
        awattar/*
