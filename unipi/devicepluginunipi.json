@@ -319,30 +319,6 @@
                             "writable": true
                         }
                     ]
-                },
-                {
-                    "id": "fe3d7d2f-3cee-4f2b-b6f8-4381ff1a2825",
-                    "name": "temperatureSensor",
-                    "displayName": "1-Wire Temperature Sensor",
-                    "deviceIcon": "Thermometer",
-                    "createMethods": ["discovery"],
-                    "interfaces": ["temperaturesensor"],
-                    "basicTags": ["Actuator"],
-                    "paramTypes": [
-                        {
-                        }
-                    ],
-                    "stateTypes":[
-                        {
-                            "id": "a11e8108-d16e-4972-820a-f3611ba6fe24",
-                            "name": "temperature",
-                            "displayName": "Temperature",
-                            "displayNameEvent": "Temperature changed",
-                            "type": "double",
-                            "defaultValue": 0,
-                            "unit": "DegreeCelsius"
-                        }
-                    ]
                 }
             ]
         }
