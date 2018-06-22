@@ -39,7 +39,6 @@ void DevicePluginUniPi::init()
 {
     connectToEvok();
 
-    // Refresh timer for snapd checks
     m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
     connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginUniPi::onRefreshTimer);
 
@@ -79,15 +78,15 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
     if (device->deviceClassId() == shutterDeviceClassId) {
 
-        if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::relay) {
+        if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GpioType::Relay) {
             m_usedRelais.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
-        } else if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::digitalOutput) {
+        } else if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
             m_usedDigitalOutputs.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
         }
 
-        if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GPIOType::relay) {
+        if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GpioType::Relay) {
             m_usedRelais.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
-        } else if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::digitalOutput) {
+        } else if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
             m_usedDigitalOutputs.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
         }
 
@@ -96,9 +95,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
     if (device->deviceClassId() == lightDeviceClassId) {
 
-        if (device->paramValue(lightOutputTypeParamTypeId) == GPIOType::relay) {
+        if (device->paramValue(lightOutputTypeParamTypeId) == GpioType::Relay) {
             m_usedRelais.insert(device->paramValue(lightOutputParamTypeId).toString(), device);
-        } else if (device->paramValue(lightOutputParamTypeId) == GPIOType::digitalOutput) {
+        } else if (device->paramValue(lightOutputParamTypeId) == GpioType::DigitalOutput) {
             m_usedDigitalOutputs.insert(device->paramValue(lightOutputParamTypeId).toString(), device);
         }
         return DeviceManager::DeviceSetupStatusSuccess;
@@ -193,7 +192,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
             for (int i = 0; i < m_analogInputs.count(); i++) {
                 const QString circuit = m_analogInputs.at(i);
 
-                // Offer only analog inputs which arn't in use already
+                // Offer only analog inputs which aren't in use already
                 if (m_usedAnalogInputs.contains(circuit)){
                     continue;
                 }
@@ -249,8 +248,8 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                         ParamList parameters;
                         parameters.append(Param(shutterOutputOpenParamTypeId, openingCircuit));
                         parameters.append(Param(shutterOutputCloseParamTypeId, closingCircuit));
-                        parameters.append(Param(shutterOutputTypeOpenParamTypeId, GPIOType::relay));
-                        parameters.append(Param(shutterOutputTypeCloseParamTypeId, GPIOType::relay));
+                        parameters.append(Param(shutterOutputTypeOpenParamTypeId, GpioType::Relay));
+                        parameters.append(Param(shutterOutputTypeCloseParamTypeId, GpioType::Relay));
                         descriptor.setParams(parameters);
                         deviceDescriptors.append(descriptor);
                         break;
@@ -276,8 +275,8 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                         ParamList parameters;
                         parameters.append(Param(shutterOutputOpenParamTypeId, openingCircuit));
                         parameters.append(Param(shutterOutputCloseParamTypeId, closingCircuit));
-                        parameters.append(Param(shutterOutputTypeOpenParamTypeId, GPIOType::digitalOutput));
-                        parameters.append(Param(shutterOutputTypeCloseParamTypeId, GPIOType::digitalOutput));
+                        parameters.append(Param(shutterOutputTypeOpenParamTypeId, GpioType::DigitalOutput));
+                        parameters.append(Param(shutterOutputTypeCloseParamTypeId, GpioType::DigitalOutput));
                         descriptor.setParams(parameters);
                         deviceDescriptors.append(descriptor);
                         break;
@@ -302,7 +301,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor descriptor(deviceClassId, "Light", QString("Relay %1").arg(circuit));
                 ParamList parameters;
                 parameters.append(Param(lightOutputParamTypeId, circuit));
-                parameters.append(Param(lightOutputTypeParamTypeId, GPIOType::relay));
+                parameters.append(Param(lightOutputTypeParamTypeId, GpioType::Relay));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -317,7 +316,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor descriptor(deviceClassId, "Light", QString("Digital output %1").arg(circuit));
                 ParamList parameters;
                 parameters.append(Param(lightOutputParamTypeId, circuit));
-                parameters.append(Param(lightOutputTypeParamTypeId, GPIOType::digitalOutput));
+                parameters.append(Param(lightOutputTypeParamTypeId, GpioType::DigitalOutput));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -366,7 +365,7 @@ void DevicePluginUniPi::connectToEvok()
 {
     if (m_webSocket == NULL) {
 
-        int port = 8080; //configValue(uniPiPortParamTypeId).toInt(); TODO
+        int port = 8080; //configValue(uniPiPortParamTypeId).toInt(); //FIXME plugin configuration loading currently not possible in init
 
         m_webSocket = new QWebSocket();
         connect(m_webSocket, &QWebSocket::connected, this, &DevicePluginUniPi::onWebSocketConnected);
@@ -394,27 +393,29 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
         m_usedAnalogInputs.remove(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString());
 
     } else if (device->deviceClassId() == shutterDeviceClassId) {
-        if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GPIOType::relay) {
+        if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GpioType::Relay) {
             m_usedRelais.remove(device->paramValue(shutterOutputOpenParamTypeId).toString());
-        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GPIOType::digitalOutput) {
+        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GpioType::DigitalOutput) {
             m_usedDigitalOutputs.remove(device->paramValue(shutterOutputOpenParamTypeId).toString());
         }
 
-        if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GPIOType::relay) {
+        if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GpioType::Relay) {
             m_usedRelais.remove(device->paramValue(shutterOutputCloseParamTypeId).toString());
-        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GPIOType::digitalOutput) {
+        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GpioType::DigitalOutput) {
             m_usedDigitalOutputs.remove(device->paramValue(shutterOutputCloseParamTypeId).toString());
         }
 
     } else if (device->deviceClassId() == lightDeviceClassId) {
-        if (device->paramValue(lightOutputTypeParamTypeId) == GPIOType::relay) {
+        if (device->paramValue(lightOutputTypeParamTypeId) == GpioType::Relay) {
             m_usedRelais.remove(device->paramValue(lightOutputParamTypeId).toString());
-        } else if (device->paramValue(lightOutputParamTypeId) == GPIOType::digitalOutput) {
+        } else if (device->paramValue(lightOutputParamTypeId) == GpioType::DigitalOutput) {
             m_usedDigitalOutputs.remove(device->paramValue(lightOutputParamTypeId).toString());
         }
     } else if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
         m_usedDigitalInputs.remove(device->paramValue(dimmerSwitchInputNumberParamTypeId).toString());
-        m_dimmerSwitches.remove(m_dimmerSwitches.key(device));
+        DimmerSwitch *dimmerSwitch = m_dimmerSwitches.key(device);
+        m_dimmerSwitches.remove(dimmerSwitch);
+        dimmerSwitch->deleteLater();
     }
 
     if (myDevices().isEmpty()) {
@@ -425,6 +426,8 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
 
 DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
 {
+    if (m_webSocket->state() != QAbstractSocket::ConnectedState)
+        return DeviceManager::DeviceErrorHardwareNotAvailable;
 
     if (device->deviceClassId() == relayOutputDeviceClassId) {
 
@@ -695,21 +698,12 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             }
         }
 
-        if (obj["dev"] == "led") { //TODO cant discover leds without toggling it from another client
+        if (obj["dev"] == "led") { //TODO can't discover leds without toggling it from another client
             qCDebug(dcUniPi()) << "Led:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
 
             if (!m_leds.contains(obj["circuit"].toString())){
                 //New led detected
                 m_leds.append(obj["circuit"].toString());
-            }
-        }
-
-        if (obj["dev"] == "sensor") { //TODO not yet implemented
-            qCDebug(dcUniPi()) << "Sensor:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
-
-            if (!m_sensors.contains(obj["circuit"].toString())){
-                //New Sensor detected
-                m_sensors.append(obj["circuit"].toString());
             }
         }
     }

@@ -51,12 +51,12 @@ public:
 
 private:
 
-    enum GPIOType {
-        relay,
-        digitalInput,
-        digitalOutput,
-        analogInput,
-        analogOutput
+    enum GpioType {
+        Relay,
+        DigitalInput,
+        DigitalOutput,
+        AnalogInput,
+        AnalogOutput
     };
 
     QHash<QString, Device*> m_usedRelais;
