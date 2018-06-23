@@ -60,6 +60,19 @@ int ModbusTCPClient::slaveAddress()
     return m_slaveAddress;
 }
 
+bool ModbusTCPClient::connected()
+{
+    if (!m_mb){
+        return false;
+    }
+    // Check if already connected
+    if (modbus_read_input_registers(m_mb, 1, 1, NULL) == -1) { //Register address 1 bloody workaround
+        return false;
+    } else {
+        return true;
+    }
+}
+
 void ModbusTCPClient::reconnect(int registerAddress)
 {
     if (!m_mb){

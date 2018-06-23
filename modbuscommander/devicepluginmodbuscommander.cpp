@@ -55,9 +55,9 @@ DevicePluginModbusCommander::~DevicePluginModbusCommander()
 
 void DevicePluginModbusCommander::init()
 {
-   // Refresh timer for TCP read
-   m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
-   connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginModbusCommander::onRefreshTimer);
+    // Refresh timer for TCP read
+    m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+    connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginModbusCommander::onRefreshTimer);
 }
 
 
@@ -162,15 +162,25 @@ void DevicePluginModbusCommander::onRefreshTimer()
     foreach (Device *device, myDevices()) {
         if (device->deviceClassId() == modbusTCPReadDeviceClassId) {
             ModbusTCPClient *modbus = m_modbusSockets.value(device);
-            int reg = device->paramValue(modbusTCPReadRegisterAddressParamTypeId).toInt();
-
-            if (device->paramValue(modbusTCPReadRegisterTypeParamTypeId) == "coil"){
-                bool data = modbus->getCoil(reg);
-                device->setStateValue(modbusTCPReadReadDataStateTypeId, data);
-            } else if (device->paramValue(modbusTCPReadRegisterTypeParamTypeId) == "register") {
-                int data = modbus->getRegister(reg);
-                device->setStateValue(modbusTCPReadReadDataStateTypeId, data);
+            device->setStateValue(modbusTCPReadConnectedStateTypeId, modbus->connected());
+            if (modbus->connected()) {
+                int reg = device->paramValue(modbusTCPReadRegisterAddressParamTypeId).toInt();
+                if (device->paramValue(modbusTCPReadRegisterTypeParamTypeId) == "coil"){
+                    bool data = modbus->getCoil(reg);
+                    device->setStateValue(modbusTCPReadReadDataStateTypeId, data);
+                } else if (device->paramValue(modbusTCPReadRegisterTypeParamTypeId) == "register") {
+                    int data = modbus->getRegister(reg);
+                    device->setStateValue(modbusTCPReadReadDataStateTypeId, data);
+                }
+            } else {
+                modbus->reconnect(device->paramValue(modbusTCPReadRegisterAddressParamTypeId).toInt());
             }
+        } else if (device->deviceClassId() == modbusTCPWriteDeviceClassId) {
+            ModbusTCPClient *modbus = m_modbusSockets.value(device);
+            device->setStateValue(modbusTCPWriteConnectedStateTypeId, modbus->connected());
+             if (!modbus->connected()) {
+                 modbus->reconnect(device->paramValue(modbusTCPWriteRegisterAddressParamTypeId).toInt());
+             }
         }
     }
 }

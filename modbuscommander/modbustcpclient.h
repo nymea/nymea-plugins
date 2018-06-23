@@ -20,6 +20,7 @@ public:
     QHostAddress ipv4Address();
     int port();
     int slaveAddress();
+    bool connected();
 private:
      modbus_t *m_mb;
      QHostAddress m_IPv4Address;
