@@ -62,9 +62,12 @@ DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *dev
 
 void DevicePluginSimulation::deviceRemoved(Device *device)
 {
-    QTimer *t = m_simulationTimers.take(device);
-    t->stop();
-    t->deleteLater();
+    // Clean up any timers we may have for this device
+    if (m_simulationTimers.contains(device)) {
+        QTimer *t = m_simulationTimers.take(device);
+        t->stop();
+        t->deleteLater();
+    }
 }
 
 DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device, const Action &action)
