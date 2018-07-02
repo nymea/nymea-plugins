@@ -40,6 +40,7 @@ PLUGIN_DIRS = \
     keba                \
     remotessh           \
     dweetio             \ 
+    pianohat            \ 
 
 
 CONFIG+=all
