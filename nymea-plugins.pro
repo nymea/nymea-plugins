@@ -40,7 +40,7 @@ PLUGIN_DIRS = \
     keba                \
     remotessh           \
     dweetio             \ 
-
+    flowercare          \
 
 CONFIG+=all
 

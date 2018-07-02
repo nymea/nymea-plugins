@@ -572,7 +572,7 @@ void SensorTag::onTemperatureServiceStateChanged(const QLowEnergyService::Servic
     }
 
     // Data characteristic
-    m_temperatureDataCharacteristic = m_temperatureService->characteristic(QBluetoothUuid(QUuid("f000aa01-0451-4000-b000-000000000000")));
+    m_temperatureDataCharacteristic = m_temperatureService->characteristic(temperatureDataCharacteristicUuid);
     if (!m_temperatureDataCharacteristic.isValid()) {
         qCWarning(dcMultiSensor()) << "Invalid temperature data characteristic.";
         m_bluetoothDevice->disconnectDevice();

@@ -1,0 +1,102 @@
+{
+    "displayName": "Flower Care",
+    "name": "flowerCare",
+    "id": "74e2106a-3407-4e89-a27a-1c890d78bee7",
+    "vendors": [
+        {
+            "id": "f037aa1a-f764-42f9-a613-338e683e4da5",
+            "name": "xiaomi",
+            "displayName": "Xiaomi",
+            "deviceClasses": [
+                {
+                    "id": "297e2efa-168c-4eb8-bf3f-f8694dc0a2b9",
+                    "name": "flowerCare",
+                    "displayName": "Flower Care",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["temperaturesensor", "lightsensor", "moisturesensor", "conductivitysensor", "connectable", "batterylevel"],
+                    "paramTypes": [
+                        {
+                            "id": "65f95e3c-59fe-47d6-ba4a-2469e5f554e2",
+                            "name": "name",
+                            "displayName": "Name",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "fe2dba0f-2a47-463e-a645-bcd55cf09750",
+                            "name": "mac",
+                            "displayName": "MAC address",
+                            "type": "QString",
+                            "inputType": "MacAddress"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "6254103a-ff8b-4f62-afda-6b5be1c933ec",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "801a00ab-ce3b-4b10-9236-2f845c469a26",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "700a83e6-9fbb-4330-b00e-e9d0874b4f66",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "displayNameEvent": "Battery level critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "4577a032-bafd-49ca-8625-6dcf90819e88",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "5e3ac82a-1dda-4399-888e-529b391a814a",
+                            "name": "moisture",
+                            "displayName": "Soil moisture",
+                            "displayNameEvent": "Soil moisture changed",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "7e0a3b3d-72f4-4547-bd1e-2711be61c1a7",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "f77608b3-8b5b-43a9-aab6-0dc35c694ec3",
+                            "name": "conductivity",
+                            "displayName": "Conductivity",
+                            "displayNameEvent": "Conductivity changed",
+                            "type": "double",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
