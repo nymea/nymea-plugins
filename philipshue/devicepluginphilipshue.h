@@ -123,6 +123,7 @@ private:
     int brightnessToPercentage(int brightness);
     int percentageToBrightness(int percentage);
 
+    void abortRequests(QHash<QNetworkReply *, Device *> requestList, Device* device);
 };
 
 #endif // DEVICEPLUGINBOBLIGHT_H

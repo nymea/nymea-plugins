@@ -240,6 +240,15 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
 
 void DevicePluginPhilipsHue::deviceRemoved(Device *device)
 {
+    abortRequests(m_lightRefreshRequests, device);
+    abortRequests(m_lightSetNameRequests, device);
+    abortRequests(m_bridgeRefreshRequests, device);
+    abortRequests(m_lightsRefreshRequests, device);
+    abortRequests(m_sensorsRefreshRequests, device);
+    abortRequests(m_bridgeLightsDiscoveryRequests, device);
+    abortRequests(m_bridgeSensorsDiscoveryRequests, device);
+    abortRequests(m_bridgeSearchDevicesRequests, device);
+
     if (device->deviceClassId() == hueBridgeDeviceClassId) {
         HueBridge *bridge = m_bridges.key(device);
         m_bridges.remove(bridge);
@@ -1334,4 +1343,13 @@ int DevicePluginPhilipsHue::brightnessToPercentage(int brightness)
 int DevicePluginPhilipsHue::percentageToBrightness(int percentage)
 {
     return qRound((255.0 * percentage) / 100.0);
+}
+
+void DevicePluginPhilipsHue::abortRequests(QHash<QNetworkReply *, Device *> requestList, Device *device)
+{
+    foreach (QNetworkReply* reply, requestList.keys()) {
+        if (requestList.value(reply) == device) {
+            reply->abort();
+        }
+    }
 }
