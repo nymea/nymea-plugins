@@ -25,7 +25,9 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+extern "C" {
 #include "linux/i2c-dev.h"
+}
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <string.h>
