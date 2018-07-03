@@ -175,7 +175,7 @@ void TouchSensor::run()
 quint8 TouchSensor::readRegister(quint8 i2cRegister)
 {
     i2c_smbus_write_byte(m_i2cDevice, i2cRegister);
-    return i2c_smbus_read_byte(m_i2cDevice);;
+    return i2c_smbus_read_byte(m_i2cDevice);
 }
 
 void TouchSensor::writeRegister(quint8 i2cRegister, quint8 value)
