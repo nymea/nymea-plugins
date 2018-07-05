@@ -8,7 +8,7 @@ Build-depends: debhelper (>= 0.0.0),
                python:any,
                qtbase5-dev,
                qtconnectivity5-dev,
-               libi2c-dev,
+               libi2c-dev:all,
 Standards-Version: 3.9.3
 
 
