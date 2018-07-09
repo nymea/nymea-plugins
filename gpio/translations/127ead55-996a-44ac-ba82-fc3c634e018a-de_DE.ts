@@ -7,13 +7,13 @@
         <location filename="../plugininfo.h" line="59"/>
         <source>Gpio Controller</source>
         <extracomment>The name of the plugin GpioController (127ead55-996a-44ac-ba82-fc3c634e018a)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>GPIO-Controller</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="62"/>
         <source>Raspberry Pi 2/3</source>
         <extracomment>The name of the vendor (f0d00b66-bbd8-4a07-8591-ea48a61b229e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Raspberry Pi 2/3</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="65"/>
