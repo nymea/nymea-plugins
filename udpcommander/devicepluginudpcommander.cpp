@@ -80,6 +80,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *d
             delete udpSocket;
             return DeviceManager::DeviceSetupStatusFailure;
         }
+        qCDebug(dcUdpCommander()) << "Listening on port" << port;
 
         connect(udpSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
         m_receiverList.insert(udpSocket, device);
@@ -98,7 +99,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *d
 DeviceManager::DeviceError DevicePluginUdpCommander::executeAction(Device *device, const Action &action) {
 
     if (device->deviceClassId() == udpCommanderDeviceClassId) {
-        if (action.actionTypeId() == udpCommanderOutputDataActionTypeId) {
+        if (action.actionTypeId() == udpCommanderTriggerActionTypeId) {
             QUdpSocket *udpSocket = m_commanderList.key(device);
             int port = device->paramValue(udpCommanderPortParamTypeId).toInt();
             QHostAddress address = QHostAddress(device->paramValue(udpCommanderAddressParamTypeId).toString());
@@ -131,11 +132,14 @@ void DevicePluginUdpCommander::deviceRemoved(Device *device)
 
 void DevicePluginUdpCommander::readPendingDatagrams()
 {
+    qCDebug(dcUdpCommander()) << "UDP datagram received";
     QUdpSocket *socket= static_cast<QUdpSocket *>(sender());
     Device *device = m_receiverList.value(socket);
 
-    if (!device)
+    if (!device) {
+        qCWarning(dcUdpCommander()) << "Received a datagram from a socket we don't know";
         return;
+    }
 
     QByteArray datagram;
     QHostAddress sender;
@@ -146,14 +150,13 @@ void DevicePluginUdpCommander::readPendingDatagrams()
         socket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
     }
 
-    device->setStateValue(udpReceiverInputDataStateTypeId, datagram);
+    qCDebug(dcUdpCommander()) << device->name() << "got command from" << sender.toString() << senderPort;
+    Event ev = Event(udpReceiverTriggeredEventTypeId, device->id());
+    ParamList params;
+    params.append(Param(udpReceiverDataParamTypeId, datagram));
+    ev.setParams(params);
+    emit emitEvent(ev);
 
-    if (datagram == device->paramValue(udpReceiverCommandParamTypeId).toByteArray() ||
-            datagram == device->paramValue(udpReceiverCommandParamTypeId).toByteArray() + "\n") {
-        qCDebug(dcUdpCommander()) << device->name() << "got command from" << sender.toString() << senderPort;
-        emit emitEvent(Event(udpReceiverCommandReceivedEventTypeId, device->id()));
-
-        // Send response for verification
-        socket->writeDatagram("OK\n", sender, senderPort);
-    }
+    // Send response for verification
+    socket->writeDatagram("OK\n", sender, senderPort);
 }

@@ -201,7 +201,10 @@ QStringList Discovery::getDefaultTargets()
     foreach (const QHostAddress &interface, QNetworkInterface::allAddresses()) {
         if (!interface.isLoopback() && interface.scopeId().isEmpty() && interface.protocol() == QAbstractSocket::IPv4Protocol) {
             QPair<QHostAddress, int> pair = QHostAddress::parseSubnet(interface.toString() + "/24");
-            targets << QString("%1/%2").arg(pair.first.toString()).arg(pair.second);
+            QString newTarget = QString("%1/%2").arg(pair.first.toString()).arg(pair.second);
+            if (!targets.contains(newTarget)) {
+                targets.append(newTarget);
+            }
         }
     }
     return targets;
