@@ -56,12 +56,12 @@ void KodiJsonHandler::processNotification(const QString &method, const QVariantM
     if (method == "Application.OnVolumeChanged") {
         QVariantMap data = params.value("data").toMap();
         emit volumeChanged(data.value("volume").toInt(), data.value("muted").toBool());
-    } else if (method == "Player.OnPlay") {
-        emit playbackStatusChanged("PLAYING");
+    } else if (method == "Player.OnPlay" || method == "Player.OnResume") {
+        emit playbackStatusChanged("Playing");
     } else if (method == "Player.OnPause") {
-        emit playbackStatusChanged("PAUSED");
+        emit playbackStatusChanged("Paused");
     } else if (method == "Player.OnStop") {
-        emit playbackStatusChanged("STOPPED");
+        emit playbackStatusChanged("Stopped");
     }
 }
 

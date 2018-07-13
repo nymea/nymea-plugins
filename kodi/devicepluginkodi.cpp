@@ -313,9 +313,9 @@ void DevicePluginKodi::onPlaybackStatusChanged(const QString &playbackStatus)
     Device *device = m_kodis.value(kodi);
     device->setStateValue(kodiPlaybackStatusStateTypeId, playbackStatus);
     // legacy events
-    if (playbackStatus == "PLAYING") {
+    if (playbackStatus == "Playing") {
         emit emitEvent(Event(kodiOnPlayerPlayEventTypeId, device->id()));
-    } else if (playbackStatus == "PAUSED") {
+    } else if (playbackStatus == "Paused") {
         emit emitEvent(Event(kodiOnPlayerPauseEventTypeId, device->id()));
     } else {
         emit emitEvent(Event(kodiOnPlayerStopEventTypeId, device->id()));

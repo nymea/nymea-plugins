@@ -205,7 +205,7 @@ void Kodi::activePlayersChanged(const QVariantList &data)
     qCDebug(dcKodi()) << "active players changed" << data.count();
     m_activePlayerCount = data.count();
     if (m_activePlayerCount == 0) {
-        emit playbackStatusChanged("STOPPED");
+        emit playbackStatusChanged("Stopped");
         return;
     }
     int activePlayer = data.first().toMap().value("playerid").toInt();
@@ -222,9 +222,9 @@ void Kodi::playerPropertiesReceived(const QVariantMap &properties)
     qCDebug(dcKodi()) << "player props received" << properties;
     if (m_activePlayerCount > 0) {
         if (properties.value("speed").toDouble() > 0) {
-            emit playbackStatusChanged("PLAYING");
+            emit playbackStatusChanged("Playing");
         } else {
-            emit playbackStatusChanged("PAUSED");
+            emit playbackStatusChanged("Paused");
         }
     }
 }
