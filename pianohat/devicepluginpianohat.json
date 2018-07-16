@@ -1,0 +1,190 @@
+{
+    "name": "Pianohat",
+    "displayName": "Pianohat",
+    "id": "d2cbfd1e-2c4b-4ddd-8a37-21f4c07b9ab3",
+    "vendors": [
+        {
+            "name": "pimoroni",
+            "displayName": "Pimoroni",
+            "id": "3d1adc76-2867-4cbd-bdae-e2cf754869eb",
+            "deviceClasses": [
+                {
+                    "name": "pianohat",
+                    "displayName": "PianoHat",
+                    "id": "8c0001dd-0cb5-4239-af0d-d2c3cb32a803",
+                    "deviceIcon": "None",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["User"],
+                    "interfaces": [ "simplemultibutton" ],
+                    "stateTypes": [
+                        {
+                            "id": "b55ae3da-74b5-4419-b00c-296ed4d1be3b",
+                            "name": "c",
+                            "displayName": "C pressed",
+                            "displayNameEvent": "C pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "6ad62591-8f0f-4579-8185-92c29e5bb627",
+                            "name": "cSharp",
+                            "displayName": "C# pressed",
+                            "displayNameEvent": "C# pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "7713a612-5e85-4d56-84b4-33d528e39c99",
+                            "name": "d",
+                            "displayName": "D pressed",
+                            "displayNameEvent": "D pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "77b4628e-3965-4125-a927-80ddff868cab",
+                            "name": "dSharp",
+                            "displayName": "D# pressed",
+                            "displayNameEvent": "D# pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5b350f53-cb79-4bb4-9355-8407634b88dc",
+                            "name": "e",
+                            "displayName": "E pressed",
+                            "displayNameEvent": "E pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "80432960-2fe8-423b-ab9b-a2b5dc71356c",
+                            "name": "f",
+                            "displayName": "F pressed",
+                            "displayNameEvent": "F pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b0c8c1af-a311-4f37-a1a8-bd734e540a6b",
+                            "name": "fSharp",
+                            "displayName": "F# pressed",
+                            "displayNameEvent": "F# pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "2eb0a67f-d370-4b79-9c84-48b544c77004",
+                            "name": "g",
+                            "displayName": "G pressed",
+                            "displayNameEvent": "G pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "1897f604-cb26-4d66-b292-251f59b27f56",
+                            "name": "gSharp",
+                            "displayName": "G# pressed",
+                            "displayNameEvent": "G# pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5ff7377c-95f2-4080-be0c-145b94437ee6",
+                            "name": "a",
+                            "displayName": "A pressed",
+                            "displayNameEvent": "A pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b221e069-4cbd-4dcd-adba-97beb6630211",
+                            "name": "aSharp",
+                            "displayName": "A# pressed",
+                            "displayNameEvent": "A# pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "99324edb-e88e-4f1d-96c7-49caf861cd4b",
+                            "name": "b",
+                            "displayName": "B pressed",
+                            "displayNameEvent": "B pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "3bc73c73-81ec-41d5-ae77-471d3399740b",
+                            "name": "cHigh",
+                            "displayName": "C (high) pressed",
+                            "displayNameEvent": "C (high) pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b890db7f-9c60-4288-8911-160d4f4ea508",
+                            "name": "octaveDown",
+                            "displayName": "Octave down pressed",
+                            "displayNameEvent": "Octave down pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "a32bf226-ca2f-48cf-9834-e55b33fd0e58",
+                            "name": "octaveUp",
+                            "displayName": "Octave up pressed",
+                            "displayNameEvent": "Octave up pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "77e47139-445c-4a88-a266-ddefd22997c2",
+                            "name": "instrument",
+                            "displayName": "Instrument pressed",
+                            "displayNameEvent": "Octave down pressed changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "4877964c-951f-42d7-9775-bf28615700b1",
+                            "name": "pressed",
+                            "displayName": "Key pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "74bf5392-d71e-45a0-a96b-8b4ec405d3dd",
+                                    "name": "buttonName",
+                                    "displayName": "Key",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "C",
+                                        "C#",
+                                        "D",
+                                        "D#",
+                                        "E",
+                                        "F",
+                                        "F#",
+                                        "G",
+                                        "G#",
+                                        "A",
+                                        "A#",
+                                        "B",
+                                        "C (high)",
+                                        "Octave down",
+                                        "Octave up",
+                                        "Instrument"
+                                    ],
+                                    "defaultValue": "C"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
