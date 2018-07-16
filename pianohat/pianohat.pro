@@ -2,6 +2,10 @@ include(../plugins.pri)
 
 TARGET = $$qtLibraryTarget(nymea_devicepluginpianohat)
 
+QT += multimedia
+
+RESOURCES += sounds/sounds.qrc
+
 SOURCES += \
     devicepluginpianohat.cpp \
     pianohat.cpp \

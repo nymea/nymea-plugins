@@ -1,6 +1,3 @@
-#ifndef PIANOHAT_H
-#define PIANOHAT_H
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2018 Simon Stürz <simon.stuerz@guh.io>                   *
@@ -23,11 +20,14 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#ifndef PIANOHAT_H
+#define PIANOHAT_H
+
 #include <QObject>
+#include <QSoundEffect>
 
 #include "touchsensor.h"
 #include "plugin/device.h"
-
 
 class PianoHat : public QObject
 {
@@ -60,9 +60,27 @@ public:
     void enable();
     void disable();
 
+    void enableSounds(bool enable);
+
 private:
     TouchSensor *m_sensorOne = nullptr;
     TouchSensor *m_sensorTwo = nullptr;
+
+    bool m_soundsEnabled = true;
+
+    QSoundEffect *m_soundKeyC = nullptr;
+    QSoundEffect *m_soundKeyCSharp = nullptr;
+    QSoundEffect *m_soundKeyD = nullptr;
+    QSoundEffect *m_soundKeyDSharp = nullptr;
+    QSoundEffect *m_soundKeyE = nullptr;
+    QSoundEffect *m_soundKeyF = nullptr;
+    QSoundEffect *m_soundKeyFSharp = nullptr;
+    QSoundEffect *m_soundKeyG = nullptr;
+    QSoundEffect *m_soundKeyGSharp = nullptr;
+    QSoundEffect *m_soundKeyA = nullptr;
+    QSoundEffect *m_soundKeyASharp = nullptr;
+    QSoundEffect *m_soundKeyB = nullptr;
+    QSoundEffect *m_soundKeyC2 = nullptr;
 
 signals:
     void keyPressed(const Key &key, bool pressed);

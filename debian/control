@@ -8,6 +8,7 @@ Build-depends: debhelper (>= 0.0.0),
                python:any,
                qtbase5-dev,
                qtconnectivity5-dev,
+               qtmultimedia5-dev,
                libi2c-dev:all,
 Standards-Version: 3.9.3
 
@@ -637,6 +638,7 @@ Package: nymea-plugin-pianohat
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         libqt5multimedia5,
          nymea-plugins-translations,
 Description: nymea.io plugin for the Raspberry Pi Pianohat
  The nymea daemon is a plugin based IoT (Internet of Things) server. The

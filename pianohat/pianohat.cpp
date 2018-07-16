@@ -23,6 +23,8 @@
 #include "pianohat.h"
 #include "extern-plugininfo.h"
 
+#include <QAudioDeviceInfo>
+
 PianoHat::PianoHat(QObject *parent) :
     QObject(parent)
 {
@@ -43,6 +45,63 @@ PianoHat::PianoHat(QObject *parent) :
 
     m_sensorTwo = new TouchSensor(0x2b, 27, 22, this);
     connect(m_sensorTwo, &TouchSensor::keyPressedChanged, this, &PianoHat::onSensorTwoKeyPressedChanged);
+
+    foreach (const QAudioDeviceInfo &audioInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+        qCDebug(dcPianohat()) << audioInfo.deviceName();
+    }
+
+    // Create sound effects
+    m_soundKeyC = new QSoundEffect(this);
+    m_soundKeyC->setVolume(1);
+    m_soundKeyC->setSource(QUrl::fromLocalFile(":/c1.wav"));
+
+    m_soundKeyCSharp = new QSoundEffect(this);
+    m_soundKeyCSharp->setVolume(1);
+    m_soundKeyCSharp->setSource(QUrl::fromLocalFile(":/c1s.wav"));
+
+    m_soundKeyD = new QSoundEffect(this);
+    m_soundKeyD->setVolume(1);
+    m_soundKeyD->setSource(QUrl::fromLocalFile(":/d1.wav"));
+
+    m_soundKeyDSharp = new QSoundEffect(this);
+    m_soundKeyDSharp->setVolume(1);
+    m_soundKeyDSharp->setSource(QUrl::fromLocalFile(":/d1s.wav"));
+
+    m_soundKeyE = new QSoundEffect(this);
+    m_soundKeyE->setVolume(1);
+    m_soundKeyE->setSource(QUrl::fromLocalFile(":/e1.wav"));
+
+    m_soundKeyF = new QSoundEffect(this);
+    m_soundKeyF->setVolume(1);
+    m_soundKeyF->setSource(QUrl::fromLocalFile(":/f1.wav"));
+
+    m_soundKeyFSharp = new QSoundEffect(this);
+    m_soundKeyFSharp->setVolume(1);
+    m_soundKeyFSharp->setSource(QUrl::fromLocalFile(":/f1s.wav"));
+
+    m_soundKeyG = new QSoundEffect(this);
+    m_soundKeyG->setVolume(1);
+    m_soundKeyG->setSource(QUrl::fromLocalFile(":/g1.wav"));
+
+    m_soundKeyGSharp = new QSoundEffect(this);
+    m_soundKeyGSharp->setVolume(1);
+    m_soundKeyGSharp->setSource(QUrl::fromLocalFile(":/g1s.wav"));
+
+    m_soundKeyA = new QSoundEffect(this);
+    m_soundKeyA->setVolume(1);
+    m_soundKeyA->setSource(QUrl::fromLocalFile(":/a1.wav"));
+
+    m_soundKeyASharp = new QSoundEffect(this);
+    m_soundKeyASharp->setVolume(1);
+    m_soundKeyASharp->setSource(QUrl::fromLocalFile(":/a1s.wav"));
+
+    m_soundKeyB = new QSoundEffect(this);
+    m_soundKeyB->setVolume(1);
+    m_soundKeyB->setSource(QUrl::fromLocalFile(":/b1.wav"));
+
+    m_soundKeyC2 = new QSoundEffect(this);
+    m_soundKeyC2->setVolume(1);
+    m_soundKeyC2->setSource(QUrl::fromLocalFile(":/c2.wav"));
 }
 
 void PianoHat::enable()
@@ -59,11 +118,48 @@ void PianoHat::disable()
     m_sensorTwo->disableSensor();
 }
 
+void PianoHat::enableSounds(bool enable)
+{
+    m_soundsEnabled = enable;
+}
+
 void PianoHat::onSensorOneKeyPressedChanged(quint8 key, bool pressed)
 {
     // Map the bit number to the actual pianohat key
     Key pianoHatKey = static_cast<Key>(key);
     emit keyPressed(pianoHatKey, pressed);
+
+    if (!m_soundsEnabled || !pressed)
+        return;
+
+    switch (key) {
+    case KeyC:
+        m_soundKeyC->play();
+        break;
+    case KeyCSharp:
+        m_soundKeyCSharp->play();
+        break;
+    case KeyD:
+        m_soundKeyD->play();
+        break;
+    case KeyDSharp:
+        m_soundKeyDSharp->play();
+        break;
+    case KeyE:
+        m_soundKeyE->play();
+        break;
+    case KeyF:
+        m_soundKeyF->play();
+        break;
+    case KeyFSharp:
+        m_soundKeyFSharp->play();
+        break;
+    case KeyG:
+        m_soundKeyG->play();
+        break;
+    default:
+        break;
+    }
 }
 
 void PianoHat::onSensorTwoKeyPressedChanged(quint8 key, bool pressed)
@@ -71,4 +167,27 @@ void PianoHat::onSensorTwoKeyPressedChanged(quint8 key, bool pressed)
     // Map the bit number to the actual pianohat key (bit + 8)
     Key pianoHatKey = static_cast<Key>(key + 8);
     emit keyPressed(pianoHatKey, pressed);
+
+    if (!m_soundsEnabled || !pressed)
+        return;
+
+    switch (pianoHatKey) {
+    case KeyGSharp:
+        m_soundKeyGSharp->play();
+        break;
+    case KeyA:
+        m_soundKeyA->play();
+        break;
+    case KeyASharp:
+        m_soundKeyASharp->play();
+        break;
+    case KeyB:
+        m_soundKeyB->play();
+        break;
+    case KeyHighC:
+        m_soundKeyC2->play();
+        break;
+    default:
+        break;
+    }
 }

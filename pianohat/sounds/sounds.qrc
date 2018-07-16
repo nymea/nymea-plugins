@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>a1.wav</file>
+        <file>a1s.wav</file>
+        <file>b1.wav</file>
+        <file>c1.wav</file>
+        <file>c1s.wav</file>
+        <file>c2.wav</file>
+        <file>d1.wav</file>
+        <file>d1s.wav</file>
+        <file>e1.wav</file>
+        <file>f1.wav</file>
+        <file>f1s.wav</file>
+        <file>g1.wav</file>
+        <file>g1s.wav</file>
+    </qresource>
+</RCC>
