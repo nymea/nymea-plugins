@@ -154,6 +154,10 @@ The name of the autocreated EventType (b481b6e7-77c1-40b0-859a-286876b05959)</ex
         <source>Open</source>
         <extracomment>The name of the ActionType 1786029d-f3a6-4b47-978a-ac1a581aac0f of deviceClass garageGate
 ----------
+The name of the ActionType b4379ab7-5fc2-45b6-8214-5855b040ee1a of deviceClass extendedBlind
+----------
+The name of the ActionType 508c8f1b-aa1d-43d8-badb-0c9d219025b3 of deviceClass extendedAwning
+----------
 The name of the ActionType 17860291-f3a6-4b47-978a-ac1a581aac0f of deviceClass rollerShutter</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -173,18 +177,21 @@ The name of the ActionType 17860291-f3a6-4b47-978a-ac1a581aac0f of deviceClass r
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Shutter status changed</source>
-        <extracomment>The name of the autocreated EventType (1386029d-f3a6-4b47-978a-ac1a581aac0f)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>stop</source>
-        <extracomment>The name of the ActionType 27860292-f3a6-4b47-978a-ac1a581aac0f of deviceClass rollerShutter</extracomment>
+        <extracomment>The name of the ActionType fd63d8bf-ffde-4343-bbdc-1645c94017dc of deviceClass extendedBlind
+----------
+The name of the ActionType 41fdeba2-8d2f-46ce-8f2d-b8c31bdf90ff of deviceClass extendedAwning
+----------
+The name of the ActionType 27860292-f3a6-4b47-978a-ac1a581aac0f of deviceClass rollerShutter</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>close</source>
-        <extracomment>The name of the ActionType 37860293-f3a6-4b47-978a-ac1a581aac0f of deviceClass rollerShutter</extracomment>
+        <extracomment>The name of the ActionType 316c17e6-01a8-45c4-921d-7773b2d441a4 of deviceClass extendedBlind
+----------
+The name of the ActionType 79ec0271-5361-4f0f-a458-bf22e570c9ac of deviceClass extendedAwning
+----------
+The name of the ActionType 37860293-f3a6-4b47-978a-ac1a581aac0f of deviceClass rollerShutter</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -463,11 +470,6 @@ The name of the autocreated ParamType of the writable StateType (87600986-da37-4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Status</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (1386029d-f3a6-4b47-978a-ac1a581aac0f) of DeviceClass rollerShutter</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Color temperature</source>
         <extracomment>The name of the ParamType of the autocreated EventType (cff4206f-f219-4f06-93c4-4ca515a56f79) of DeviceClass colorBulb
 ----------
@@ -613,6 +615,63 @@ The name of the autocreated ParamType of the writable StateType (46543561-2690-4
     <message>
         <source>Set light power</source>
         <extracomment>The name of the autocreated ActionType (46543561-2690-4072-a6a3-795e1c4f49a8)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extended blind</source>
+        <extracomment>The name of the DeviceClass (1d7aaa1d-fc50-4d7b-9657-1449322e40d8)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>percentage changed</source>
+        <extracomment>The name of the autocreated EventType (18fc257c-6b7b-472c-b52a-acd4ba405bf2)
+----------
+The name of the autocreated EventType (e4c92da3-da3e-40ea-907f-a93283426789)
+----------
+The name of the autocreated EventType (1386029d-f3a6-4b47-978a-ac1a581aac0f)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>percentage</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (18fc257c-6b7b-472c-b52a-acd4ba405bf2) of DeviceClass extendedBlind
+----------
+The name of the ParamType of the autocreated EventType (e4c92da3-da3e-40ea-907f-a93283426789) of DeviceClass extendedAwning
+----------
+The name of the autocreated ParamType of the writable StateType (e4c92da3-da3e-40ea-907f-a93283426789) of DeviceClass extendedAwning
+----------
+The name of the ParamType of the autocreated EventType (1386029d-f3a6-4b47-978a-ac1a581aac0f) of DeviceClass rollerShutter
+----------
+The name of the autocreated ParamType of the writable StateType (1386029d-f3a6-4b47-978a-ac1a581aac0f) of DeviceClass rollerShutter</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>moving changed</source>
+        <extracomment>The name of the autocreated EventType (83559182-f3db-4a4a-8c70-d5fb3ceb57de)
+----------
+The name of the autocreated EventType (b2a888b3-c526-410f-bafc-9d6dc459dbf8)
+----------
+The name of the autocreated EventType (fd94b07d-4631-450d-9f99-9e9221cc3602)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>mooving</source>
+        <extracomment>The name of the ParamType of the autocreated EventType (83559182-f3db-4a4a-8c70-d5fb3ceb57de) of DeviceClass extendedBlind
+----------
+The name of the ParamType of the autocreated EventType (b2a888b3-c526-410f-bafc-9d6dc459dbf8) of DeviceClass extendedAwning
+----------
+The name of the ParamType of the autocreated EventType (fd94b07d-4631-450d-9f99-9e9221cc3602) of DeviceClass rollerShutter</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extended awning</source>
+        <extracomment>The name of the DeviceClass (d302630b-f331-4bb0-88e4-4078f16aba7f)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>set percentage</source>
+        <extracomment>The name of the autocreated ActionType (e4c92da3-da3e-40ea-907f-a93283426789)
+----------
+The name of the autocreated ActionType (1386029d-f3a6-4b47-978a-ac1a581aac0f)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
