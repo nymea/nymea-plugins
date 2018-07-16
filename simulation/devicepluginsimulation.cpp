@@ -53,7 +53,9 @@ void DevicePluginSimulation::init()
 DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *device)
 {
     qCDebug(dcSimulation()) << "Set up device" << device->name();
-    if (device->deviceClassId() == garageGateDeviceClassId) {
+    if (device->deviceClassId() == garageGateDeviceClassId ||
+            device->deviceClassId() == extendedAwningDeviceClassId ||
+            device->deviceClassId() == rollerShutterDeviceClassId) {
         m_simulationTimers.insert(device, new QTimer(device));
         connect(m_simulationTimers[device], &QTimer::timeout, this, &DevicePluginSimulation::simulationTimerTimeout);
     }
@@ -293,14 +295,59 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
     if (device->deviceClassId() == rollerShutterDeviceClassId) {
         if (action.actionTypeId() == rollerShutterOpenActionTypeId) {
             qCDebug(dcSimulation()) << "Opening roller shutter";
+            m_simulationTimers.value(device)->setProperty("targetValue", 0);
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(rollerShutterMovingStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == rollerShutterCloseActionTypeId) {
             qCDebug(dcSimulation()) << "Closing roller shutter";
+            m_simulationTimers.value(device)->setProperty("targetValue", 100);
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(rollerShutterMovingStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == rollerShutterStopActionTypeId) {
             qCDebug(dcSimulation()) << "Stopping roller shutter";
+            m_simulationTimers.value(device)->stop();
+            device->setStateValue(rollerShutterMovingStateTypeId, false);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == rollerShutterPercentageActionTypeId) {
+            qCDebug(dcSimulation()) << "Setting awning to" << action.param(rollerShutterPercentageActionParamTypeId);
+            m_simulationTimers.value(device)->setProperty("targetValue", action.param(rollerShutterPercentageActionParamTypeId).value());
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(rollerShutterMovingStateTypeId, true);
+            return DeviceManager::DeviceErrorNoError;
+        }
+    }
+
+    if (device->deviceClassId() == extendedAwningDeviceClassId) {
+        if (action.actionTypeId() == extendedAwningOpenActionTypeId) {
+            qCDebug(dcSimulation()) << "Opening awning";
+            m_simulationTimers.value(device)->setProperty("targetValue", 100);
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(extendedAwningMovingStateTypeId, true);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == extendedAwningCloseActionTypeId) {
+            qCDebug(dcSimulation()) << "Closing awning";
+            m_simulationTimers.value(device)->setProperty("targetValue", 0);
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(extendedAwningMovingStateTypeId, true);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == extendedAwningStopActionTypeId) {
+            qCDebug(dcSimulation()) << "Stopping awning";
+            m_simulationTimers.value(device)->stop();
+            device->setStateValue(extendedAwningMovingStateTypeId, false);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == extendedAwningPercentageActionTypeId) {
+            qCDebug(dcSimulation()) << "Setting awning to" << action.param(extendedAwningPercentageActionParamTypeId);
+            m_simulationTimers.value(device)->setProperty("targetValue", action.param(extendedAwningPercentageActionParamTypeId).value());
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(extendedAwningMovingStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
     }
@@ -394,6 +441,24 @@ void DevicePluginSimulation::simulationTimerTimeout()
         if (device->stateValue(garageGateStateStateTypeId).toString() == "closing") {
             device->setStateValue(garageGateIntermediatePositionStateTypeId, false);
             device->setStateValue(garageGateStateStateTypeId, "closed");
+        }
+    } else if (device->deviceClassId() == extendedAwningDeviceClassId) {
+        int currentValue = device->stateValue(extendedAwningPercentageStateTypeId).toInt();
+        int targetValue = t->property("targetValue").toInt();
+        int newValue = targetValue > currentValue ? qMin(targetValue, currentValue + 5) : qMax(targetValue, currentValue - 5);
+        device->setStateValue(extendedAwningPercentageStateTypeId, newValue);
+        if (newValue == targetValue) {
+            t->stop();
+            device->setStateValue(extendedAwningMovingStateTypeId, false);
+        }
+    } else if (device->deviceClassId() == rollerShutterDeviceClassId) {
+        int currentValue = device->stateValue(rollerShutterPercentageStateTypeId).toInt();
+        int targetValue = t->property("targetValue").toInt();
+        int newValue = targetValue > currentValue ? qMin(targetValue, currentValue + 5) : qMax(targetValue, currentValue - 5);
+        device->setStateValue(rollerShutterPercentageStateTypeId, newValue);
+        if (newValue == targetValue) {
+            t->stop();
+            device->setStateValue(rollerShutterMovingStateTypeId, false);
         }
     }
 }
