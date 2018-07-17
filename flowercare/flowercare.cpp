@@ -3,7 +3,6 @@
 #include "extern-plugininfo.h"
 
 #include <QDataStream>
-#include <QVersionNumber>
 
 FlowerCare::FlowerCare(BluetoothLowEnergyDevice *device, QObject *parent):
     QObject(parent),
@@ -67,10 +66,9 @@ void FlowerCare::onSensorServiceStateChanged(const QLowEnergyService::ServiceSta
     QString firmwareVersionString = value.right(5);
     qCDebug(dcFlowerCare()) << "Battery level:" << m_batteryLevel;
 
-    QVersionNumber firmwareVersion = QVersionNumber::fromString(firmwareVersionString);
-    qCDebug(dcFlowerCare()) << "Firmware version:" << firmwareVersion;
+    qCDebug(dcFlowerCare()) << "Firmware version:" << firmwareVersionString;
 
-    if (firmwareVersion >= QVersionNumber::fromString("2.6.6")) {
+    if (firmwareVersionString >= "2.6.6") {
         QLowEnergyCharacteristic sensorControlCharacteristic = m_sensorService->characteristic(sensorControlCharacteristicUuid);
         m_sensorService->writeCharacteristic(sensorControlCharacteristic, QByteArray::fromHex("A01F"));
         qCDebug(dcFlowerCare()) << "Wrote to handle 0x0033: A01F";
