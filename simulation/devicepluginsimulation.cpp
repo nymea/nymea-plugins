@@ -24,6 +24,7 @@
 
 #include <QColor>
 #include <QDateTime>
+#include <QSettings>
 
 DevicePluginSimulation::DevicePluginSimulation()
 {
@@ -55,9 +56,13 @@ DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *dev
     qCDebug(dcSimulation()) << "Set up device" << device->name();
     if (device->deviceClassId() == garageGateDeviceClassId ||
             device->deviceClassId() == extendedAwningDeviceClassId ||
-            device->deviceClassId() == rollerShutterDeviceClassId) {
+            device->deviceClassId() == rollerShutterDeviceClassId ||
+            device->deviceClassId() == fingerPrintSensorDeviceClassId) {
         m_simulationTimers.insert(device, new QTimer(device));
         connect(m_simulationTimers[device], &QTimer::timeout, this, &DevicePluginSimulation::simulationTimerTimeout);
+    }
+    if (device->deviceClassId() == fingerPrintSensorDeviceClassId && device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList().count() > 0) {
+        m_simulationTimers.value(device)->start(10000);
     }
     return DeviceManager::DeviceSetupStatusSuccess;
 }
@@ -352,6 +357,53 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         }
     }
 
+    if (device->deviceClassId() == fingerPrintSensorDeviceClassId) {
+        if (action.actionTypeId() == fingerPrintSensorAddUserActionTypeId) {
+            QStringList users = device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList();
+            QString username = action.param(fingerPrintSensorUserIdParamTypeId).value().toString();
+            QString finger = action.param(fingerPrintSensorFingerParamTypeId).value().toString();
+            QSettings settings;
+            settings.beginGroup(device->id().toString());
+            QStringList usedFingers = settings.value(username).toStringList();
+            if (users.contains(username) && usedFingers.contains(finger)) {
+                return DeviceManager::DeviceErrorDuplicateUuid;
+            }
+            QTimer::singleShot(5000, this, [this, action, device, username, finger]() {
+                if (username.toLower().trimmed() == "john") {
+                    emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
+                } else {
+                    emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
+                    QStringList users = device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList();
+                    if (!users.contains(username)) {
+                        users.append(username);
+                        device->setStateValue(fingerPrintSensorUsersStateTypeId, users);
+                        m_simulationTimers.value(device)->start(10000);
+                    }
+
+                    QSettings settings;
+                    settings.beginGroup(device->id().toString());
+                    QStringList usedFingers = settings.value(username).toStringList();
+                    usedFingers.append(finger);
+                    settings.setValue(username, usedFingers);
+                    settings.endGroup();
+                }
+            });
+            return DeviceManager::DeviceErrorAsync;
+        }
+        if (action.actionTypeId() == fingerPrintSensorRemoveUserActionTypeId) {
+            QStringList users = device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList();
+            QString username = action.params().first().value().toString();
+            if (!users.contains(username)) {
+                return DeviceManager::DeviceErrorInvalidParameter;
+            }
+            users.removeAll(username);
+            device->setStateValue(fingerPrintSensorUsersStateTypeId, users);
+            if (users.count() == 0) {
+                m_simulationTimers.value(device)->stop();
+            }
+            return DeviceManager::DeviceErrorNoError;
+        }
+    }
     qCWarning(dcSimulation()) << "Unhandled device class" << device->deviceClassId() << "for device" << device->name();
 
     return DeviceManager::DeviceErrorDeviceClassNotFound;
@@ -460,5 +512,23 @@ void DevicePluginSimulation::simulationTimerTimeout()
             t->stop();
             device->setStateValue(rollerShutterMovingStateTypeId, false);
         }
+    } else if (device->deviceClassId() == fingerPrintSensorDeviceClassId) {
+        EventTypeId evt = qrand() % 2 == 0 ? fingerPrintSensorAccessGrantedEventTypeId : fingerPrintSensorAccessDeniedEventTypeId;
+        ParamList params;
+        if (evt == fingerPrintSensorAccessGrantedEventTypeId) {
+            QStringList users = device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList();
+            QString user = users.at(qrand() % users.count());
+            QSettings settings;
+            settings.beginGroup(device->id().toString());
+            QStringList fingers = settings.value(user).toStringList();
+            params.append(Param(fingerPrintSensorUserIdParamTypeId, user));
+            QString finger = fingers.at(qrand() % fingers.count());
+            params.append(Param(fingerPrintSensorFingerParamTypeId, finger));
+            qCDebug(dcSimulation()) << "Emitting fingerprint accepted for user" << user << "and finger" << finger;
+        } else {
+            qCDebug(dcSimulation()) << "Emitting fingerprint denied";
+        }
+        Event event(evt, device->id(), params);
+        emitEvent(event);
     }
 }

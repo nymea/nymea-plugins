@@ -549,7 +549,7 @@
                     "name": "fingerPrintSensor",
                     "displayName": "Finger Print Sensor",
                     "createMethods": ["user"],
-                    "interfaces": ["connectable"],
+                    "interfaces": ["fingerprintreader", "connectable"],
                     "deviceIcon": "Network",
                     "basicTags": [
                         "Device",
@@ -564,13 +564,93 @@
                             "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": true
+                        },
+                        {
+                            "id": "02482093-3b82-4918-a3ce-2a2f4831aae0",
+                            "name": "users",
+                            "displayName": "users",
+                            "displayNameEvent": "Users",
+                            "type": "QStringList",
+                            "defaultValue": []
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "c3805253-a09b-4657-b86c-97936f390672",
+                            "name": "addUser",
+                            "displayName": "Add user",
+                            "paramTypes": [
+                                {
+                                    "id": "d9e0c68f-8b61-4f5a-9909-b27a4ac562a3",
+                                    "displayName": "User ID",
+                                    "name": "userId",
+                                    "type": "QString"
+                                },
+                                {
+                                    "id": "2a97de6c-5ffb-4ca8-b4c7-41ad6790668d",
+                                    "displayName": "Finger",
+                                    "name": "finger",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "ThumbLeft",
+                                        "IndexFingerLeft",
+                                        "MiddleFingerLeft",
+                                        "RingFingerLeft",
+                                        "PinkyLeft",
+                                        "ThumbRight",
+                                        "IndexFingerRight",
+                                        "MiddleFingerRight",
+                                        "RingFingerRight",
+                                        "PinkyRight"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "28bf4cd1-bb1c-442b-8ba3-ed019f34abbd",
+                            "name": "removeUser",
+                            "displayName": "Remove user",
+                            "paramTypes": [
+                                {
+                                    "id": "ca2ffce8-ee71-47ff-8247-f17fca14fd87",
+                                    "displayName": "User ID",
+                                    "name": "userId",
+                                    "type": "QString"
+                                }
+                            ]
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "1d2dde79-7121-4f8c-b7c1-904ced66a79e",
                             "name": "accessGranted",
-                            "displayName": "Access granted"
+                            "displayName": "Access granted",
+                            "paramTypes": [
+                                {
+                                    "id": "84addd61-15e9-4e98-aa80-6b0bf5d82a15",
+                                    "name": "userId",
+                                    "displayName": "User ID",
+                                    "type": "QString"
+                                },
+                                {
+                                    "id": "3611bfc0-be3c-4ddb-8184-b64fc38c7256",
+                                    "displayName": "Finger",
+                                    "name": "finger",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "ThumbLeft",
+                                        "IndexFingerLeft",
+                                        "MiddleFingerLeft",
+                                        "RingFingerLeft",
+                                        "PinkyLeft",
+                                        "ThumbRight",
+                                        "IndexFingerRight",
+                                        "MiddleFingerRight",
+                                        "RingFingerRight",
+                                        "PinkyRight"
+                                    ]
+                                }
+                            ]
                         },
                         {
                             "id": "992b7742-af0c-447c-bd94-9ec70b872268",
