@@ -568,8 +568,8 @@
                         {
                             "id": "02482093-3b82-4918-a3ce-2a2f4831aae0",
                             "name": "users",
-                            "displayName": "users",
-                            "displayNameEvent": "Users",
+                            "displayName": "Users",
+                            "displayNameEvent": "Users changed",
                             "type": "QStringList",
                             "defaultValue": []
                         }
