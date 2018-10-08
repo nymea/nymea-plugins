@@ -47,7 +47,7 @@ DeviceManager::DeviceSetupStatus DevicePluginHttpCommander::setupDevice(Device *
 
     // Get
     if (device->deviceClassId() == httpGetCommanderDeviceClassId) {
-        QUrl url = device->paramValue(httpGetCommanderUrlParamTypeId).toUrl();
+        QUrl url = device->paramValue(httpGetCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
             qDebug(dcHttpCommander()) << "Given URL is not valid";
             return DeviceManager::DeviceSetupStatusFailure;
@@ -58,7 +58,7 @@ DeviceManager::DeviceSetupStatus DevicePluginHttpCommander::setupDevice(Device *
 
     // Put
     if (device->deviceClassId() == httpPutCommanderDeviceClassId) {
-        QUrl url = device->paramValue(httpPutCommanderUrlParamTypeId).toUrl();
+        QUrl url = device->paramValue(httpPutCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
             qDebug(dcHttpCommander()) << "Given URL is not valid";
             return DeviceManager::DeviceSetupStatusFailure;
@@ -69,7 +69,7 @@ DeviceManager::DeviceSetupStatus DevicePluginHttpCommander::setupDevice(Device *
 
     // Post
     if (device->deviceClassId() == httpPostCommanderDeviceClassId) {
-        QUrl url = device->paramValue(httpPostCommanderUrlParamTypeId).toUrl();
+        QUrl url = device->paramValue(httpPostCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
             qDebug(dcHttpCommander()) << "Given URL is not valid";
             return DeviceManager::DeviceSetupStatusFailure;
@@ -105,9 +105,9 @@ DeviceManager::DeviceError DevicePluginHttpCommander::executeAction(Device *devi
     if (device->deviceClassId() == httpPostCommanderDeviceClassId) {
 
         if (action.actionTypeId() == httpPostCommanderPostActionTypeId) {
-            QUrl url = device->paramValue(httpPostCommanderUrlParamTypeId).toUrl();
-            url.setPort(device->paramValue(httpPostCommanderPortParamTypeId).toInt());
-            QByteArray payload = action.param(httpPostCommanderDataParamTypeId).value().toByteArray();
+            QUrl url = device->paramValue(httpPostCommanderDeviceUrlParamTypeId).toUrl();
+            url.setPort(device->paramValue(httpPostCommanderDevicePortParamTypeId).toInt());
+            QByteArray payload = action.param(httpPostCommanderPostActionDataParamTypeId).value().toByteArray();
 
             QNetworkReply *reply = hardwareManager()->networkManager()->post(QNetworkRequest(url), payload);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginHttpCommander::onPostRequestFinished);
@@ -125,9 +125,9 @@ DeviceManager::DeviceError DevicePluginHttpCommander::executeAction(Device *devi
         // check if this is the "press" action
         if (action.actionTypeId() == httpPutCommanderPutActionTypeId) {
 
-            QUrl url = device->paramValue(httpPutCommanderUrlParamTypeId).toUrl();
-            url.setPort(device->paramValue(httpPutCommanderPortParamTypeId).toInt());
-            QByteArray payload = action.param(httpPutCommanderDataParamTypeId).value().toByteArray();
+            QUrl url = device->paramValue(httpPutCommanderDeviceUrlParamTypeId).toUrl();
+            url.setPort(device->paramValue(httpPutCommanderDevicePortParamTypeId).toInt());
+            QByteArray payload = action.param(httpPutCommanderPutActionDataParamTypeId).value().toByteArray();
             QNetworkReply *reply = hardwareManager()->networkManager()->put(QNetworkRequest(url), payload);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginHttpCommander::onPutRequestFinished);
 
@@ -141,8 +141,8 @@ DeviceManager::DeviceError DevicePluginHttpCommander::executeAction(Device *devi
 
 void DevicePluginHttpCommander::makeGetCall(Device *device)
 {
-    QUrl url = device->paramValue(httpGetCommanderUrlParamTypeId).toUrl();
-    url.setPort(device->paramValue(httpGetCommanderPortParamTypeId).toInt());
+    QUrl url = device->paramValue(httpGetCommanderDeviceUrlParamTypeId).toUrl();
+    url.setPort(device->paramValue(httpGetCommanderDevicePortParamTypeId).toInt());
     QNetworkRequest request;
     request.setUrl(url);
     request.setRawHeader("User-Agent", "guhIO 1.0");

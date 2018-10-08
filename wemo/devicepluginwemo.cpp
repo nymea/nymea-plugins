@@ -106,7 +106,7 @@ DeviceManager::DeviceError DevicePluginWemo::executeAction(Device *device, const
         // Check if wemo device is reachable
         if (device->stateValue(wemoSwitchReachableStateTypeId).toBool()) {
             // setPower returns false, if the curent powerState is already the new powerState
-            if (setPower(device, action.param(wemoSwitchPowerActionParamTypeId).value().toBool(), action.id())) {
+            if (setPower(device, action.param(wemoSwitchPowerActionPowerParamTypeId).value().toBool(), action.id())) {
                 return DeviceManager::DeviceErrorAsync;
             } else {
                 return DeviceManager::DeviceErrorNoError;
@@ -143,7 +143,7 @@ void DevicePluginWemo::refresh(Device *device)
     QByteArray getBinarayStateMessage("<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:GetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\"><BinaryState>1</BinaryState></u:GetBinaryState></s:Body></s:Envelope>");
 
     QNetworkRequest request;
-    request.setUrl(QUrl("http://" + device->paramValue(wemoSwitchHostParamTypeId).toString() + ":" + device->paramValue(wemoSwitchPortParamTypeId).toString() + "/upnp/control/basicevent1"));
+    request.setUrl(QUrl("http://" + device->paramValue(wemoSwitchDeviceHostParamTypeId).toString() + ":" + device->paramValue(wemoSwitchDevicePortParamTypeId).toString() + "/upnp/control/basicevent1"));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("text/xml; charset=\"utf-8\""));
     request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("nymea"));
     request.setRawHeader("SOAPACTION", "\"urn:Belkin:service:basicevent:1#GetBinaryState\"");
@@ -163,7 +163,7 @@ bool DevicePluginWemo::setPower(Device *device, const bool &power, const ActionI
     QByteArray setPowerMessage("<?xml version=\"1.0\" encoding=\"utf-8\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\"><BinaryState>" + QByteArray::number((int)power) + "</BinaryState></u:SetBinaryState></s:Body></s:Envelope>");
 
     QNetworkRequest request;
-    request.setUrl(QUrl("http://" + device->paramValue(wemoSwitchHostParamTypeId).toString() + ":" + device->paramValue(wemoSwitchPortParamTypeId).toString() + "/upnp/control/basicevent1"));
+    request.setUrl(QUrl("http://" + device->paramValue(wemoSwitchDeviceHostParamTypeId).toString() + ":" + device->paramValue(wemoSwitchDevicePortParamTypeId).toString() + "/upnp/control/basicevent1"));
     request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("text/xml; charset=\"utf-8\""));
     request.setHeader(QNetworkRequest::UserAgentHeader,QVariant("nymea"));
     request.setRawHeader("SOAPACTION", "\"urn:Belkin:service:basicevent:1#SetBinaryState\"");
@@ -249,10 +249,10 @@ void DevicePluginWemo::onUpnpDiscoveryFinished()
         if (upnpDeviceDescriptor.friendlyName() == "WeMo Switch") {
             DeviceDescriptor descriptor(wemoSwitchDeviceClassId, "WeMo Switch", upnpDeviceDescriptor.serialNumber());
             ParamList params;
-            params.append(Param(wemoSwitchNameParamTypeId, upnpDeviceDescriptor.friendlyName()));
-            params.append(Param(wemoSwitchHostParamTypeId, upnpDeviceDescriptor.hostAddress().toString()));
-            params.append(Param(wemoSwitchPortParamTypeId, upnpDeviceDescriptor.port()));
-            params.append(Param(wemoSwitchSerialParamTypeId, upnpDeviceDescriptor.serialNumber()));
+            params.append(Param(wemoSwitchDeviceNameParamTypeId, upnpDeviceDescriptor.friendlyName()));
+            params.append(Param(wemoSwitchDeviceHostParamTypeId, upnpDeviceDescriptor.hostAddress().toString()));
+            params.append(Param(wemoSwitchDevicePortParamTypeId, upnpDeviceDescriptor.port()));
+            params.append(Param(wemoSwitchDeviceSerialParamTypeId, upnpDeviceDescriptor.serialNumber()));
             descriptor.setParams(params);
             deviceDescriptors.append(descriptor);
         }

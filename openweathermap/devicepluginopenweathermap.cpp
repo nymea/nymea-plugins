@@ -84,7 +84,7 @@ DeviceManager::DeviceError DevicePluginOpenweathermap::discoverDevices(const Dev
         return DeviceManager::DeviceErrorDeviceClassNotFound;
     }
 
-    QString location = params.paramValue(openweathermapLocationParamTypeId).toString();
+    QString location = params.paramValue(openweathermapDiscoveryLocationParamTypeId).toString();
 
     // if we have an empty search string, perform an autodetection of the location with the WAN ip...
     if (location.isEmpty()){
@@ -161,7 +161,7 @@ void DevicePluginOpenweathermap::update(Device *device)
     qCDebug(dcOpenWeatherMap()) << "Refresh data for" << device->name();
     QUrl url("http://api.openweathermap.org/data/2.5/weather");
     QUrlQuery query;
-    query.addQueryItem("id", device->paramValue(openweathermapIdParamTypeId).toString());
+    query.addQueryItem("id", device->paramValue(openweathermapDeviceIdParamTypeId).toString());
     query.addQueryItem("mode", "json");
     query.addQueryItem("units", "metric");
     query.addQueryItem("appid", m_apiKey);
@@ -315,11 +315,11 @@ void DevicePluginOpenweathermap::processSearchResults(const QList<QVariantMap> &
     foreach (QVariantMap elemant, cityList) {
         DeviceDescriptor descriptor(openweathermapDeviceClassId, elemant.value("name").toString(), elemant.value("country").toString());
         ParamList params;
-        Param nameParam(openweathermapNameParamTypeId, elemant.value("name"));
+        Param nameParam(openweathermapDeviceNameParamTypeId, elemant.value("name"));
         params.append(nameParam);
-        Param countryParam(openweathermapCountryParamTypeId, elemant.value("country"));
+        Param countryParam(openweathermapDeviceCountryParamTypeId, elemant.value("country"));
         params.append(countryParam);
-        Param idParam(openweathermapIdParamTypeId, elemant.value("id"));
+        Param idParam(openweathermapDeviceIdParamTypeId, elemant.value("id"));
         params.append(idParam);
         descriptor.setParams(params);
         retList.append(descriptor);

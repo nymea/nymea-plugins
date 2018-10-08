@@ -87,8 +87,8 @@ DeviceManager::DeviceSetupStatus DevicePluginMultiSensor::setupDevice(Device *de
 
     if (device->deviceClassId() == sensorTagDeviceClassId) {
 
-        QBluetoothAddress address = QBluetoothAddress(device->paramValue(sensorTagMacParamTypeId).toString());
-        QString name = device->paramValue(sensorTagNameParamTypeId).toString();
+        QBluetoothAddress address = QBluetoothAddress(device->paramValue(sensorTagDeviceMacParamTypeId).toString());
+        QString name = device->paramValue(sensorTagDeviceNameParamTypeId).toString();
         QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
@@ -136,64 +136,64 @@ DeviceManager::DeviceError DevicePluginMultiSensor::executeAction(Device *device
 {
     SensorTag *sensor = m_sensors.value(device);
     if (action.actionTypeId() == sensorTagBuzzerActionTypeId) {
-        sensor->setBuzzerPower(action.param(sensorTagBuzzerActionParamTypeId).value().toBool());
+        sensor->setBuzzerPower(action.param(sensorTagBuzzerActionBuzzerParamTypeId).value().toBool());
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagGreenLedActionTypeId) {
-        sensor->setGreenLedPower(action.param(sensorTagGreenLedActionParamTypeId).value().toBool());
+        sensor->setGreenLedPower(action.param(sensorTagGreenLedActionGreenLedParamTypeId).value().toBool());
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagRedLedActionTypeId) {
-        sensor->setRedLedPower(action.param(sensorTagRedLedActionParamTypeId).value().toBool());
+        sensor->setRedLedPower(action.param(sensorTagRedLedActionRedLedParamTypeId).value().toBool());
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagBuzzerImpulseActionTypeId) {
         sensor->buzzerImpulse();
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagTemperatureSensorEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagTemperatureSensorEnabledActionParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagTemperatureSensorEnabledActionTemperatureSensorEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagTemperatureSensorEnabledStateTypeId, enabled);
         sensor->setTemperatureSensorEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagHumiditySensorEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagHumiditySensorEnabledActionParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagHumiditySensorEnabledActionHumiditySensorEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagHumiditySensorEnabledStateTypeId, enabled);
         sensor->setHumiditySensorEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagPressureSensorEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagPressureSensorEnabledActionParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagPressureSensorEnabledActionPressureSensorEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagPressureSensorEnabledStateTypeId, enabled);
         sensor->setPressureSensorEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagOpticalSensorEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagOpticalSensorEnabledActionParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagOpticalSensorEnabledActionOpticalSensorEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagOpticalSensorEnabledStateTypeId, enabled);
         sensor->setOpticalSensorEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagAccelerometerEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagAccelerometerEnabledActionParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagAccelerometerEnabledActionAccelerometerEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagAccelerometerEnabledStateTypeId, enabled);
         sensor->setAccelerometerEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagGyroscopeEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagGyroscopeEnabledActionParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagGyroscopeEnabledActionGyroscopeEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagGyroscopeEnabledStateTypeId, enabled);
         sensor->setGyroscopeEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMagnetometerEnabledActionTypeId) {
-        bool enabled = action.param(sensorTagMagnetometerEnabledActionParamTypeId).value().toBool();
+        bool enabled = action.param(sensorTagMagnetometerEnabledActionMagnetometerEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagMagnetometerEnabledStateTypeId, enabled);
         sensor->setMagnetometerEnabled(enabled);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMeasurementPeriodActionTypeId) {
-        int period = action.param(sensorTagMeasurementPeriodActionParamTypeId).value().toInt();
+        int period = action.param(sensorTagMeasurementPeriodActionMeasurementPeriodParamTypeId).value().toInt();
         device->setStateValue(sensorTagMeasurementPeriodStateTypeId, period);
         sensor->setMeasurementPeriod(period);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMeasurementPeriodMovementActionTypeId) {
-        int period = action.param(sensorTagMeasurementPeriodMovementActionParamTypeId).value().toInt();
+        int period = action.param(sensorTagMeasurementPeriodMovementActionMeasurementPeriodMovementParamTypeId).value().toInt();
         device->setStateValue(sensorTagMeasurementPeriodMovementStateTypeId, period);
         sensor->setMeasurementPeriodMovement(period);
         return DeviceManager::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMovementSensitivityActionTypeId) {
-        int sensitivity = action.param(sensorTagMovementSensitivityActionParamTypeId).value().toInt();
+        int sensitivity = action.param(sensorTagMovementSensitivityActionMovementSensitivityParamTypeId).value().toInt();
         device->setStateValue(sensorTagMovementSensitivityStateTypeId, sensitivity);
         sensor->setMovementSensitivity(sensitivity);
         return DeviceManager::DeviceErrorNoError;
@@ -205,7 +205,7 @@ DeviceManager::DeviceError DevicePluginMultiSensor::executeAction(Device *device
 bool DevicePluginMultiSensor::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
 {
     foreach (Device *device, m_sensors.keys()) {
-        if (device->paramValue(sensorTagMacParamTypeId).toString() == deviceInfo.address().toString())
+        if (device->paramValue(sensorTagDeviceMacParamTypeId).toString() == deviceInfo.address().toString())
             return true;
     }
 
@@ -237,8 +237,8 @@ void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
             if (!verifyExistingDevices(deviceInfo)) {
                 DeviceDescriptor descriptor(sensorTagDeviceClassId, "Sensor Tag", deviceInfo.address().toString());
                 ParamList params;
-                params.append(Param(sensorTagNameParamTypeId, deviceInfo.name()));
-                params.append(Param(sensorTagMacParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(sensorTagDeviceNameParamTypeId, deviceInfo.name()));
+                params.append(Param(sensorTagDeviceMacParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
             }

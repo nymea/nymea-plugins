@@ -66,61 +66,61 @@ DeviceManager::DeviceError DevicePluginElro::executeAction(Device *device, const
 
     // create the bincode
     // channels
-    if (device->paramValue(elroSocketChan1ParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceChan1ParamTypeId).toBool()) {
         binCode.append("00");
     } else {
         binCode.append("01");
     }
-    if (device->paramValue(elroSocketChan2ParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceChan2ParamTypeId).toBool()) {
         binCode.append("00");
     } else {
         binCode.append("01");
     }
-    if (device->paramValue(elroSocketChan3ParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceChan3ParamTypeId).toBool()) {
         binCode.append("00");
     }else{
         binCode.append("01");
     }
-    if(device->paramValue(elroSocketChan4ParamTypeId).toBool()){
+    if(device->paramValue(elroSocketDeviceChan4ParamTypeId).toBool()){
         binCode.append("00");
     } else {
         binCode.append("01");
     }
-    if (device->paramValue(elroSocketChan5ParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceChan5ParamTypeId).toBool()) {
         binCode.append("00");
     } else {
         binCode.append("01");
     }
 
     // Buttons
-    if (device->paramValue(elroSocketAParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceAParamTypeId).toBool()) {
         binCode.append("00");
     } else {
         binCode.append("01");
     }
-    if (device->paramValue(elroSocketBParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceBParamTypeId).toBool()) {
         binCode.append("00");
     } else {
         binCode.append("01");
     }
-    if (device->paramValue(elroSocketCParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceCParamTypeId).toBool()) {
         binCode.append("00");
     } else {
         binCode.append("01");
     }
-    if (device->paramValue(elroSocketDParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceDParamTypeId).toBool()) {
         binCode.append("00");
     } else {
         binCode.append("01");
     }
-    if (device->paramValue(elroSocketEParamTypeId).toBool()) {
+    if (device->paramValue(elroSocketDeviceEParamTypeId).toBool()) {
         binCode.append("00");
     } else {
         binCode.append("01");
     }
 
     // Power
-    if (action.param(elroSocketPowerParamTypeId).value().toBool()) {
+    if (action.param(elroSocketPowerActionPowerParamTypeId).value().toBool()) {
         binCode.append("0001");
     } else {
         binCode.append("0100");
@@ -146,9 +146,9 @@ DeviceManager::DeviceError DevicePluginElro::executeAction(Device *device, const
 
     // send data to hardware resource
     if (hardwareManager()->radio433()->sendData(delay, rawData, 10)) {
-        qCDebug(dcElro) << "Transmitted" << pluginName() << device->name() << "power: " << action.param(elroSocketPowerParamTypeId).value().toBool();
+        qCDebug(dcElro) << "Transmitted" << pluginName() << device->name() << "power: " << action.param(elroSocketPowerActionPowerParamTypeId).value().toBool();
     } else {
-        qCWarning(dcElro) << "Could not transmitt" << pluginName() << device->name() << "power: " << action.param(elroSocketPowerParamTypeId).value().toBool();
+        qCWarning(dcElro) << "Could not transmitt" << pluginName() << device->name() << "power: " << action.param(elroSocketPowerActionPowerParamTypeId).value().toBool();
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
 

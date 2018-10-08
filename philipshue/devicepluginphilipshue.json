@@ -10,7 +10,7 @@
             "deviceClasses": [
                 {
                     "id": "642aa4c7-19aa-45ed-ba06-aa1ae6c9edf7",
-                    "name": "hueBridge",
+                    "name": "bridge",
                     "displayName": "Hue gateway",
                     "deviceIcon": "Gateway",
                     "interfaces": ["gateway", "connectable"],
@@ -26,14 +26,14 @@
                     "paramTypes": [
                         {
                             "id": "275b76f2-0174-4f26-b3ec-5f108baf8bdd",
-                            "name": "bridgeName",
+                            "name": "name",
                             "displayName": "name",
                             "type" : "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "8bf5776a-d5a6-4600-8b27-481f0d803a8f",
-                            "name": "bridgeApiKey",
+                            "name": "apiKey",
                             "displayName": "api key",
                             "type" : "QString",
                             "inputType": "TextLine",
@@ -41,7 +41,7 @@
                         },
                         {
                             "id": "1845975b-1184-4440-bc0d-73d53a9f683c",
-                            "name": "bridgeHost",
+                            "name": "host",
                             "displayName": "host address",
                             "type" : "QString",
                             "inputType": "IPv4Address",
@@ -49,7 +49,7 @@
                         },
                         {
                             "id": "2c67203d-a308-45ec-9a08-fc4183c06ff8",
-                            "name": "bridgeMac",
+                            "name": "mac",
                             "displayName": "mac address",
                             "type" : "QString",
                             "inputType": "MacAddress",
@@ -57,21 +57,21 @@
                         },
                         {
                             "id": "a496feb0-3b7b-46cb-a63a-e063447d6b1d",
-                            "name": "bridgeId",
+                            "name": "id",
                             "displayName": "id",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
                             "id": "ea228c4d-975c-4b43-9445-7c9a907c29d6",
-                            "name": "bridgeSoftware",
+                            "name": "softwareVersion",
                             "displayName": "software version",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
                             "id": "53170394-956c-4511-b3a8-2c8a502ef1ed",
-                            "name": "bridgeZigbeeChannel",
+                            "name": "zigbeeChannel",
                             "displayName": "zigbee channel",
                             "type" : "int",
                             "readOnly": true
@@ -142,7 +142,7 @@
                 },
                 {
                     "id": "0edba26c-96ab-44fb-a6a2-c0574d19630e",
-                    "name": "hueLight",
+                    "name": "light",
                     "displayName": "Hue Light",
                     "deviceIcon": "LightBulb",
                     "interfaces": ["colorlight", "connectable"],
@@ -256,7 +256,7 @@
                         },
                         {
                             "id": "0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc",
-                            "name": "hueEffect",
+                            "name": "effect",
                             "displayName": "effect",
                             "displayNameEvent": "effect changed",
                             "displayNameAction": "Set effect",
@@ -274,7 +274,7 @@
                     "actionTypes": [
                         {
                             "id": "d25dcfbc-d28c-4905-80e3-300ffb1248f5",
-                            "name": "hueAlert",
+                            "name": "alert",
                             "displayName": "flash",
                             "paramTypes": [
                                 {
@@ -293,7 +293,7 @@
                 },
                 {
                     "id": "4fa568ef-7a3a-422b-b0c0-206d37cb4eed",
-                    "name": "hueWhiteLight",
+                    "name": "whiteLight",
                     "displayName": "Hue White Light",
                     "deviceIcon": "LightBulb",
                     "interfaces": ["dimmablelight", "connectable"],
@@ -381,7 +381,7 @@
                     "actionTypes": [
                         {
                             "id": "d25dcfbc-d28c-4905-80e3-300ffb1248f5",
-                            "name": "hueAlert",
+                            "name": "alert",
                             "displayName": "flash",
                             "paramTypes": [
                                 {
@@ -400,7 +400,7 @@
                 },
                 {
                     "id": "bb482d39-67ef-46dc-88e9-7b181d642b28",
-                    "name": "hueRemote",
+                    "name": "remote",
                     "displayName": "Hue Remote",
                     "deviceIcon": "Switch",
                     "interfaces": ["longpressmultibutton", "batterylevel", "connectable"],
@@ -549,7 +549,7 @@
                 },
                 {
                     "id": "2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e",
-                    "name": "hueTap",
+                    "name": "tap",
                     "displayName": "Hue Tap",
                     "deviceIcon": "Switch",
                     "interfaces": ["simplemultibutton", "connectable"],

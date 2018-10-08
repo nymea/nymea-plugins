@@ -82,14 +82,14 @@ DeviceManager::DeviceError DevicePluginLeynew::executeAction(Device *device, con
     // TODO: find out how the id will be calculated to bin code or make it discoverable
     // =======================================
     // bincode depending on the id
-    if (device->paramValue(rfControllerIdParamTypeId) == "0115"){
+    if (device->paramValue(rfControllerDeviceIdParamTypeId) == "0115"){
         binCode.append("001101000001");
-    } else if (device->paramValue(rfControllerIdParamTypeId) == "0014") {
+    } else if (device->paramValue(rfControllerDeviceIdParamTypeId) == "0014") {
         binCode.append("110000010101");
-    } else if (device->paramValue(rfControllerIdParamTypeId) == "0008") {
+    } else if (device->paramValue(rfControllerDeviceIdParamTypeId) == "0008") {
         binCode.append("111101010101");
     } else {
-        qCWarning(dcLeynew) << "Could not get id of device: invalid parameter" << device->paramValue(rfControllerIdParamTypeId);
+        qCWarning(dcLeynew) << "Could not get id of device: invalid parameter" << device->paramValue(rfControllerDeviceIdParamTypeId);
         return DeviceManager::DeviceErrorInvalidParameter;
     }
 

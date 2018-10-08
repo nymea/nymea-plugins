@@ -74,7 +74,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *d
 
     if (device->deviceClassId() == udpReceiverDeviceClassId) {
         QUdpSocket *udpSocket = new QUdpSocket(this);
-        int port = device->paramValue(udpReceiverPortParamTypeId).toInt();
+        int port = device->paramValue(udpReceiverDevicePortParamTypeId).toInt();
         if (!udpSocket->bind(QHostAddress::Any, port, QUdpSocket::ShareAddress)) {
             qCWarning(dcUdpCommander()) << device->name() << "cannot bind to port" << port;
             delete udpSocket;
@@ -101,9 +101,9 @@ DeviceManager::DeviceError DevicePluginUdpCommander::executeAction(Device *devic
     if (device->deviceClassId() == udpCommanderDeviceClassId) {
         if (action.actionTypeId() == udpCommanderTriggerActionTypeId) {
             QUdpSocket *udpSocket = m_commanderList.key(device);
-            int port = device->paramValue(udpCommanderPortParamTypeId).toInt();
-            QHostAddress address = QHostAddress(device->paramValue(udpCommanderAddressParamTypeId).toString());
-            QByteArray data = action.param(udpCommanderDataParamTypeId).value().toByteArray();
+            int port = device->paramValue(udpCommanderDevicePortParamTypeId).toInt();
+            QHostAddress address = QHostAddress(device->paramValue(udpCommanderDeviceAddressParamTypeId).toString());
+            QByteArray data = action.param(udpCommanderTriggerActionDataParamTypeId).value().toByteArray();
             qDebug(dcUdpCommander()) << "Send UDP datagram:" << data << "address:" << address.toIPv4Address() << "port:" << port;
             udpSocket->writeDatagram(data, address, port);
 
@@ -143,7 +143,7 @@ void DevicePluginUdpCommander::readPendingDatagrams()
 
     QByteArray datagram;
     QHostAddress sender;
-    quint16 senderPort;
+    quint16 senderPort = 0;
 
     while (socket->hasPendingDatagrams()) {
         datagram.resize(socket->pendingDatagramSize());
@@ -153,7 +153,7 @@ void DevicePluginUdpCommander::readPendingDatagrams()
     qCDebug(dcUdpCommander()) << device->name() << "got command from" << sender.toString() << senderPort;
     Event ev = Event(udpReceiverTriggeredEventTypeId, device->id());
     ParamList params;
-    params.append(Param(udpReceiverDataParamTypeId, datagram));
+    params.append(Param(udpReceiverTriggeredEventDataParamTypeId, datagram));
     ev.setParams(params);
     emit emitEvent(ev);
 

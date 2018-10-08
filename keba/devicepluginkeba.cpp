@@ -59,7 +59,7 @@ DeviceManager::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
         qCDebug(dcKebaKeContact()) << "Create keba socket";
     }
 
-    QHostAddress address = QHostAddress(device->paramValue(wallboxIpParamTypeId).toString());
+    QHostAddress address = QHostAddress(device->paramValue(wallboxDeviceIpParamTypeId).toString());
 
     //Check if the IP is empty
     if (address.isNull()) {
@@ -81,7 +81,7 @@ void DevicePluginKeba::postSetupDevice(Device *device)
     qCDebug(dcKebaKeContact()) << "Post setup" << device->name();
     QByteArray datagram;
     datagram.append("report 2");
-    m_kebaSocket->writeDatagram(datagram.data(), datagram.size(), QHostAddress(device->paramValue(wallboxIpParamTypeId).toString()), 7090);
+    m_kebaSocket->writeDatagram(datagram.data(), datagram.size(), QHostAddress(device->paramValue(wallboxDeviceIpParamTypeId).toString()), 7090);
 }
 
 void DevicePluginKeba::deviceRemoved(Device *device)
@@ -120,24 +120,24 @@ DeviceManager::DeviceError DevicePluginKeba::executeAction(Device *device, const
 
         if(action.actionTypeId() == wallboxMaxCurrentActionTypeId){
             // Print information that we are executing now the update action
-            qCDebug(dcKebaKeContact()) << "Update max current to : " << action.param(wallboxMaxCurrentActionParamTypeId).value().toString();
+            qCDebug(dcKebaKeContact()) << "Update max current to : " << action.param(wallboxMaxCurrentActionMaxCurrentParamTypeId).value().toString();
             QByteArray datagram;
-            datagram.append("curr " + QVariant(action.param(wallboxMaxCurrentActionParamTypeId).value().toInt()*1000).toString());
+            datagram.append("curr " + QVariant(action.param(wallboxMaxCurrentActionMaxCurrentParamTypeId).value().toInt()*1000).toString());
             qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
-            m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(device->paramValue(wallboxIpParamTypeId).toString()) , 7090);
+            m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(device->paramValue(wallboxDeviceIpParamTypeId).toString()) , 7090);
         }
         else if(action.actionTypeId() == wallboxOutEnableActionTypeId){
             // Print information that we are executing now the update action
-            qCDebug(dcKebaKeContact()) << "output enable : " << action.param(wallboxOutEnableActionParamTypeId).value().toString();
+            qCDebug(dcKebaKeContact()) << "output enable : " << action.param(wallboxOutEnableActionOutEnableParamTypeId).value().toString();
             QByteArray datagram;
-            if(action.param(wallboxOutEnableActionParamTypeId).value().toBool()){
+            if(action.param(wallboxOutEnableActionOutEnableParamTypeId).value().toBool()){
                 datagram.append("ena 1");
             }
             else{
                 datagram.append("ena 0");
             }
             qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
-            m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(device->paramValue(wallboxIpParamTypeId).toString()) , 7090);
+            m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(device->paramValue(wallboxDeviceIpParamTypeId).toString()) , 7090);
         }
 
         return DeviceManager::DeviceErrorNoError;
@@ -230,7 +230,7 @@ void DevicePluginKeba::readPendingDatagrams()
             QByteArray datagram;
             datagram.append("report 3");
             qCDebug(dcKebaKeContact()) << "datagram : " << datagram;
-            socket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(m_kebaDevices.value(sender)->paramValue(wallboxIpParamTypeId).toString()) , 7090);
+            socket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(m_kebaDevices.value(sender)->paramValue(wallboxDeviceIpParamTypeId).toString()) , 7090);
         }
         else if(data.value("ID").toString() == "3"){
             //power of current charging session
