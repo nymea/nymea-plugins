@@ -36,7 +36,7 @@ PLUGIN_DIRS = \
     simulation          \
     keba                \
     remotessh           \
-    dweetio             \ 
+    dweetio             \
     flowercare          \
 
 CONFIG+=all
@@ -60,6 +60,10 @@ lrelease.depends = FORCE
 for (entry, PLUGIN_DIRS):lrelease.commands += lrelease $$files($$PWD/$${entry}/translations/*.ts, true);
 for (entry, PLUGIN_DIRS):lrelease.commands += rsync -a $$PWD/$${entry}/translations/*.qm $$OUT_PWD/translations/;
 QMAKE_EXTRA_TARGETS += lrelease
+
+# For Qt-Creator's code model: Add CPATH to INCLUDEPATH explicitly
+INCLUDEPATH += $$(CPATH)
+message(" cpath is $$(CPATH)")
 
 # Verify if building only a selection of plugins
 contains(CONFIG, selection) {

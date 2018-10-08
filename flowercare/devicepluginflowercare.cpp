@@ -73,8 +73,8 @@ DeviceManager::DeviceSetupStatus DevicePluginFlowercare::setupDevice(Device *dev
     qCDebug(dcFlowerCare) << "Setting up Flower care" << device->name() << device->params();
 
     if (device->deviceClassId() == flowerCareDeviceClassId) {
-        QBluetoothAddress address = QBluetoothAddress(device->paramValue(flowerCareMacParamTypeId).toString());
-        QString name = device->paramValue(flowerCareNameParamTypeId).toString();
+        QBluetoothAddress address = QBluetoothAddress(device->paramValue(flowerCareDeviceMacParamTypeId).toString());
+        QString name = device->paramValue(flowerCareDeviceNameParamTypeId).toString();
         QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
@@ -125,7 +125,7 @@ DeviceManager::DeviceError DevicePluginFlowercare::executeAction(Device *device,
 bool DevicePluginFlowercare::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
 {
     foreach (Device *device, m_list.keys()) {
-        if (device->paramValue(flowerCareMacParamTypeId).toString() == deviceInfo.address().toString())
+        if (device->paramValue(flowerCareDeviceMacParamTypeId).toString() == deviceInfo.address().toString())
             return true;
     }
 
@@ -169,8 +169,8 @@ void DevicePluginFlowercare::onBluetoothDiscoveryFinished()
             if (!verifyExistingDevices(deviceInfo)) {
                 DeviceDescriptor descriptor(flowerCareDeviceClassId, "Flower Care", deviceInfo.address().toString());
                 ParamList params;
-                params.append(Param(flowerCareNameParamTypeId, deviceInfo.name()));
-                params.append(Param(flowerCareMacParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(flowerCareDeviceNameParamTypeId, deviceInfo.name()));
+                params.append(Param(flowerCareDeviceMacParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
             }

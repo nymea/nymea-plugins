@@ -97,7 +97,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         if (action.actionTypeId() == alternativeButtonPowerActionTypeId) {
 
             // get the param value
-            Param powerParam = action.param(alternativeButtonPowerActionParamTypeId);
+            Param powerParam = action.param(alternativeButtonPowerActionPowerParamTypeId);
             bool power = powerParam.value().toBool();
 
             qCDebug(dcSimulation()) << "Set power" << power << "for button" << device->name();
@@ -116,7 +116,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         if (action.actionTypeId() == heatingPowerActionTypeId) {
 
             // get the param value
-            Param powerParam = action.param(heatingPowerActionParamTypeId);
+            Param powerParam = action.param(heatingPowerActionPowerParamTypeId);
             bool power = powerParam.value().toBool();
             qCDebug(dcSimulation()) << "Set power" << power << "for heating device" << device->name();
             device->setStateValue(heatingPowerStateTypeId, power);
@@ -125,7 +125,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
         } else if (action.actionTypeId() == heatingTargetTemperatureActionTypeId) {
 
             // get the param value
-            Param temperatureParam = action.param(heatingTargetTemperatureActionParamTypeId);
+            Param temperatureParam = action.param(heatingTargetTemperatureActionTargetTemperatureParamTypeId);
             int temperature = temperatureParam.value().toInt();
 
             qCDebug(dcSimulation()) << "Set target temperature" << temperature << "for heating device" << device->name();
@@ -140,7 +140,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
 
         if (action.actionTypeId() == evChargerPowerActionTypeId){
             // get the param value
-            Param powerParam = action.param(evChargerPowerActionParamTypeId);
+            Param powerParam = action.param(evChargerPowerActionPowerParamTypeId);
             bool power = powerParam.value().toBool();
 
             qCDebug(dcSimulation()) << "Set power" << power << "for heating device" << device->name();
@@ -150,7 +150,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
 
         } else if(action.actionTypeId() == evChargerCurrentActionTypeId){
             // get the param value
-            Param currentParam = action.param(evChargerCurrentActionParamTypeId);
+            Param currentParam = action.param(evChargerCurrentActionCurrentParamTypeId);
             int current = currentParam.value().toInt();
             qCDebug(dcSimulation()) << "Set current" << current << "for EV Charger device" << device->name();
             device->setStateValue(evChargerCurrentStateTypeId, current);
@@ -163,7 +163,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
 
         if(action.actionTypeId() == socketPowerActionTypeId){
             // get the param value
-            Param powerParam = action.param(socketPowerActionParamTypeId);
+            Param powerParam = action.param(socketPowerActionPowerParamTypeId);
             bool power = powerParam.value().toBool();
             // Set the "power" state
             qCDebug(dcSimulation()) << "Set power" << power << "for socket device" << device->name();
@@ -176,25 +176,25 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
     if(device->deviceClassId() == colorBulbDeviceClassId){
 
         if(action.actionTypeId() == colorBulbBrightnessActionTypeId){
-            int brightness = action.param(colorBulbBrightnessActionParamTypeId).value().toInt();
+            int brightness = action.param(colorBulbBrightnessActionBrightnessParamTypeId).value().toInt();
             qCDebug(dcSimulation()) << "Set brightness" << brightness << "for color bulb device" << device->name();
             device->setStateValue(colorBulbBrightnessStateTypeId, brightness);
             return DeviceManager::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == colorBulbColorTemperatureActionTypeId){
-            int temperature = action.param(colorBulbColorTemperatureActionParamTypeId).value().toInt();
+            int temperature = action.param(colorBulbColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
             qCDebug(dcSimulation()) << "Set color temperature" << temperature << "for color bulb device" << device->name();
             device->setStateValue(colorBulbColorTemperatureStateTypeId, temperature);
             return DeviceManager::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == colorBulbColorActionTypeId) {
-            QColor color = action.param(colorBulbColorActionParamTypeId).value().value<QColor>();
+            QColor color = action.param(colorBulbColorActionColorParamTypeId).value().value<QColor>();
             qCDebug(dcSimulation()) << "Set color" << color << "for color bulb device" << device->name();
             device->setStateValue(colorBulbColorStateTypeId, color);
             return DeviceManager::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == colorBulbPowerActionTypeId) {
-            bool power = action.param(colorBulbPowerActionParamTypeId).value().toBool();
+            bool power = action.param(colorBulbPowerActionPowerParamTypeId).value().toBool();
             qCDebug(dcSimulation()) << "Set power" << power << "for color bulb device" << device->name();
             device->setStateValue(colorBulbPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
@@ -206,17 +206,17 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
     if (device->deviceClassId() == heatingRodDeviceClassId) {
 
         if (action.actionTypeId() == heatingRodPowerActionTypeId) {
-            bool power = action.param(heatingRodPowerActionParamTypeId).value().toBool();
+            bool power = action.param(heatingRodPowerActionPowerParamTypeId).value().toBool();
             qCDebug(dcSimulation()) << "Set power" << power << "for heating rod device" << device->name();
             device->setStateValue(heatingRodPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == heatingRodWaterTemperatureActionTypeId) {
-            int temperature = action.param(heatingRodWaterTemperatureActionParamTypeId).value().toInt();
+            int temperature = action.param(heatingRodWaterTemperatureActionWaterTemperatureParamTypeId).value().toInt();
             qCDebug(dcSimulation()) << "Set water temperature" << temperature << "for heating rod device" << device->name();
             device->setStateValue(heatingRodWaterTemperatureStateTypeId, temperature);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == heatingRodMaxPowerActionTypeId) {
-            double maxPower = action.param(heatingRodMaxPowerActionParamTypeId).value().toDouble();
+            double maxPower = action.param(heatingRodMaxPowerActionMaxPowerParamTypeId).value().toDouble();
             qCDebug(dcSimulation()) << "Set max power" << maxPower << "for heating rod device" << device->name();
             device->setStateValue(heatingRodMaxPowerStateTypeId, maxPower);
             return DeviceManager::DeviceErrorNoError;
@@ -227,7 +227,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
 
     if (device->deviceClassId() == batteryDeviceClassId) {
         if (action.actionTypeId() == batteryMaxChargingActionTypeId) {
-            int maxCharging = action.param(batteryMaxChargingActionParamTypeId).value().toInt();
+            int maxCharging = action.param(batteryMaxChargingActionMaxChargingParamTypeId).value().toInt();
             device->setStateValue(batteryMaxChargingStateTypeId, maxCharging);
             qCDebug(dcSimulation()) << "Set max charging power" << maxCharging << "for battery device" << device->name();
             device->setStateValue(batteryChargingStateTypeId, maxCharging);
@@ -238,7 +238,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
 
     if (device->deviceClassId() == waterValveDeviceClassId) {
         if (action.actionTypeId() == waterValvePowerActionTypeId) {
-            bool power = action.param(waterValvePowerActionParamTypeId).value().toBool();
+            bool power = action.param(waterValvePowerActionPowerParamTypeId).value().toBool();
             device->setStateValue(waterValvePowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
         }
@@ -286,7 +286,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == garageGatePowerActionTypeId) {
-            bool power = action.param(garageGatePowerActionParamTypeId).value().toBool();
+            bool power = action.param(garageGatePowerActionPowerParamTypeId).value().toBool();
             device->setStateValue(garageGatePowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
         }
@@ -314,8 +314,8 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == rollerShutterPercentageActionTypeId) {
-            qCDebug(dcSimulation()) << "Setting awning to" << action.param(rollerShutterPercentageActionParamTypeId);
-            m_simulationTimers.value(device)->setProperty("targetValue", action.param(rollerShutterPercentageActionParamTypeId).value());
+            qCDebug(dcSimulation()) << "Setting awning to" << action.param(rollerShutterPercentageActionPercentageParamTypeId);
+            m_simulationTimers.value(device)->setProperty("targetValue", action.param(rollerShutterPercentageActionPercentageParamTypeId).value());
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(rollerShutterMovingStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
@@ -344,8 +344,8 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == extendedAwningPercentageActionTypeId) {
-            qCDebug(dcSimulation()) << "Setting awning to" << action.param(extendedAwningPercentageActionParamTypeId);
-            m_simulationTimers.value(device)->setProperty("targetValue", action.param(extendedAwningPercentageActionParamTypeId).value());
+            qCDebug(dcSimulation()) << "Setting awning to" << action.param(extendedAwningPercentageActionPercentageParamTypeId);
+            m_simulationTimers.value(device)->setProperty("targetValue", action.param(extendedAwningPercentageActionPercentageParamTypeId).value());
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedAwningMovingStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;

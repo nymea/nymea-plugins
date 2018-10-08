@@ -444,8 +444,8 @@ DeviceManager::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
     qCDebug(dcElgato()) << "Setup device" << device->name() << device->params();
 
     if (device->deviceClassId() == aveaDeviceClassId) {
-        QBluetoothAddress address = QBluetoothAddress(device->paramValue(aveaMacAddressParamTypeId).toString());
-        QString name = device->paramValue(aveaNameParamTypeId).toString();
+        QBluetoothAddress address = QBluetoothAddress(device->paramValue(aveaDeviceMacAddressParamTypeId).toString());
+        QString name = device->paramValue(aveaDeviceNameParamTypeId).toString();
         QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
@@ -478,28 +478,28 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
         AveaBulb *bulb = m_bulbs.value(device);
 
         if (action.actionTypeId() == aveaPowerActionTypeId) {
-            bool power = action.param(aveaPowerActionParamTypeId).value().toBool();
+            bool power = action.param(aveaPowerActionPowerParamTypeId).value().toBool();
             device->setStateValue(aveaPowerStateTypeId, power);
             if (!bulb->setPower(power))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaBrightnessActionTypeId) {
-            int percentage = action.param(aveaBrightnessActionParamTypeId).value().toInt();
+            int percentage = action.param(aveaBrightnessActionBrightnessParamTypeId).value().toInt();
             if (!bulb->setBrightness(percentage))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             device->setStateValue(aveaBrightnessStateTypeId, percentage);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorActionTypeId) {
-            QColor color = action.param(aveaColorActionParamTypeId).value().value<QColor>();
+            QColor color = action.param(aveaColorActionColorParamTypeId).value().value<QColor>();
             if (!bulb->setColor(color))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             device->setStateValue(aveaColorStateTypeId, color);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorTemperatureActionTypeId) {
-            int ctValue = action.param(aveaColorTemperatureActionParamTypeId).value().toInt();
+            int ctValue = action.param(aveaColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
             // normalize from 0 to 347 instead of 153 to 500
             int ct = ctValue - 153;
             // for blue: lower half fades blue from 255 to 0
@@ -520,31 +520,31 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             device->setStateValue(aveaColorTemperatureStateTypeId, ctValue);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaWhiteActionTypeId) {
-            int whiteValue = action.param(aveaWhiteActionParamTypeId).value().toInt();
+            int whiteValue = action.param(aveaWhiteActionWhiteParamTypeId).value().toInt();
             if (!bulb->setWhite(whiteValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaGreenActionTypeId) {
-            int greenValue = action.param(aveaGreenActionParamTypeId).value().toInt();
+            int greenValue = action.param(aveaGreenActionGreenParamTypeId).value().toInt();
             if (!bulb->setGreen(greenValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaRedActionTypeId) {
-            int redValue = action.param(aveaRedActionParamTypeId).value().toInt();
+            int redValue = action.param(aveaRedActionRedParamTypeId).value().toInt();
             if (!bulb->setRed(redValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaBlueActionTypeId) {
-            int blueValue = action.param(aveaBlueActionParamTypeId).value().toInt();
+            int blueValue = action.param(aveaBlueActionBlueParamTypeId).value().toInt();
             if (!bulb->setBlue(blueValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaFadeActionTypeId) {
-            int fadeValue = action.param(aveaFadeActionParamTypeId).value().toInt();
+            int fadeValue = action.param(aveaFadeActionFadeParamTypeId).value().toInt();
             device->setStateValue(aveaFadeStateTypeId, fadeValue);
             if (!bulb->setFade(fadeValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
@@ -571,7 +571,7 @@ void DevicePluginElgato::deviceRemoved(Device *device)
 bool DevicePluginElgato::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
 {
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(aveaMacAddressParamTypeId).toString() == deviceInfo.address().toString())
+        if (device->paramValue(aveaDeviceMacAddressParamTypeId).toString() == deviceInfo.address().toString())
             return true;
     }
 
@@ -603,8 +603,8 @@ void DevicePluginElgato::onBluetoothDiscoveryFinished()
             if (!verifyExistingDevices(deviceInfo)) {
                 DeviceDescriptor descriptor(aveaDeviceClassId, "Avea", deviceInfo.address().toString());
                 ParamList params;
-                params.append(Param(aveaNameParamTypeId, deviceInfo.name()));
-                params.append(Param(aveaMacAddressParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(aveaDeviceNameParamTypeId, deviceInfo.name()));
+                params.append(Param(aveaDeviceMacAddressParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
             }

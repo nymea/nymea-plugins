@@ -54,7 +54,7 @@ DeviceManager::DeviceSetupStatus DevicePluginDweetio::setupDevice(Device *device
 
     if (device->deviceClassId() == postDeviceClassId) {
 
-        QString thing = device->paramValue(postThingParamTypeId).toString();
+        QString thing = device->paramValue(postDeviceThingParamTypeId).toString();
         if (thing.isEmpty()){
             qDebug(dcDweetio) << "No thing name given, creating one";
             thing = QUuid::createUuid().toString();
@@ -101,7 +101,7 @@ DeviceManager::DeviceError DevicePluginDweetio::executeAction(Device *device, co
 
         if (action.actionTypeId() == postContentDataActionTypeId) {
 
-            QString content = action.param(postContentDataAreaParamTypeId).value().toString();
+            QString content = action.param(postContentDataActionContentDataAreaParamTypeId).value().toString();
             postContent(content, device, action);
 
             return DeviceManager::DeviceErrorAsync;
@@ -113,13 +113,13 @@ DeviceManager::DeviceError DevicePluginDweetio::executeAction(Device *device, co
 
 void DevicePluginDweetio::postContent(const QString &content, Device *device, const Action &action)
 {
-    QUrl url = QString("https://dweet.io:443/dweet/for/") + device->paramValue(postThingParamTypeId).toString();
+    QUrl url = QString("https://dweet.io:443/dweet/for/") + device->paramValue(postDeviceThingParamTypeId).toString();
     QNetworkRequest request(url);
     request.setRawHeader("Content-Type", QString("application/json").toLocal8Bit());
     request.setRawHeader("Accept", QString("application/json").toLocal8Bit());
     request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
 
-    QString key = device->paramValue(postKeyParamTypeId).toString();
+    QString key = device->paramValue(postDeviceKeyParamTypeId).toString();
     if (!(key.isEmpty()) || !(key == "none")) {
         QUrlQuery query;
         query.addQueryItem("key", key);
@@ -127,7 +127,7 @@ void DevicePluginDweetio::postContent(const QString &content, Device *device, co
     }
 
     QVariantMap contentMap;
-    contentMap.insert(device->paramValue(postContentNameParamTypeId).toString(), content);
+    contentMap.insert(device->paramValue(postDeviceContentNameParamTypeId).toString(), content);
 
     QByteArray data = QJsonDocument::fromVariant(contentMap).toJson(QJsonDocument::Compact);
     qDebug(dcDweetio) << "Dweet: " << data << "Url: " << url;
@@ -155,7 +155,7 @@ void DevicePluginDweetio::processGetReply(const QVariantMap &data, Device *devic
 {
     QVariantList withList = data.value("with").toList();
     QVariantMap contentMap = withList.first().toMap().value("content").toMap();
-    QString content = contentMap.value(device->paramValue(getContentNameParamTypeId).toString()).toString();
+    QString content = contentMap.value(device->paramValue(getDeviceContentNameParamTypeId).toString()).toString();
     device->setStateValue(getContentStateTypeId, content);
 
     qDebug(dcDweetio) << "Data: " << data << "Device: " << device->name();
@@ -236,13 +236,13 @@ void DevicePluginDweetio::getRequest(Device *device)
 {
     qCDebug(dcDweetio()) << "Refresh data for" << device->name();
 
-    QUrl url = QString("https://dweet.io:443/get/latest/dweet/for/") + device->paramValue(postThingParamTypeId).toString();
+    QUrl url = QString("https://dweet.io:443/get/latest/dweet/for/") + device->paramValue(postDeviceThingParamTypeId).toString();
     QNetworkRequest request(url);
     request.setRawHeader("Content-Type", QString("application/json").toLocal8Bit());
     request.setRawHeader("Accept", QString("application/json").toLocal8Bit());
     request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
 
-    QString key = device->paramValue(getKeyParamTypeId).toString();
+    QString key = device->paramValue(getDeviceKeyParamTypeId).toString();
     if (!(key.isEmpty()) || !(key == "none")) {
         QUrlQuery query;
         query.addQueryItem("key", key);

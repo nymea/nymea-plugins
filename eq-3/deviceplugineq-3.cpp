@@ -111,13 +111,13 @@ DeviceManager::DeviceSetupStatus DevicePluginEQ3::setupDevice(Device *device)
 
     if(device->deviceClassId() == cubeDeviceClassId){
         foreach (MaxCube *cube, m_cubes.keys()) {
-            if(cube->serialNumber() == device->paramValue(cubeSerialParamTypeId).toString()){
+            if(cube->serialNumber() == device->paramValue(cubeDeviceSerialParamTypeId).toString()){
                 qCDebug(dcEQ3) << cube->serialNumber() << " already exists...";
                 return DeviceManager::DeviceSetupStatusFailure;
             }
         }
 
-        MaxCube *cube = new MaxCube(this,device->paramValue(cubeSerialParamTypeId).toString(),QHostAddress(device->paramValue(cubeHostParamTypeId).toString()),device->paramValue(cubePortParamTypeId).toInt());
+        MaxCube *cube = new MaxCube(this,device->paramValue(cubeDeviceSerialParamTypeId).toString(),QHostAddress(device->paramValue(cubeDeviceHostParamTypeId).toString()),device->paramValue(cubeDevicePortParamTypeId).toInt());
         m_cubes.insert(cube,device);
 
         connect(cube,SIGNAL(cubeConnectionStatusChanged(bool)),this,SLOT(cubeConnectionStatusChanged(bool)));
@@ -133,7 +133,7 @@ DeviceManager::DeviceSetupStatus DevicePluginEQ3::setupDevice(Device *device)
         return DeviceManager::DeviceSetupStatusAsync;
     }
     if(device->deviceClassId() == wallThermostateDeviceClassId){
-        device->setName("Max! Wall Thermostat (" + device->paramValue(wallThermostateSerialParamTypeId).toString() + ")");
+        device->setName("Max! Wall Thermostat (" + device->paramValue(wallThermostateDeviceSerialParamTypeId).toString() + ")");
     }
 
     return DeviceManager::DeviceSetupStatusSuccess;
@@ -156,13 +156,13 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
 {    
     if(device->deviceClassId() == wallThermostateDeviceClassId){
         foreach (MaxCube *cube, m_cubes.keys()){
-            if(cube->serialNumber() == device->paramValue(wallThermostateParentParamTypeId).toString()){
+            if(cube->serialNumber() == device->paramValue(wallThermostateDeviceParentParamTypeId).toString()){
 
-                QByteArray rfAddress = device->paramValue(wallThermostateRfParamTypeId).toByteArray();
-                int roomId = device->paramValue(wallThermostateRoomParamTypeId).toInt();
+                QByteArray rfAddress = device->paramValue(wallThermostateDeviceRfParamTypeId).toByteArray();
+                int roomId = device->paramValue(wallThermostateDeviceRoomParamTypeId).toInt();
 
                 if (action.actionTypeId() == wallThermostateDesiredTemperatureActionTypeId){
-                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostateDesiredTemperatureActionParamTypeId).value().toDouble(), action.id());
+                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostateDesiredTemperatureActionDesiredTemperatureParamTypeId).value().toDouble(), action.id());
                 } else if (action.actionTypeId() == wallThermostateSetAutoModeActionTypeId){
                     cube->setDeviceAutoMode(rfAddress, roomId, action.id());
                 } else if (action.actionTypeId() == wallThermostateSetManualModeActionTypeId){
@@ -170,20 +170,20 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
                 } else if (action.actionTypeId() == wallThermostateSetEcoModeActionTypeId){
                     cube->setDeviceEcoMode(rfAddress, roomId, action.id());
                 } else if (action.actionTypeId() == wallThermostateDisplayCurrentTempActionTypeId){
-                    cube->displayCurrentTemperature(rfAddress, roomId, action.param(wallThermostateDisplayParamTypeId).value().toBool(), action.id());
+                    cube->displayCurrentTemperature(rfAddress, roomId, action.param(wallThermostateDisplayCurrentTempActionDisplayParamTypeId).value().toBool(), action.id());
                 }
                 return DeviceManager::DeviceErrorAsync;
             }
         }
     } else if (device->deviceClassId() == radiatorThermostateDeviceClassId){
         foreach (MaxCube *cube, m_cubes.keys()){
-            if(cube->serialNumber() == device->paramValue(radiatorThermostateParentParamTypeId).toString()){
+            if(cube->serialNumber() == device->paramValue(radiatorThermostateDeviceParentParamTypeId).toString()){
 
-                QByteArray rfAddress = device->paramValue(radiatorThermostateRfParamTypeId).toByteArray();
-                int roomId = device->paramValue(radiatorThermostateRoomParamTypeId).toInt();
+                QByteArray rfAddress = device->paramValue(radiatorThermostateDeviceRfParamTypeId).toByteArray();
+                int roomId = device->paramValue(radiatorThermostateDeviceRoomParamTypeId).toInt();
 
                 if (action.actionTypeId() == radiatorThermostateDesiredTemperatureActionTypeId){
-                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(radiatorThermostateDesiredTemperatureActionParamTypeId).value().toDouble(), action.id());
+                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(radiatorThermostateDesiredTemperatureActionDesiredTemperatureParamTypeId).value().toDouble(), action.id());
                 } else if (action.actionTypeId() == radiatorThermostateSetAutoModeActionTypeId){
                     cube->setDeviceAutoMode(rfAddress, roomId, action.id());
                 } else if (action.actionTypeId() == radiatorThermostateSetManualModeActionTypeId){
@@ -236,13 +236,13 @@ void DevicePluginEQ3::discoveryDone(const QList<MaxCube *> &cubeList)
     foreach (MaxCube *cube, cubeList) {
         DeviceDescriptor descriptor(cubeDeviceClassId, "Max! Cube LAN Gateway",cube->serialNumber());
         ParamList params;
-        Param hostParam(cubeHostParamTypeId, cube->hostAddress().toString());
+        Param hostParam(cubeDeviceHostParamTypeId, cube->hostAddress().toString());
         params.append(hostParam);
-        Param portParam(cubePortParamTypeId, cube->port());
+        Param portParam(cubeDevicePortParamTypeId, cube->port());
         params.append(portParam);
-        Param firmwareParam(cubeFirmwareParamTypeId, cube->firmware());
+        Param firmwareParam(cubeDeviceFirmwareParamTypeId, cube->firmware());
         params.append(firmwareParam);
-        Param serialNumberParam(cubeSerialParamTypeId, cube->serialNumber());
+        Param serialNumberParam(cubeDeviceSerialParamTypeId, cube->serialNumber());
         params.append(serialNumberParam);
 
         descriptor.setParams(params);
@@ -269,7 +269,7 @@ void DevicePluginEQ3::wallThermostatFound()
     foreach (WallThermostat *wallThermostat, cube->wallThermostatList()) {
         bool allreadyAdded = false;
         foreach (Device *device, deviceManager()->findConfiguredDevices(wallThermostateDeviceClassId)){
-            if(wallThermostat->serialNumber() == device->paramValue(wallThermostateSerialParamTypeId).toString()){
+            if(wallThermostat->serialNumber() == device->paramValue(wallThermostateDeviceSerialParamTypeId).toString()){
                 allreadyAdded = true;
                 break;
             }
@@ -277,12 +277,12 @@ void DevicePluginEQ3::wallThermostatFound()
         if(!allreadyAdded){
             DeviceDescriptor descriptor(wallThermostateDeviceClassId, wallThermostat->serialNumber());
             ParamList params;
-            params.append(Param(wallThermostateNameParamTypeId, wallThermostat->deviceName()));
-            params.append(Param(wallThermostateParentParamTypeId, cube->serialNumber()));
-            params.append(Param(wallThermostateSerialParamTypeId, wallThermostat->serialNumber()));
-            params.append(Param(wallThermostateRfParamTypeId, wallThermostat->rfAddress()));
-            params.append(Param(wallThermostateRoomParamTypeId, wallThermostat->roomId()));
-            params.append(Param(wallThermostateRoomNameParamTypeId, wallThermostat->roomName()));
+            params.append(Param(wallThermostateDeviceNameParamTypeId, wallThermostat->deviceName()));
+            params.append(Param(wallThermostateDeviceParentParamTypeId, cube->serialNumber()));
+            params.append(Param(wallThermostateDeviceSerialParamTypeId, wallThermostat->serialNumber()));
+            params.append(Param(wallThermostateDeviceRfParamTypeId, wallThermostat->rfAddress()));
+            params.append(Param(wallThermostateDeviceRoomParamTypeId, wallThermostat->roomId()));
+            params.append(Param(wallThermostateDeviceRoomNameParamTypeId, wallThermostat->roomName()));
             descriptor.setParams(params);
             descriptorList.append(descriptor);
         }
@@ -303,7 +303,7 @@ void DevicePluginEQ3::radiatorThermostatFound()
     foreach (RadiatorThermostat *radiatorThermostat, cube->radiatorThermostatList()) {
         bool allreadyAdded = false;
         foreach (Device *device, deviceManager()->findConfiguredDevices(radiatorThermostateDeviceClassId)){
-            if(radiatorThermostat->serialNumber() == device->paramValue(radiatorThermostateSerialParamTypeId).toString()){
+            if(radiatorThermostat->serialNumber() == device->paramValue(radiatorThermostateDeviceSerialParamTypeId).toString()){
                 allreadyAdded = true;
                 break;
             }
@@ -311,12 +311,12 @@ void DevicePluginEQ3::radiatorThermostatFound()
         if(!allreadyAdded){
             DeviceDescriptor descriptor(radiatorThermostateDeviceClassId, radiatorThermostat->serialNumber());
             ParamList params;
-            params.append(Param(radiatorThermostateNameParamTypeId, radiatorThermostat->deviceName()));
-            params.append(Param(radiatorThermostateParentParamTypeId, cube->serialNumber()));
-            params.append(Param(radiatorThermostateSerialParamTypeId, radiatorThermostat->serialNumber()));
-            params.append(Param(radiatorThermostateRfParamTypeId, radiatorThermostat->rfAddress()));
-            params.append(Param(radiatorThermostateRoomParamTypeId, radiatorThermostat->roomId()));
-            params.append(Param(radiatorThermostateRoomNameParamTypeId, radiatorThermostat->roomName()));
+            params.append(Param(radiatorThermostateDeviceNameParamTypeId, radiatorThermostat->deviceName()));
+            params.append(Param(radiatorThermostateDeviceParentParamTypeId, cube->serialNumber()));
+            params.append(Param(radiatorThermostateDeviceSerialParamTypeId, radiatorThermostat->serialNumber()));
+            params.append(Param(radiatorThermostateDeviceRfParamTypeId, radiatorThermostat->rfAddress()));
+            params.append(Param(radiatorThermostateDeviceRoomParamTypeId, radiatorThermostat->roomId()));
+            params.append(Param(radiatorThermostateDeviceRoomNameParamTypeId, radiatorThermostat->roomName()));
             descriptor.setParams(params);
             descriptorList.append(descriptor);
         }
@@ -344,7 +344,7 @@ void DevicePluginEQ3::wallThermostatDataUpdated()
 
     foreach (WallThermostat *wallThermostat, cube->wallThermostatList()) {
         foreach (Device *device, deviceManager()->findConfiguredDevices(wallThermostateDeviceClassId)){
-            if(device->paramValue(wallThermostateSerialParamTypeId).toString() == wallThermostat->serialNumber()){
+            if(device->paramValue(wallThermostateDeviceSerialParamTypeId).toString() == wallThermostat->serialNumber()){
                 device->setStateValue(wallThermostateComfortTempStateTypeId, wallThermostat->comfortTemp());
                 device->setStateValue(wallThermostateEcoTempStateTypeId, wallThermostat->ecoTemp());
                 device->setStateValue(wallThermostateMaxSetpointTempStateTypeId, wallThermostat->maxSetPointTemp());
@@ -371,7 +371,7 @@ void DevicePluginEQ3::radiatorThermostatDataUpdated()
 
     foreach (RadiatorThermostat *radiatorThermostat, cube->radiatorThermostatList()) {
         foreach (Device *device, deviceManager()->findConfiguredDevices(radiatorThermostateDeviceClassId)){
-            if(device->paramValue(radiatorThermostateSerialParamTypeId).toString() == radiatorThermostat->serialNumber()){
+            if(device->paramValue(radiatorThermostateDeviceSerialParamTypeId).toString() == radiatorThermostat->serialNumber()){
                 device->setStateValue(radiatorThermostateComfortTempStateTypeId, radiatorThermostat->comfortTemp());
                 device->setStateValue(radiatorThermostateMaxSetpointTempStateTypeId, radiatorThermostat->maxSetPointTemp());
                 device->setStateValue(radiatorThermostateMinSetpointTempStateTypeId, radiatorThermostat->minSetPointTemp());

@@ -103,8 +103,8 @@
 #include <QUrlQuery>
 
 DevicePluginDateTime::DevicePluginDateTime() :
-    m_timer(0),
-    m_todayDevice(0),
+    m_timer(nullptr),
+    m_todayDevice(nullptr),
     m_timeZone(QTimeZone(QTimeZone::systemTimeZoneId())),
     m_dusk(QDateTime()),
     m_sunrise(QDateTime()),
@@ -142,17 +142,17 @@ DeviceManager::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *devic
     if (device->deviceClassId() == alarmDeviceClassId) {
         Alarm *alarm = new Alarm(this);
         alarm->setName(device->name());
-        alarm->setMonday(device->paramValue(alarmMondayParamTypeId).toBool());
-        alarm->setTuesday(device->paramValue(alarmTuesdayParamTypeId).toBool());
-        alarm->setWednesday(device->paramValue(alarmWednesdayParamTypeId).toBool());
-        alarm->setThursday(device->paramValue(alarmThursdayParamTypeId).toBool());
-        alarm->setFriday(device->paramValue(alarmFridayParamTypeId).toBool());
-        alarm->setSaturday(device->paramValue(alarmSaturdayParamTypeId).toBool());
-        alarm->setSunday(device->paramValue(alarmSundayParamTypeId).toBool());
-        alarm->setMinutes(device->paramValue(alarmMinutesParamTypeId).toInt());
-        alarm->setHours(device->paramValue(alarmHoursParamTypeId).toInt());
-        alarm->setTimeType(device->paramValue(alarmTimeTypeParamTypeId).toString());
-        alarm->setOffset(device->paramValue(alarmOffsetParamTypeId).toInt());
+        alarm->setMonday(device->paramValue(alarmDeviceMondayParamTypeId).toBool());
+        alarm->setTuesday(device->paramValue(alarmDeviceTuesdayParamTypeId).toBool());
+        alarm->setWednesday(device->paramValue(alarmDeviceWednesdayParamTypeId).toBool());
+        alarm->setThursday(device->paramValue(alarmDeviceThursdayParamTypeId).toBool());
+        alarm->setFriday(device->paramValue(alarmDeviceFridayParamTypeId).toBool());
+        alarm->setSaturday(device->paramValue(alarmDeviceSaturdayParamTypeId).toBool());
+        alarm->setSunday(device->paramValue(alarmDeviceSundayParamTypeId).toBool());
+        alarm->setMinutes(device->paramValue(alarmDeviceMinutesParamTypeId).toInt());
+        alarm->setHours(device->paramValue(alarmDeviceHoursParamTypeId).toInt());
+        alarm->setTimeType(device->paramValue(alarmDeviceTimeTypeParamTypeId).toString());
+        alarm->setOffset(device->paramValue(alarmDeviceOffsetParamTypeId).toInt());
         alarm->setDusk(m_dusk);
         alarm->setSunrise(m_sunrise);
         alarm->setNoon(m_noon);
@@ -166,10 +166,10 @@ DeviceManager::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *devic
 
     if (device->deviceClassId() == countdownDeviceClassId) {
         Countdown *countdown = new Countdown(device->name(),
-                                             QTime(device->paramValue(countdownHoursParamTypeId).toInt(),
-                                                   device->paramValue(countdownMinutesParamTypeId).toInt(),
-                                                   device->paramValue(countdownSecondsParamTypeId).toInt()),
-                                             device->paramValue(countdownRepeatingParamTypeId).toBool());
+                                             QTime(device->paramValue(countdownDeviceHoursParamTypeId).toInt(),
+                                                   device->paramValue(countdownDeviceMinutesParamTypeId).toInt(),
+                                                   device->paramValue(countdownDeviceSecondsParamTypeId).toInt()),
+                                             device->paramValue(countdownDeviceRepeatingParamTypeId).toBool());
 
         connect(countdown, &Countdown::countdownTimeout, this, &DevicePluginDateTime::onCountdownTimeout);
         connect(countdown, &Countdown::runningStateChanged, this, &DevicePluginDateTime::onCountdownRunningChanged);
@@ -203,7 +203,7 @@ void DevicePluginDateTime::deviceRemoved(Device *device)
 
     // date
     if (device->deviceClassId() == todayDeviceClassId) {
-        m_todayDevice = 0;
+        m_todayDevice = nullptr;
     }
 
     // alarm
@@ -254,7 +254,7 @@ void DevicePluginDateTime::startMonitoringAutoDevices()
 
 void DevicePluginDateTime::searchGeoLocation()
 {
-    if (m_todayDevice == 0)
+    if (!m_todayDevice)
         return;
 
     QNetworkRequest request;
@@ -454,7 +454,7 @@ void DevicePluginDateTime::onDayChanged(const QDateTime &dateTime)
 {
     qCDebug(dcDateTime) << "day changed" << dateTime.toString();
 
-    if (m_todayDevice == 0)
+    if (!m_todayDevice)
         return;
 
     m_todayDevice->setStateValue(todayDayStateTypeId, dateTime.date().day());
@@ -482,7 +482,7 @@ void DevicePluginDateTime::updateTimes()
     }
 
     // date
-    if (m_todayDevice == 0)
+    if (!m_todayDevice)
         return;
 
     if (m_dusk.isValid()) {
@@ -515,7 +515,7 @@ void DevicePluginDateTime::updateTimes()
 
 void DevicePluginDateTime::validateTimeTypes(const QDateTime &dateTime)
 {
-    if (m_todayDevice == 0)
+    if (!m_todayDevice)
         return;
 
     if (dateTime == m_dusk) {

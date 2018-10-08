@@ -55,7 +55,7 @@ DeviceManager::DeviceError DevicePluginRemoteSsh::executeAction(Device *device, 
 
         if (action.actionTypeId() == reverseSshConnectedActionTypeId) {
 
-            if (action.param(reverseSshConnectedActionParamTypeId).value().toBool() == true) {
+            if (action.param(reverseSshConnectedActionConnectedParamTypeId).value().toBool() == true) {
                 QProcess *process = startReverseSSHProcess(device);
                 m_reverseSSHProcess.insert(process, device);
                 m_startingProcess.insert(process, action.id());
@@ -115,11 +115,11 @@ QProcess * DevicePluginRemoteSsh::startReverseSSHProcess(Device *device)
     connect(process, &QProcess::readyRead, this, &DevicePluginRemoteSsh::processReadyRead);
 
     QStringList arguments;
-    int localPort    = device->paramValue(reverseSshLocalPortParamTypeId).toInt();
-    int remotePort   = device->paramValue(reverseSshRemotePortParamTypeId).toInt();
-    QString user     = device->paramValue(reverseSshUserParamTypeId).toString();
-    QString password = device->paramValue(reverseSshPasswordParamTypeId).toString();
-    QString address  = device->paramValue(reverseSshAddressParamTypeId).toString();
+    int localPort    = device->paramValue(reverseSshDeviceLocalPortParamTypeId).toInt();
+    int remotePort   = device->paramValue(reverseSshDeviceRemotePortParamTypeId).toInt();
+    QString user     = device->paramValue(reverseSshDeviceUserParamTypeId).toString();
+    QString password = device->paramValue(reverseSshDevicePasswordParamTypeId).toString();
+    QString address  = device->paramValue(reverseSshDeviceAddressParamTypeId).toString();
 
     arguments << "-p" << password;
     arguments << "ssh" << "-o StrictHostKeyChecking=no" << "-oUserKnownHostsFile=/dev/null";

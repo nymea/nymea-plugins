@@ -77,8 +77,8 @@ DeviceManager::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
 {
     qCDebug(dcSenic()) << "Setup device" << device->name() << device->params();
 
-    QString name = device->paramValue(nuimoNameParamTypeId).toString();
-    QBluetoothAddress address = QBluetoothAddress(device->paramValue(nuimoMacParamTypeId).toString());
+    QString name = device->paramValue(nuimoDeviceNameParamTypeId).toString();
+    QBluetoothAddress address = QBluetoothAddress(device->paramValue(nuimoDeviceMacParamTypeId).toString());
     QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
 
     BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::RandomAddress);
@@ -107,23 +107,23 @@ DeviceManager::DeviceError DevicePluginSenic::executeAction(Device *device, cons
 
     if (action.actionTypeId() == nuimoShowLogoActionTypeId) {
 
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Up")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Up")
             nuimo->showImage(Nuimo::MatrixTypeUp);
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Down")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Down")
             nuimo->showImage(Nuimo::MatrixTypeDown);
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Left")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Left")
             nuimo->showImage(Nuimo::MatrixTypeLeft);
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Right")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Right")
             nuimo->showImage(Nuimo::MatrixTypeRight);
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Play")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Play")
             nuimo->showImage(Nuimo::MatrixTypePlay);
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Pause")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Pause")
             nuimo->showImage(Nuimo::MatrixTypePause);
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Stop")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Stop")
             nuimo->showImage(Nuimo::MatrixTypeStop);
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Music")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Music")
             nuimo->showImage(Nuimo::MatrixTypeStop);
-        if (action.param(nuimoLogoParamTypeId).value().toString() == "Heart")
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Heart")
             nuimo->showImage(Nuimo::MatrixTypeHeart);
 
         return DeviceManager::DeviceErrorNoError;
@@ -145,7 +145,7 @@ void DevicePluginSenic::deviceRemoved(Device *device)
 bool DevicePluginSenic::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
 {
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(nuimoMacParamTypeId).toString() == deviceInfo.address().toString())
+        if (device->paramValue(nuimoDeviceMacParamTypeId).toString() == deviceInfo.address().toString())
             return true;
     }
 
@@ -178,8 +178,8 @@ void DevicePluginSenic::onBluetoothDiscoveryFinished()
             if (!verifyExistingDevices(deviceInfo)) {
                 DeviceDescriptor descriptor(nuimoDeviceClassId, "Nuimo", deviceInfo.address().toString());
                 ParamList params;
-                params.append(Param(nuimoNameParamTypeId, deviceInfo.name()));
-                params.append(Param(nuimoMacParamTypeId, deviceInfo.address().toString()));
+                params.append(Param(nuimoDeviceNameParamTypeId, deviceInfo.name()));
+                params.append(Param(nuimoDeviceMacParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
             }
@@ -220,8 +220,6 @@ void DevicePluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
         break;
     case Nuimo::SwipeDirectionDown:
         emitEvent(Event(nuimoSwipeDownEventTypeId, device->id()));
-        break;
-    default:
         break;
     }
 }

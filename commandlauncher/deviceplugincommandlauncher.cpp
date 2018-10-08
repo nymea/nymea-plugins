@@ -117,7 +117,7 @@ DeviceManager::DeviceSetupStatus DevicePluginCommandLauncher::setupDevice(Device
 
     // Script
     if(device->deviceClassId() == scriptDeviceClassId){
-        QStringList scriptArguments = device->paramValue(scriptScriptParamTypeId).toString().split(QRegExp("[ \r\n][ \r\n]*"));
+        QStringList scriptArguments = device->paramValue(scriptDeviceScriptParamTypeId).toString().split(QRegExp("[ \r\n][ \r\n]*"));
         // check if script exists and if it is executable
         QFileInfo fileInfo(scriptArguments.first());
         if (!fileInfo.exists()) {
@@ -156,7 +156,7 @@ DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *de
 
             m_applications.insert(process, device);
             m_startingApplications.insert(process, action.id());
-            process->start("/bin/bash", QStringList() << "-c" << device->paramValue(applicationCommandParamTypeId).toString());
+            process->start("/bin/bash", QStringList() << "-c" << device->paramValue(applicationDeviceCommandParamTypeId).toString());
 
             return DeviceManager::DeviceErrorAsync;
         }
@@ -191,7 +191,7 @@ DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *de
 
             m_scripts.insert(process, device);
             m_startingScripts.insert(process, action.id());
-            process->start("/bin/bash", QStringList() << device->paramValue(scriptScriptParamTypeId).toString());
+            process->start("/bin/bash", QStringList() << device->paramValue(scriptDeviceScriptParamTypeId).toString());
 
             return DeviceManager::DeviceErrorAsync;
         }
