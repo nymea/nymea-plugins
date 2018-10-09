@@ -369,7 +369,8 @@ void DevicePluginUniPi::connectToEvok()
 {
     if (m_webSocket == NULL) {
 
-        int port = 8080; //configValue(uniPiPortParamTypeId).toInt(); //FIXME plugin configuration loading currently not possible in init
+        int port = 8080;
+        //configValue(uniPiPortParamTypeId).toInt(); //FIXME plugin configuration loading currently not possible in init
 
         m_webSocket = new QWebSocket();
         connect(m_webSocket, &QWebSocket::connected, this, &DevicePluginUniPi::onWebSocketConnected);
