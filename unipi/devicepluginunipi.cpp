@@ -76,18 +76,18 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
-    if (device->deviceClassId() == shutterDeviceClassId) {
+    if (device->deviceClassId() == blindDeviceClassId) {
 
-        if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GpioType::Relay) {
-            m_usedRelais.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
-        } else if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.insert(device->paramValue(shutterOutputOpenParamTypeId).toString(), device);
+        if (device->paramValue(blindOutputTypeOpenParamTypeId) == GpioType::Relay) {
+            m_usedRelais.insert(device->paramValue(blindOutputOpenParamTypeId).toString(), device);
+        } else if (device->paramValue(blindOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.insert(device->paramValue(blindOutputOpenParamTypeId).toString(), device);
         }
 
-        if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GpioType::Relay) {
-            m_usedRelais.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
-        } else if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.insert(device->paramValue(shutterOutputCloseParamTypeId).toString(), device);
+        if (device->paramValue(blindOutputTypeCloseParamTypeId) == GpioType::Relay) {
+            m_usedRelais.insert(device->paramValue(blindOutputCloseParamTypeId).toString(), device);
+        } else if (device->paramValue(blindOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.insert(device->paramValue(blindOutputCloseParamTypeId).toString(), device);
         }
 
         return DeviceManager::DeviceSetupStatusSuccess;
@@ -121,6 +121,11 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params);
+    qSort(m_relais);
+    qSort(m_digitalOutputs);
+    qSort(m_digitalInputs);
+    qSort(m_analogInputs);
+    qSort(m_analogOutputs);
 
     const DeviceClass deviceClass = deviceManager()->findDeviceClass(deviceClassId);
     if (deviceClass.vendorId() == unipiVendorId) {
@@ -226,10 +231,9 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
             return DeviceManager::DeviceErrorAsync;
         }
 
-        if (deviceClassId == shutterDeviceClassId) {
+        if (deviceClassId == blindDeviceClassId) {
             // Create the list of available gpios
             QList<DeviceDescriptor> deviceDescriptors;
-
             for (int i = 0; i < (m_relais.count()-1); i++) {
 
                 const QString openingCircuit = m_relais.at(i);
@@ -244,12 +248,12 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                     // Offer only relais which aren't in use already
                     if (!m_usedRelais.contains(closingCircuit)){
 
-                        DeviceDescriptor descriptor(deviceClassId, "Roller shutter", QString("Opening relay %1 | Closing relay %2").arg(openingCircuit, closingCircuit));
+                        DeviceDescriptor descriptor(deviceClassId, "Blind", QString("Opening relay %1 | Closing relay %2").arg(openingCircuit, closingCircuit));
                         ParamList parameters;
-                        parameters.append(Param(shutterOutputOpenParamTypeId, openingCircuit));
-                        parameters.append(Param(shutterOutputCloseParamTypeId, closingCircuit));
-                        parameters.append(Param(shutterOutputTypeOpenParamTypeId, GpioType::Relay));
-                        parameters.append(Param(shutterOutputTypeCloseParamTypeId, GpioType::Relay));
+                        parameters.append(Param(blindOutputOpenParamTypeId, openingCircuit));
+                        parameters.append(Param(blindOutputCloseParamTypeId, closingCircuit));
+                        parameters.append(Param(blindOutputTypeOpenParamTypeId, GpioType::Relay));
+                        parameters.append(Param(blindOutputTypeCloseParamTypeId, GpioType::Relay));
                         descriptor.setParams(parameters);
                         deviceDescriptors.append(descriptor);
                         break;
@@ -271,12 +275,12 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                     // Offer only relais which aren't in use already
                     if (!m_usedDigitalOutputs.contains(closingCircuit)){
 
-                        DeviceDescriptor descriptor(deviceClassId, "Roller shutter", QString("Opening output %1 | Closing output %2").arg(openingCircuit, closingCircuit));
+                        DeviceDescriptor descriptor(deviceClassId, "Blind", QString("Opening output %1 | Closing output %2").arg(openingCircuit, closingCircuit));
                         ParamList parameters;
-                        parameters.append(Param(shutterOutputOpenParamTypeId, openingCircuit));
-                        parameters.append(Param(shutterOutputCloseParamTypeId, closingCircuit));
-                        parameters.append(Param(shutterOutputTypeOpenParamTypeId, GpioType::DigitalOutput));
-                        parameters.append(Param(shutterOutputTypeCloseParamTypeId, GpioType::DigitalOutput));
+                        parameters.append(Param(blindOutputOpenParamTypeId, openingCircuit));
+                        parameters.append(Param(blindOutputCloseParamTypeId, closingCircuit));
+                        parameters.append(Param(blindOutputTypeOpenParamTypeId, GpioType::DigitalOutput));
+                        parameters.append(Param(blindOutputTypeCloseParamTypeId, GpioType::DigitalOutput));
                         descriptor.setParams(parameters);
                         deviceDescriptors.append(descriptor);
                         break;
@@ -392,17 +396,17 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
     } else if (device->deviceClassId() == analogInputDeviceClassId) {
         m_usedAnalogInputs.remove(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString());
 
-    } else if (device->deviceClassId() == shutterDeviceClassId) {
-        if (device->paramValue(shutterOutputTypeOpenParamTypeId) == GpioType::Relay) {
-            m_usedRelais.remove(device->paramValue(shutterOutputOpenParamTypeId).toString());
-        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.remove(device->paramValue(shutterOutputOpenParamTypeId).toString());
+    } else if (device->deviceClassId() == blindDeviceClassId) {
+        if (device->paramValue(blindOutputTypeOpenParamTypeId) == GpioType::Relay) {
+            m_usedRelais.remove(device->paramValue(blindOutputOpenParamTypeId).toString());
+        } else if (device->paramValue(blindOutputOpenParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.remove(device->paramValue(blindOutputOpenParamTypeId).toString());
         }
 
-        if (device->paramValue(shutterOutputTypeCloseParamTypeId) == GpioType::Relay) {
-            m_usedRelais.remove(device->paramValue(shutterOutputCloseParamTypeId).toString());
-        } else if (device->paramValue(shutterOutputOpenParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.remove(device->paramValue(shutterOutputCloseParamTypeId).toString());
+        if (device->paramValue(blindOutputTypeCloseParamTypeId) == GpioType::Relay) {
+            m_usedRelais.remove(device->paramValue(blindOutputCloseParamTypeId).toString());
+        } else if (device->paramValue(blindOutputOpenParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.remove(device->paramValue(blindOutputCloseParamTypeId).toString());
         }
 
     } else if (device->deviceClassId() == lightDeviceClassId) {
@@ -473,23 +477,23 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
-    if (device->deviceClassId() == shutterDeviceClassId) {
-        QString circuitOpen = device->paramValue(shutterOutputOpenParamTypeId).toString();
-        QString circuitClose = device->paramValue(shutterOutputCloseParamTypeId).toString();
+    if (device->deviceClassId() == blindDeviceClassId) {
+        QString circuitOpen = device->paramValue(blindOutputOpenParamTypeId).toString();
+        QString circuitClose = device->paramValue(blindOutputCloseParamTypeId).toString();
 
-        if (action.actionTypeId() == shutterCloseActionTypeId) {
+        if (action.actionTypeId() == blindCloseActionTypeId) {
 
             setOutput(circuitOpen, false);
             setOutput(circuitClose, true);
             return DeviceManager::DeviceErrorNoError;
         }
-        if (action.actionTypeId() == shutterOpenActionTypeId) {
+        if (action.actionTypeId() == blindOpenActionTypeId) {
 
             setOutput(circuitClose, false);
             setOutput(circuitOpen, true);
             return DeviceManager::DeviceErrorNoError;
         }
-        if (action.actionTypeId() == shutterStopActionTypeId) {
+        if (action.actionTypeId() == blindStopActionTypeId) {
             setOutput(circuitOpen, false);
             setOutput(circuitClose, false);
 
@@ -501,7 +505,7 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
     if (device->deviceClassId() == lightDeviceClassId) {
 
         QString circuit = device->paramValue(lightOutputParamTypeId).toString();
-        bool stateValue = action.param(digitalOutputPowerActionParamTypeId).value().toBool();
+        bool stateValue = action.param(lightPowerActionParamTypeId).value().toBool();
 
         setOutput(circuit, stateValue);
         return DeviceManager::DeviceErrorNoError;
@@ -576,23 +580,23 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                         Device *device = m_usedRelais.value(circuit);
                         if (device->deviceClassId() == relayOutputDeviceClassId) {
                             device->setStateValue(relayOutputPowerStateTypeId, value);
-                        } else if (device->deviceClassId() == shutterDeviceClassId) {
-                            if (circuit == device->paramValue(shutterOutputOpenParamTypeId).toString()) {
-                                if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
-                                    device->setStateValue(shutterStatusStateTypeId, "close");
-                                } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("open")) {
-                                    device->setStateValue(shutterStatusStateTypeId, "stop");
+                        } else if (device->deviceClassId() == blindDeviceClassId) {
+                            if (circuit == device->paramValue(blindOutputOpenParamTypeId).toString()) {
+                                if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
+                                    device->setStateValue(blindStatusStateTypeId, "opening");
+                                } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
+                                    device->setStateValue(blindStatusStateTypeId, "stopped");
                                 } else {
-                                    qWarning(dcUniPi()) << "shutter" << device << "Output open:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
+                                    qWarning(dcUniPi()) << "Blind" << device << "Output open:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
                                 }
                             }
-                            if (circuit == device->paramValue(shutterOutputCloseParamTypeId).toString()) {
-                                if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
-                                    device->setStateValue(shutterStatusStateTypeId, "close");
-                                } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("close")) {
-                                    device->setStateValue(shutterStatusStateTypeId, "stop");
+                            if (circuit == device->paramValue(blindOutputCloseParamTypeId).toString()) {
+                                if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
+                                    device->setStateValue(blindStatusStateTypeId, "closing");
+                                } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
+                                    device->setStateValue(blindStatusStateTypeId, "stopped");
                                 } else {
-                                    qWarning(dcUniPi()) << "shutter" << device << "Output close:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
+                                    qWarning(dcUniPi()) << "Blind" << device << "Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
                                 }
                                 break;
                             }
@@ -611,23 +615,23 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                         Device *device = m_usedDigitalOutputs.value(obj["circuit"].toString());
                         if (device->deviceClassId() == digitalOutputDeviceClassId) {
                             device->setStateValue(digitalOutputPowerStateTypeId, QVariant(obj["value"].toInt()).toBool());
-                        } else if (device->deviceClassId() == shutterDeviceClassId) {
-                            if (circuit == device->paramValue(shutterOutputOpenParamTypeId).toString()) {
-                                if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
-                                    device->setStateValue(shutterStatusStateTypeId, "close");
-                                } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("open")) {
-                                    device->setStateValue(shutterStatusStateTypeId, "stop");
+                        } else if (device->deviceClassId() == blindDeviceClassId) {
+                            if (circuit == device->paramValue(blindOutputOpenParamTypeId).toString()) {
+                                if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stop")) {
+                                    device->setStateValue(blindStatusStateTypeId, "open");
+                                } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("open")) {
+                                    device->setStateValue(blindStatusStateTypeId, "stop");
                                 } else {
-                                    qWarning(dcUniPi()) << "shutter" << device << "Output open:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
+                                    qWarning(dcUniPi()) << "blind" << device << "Output open:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
                                 }
                             }
-                            if (circuit == device->paramValue(shutterOutputCloseParamTypeId).toString()) {
-                                if (value && device->stateValue(shutterStatusStateTypeId).toString().contains("stop")) {
-                                    device->setStateValue(shutterStatusStateTypeId, "close");
-                                } else if (!value && device->stateValue(shutterStatusStateTypeId).toString().contains("close")) {
-                                    device->setStateValue(shutterStatusStateTypeId, "stop");
+                            if (circuit == device->paramValue(blindOutputCloseParamTypeId).toString()) {
+                                if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stop")) {
+                                    device->setStateValue(blindStatusStateTypeId, "close");
+                                } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("close")) {
+                                    device->setStateValue(blindStatusStateTypeId, "stop");
                                 } else {
-                                    qWarning(dcUniPi()) << "shutter" << device << "Output close:" << value << "Status: " << device->stateValue(shutterStatusStateTypeId).toString();
+                                    qWarning(dcUniPi()) << "blind" << device << "Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
                                 }
                                 break;
                             }

@@ -217,11 +217,11 @@
                 },
                 {
                     "id": "eadddc99-ce7d-4169-a2f9-a829fa105ad2",
-                    "name": "shutter",
-                    "displayName": "Shutter",
-                    "deviceIcon": "RollerShutter",
+                    "name": "blind",
+                    "displayName": "Blind",
+                    "deviceIcon": "Blinds",
                     "createMethods": ["discovery"],
-                    "interfaces": ["shutter"],
+                    "interfaces": ["blind"],
                     "basicTags": ["Actuator"],
                     "paramTypes": [
                         {
@@ -259,11 +259,11 @@
                             "displayNameEvent": "Status changed",
                             "type": "QString",
                             "possibleValues":[
-                                "open",
-                                "stop",
-                                "close"
+                                "opening",
+                                "stopped",
+                                "closing"
                             ],
-                            "defaultValue": "stop"
+                            "defaultValue": "stopped"
                         }
                     ],
                     "actionTypes":[
