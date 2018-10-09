@@ -637,7 +637,6 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                                     qWarning(dcUniPi()) << "blind" << device << "Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
                                     device->setStateValue(blindStatusStateTypeId, "stopped");
                                 }
-                                break;
                             }
                         } else if (device->deviceClassId() == lightDeviceClassId) {
                             device->setStateValue(lightPowerStateTypeId, QVariant(obj["value"].toInt()).toBool());
