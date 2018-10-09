@@ -587,9 +587,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                                     if (device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
                                         device->setStateValue(blindStatusStateTypeId, "opening");
                                     } else if (device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
-                                        //error both relais are on
-                                        qWarning(dcUniPi()) << "Blind" << device->name() << "Critical state - Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
-                                        device->setStateValue(blindStatusStateTypeId, "stopped");
+                                        device->setStateValue(blindStatusStateTypeId, "opening");
                                     } else if (device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
                                         //state unchanged
                                     }
@@ -610,9 +608,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                                     } else if (device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
                                         //state unchanged
                                     } else if (device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
-                                        //error both relais are on
-                                        qWarning(dcUniPi()) << "Blind" << device->name() << "Critical state - Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
-                                        device->setStateValue(blindStatusStateTypeId, "stopped");
+                                        device->setStateValue(blindStatusStateTypeId, "closing");
                                     }
                                 } else {
                                     if (device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
