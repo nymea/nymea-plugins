@@ -583,23 +583,45 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                             device->setStateValue(relayOutputPowerStateTypeId, value);
                         } else if (device->deviceClassId() == blindDeviceClassId) {
                             if (circuit == device->paramValue(blindOutputOpenParamTypeId).toString()) {
-                                if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
-                                    device->setStateValue(blindStatusStateTypeId, "opening");
-                                } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
-                                    device->setStateValue(blindStatusStateTypeId, "stopped");
+                                if (value) {
+                                    if (device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
+                                        device->setStateValue(blindStatusStateTypeId, "opening");
+                                    } else if (device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
+                                        //error both relais are on
+                                        qWarning(dcUniPi()) << "Blind" << device->name() << "Critical state - Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
+                                        device->setStateValue(blindStatusStateTypeId, "stopped");
+                                    } else if (device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
+                                        //state unchanged
+                                    }
                                 } else {
-                                    qWarning(dcUniPi()) << "Blind" << device << "Output open:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
-                                    device->setStateValue(blindStatusStateTypeId, "stopped");
+                                    if (device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
+                                        // state unchanged
+                                    } else if (device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
+                                        // state unchanged
+                                    } else if (device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
+                                        device->setStateValue(blindStatusStateTypeId, "stopped");
+                                    }
                                 }
                             }
                             if (circuit == device->paramValue(blindOutputCloseParamTypeId).toString()) {
-                                if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
-                                    device->setStateValue(blindStatusStateTypeId, "closing");
-                                } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
-                                    device->setStateValue(blindStatusStateTypeId, "stopped");
+                                if (value) {
+                                    if (device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
+                                        device->setStateValue(blindStatusStateTypeId, "closing");
+                                    } else if (device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
+                                        //state unchanged
+                                    } else if (device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
+                                        //error both relais are on
+                                        qWarning(dcUniPi()) << "Blind" << device->name() << "Critical state - Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
+                                        device->setStateValue(blindStatusStateTypeId, "stopped");
+                                    }
                                 } else {
-                                    qWarning(dcUniPi()) << "Blind" << device << "Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
-                                    device->setStateValue(blindStatusStateTypeId, "stopped");
+                                    if (device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
+                                        // state unchanged
+                                    } else if (device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
+                                        device->setStateValue(blindStatusStateTypeId, "stopped");
+                                    } else if (device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
+                                        // state unchanged
+                                    }
                                 }
                             }
 
@@ -623,7 +645,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                                     device->setStateValue(blindStatusStateTypeId, "opening");
                                 } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
                                     device->setStateValue(blindStatusStateTypeId, "stopped");
-                                } else {      
+                                } else {
                                     qWarning(dcUniPi()) << "blind" << device << "Output open:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
                                     device->setStateValue(blindStatusStateTypeId, "stopped");
                                 }
@@ -667,7 +689,6 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             }
         }
 
-
         if (obj["dev"] == "led") { //TODO can't discover leds without toggling it from another client
             qCDebug(dcUniPi()) << "Led:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
 
@@ -683,14 +704,13 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             if (!m_analogOutputs.contains(obj["circuit"].toString())){
                 //New Device detected
                 m_analogOutputs.append(obj["circuit"].toString());
-
             } else {
-                foreach (Device *device, myDevices()) {
+                if (m_usedAnalogOutputs.contains(obj["circuit"].toString())) {
+                    double value = QVariant(obj["value"]).toDouble();
+                    Device *device = m_usedDigitalInputs.value(obj["circuit"].toString());
+
                     if (device->deviceClassId() == analogOutputDeviceClassId) {
-                        if (obj["circuit"] == device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString()) {
-                            device->setStateValue(analogOutputAnalogOutputValueStateTypeId, obj["value"].toDouble());
-                            break;
-                        }
+                        device->setStateValue(analogOutputAnalogOutputValueStateTypeId, value);
                     }
                 }
             }
@@ -703,13 +723,12 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                 //New analog output detected
                 m_analogInputs.append(obj["circuit"].toString());
             } else {
-                foreach (Device *device, myDevices()) {
-                    if (device->deviceClassId() == analogInputDeviceClassId) {
+                if (m_usedAnalogInputs.contains(obj["circuit"].toString())) {
+                    double value = QVariant(obj["value"]).toDouble();
+                    Device *device = m_usedDigitalInputs.value(obj["circuit"].toString());
 
-                        if (obj["circuit"] == device->paramValue(analogInputAnalogInputNumberParamTypeId).toString()) {
-                            device->setStateValue(analogInputAnalogInputValueStateTypeId, obj["value"].toDouble());
-                            break;
-                        }
+                    if (device->deviceClassId() == analogInputDeviceClassId) {
+                        device->setStateValue(analogInputAnalogInputValueStateTypeId, value);
                     }
                 }
             }
