@@ -66,7 +66,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPlantCare::setupDevice(Device *devi
     qCDebug(dcPlantCare) << "Setup Plant Care" << device->name() << device->params();
 
     // Check if device already added with this address
-    if (deviceAlreadyAdded(QHostAddress(device->paramValue(plantCareHostParamTypeId).toString()))) {
+    if (deviceAlreadyAdded(QHostAddress(device->paramValue(plantCareDeviceHostParamTypeId).toString()))) {
         qCWarning(dcPlantCare) << "Device with this address already added.";
         return DeviceManager::DeviceSetupStatusFailure;
     }
@@ -102,7 +102,7 @@ DeviceManager::DeviceError DevicePluginPlantCare::discoverDevices(const DeviceCl
     Q_UNUSED(params)
 
     // Perform a HTTP GET on the RPL router address
-    QHostAddress address(configuration().paramValue(plantCareRplParamTypeId).toString());
+    QHostAddress address(configuration().paramValue(plantCarePluginRplParamTypeId).toString());
     qCDebug(dcPlantCare) << "Scan for new nodes on RPL" << address.toString();
 
     QUrl url;
@@ -132,7 +132,7 @@ DeviceManager::DeviceError DevicePluginPlantCare::executeAction(Device *device, 
     if (action.actionTypeId() == plantCareToggleLedActionTypeId) {
         QUrl url;
         url.setScheme("coap");
-        url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+        url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
         url.setPath("/a/toggle");
 
         CoapReply *reply = m_coap->post(CoapRequest(url));
@@ -148,11 +148,11 @@ DeviceManager::DeviceError DevicePluginPlantCare::executeAction(Device *device, 
         return DeviceManager::DeviceErrorAsync;
 
     } else if(action.actionTypeId() == plantCareLedPowerActionTypeId) {
-        int power = action.param(plantCareLedPowerActionParamTypeId).value().toInt();
+        int power = action.param(plantCareLedPowerActionLedPowerParamTypeId).value().toInt();
 
         QUrl url;
         url.setScheme("coap");
-        url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+        url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
         url.setPath("/a/light");
 
         QByteArray payload = QString("pwm=%1").arg(QString::number(power)).toUtf8();
@@ -170,11 +170,11 @@ DeviceManager::DeviceError DevicePluginPlantCare::executeAction(Device *device, 
         return DeviceManager::DeviceErrorAsync;
 
     } else if(action.actionTypeId() == plantCareWaterPumpActionTypeId) {
-        bool pump = action.param(plantCareWaterPumpActionParamTypeId).value().toBool();
+        bool pump = action.param(plantCareWaterPumpActionWaterPumpParamTypeId).value().toBool();
 
         QUrl url;
         url.setScheme("coap");
-        url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+        url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
         url.setPath("/a/pump");
 
         QByteArray payload = QString("mode=%1").arg(QString::number((int)pump)).toUtf8();
@@ -198,7 +198,7 @@ void DevicePluginPlantCare::pingDevice(Device *device)
 {
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+    url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
     m_pingReplies.insert(m_coap->ping(CoapRequest(url)), device);
 }
 
@@ -207,7 +207,7 @@ void DevicePluginPlantCare::updateBattery(Device *device)
     qCDebug(dcPlantCare) << "Update" << device->name() << "battery value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+    url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
     url.setPath("/s/battery");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -224,7 +224,7 @@ void DevicePluginPlantCare::updateMoisture(Device *device)
     qCDebug(dcPlantCare) << "Update" << device->name() << "moisture value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+    url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
     url.setPath("/s/moisture");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -242,7 +242,7 @@ void DevicePluginPlantCare::updateWater(Device *device)
     qCDebug(dcPlantCare) << "Update" << device->name() << "water value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+    url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
     url.setPath("/s/water");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -260,7 +260,7 @@ void DevicePluginPlantCare::updateBrightness(Device *device)
     qCDebug(dcPlantCare) << "Update" << device->name() << "brightness value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+    url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
     url.setPath("/a/light");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -278,7 +278,7 @@ void DevicePluginPlantCare::updatePump(Device *device)
     qCDebug(dcPlantCare) << "Update" << device->name() << "pump value";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+    url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
     url.setPath("/a/pump");
     CoapReply *reply = m_coap->get(CoapRequest(url));
     if (reply->isFinished() && reply->error() != CoapReply::NoError) {
@@ -296,7 +296,7 @@ void DevicePluginPlantCare::enableNotifications(Device *device)
     qCDebug(dcPlantCare) << "Enable" << device->name() << "notifications";
     QUrl url;
     url.setScheme("coap");
-    url.setHost(device->paramValue(plantCareHostParamTypeId).toString());
+    url.setHost(device->paramValue(plantCareDeviceHostParamTypeId).toString());
 
     url.setPath("/s/water");
     m_enableNotification.insert(m_coap->enableResourceNotifications(CoapRequest(url)), device);
@@ -342,7 +342,7 @@ bool DevicePluginPlantCare::deviceAlreadyAdded(const QHostAddress &address)
 {
     // Check if we already have a device with the given address
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(plantCareHostParamTypeId).toString() == address.toString()) {
+        if (device->paramValue(plantCareDeviceHostParamTypeId).toString() == address.toString()) {
             return true;
         }
     }
@@ -353,11 +353,11 @@ Device *DevicePluginPlantCare::findDevice(const QHostAddress &address)
 {
     // Return the device pointer with the given address (otherwise 0)
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(plantCareHostParamTypeId).toString() == address.toString()) {
+        if (device->paramValue(plantCareDeviceHostParamTypeId).toString() == address.toString()) {
             return device;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void DevicePluginPlantCare::onPluginTimer()
@@ -402,7 +402,7 @@ void DevicePluginPlantCare::onNetworkReplyFinished()
             // Create a deviceDescriptor for each found address
             DeviceDescriptor descriptor(deviceClassId, "Plant Care", address.toString());
             ParamList params;
-            params.append(Param(plantCareHostParamTypeId, address.toString()));
+            params.append(Param(plantCareDeviceHostParamTypeId, address.toString()));
             descriptor.setParams(params);
             deviceDescriptors.append(descriptor);
         }
@@ -517,7 +517,7 @@ void DevicePluginPlantCare::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(plantCareLedPowerStateTypeId, action.param(plantCareLedPowerActionParamTypeId).value().toBool());
+        device->setStateValue(plantCareLedPowerStateTypeId, action.param(plantCareLedPowerActionLedPowerParamTypeId).value().toBool());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 
@@ -543,7 +543,7 @@ void DevicePluginPlantCare::coapReplyFinished(CoapReply *reply)
         }
 
         // Update the state here, so we don't have to wait for the notification
-        device->setStateValue(plantCareWaterPumpStateTypeId, action.param(plantCareWaterPumpActionParamTypeId).value().toBool());
+        device->setStateValue(plantCareWaterPumpStateTypeId, action.param(plantCareWaterPumpActionWaterPumpParamTypeId).value().toBool());
         // Tell the user about the action execution result
         emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
 

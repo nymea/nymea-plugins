@@ -39,8 +39,8 @@ DevicePluginSnapd::~DevicePluginSnapd()
 void DevicePluginSnapd::init()
 {
     // Initialize plugin configurations
-    m_advancedMode = configValue(snapdAdvancedModeParamTypeId).toBool();
-    m_refreshTime = configValue(snapdRefreshScheduleParamTypeId).toInt();
+    m_advancedMode = configValue(snapdPluginAdvancedModeParamTypeId).toBool();
+    m_refreshTime = configValue(snapdPluginRefreshScheduleParamTypeId).toInt();
     connect(this, &DevicePluginSnapd::configValueChanged, this, &DevicePluginSnapd::onPluginConfigurationChanged);
 
     // Refresh timer for snapd checks
@@ -114,12 +114,12 @@ DeviceManager::DeviceSetupStatus DevicePluginSnapd::setupDevice(Device *device)
         }
 
         m_snapdControl = new SnapdControl(device, this);
-        m_snapdControl->setPreferredRefreshTime(configValue(snapdRefreshScheduleParamTypeId).toInt());
+        m_snapdControl->setPreferredRefreshTime(configValue(snapdPluginRefreshScheduleParamTypeId).toInt());
         connect(m_snapdControl, &SnapdControl::snapListUpdated, this, &DevicePluginSnapd::onSnapListUpdated);
 
     } else if (device->deviceClassId() == snapDeviceClassId) {
-        device->setName(QString("%1").arg(device->paramValue(snapNameParamTypeId).toString()));
-        m_snapDevices.insert(device->paramValue(snapIdParamTypeId).toString(), device);
+        device->setName(QString("%1").arg(device->paramValue(snapDeviceNameParamTypeId).toString()));
+        m_snapDevices.insert(device->paramValue(snapDeviceIdParamTypeId).toString(), device);
     }
 
     return DeviceManager::DeviceSetupStatusSuccess;
@@ -162,11 +162,11 @@ DeviceManager::DeviceError DevicePluginSnapd::executeAction(Device *device, cons
         }
 
         if (action.actionTypeId() == snapChannelActionTypeId) {
-            QString snapName = device->paramValue(snapNameParamTypeId).toString();
-            m_snapdControl->changeSnapChannel(snapName, action.param(snapChannelActionParamTypeId).value().toString());
+            QString snapName = device->paramValue(snapDeviceNameParamTypeId).toString();
+            m_snapdControl->changeSnapChannel(snapName, action.param(snapChannelActionChannelParamTypeId).value().toString());
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == snapRevertActionTypeId) {
-            QString snapName = device->paramValue(snapNameParamTypeId).toString();
+            QString snapName = device->paramValue(snapDeviceNameParamTypeId).toString();
             m_snapdControl->snapRevert(snapName);
             return DeviceManager::DeviceErrorNoError;
         }
@@ -182,7 +182,7 @@ void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     qCDebug(dcSnapd()) << "Plugin configuration changed";
 
     // Check advanced mode
-    if (paramTypeId == snapdAdvancedModeParamTypeId) {
+    if (paramTypeId == snapdPluginAdvancedModeParamTypeId) {
         qCDebug(dcSnapd()) << "Advanced mode" << (value.toBool() ? "enabled." : "disabled.");
         m_advancedMode = value.toBool();
 
@@ -190,7 +190,7 @@ void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTyp
         if (!m_advancedMode) {
             foreach (const QString deviceSnapId, m_snapDevices.keys()) {
                 Device *device = m_snapDevices.take(deviceSnapId);
-                qCDebug(dcSnapd()) << "Remove device for snap" << device->paramValue(snapNameParamTypeId).toString();
+                qCDebug(dcSnapd()) << "Remove device for snap" << device->paramValue(snapDeviceNameParamTypeId).toString();
                 emit autoDeviceDisappeared(device->id());
             }
         } else {
@@ -202,7 +202,7 @@ void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     }
 
     // Check refresh schedule
-    if (paramTypeId == snapdRefreshScheduleParamTypeId) {
+    if (paramTypeId == snapdPluginRefreshScheduleParamTypeId) {
         if (!m_snapdControl)
             return;
 
@@ -247,11 +247,11 @@ void DevicePluginSnapd::onSnapListUpdated(const QVariantList &snapList)
         if (!m_snapDevices.contains(snapMap.value("id").toString())) {
             DeviceDescriptor descriptor(snapDeviceClassId, QString("Snap %1").arg(snapMap.value("name").toString()));
             ParamList params;
-            params.append(Param(snapNameParamTypeId, snapMap.value("name")));
-            params.append(Param(snapIdParamTypeId, snapMap.value("id")));
-            params.append(Param(snapSummaryParamTypeId, snapMap.value("summary")));
-            params.append(Param(snapDescriptionParamTypeId, snapMap.value("description")));
-            params.append(Param(snapDeveloperParamTypeId, snapMap.value("developer")));
+            params.append(Param(snapDeviceNameParamTypeId, snapMap.value("name")));
+            params.append(Param(snapDeviceIdParamTypeId, snapMap.value("id")));
+            params.append(Param(snapDeviceSummaryParamTypeId, snapMap.value("summary")));
+            params.append(Param(snapDeviceDescriptionParamTypeId, snapMap.value("description")));
+            params.append(Param(snapDeviceDeveloperParamTypeId, snapMap.value("developer")));
             descriptor.setParams(params);
 
             emit autoDevicesAppeared(snapDeviceClassId, QList<DeviceDescriptor>() << descriptor);
@@ -273,7 +273,7 @@ void DevicePluginSnapd::onSnapListUpdated(const QVariantList &snapList)
     foreach (const QString deviceSnapId, m_snapDevices.keys()) {
         if (!snapIdList.contains(deviceSnapId)) {
             Device *device = m_snapDevices.take(deviceSnapId);
-            qCDebug(dcSnapd()) << "The snap" << device->paramValue(snapNameParamTypeId).toString() << "is not installed any more.";
+            qCDebug(dcSnapd()) << "The snap" << device->paramValue(snapDeviceNameParamTypeId).toString() << "is not installed any more.";
             emit autoDeviceDisappeared(device->id());
         }
     }

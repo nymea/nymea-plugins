@@ -47,15 +47,15 @@ void DevicePluginUsbWde::init()
 DeviceManager::DeviceSetupStatus DevicePluginUsbWde::setupDevice(Device *device)
 {
     if (device->deviceClassId() == wdeBridgeDeviceClassId) {
-        if (m_bridgeDevice != 0) {
+        if (m_bridgeDevice) {
             qCWarning(dcUsbWde) << "Only one USB WDE device can be configured.";
             return DeviceManager::DeviceSetupStatusFailure;
         }
         m_serialPort = new QSerialPort(this);
-        m_serialPort->setPortName(device->paramValue(wdeBridgeInterfaceParamTypeId).toString());
-        m_serialPort->setBaudRate(device->paramValue(wdeBridgeBaudrateParamTypeId).toInt());
+        m_serialPort->setPortName(device->paramValue(wdeBridgeDeviceInterfaceParamTypeId).toString());
+        m_serialPort->setBaudRate(device->paramValue(wdeBridgeDeviceBaudrateParamTypeId).toInt());
         if (!m_serialPort->open(QIODevice::ReadOnly)) {
-            qCWarning(dcUsbWde) << device->name() << "can't bind to interface" << device->paramValue(wdeBridgeInterfaceParamTypeId);
+            qCWarning(dcUsbWde) << device->name() << "can't bind to interface" << device->paramValue(wdeBridgeDeviceInterfaceParamTypeId);
             return DeviceManager::DeviceSetupStatusFailure;
         }
         m_bridgeDevice = device;
@@ -65,12 +65,12 @@ DeviceManager::DeviceSetupStatus DevicePluginUsbWde::setupDevice(Device *device)
     }
 
     if (device->deviceClassId() == temperatureSensorDeviceClassId) {
-        m_deviceList.insert(device->paramValue(temperatureSensorChannelParamTypeId).toInt(), device);
+        m_deviceList.insert(device->paramValue(temperatureSensorDeviceChannelParamTypeId).toInt(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == windRainSensorDeviceClassId) {
-        m_deviceList.insert(device->paramValue(windRainSensorChannelParamTypeId).toInt(), device);
+        m_deviceList.insert(device->paramValue(windRainSensorDeviceChannelParamTypeId).toInt(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
     return DeviceManager::DeviceSetupStatusFailure;
@@ -80,11 +80,11 @@ void DevicePluginUsbWde::deviceRemoved(Device *device)
 {
     if (device->deviceClassId() == wdeBridgeDeviceClassId) {
         m_serialPort->close();
-        m_bridgeDevice = 0;
+        m_bridgeDevice = nullptr;
     } else if (device->deviceClassId() == temperatureSensorDeviceClassId) {
-        m_deviceList.remove(device->paramValue(temperatureSensorChannelParamTypeId).toInt());
+        m_deviceList.remove(device->paramValue(temperatureSensorDeviceChannelParamTypeId).toInt());
     } else if (device->deviceClassId() == windRainSensorDeviceClassId) {
-        m_deviceList.remove(device->paramValue(windRainSensorChannelParamTypeId).toInt());
+        m_deviceList.remove(device->paramValue(windRainSensorDeviceChannelParamTypeId).toInt());
     }
 }
 
@@ -109,13 +109,13 @@ void DevicePluginUsbWde::createNewSensor(int channel)
     if (channel == 9) {
         createClassId = windRainSensorDeviceClassId;
         deviceName = "Weather station";
-        params.append(Param(windRainSensorNameParamTypeId, "Sensor " + QString::number(channel)));
-        params.append(Param(windRainSensorChannelParamTypeId, channel));
+        params.append(Param(windRainSensorDeviceNameParamTypeId, "Sensor " + QString::number(channel)));
+        params.append(Param(windRainSensorDeviceChannelParamTypeId, channel));
     } else {
         createClassId = temperatureSensorDeviceClassId;
         deviceName = "Sensor channel " + QString::number(channel);
-        params.append(Param(temperatureSensorNameParamTypeId, "Sensor " + QString::number(channel)));
-        params.append(Param(temperatureSensorChannelParamTypeId, channel));
+        params.append(Param(temperatureSensorDeviceNameParamTypeId, "Sensor " + QString::number(channel)));
+        params.append(Param(temperatureSensorDeviceChannelParamTypeId, channel));
     }
     DeviceDescriptor descriptor(createClassId, deviceName, deviceName);
     descriptor.setParams(params);

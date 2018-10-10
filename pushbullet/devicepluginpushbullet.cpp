@@ -42,7 +42,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *dev
 
     QNetworkRequest request(requestUrl);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(pushNotificationTokenParamTypeId).toByteArray().trimmed());
+    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(pushNotificationDeviceTokenParamTypeId).toByteArray().trimmed());
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, this, [this, reply, device](){
@@ -67,13 +67,13 @@ DeviceManager::DeviceError DevicePluginPushbullet::executeAction(Device *device,
 
 QNetworkReply* DevicePluginPushbullet::sendNotification(Device* device, ParamList params) {
     QUrlQuery urlParams;
-    urlParams.addQueryItem("body", params.paramValue(pushNotificationBodyParamTypeId).toByteArray());
-    urlParams.addQueryItem("title", params.paramValue(pushNotificationTitleParamTypeId).toByteArray());
+    urlParams.addQueryItem("body", params.paramValue(pushNotificationNotifyActionBodyParamTypeId).toByteArray());
+    urlParams.addQueryItem("title", params.paramValue(pushNotificationNotifyActionTitleParamTypeId).toByteArray());
     urlParams.addQueryItem("type", "note");
 
     QNetworkRequest request(QUrl("https://api.pushbullet.com/v2/pushes"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(pushNotificationTokenParamTypeId).toByteArray());
+    request.setRawHeader(QByteArray("Access-Token"), device->paramValue(pushNotificationDeviceTokenParamTypeId).toByteArray());
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, urlParams.toString(QUrl::FullyEncoded).toUtf8());
     connect(reply, &QNetworkReply::finished, this, &DevicePluginPushbullet::onNetworkReplyFinished);
     return reply;

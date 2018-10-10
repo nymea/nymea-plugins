@@ -100,8 +100,8 @@ DeviceManager::DeviceSetupStatus DevicePluginAwattar::setupDevice(Device *device
 
     qCDebug(dcAwattar) << "Setup device" << device->name() << device->params();
 
-    m_token = device->paramValue(awattarTokenParamTypeId).toString();
-    m_userUuid = device->paramValue(awattarUserUuidParamTypeId).toString();
+    m_token = device->paramValue(awattarDeviceTokenParamTypeId).toString();
+    m_userUuid = device->paramValue(awattarDeviceUserUuidParamTypeId).toString();
     m_device = device;
 
     if (m_token.isEmpty() || m_userUuid.isEmpty()) {
@@ -124,7 +124,7 @@ void DevicePluginAwattar::deviceRemoved(Device *device)
     Q_UNUSED(device)
     qDeleteAll(m_heatPumps);
     m_heatPumps.clear();
-    m_device = 0;
+    m_device = nullptr;
 }
 
 DeviceManager::DeviceError DevicePluginAwattar::executeAction(Device *device, const Action &action)
@@ -133,9 +133,9 @@ DeviceManager::DeviceError DevicePluginAwattar::executeAction(Device *device, co
         return DeviceManager::DeviceErrorHardwareNotAvailable;
 
     if (action.actionTypeId() == awattarSgSyncModeActionTypeId) {
-        qCDebug(dcAwattar) << "Set sg sync mode to" << action.param(awattarSgSyncModeActionParamTypeId).value();
-        device->setStateValue(awattarSgSyncModeStateTypeId, action.param(awattarSgSyncModeActionParamTypeId).value());
-        if (action.param(awattarSgSyncModeActionParamTypeId).value() == "auto")
+        qCDebug(dcAwattar) << "Set sg sync mode to" << action.param(awattarSgSyncModeActionSgSyncModeParamTypeId).value();
+        device->setStateValue(awattarSgSyncModeStateTypeId, action.param(awattarSgSyncModeActionSgSyncModeParamTypeId).value());
+        if (action.param(awattarSgSyncModeActionSgSyncModeParamTypeId).value() == "auto")
             setSgMode(m_autoSgMode);
 
         return DeviceManager::DeviceErrorNoError;
@@ -146,7 +146,7 @@ DeviceManager::DeviceError DevicePluginAwattar::executeAction(Device *device, co
         }
 
         device->setStateValue(awattarSgSyncModeStateTypeId, "manual");
-        QString sgModeString = action.param(awattarSgModeParamTypeId).value().toString();
+        QString sgModeString = action.param(awattarSetSgModeActionSgModeParamTypeId).value().toString();
         qCDebug(dcAwattar) << "Set manual SG mode to:" << sgModeString;
 
         if(sgModeString == "1 - Off") {
@@ -198,10 +198,10 @@ void DevicePluginAwattar::updateData()
 
 void DevicePluginAwattar::searchHeatPumps()
 {
-    QHostAddress rplAddress = QHostAddress(configuration().paramValue(awattarRplParamTypeId).toString());
+    QHostAddress rplAddress = QHostAddress(configuration().paramValue(awattarPluginRplParamTypeId).toString());
 
     if (rplAddress.isNull()) {
-        qCWarning(dcAwattar) << "Invalid RPL address" << configuration().paramValue(awattarRplParamTypeId).toString();
+        qCWarning(dcAwattar) << "Invalid RPL address" << configuration().paramValue(awattarPluginRplParamTypeId).toString();
         return;
     }
 

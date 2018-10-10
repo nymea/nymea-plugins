@@ -79,8 +79,8 @@ DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const Devic
     foreach (const AvahiServiceEntry &service, hardwareManager()->avahiBrowser()->serviceEntries()) {
         DeviceDescriptor deviceDescriptor(avahiDeviceClassId, service.name(), service.hostAddress().toString());
         ParamList params;
-        params.append(Param(avahiServiceParamTypeId, service.name()));
-        params.append(Param(avahiHostNameParamTypeId, service.hostName()));
+        params.append(Param(avahiDeviceServiceParamTypeId, service.name()));
+        params.append(Param(avahiDeviceHostNameParamTypeId, service.hostName()));
         deviceDescriptor.setParams(params);
         deviceDescriptors.append(deviceDescriptor);
     }
@@ -93,7 +93,7 @@ DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const Devic
 void DevicePluginAvahiMonitor::onServiceEntryAdded(const AvahiServiceEntry &serviceEntry)
 {
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(avahiServiceParamTypeId).toString() == serviceEntry.name()) {
+        if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name()) {
             device->setStateValue(avahiOnlineStateTypeId, true);
         }
     }
@@ -102,7 +102,7 @@ void DevicePluginAvahiMonitor::onServiceEntryAdded(const AvahiServiceEntry &serv
 void DevicePluginAvahiMonitor::onServiceEntryRemoved(const AvahiServiceEntry &serviceEntry)
 {
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(avahiServiceParamTypeId).toString() == serviceEntry.name()) {
+        if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name()) {
             device->setStateValue(avahiOnlineStateTypeId, false);
         }
     }
