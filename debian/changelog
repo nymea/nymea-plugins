@@ -1,8 +1,14 @@
-nymea-plugins (0.2.0) UNRELEASED; urgency=medium
+nymea-plugins (0.9.36) bionic; urgency=medium
+
+  * Bump version to be in line with core
+
+ -- Michael Zanetti <michael.zanetti@nymea.io>  Wed, 10 Oct 2018 04:00:57 +0200
+
+nymea-plugins (0.2.0) bionic; urgency=medium
 
   * rename to nymea
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Tue, 06 Mar 2018 22:49:05 +0100
+ -- Michael Zanetti <michael.zanetti@nymea.io>  Wed, 10 Oct 2018 04:00:00 +0200
 
 guh-plugins (0.1.0) xenial; urgency=medium
 
