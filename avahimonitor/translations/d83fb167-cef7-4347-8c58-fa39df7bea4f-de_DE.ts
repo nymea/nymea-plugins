@@ -21,25 +21,25 @@ The name of the DeviceClass (97f0154d-6945-49b8-bd65-0a8cea0c6652)</extracomment
     <message>
         <location filename="../plugininfo.h" line="41"/>
         <source>service name</source>
-        <extracomment>The name of the paramType (3cbc94c5-6925-4003-9201-ef0d370266c1) of avahi</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: avahi, Type: device, ID: 3cbc94c5-6925-4003-9201-ef0d370266c1)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="44"/>
         <source>host name</source>
-        <extracomment>The name of the paramType (2fdcf581-b767-4ecb-a425-b06a46f9ce8d) of avahi</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: avahi, Type: device, ID: 2fdcf581-b767-4ecb-a425-b06a46f9ce8d)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="47"/>
         <source>online changed</source>
-        <extracomment>The name of the autocreated EventType (b5616fd3-da12-4613-9576-6516b2267180)</extracomment>
-        <translation>Online geändert</translation>
+        <extracomment>The name of the autocreated EventType (DeviceClass: avahi, StateType: online, ID: b5616fd3-da12-4613-9576-6516b2267180)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="50"/>
         <source>online</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (b5616fd3-da12-4613-9576-6516b2267180) of DeviceClass avahi</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: avahi, StateType: online, ID: b5616fd3-da12-4613-9576-6516b2267180</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

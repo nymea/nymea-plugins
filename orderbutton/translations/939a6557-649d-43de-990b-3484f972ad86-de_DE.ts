@@ -6,7 +6,7 @@
     <message>
         <location filename="../plugininfo.h" line="48"/>
         <source>RPL address</source>
-        <extracomment>The name of the paramType (e917e779-e01c-4095-9d62-ab46fc2deecc) of orderButton</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: orderButton, Type: plugin, ID: e917e779-e01c-4095-9d62-ab46fc2deecc)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -24,14 +24,14 @@
     <message>
         <location filename="../plugininfo.h" line="57"/>
         <source>host</source>
-        <extracomment>The name of the paramType (53a00a7b-e168-4917-86b5-d4329a0a720c) of orderbutton</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: orderbutton, Type: device, ID: 53a00a7b-e168-4917-86b5-d4329a0a720c)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="60"/>
         <source>battery voltage changed</source>
-        <extracomment>The name of the autocreated EventType (a4d83813-10f3-4830-be2e-60d4815906c4)</extracomment>
-        <translation>Batterie Spannung geändert</translation>
+        <extracomment>The name of the autocreated EventType (DeviceClass: orderbutton, StateType: battery, ID: a4d83813-10f3-4830-be2e-60d4815906c4)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="45"/>
@@ -42,53 +42,53 @@
     <message>
         <location filename="../plugininfo.h" line="63"/>
         <source>battery voltage</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (a4d83813-10f3-4830-be2e-60d4815906c4) of DeviceClass orderbutton</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: orderbutton, StateType: battery, ID: a4d83813-10f3-4830-be2e-60d4815906c4</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="66"/>
         <source>count changed</source>
-        <extracomment>The name of the autocreated EventType (2df871fc-1888-4b04-8f02-f17b26642534)</extracomment>
-        <translation>Zähler geändert</translation>
+        <extracomment>The name of the autocreated EventType (DeviceClass: orderbutton, StateType: count, ID: 2df871fc-1888-4b04-8f02-f17b26642534)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="69"/>
         <source>count</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (2df871fc-1888-4b04-8f02-f17b26642534) of DeviceClass orderbutton</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: orderbutton, StateType: count, ID: 2df871fc-1888-4b04-8f02-f17b26642534</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="72"/>
         <source>reachable changed</source>
-        <extracomment>The name of the autocreated EventType (783e74ee-ffd6-4dd7-ade5-3a961452cf15)</extracomment>
-        <translation>Erreichbarkeit gändert</translation>
+        <extracomment>The name of the autocreated EventType (DeviceClass: orderbutton, StateType: reachable, ID: 783e74ee-ffd6-4dd7-ade5-3a961452cf15)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="75"/>
         <source>reachable</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (783e74ee-ffd6-4dd7-ade5-3a961452cf15) of DeviceClass orderbutton</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: orderbutton, StateType: reachable, ID: 783e74ee-ffd6-4dd7-ade5-3a961452cf15</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="78"/>
         <source>led changed</source>
-        <extracomment>The name of the autocreated EventType (b184ccc8-e7d9-4e94-8683-07f81484bbda)</extracomment>
-        <translation>LED geändert</translation>
+        <extracomment>The name of the autocreated EventType (DeviceClass: orderbutton, StateType: led, ID: b184ccc8-e7d9-4e94-8683-07f81484bbda)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="81"/>
         <location filename="../plugininfo.h" line="87"/>
         <source>led</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (b184ccc8-e7d9-4e94-8683-07f81484bbda) of DeviceClass orderbutton
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: orderbutton, StateType: led, ID: b184ccc8-e7d9-4e94-8683-07f81484bbda
 ----------
-The name of the autocreated ParamType of the writable StateType (b184ccc8-e7d9-4e94-8683-07f81484bbda) of DeviceClass orderbutton</extracomment>
+The name of the ParamType for the autocreated ActionType (DeviceClass: orderbutton, StateType: led, ID: b184ccc8-e7d9-4e94-8683-07f81484bbda)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="84"/>
         <source>Set led</source>
-        <extracomment>The name of the autocreated ActionType (b184ccc8-e7d9-4e94-8683-07f81484bbda)</extracomment>
-        <translation>Setze LED</translation>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: orderbutton, StateType: led, ID: b184ccc8-e7d9-4e94-8683-07f81484bbda)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="90"/>

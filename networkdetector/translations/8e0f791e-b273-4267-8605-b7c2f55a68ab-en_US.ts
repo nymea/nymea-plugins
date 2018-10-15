@@ -24,25 +24,25 @@
     <message>
         <location filename="../plugininfo.h" line="41"/>
         <source>address</source>
-        <extracomment>The name of the paramType (c6707093-3b51-469d-9fc0-f167bff2a987) of networkDevice</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: networkDevice, Type: device, ID: c6707093-3b51-469d-9fc0-f167bff2a987)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="44"/>
         <source>hardware address</source>
-        <extracomment>The name of the paramType (18fd3b05-478a-49cf-b8ae-3c6a98675ccc) of networkDevice</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: networkDevice, Type: device, ID: 18fd3b05-478a-49cf-b8ae-3c6a98675ccc)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="47"/>
         <source>Device in network changed</source>
-        <extracomment>The name of the autocreated EventType (cb43e1b5-4f61-4538-bfa2-c33055c542cf)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: networkDevice, StateType: connected, ID: cb43e1b5-4f61-4538-bfa2-c33055c542cf)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="50"/>
         <source>Device in network</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (cb43e1b5-4f61-4538-bfa2-c33055c542cf) of DeviceClass networkDevice</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: networkDevice, StateType: connected, ID: cb43e1b5-4f61-4538-bfa2-c33055c542cf</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

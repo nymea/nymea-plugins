@@ -21,85 +21,85 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="63"/>
         <source>name</source>
-        <extracomment>The name of the paramType (db67d1e6-26fa-44ed-ad55-c6aef45ea2ea) of nuimo</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: nuimo, Type: device, ID: db67d1e6-26fa-44ed-ad55-c6aef45ea2ea)</extracomment>
         <translation>nombre</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="66"/>
         <source>mac address</source>
-        <extracomment>The name of the paramType (71553f6a-2ed4-4896-bb7b-52e7dca948b2) of nuimo</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: nuimo, Type: device, ID: 71553f6a-2ed4-4896-bb7b-52e7dca948b2)</extracomment>
         <translation>dirección mac</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="75"/>
         <source>Hardware revision changed</source>
-        <extracomment>The name of the autocreated EventType (5c400da4-a14e-4e0a-be9f-c82ffe7e1972)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: nuimo, StateType: hardwareRevision, ID: 5c400da4-a14e-4e0a-be9f-c82ffe7e1972)</extracomment>
         <translation>Revisión de hardware modificada</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="93"/>
         <source>battery changed</source>
-        <extracomment>The name of the autocreated EventType (b5ee2465-7fa1-450b-8073-f115537d3409)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: nuimo, StateType: battery, ID: b5ee2465-7fa1-450b-8073-f115537d3409)</extracomment>
         <translation>batería modificada</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="96"/>
         <source>battery</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (b5ee2465-7fa1-450b-8073-f115537d3409) of DeviceClass nuimo</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: nuimo, StateType: battery, ID: b5ee2465-7fa1-450b-8073-f115537d3409</extracomment>
         <translation>batería</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="99"/>
         <source>rotation changed</source>
-        <extracomment>The name of the autocreated EventType (69a5f495-5452-434b-8fb8-b73d992c5446)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: nuimo, StateType: rotation, ID: 69a5f495-5452-434b-8fb8-b73d992c5446)</extracomment>
         <translation>rotación modificada</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="102"/>
         <source>rotation</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (69a5f495-5452-434b-8fb8-b73d992c5446) of DeviceClass nuimo</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: nuimo, StateType: rotation, ID: 69a5f495-5452-434b-8fb8-b73d992c5446</extracomment>
         <translation>rotación</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="69"/>
         <source>Connected changed</source>
-        <extracomment>The name of the autocreated EventType (5286976a-f5dc-4662-872a-438ac5d491cb)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: nuimo, StateType: connected, ID: 5286976a-f5dc-4662-872a-438ac5d491cb)</extracomment>
         <translation>Conexión modificada</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="72"/>
         <source>Connected</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (5286976a-f5dc-4662-872a-438ac5d491cb) of DeviceClass nuimo</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: nuimo, StateType: connected, ID: 5286976a-f5dc-4662-872a-438ac5d491cb</extracomment>
         <translation>Conectado</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="78"/>
         <source>Hardware revision</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (5c400da4-a14e-4e0a-be9f-c82ffe7e1972) of DeviceClass nuimo</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: nuimo, StateType: hardwareRevision, ID: 5c400da4-a14e-4e0a-be9f-c82ffe7e1972</extracomment>
         <translation>Revisión de hardware</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="81"/>
         <source>Firmware revision changed</source>
-        <extracomment>The name of the autocreated EventType (edcf76c6-9fed-4c26-9853-c284cf887adb)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: nuimo, StateType: firmwareRevision, ID: edcf76c6-9fed-4c26-9853-c284cf887adb)</extracomment>
         <translation>Revisión de firmware modificada</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="84"/>
         <source>Firmware revision</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (edcf76c6-9fed-4c26-9853-c284cf887adb) of DeviceClass nuimo</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: nuimo, StateType: firmwareRevision, ID: edcf76c6-9fed-4c26-9853-c284cf887adb</extracomment>
         <translation>Revisión de firmware</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="87"/>
         <source>Software revision changed</source>
-        <extracomment>The name of the autocreated EventType (be42cbd3-12e9-44ec-8f9d-141e10d9573a)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: nuimo, StateType: softwareRevision, ID: be42cbd3-12e9-44ec-8f9d-141e10d9573a)</extracomment>
         <translation>Revisión de software modificada</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="90"/>
         <source>Software revision</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (be42cbd3-12e9-44ec-8f9d-141e10d9573a) of DeviceClass nuimo</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: nuimo, StateType: softwareRevision, ID: be42cbd3-12e9-44ec-8f9d-141e10d9573a</extracomment>
         <translation>Revisión de software</translation>
     </message>
     <message>
@@ -111,7 +111,7 @@ The name of the vendor (8e6cae9c-706b-49e5-ae86-da52a20dd336)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="108"/>
         <source>logo</source>
-        <extracomment>The name of the paramType (a8f72c37-9cb5-4885-a7e4-b2b396f8e4cd) of nuimo</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: nuimo, ActionType: showLogo, ID: a8f72c37-9cb5-4885-a7e4-b2b396f8e4cd)</extracomment>
         <translation>logotipo</translation>
     </message>
     <message>

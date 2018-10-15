@@ -24,7 +24,7 @@
     <message>
         <location filename="../plugininfo.h" line="38"/>
         <source>MAC address</source>
-        <extracomment>The name of the paramType (e2ba04ac-9fe1-4f9d-8152-024c27030cde) of wol</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wol, Type: device, ID: e2ba04ac-9fe1-4f9d-8152-024c27030cde)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

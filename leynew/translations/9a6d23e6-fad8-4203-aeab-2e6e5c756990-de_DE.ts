@@ -21,7 +21,7 @@ The name of the vendor (83c649b4-49b0-4482-9334-d86a85bfbd2a)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="57"/>
         <source>id</source>
-        <extracomment>The name of the paramType (09e28309-693c-4c89-9ad8-58b643794e85) of rfController</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: rfController, Type: device, ID: 09e28309-693c-4c89-9ad8-58b643794e85)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
