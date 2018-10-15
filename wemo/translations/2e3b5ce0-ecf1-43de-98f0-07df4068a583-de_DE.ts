@@ -24,58 +24,58 @@
     <message>
         <location filename="../plugininfo.h" line="48"/>
         <source>name</source>
-        <extracomment>The name of the paramType (50d2236d-b73a-4d7b-ac8a-34c6566e6543) of wemoSwitch</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: 50d2236d-b73a-4d7b-ac8a-34c6566e6543)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="51"/>
         <source>host address</source>
-        <extracomment>The name of the paramType (84ed399c-edb0-40da-8e2f-86eefc5790eb) of wemoSwitch</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: 84ed399c-edb0-40da-8e2f-86eefc5790eb)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="54"/>
         <source>port</source>
-        <extracomment>The name of the paramType (2d30eb6b-08cf-4d34-aeb5-fb441bb2291a) of wemoSwitch</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: 2d30eb6b-08cf-4d34-aeb5-fb441bb2291a)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="57"/>
         <source>serial number</source>
-        <extracomment>The name of the paramType (93e1a45a-b8b9-48a7-869e-ad07550a1951) of wemoSwitch</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: 93e1a45a-b8b9-48a7-869e-ad07550a1951)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="60"/>
         <source>power changed</source>
-        <extracomment>The name of the autocreated EventType (7166c4f6-f68c-4188-8f7c-2205d72a5a6d)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: wemoSwitch, StateType: power, ID: 7166c4f6-f68c-4188-8f7c-2205d72a5a6d)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="63"/>
         <location filename="../plugininfo.h" line="69"/>
         <source>power</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (7166c4f6-f68c-4188-8f7c-2205d72a5a6d) of DeviceClass wemoSwitch
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wemoSwitch, StateType: power, ID: 7166c4f6-f68c-4188-8f7c-2205d72a5a6d
 ----------
-The name of the autocreated ParamType of the writable StateType (7166c4f6-f68c-4188-8f7c-2205d72a5a6d) of DeviceClass wemoSwitch</extracomment>
+The name of the ParamType for the autocreated ActionType (DeviceClass: wemoSwitch, StateType: power, ID: 7166c4f6-f68c-4188-8f7c-2205d72a5a6d)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="66"/>
         <source>Set power</source>
-        <extracomment>The name of the autocreated ActionType (7166c4f6-f68c-4188-8f7c-2205d72a5a6d)</extracomment>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: wemoSwitch, StateType: power, ID: 7166c4f6-f68c-4188-8f7c-2205d72a5a6d)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="72"/>
         <source>reachable changed</source>
-        <extracomment>The name of the autocreated EventType (ec2f5b49-585c-4455-a233-b7aa4c608dbc)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: wemoSwitch, StateType: reachable, ID: ec2f5b49-585c-4455-a233-b7aa4c608dbc)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="75"/>
         <source>reachable</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (ec2f5b49-585c-4455-a233-b7aa4c608dbc) of DeviceClass wemoSwitch</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wemoSwitch, StateType: reachable, ID: ec2f5b49-585c-4455-a233-b7aa4c608dbc</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -12,13 +12,13 @@
     <message>
         <location filename="../plugininfo.h" line="70"/>
         <source>Advanced mode</source>
-        <extracomment>The name of the paramType (017fe4c5-fc41-41fe-8e67-08fdaccb89ea) of snapd</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: snapd, Type: plugin, ID: 017fe4c5-fc41-41fe-8e67-08fdaccb89ea)</extracomment>
         <translation>Modalità avanzata</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="73"/>
         <source>Automatic daily refresh schedule</source>
-        <extracomment>The name of the paramType (d2e697d1-9a68-4666-bf40-8d70fa694eec) of snapd</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: snapd, Type: plugin, ID: d2e697d1-9a68-4666-bf40-8d70fa694eec)</extracomment>
         <translation>Programma di aggiornamento giornaliero automatico</translation>
     </message>
     <message>
@@ -30,100 +30,100 @@
     <message>
         <location filename="../plugininfo.h" line="88"/>
         <source>System update available changed</source>
-        <extracomment>The name of the autocreated EventType (a6b1d24b-d523-4516-9bce-5b467e5e09b2)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snapdControl, StateType: updateAvailable, ID: a6b1d24b-d523-4516-9bce-5b467e5e09b2)</extracomment>
         <translation>Aggiornamento del sistema disponibile modificato</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="100"/>
         <source>Last automatic system update time changed</source>
-        <extracomment>The name of the autocreated EventType (c671545a-6bde-4c08-8e37-0d256841a3a5)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snapdControl, StateType: lastUpdateTime, ID: c671545a-6bde-4c08-8e37-0d256841a3a5)</extracomment>
         <translation>Ora dell&apos;ultimo aggiornamento automatico del sistema cambiato</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="103"/>
         <source>Last automatic system update</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (c671545a-6bde-4c08-8e37-0d256841a3a5) of DeviceClass snapdControl</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snapdControl, StateType: lastUpdateTime, ID: c671545a-6bde-4c08-8e37-0d256841a3a5</extracomment>
         <translation>Ultimo aggiornamento automatico del sistema</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="106"/>
         <source>Next automatic system update time changed</source>
-        <extracomment>The name of the autocreated EventType (122c2423-a1d9-400f-80f8-b1f798975914)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snapdControl, StateType: nextUpdateTime, ID: 122c2423-a1d9-400f-80f8-b1f798975914)</extracomment>
         <translation>Ora del prossimo aggiornamento automatico del sistema cambiato</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="109"/>
         <source>Next automatic system update</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (122c2423-a1d9-400f-80f8-b1f798975914) of DeviceClass snapdControl</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snapdControl, StateType: nextUpdateTime, ID: 122c2423-a1d9-400f-80f8-b1f798975914</extracomment>
         <translation>Prossimo aggiornamento automatico del sistema</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="115"/>
         <source>Status</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (4987aca3-3916-4cb3-938f-df6c99d04dbf) of DeviceClass snapdControl</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snapdControl, StateType: status, ID: 4987aca3-3916-4cb3-938f-df6c99d04dbf</extracomment>
         <translation>Stato</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="130"/>
         <source>ID</source>
-        <extracomment>The name of the paramType (9afb98fb-f717-4f4c-8009-1a6514054c5f) of snap</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: snap, Type: device, ID: 9afb98fb-f717-4f4c-8009-1a6514054c5f)</extracomment>
         <translation>ID</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="133"/>
         <source>Summary</source>
-        <extracomment>The name of the paramType (12b9a65f-970b-49b5-b1d0-1625fc6d8758) of snap</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: snap, Type: device, ID: 12b9a65f-970b-49b5-b1d0-1625fc6d8758)</extracomment>
         <translation>Sommario</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="136"/>
         <source>Description</source>
-        <extracomment>The name of the paramType (fe24c61b-e154-4259-b7ca-6f0602e9d1c3) of snap</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: snap, Type: device, ID: fe24c61b-e154-4259-b7ca-6f0602e9d1c3)</extracomment>
         <translation>Descrizione</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="139"/>
         <source>Developer</source>
-        <extracomment>The name of the paramType (76ead9c5-0a18-40a2-b31d-f6bb6dfea0a5) of snap</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: snap, Type: device, ID: 76ead9c5-0a18-40a2-b31d-f6bb6dfea0a5)</extracomment>
         <translation>Sviluppatore</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="145"/>
         <location filename="../plugininfo.h" line="151"/>
         <source>Channel</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (7be2b61e-3f59-4b92-b2bb-50d027bb92ff) of DeviceClass snap
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snap, StateType: channel, ID: 7be2b61e-3f59-4b92-b2bb-50d027bb92ff
 ----------
-The name of the autocreated ParamType of the writable StateType (7be2b61e-3f59-4b92-b2bb-50d027bb92ff) of DeviceClass snap</extracomment>
+The name of the ParamType for the autocreated ActionType (DeviceClass: snap, StateType: channel, ID: 7be2b61e-3f59-4b92-b2bb-50d027bb92ff)</extracomment>
         <translation>Canale</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="148"/>
         <source>Set channel</source>
-        <extracomment>The name of the autocreated ActionType (7be2b61e-3f59-4b92-b2bb-50d027bb92ff)</extracomment>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: snap, StateType: channel, ID: 7be2b61e-3f59-4b92-b2bb-50d027bb92ff)</extracomment>
         <translation>Imposta canale </translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="154"/>
         <source>Version changed</source>
-        <extracomment>The name of the autocreated EventType (532a95f3-db29-427e-bb32-d5a22029e586)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snap, StateType: version, ID: 532a95f3-db29-427e-bb32-d5a22029e586)</extracomment>
         <translation>Versione modificata</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="157"/>
         <source>Version</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (532a95f3-db29-427e-bb32-d5a22029e586) of DeviceClass snap</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snap, StateType: version, ID: 532a95f3-db29-427e-bb32-d5a22029e586</extracomment>
         <translation>Versione</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="160"/>
         <source>Revision changed</source>
-        <extracomment>The name of the autocreated EventType (f26a6404-e011-11e7-9224-2350048461eb)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snap, StateType: revision, ID: f26a6404-e011-11e7-9224-2350048461eb)</extracomment>
         <translation>Revisione modificata</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="163"/>
         <source>Revision</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (f26a6404-e011-11e7-9224-2350048461eb) of DeviceClass snap</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snap, StateType: revision, ID: f26a6404-e011-11e7-9224-2350048461eb</extracomment>
         <translation>Revisione</translation>
     </message>
     <message>
@@ -147,25 +147,25 @@ The name of the autocreated ParamType of the writable StateType (7be2b61e-3f59-4
     <message>
         <location filename="../plugininfo.h" line="82"/>
         <source>Update manager available changed</source>
-        <extracomment>The name of the autocreated EventType (6b662b3e-fd12-4f24-be77-aec066f16d8c)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snapdControl, StateType: snapdAvailable, ID: 6b662b3e-fd12-4f24-be77-aec066f16d8c)</extracomment>
         <translation>Gestione aggiornamento disponibile cambiato</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="85"/>
         <source>Update manager available</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (6b662b3e-fd12-4f24-be77-aec066f16d8c) of DeviceClass snapdControl</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snapdControl, StateType: snapdAvailable, ID: 6b662b3e-fd12-4f24-be77-aec066f16d8c</extracomment>
         <translation>Gestione aggiornamento disponibile</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="91"/>
         <source>System update available</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (a6b1d24b-d523-4516-9bce-5b467e5e09b2) of DeviceClass snapdControl</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snapdControl, StateType: updateAvailable, ID: a6b1d24b-d523-4516-9bce-5b467e5e09b2</extracomment>
         <translation>Aggiornamento del sistema disponibile</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="97"/>
         <source>System update running</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (01ca7a22-5607-4c5e-a465-a2ae7e8b529c) of DeviceClass snapdControl</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: snapdControl, StateType: updateRunning, ID: 01ca7a22-5607-4c5e-a465-a2ae7e8b529c</extracomment>
         <translation>Esecuzione aggiornamento del sistema</translation>
     </message>
     <message>
@@ -177,25 +177,25 @@ The name of the autocreated ParamType of the writable StateType (7be2b61e-3f59-4
     <message>
         <location filename="../plugininfo.h" line="94"/>
         <source>System update running changed</source>
-        <extracomment>The name of the autocreated EventType (01ca7a22-5607-4c5e-a465-a2ae7e8b529c)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snapdControl, StateType: updateRunning, ID: 01ca7a22-5607-4c5e-a465-a2ae7e8b529c)</extracomment>
         <translation>Esecuzione aggiornamento del sistema modificata</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="112"/>
         <source>Status changed</source>
-        <extracomment>The name of the autocreated EventType (4987aca3-3916-4cb3-938f-df6c99d04dbf)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snapdControl, StateType: status, ID: 4987aca3-3916-4cb3-938f-df6c99d04dbf)</extracomment>
         <translation>Stato modificato</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="127"/>
         <source>Name</source>
-        <extracomment>The name of the paramType (4f38614d-8be0-48dc-a24d-cee9ff1f2a89) of snap</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: snap, Type: device, ID: 4f38614d-8be0-48dc-a24d-cee9ff1f2a89)</extracomment>
         <translation>Nome</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="142"/>
         <source>Channel changed</source>
-        <extracomment>The name of the autocreated EventType (7be2b61e-3f59-4b92-b2bb-50d027bb92ff)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: snap, StateType: channel, ID: 7be2b61e-3f59-4b92-b2bb-50d027bb92ff)</extracomment>
         <translation>Canale modificato</translation>
     </message>
     <message>

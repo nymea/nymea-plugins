@@ -18,7 +18,7 @@
     <message>
         <location filename="../plugininfo.h" line="63"/>
         <source>sender mail</source>
-        <extracomment>The name of the paramType (af30ce7b-fb6b-42f0-889d-20b32f8b8fa4) of customMail</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: af30ce7b-fb6b-42f0-889d-20b32f8b8fa4)</extracomment>
         <translation>Sender Adresse</translation>
     </message>
     <message>
@@ -26,11 +26,11 @@
         <location filename="../plugininfo.h" line="102"/>
         <location filename="../plugininfo.h" line="126"/>
         <source>user</source>
-        <extracomment>The name of the paramType (b91d0ecc-6903-4991-ae8d-f36757ce40a7) of customMail
+        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: b91d0ecc-6903-4991-ae8d-f36757ce40a7)
 ----------
-The name of the paramType (0a4ea3ff-ea76-4a5f-adbb-b8f79faa2156) of googleMail
+The name of the ParamType (DeviceClass: googleMail, Type: device, ID: 0a4ea3ff-ea76-4a5f-adbb-b8f79faa2156)
 ----------
-The name of the paramType (0a4ea3ff-ea76-4a5f-adbb-b8f79faa2156) of yahooMail</extracomment>
+The name of the ParamType (DeviceClass: yahooMail, Type: device, ID: 0a4ea3ff-ea76-4a5f-adbb-b8f79faa2156)</extracomment>
         <translation>Benutzername</translation>
     </message>
     <message>
@@ -38,11 +38,11 @@ The name of the paramType (0a4ea3ff-ea76-4a5f-adbb-b8f79faa2156) of yahooMail</e
         <location filename="../plugininfo.h" line="105"/>
         <location filename="../plugininfo.h" line="129"/>
         <source>password</source>
-        <extracomment>The name of the paramType (ac29e643-1d18-4612-8d2f-65fb07a67182) of customMail
+        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: ac29e643-1d18-4612-8d2f-65fb07a67182)
 ----------
-The name of the paramType (f63f6486-5340-472a-b37c-be828111725c) of googleMail
+The name of the ParamType (DeviceClass: googleMail, Type: device, ID: f63f6486-5340-472a-b37c-be828111725c)
 ----------
-The name of the paramType (f63f6486-5340-472a-b37c-be828111725c) of yahooMail</extracomment>
+The name of the ParamType (DeviceClass: yahooMail, Type: device, ID: f63f6486-5340-472a-b37c-be828111725c)</extracomment>
         <translation>Passwort</translation>
     </message>
     <message>
@@ -50,35 +50,35 @@ The name of the paramType (f63f6486-5340-472a-b37c-be828111725c) of yahooMail</e
         <location filename="../plugininfo.h" line="108"/>
         <location filename="../plugininfo.h" line="132"/>
         <source>recipient</source>
-        <extracomment>The name of the paramType (d657f002-9741-42e1-9fef-32eae96dacdb) of customMail
+        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: d657f002-9741-42e1-9fef-32eae96dacdb)
 ----------
-The name of the paramType (76697fe2-3393-4ed0-a15d-9d041502cfd3) of googleMail
+The name of the ParamType (DeviceClass: googleMail, Type: device, ID: 76697fe2-3393-4ed0-a15d-9d041502cfd3)
 ----------
-The name of the paramType (76697fe2-3393-4ed0-a15d-9d041502cfd3) of yahooMail</extracomment>
+The name of the ParamType (DeviceClass: yahooMail, Type: device, ID: 76697fe2-3393-4ed0-a15d-9d041502cfd3)</extracomment>
         <translation>Empfänger</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="75"/>
         <source>SMTP server</source>
-        <extracomment>The name of the paramType (421f13f2-c311-446a-8ae0-7f0a1a4e1786) of customMail</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: 421f13f2-c311-446a-8ae0-7f0a1a4e1786)</extracomment>
         <translation>SMTP Server</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="78"/>
         <source>port</source>
-        <extracomment>The name of the paramType (56ec204f-2e02-4a17-b9d1-e855e384b689) of customMail</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: 56ec204f-2e02-4a17-b9d1-e855e384b689)</extracomment>
         <translation>Port</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="81"/>
         <source>authentification</source>
-        <extracomment>The name of the paramType (789b963b-4143-4e21-853c-2612707d726f) of customMail</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: 789b963b-4143-4e21-853c-2612707d726f)</extracomment>
         <translation>Authentifizierung</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="84"/>
         <source>encryption</source>
-        <extracomment>The name of the paramType (2af9a397-f517-49db-9ac1-3e873f7ac78b) of customMail</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: 2af9a397-f517-49db-9ac1-3e873f7ac78b)</extracomment>
         <translation>Verschlüsselung</translation>
     </message>
     <message>
@@ -86,11 +86,11 @@ The name of the paramType (76697fe2-3393-4ed0-a15d-9d041502cfd3) of yahooMail</e
         <location filename="../plugininfo.h" line="114"/>
         <location filename="../plugininfo.h" line="138"/>
         <source>subject</source>
-        <extracomment>The name of the paramType (2047e0f4-3d34-4214-bc8f-9ab741ae6006) of customMail
+        <extracomment>The name of the ParamType (DeviceClass: customMail, ActionType: send, ID: 2047e0f4-3d34-4214-bc8f-9ab741ae6006)
 ----------
-The name of the paramType (2047e0f4-3d34-4214-bc8f-9ab741ae6006) of googleMail
+The name of the ParamType (DeviceClass: googleMail, ActionType: sendMail, ID: 2047e0f4-3d34-4214-bc8f-9ab741ae6006)
 ----------
-The name of the paramType (2047e0f4-3d34-4214-bc8f-9ab741ae6006) of yahooMail</extracomment>
+The name of the ParamType (DeviceClass: yahooMail, ActionType: send, ID: 2047e0f4-3d34-4214-bc8f-9ab741ae6006)</extracomment>
         <translation>Betreff</translation>
     </message>
     <message>
@@ -98,11 +98,11 @@ The name of the paramType (2047e0f4-3d34-4214-bc8f-9ab741ae6006) of yahooMail</e
         <location filename="../plugininfo.h" line="117"/>
         <location filename="../plugininfo.h" line="141"/>
         <source>body</source>
-        <extracomment>The name of the paramType (aeb6e79e-9862-43e1-9873-cbdce549344a) of customMail
+        <extracomment>The name of the ParamType (DeviceClass: customMail, ActionType: send, ID: aeb6e79e-9862-43e1-9873-cbdce549344a)
 ----------
-The name of the paramType (aeb6e79e-9862-43e1-9873-cbdce549344a) of googleMail
+The name of the ParamType (DeviceClass: googleMail, ActionType: sendMail, ID: aeb6e79e-9862-43e1-9873-cbdce549344a)
 ----------
-The name of the paramType (aeb6e79e-9862-43e1-9873-cbdce549344a) of yahooMail</extracomment>
+The name of the ParamType (DeviceClass: yahooMail, ActionType: send, ID: aeb6e79e-9862-43e1-9873-cbdce549344a)</extracomment>
         <translation>Text</translation>
     </message>
     <message>

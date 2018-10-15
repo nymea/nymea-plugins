@@ -21,7 +21,7 @@ The name of the vendor (f2cd9a76-5a7f-4c01-bf8c-5eae8b12e95c)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="39"/>
         <source>channel</source>
-        <extracomment>The name of the paramType (2cb59323-bc01-477c-ac0d-312b25c53463) of switch</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: switch, Type: device, ID: 2cb59323-bc01-477c-ac0d-312b25c53463)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -33,7 +33,7 @@ The name of the vendor (f2cd9a76-5a7f-4c01-bf8c-5eae8b12e95c)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="45"/>
         <source>power</source>
-        <extracomment>The name of the paramType (c101c199-314d-420f-a302-0ae29c599047) of switch</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: switch, ActionType: power, ID: c101c199-314d-420f-a302-0ae29c599047)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

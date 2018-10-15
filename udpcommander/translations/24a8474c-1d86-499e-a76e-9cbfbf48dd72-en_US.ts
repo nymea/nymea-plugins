@@ -28,9 +28,9 @@ The name of the DeviceClass (31b00639-8904-4522-84ed-54c46a54c63c)</extracomment
         <location filename="../plugininfo.h" line="44"/>
         <location filename="../plugininfo.h" line="56"/>
         <source>Port</source>
-        <extracomment>The name of the paramType (1843adcb-e377-44d1-8d70-ab4f9eeb32ec) of udpReceiver
+        <extracomment>The name of the ParamType (DeviceClass: udpReceiver, Type: device, ID: 1843adcb-e377-44d1-8d70-ab4f9eeb32ec)
 ----------
-The name of the paramType (eb204dfe-11f8-413f-8b68-8bffef3f9a7f) of udpCommander</extracomment>
+The name of the ParamType (DeviceClass: udpCommander, Type: device, ID: eb204dfe-11f8-413f-8b68-8bffef3f9a7f)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -42,7 +42,7 @@ The name of the paramType (eb204dfe-11f8-413f-8b68-8bffef3f9a7f) of udpCommander
     <message>
         <location filename="../plugininfo.h" line="59"/>
         <source>Address</source>
-        <extracomment>The name of the paramType (ea1be9fc-9a9b-44ba-a28d-e021aef4f046) of udpCommander</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: udpCommander, Type: device, ID: ea1be9fc-9a9b-44ba-a28d-e021aef4f046)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -55,9 +55,9 @@ The name of the paramType (eb204dfe-11f8-413f-8b68-8bffef3f9a7f) of udpCommander
         <location filename="../plugininfo.h" line="50"/>
         <location filename="../plugininfo.h" line="65"/>
         <source>Data</source>
-        <extracomment>The name of the paramType (93c379e3-4707-46b7-9be0-2d6ff88f5d21) of udpReceiver
+        <extracomment>The name of the ParamType (DeviceClass: udpReceiver, EventType: triggered, ID: 93c379e3-4707-46b7-9be0-2d6ff88f5d21)
 ----------
-The name of the paramType (6604c852-6b24-4707-b8e5-1ddd8032efcc) of udpCommander</extracomment>
+The name of the ParamType (DeviceClass: udpCommander, ActionType: trigger, ID: 6604c852-6b24-4707-b8e5-1ddd8032efcc)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

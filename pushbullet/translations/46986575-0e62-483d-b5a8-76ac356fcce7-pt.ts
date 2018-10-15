@@ -21,7 +21,7 @@ The name of the vendor (b5e1896e-b7fa-4c19-ac2b-10bd489f8302)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="40"/>
         <source>access token</source>
-        <extracomment>The name of the paramType (1f37ce22-50b8-4183-8b74-557fdb2d3076) of pushNotification</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: pushNotification, Type: device, ID: 1f37ce22-50b8-4183-8b74-557fdb2d3076)</extracomment>
         <translation>token de acesso</translation>
     </message>
     <message>
@@ -33,13 +33,13 @@ The name of the vendor (b5e1896e-b7fa-4c19-ac2b-10bd489f8302)</extracomment>
     <message>
         <location filename="../plugininfo.h" line="46"/>
         <source>title</source>
-        <extracomment>The name of the paramType (ceed6e66-0dcb-4405-832d-e9091f882acc) of pushNotification</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: pushNotification, ActionType: notify, ID: ceed6e66-0dcb-4405-832d-e9091f882acc)</extracomment>
         <translation>título</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="49"/>
         <source>body</source>
-        <extracomment>The name of the paramType (f72cc56c-4d0b-4b96-ab9b-ff3ca92b00e2) of pushNotification</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: pushNotification, ActionType: notify, ID: f72cc56c-4d0b-4b96-ab9b-ff3ca92b00e2)</extracomment>
         <translation>corpo</translation>
     </message>
 </context>

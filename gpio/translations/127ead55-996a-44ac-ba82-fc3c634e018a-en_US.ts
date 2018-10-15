@@ -30,13 +30,13 @@ The name of the DeviceClass (75d54a59-f9b0-4bc4-a86c-6b1fc47e0663)</extracomment
         <location filename="../plugininfo.h" line="113"/>
         <location filename="../plugininfo.h" line="137"/>
         <source>GPIO</source>
-        <extracomment>The name of the paramType (9eda783f-6d9f-4d39-986d-d2cbfff5a7dd) of gpioOutputRpi
+        <extracomment>The name of the ParamType (DeviceClass: gpioOutputRpi, Type: device, ID: 9eda783f-6d9f-4d39-986d-d2cbfff5a7dd)
 ----------
-The name of the paramType (9eda783f-6d9f-4d39-986d-d2cbfff5a7dd) of gpioInputRpi
+The name of the ParamType (DeviceClass: gpioInputRpi, Type: device, ID: 9eda783f-6d9f-4d39-986d-d2cbfff5a7dd)
 ----------
-The name of the paramType (9eda783f-6d9f-4d39-986d-d2cbfff5a7dd) of gpioOutputBbb
+The name of the ParamType (DeviceClass: gpioOutputBbb, Type: device, ID: 9eda783f-6d9f-4d39-986d-d2cbfff5a7dd)
 ----------
-The name of the paramType (9eda783f-6d9f-4d39-986d-d2cbfff5a7dd) of gpioInputBbb</extracomment>
+The name of the ParamType (DeviceClass: gpioInputBbb, Type: device, ID: 9eda783f-6d9f-4d39-986d-d2cbfff5a7dd)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -45,13 +45,13 @@ The name of the paramType (9eda783f-6d9f-4d39-986d-d2cbfff5a7dd) of gpioInputBbb
         <location filename="../plugininfo.h" line="116"/>
         <location filename="../plugininfo.h" line="140"/>
         <source>Pin number</source>
-        <extracomment>The name of the paramType (2204d278-7bc7-407f-ac82-ce3ae1d5779c) of gpioOutputRpi
+        <extracomment>The name of the ParamType (DeviceClass: gpioOutputRpi, Type: device, ID: 2204d278-7bc7-407f-ac82-ce3ae1d5779c)
 ----------
-The name of the paramType (2204d278-7bc7-407f-ac82-ce3ae1d5779c) of gpioInputRpi
+The name of the ParamType (DeviceClass: gpioInputRpi, Type: device, ID: 2204d278-7bc7-407f-ac82-ce3ae1d5779c)
 ----------
-The name of the paramType (2204d278-7bc7-407f-ac82-ce3ae1d5779c) of gpioOutputBbb
+The name of the ParamType (DeviceClass: gpioOutputBbb, Type: device, ID: 2204d278-7bc7-407f-ac82-ce3ae1d5779c)
 ----------
-The name of the paramType (2204d278-7bc7-407f-ac82-ce3ae1d5779c) of gpioInputBbb</extracomment>
+The name of the ParamType (DeviceClass: gpioInputBbb, Type: device, ID: 2204d278-7bc7-407f-ac82-ce3ae1d5779c)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -60,20 +60,22 @@ The name of the paramType (2204d278-7bc7-407f-ac82-ce3ae1d5779c) of gpioInputBbb
         <location filename="../plugininfo.h" line="119"/>
         <location filename="../plugininfo.h" line="143"/>
         <source>Description</source>
-        <extracomment>The name of the paramType (504798eb-1faa-4703-a57a-2778e4bf9a67) of gpioOutputRpi
+        <extracomment>The name of the ParamType (DeviceClass: gpioOutputRpi, Type: device, ID: 504798eb-1faa-4703-a57a-2778e4bf9a67)
 ----------
-The name of the paramType (504798eb-1faa-4703-a57a-2778e4bf9a67) of gpioInputRpi
+The name of the ParamType (DeviceClass: gpioInputRpi, Type: device, ID: 504798eb-1faa-4703-a57a-2778e4bf9a67)
 ----------
-The name of the paramType (504798eb-1faa-4703-a57a-2778e4bf9a67) of gpioOutputBbb
+The name of the ParamType (DeviceClass: gpioOutputBbb, Type: device, ID: 504798eb-1faa-4703-a57a-2778e4bf9a67)
 ----------
-The name of the paramType (504798eb-1faa-4703-a57a-2778e4bf9a67) of gpioInputBbb</extracomment>
+The name of the ParamType (DeviceClass: gpioInputBbb, Type: device, ID: 504798eb-1faa-4703-a57a-2778e4bf9a67)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="77"/>
         <location filename="../plugininfo.h" line="122"/>
         <source>Power changed</source>
-        <extracomment>The name of the autocreated EventType (06843766-358e-44b0-8d52-2b46ef98459a)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: gpioOutputRpi, StateType: powerValue, ID: 06843766-358e-44b0-8d52-2b46ef98459a)
+----------
+The name of the autocreated EventType (DeviceClass: gpioOutputBbb, StateType: powerValue, ID: 06843766-358e-44b0-8d52-2b46ef98459a)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -82,13 +84,13 @@ The name of the paramType (504798eb-1faa-4703-a57a-2778e4bf9a67) of gpioInputBbb
         <location filename="../plugininfo.h" line="125"/>
         <location filename="../plugininfo.h" line="131"/>
         <source>Power</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (06843766-358e-44b0-8d52-2b46ef98459a) of DeviceClass gpioOutputRpi
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: gpioOutputRpi, StateType: powerValue, ID: 06843766-358e-44b0-8d52-2b46ef98459a
 ----------
-The name of the autocreated ParamType of the writable StateType (06843766-358e-44b0-8d52-2b46ef98459a) of DeviceClass gpioOutputRpi
+The name of the ParamType for the autocreated ActionType (DeviceClass: gpioOutputRpi, StateType: powerValue, ID: 06843766-358e-44b0-8d52-2b46ef98459a)
 ----------
-The name of the ParamType of the autocreated EventType (06843766-358e-44b0-8d52-2b46ef98459a) of DeviceClass gpioOutputBbb
+The name of the ParamType for the autocreated EventType (DeviceClass: gpioOutputBbb, StateType: powerValue, ID: 06843766-358e-44b0-8d52-2b46ef98459a
 ----------
-The name of the autocreated ParamType of the writable StateType (06843766-358e-44b0-8d52-2b46ef98459a) of DeviceClass gpioOutputBbb</extracomment>
+The name of the ParamType for the autocreated ActionType (DeviceClass: gpioOutputBbb, StateType: powerValue, ID: 06843766-358e-44b0-8d52-2b46ef98459a)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -104,23 +106,27 @@ The name of the DeviceClass (ffd2aa29-55cc-4824-ba95-c311784f7824)</extracomment
         <location filename="../plugininfo.h" line="83"/>
         <location filename="../plugininfo.h" line="128"/>
         <source>Set power</source>
-        <extracomment>The name of the autocreated ActionType (06843766-358e-44b0-8d52-2b46ef98459a)</extracomment>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: gpioOutputRpi, StateType: powerValue, ID: 06843766-358e-44b0-8d52-2b46ef98459a)
+----------
+The name of the autocreated ActionType (DeviceClass: gpioOutputBbb, StateType: powerValue, ID: 06843766-358e-44b0-8d52-2b46ef98459a)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="101"/>
         <location filename="../plugininfo.h" line="146"/>
         <source>Pressed changed</source>
-        <extracomment>The name of the autocreated EventType (57f1b7cc-26c8-434b-ba04-d3077dc886c8)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: gpioInputRpi, StateType: pressed, ID: 57f1b7cc-26c8-434b-ba04-d3077dc886c8)
+----------
+The name of the autocreated EventType (DeviceClass: gpioInputBbb, StateType: pressed, ID: 57f1b7cc-26c8-434b-ba04-d3077dc886c8)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="104"/>
         <location filename="../plugininfo.h" line="149"/>
         <source>Pressed</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (57f1b7cc-26c8-434b-ba04-d3077dc886c8) of DeviceClass gpioInputRpi
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: gpioInputRpi, StateType: pressed, ID: 57f1b7cc-26c8-434b-ba04-d3077dc886c8
 ----------
-The name of the ParamType of the autocreated EventType (57f1b7cc-26c8-434b-ba04-d3077dc886c8) of DeviceClass gpioInputBbb</extracomment>
+The name of the ParamType for the autocreated EventType (DeviceClass: gpioInputBbb, StateType: pressed, ID: 57f1b7cc-26c8-434b-ba04-d3077dc886c8</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

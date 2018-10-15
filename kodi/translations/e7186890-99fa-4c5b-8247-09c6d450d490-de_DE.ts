@@ -18,94 +18,94 @@ The name of the DeviceClass (d09953e3-c5bd-415b-973b-0d0bf2be3f69)</extracomment
     <message>
         <location filename="../plugininfo.h" line="78"/>
         <source>name</source>
-        <extracomment>The name of the paramType (a704beb1-b0b0-46fc-91fc-3aac01e1a364) of kodi</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: a704beb1-b0b0-46fc-91fc-3aac01e1a364)</extracomment>
         <translation>Name</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="81"/>
         <source>ip</source>
-        <extracomment>The name of the paramType (1a897065-57c6-49b3-bac9-1e5db27859e5) of kodi</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: 1a897065-57c6-49b3-bac9-1e5db27859e5)</extracomment>
         <translation>IP Adresse</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="84"/>
         <source>port</source>
-        <extracomment>The name of the paramType (660fb4d7-9479-4c9d-a900-ce221d2b8ae4) of kodi</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: 660fb4d7-9479-4c9d-a900-ce221d2b8ae4)</extracomment>
         <translation>Port</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="87"/>
         <source>connected changed</source>
-        <extracomment>The name of the autocreated EventType (09dfbd40-c97c-4a20-9ecd-f80e389a4864)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: connected, ID: 09dfbd40-c97c-4a20-9ecd-f80e389a4864)</extracomment>
         <translation>Verbindung geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="90"/>
         <source>connected</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (09dfbd40-c97c-4a20-9ecd-f80e389a4864) of DeviceClass kodi</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: connected, ID: 09dfbd40-c97c-4a20-9ecd-f80e389a4864</extracomment>
         <translation>Verbunden</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="93"/>
         <source>mute changed</source>
-        <extracomment>The name of the autocreated EventType (bc98cdb0-4d0e-48ca-afc7-922e49bb7813)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: mute, ID: bc98cdb0-4d0e-48ca-afc7-922e49bb7813)</extracomment>
         <translation>Stumm geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="96"/>
         <location filename="../plugininfo.h" line="102"/>
         <source>mute</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (bc98cdb0-4d0e-48ca-afc7-922e49bb7813) of DeviceClass kodi
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: mute, ID: bc98cdb0-4d0e-48ca-afc7-922e49bb7813
 ----------
-The name of the autocreated ParamType of the writable StateType (bc98cdb0-4d0e-48ca-afc7-922e49bb7813) of DeviceClass kodi</extracomment>
+The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: mute, ID: bc98cdb0-4d0e-48ca-afc7-922e49bb7813)</extracomment>
         <translation>Stumm</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="99"/>
         <source>Set mute</source>
-        <extracomment>The name of the autocreated ActionType (bc98cdb0-4d0e-48ca-afc7-922e49bb7813)</extracomment>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: mute, ID: bc98cdb0-4d0e-48ca-afc7-922e49bb7813)</extracomment>
         <translation>Stumm schalten</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="105"/>
         <source>volume changed</source>
-        <extracomment>The name of the autocreated EventType (9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: volume, ID: 9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9)</extracomment>
         <translation>Lautstärke geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="108"/>
         <location filename="../plugininfo.h" line="114"/>
         <source>volume</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9) of DeviceClass kodi
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: volume, ID: 9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9
 ----------
-The name of the autocreated ParamType of the writable StateType (9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9) of DeviceClass kodi</extracomment>
+The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: volume, ID: 9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9)</extracomment>
         <translation>Lautstärke</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="111"/>
         <source>Set volume</source>
-        <extracomment>The name of the autocreated ActionType (9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9)</extracomment>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: volume, ID: 9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9)</extracomment>
         <translation>Lautstärke einstellen</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="117"/>
         <source>playback status changed</source>
-        <extracomment>The name of the autocreated EventType (2dd512b7-40c2-488e-8d4f-6519edaa6f74)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: playbackStatus, ID: 2dd512b7-40c2-488e-8d4f-6519edaa6f74)</extracomment>
         <translation>Playbackstatus geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="120"/>
         <location filename="../plugininfo.h" line="126"/>
         <source>playback status</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (2dd512b7-40c2-488e-8d4f-6519edaa6f74) of DeviceClass kodi
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: playbackStatus, ID: 2dd512b7-40c2-488e-8d4f-6519edaa6f74
 ----------
-The name of the autocreated ParamType of the writable StateType (2dd512b7-40c2-488e-8d4f-6519edaa6f74) of DeviceClass kodi</extracomment>
+The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: playbackStatus, ID: 2dd512b7-40c2-488e-8d4f-6519edaa6f74)</extracomment>
         <translation>Playbackstatus</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="123"/>
         <source>set playback status</source>
-        <extracomment>The name of the autocreated ActionType (2dd512b7-40c2-488e-8d4f-6519edaa6f74)</extracomment>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: playbackStatus, ID: 2dd512b7-40c2-488e-8d4f-6519edaa6f74)</extracomment>
         <translation>Setze Playbackstatus</translation>
     </message>
     <message>
@@ -159,13 +159,13 @@ The name of the autocreated ParamType of the writable StateType (2dd512b7-40c2-4
     <message>
         <location filename="../plugininfo.h" line="153"/>
         <source>message</source>
-        <extracomment>The name of the paramType (798f720a-cc4f-40e7-91d7-2ef5957ca7ad) of kodi</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: showNotification, ID: 798f720a-cc4f-40e7-91d7-2ef5957ca7ad)</extracomment>
         <translation>Nachricht</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="156"/>
         <source>type</source>
-        <extracomment>The name of the paramType (86df6a45-ee8a-4e1f-94e2-4081e14eb557) of kodi</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: showNotification, ID: 86df6a45-ee8a-4e1f-94e2-4081e14eb557)</extracomment>
         <translation>Typ</translation>
     </message>
     <message>
@@ -177,7 +177,7 @@ The name of the autocreated ParamType of the writable StateType (2dd512b7-40c2-4
     <message>
         <location filename="../plugininfo.h" line="162"/>
         <source>button</source>
-        <extracomment>The name of the paramType (93861dac-0c24-4a3b-903d-d1be44eae611) of kodi</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: pressButton, ID: 93861dac-0c24-4a3b-903d-d1be44eae611)</extracomment>
         <translation>Taste</translation>
     </message>
     <message>
@@ -191,11 +191,11 @@ The name of the autocreated ParamType of the writable StateType (2dd512b7-40c2-4
         <location filename="../plugininfo.h" line="174"/>
         <location filename="../plugininfo.h" line="180"/>
         <source>command</source>
-        <extracomment>The name of the paramType (8f3413fb-018e-40d6-903c-c8a915a6f498) of kodi
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: system, ID: 8f3413fb-018e-40d6-903c-c8a915a6f498)
 ----------
-The name of the paramType (3219855b-e043-43aa-91ae-794b474379bf) of kodi
+The name of the ParamType (DeviceClass: kodi, ActionType: videoLibrary, ID: 3219855b-e043-43aa-91ae-794b474379bf)
 ----------
-The name of the paramType (ba89d098-56d7-40a2-b499-c02499c1ec0c) of kodi</extracomment>
+The name of the ParamType (DeviceClass: kodi, ActionType: audioLibrary, ID: ba89d098-56d7-40a2-b499-c02499c1ec0c)</extracomment>
         <translation>Kommando</translation>
     </message>
     <message>

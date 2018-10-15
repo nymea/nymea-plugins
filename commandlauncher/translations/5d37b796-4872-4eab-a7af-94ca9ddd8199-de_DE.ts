@@ -24,23 +24,25 @@
     <message>
         <location filename="../plugininfo.h" line="49"/>
         <source>command</source>
-        <extracomment>The name of the paramType (79e54f91-2771-459a-9cb0-1d37759d2e33) of application</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: application, Type: device, ID: 79e54f91-2771-459a-9cb0-1d37759d2e33)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="52"/>
         <location filename="../plugininfo.h" line="70"/>
         <source>running changed</source>
-        <extracomment>The name of the autocreated EventType (28d7e933-ff05-4f4c-95a0-482689543de5)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: application, StateType: running, ID: 28d7e933-ff05-4f4c-95a0-482689543de5)
+----------
+The name of the autocreated EventType (DeviceClass: script, StateType: running, ID: 28d7e933-ff05-4f4c-95a0-482689543de5)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="55"/>
         <location filename="../plugininfo.h" line="73"/>
         <source>running</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (28d7e933-ff05-4f4c-95a0-482689543de5) of DeviceClass application
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: application, StateType: running, ID: 28d7e933-ff05-4f4c-95a0-482689543de5
 ----------
-The name of the ParamType of the autocreated EventType (28d7e933-ff05-4f4c-95a0-482689543de5) of DeviceClass script</extracomment>
+The name of the ParamType for the autocreated EventType (DeviceClass: script, StateType: running, ID: 28d7e933-ff05-4f4c-95a0-482689543de5</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -70,7 +72,7 @@ The name of the ActionType d21b1fed-1dd9-4c5a-a64e-0c6ba94059be of deviceClass s
     <message>
         <location filename="../plugininfo.h" line="67"/>
         <source>script</source>
-        <extracomment>The name of the paramType (391cf4af-ccb4-4ec0-9711-00c1b53a3c4c) of script</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: script, Type: device, ID: 391cf4af-ccb4-4ec0-9711-00c1b53a3c4c)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

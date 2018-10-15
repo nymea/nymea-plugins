@@ -24,22 +24,22 @@
     <message>
         <location filename="../plugininfo.h" line="49"/>
         <source>state changed</source>
-        <extracomment>The name of the autocreated EventType (b5e90567-54aa-49bd-a78a-3c19fb38aaf5)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: toggleButton, StateType: state, ID: b5e90567-54aa-49bd-a78a-3c19fb38aaf5)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="52"/>
         <location filename="../plugininfo.h" line="58"/>
         <source>state</source>
-        <extracomment>The name of the ParamType of the autocreated EventType (b5e90567-54aa-49bd-a78a-3c19fb38aaf5) of DeviceClass toggleButton
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: toggleButton, StateType: state, ID: b5e90567-54aa-49bd-a78a-3c19fb38aaf5
 ----------
-The name of the autocreated ParamType of the writable StateType (b5e90567-54aa-49bd-a78a-3c19fb38aaf5) of DeviceClass toggleButton</extracomment>
+The name of the ParamType for the autocreated ActionType (DeviceClass: toggleButton, StateType: state, ID: b5e90567-54aa-49bd-a78a-3c19fb38aaf5)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="55"/>
         <source>Set state</source>
-        <extracomment>The name of the autocreated ActionType (b5e90567-54aa-49bd-a78a-3c19fb38aaf5)</extracomment>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: toggleButton, StateType: state, ID: b5e90567-54aa-49bd-a78a-3c19fb38aaf5)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
