@@ -313,6 +313,30 @@
                     ]
                 },
                 {
+                    "id": "a13c14f1-361e-4aad-8785-c04b094fb19a",
+                    "name": "simpleBlind",
+                    "displayName": "Simple blind",
+                    "createMethods": ["user"],
+                    "interfaces": ["blind"],
+                    "actionTypes": [
+                        {
+                            "id": "06b99eb1-c3b6-4bea-95cf-690078297206",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "7f1bdeef-a57c-4b82-80ad-e3e31f16027f",
+                            "name": "stop",
+                            "displayName": "stop"
+                        },
+                        {
+                            "id": "0c55d32d-c916-472b-a03e-66fe7115e85d",
+                            "name": "close",
+                            "displayName": "close"
+                        }
+                    ]
+                },
+                {
                     "id": "1d7aaa1d-fc50-4d7b-9657-1449322e40d8",
                     "name": "extendedBlind",
                     "displayName": "Extended blind",
@@ -327,6 +351,8 @@
                             "type": "int",
                             "unit": "Percentage",
                             "displayNameEvent": "percentage changed",
+                            "writable": true,
+                            "displayNameAction": "set percentage",
                             "defaultValue": 0
                         },
                         {

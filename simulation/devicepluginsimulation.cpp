@@ -404,6 +404,52 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             return DeviceManager::DeviceErrorNoError;
         }
     }
+
+    if (device->deviceClassId() == simpleBlindDeviceClassId) {
+        if (action.actionTypeId() == simpleBlindOpenActionTypeId) {
+            qCDebug(dcSimulation()) << "Opening simple blind";
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == simpleBlindCloseActionTypeId) {
+            qCDebug(dcSimulation()) << "Closing simple blind";
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == simpleBlindStopActionTypeId) {
+            qCDebug(dcSimulation()) << "Stopping simple blind";
+            return DeviceManager::DeviceErrorNoError;
+        }
+    }
+
+    if (device->deviceClassId() == extendedBlindDeviceClassId) {
+        if (action.actionTypeId() == extendedBlindOpenActionTypeId) {
+            qCDebug(dcSimulation()) << "Opening extended blind";
+            m_simulationTimers.value(device)->setProperty("targetValue", 100);
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(extendedBlindMovingStateTypeId, true);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == extendedBlindCloseActionTypeId) {
+            qCDebug(dcSimulation()) << "Closing extended blind";
+            m_simulationTimers.value(device)->setProperty("targetValue", 0);
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(extendedBlindMovingStateTypeId, true);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == extendedBlindStopActionTypeId) {
+            qCDebug(dcSimulation()) << "Stopping extended blind";
+            m_simulationTimers.value(device)->stop();
+            device->setStateValue(extendedBlindMovingStateTypeId, false);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == extendedBlindPercentageActionTypeId) {
+            qCDebug(dcSimulation()) << "Setting extended blind to" << action.param(extendedBlindPercentageActionPercentageParamTypeId);
+            m_simulationTimers.value(device)->setProperty("targetValue", action.param(extendedBlindPercentageActionPercentageParamTypeId).value());
+            m_simulationTimers.value(device)->start(500);
+            device->setStateValue(extendedBlindMovingStateTypeId, true);
+            return DeviceManager::DeviceErrorNoError;
+        }
+    }
+
     qCWarning(dcSimulation()) << "Unhandled device class" << device->deviceClassId() << "for device" << device->name();
 
     return DeviceManager::DeviceErrorDeviceClassNotFound;
