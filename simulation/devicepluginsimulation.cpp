@@ -360,8 +360,8 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
     if (device->deviceClassId() == fingerPrintSensorDeviceClassId) {
         if (action.actionTypeId() == fingerPrintSensorAddUserActionTypeId) {
             QStringList users = device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList();
-            QString username = action.param(fingerPrintSensorUserIdParamTypeId).value().toString();
-            QString finger = action.param(fingerPrintSensorFingerParamTypeId).value().toString();
+            QString username = action.param(fingerPrintSensorAddUserActionUserIdParamTypeId).value().toString();
+            QString finger = action.param(fingerPrintSensorAddUserActionFingerParamTypeId).value().toString();
             QSettings settings;
             settings.beginGroup(device->id().toString());
             QStringList usedFingers = settings.value(username).toStringList();
@@ -521,9 +521,9 @@ void DevicePluginSimulation::simulationTimerTimeout()
             QSettings settings;
             settings.beginGroup(device->id().toString());
             QStringList fingers = settings.value(user).toStringList();
-            params.append(Param(fingerPrintSensorUserIdParamTypeId, user));
+            params.append(Param(fingerPrintSensorAccessGrantedEventUserIdParamTypeId, user));
             QString finger = fingers.at(qrand() % fingers.count());
-            params.append(Param(fingerPrintSensorFingerParamTypeId, finger));
+            params.append(Param(fingerPrintSensorAccessGrantedEventFingerParamTypeId, finger));
             qCDebug(dcSimulation()) << "Emitting fingerprint accepted for user" << user << "and finger" << finger;
         } else {
             qCDebug(dcSimulation()) << "Emitting fingerprint denied";
