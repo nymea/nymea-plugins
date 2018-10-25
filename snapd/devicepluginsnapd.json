@@ -115,6 +115,7 @@
                     "displayName": "Snap",
                     "createMethods": [ "auto" ],
                     "basicTags": [ "Gateway" ],
+                    "interfaces": ["system"],
                     "deviceIcon": "Network",
                     "paramTypes": [
                         {

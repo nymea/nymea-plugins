@@ -66,13 +66,13 @@ void DevicePluginNetatmo::init()
 
 DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
 {
-    if (device->deviceClassId() == connectionDeviceClassId) {
+    if (device->deviceClassId() == netatmoConnectionDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo connection" << device->name() << device->params();
 
         OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
         authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
-        authentication->setUsername(device->paramValue(connectionDeviceUsernameParamTypeId).toString());
-        authentication->setPassword(device->paramValue(connectionDevicePasswordParamTypeId).toString());
+        authentication->setUsername(device->paramValue(netatmoConnectionDeviceUsernameParamTypeId).toString());
+        authentication->setPassword(device->paramValue(netatmoConnectionDevicePasswordParamTypeId).toString());
         authentication->setScope("read_station read_thermostat write_thermostat");
 
         m_authentications.insert(authentication, device);
@@ -109,7 +109,7 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
 
 void DevicePluginNetatmo::deviceRemoved(Device *device)
 {
-    if (device->deviceClassId() == connectionDeviceClassId) {
+    if (device->deviceClassId() == netatmoConnectionDeviceClassId) {
         OAuth2 * authentication = m_authentications.key(device);
         m_authentications.remove(authentication);
         authentication->deleteLater();
@@ -252,7 +252,7 @@ void DevicePluginNetatmo::onNetworkReplyFinished()
         // check HTTP status code
         if (status != 200) {
             qCWarning(dcNetatmo) << "Device list reply HTTP error:" << status << reply->errorString();
-            device->setStateValue(connectionAvailableStateTypeId, false);
+            device->setStateValue(netatmoConnectionConnectedStateTypeId, false);
             reply->deleteLater();
             return;
         }
@@ -282,7 +282,7 @@ void DevicePluginNetatmo::onAuthenticationChanged()
         return;
 
     // set the available state
-    device->setStateValue(connectionAvailableStateTypeId, authentication->authenticated());
+    device->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
 
     // check if this is was a setup athentication
     if (m_asyncSetups.contains(device)) {
