@@ -34,6 +34,17 @@
                             "type": "QString",
                             "inputType": "IPv6Address"
                         }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "2389b6c4-31ad-4058-bcc9-c2feb0c041d8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        }
+
                     ]
                 },
                 {

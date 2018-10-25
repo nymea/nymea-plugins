@@ -128,7 +128,7 @@ DeviceManager::DeviceError DevicePluginWs2812::executeAction(Device *device, con
     qCDebug(dcWs2812) << "Execute action" << device->name() << action.params();
 
     // Check if the device is reachable
-    if (!device->stateValue(ws2812ReachableStateTypeId).toBool()) {
+    if (!device->stateValue(ws2812ConnectedStateTypeId).toBool()) {
         qCWarning(dcWs2812) << "Device not reachable.";
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
@@ -468,7 +468,7 @@ void DevicePluginWs2812::enableNotifications(Device *device)
 
 void DevicePluginWs2812::setReachable(Device *device, const bool &reachable)
 {
-    if (device->stateValue(ws2812ReachableStateTypeId).toBool() != reachable) {
+    if (device->stateValue(ws2812ConnectedStateTypeId).toBool() != reachable) {
         if (!reachable) {
             // Warn just once that the device is not reachable
             qCWarning(dcWs2812()) << device->name() << "reachable changed" << reachable;
@@ -487,7 +487,7 @@ void DevicePluginWs2812::setReachable(Device *device, const bool &reachable)
         }
     }
 
-    device->setStateValue(ws2812ReachableStateTypeId, reachable);
+    device->setStateValue(ws2812ConnectedStateTypeId, reachable);
 }
 
 bool DevicePluginWs2812::deviceAlreadyAdded(const QHostAddress &address)
@@ -573,7 +573,7 @@ void DevicePluginWs2812::coapReplyFinished(CoapReply *reply)
 
         // Check CoAP reply error
         if (reply->error() != CoapReply::NoError) {
-            if (device->stateValue(ws2812ReachableStateTypeId).toBool())
+            if (device->stateValue(ws2812ConnectedStateTypeId).toBool())
                 qCWarning(dcWs2812) << "Ping device" << reply->request().url().toString() << "reply finished with error" << reply->errorString();
 
             setReachable(device, false);

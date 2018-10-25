@@ -56,9 +56,11 @@ DeviceManager::DeviceSetupStatus DevicePluginUsbWde::setupDevice(Device *device)
         m_serialPort->setBaudRate(device->paramValue(wdeBridgeDeviceBaudrateParamTypeId).toInt());
         if (!m_serialPort->open(QIODevice::ReadOnly)) {
             qCWarning(dcUsbWde) << device->name() << "can't bind to interface" << device->paramValue(wdeBridgeDeviceInterfaceParamTypeId);
+            device->setStateValue(wdeBridgeConnectedStateTypeId, false);
             return DeviceManager::DeviceSetupStatusFailure;
         }
         m_bridgeDevice = device;
+        device->setStateValue(wdeBridgeConnectedStateTypeId, true);
         connect(m_serialPort, SIGNAL(readyRead()), SLOT(handleReadyRead()));
         connect(m_serialPort, SIGNAL(error(QSerialPort::SerialPortError)), SLOT(handleError(QSerialPort::SerialPortError)));
         return DeviceManager::DeviceSetupStatusSuccess;

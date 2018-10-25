@@ -122,7 +122,7 @@ DeviceManager::DeviceError DevicePluginOrderButton::executeAction(Device *device
     qCDebug(dcOrderButton) << "Execute action" << device->name() << action.params();
 
     // Check if the device is reachable
-    if (!device->stateValue(orderbuttonReachableStateTypeId).toBool()) {
+    if (!device->stateValue(orderbuttonConnectedStateTypeId).toBool()) {
         qCWarning(dcOrderButton) << "Device not reachable.";
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
@@ -273,7 +273,7 @@ void DevicePluginOrderButton::enableNotifications(Device *device)
 
 void DevicePluginOrderButton::setReachable(Device *device, const bool &reachable)
 {
-    if (device->stateValue(orderbuttonReachableStateTypeId).toBool() != reachable) {
+    if (device->stateValue(orderbuttonConnectedStateTypeId).toBool() != reachable) {
         if (!reachable) {
             // Warn just once that the device is not reachable
             qCWarning(dcOrderButton()) << device->name() << "reachable changed" << reachable;
@@ -291,7 +291,7 @@ void DevicePluginOrderButton::setReachable(Device *device, const bool &reachable
         }
     }
 
-    device->setStateValue(orderbuttonReachableStateTypeId, reachable);
+    device->setStateValue(orderbuttonConnectedStateTypeId, reachable);
 }
 
 bool DevicePluginOrderButton::deviceAlreadyAdded(const QHostAddress &address)
@@ -377,7 +377,7 @@ void DevicePluginOrderButton::coapReplyFinished(CoapReply *reply)
 
         // Check CoAP reply error
         if (reply->error() != CoapReply::NoError) {
-            if (device->stateValue(orderbuttonReachableStateTypeId).toBool())
+            if (device->stateValue(orderbuttonConnectedStateTypeId).toBool())
                 qCWarning(dcOrderButton) << "Ping device" << reply->request().url().toString() << "reply finished with error" << reply->errorString();
 
             setReachable(device, false);
