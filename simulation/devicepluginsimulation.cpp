@@ -22,6 +22,7 @@
 #include "devicepluginsimulation.h"
 #include "plugininfo.h"
 
+#include <QtMath>
 #include <QColor>
 #include <QDateTime>
 #include <QSettings>
@@ -476,36 +477,82 @@ bool DevicePluginSimulation::generateRandomBoolValue()
     return value;
 }
 
+qreal DevicePluginSimulation::generateSinValue(int min, int max, int hourOffset, int decimals)
+{
+    // 00:00 : 23:99 = 0 : PI
+    // seconds of day : (60 * 60 * 24) = x : 2*PI
+    QDateTime d = QDateTime::currentDateTime();
+    int secondsPerDay = 60 * 60 * 24;
+    int offsetInSeconds =  hourOffset * 60 * 60;
+    int secondsOfDay = d.time().msecsSinceStartOfDay() / 1000;
+    // add offset and wrap around
+    secondsOfDay = (secondsOfDay - offsetInSeconds) % secondsPerDay;
+
+    qreal interval = secondsOfDay * 2*M_PI / secondsPerDay;
+    qreal gain = 1.0 * (max - min) / 2;
+    qreal temp = (gain * qSin(interval)) + min + gain;
+    return QString::number(temp, 'f', decimals).toDouble();
+}
+
+qreal DevicePluginSimulation::generateBatteryValue(int chargeStartHour, int chargeDurationInMinutes)
+{
+    QDateTime d = QDateTime::currentDateTime();
+
+    int secondsPerDay = 24 * 60 * 60;
+    int currentSecond = d.time().msecsSinceStartOfDay() / 1000;
+    int chargeStartSecond = chargeStartHour * 60 * 60;
+    int chargeEndSecond = chargeStartSecond + (chargeDurationInMinutes * 60);
+    int chargeDurationInSeconds = chargeDurationInMinutes * 60;
+
+    // should we be charging?
+    if (chargeStartSecond < currentSecond && currentSecond < chargeEndSecond) {
+        // Yep, charging...
+        int currentChargeSecond = currentSecond - chargeStartSecond;
+        // x : 100 = currentChargeSecond : chargeDurationInSeconds
+        return 100 * currentChargeSecond / chargeDurationInSeconds;
+    }
+
+    int dischargeDurationInSecs = secondsPerDay - chargeDurationInSeconds;
+    int currentDischargeSecond;
+    if (currentSecond < chargeStartSecond) {
+        currentDischargeSecond = currentSecond + (secondsPerDay - chargeEndSecond);
+    } else {
+        currentDischargeSecond = currentSecond - chargeEndSecond;
+    }
+    // 100 : x = dischargeDurationInSecs : currentDischargeSecond
+    return 100 - (100 * currentDischargeSecond / dischargeDurationInSecs);
+}
+
 void DevicePluginSimulation::onPluginTimer20Seconds()
 {
     foreach (Device *device, myDevices()) {
         if (device->deviceClassId() == temperatureSensorDeviceClassId) {
             // Temperature sensor
-            device->setStateValue(temperatureSensorTemperatureStateTypeId, generateRandomDoubleValue(18, 23));
-            device->setStateValue(temperatureSensorHumidityStateTypeId, generateRandomIntValue(40, 55));
-            device->setStateValue(temperatureSensorBatteryLevelStateTypeId, generateRandomIntValue(25, 40));
-            device->setStateValue(temperatureSensorBatteryCriticalStateTypeId, device->stateValue(temperatureSensorBatteryLevelStateTypeId).toInt() <= 30);
+            device->setStateValue(temperatureSensorTemperatureStateTypeId, generateSinValue(18, 23, 8));
+            device->setStateValue(temperatureSensorHumidityStateTypeId, generateSinValue(40, 55, 20));
+            device->setStateValue(temperatureSensorBatteryLevelStateTypeId, generateBatteryValue(8, 10));
+            device->setStateValue(temperatureSensorBatteryCriticalStateTypeId, device->stateValue(temperatureSensorBatteryLevelStateTypeId).toInt() <= 25);
             device->setStateValue(temperatureSensorConnectedStateTypeId, true);
         } else if (device->deviceClassId() == motionDetectorDeviceClassId) {
             // Motion detector
             device->setStateValue(motionDetectorActiveStateTypeId, generateRandomBoolValue());
-            device->setStateValue(motionDetectorBatteryLevelStateTypeId, generateRandomIntValue(25, 40));
+            device->setStateValue(motionDetectorBatteryLevelStateTypeId, generateBatteryValue(13, 1));
             device->setStateValue(motionDetectorBatteryCriticalStateTypeId, device->stateValue(motionDetectorBatteryLevelStateTypeId).toInt() <= 30);
             device->setStateValue(motionDetectorConnectedStateTypeId, true);
         } else if (device->deviceClassId() == gardenSensorDeviceClassId) {
             // Garden sensor
-            device->setStateValue(gardenSensorTemperatureStateTypeId, generateRandomDoubleValue(20, 23));
-            device->setStateValue(gardenSensorSoilMoistureStateTypeId, generateRandomIntValue(40, 60));
-            device->setStateValue(gardenSensorIlluminanceStateTypeId, generateRandomIntValue(20, 80));
-            device->setStateValue(gardenSensorBatteryLevelStateTypeId, generateRandomIntValue(25, 90));
+            device->setStateValue(gardenSensorTemperatureStateTypeId, generateSinValue(-4, 17, 5));
+            device->setStateValue(gardenSensorSoilMoistureStateTypeId, generateSinValue(40, 60, 13));
+            device->setStateValue(gardenSensorIlluminanceStateTypeId, generateSinValue(0, 80, 2));
+            device->setStateValue(gardenSensorBatteryLevelStateTypeId, generateBatteryValue(9, 20));
             device->setStateValue(gardenSensorBatteryCriticalStateTypeId, device->stateValue(gardenSensorBatteryLevelStateTypeId).toDouble() <= 30);
             device->setStateValue(gardenSensorConnectedStateTypeId, true);
         } else if(device->deviceClassId() == netatmoIndoorDeviceClassId) {
             // Netatmo
             device->setStateValue(netatmoIndoorUpdateTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
-            device->setStateValue(netatmoIndoorHumidityStateTypeId, generateRandomIntValue(35, 45));
-            device->setStateValue(netatmoIndoorTemperatureStateTypeId, generateRandomIntValue(20, 25));
-            device->setStateValue(netatmoIndoorPressureStateTypeId, generateRandomIntValue(1003, 1008));
+            device->setStateValue(netatmoIndoorHumidityStateTypeId, generateSinValue(35, 45, 13));
+            device->setStateValue(netatmoIndoorTemperatureStateTypeId, generateSinValue(20, 25, 3));
+            device->setStateValue(netatmoIndoorPressureStateTypeId, generateSinValue(1003, 1008, 8));
             device->setStateValue(netatmoIndoorNoiseStateTypeId, generateRandomIntValue(40, 80));
             device->setStateValue(netatmoIndoorWifiStrengthStateTypeId, generateRandomIntValue(85, 95));
         }

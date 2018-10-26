@@ -51,6 +51,10 @@ private:
     double generateRandomDoubleValue(double min, double max);
     bool generateRandomBoolValue();
 
+    // Generates values in a sin curve from min to max, moving the start by hourOffset from midnight
+    qreal generateSinValue(int min, int max, int hourOffset, int decimals = 2);
+    qreal generateBatteryValue(int chargeStartHour, int chargeDurationInMinutes);
+
     QHash<Device*, QTimer*> m_simulationTimers;
 private slots:
     void onPluginTimer20Seconds();
