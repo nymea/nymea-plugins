@@ -123,7 +123,7 @@ DeviceManager::DeviceError DevicePluginPlantCare::executeAction(Device *device, 
     qCDebug(dcPlantCare) << "Execute action" << device->name() << action.params();
 
     // Check if the device is reachable
-    if (!device->stateValue(plantCareReachableStateTypeId).toBool()) {
+    if (!device->stateValue(plantCareConnectedStateTypeId).toBool()) {
         qCWarning(dcPlantCare) << "Device not reachable.";
         return DeviceManager::DeviceErrorHardwareNotAvailable;
     }
@@ -316,7 +316,7 @@ void DevicePluginPlantCare::enableNotifications(Device *device)
 
 void DevicePluginPlantCare::setReachable(Device *device, const bool &reachable)
 {
-    if (device->stateValue(plantCareReachableStateTypeId).toBool() != reachable) {
+    if (device->stateValue(plantCareConnectedStateTypeId).toBool() != reachable) {
         if (!reachable) {
             // Warn just once that the device is not reachable
             qCWarning(dcPlantCare()) << device->name() << "reachable changed" << reachable;
@@ -335,7 +335,7 @@ void DevicePluginPlantCare::setReachable(Device *device, const bool &reachable)
         }
     }
 
-    device->setStateValue(plantCareReachableStateTypeId, reachable);
+    device->setStateValue(plantCareConnectedStateTypeId, reachable);
 }
 
 bool DevicePluginPlantCare::deviceAlreadyAdded(const QHostAddress &address)
@@ -421,7 +421,7 @@ void DevicePluginPlantCare::coapReplyFinished(CoapReply *reply)
 
         // Check CoAP reply error
         if (reply->error() != CoapReply::NoError) {
-            if (device->stateValue(plantCareReachableStateTypeId).toBool())
+            if (device->stateValue(plantCareConnectedStateTypeId).toBool())
                 qCWarning(dcPlantCare) << "Ping device" << reply->request().url().toString() << "reply finished with error" << reply->errorString();
 
             setReachable(device, false);

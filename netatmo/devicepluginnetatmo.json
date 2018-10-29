@@ -10,7 +10,7 @@
             "deviceClasses": [
                 {
                     "id": "728d5a67-27a3-400e-b83c-2765f5196f69",
-                    "name": "connection",
+                    "name": "netatmoConnection",
                     "displayName": "Netatmo Connection",
                     "criticalStateTypeId": "2f79bc1d-27ed-480a-b583-728363c83ea6",
                     "deviceIcon": "Network",
@@ -40,7 +40,7 @@
                     "stateTypes": [
                         {
                             "id": "2f79bc1d-27ed-480a-b583-728363c83ea6",
-                            "name": "available",
+                            "name": "connected",
                             "displayName": "available",
                             "displayNameEvent": "available changed",
                             "type": "bool",

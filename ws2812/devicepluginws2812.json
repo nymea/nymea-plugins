@@ -50,7 +50,7 @@
                         },
                         {
                             "id": "08091cde-983d-42f7-bdd7-d89c312ccbed",
-                            "name": "reachable",
+                            "name": "connected",
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
                             "type": "bool",

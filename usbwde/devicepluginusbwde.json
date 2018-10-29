@@ -41,6 +41,16 @@
                             "inputType": "TextLine",
                             "defaultValue": "9600"
                         }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8d6c6e04-acff-48cc-8a62-70c5c8b43067",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
                     ]
                 },
                 {
