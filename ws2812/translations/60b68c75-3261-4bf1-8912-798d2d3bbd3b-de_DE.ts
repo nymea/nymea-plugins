@@ -33,7 +33,7 @@ The name of the DeviceClass (3142db46-5c6f-42d6-9001-753150763385)</extracomment
     <message>
         <location filename="../plugininfo.h" line="96"/>
         <source>reachable changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: ws2812, StateType: reachable, ID: 08091cde-983d-42f7-bdd7-d89c312ccbed)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: ws2812, StateType: connected, ID: 08091cde-983d-42f7-bdd7-d89c312ccbed)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -51,7 +51,7 @@ The name of the DeviceClass (3142db46-5c6f-42d6-9001-753150763385)</extracomment
     <message>
         <location filename="../plugininfo.h" line="99"/>
         <source>reachable</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: ws2812, StateType: reachable, ID: 08091cde-983d-42f7-bdd7-d89c312ccbed</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: ws2812, StateType: connected, ID: 08091cde-983d-42f7-bdd7-d89c312ccbed</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

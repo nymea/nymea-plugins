@@ -111,13 +111,13 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: plantCare
     <message>
         <location filename="../plugininfo.h" line="109"/>
         <source>reachable changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: plantCare, StateType: reachable, ID: 8384e07b-8b91-492a-b6c8-e72b325ba0b4)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: plantCare, StateType: connected, ID: 8384e07b-8b91-492a-b6c8-e72b325ba0b4)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="112"/>
         <source>reachable</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: plantCare, StateType: reachable, ID: 8384e07b-8b91-492a-b6c8-e72b325ba0b4</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: plantCare, StateType: connected, ID: 8384e07b-8b91-492a-b6c8-e72b325ba0b4</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
