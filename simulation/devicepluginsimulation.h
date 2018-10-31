@@ -26,6 +26,8 @@
 #include "devicemanager.h"
 #include "plugintimer.h"
 
+#include <QDateTime>
+
 class DevicePluginSimulation : public DevicePlugin
 {
     Q_OBJECT
@@ -54,6 +56,7 @@ private:
     // Generates values in a sin curve from min to max, moving the start by hourOffset from midnight
     qreal generateSinValue(int min, int max, int hourOffset, int decimals = 2);
     qreal generateBatteryValue(int chargeStartHour, int chargeDurationInMinutes);
+    qreal generateNoisyRectangle(int min, int max, int noise, int stablePeriodInMinutes, int &lastValue, QDateTime &lastChangeTimestamp);
 
     QHash<Device*, QTimer*> m_simulationTimers;
 private slots:
