@@ -30,25 +30,25 @@ The name of the ParamType (DeviceClass: outdoor, Type: device, ID: a97d256c-e159
     <message>
         <location filename="../plugininfo.h" line="99"/>
         <source>username</source>
-        <extracomment>The name of the ParamType (DeviceClass: connection, Type: device, ID: 763c2c10-dee5-41c8-9f7e-ded741945e73)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: netatmoConnection, Type: device, ID: 763c2c10-dee5-41c8-9f7e-ded741945e73)</extracomment>
         <translation>nome de utilizador</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="102"/>
         <source>password</source>
-        <extracomment>The name of the ParamType (DeviceClass: connection, Type: device, ID: c0d892d6-f359-4782-9d7d-8f74a3b53e3e)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: netatmoConnection, Type: device, ID: c0d892d6-f359-4782-9d7d-8f74a3b53e3e)</extracomment>
         <translation>palavra-passe</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="105"/>
         <source>available changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: connection, StateType: available, ID: 2f79bc1d-27ed-480a-b583-728363c83ea6)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: netatmoConnection, StateType: connected, ID: 2f79bc1d-27ed-480a-b583-728363c83ea6)</extracomment>
         <translation>﻿disponível alterado﻿</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="108"/>
         <source>available</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: connection, StateType: available, ID: 2f79bc1d-27ed-480a-b583-728363c83ea6</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: netatmoConnection, StateType: connected, ID: 2f79bc1d-27ed-480a-b583-728363c83ea6</extracomment>
         <translation>﻿disponível</translation>
     </message>
     <message>

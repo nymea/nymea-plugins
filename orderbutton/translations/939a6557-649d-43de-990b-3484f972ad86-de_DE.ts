@@ -60,13 +60,13 @@
     <message>
         <location filename="../plugininfo.h" line="72"/>
         <source>reachable changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: orderbutton, StateType: reachable, ID: 783e74ee-ffd6-4dd7-ade5-3a961452cf15)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: orderbutton, StateType: connected, ID: 783e74ee-ffd6-4dd7-ade5-3a961452cf15)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="75"/>
         <source>reachable</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: orderbutton, StateType: reachable, ID: 783e74ee-ffd6-4dd7-ade5-3a961452cf15</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: orderbutton, StateType: connected, ID: 783e74ee-ffd6-4dd7-ade5-3a961452cf15</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

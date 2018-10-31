@@ -172,6 +172,8 @@ The name of the autocreated EventType (DeviceClass: heatingRod, StateType: heati
         <source>Open</source>
         <extracomment>The name of the ActionType 1786029d-f3a6-4b47-978a-ac1a581aac0f of deviceClass garageGate
 ----------
+The name of the ActionType 06b99eb1-c3b6-4bea-95cf-690078297206 of deviceClass simpleBlind
+----------
 The name of the ActionType b4379ab7-5fc2-45b6-8214-5855b040ee1a of deviceClass extendedBlind
 ----------
 The name of the ActionType 508c8f1b-aa1d-43d8-badb-0c9d219025b3 of deviceClass extendedAwning
@@ -196,7 +198,9 @@ The name of the ActionType 17860291-f3a6-4b47-978a-ac1a581aac0f of deviceClass r
     </message>
     <message>
         <source>stop</source>
-        <extracomment>The name of the ActionType fd63d8bf-ffde-4343-bbdc-1645c94017dc of deviceClass extendedBlind
+        <extracomment>The name of the ActionType 7f1bdeef-a57c-4b82-80ad-e3e31f16027f of deviceClass simpleBlind
+----------
+The name of the ActionType fd63d8bf-ffde-4343-bbdc-1645c94017dc of deviceClass extendedBlind
 ----------
 The name of the ActionType 41fdeba2-8d2f-46ce-8f2d-b8c31bdf90ff of deviceClass extendedAwning
 ----------
@@ -205,7 +209,9 @@ The name of the ActionType 27860292-f3a6-4b47-978a-ac1a581aac0f of deviceClass r
     </message>
     <message>
         <source>close</source>
-        <extracomment>The name of the ActionType 316c17e6-01a8-45c4-921d-7773b2d441a4 of deviceClass extendedBlind
+        <extracomment>The name of the ActionType 0c55d32d-c916-472b-a03e-66fe7115e85d of deviceClass simpleBlind
+----------
+The name of the ActionType 316c17e6-01a8-45c4-921d-7773b2d441a4 of deviceClass extendedBlind
 ----------
 The name of the ActionType 79ec0271-5361-4f0f-a458-bf22e570c9ac of deviceClass extendedAwning
 ----------
@@ -657,6 +663,8 @@ The name of the autocreated EventType (DeviceClass: rollerShutter, StateType: pe
         <source>percentage</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: extendedBlind, StateType: percentage, ID: 18fc257c-6b7b-472c-b52a-acd4ba405bf2
 ----------
+The name of the ParamType for the autocreated ActionType (DeviceClass: extendedBlind, StateType: percentage, ID: 18fc257c-6b7b-472c-b52a-acd4ba405bf2)
+----------
 The name of the ParamType for the autocreated EventType (DeviceClass: extendedAwning, StateType: percentage, ID: e4c92da3-da3e-40ea-907f-a93283426789
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: extendedAwning, StateType: percentage, ID: e4c92da3-da3e-40ea-907f-a93283426789)
@@ -691,9 +699,52 @@ The name of the ParamType for the autocreated EventType (DeviceClass: rollerShut
     </message>
     <message>
         <source>set percentage</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: extendedAwning, StateType: percentage, ID: e4c92da3-da3e-40ea-907f-a93283426789)
+        <extracomment>The name of the autocreated ActionType (DeviceClass: extendedBlind, StateType: percentage, ID: 18fc257c-6b7b-472c-b52a-acd4ba405bf2)
+----------
+The name of the autocreated ActionType (DeviceClass: extendedAwning, StateType: percentage, ID: e4c92da3-da3e-40ea-907f-a93283426789)
 ----------
 The name of the autocreated ActionType (DeviceClass: rollerShutter, StateType: percentage, ID: 1386029d-f3a6-4b47-978a-ac1a581aac0f)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simple blind</source>
+        <extracomment>The name of the DeviceClass (a13c14f1-361e-4aad-8785-c04b094fb19a)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Users changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: fingerPrintSensor, StateType: users, ID: 02482093-3b82-4918-a3ce-2a2f4831aae0)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Users</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: fingerPrintSensor, StateType: users, ID: 02482093-3b82-4918-a3ce-2a2f4831aae0</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add user</source>
+        <extracomment>The name of the ActionType c3805253-a09b-4657-b86c-97936f390672 of deviceClass fingerPrintSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User ID</source>
+        <extracomment>The name of the ParamType (DeviceClass: fingerPrintSensor, ActionType: addUser, ID: d9e0c68f-8b61-4f5a-9909-b27a4ac562a3)
+----------
+The name of the ParamType (DeviceClass: fingerPrintSensor, ActionType: removeUser, ID: ca2ffce8-ee71-47ff-8247-f17fca14fd87)
+----------
+The name of the ParamType (DeviceClass: fingerPrintSensor, EventType: accessGranted, ID: 84addd61-15e9-4e98-aa80-6b0bf5d82a15)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Finger</source>
+        <extracomment>The name of the ParamType (DeviceClass: fingerPrintSensor, ActionType: addUser, ID: 2a97de6c-5ffb-4ca8-b4c7-41ad6790668d)
+----------
+The name of the ParamType (DeviceClass: fingerPrintSensor, EventType: accessGranted, ID: 3611bfc0-be3c-4ddb-8184-b64fc38c7256)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove user</source>
+        <extracomment>The name of the ActionType 28bf4cd1-bb1c-442b-8ba3-ed019f34abbd of deviceClass fingerPrintSensor</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
