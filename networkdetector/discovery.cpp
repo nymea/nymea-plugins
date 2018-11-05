@@ -20,23 +20,29 @@ void Discovery::discoverHosts(int timeout)
     }
     m_timeoutTimer.start(timeout * 1000);
 
-    m_discoveryProcess = new QProcess(this);
-    connect(m_discoveryProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(discoveryFinished(int,QProcess::ExitStatus)));
+    foreach (const QString &target, getDefaultTargets()) {
+        QProcess *discoveryProcess = new QProcess(this);
+        m_discoveryProcesses.append(discoveryProcess);
+        connect(discoveryProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(discoveryFinished(int,QProcess::ExitStatus)));
 
-    QStringList arguments;
-    arguments << "-oX" << "-" << "-n" << "-sn";
-    arguments << getDefaultTargets();
+        QStringList arguments;
+        arguments << "-oX" << "-" << "-n" << "-sn";
+        arguments << target;
 
-    qCDebug(dcNetworkDetector) << "Scanning network:" << "nmap" << arguments.join(" ");
-    m_discoveryProcess->start(QStringLiteral("nmap"), arguments);
+        qCDebug(dcNetworkDetector) << "Scanning network:" << "nmap" << arguments.join(" ");
+        discoveryProcess->start(QStringLiteral("nmap"), arguments);
+    }
+
 }
 
 void Discovery::abort()
 {
-    if (m_discoveryProcess && m_discoveryProcess->state() == QProcess::Running) {
-        qCDebug(dcNetworkDetector()) << "Kill running discovery process";
-        m_discoveryProcess->terminate();
-        m_discoveryProcess->waitForFinished(5000);
+    foreach (QProcess *discoveryProcess, m_discoveryProcesses) {
+        if (discoveryProcess->state() == QProcess::Running) {
+            qCDebug(dcNetworkDetector()) << "Kill running discovery process";
+            discoveryProcess->terminate();
+            discoveryProcess->waitForFinished(5000);
+        }
     }
     foreach (QProcess *p, m_pendingArpLookups.keys()) {
         p->terminate();
@@ -50,23 +56,26 @@ void Discovery::abort()
 
 bool Discovery::isRunning() const
 {
-    return m_discoveryProcess != nullptr && m_pendingArpLookups.isEmpty() && m_pendingNameLookups.isEmpty();
+    return !m_discoveryProcesses.isEmpty() || !m_pendingArpLookups.isEmpty() || !m_pendingNameLookups.isEmpty();
 }
 
 void Discovery::discoveryFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    QProcess *discoveryProcess = static_cast<QProcess*>(sender());
 
     if (exitCode != 0 || exitStatus != QProcess::NormalExit) {
         qCWarning(dcNetworkDetector()) << "Nmap error failed. Is nmap installed correctly?";
         emit finished({});
-        m_discoveryProcess->deleteLater();
-        m_discoveryProcess = nullptr;
+        m_discoveryProcesses.removeAll(discoveryProcess);
+        discoveryProcess->deleteLater();
+        discoveryProcess = nullptr;
         return;
     }
 
-    QByteArray data = m_discoveryProcess->readAll();
-    m_discoveryProcess->deleteLater();
-    m_discoveryProcess = nullptr;
+    QByteArray data = discoveryProcess->readAll();
+    m_discoveryProcesses.removeAll(discoveryProcess);
+    discoveryProcess->deleteLater();
+    discoveryProcess = nullptr;
 
     QXmlStreamReader reader(data);
 
@@ -128,7 +137,7 @@ void Discovery::discoveryFinished(int exitCode, QProcess::ExitStatus exitStatus)
         }
     }
 
-    if (foundHosts == 0) {
+    if (foundHosts == 0 && m_discoveryProcesses.isEmpty()) {
         qCDebug(dcNetworkDetector()) << "Network scan successful but no hosts found in this network";
         emit finished({});
     }
@@ -179,11 +188,11 @@ void Discovery::arpLookupDone(int exitCode, QProcess::ExitStatus exitStatus)
 void Discovery::onTimeout()
 {
     qWarning(dcNetworkDetector()) << "Timeout hit. Stopping discovery";
-    if (m_discoveryProcess && m_discoveryProcess->state() == QProcess::Running) {
+    while (!m_discoveryProcesses.isEmpty()) {
+        QProcess *discoveryProcess = m_discoveryProcesses.takeFirst();
         disconnect(this, SLOT(discoveryFinished(int,QProcess::ExitStatus)));
-        m_discoveryProcess->terminate();
-        delete m_discoveryProcess;
-        m_discoveryProcess = nullptr;
+        discoveryProcess->terminate();
+        delete discoveryProcess;
     }
     foreach (QProcess *p, m_pendingArpLookups.keys()) {
         p->terminate();
@@ -212,7 +221,7 @@ QStringList Discovery::getDefaultTargets()
 
 void Discovery::finishDiscovery()
 {
-    if (m_pendingNameLookups.count() > 0 || m_pendingArpLookups.count() > 0) {
+    if (m_discoveryProcesses.count() > 0 || m_pendingNameLookups.count() > 0 || m_pendingArpLookups.count() > 0) {
         // Still busy...
         return;
     }

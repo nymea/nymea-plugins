@@ -35,7 +35,7 @@ private slots:
     void onTimeout();
 
 private:
-    QProcess * m_discoveryProcess = nullptr;
+    QList<QProcess*> m_discoveryProcesses;
     QTimer m_timeoutTimer;
 
     QHash<QProcess*, Host*> m_pendingArpLookups;
