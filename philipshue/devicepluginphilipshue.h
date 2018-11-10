@@ -98,7 +98,7 @@ private:
     void refreshSensors(HueBridge *bridge);
 
     void discoverBridgeDevices(HueBridge *bridge);
-    void searchNewDevices(HueBridge *bridge);
+    void searchNewDevices(HueBridge *bridge, const QString &serialNumber);
 
     void setLightName(Device *device, const QString &name);
 

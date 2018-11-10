@@ -126,11 +126,19 @@ QPair<QNetworkRequest, QByteArray> HueBridge::createDiscoverLightsRequest()
     return QPair<QNetworkRequest, QByteArray>(request, QByteArray());
 }
 
-QPair<QNetworkRequest, QByteArray> HueBridge::createSearchLightsRequest()
+QPair<QNetworkRequest, QByteArray> HueBridge::createSearchLightsRequest(const QString &deviceId)
 {
     QNetworkRequest request(QUrl("http://" + hostAddress().toString() + "/api/" + apiKey() + "/lights/"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    return QPair<QNetworkRequest, QByteArray>(request, QByteArray());
+    QByteArray payload;
+    if (!deviceId.isEmpty()) {
+        QVariantMap params;
+        QVariantList deviceIds;
+        deviceIds.append(deviceId);
+        params.insert("deviceId", deviceIds);
+        payload = QJsonDocument::fromVariant(params).toJson(QJsonDocument::Compact);
+    }
+    return QPair<QNetworkRequest, QByteArray>(request, payload);
 }
 
 QPair<QNetworkRequest, QByteArray> HueBridge::createSearchSensorsRequest()

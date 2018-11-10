@@ -126,7 +126,15 @@
                         {
                             "id": "cca3f171-6318-44e7-a2ac-d841857c1c24",
                             "name": "searchNewDevices",
-                            "displayName": "search devices"
+                            "displayName": "search devices",
+                            "paramTypes": [
+                                {
+                                    "id": "1924bdb5-f8f1-4dcd-bc09-21ad7c5ce377",
+                                    "name": "serial",
+                                    "displayName": "Serial Number (optional)",
+                                    "type": "QString"
+                                }
+                            ]
                         },
                         {
                             "id": "07a85e91-d064-4bce-b017-13fd0c320c0b",
@@ -142,8 +150,8 @@
                 },
                 {
                     "id": "0edba26c-96ab-44fb-a6a2-c0574d19630e",
-                    "name": "light",
-                    "displayName": "Hue Light",
+                    "name": "colorLight",
+                    "displayName": "Hue color light",
                     "deviceIcon": "LightBulb",
                     "interfaces": ["colorlight", "connectable"],
                     "basicTags": [
@@ -292,9 +300,128 @@
                     ]
                 },
                 {
+                    "id": "35f749f7-b60a-4922-bd25-1bdd2eddcbe3",
+                    "name": "colorTemperatureLight",
+                    "displayName": "Hue color temperature light",
+                    "deviceIcon": "LightBulb",
+                    "interfaces": ["colortemperaturelight", "connectable"],
+                    "basicTags": [
+                        "Device",
+                        "Lighting",
+                        "Actuator"
+                    ],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "1fcb0645-f552-4d81-9cc3-69ad5bbe2a85",
+                            "name": "name",
+                            "displayName": "name",
+                            "type" : "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "e944795b-7863-488c-805b-a112b836bfbf",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "f52671c9-ab0b-4986-8d32-f03b8c289cf7",
+                            "name": "type",
+                            "displayName": "type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "3db74bca-bd8e-4716-9ad1-4af41862a33e",
+                            "name": "uuid",
+                            "displayName": "uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "2705f25c-c9bc-40c4-bed2-835308986813",
+                            "name": "lightId",
+                            "displayName": "light id",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "38f3ddea-ceb0-47ae-bbd8-e70b5a89b1bf",
+                            "name": "connected",
+                            "displayName": "reachable",
+                            "displayNameEvent": "reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "4e579f6a-e4b3-4876-804a-9fcc066f90f9",
+                            "name": "power",
+                            "displayName": "power",
+                            "displayNameEvent": "power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "fee57738-45c7-48fe-a06b-1397376361f0",
+                            "name": "colorTemperature",
+                            "displayName": "color temperature",
+                            "displayNameEvent": "color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "ruleRelevant": false,
+                            "eventRuleRelevant": false,
+                            "minValue": 153,
+                            "maxValue": 500,
+                            "writable": true
+                        },
+                        {
+                            "id": "bdf6f831-b448-4ff6-9f85-12e26b4e5534",
+                            "name": "brightness",
+                            "displayName": "brightness",
+                            "displayNameEvent": "brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "ruleRelevant": false,
+                            "eventRuleRelevant": false,
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "8818e8b9-14ed-4344-96fb-c852abc85921",
+                            "name": "alert",
+                            "displayName": "flash",
+                            "paramTypes": [
+                                {
+                                    "id": "07c94fe7-35ac-4dee-996e-8bd60dcabb05",
+                                    "name": "alert",
+                                    "displayName": "alert",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "flash",
+                                        "flash 15 [s]"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
                     "id": "4fa568ef-7a3a-422b-b0c0-206d37cb4eed",
-                    "name": "whiteLight",
-                    "displayName": "Hue White Light",
+                    "name": "dimmableLight",
+                    "displayName": "Hue dimmable light",
                     "deviceIcon": "LightBulb",
                     "interfaces": ["dimmablelight", "connectable"],
                     "basicTags": [
