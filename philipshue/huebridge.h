@@ -62,7 +62,7 @@ public:
     void addLight(HueLight *light);
 
     QPair<QNetworkRequest, QByteArray> createDiscoverLightsRequest();
-    QPair<QNetworkRequest, QByteArray> createSearchLightsRequest();
+    QPair<QNetworkRequest, QByteArray> createSearchLightsRequest(const QString &deviceId);
     QPair<QNetworkRequest, QByteArray> createSearchSensorsRequest();
     QPair<QNetworkRequest, QByteArray> createCheckUpdatesRequest();
     QPair<QNetworkRequest, QByteArray> createUpgradeRequest();

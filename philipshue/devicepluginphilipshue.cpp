@@ -147,18 +147,18 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
     }
 
     // hue color light
-    if (device->deviceClassId() == lightDeviceClassId) {
+    if (device->deviceClassId() == colorLightDeviceClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue color light" << device->params();
 
         HueBridge *bridge = m_bridges.key(myDevices().findById(device->parentId()));
         HueLight *hueLight = new HueLight(this);
         hueLight->setHostAddress(bridge->hostAddress());
         hueLight->setApiKey(bridge->apiKey());
-        hueLight->setId(device->paramValue(lightDeviceLightIdParamTypeId).toInt());
-        hueLight->setName(device->paramValue(lightDeviceNameParamTypeId).toString());
-        hueLight->setModelId(device->paramValue(lightDeviceModelIdParamTypeId).toString());
-        hueLight->setUuid(device->paramValue(lightDeviceUuidParamTypeId).toString());
-        hueLight->setType(device->paramValue(lightDeviceTypeParamTypeId).toString());
+        hueLight->setId(device->paramValue(colorLightDeviceLightIdParamTypeId).toInt());
+        hueLight->setName(device->paramValue(colorLightDeviceNameParamTypeId).toString());
+        hueLight->setModelId(device->paramValue(colorLightDeviceModelIdParamTypeId).toString());
+        hueLight->setUuid(device->paramValue(colorLightDeviceUuidParamTypeId).toString());
+        hueLight->setType(device->paramValue(colorLightDeviceTypeParamTypeId).toString());
 
         connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
         m_lights.insert(hueLight, device);
@@ -166,24 +166,49 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         device->setName(hueLight->name());
 
         refreshLight(device);
-        setLightName(device, device->paramValue(lightDeviceNameParamTypeId).toString());
+        setLightName(device, device->paramValue(colorLightDeviceNameParamTypeId).toString());
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    // hue color temperature light
+    if (device->deviceClassId() == colorTemperatureLightDeviceClassId) {
+        qCDebug(dcPhilipsHue) << "Setup Hue color temperature light" << device->params();
+
+        HueBridge *bridge = m_bridges.key(myDevices().findById(device->parentId()));
+        HueLight *hueLight = new HueLight(this);
+        hueLight->setHostAddress(bridge->hostAddress());
+        hueLight->setApiKey(bridge->apiKey());
+        hueLight->setId(device->paramValue(colorTemperatureLightDeviceLightIdParamTypeId).toInt());
+        hueLight->setName(device->paramValue(colorTemperatureLightDeviceNameParamTypeId).toString());
+        hueLight->setModelId(device->paramValue(colorTemperatureLightDeviceModelIdParamTypeId).toString());
+        hueLight->setUuid(device->paramValue(colorTemperatureLightDeviceUuidParamTypeId).toString());
+        hueLight->setType(device->paramValue(colorTemperatureLightDeviceTypeParamTypeId).toString());
+
+        connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
+        m_lights.insert(hueLight, device);
+
+        device->setName(hueLight->name());
+
+        refreshLight(device);
+        setLightName(device, device->paramValue(colorTemperatureLightDeviceNameParamTypeId).toString());
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     // hue white light
-    if (device->deviceClassId() == whiteLightDeviceClassId) {
+    if (device->deviceClassId() == dimmableLightDeviceClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue white light" << device->params();
 
         HueBridge *bridge = m_bridges.key(myDevices().findById(device->parentId()));
         HueLight *hueLight = new HueLight(this);
         hueLight->setHostAddress(bridge->hostAddress());
         hueLight->setApiKey(bridge->apiKey());
-        hueLight->setId(device->paramValue(whiteLightDeviceLightIdParamTypeId).toInt());
-        hueLight->setName(device->paramValue(whiteLightDeviceNameParamTypeId).toString());
-        hueLight->setModelId(device->paramValue(whiteLightDeviceModelIdParamTypeId).toString());
-        hueLight->setUuid(device->paramValue(whiteLightDeviceUuidParamTypeId).toString());
-        hueLight->setType(device->paramValue(whiteLightDeviceTypeParamTypeId).toString());
+        hueLight->setId(device->paramValue(dimmableLightDeviceLightIdParamTypeId).toInt());
+        hueLight->setName(device->paramValue(dimmableLightDeviceNameParamTypeId).toString());
+        hueLight->setModelId(device->paramValue(dimmableLightDeviceModelIdParamTypeId).toString());
+        hueLight->setUuid(device->paramValue(dimmableLightDeviceUuidParamTypeId).toString());
+        hueLight->setType(device->paramValue(dimmableLightDeviceTypeParamTypeId).toString());
 
         connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
 
@@ -192,7 +217,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         m_lights.insert(hueLight, device);
         refreshLight(device);
 
-        setLightName(device, device->paramValue(whiteLightDeviceNameParamTypeId).toString());
+        setLightName(device, device->paramValue(dimmableLightDeviceNameParamTypeId).toString());
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -255,7 +280,9 @@ void DevicePluginPhilipsHue::deviceRemoved(Device *device)
         bridge->deleteLater();
     }
 
-    if (device->deviceClassId() == lightDeviceClassId || device->deviceClassId() == whiteLightDeviceClassId) {
+    if (device->deviceClassId() == colorLightDeviceClassId
+            || device->deviceClassId() == colorTemperatureLightDeviceClassId
+            || device->deviceClassId() == dimmableLightDeviceClassId) {
         HueLight *light = m_lights.key(device);
         m_lights.remove(light);
         light->deleteLater();
@@ -403,7 +430,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (device->stateValue(lightConnectedStateTypeId).toBool()) {
+            if (device->stateValue(colorLightConnectedStateTypeId).toBool()) {
                 qCWarning(dcPhilipsHue) << "Refresh Hue lights request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
@@ -461,7 +488,7 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
     qCDebug(dcPhilipsHue) << "Execute action" << action.actionTypeId() << action.params();
 
     // color light
-    if (device->deviceClassId() == lightDeviceClassId) {
+    if (device->deviceClassId() == colorLightDeviceClassId) {
         HueLight *light = m_lights.key(device);
 
         if (!light->reachable()) {
@@ -469,38 +496,38 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
             return DeviceManager::DeviceErrorHardwareNotAvailable;
         }
 
-        if (action.actionTypeId() == lightPowerActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(lightPowerActionPowerParamTypeId).value().toBool());
+        if (action.actionTypeId() == colorLightPowerActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(colorLightPowerActionPowerParamTypeId).value().toBool());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == lightColorActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetColorRequest(action.param(lightColorActionColorParamTypeId).value().value<QColor>());
+        } else if (action.actionTypeId() == colorLightColorActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetColorRequest(action.param(colorLightColorActionColorParamTypeId).value().value<QColor>());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply,QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == lightBrightnessActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(lightBrightnessActionBrightnessParamTypeId).value().toInt()));
+        } else if (action.actionTypeId() == colorLightBrightnessActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(colorLightBrightnessActionBrightnessParamTypeId).value().toInt()));
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == lightEffectActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetEffectRequest(action.param(lightEffectActionEffectParamTypeId).value().toString());
+        } else if (action.actionTypeId() == colorLightEffectActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetEffectRequest(action.param(colorLightEffectActionEffectParamTypeId).value().toString());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == lightAlertActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createFlashRequest(action.param(lightAlertActionAlertParamTypeId).value().toString());
+        } else if (action.actionTypeId() == colorLightAlertActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createFlashRequest(action.param(colorLightAlertActionAlertParamTypeId).value().toString());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == lightColorTemperatureActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetTemperatureRequest(action.param(lightColorTemperatureActionColorTemperatureParamTypeId).value().toInt());
+        } else if (action.actionTypeId() == colorLightColorTemperatureActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetTemperatureRequest(action.param(colorLightColorTemperatureActionColorTemperatureParamTypeId).value().toInt());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
@@ -509,8 +536,8 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
-    // white light
-    if (device->deviceClassId() == whiteLightDeviceClassId) {
+    // color temperature light
+    if (device->deviceClassId() == colorTemperatureLightDeviceClassId) {
         HueLight *light = m_lights.key(device);
 
         if (!light->reachable()) {
@@ -518,20 +545,57 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
             return DeviceManager::DeviceErrorHardwareNotAvailable;
         }
 
-        if (action.actionTypeId() == whiteLightPowerActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(whiteLightPowerActionPowerParamTypeId).value().toBool());
+        if (action.actionTypeId() == colorTemperatureLightPowerActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(colorTemperatureLightPowerActionPowerParamTypeId).value().toBool());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == whiteLightBrightnessActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(whiteLightBrightnessActionBrightnessParamTypeId).value().toInt()));
+        } else if (action.actionTypeId() == colorTemperatureLightBrightnessActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(colorTemperatureLightBrightnessActionBrightnessParamTypeId).value().toInt()));
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
             return DeviceManager::DeviceErrorAsync;
-        } else if (action.actionTypeId() == whiteLightAlertActionTypeId) {
-            QPair<QNetworkRequest, QByteArray> request = light->createFlashRequest(action.param(whiteLightAlertActionAlertParamTypeId).value().toString());
+        } else if (action.actionTypeId() == colorTemperatureLightAlertActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createFlashRequest(action.param(colorTemperatureLightAlertActionAlertParamTypeId).value().toString());
+            QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
+            connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
+            m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            return DeviceManager::DeviceErrorAsync;
+        } else if (action.actionTypeId() == colorTemperatureLightColorTemperatureActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetTemperatureRequest(action.param(colorTemperatureLightColorTemperatureActionColorTemperatureParamTypeId).value().toInt());
+            QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
+            connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
+            m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            return DeviceManager::DeviceErrorAsync;
+        }
+        return DeviceManager::DeviceErrorActionTypeNotFound;
+    }
+
+    // dimmable light
+    if (device->deviceClassId() == dimmableLightDeviceClassId) {
+        HueLight *light = m_lights.key(device);
+
+        if (!light->reachable()) {
+            qCWarning(dcPhilipsHue) << "Light" << light->name() << "not reachable";
+            return DeviceManager::DeviceErrorHardwareNotAvailable;
+        }
+
+        if (action.actionTypeId() == dimmableLightPowerActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(action.param(dimmableLightPowerActionPowerParamTypeId).value().toBool());
+            QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
+            connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
+            m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            return DeviceManager::DeviceErrorAsync;
+        } else if (action.actionTypeId() == dimmableLightBrightnessActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percentageToBrightness(action.param(dimmableLightBrightnessActionBrightnessParamTypeId).value().toInt()));
+            QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
+            connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
+            m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            return DeviceManager::DeviceErrorAsync;
+        } else if (action.actionTypeId() == dimmableLightAlertActionTypeId) {
+            QPair<QNetworkRequest, QByteArray> request = light->createFlashRequest(action.param(dimmableLightAlertActionAlertParamTypeId).value().toString());
             QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
             m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
@@ -548,7 +612,7 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device,
         }
 
         if (action.actionTypeId() == bridgeSearchNewDevicesActionTypeId) {
-            searchNewDevices(bridge);
+            searchNewDevices(bridge, action.param(bridgeSearchNewDevicesActionSerialParamTypeId).value().toString());
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == bridgeCheckForUpdatesActionTypeId) {
             QPair<QNetworkRequest, QByteArray> request = bridge->createCheckUpdatesRequest();
@@ -578,17 +642,22 @@ void DevicePluginPhilipsHue::lightStateChanged()
         return;
     }
 
-    if (device->deviceClassId() == lightDeviceClassId) {
-        device->setStateValue(lightConnectedStateTypeId, light->reachable());
-        device->setStateValue(lightColorStateTypeId, QVariant::fromValue(light->color()));
-        device->setStateValue(lightPowerStateTypeId, light->power());
-        device->setStateValue(lightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
-        device->setStateValue(lightColorTemperatureStateTypeId, light->ct());
-        device->setStateValue(lightEffectStateTypeId, light->effect());
-    } else if (device->deviceClassId() == whiteLightDeviceClassId) {
-        device->setStateValue(whiteLightConnectedStateTypeId, light->reachable());
-        device->setStateValue(whiteLightPowerStateTypeId, light->power());
-        device->setStateValue(whiteLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
+    if (device->deviceClassId() == colorLightDeviceClassId) {
+        device->setStateValue(colorLightConnectedStateTypeId, light->reachable());
+        device->setStateValue(colorLightColorStateTypeId, QVariant::fromValue(light->color()));
+        device->setStateValue(colorLightPowerStateTypeId, light->power());
+        device->setStateValue(colorLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
+        device->setStateValue(colorLightColorTemperatureStateTypeId, light->ct());
+        device->setStateValue(colorLightEffectStateTypeId, light->effect());
+    } else if (device->deviceClassId() == colorTemperatureLightDeviceClassId) {
+        device->setStateValue(colorTemperatureLightConnectedStateTypeId, light->reachable());
+        device->setStateValue(colorTemperatureLightPowerStateTypeId, light->power());
+        device->setStateValue(colorTemperatureLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
+        device->setStateValue(colorTemperatureLightColorTemperatureStateTypeId, light->ct());
+    } else if (device->deviceClassId() == dimmableLightDeviceClassId) {
+        device->setStateValue(dimmableLightConnectedStateTypeId, light->reachable());
+        device->setStateValue(dimmableLightPowerStateTypeId, light->power());
+        device->setStateValue(dimmableLightBrightnessStateTypeId, brightnessToPercentage(light->brightness()));
     }
 }
 
@@ -780,12 +849,12 @@ void DevicePluginPhilipsHue::discoverBridgeDevices(HueBridge *bridge)
     m_bridgeSensorsDiscoveryRequests.insert(reply, device);
 }
 
-void DevicePluginPhilipsHue::searchNewDevices(HueBridge *bridge)
+void DevicePluginPhilipsHue::searchNewDevices(HueBridge *bridge, const QString &serialNumber)
 {
     Device *device = m_bridges.value(bridge);
     qCDebug(dcPhilipsHue) << "Discover bridge devices" << bridge->hostAddress();
 
-    QPair<QNetworkRequest, QByteArray> request = bridge->createSearchLightsRequest();
+    QPair<QNetworkRequest, QByteArray> request = bridge->createSearchLightsRequest(serialNumber);
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
     m_bridgeSearchDevicesRequests.insert(reply, device);
@@ -861,8 +930,9 @@ void DevicePluginPhilipsHue::processBridgeLightDiscoveryResponse(Device *device,
     }
 
     // create Lights if not already added
-    QList<DeviceDescriptor> lightDescriptors;
-    QList<DeviceDescriptor> whiteLightDescriptors;
+    QList<DeviceDescriptor> colorLightDescriptors;
+    QList<DeviceDescriptor> colorTemperatureLightDescriptors;
+    QList<DeviceDescriptor> dimmableLightDescriptors;
 
     QVariantMap lightsMap = jsonDoc.toVariant().toMap();
     foreach (QString lightId, lightsMap.keys()) {
@@ -874,39 +944,50 @@ void DevicePluginPhilipsHue::processBridgeLightDiscoveryResponse(Device *device,
         if (lightAlreadyAdded(uuid))
             continue;
 
-        // check if this is a white light
-        if (model == "LWB004" || model == "LWB006" || model == "LWB007") {
-            DeviceDescriptor descriptor(whiteLightDeviceClassId, "Philips Hue White Light", lightMap.value("name").toString(), device->id());
+        if (lightMap.value("type").toString() == "Dimmable light") {
+            DeviceDescriptor descriptor(dimmableLightDeviceClassId, "Philips Hue White Light", lightMap.value("name").toString(), device->id());
             ParamList params;
-            params.append(Param(whiteLightDeviceNameParamTypeId, lightMap.value("name").toString()));
-            params.append(Param(whiteLightDeviceModelIdParamTypeId, model));
-            params.append(Param(whiteLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
-            params.append(Param(whiteLightDeviceUuidParamTypeId, uuid));
-            params.append(Param(whiteLightDeviceLightIdParamTypeId, lightId));
+            params.append(Param(dimmableLightDeviceNameParamTypeId, lightMap.value("name").toString()));
+            params.append(Param(dimmableLightDeviceModelIdParamTypeId, model));
+            params.append(Param(dimmableLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(dimmableLightDeviceUuidParamTypeId, uuid));
+            params.append(Param(dimmableLightDeviceLightIdParamTypeId, lightId));
             descriptor.setParams(params);
-            whiteLightDescriptors.append(descriptor);
+            dimmableLightDescriptors.append(descriptor);
 
-            qCDebug(dcPhilipsHue) << "Found new white light" << lightMap.value("name").toString() << model;
+            qCDebug(dcPhilipsHue) << "Found new dimmable light" << lightMap.value("name").toString() << model;
+        } else if (lightMap.value("type").toString() == "Color temperature light") {
+            DeviceDescriptor descriptor(colorTemperatureLightDeviceClassId, "Philips Hue White Light", lightMap.value("name").toString(), device->id());
+            ParamList params;
+            params.append(Param(colorTemperatureLightDeviceNameParamTypeId, lightMap.value("name").toString()));
+            params.append(Param(colorTemperatureLightDeviceModelIdParamTypeId, model));
+            params.append(Param(colorTemperatureLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(colorTemperatureLightDeviceUuidParamTypeId, uuid));
+            params.append(Param(colorTemperatureLightDeviceLightIdParamTypeId, lightId));
+            descriptor.setParams(params);
+            colorTemperatureLightDescriptors.append(descriptor);
 
+            qCDebug(dcPhilipsHue) << "Found new color temperature light" << lightMap.value("name").toString() << model;
         } else {
-            DeviceDescriptor descriptor(lightDeviceClassId, "Philips Hue Light", lightMap.value("name").toString(), device->id());
+            DeviceDescriptor descriptor(colorLightDeviceClassId, "Philips Hue Light", lightMap.value("name").toString(), device->id());
             ParamList params;
-            params.append(Param(lightDeviceNameParamTypeId, lightMap.value("name").toString()));
-            params.append(Param(lightDeviceModelIdParamTypeId, model));
-            params.append(Param(lightDeviceTypeParamTypeId, lightMap.value("type").toString()));
-            params.append(Param(lightDeviceUuidParamTypeId, uuid));
-            params.append(Param(lightDeviceLightIdParamTypeId, lightId));
+            params.append(Param(colorLightDeviceNameParamTypeId, lightMap.value("name").toString()));
+            params.append(Param(colorLightDeviceModelIdParamTypeId, model));
+            params.append(Param(colorLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(colorLightDeviceUuidParamTypeId, uuid));
+            params.append(Param(colorLightDeviceLightIdParamTypeId, lightId));
             descriptor.setParams(params);
-            lightDescriptors.append(descriptor);
+            colorLightDescriptors.append(descriptor);
             qCDebug(dcPhilipsHue) << "Found new color light" << lightMap.value("name").toString() << model;
         }
     }
 
-    if (!lightDescriptors.isEmpty())
-        emit autoDevicesAppeared(lightDeviceClassId, lightDescriptors);
-
-    if (!whiteLightDescriptors.isEmpty())
-        emit autoDevicesAppeared(whiteLightDeviceClassId, whiteLightDescriptors);
+    if (!colorLightDescriptors.isEmpty())
+        emit autoDevicesAppeared(colorLightDeviceClassId, colorLightDescriptors);
+    if (!colorTemperatureLightDescriptors.isEmpty())
+        emit autoDevicesAppeared(colorTemperatureLightDeviceClassId, colorTemperatureLightDescriptors);
+    if (!dimmableLightDescriptors.isEmpty())
+        emit autoDevicesAppeared(dimmableLightDeviceClassId, dimmableLightDescriptors);
 }
 
 void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device, const QByteArray &data)
@@ -941,7 +1022,7 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
         if (sensorAlreadyAdded(uuid))
             continue;
 
-        if (model == "RWL021" || model == "RWL020") {
+        if (sensorMap.value("type").toString() == "ZLLSwitch") {
             DeviceDescriptor descriptor(remoteDeviceClassId, "Philips Hue Remote", sensorMap.value("name").toString(), device->id());
             ParamList params;
             params.append(Param(remoteDeviceNameParamTypeId, sensorMap.value("name").toString()));
@@ -952,7 +1033,7 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
             descriptor.setParams(params);
             emit autoDevicesAppeared(remoteDeviceClassId, {descriptor});
             qCDebug(dcPhilipsHue) << "Found new remote" << sensorMap.value("name").toString() << model;
-        } else if (model == "ZGPSWITCH") {
+        } else if (sensorMap.value("type").toString() == "ZGPSwitch") {
             DeviceDescriptor descriptor(tapDeviceClassId, "Hue Tap", sensorMap.value("name").toString(), device->id());
             ParamList params;
             params.append(Param(tapDeviceUuidParamTypeId, uuid));
@@ -1123,7 +1204,7 @@ void DevicePluginPhilipsHue::processSetNameResponse(Device *device, const QByteA
 
     //emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
 
-    if (device->deviceClassId() == lightDeviceClassId || device->deviceClassId() == whiteLightDeviceClassId)
+    if (device->deviceClassId() == colorLightDeviceClassId || device->deviceClassId() == dimmableLightDeviceClassId)
         refreshLight(device);
 
 }
@@ -1260,10 +1341,10 @@ void DevicePluginPhilipsHue::bridgeReachableChanged(Device *device, const bool &
             foreach (HueLight *light, m_lights.keys()) {
                 if (m_lights.value(light)->parentId() == device->id()) {
                     light->setReachable(false);
-                    if (m_lights.value(light)->deviceClassId() == lightDeviceClassId) {
-                        m_lights.value(light)->setStateValue(lightConnectedStateTypeId, false);
-                    } else if (m_lights.value(light)->deviceClassId() == whiteLightDeviceClassId) {
-                        m_lights.value(light)->setStateValue(whiteLightConnectedStateTypeId, false);
+                    if (m_lights.value(light)->deviceClassId() == colorLightDeviceClassId) {
+                        m_lights.value(light)->setStateValue(colorLightConnectedStateTypeId, false);
+                    } else if (m_lights.value(light)->deviceClassId() == dimmableLightDeviceClassId) {
+                        m_lights.value(light)->setStateValue(dimmableLightConnectedStateTypeId, false);
                     }
                 }
             }
@@ -1298,12 +1379,12 @@ bool DevicePluginPhilipsHue::bridgeAlreadyAdded(const QString &id)
 bool DevicePluginPhilipsHue::lightAlreadyAdded(const QString &uuid)
 {
     foreach (Device *device, myDevices()) {
-        if (device->deviceClassId() == lightDeviceClassId) {
-            if (device->paramValue(lightDeviceUuidParamTypeId).toString() == uuid) {
+        if (device->deviceClassId() == colorLightDeviceClassId) {
+            if (device->paramValue(colorLightDeviceUuidParamTypeId).toString() == uuid) {
                 return true;
             }
-        } else if (device->deviceClassId() == whiteLightDeviceClassId) {
-            if (device->paramValue(whiteLightDeviceUuidParamTypeId).toString() == uuid) {
+        } else if (device->deviceClassId() == dimmableLightDeviceClassId) {
+            if (device->paramValue(dimmableLightDeviceUuidParamTypeId).toString() == uuid) {
                 return true;
             }
         }
