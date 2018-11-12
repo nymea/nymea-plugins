@@ -32,6 +32,7 @@
                     "name": "snapdControl",
                     "displayName": "Update manager",
                     "createMethods": [ "auto" ],
+                    "interfaces": [ "system" ],
                     "basicTags": [ "Gateway" ],
                     "deviceIcon": "Gateway",
                     "paramTypes": [ ],
