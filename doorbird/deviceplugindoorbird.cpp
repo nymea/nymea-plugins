@@ -67,6 +67,7 @@ DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *devic
     QNetworkRequest request(QString("http://%1/bha-api/monitor.cgi?ring=doorbell,motionsensor").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
     qCDebug(dcDoorBird) << "Starting monitoring" << device->name();
     QNetworkReply *reply = m_nam->get(request);
+    m_networkRequests.insert(reply, device);
     connect(reply, &QNetworkReply::downloadProgress, this, [this, device, reply](qint64 bytesReceived, qint64 bytesTotal){
         if (!myDevices().contains(device)) {
             qCWarning(dcDoorBird) << "Device disappeared for monitor stream." << bytesReceived << bytesTotal;
@@ -78,6 +79,7 @@ DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *devic
     });
     connect(reply, &QNetworkReply::finished, this, [this, device, reply](){
         reply->deleteLater();
+        m_networkRequests.remove(reply);
         qCDebug(dcDoorBird) << "Monitor request finished:" << reply->error();
     });
     return DeviceManager::DeviceSetupStatusSuccess;
@@ -92,6 +94,7 @@ DeviceManager::DeviceError DevicePluginDoorbird::executeAction(Device *device, c
         m_networkRequests.insert(reply, device);
         connect(reply, &QNetworkReply::finished, this, [this, reply, device, action](){
             reply->deleteLater();
+            m_networkRequests.remove(reply);
             if (!myDevices().contains(device)) {
                 // Device must have been removed in the meantime
                 return;
