@@ -24,6 +24,9 @@
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
 
+class QNetworkAccessManager;
+class QNetworkReply;
+
 class DevicePluginDoorbird: public DevicePlugin
 {
     Q_OBJECT
@@ -41,6 +44,11 @@ public:
     void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+
+private:
+    QNetworkAccessManager *m_nam = nullptr;
+
+    QHash<QNetworkReply*, Device*> m_networkRequests;
 };
 
 #endif // DEVICEPLUGINDOORBIRD_H

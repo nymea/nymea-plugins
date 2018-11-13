@@ -22,13 +22,19 @@
 #include "deviceplugindoorbird.h"
 #include "plugininfo.h"
 
-#include <network/networkaccessmanager.h>
 #include <network/upnp/upnpdiscovery.h>
 
+#include <QNetworkAccessManager>
+#include <QAuthenticator>
 
 DevicePluginDoorbird::DevicePluginDoorbird()
 {
-
+    m_nam = new QNetworkAccessManager(this);
+    connect(m_nam, &QNetworkAccessManager::authenticationRequired, this, [this](QNetworkReply *reply, QAuthenticator *authenticator) {
+        Device *dev = m_networkRequests.value(reply);
+        authenticator->setUser(dev->paramValue(doorBirdDeviceUsernameParamTypeId).toString());
+        authenticator->setPassword(dev->paramValue(doorBirdDevicePasswordParamTypeId).toString());
+    });
 }
 
 DevicePluginDoorbird::~DevicePluginDoorbird()
@@ -45,7 +51,7 @@ DeviceManager::DeviceError DevicePluginDoorbird::discoverDevices(const DeviceCla
 
     connect(reply, &UpnpDiscoveryReply::finished, this, [reply]() {
         reply->deleteLater();
-        qCDebug(dcDoorbird) << "UPnP discovery reply:" << reply->error();
+        qCDebug(dcDoorBird) << "UPnP discovery reply:" << reply->error();
     });
 
     return DeviceManager::DeviceErrorAsync;
@@ -64,9 +70,11 @@ DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *devic
 
 DeviceManager::DeviceError DevicePluginDoorbird::executeAction(Device *device, const Action &action)
 {
-    if (action.actionTypeId() == doorbirdUnlatchActionTypeId) {
-        QNetworkRequest request(QString("http://%1/bha-api/open-door.cgi?r=1").arg(device->paramValue(doorbirdDeviceAddressParamTypeId).toString()));
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    if (action.actionTypeId() == doorBirdUnlatchActionTypeId) {
+        QNetworkRequest request(QString("http://%1/bha-api/open-door.cgi?r=1").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
+//        request.setHeader()
+        QNetworkReply *reply = m_nam->get(request);
+        m_networkRequests.insert(reply, device);
         connect(reply, &QNetworkReply::finished, this, [reply](){
             reply->deleteLater();
             qDebug() << "Network reply finished:" << reply->error() << reply->errorString();
