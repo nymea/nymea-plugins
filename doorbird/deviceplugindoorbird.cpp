@@ -22,9 +22,10 @@
 #include "deviceplugindoorbird.h"
 #include "plugininfo.h"
 
-#include <network/upnp/upnpdiscovery.h>
+#include <network/avahi/qtavahiservicebrowser.h>
 
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QAuthenticator>
 
 DevicePluginDoorbird::DevicePluginDoorbird()
@@ -52,12 +53,9 @@ DeviceManager::DeviceError DevicePluginDoorbird::discoverDevices(const DeviceCla
     Q_UNUSED(deviceClassId)
     Q_UNUSED(params)
 
-    UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices();
-
-    connect(reply, &UpnpDiscoveryReply::finished, this, [reply]() {
-        reply->deleteLater();
-        qCDebug(dcDoorBird) << "UPnP discovery reply:" << reply->error();
-    });
+    foreach (const AvahiServiceEntry &serviceEntry, hardwareManager()->avahiBrowser()->serviceEntries()) {
+        qCDebug(dcDoorBird) << "Found Avahi service entry:" << serviceEntry;
+    }
 
     return DeviceManager::DeviceErrorAsync;
 }
