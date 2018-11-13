@@ -53,11 +53,21 @@ DeviceManager::DeviceError DevicePluginDoorbird::discoverDevices(const DeviceCla
     Q_UNUSED(deviceClassId)
     Q_UNUSED(params)
 
+    QList<DeviceDescriptor> deviceDescriptors;
     foreach (const AvahiServiceEntry &serviceEntry, hardwareManager()->avahiBrowser()->serviceEntries()) {
         qCDebug(dcDoorBird) << "Found Avahi service entry:" << serviceEntry;
+        if (serviceEntry.serviceType() == "_axis-video._tcp" && serviceEntry.hostName().startsWith("bha-")) {
+            qCDebug(dcDoorBird) << "Found DoorBird device";
+            DeviceDescriptor deviceDescriptor(doorBirdDeviceClassId, serviceEntry.name(), serviceEntry.hostAddress().toString());
+            ParamList params;
+            params.append(Param(doorBirdDeviceAddressParamTypeId, serviceEntry.hostAddress().toString()));
+            deviceDescriptor.setParams(params);
+            deviceDescriptors.append(deviceDescriptor);
+        }
     }
+    emit devicesDiscovered(doorBirdDeviceClassId, deviceDescriptors);
 
-    return DeviceManager::DeviceErrorAsync;
+    return DeviceManager::DeviceErrorNoError;
 }
 
 void DevicePluginDoorbird::init()
