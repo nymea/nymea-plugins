@@ -79,30 +79,56 @@ DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *devic
             reply->abort();
             return;
         }
-        QByteArray data = reply->readAll();
+        m_readBuffers[device].append(reply->readAll());
 //        qCDebug(dcDoorBird) << "Monitor data for" << device->name();
 //        qCDebug(dcDoorBird) << data;
-        while (!data.isEmpty()) {
+
+        // Input data looks like:
+        // "--ioboundary\r\nContent-Type: text/plain\r\n\r\ndoorbell:H\r\n\r\n"
+
+        while (m_readBuffers[device].isEmpty()) {
             // find next --ioboundary
             QString boundary = QStringLiteral("--ioboundary");
-            int startIndex = data.indexOf(boundary);
+            int startIndex = m_readBuffers[device].indexOf(boundary);
             if (startIndex == -1) {
-                qCWarning(dcDoorBird) << "No meaningful data...";
+                qCWarning(dcDoorBird) << "No meaningful data in buffer:" << m_readBuffers[device];
+                if (m_readBuffers[device].size() > 1024) {
+                    qCWarning(dcDoorBird) << "Buffer size > 1KB and still no meaningful data. Discarding buffer...";
+                    m_readBuffers[device].clear();
+                }
+                // Assuming we don't have enough data yet...
                 return;
             }
-            data.remove(0, startIndex + boundary.length());
-            data = data.trimmed();
+
             QByteArray contentType = QByteArrayLiteral("Content-Type: text/plain");
-            if (!data.startsWith(contentType)) {
-                qCWarning(dcDoorBird) << "Unexpected data format" << data;
-                data.remove(0, contentType.length());
-                data = data.trimmed();
-                continue;
+            int contentTypeIndex = m_readBuffers[device].indexOf(contentType);
+            if (contentTypeIndex == -1) {
+                qCWarning(dcDoorBird) << "Cannot find Content-Type in buffer:" << m_readBuffers[device];
+                if (m_readBuffers[device].size() > startIndex + 50) {
+                    qCWarning(dcDoorBird) << boundary << "found but unexpected data follows. Skipping this element...";
+                    m_readBuffers[device].remove(0, startIndex + boundary.length());
+                    continue;
+                }
+                // Assuming we don't have enough data yet...
+                return;
             }
-            QString message = data.split('\n').first().trimmed();
-            QStringList parts = message.split(':');
+
+            // At this point we have the boundary and Content-Type. Remove all of that and take the entire string to either end or next boundary
+            m_readBuffers[device].remove(0, contentTypeIndex + contentType.length());
+            int nextStartIndex = m_readBuffers[device].indexOf(boundary);
+            QByteArray data;
+            if (nextStartIndex == -1) {
+                data = m_readBuffers[device];
+                m_readBuffers[device].clear();
+            } else {
+                data = m_readBuffers[device].left(nextStartIndex);
+                m_readBuffers[device].remove(0, nextStartIndex);
+            }
+
+            QString message = data.trimmed();
+            QStringList parts = message.split(":");
             if (parts.count() != 2) {
-                qCWarning(dcDoorBird) << "Message has invalid format:" << message << " Expected device:state";
+                qCWarning(dcDoorBird) << "Message has invalid format:" << message << "Expected device:state";
                 continue;
             }
             if (parts.first() == "doorbell") {

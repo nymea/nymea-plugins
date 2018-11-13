@@ -49,6 +49,7 @@ private:
     QNetworkAccessManager *m_nam = nullptr;
 
     QHash<QNetworkReply*, Device*> m_networkRequests;
+    QHash<Device*, QByteArray> m_readBuffers;
 };
 
 #endif // DEVICEPLUGINDOORBIRD_H
