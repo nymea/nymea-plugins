@@ -72,12 +72,13 @@ DeviceManager::DeviceError DevicePluginDoorbird::executeAction(Device *device, c
 {
     if (action.actionTypeId() == doorBirdUnlatchActionTypeId) {
         QNetworkRequest request(QString("http://%1/bha-api/open-door.cgi?r=1").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
+        qCDebug(dcDoorBird) << "Sending request:" << request.url();
 //        request.setHeader()
         QNetworkReply *reply = m_nam->get(request);
         m_networkRequests.insert(reply, device);
         connect(reply, &QNetworkReply::finished, this, [reply](){
             reply->deleteLater();
-            qDebug() << "Network reply finished:" << reply->error() << reply->errorString();
+            qCDebug(dcDoorBird) << "Network reply finished:" << reply->error() << reply->errorString();
         });
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
