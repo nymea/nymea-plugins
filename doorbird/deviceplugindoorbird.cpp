@@ -73,12 +73,21 @@ DeviceManager::DeviceError DevicePluginDoorbird::executeAction(Device *device, c
     if (action.actionTypeId() == doorBirdUnlatchActionTypeId) {
         QNetworkRequest request(QString("http://%1/bha-api/open-door.cgi?r=1").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
         qCDebug(dcDoorBird) << "Sending request:" << request.url();
-//        request.setHeader()
         QNetworkReply *reply = m_nam->get(request);
         m_networkRequests.insert(reply, device);
-        connect(reply, &QNetworkReply::finished, this, [reply](){
+        connect(reply, &QNetworkReply::finished, this, [this, reply, device, action](){
             reply->deleteLater();
-            qCDebug(dcDoorBird) << "Network reply finished:" << reply->error() << reply->errorString();
+            if (!myDevices().contains(device)) {
+                // Device must have been removed in the meantime
+                return;
+            }
+            if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcDoorBird) << "Error unlatching DoorBird device" << device->name();
+                emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
+                return;
+            }
+            qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+            emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
         });
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
