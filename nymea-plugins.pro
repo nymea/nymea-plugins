@@ -1,10 +1,13 @@
 TEMPLATE = subdirs
 
 PLUGIN_DIRS = \
+    avahimonitor        \
+    awattar             \
     elro                \
     intertechno         \
     networkdetector     \
     conrad              \
+    doorbird            \
     openweathermap      \
     wakeonlan           \
     mailnotification    \
@@ -23,14 +26,12 @@ PLUGIN_DIRS = \
     kodi                \
     elgato              \
     senic               \
-    awattar             \
     netatmo             \
     plantcare           \
     osdomotics          \
     ws2812              \
     orderbutton         \
     denon               \
-    avahimonitor        \
     pushbullet          \
     usbwde              \
     multisensor         \
