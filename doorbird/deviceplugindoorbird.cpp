@@ -80,13 +80,13 @@ DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *devic
             return;
         }
         m_readBuffers[device].append(reply->readAll());
-//        qCDebug(dcDoorBird) << "Monitor data for" << device->name();
-//        qCDebug(dcDoorBird) << data;
+        qCDebug(dcDoorBird) << "Monitor data for" << device->name();
+        qCDebug(dcDoorBird) << m_readBuffers[device];
 
         // Input data looks like:
         // "--ioboundary\r\nContent-Type: text/plain\r\n\r\ndoorbell:H\r\n\r\n"
 
-        while (m_readBuffers[device].isEmpty()) {
+        while (!m_readBuffers[device].isEmpty()) {
             // find next --ioboundary
             QString boundary = QStringLiteral("--ioboundary");
             int startIndex = m_readBuffers[device].indexOf(boundary);
