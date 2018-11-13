@@ -113,8 +113,9 @@ DeviceManager::DeviceError DevicePluginDoorbird::executeAction(Device *device, c
 
 void DevicePluginDoorbird::connectToEventMonitor(Device *device)
 {
-    QNetworkRequest request(QString("http://%1/bha-api/monitor.cgi?ring=doorbell,motionsensor").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
     qCDebug(dcDoorBird) << "Starting monitoring" << device->name();
+
+    QNetworkRequest request(QString("http://%1/bha-api/monitor.cgi?ring=doorbell,motionsensor").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
     QNetworkReply *reply = m_nam->get(request);
     m_networkRequests.insert(reply, device);
     connect(reply, &QNetworkReply::downloadProgress, this, [this, device, reply](qint64 bytesReceived, qint64 bytesTotal){
@@ -197,10 +198,12 @@ void DevicePluginDoorbird::connectToEventMonitor(Device *device)
 
         if (!myDevices().contains(device)) {
             qCWarning(dcDoorBird) << "Device has disappeared. Exiting monitor.";
+            return;
         }
 
         device->setStateValue(doorBirdConnectedStateTypeId, false);
         qCDebug(dcDoorBird) << "Monitor request finished:" << reply->error();
+
         QTimer::singleShot(2000, this, [this, device] {
             if (!myDevices().contains(device)) {
                 return;
