@@ -67,7 +67,7 @@ DeviceManager::DeviceError DevicePluginDoorbird::discoverDevices(const DeviceCla
     }
     emit devicesDiscovered(doorBirdDeviceClassId, deviceDescriptors);
 
-    return DeviceManager::DeviceErrorNoError;
+    return DeviceManager::DeviceErrorAsync;
 }
 
 void DevicePluginDoorbird::init()
