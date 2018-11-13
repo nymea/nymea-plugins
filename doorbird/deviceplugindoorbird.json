@@ -12,8 +12,8 @@
                     "id": "0485eb61-2a22-42ba-9dd2-a5961485bf08",
                     "name": "doorBird",
                     "displayName": "DoorBird",
-                    "createMethods": ["user", "discovery"],
-                    "interfaces": [""],
+                    "createMethods": [ "user" ],
+                    "interfaces": [ "inputtrigger", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "8873b17d-526e-408d-95d8-6439b501f489",
@@ -39,6 +39,26 @@
                             "id": "b6c3377b-91de-411a-9d48-8b509c39d67c",
                             "name": "unlatch",
                             "displayName": "Unlatch the door"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "186c270b-923c-46e4-a7da-33e45427cdbb",
+                            "name": "connected",
+                            "type": "boolean",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "9bc89937-a2ab-4e8e-af0e-a9ba41caa89b",
+                            "name": "triggered",
+                            "displayName": "Doorbell pressed"
+                        },
+                        {
+                            "id": "e9bb229b-8776-4110-a813-9c0dc67375db",
+                            "name": "motionDetected",
+                            "displayName": "Motion detected"
                         }
                     ]
                 }

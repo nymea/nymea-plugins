@@ -53,6 +53,9 @@ DeviceManager::DeviceError DevicePluginDoorbird::discoverDevices(const DeviceCla
     Q_UNUSED(deviceClassId)
     Q_UNUSED(params)
 
+    // NOTE: Discovery is currently disabled in json file because we don't support discovery & login as parameters in combination
+    // and there isn't any setupMethod which would allow us to enter user & password.
+
     QList<DeviceDescriptor> deviceDescriptors;
     foreach (const AvahiServiceEntry &serviceEntry, hardwareManager()->avahiBrowser()->serviceEntries()) {
         qCDebug(dcDoorBird) << "Found Avahi service entry:" << serviceEntry;
@@ -65,6 +68,7 @@ DeviceManager::DeviceError DevicePluginDoorbird::discoverDevices(const DeviceCla
             deviceDescriptors.append(deviceDescriptor);
         }
     }
+
     emit devicesDiscovered(doorBirdDeviceClassId, deviceDescriptors);
 
     return DeviceManager::DeviceErrorAsync;
@@ -77,11 +81,44 @@ void DevicePluginDoorbird::init()
 
 DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *device)
 {
+    connectToEventMonitor(device);
+    return DeviceManager::DeviceSetupStatusSuccess;
+}
+
+DeviceManager::DeviceError DevicePluginDoorbird::executeAction(Device *device, const Action &action)
+{
+    if (action.actionTypeId() == doorBirdUnlatchActionTypeId) {
+        QNetworkRequest request(QString("http://%1/bha-api/open-door.cgi?r=1").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
+        qCDebug(dcDoorBird) << "Sending request:" << request.url();
+        QNetworkReply *reply = m_nam->get(request);
+        m_networkRequests.insert(reply, device);
+        connect(reply, &QNetworkReply::finished, this, [this, reply, device, action](){
+            reply->deleteLater();
+            m_networkRequests.remove(reply);
+            if (!myDevices().contains(device)) {
+                // Device must have been removed in the meantime
+                return;
+            }
+            if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcDoorBird) << "Error unlatching DoorBird device" << device->name();
+                emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
+                return;
+            }
+            qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+            emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
+        });
+    }
+    return DeviceManager::DeviceErrorDeviceClassNotFound;
+}
+
+void DevicePluginDoorbird::connectToEventMonitor(Device *device)
+{
     QNetworkRequest request(QString("http://%1/bha-api/monitor.cgi?ring=doorbell,motionsensor").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
     qCDebug(dcDoorBird) << "Starting monitoring" << device->name();
     QNetworkReply *reply = m_nam->get(request);
     m_networkRequests.insert(reply, device);
     connect(reply, &QNetworkReply::downloadProgress, this, [this, device, reply](qint64 bytesReceived, qint64 bytesTotal){
+        device->setStateValue(doorBirdConnectedStateTypeId, true);
         if (!myDevices().contains(device)) {
             qCWarning(dcDoorBird) << "Device disappeared for monitor stream." << bytesReceived << bytesTotal;
             reply->abort();
@@ -142,12 +179,12 @@ DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *devic
             if (parts.first() == "doorbell") {
                 if (parts.at(1) == "H") {
                     qCDebug(dcDoorBird) << "Doorbell ringing!";
-                    // TODO: emit event
+                    emitEvent(Event(doorBirdTriggeredEventTypeId, device->id()));
                 }
             } else if (parts.first() == "motionsensor") {
                 if (parts.at(1) == "H") {
                     qCDebug(dcDoorBird) << "Motion sensor detected a person";
-                    // TODO: emit event
+                    emitEvent(Event(doorBirdMotionDetectedEventTypeId, device->id()));
                 }
             } else {
                 qCWarning(dcDoorBird) << "Unhandled DoorBird data:" << message;
@@ -157,33 +194,18 @@ DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *devic
     connect(reply, &QNetworkReply::finished, this, [this, device, reply](){
         reply->deleteLater();
         m_networkRequests.remove(reply);
-        qCDebug(dcDoorBird) << "Monitor request finished:" << reply->error();
-    });
-    return DeviceManager::DeviceSetupStatusSuccess;
-}
 
-DeviceManager::DeviceError DevicePluginDoorbird::executeAction(Device *device, const Action &action)
-{
-    if (action.actionTypeId() == doorBirdUnlatchActionTypeId) {
-        QNetworkRequest request(QString("http://%1/bha-api/open-door.cgi?r=1").arg(device->paramValue(doorBirdDeviceAddressParamTypeId).toString()));
-        qCDebug(dcDoorBird) << "Sending request:" << request.url();
-        QNetworkReply *reply = m_nam->get(request);
-        m_networkRequests.insert(reply, device);
-        connect(reply, &QNetworkReply::finished, this, [this, reply, device, action](){
-            reply->deleteLater();
-            m_networkRequests.remove(reply);
+        if (!myDevices().contains(device)) {
+            qCWarning(dcDoorBird) << "Device has disappeared. Exiting monitor.";
+        }
+
+        device->setStateValue(doorBirdConnectedStateTypeId, false);
+        qCDebug(dcDoorBird) << "Monitor request finished:" << reply->error();
+        QTimer::singleShot(2000, this, [this, device] {
             if (!myDevices().contains(device)) {
-                // Device must have been removed in the meantime
                 return;
             }
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcDoorBird) << "Error unlatching DoorBird device" << device->name();
-                emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
-                return;
-            }
-            qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
-            emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
+            connectToEventMonitor(device);
         });
-    }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    });
 }

@@ -45,7 +45,9 @@ public:
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
+    void connectToEventMonitor(Device *device);
 private:
+
     QNetworkAccessManager *m_nam = nullptr;
 
     QHash<QNetworkReply*, Device*> m_networkRequests;
