@@ -32,6 +32,11 @@ DevicePluginDoorbird::DevicePluginDoorbird()
     m_nam = new QNetworkAccessManager(this);
     connect(m_nam, &QNetworkAccessManager::authenticationRequired, this, [this](QNetworkReply *reply, QAuthenticator *authenticator) {
         Device *dev = m_networkRequests.value(reply);
+        if (!myDevices().contains(dev)) {
+            qCWarning(dcDoorBird) << "Credentials requested for a device which doesn't exist any more";
+            return;
+        }
+        qCDebug(dcDoorBird) << "Credentials requested for device:" << dev->name();
         authenticator->setUser(dev->paramValue(doorBirdDeviceUsernameParamTypeId).toString());
         authenticator->setPassword(dev->paramValue(doorBirdDevicePasswordParamTypeId).toString());
     });
@@ -74,8 +79,46 @@ DeviceManager::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *devic
             reply->abort();
             return;
         }
-        qCDebug(dcDoorBird) << "Monitor data for" << device->name();
-        qCDebug(dcDoorBird) << reply->readAll();
+        QByteArray data = reply->readAll();
+//        qCDebug(dcDoorBird) << "Monitor data for" << device->name();
+//        qCDebug(dcDoorBird) << data;
+        while (!data.isEmpty()) {
+            // find next --ioboundary
+            QString boundary = QStringLiteral("--ioboundary");
+            int startIndex = data.indexOf(boundary);
+            if (startIndex == -1) {
+                qCWarning(dcDoorBird) << "No meaningful data...";
+                return;
+            }
+            data.remove(0, startIndex + boundary.length());
+            data = data.trimmed();
+            QByteArray contentType = QByteArrayLiteral("Content-Type: text/plain");
+            if (!data.startsWith(contentType)) {
+                qCWarning(dcDoorBird) << "Unexpected data format" << data;
+                data.remove(0, contentType.length());
+                data = data.trimmed();
+                continue;
+            }
+            QString message = data.split('\n').first().trimmed();
+            QStringList parts = message.split(':');
+            if (parts.count() != 2) {
+                qCWarning(dcDoorBird) << "Message has invalid format:" << message << " Expected device:state";
+                continue;
+            }
+            if (parts.first() == "doorbell") {
+                if (parts.at(1) == "H") {
+                    qCDebug(dcDoorBird) << "Doorbell ringing!";
+                    // TODO: emit event
+                }
+            } else if (parts.first() == "motionsensor") {
+                if (parts.at(1) == "H") {
+                    qCDebug(dcDoorBird) << "Motion sensor detected a person";
+                    // TODO: emit event
+                }
+            } else {
+                qCWarning(dcDoorBird) << "Unhandled DoorBird data:" << message;
+            }
+        }
     });
     connect(reply, &QNetworkReply::finished, this, [this, device, reply](){
         reply->deleteLater();
