@@ -45,7 +45,9 @@
                         {
                             "id": "186c270b-923c-46e4-a7da-33e45427cdbb",
                             "name": "connected",
-                            "type": "boolean",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
                             "defaultValue": false
                         }
                     ],
