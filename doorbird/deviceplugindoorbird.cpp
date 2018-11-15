@@ -119,12 +119,12 @@ void DevicePluginDoorbird::connectToEventMonitor(Device *device)
     QNetworkReply *reply = m_nam->get(request);
     m_networkRequests.insert(reply, device);
     connect(reply, &QNetworkReply::downloadProgress, this, [this, device, reply](qint64 bytesReceived, qint64 bytesTotal){
-        device->setStateValue(doorBirdConnectedStateTypeId, true);
         if (!myDevices().contains(device)) {
             qCWarning(dcDoorBird) << "Device disappeared for monitor stream." << bytesReceived << bytesTotal;
             reply->abort();
             return;
         }
+        device->setStateValue(doorBirdConnectedStateTypeId, true);
         m_readBuffers[device].append(reply->readAll());
         qCDebug(dcDoorBird) << "Monitor data for" << device->name();
         qCDebug(dcDoorBird) << m_readBuffers[device];
