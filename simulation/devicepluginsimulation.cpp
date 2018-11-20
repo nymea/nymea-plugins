@@ -128,15 +128,15 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             device->setStateValue(heatingPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
 
-        } else if (action.actionTypeId() == heatingTargetTemperatureActionTypeId) {
+        } else if (action.actionTypeId() == heatingPercentageActionTypeId) {
 
             // get the param value
-            Param temperatureParam = action.param(heatingTargetTemperatureActionTargetTemperatureParamTypeId);
-            int temperature = temperatureParam.value().toInt();
+            Param percentageParam = action.param(heatingPercentageActionPercentageParamTypeId);
+            int percentage = percentageParam.value().toInt();
 
-            qCDebug(dcSimulation()) << "Set target temperature" << temperature << "for heating device" << device->name();
+            qCDebug(dcSimulation()) << "Set target temperature percentage" << percentage << "for heating device" << device->name();
 
-            device->setStateValue(heatingTargetTemperatureStateTypeId, temperature);
+            device->setStateValue(heatingPercentageStateTypeId, percentage);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -154,12 +154,12 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             device->setStateValue(evChargerPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
 
-        } else if(action.actionTypeId() == evChargerCurrentActionTypeId){
+        } else if(action.actionTypeId() == evChargerPercentageActionTypeId){
             // get the param value
-            Param currentParam = action.param(evChargerCurrentActionCurrentParamTypeId);
-            int current = currentParam.value().toInt();
-            qCDebug(dcSimulation()) << "Set current" << current << "for EV Charger device" << device->name();
-            device->setStateValue(evChargerCurrentStateTypeId, current);
+            Param currentParam = action.param(evChargerPercentageActionPercentageParamTypeId);
+            int percentage = currentParam.value().toInt();
+            qCDebug(dcSimulation()) << "Set percentage" << percentage << "for EV Charger device" << device->name();
+            device->setStateValue(evChargerPercentageStateTypeId, percentage);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -216,15 +216,10 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             qCDebug(dcSimulation()) << "Set power" << power << "for heating rod device" << device->name();
             device->setStateValue(heatingRodPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == heatingRodWaterTemperatureActionTypeId) {
-            int temperature = action.param(heatingRodWaterTemperatureActionWaterTemperatureParamTypeId).value().toInt();
-            qCDebug(dcSimulation()) << "Set water temperature" << temperature << "for heating rod device" << device->name();
-            device->setStateValue(heatingRodWaterTemperatureStateTypeId, temperature);
-            return DeviceManager::DeviceErrorNoError;
-        } else if (action.actionTypeId() == heatingRodMaxPowerActionTypeId) {
-            double maxPower = action.param(heatingRodMaxPowerActionMaxPowerParamTypeId).value().toDouble();
-            qCDebug(dcSimulation()) << "Set max power" << maxPower << "for heating rod device" << device->name();
-            device->setStateValue(heatingRodMaxPowerStateTypeId, maxPower);
+        } else if (action.actionTypeId() == heatingRodPercentageActionTypeId) {
+            int percentage = action.param(heatingRodPercentageActionPercentageParamTypeId).value().toInt();
+            qCDebug(dcSimulation()) << "Set percentage" << percentage << "for heating rod device" << device->name();
+            device->setStateValue(heatingRodPercentageStateTypeId, percentage);
             return DeviceManager::DeviceErrorNoError;
         }
 
@@ -523,6 +518,20 @@ qreal DevicePluginSimulation::generateBatteryValue(int chargeStartHour, int char
     return 100 - (100 * currentDischargeSecond / dischargeDurationInSecs);
 }
 
+qreal DevicePluginSimulation::generateNoisyRectangle(int min, int max, int maxNoise, int stablePeriodInMinutes, int &lastValue, QDateTime &lastChangeTimestamp)
+{
+    QDateTime now = QDateTime::currentDateTime();
+    qCDebug(dcSimulation()) << "Generating noisy rect:" << min << "-" << max << "lastValue:" << lastValue << "lastUpdate" << lastChangeTimestamp << lastChangeTimestamp.secsTo(now) << lastChangeTimestamp.isValid();
+    if (!lastChangeTimestamp.isValid() || lastChangeTimestamp.secsTo(now) / 60 > stablePeriodInMinutes) {
+        lastChangeTimestamp.swap(now);
+        lastValue = min + qrand() % (max - min);
+        qCDebug(dcSimulation()) << "New last value:" << lastValue;
+    }
+    qreal noise = 0.1 * (qrand() % (maxNoise * 20)  - maxNoise);
+    qreal ret = 1.0 * lastValue + noise;
+    return ret;
+}
+
 void DevicePluginSimulation::onPluginTimer20Seconds()
 {
     foreach (Device *device, myDevices()) {
@@ -555,7 +564,33 @@ void DevicePluginSimulation::onPluginTimer20Seconds()
             device->setStateValue(netatmoIndoorPressureStateTypeId, generateSinValue(1003, 1008, 8));
             device->setStateValue(netatmoIndoorNoiseStateTypeId, generateRandomIntValue(40, 80));
             device->setStateValue(netatmoIndoorWifiStrengthStateTypeId, generateRandomIntValue(85, 95));
+        } else if (device->deviceClassId() == smartMeterDeviceClassId) {
+            device->setStateValue(smartMeterConnectedStateTypeId, true);
+            int lastValue = device->property("lastValue").toInt();
+            QDateTime lastUpdate = device->property("lastUpdate").toDateTime();
+            qlonglong currentPower = generateNoisyRectangle(-2000, 100, 10, 5, lastValue, lastUpdate);
+            device->setStateValue(smartMeterCurrentPowerStateTypeId, currentPower);
+            device->setProperty("lastValue", lastValue);
+            device->setProperty("lastUpdate", lastUpdate);
+            if (currentPower < 0) {
+                qreal consumptionKWH = 1.0 * currentPower * (1.0 * m_pluginTimer20Seconds->interval() / 1000 / 60 / 60) / 1000;
+                device->setStateValue(smartMeterTotalEnergyConsumedStateTypeId, device->stateValue(smartMeterTotalEnergyConsumedStateTypeId).toDouble() - consumptionKWH);
+            }
+            if (currentPower > 0) {
+                qreal consumptionKWH = 1.0 * currentPower * (1.0 * m_pluginTimer20Seconds->interval() / 1000 / 60 / 60) / 1000;
+                device->setStateValue(smartMeterTotalEnergyProducedStateTypeId, device->stateValue(smartMeterTotalEnergyProducedStateTypeId).toDouble() + consumptionKWH);
+            }
+        } else if (device->deviceClassId() == solarPanelDeviceClassId) {
+            int lastValue = device->property("lastValue").toInt();
+            QDateTime lastUpdate = device->property("lastUpdate").toDateTime();
+            qlonglong currentPower = generateNoisyRectangle(0, 2000, 50, 5, lastValue, lastUpdate);
+            device->setStateValue(solarPanelCurrentPowerStateTypeId, currentPower);
+            device->setProperty("lastValue", lastValue);
+            device->setProperty("lastUpdate", lastUpdate);
+            qreal consumptionKWH = 1.0 * currentPower * (1.0 * m_pluginTimer20Seconds->interval() / 1000 / 60 / 60) / 1000;
+            device->setStateValue(solarPanelTotalEnergyProducedStateTypeId, device->stateValue(solarPanelTotalEnergyProducedStateTypeId).toDouble() + consumptionKWH);
         }
+
     }
 }
 

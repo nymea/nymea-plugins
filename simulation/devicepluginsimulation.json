@@ -175,6 +175,7 @@
                     "displayName": "Heating",
                     "createMethods": ["user"],
                     "deviceIcon": "Radiator",
+                    "interfaces": ["extendedheating"],
                     "basicTags": [
                         "Device",
                         "Actuator"
@@ -188,26 +189,19 @@
                             "displayNameEvent": "Power changed",
                             "displayNameAction": "Set power",
                             "type": "bool",
-                            "defaultValue": 0,
+                            "defaultValue": false,
                             "writable": true
                         },
                         {
-                            "id": "47a16375-1027-42cc-82d3-56cbfdb1193c",
-                            "name": "heatingActive",
-                            "displayName": "Active",
-                            "displayNameEvent": "Active status changed",
-                            "type": "bool",
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "8256a670-85c5-4043-9133-05518812848c",
-                            "name": "targetTemperature",
-                            "displayName": "Target temperature",
-                            "displayNameEvent": "target temperature changed",
-                            "displayNameAction": "change target temperature",
+                            "id": "1302cb53-ccdc-49eb-88b6-85659c7d11b8",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "displayNameAction": "Set percentage",
                             "type": "int",
-                            "unit": "DegreeCelsius",
-                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100,
                             "writable": true
                         }
                     ]
@@ -218,6 +212,7 @@
                     "displayName": "EV Charging Station",
                     "createMethods": ["user"],
                     "deviceIcon": "Energy",
+                    "interfaces": ["extendedevcharger"],
                     "basicTags": [
                         "Device",
                         "Actuator"
@@ -236,24 +231,34 @@
                         },
                         {
                             "id": "87600986-da37-4032-af37-015995910368",
-                            "name": "current",
-                            "displayName": "Current",
-                            "displayNameEvent": "Current changed",
-                            "displayNameAction": "Set current",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "displayNameAction": "Set percentage",
                             "type": "int",
-                            "unit": "Ampere",
-                            "minValue": 6,
-                            "maxValue": 64,
-                            "defaultValue": 6,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100,
                             "writable": true
-                        },
+                        }
+                    ]
+                },
+                {
+                    "id": "227da953-e476-4c31-b3f6-fdd389bb1b7c",
+                    "name": "thermostat",
+                    "displayName": "Thermostat",
+                    "createMethods": ["user"],
+                    "interfaces": ["temperaturesensor"],
+                    "paramTypes": [ ],
+                    "stateTypes": [
                         {
-                            "id": "9d3f56e1-bb73-4efd-814c-50477c609c17",
-                            "name": "evCharging",
-                            "displayName": "charging",
-                            "type": "bool",
-                            "displayNameEvent": "charging status changed",
-                            "defaultValue": false
+                            "id": "edc0ccb6-3a78-44b9-8c7d-638142c27e10",
+                            "name": "temperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
                         }
                     ]
                 },
@@ -691,7 +696,7 @@
                     "displayName": "Smart Meter",
                     "createMethods": ["user"],
                     "deviceIcon": "Energy",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["extendedsmartmeterconsumer", "extendedsmartmeterproducer", "connectable" ],
                     "basicTags": [
                         "Device"
                     ],
@@ -707,24 +712,58 @@
                         },
                         {
                             "id": "d57f4d9c-759e-40eb-999e-a1acbc8df2b1",
-                            "name": "powerConsumption",
-                            "displayName": "Power consumtion",
-                            "displayNameEvent": "Power consumption changed",
+                            "name": "currentPower",
+                            "displayName": "Current power flow",
+                            "displayNameEvent": "Power power flow changed",
                             "type": "double",
-                            "unit": "KiloWatt",
-                            "eventRuleRelevant": false,
-                            "defaultValue": 3.70
+                            "unit": "Watt",
+                            "defaultValue": 0
                         },
                         {
                             "id": "5ac91819-c855-441c-a734-ee5cc0514822",
-                            "name": "energyToday",
-                            "displayName": "Today's energy production",
-                            "displayNameEvent": "Today's energy production changed",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumption",
+                            "displayNameEvent": "Total energy consumption changed",
                             "type": "double",
-                            "unit": "KiloWatt",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
-                            "defaultValue": 13.45
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "7437d92a-ef1a-4e59-979d-1c7a2611b359",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total energy production",
+                            "displayNameEvent": "Total energy production changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "id": "eae9c1b2-a6b2-4c0d-9af3-867c900899f1",
+                    "name": "solarPanel",
+                    "displayName": "Solar panel",
+                    "createMethods": ["user"],
+                    "interfaces": ["extendedsmartmeterproducer"],
+                    "paramTypes": [],
+                    "stateTypes": [
+                        {
+                            "id": "08f4f53d-b62d-4c2e-913f-87b1c4737d71",
+                            "name": "currentPower",
+                            "displayName": "Current power production",
+                            "displayNameEvent": "Current power production changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b60948ca-cee9-447a-ba1c-f908c6db58fb",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Total produced energy",
+                            "displayNameEvent": "Total produced energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
                         }
                     ]
                 },
@@ -798,7 +837,7 @@
                     "displayName": "Heating Rod",
                     "createMethods": ["user"],
                     "deviceIcon": "Thermometer",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["connectable", "extendedheating", "temperaturesensor"],
                     "basicTags": [
                         "Device"
                     ],
@@ -824,29 +863,24 @@
                         },
                         {
                             "id": "2ab2a0fa-ea66-426c-ba22-d23b42c80883",
-                            "name": "maxPower",
-                            "displayName": "Max power",
-                            "displayNameEvent": "Max power changed",
-                            "displayNameAction": "Set max power",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "displayNameEvent": "Maximum power percentage changed",
+                            "displayNameAction": "Set maximum power percentage",
                             "type": "int",
-                            "unit": "Watt",
-                            "defaultValue": 2000,
+                            "defaultValue": 100,
                             "minValue": 0,
-                            "maxValue": 2000,
+                            "maxValue": 100,
                             "writable": true
                         },
                         {
                             "id": "49388b11-8076-4698-8091-5c5f5762fd08",
-                            "name": "waterTemperature",
-                            "displayName": "Target water temperature",
-                            "displayNameEvent": "Target water temperature changed",
-                            "displayNameAction": "Set target water temperature",
-                            "type": "int",
+                            "name": "temperature",
+                            "displayName": "Water temperature",
+                            "displayNameEvent": "Water temperature changed",
+                            "type": "double",
                             "unit": "DegreeCelsius",
-                            "minValue": 0,
-                            "maxValue": 80,
-                            "defaultValue": 65,
-                            "writable": true
+                            "defaultValue": 0
                         },
                         {
                             "id": "47a16375-1027-42cc-82d3-56cbfdb1193c",
