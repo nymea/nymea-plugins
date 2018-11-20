@@ -98,7 +98,7 @@ DeviceManager::DeviceError DevicePluginNetworkDetector::discoverDevices(const De
         return DeviceManager::DeviceErrorDeviceInUse;
     }
 
-    m_discovery->discoverHosts(14);
+    m_discovery->discoverHosts(25);
 
     return DeviceManager::DeviceErrorAsync;
 }
