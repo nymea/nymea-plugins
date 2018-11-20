@@ -1,3 +1,17 @@
+nymea-plugins (0.9.39) xenial; urgency=medium
+
+  [ Jenkins ]
+  * Prepare for release
+
+  [ Michael Zanetti ]
+  * use system interface in snapdcontrol
+  * update hue plugin
+  * change networkdetector discovery to do parallel scans...
+  * Make use of new heating/evcharger interfaces in the simulated
+    devices plugin
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 20 Nov 2018 14:32:38 +0100
+
 nymea-plugins (0.9.38) xenial; urgency=medium
 
   [ Jenkins ]
