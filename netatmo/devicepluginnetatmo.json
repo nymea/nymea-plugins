@@ -58,7 +58,7 @@
                         "Weather",
                         "Sensor"
                     ],
-                    "interfaces": ["temperaturesensor", "humiditysensor", "pressuresensor"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "pressuresensor", "noisesensor", "co2sensor"],
                     "primaryStateTypeId": "3cb25538-e463-40ae-92f9-8f34f0c06b92",
                     "createMethods": ["auto"],
                     "paramTypes": [
@@ -147,7 +147,7 @@
                             "displayNameEvent": "noise changed",
                             "graphRelevant": true,
                             "unit": "Dezibel",
-                            "type": "int",
+                            "type": "double",
                             "defaultValue": 0
                         },
                         {
@@ -157,7 +157,7 @@
                             "displayNameEvent": "co2 changed",
                             "graphRelevant": true,
                             "unit": "PartsPerMillion",
-                            "type": "int",
+                            "type": "double",
                             "defaultValue": 0
                         },
                         {
