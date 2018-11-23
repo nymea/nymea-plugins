@@ -118,7 +118,6 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
                 m_unconfiguredBridges.removeAll(b);
                 qCDebug(dcPhilipsHue) << "Setup unconfigured Hue Bridge" << b->name();
                 // set data which was not known during discovery
-                device->setParamValue(bridgeDeviceNameParamTypeId, b->name());
                 device->setParamValue(bridgeDeviceApiKeyParamTypeId, b->apiKey());
                 device->setParamValue(bridgeDeviceZigbeeChannelParamTypeId, b->zigbeeChannel());
                 device->setParamValue(bridgeDeviceIdParamTypeId, b->id());
@@ -137,7 +136,6 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         bridge->setId(device->paramValue(bridgeDeviceIdParamTypeId).toString());
         bridge->setApiKey(device->paramValue(bridgeDeviceApiKeyParamTypeId).toString());
         bridge->setHostAddress(QHostAddress(device->paramValue(bridgeDeviceHostParamTypeId).toString()));
-        bridge->setName(device->paramValue(bridgeDeviceNameParamTypeId).toString());
         bridge->setMacAddress(device->paramValue(bridgeDeviceMacParamTypeId).toString());
         bridge->setZigbeeChannel(device->paramValue(bridgeDeviceZigbeeChannelParamTypeId).toInt());
         m_bridges.insert(bridge, device);
@@ -155,7 +153,6 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         hueLight->setHostAddress(bridge->hostAddress());
         hueLight->setApiKey(bridge->apiKey());
         hueLight->setId(device->paramValue(colorLightDeviceLightIdParamTypeId).toInt());
-        hueLight->setName(device->paramValue(colorLightDeviceNameParamTypeId).toString());
         hueLight->setModelId(device->paramValue(colorLightDeviceModelIdParamTypeId).toString());
         hueLight->setUuid(device->paramValue(colorLightDeviceUuidParamTypeId).toString());
         hueLight->setType(device->paramValue(colorLightDeviceTypeParamTypeId).toString());
@@ -163,10 +160,8 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
         m_lights.insert(hueLight, device);
 
-        device->setName(hueLight->name());
-
         refreshLight(device);
-        setLightName(device, device->paramValue(colorLightDeviceNameParamTypeId).toString());
+        setLightName(device, device->name());
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
@@ -180,7 +175,6 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         hueLight->setHostAddress(bridge->hostAddress());
         hueLight->setApiKey(bridge->apiKey());
         hueLight->setId(device->paramValue(colorTemperatureLightDeviceLightIdParamTypeId).toInt());
-        hueLight->setName(device->paramValue(colorTemperatureLightDeviceNameParamTypeId).toString());
         hueLight->setModelId(device->paramValue(colorTemperatureLightDeviceModelIdParamTypeId).toString());
         hueLight->setUuid(device->paramValue(colorTemperatureLightDeviceUuidParamTypeId).toString());
         hueLight->setType(device->paramValue(colorTemperatureLightDeviceTypeParamTypeId).toString());
@@ -188,10 +182,8 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
         m_lights.insert(hueLight, device);
 
-        device->setName(hueLight->name());
-
         refreshLight(device);
-        setLightName(device, device->paramValue(colorTemperatureLightDeviceNameParamTypeId).toString());
+        setLightName(device, device->name());
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
@@ -205,19 +197,16 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         hueLight->setHostAddress(bridge->hostAddress());
         hueLight->setApiKey(bridge->apiKey());
         hueLight->setId(device->paramValue(dimmableLightDeviceLightIdParamTypeId).toInt());
-        hueLight->setName(device->paramValue(dimmableLightDeviceNameParamTypeId).toString());
         hueLight->setModelId(device->paramValue(dimmableLightDeviceModelIdParamTypeId).toString());
         hueLight->setUuid(device->paramValue(dimmableLightDeviceUuidParamTypeId).toString());
         hueLight->setType(device->paramValue(dimmableLightDeviceTypeParamTypeId).toString());
 
         connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
 
-        device->setName(hueLight->name());
-
         m_lights.insert(hueLight, device);
         refreshLight(device);
 
-        setLightName(device, device->paramValue(dimmableLightDeviceNameParamTypeId).toString());
+        setLightName(device, device->name());
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -230,12 +219,9 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
         hueRemote->setHostAddress(bridge->hostAddress());
         hueRemote->setApiKey(bridge->apiKey());
         hueRemote->setId(device->paramValue(remoteDeviceSensorIdParamTypeId).toInt());
-        hueRemote->setName(device->paramValue(remoteDeviceNameParamTypeId).toString());
         hueRemote->setModelId(device->paramValue(remoteDeviceModelIdParamTypeId).toString());
         hueRemote->setType(device->paramValue(remoteDeviceTypeParamTypeId).toString());
         hueRemote->setUuid(device->paramValue(remoteDeviceUuidParamTypeId).toString());
-
-        device->setName(hueRemote->name());
 
         connect(hueRemote, &HueRemote::stateChanged, this, &DevicePluginPhilipsHue::remoteStateChanged);
         connect(hueRemote, &HueRemote::buttonPressed, this, &DevicePluginPhilipsHue::onRemoteButtonEvent);
@@ -772,7 +758,6 @@ void DevicePluginPhilipsHue::onUpnpDiscoveryFinished()
         if (upnpDevice.modelDescription().contains("Philips")) {
             DeviceDescriptor descriptor(bridgeDeviceClassId, "Philips Hue Bridge", upnpDevice.hostAddress().toString());
             ParamList params;
-            params.append(Param(bridgeDeviceNameParamTypeId, upnpDevice.friendlyName()));
             params.append(Param(bridgeDeviceHostParamTypeId, upnpDevice.hostAddress().toString()));
             params.append(Param(bridgeDeviceApiKeyParamTypeId, QString()));
             params.append(Param(bridgeDeviceMacParamTypeId, QString()));
@@ -895,7 +880,6 @@ void DevicePluginPhilipsHue::processNUpnpResponse(const QByteArray &data)
         QVariantMap bridgeMap = bridgeVariant.toMap();
         DeviceDescriptor descriptor(bridgeDeviceClassId, "Philips Hue Bridge", bridgeMap.value("internalipaddress").toString());
         ParamList params;
-        params.append(Param(bridgeDeviceNameParamTypeId, "Philips hue"));
         params.append(Param(bridgeDeviceHostParamTypeId, bridgeMap.value("internalipaddress").toString()));
         params.append(Param(bridgeDeviceApiKeyParamTypeId, QString()));
         params.append(Param(bridgeDeviceMacParamTypeId, QString()));
@@ -945,9 +929,8 @@ void DevicePluginPhilipsHue::processBridgeLightDiscoveryResponse(Device *device,
             continue;
 
         if (lightMap.value("type").toString() == "Dimmable light") {
-            DeviceDescriptor descriptor(dimmableLightDeviceClassId, "Philips Hue White Light", lightMap.value("name").toString(), device->id());
+            DeviceDescriptor descriptor(dimmableLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue White Light", device->id());
             ParamList params;
-            params.append(Param(dimmableLightDeviceNameParamTypeId, lightMap.value("name").toString()));
             params.append(Param(dimmableLightDeviceModelIdParamTypeId, model));
             params.append(Param(dimmableLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
             params.append(Param(dimmableLightDeviceUuidParamTypeId, uuid));
@@ -957,9 +940,8 @@ void DevicePluginPhilipsHue::processBridgeLightDiscoveryResponse(Device *device,
 
             qCDebug(dcPhilipsHue) << "Found new dimmable light" << lightMap.value("name").toString() << model;
         } else if (lightMap.value("type").toString() == "Color temperature light") {
-            DeviceDescriptor descriptor(colorTemperatureLightDeviceClassId, "Philips Hue White Light", lightMap.value("name").toString(), device->id());
+            DeviceDescriptor descriptor(colorTemperatureLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue Color Temperature Light", device->id());
             ParamList params;
-            params.append(Param(colorTemperatureLightDeviceNameParamTypeId, lightMap.value("name").toString()));
             params.append(Param(colorTemperatureLightDeviceModelIdParamTypeId, model));
             params.append(Param(colorTemperatureLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
             params.append(Param(colorTemperatureLightDeviceUuidParamTypeId, uuid));
@@ -969,9 +951,8 @@ void DevicePluginPhilipsHue::processBridgeLightDiscoveryResponse(Device *device,
 
             qCDebug(dcPhilipsHue) << "Found new color temperature light" << lightMap.value("name").toString() << model;
         } else {
-            DeviceDescriptor descriptor(colorLightDeviceClassId, "Philips Hue Light", lightMap.value("name").toString(), device->id());
+            DeviceDescriptor descriptor(colorLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue Color Light", device->id());
             ParamList params;
-            params.append(Param(colorLightDeviceNameParamTypeId, lightMap.value("name").toString()));
             params.append(Param(colorLightDeviceModelIdParamTypeId, model));
             params.append(Param(colorLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
             params.append(Param(colorLightDeviceUuidParamTypeId, uuid));
@@ -1023,9 +1004,8 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
             continue;
 
         if (sensorMap.value("type").toString() == "ZLLSwitch") {
-            DeviceDescriptor descriptor(remoteDeviceClassId, "Philips Hue Remote", sensorMap.value("name").toString(), device->id());
+            DeviceDescriptor descriptor(remoteDeviceClassId, sensorMap.value("name").toString(), "Philips Hue Remote", device->id());
             ParamList params;
-            params.append(Param(remoteDeviceNameParamTypeId, sensorMap.value("name").toString()));
             params.append(Param(remoteDeviceModelIdParamTypeId, model));
             params.append(Param(remoteDeviceTypeParamTypeId, sensorMap.value("type").toString()));
             params.append(Param(remoteDeviceUuidParamTypeId, uuid));
@@ -1034,7 +1014,7 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
             emit autoDevicesAppeared(remoteDeviceClassId, {descriptor});
             qCDebug(dcPhilipsHue) << "Found new remote" << sensorMap.value("name").toString() << model;
         } else if (sensorMap.value("type").toString() == "ZGPSwitch") {
-            DeviceDescriptor descriptor(tapDeviceClassId, "Hue Tap", sensorMap.value("name").toString(), device->id());
+            DeviceDescriptor descriptor(tapDeviceClassId, sensorMap.value("name").toString(), "Philips Hue Tap", device->id());
             ParamList params;
             params.append(Param(tapDeviceUuidParamTypeId, uuid));
             params.append(Param(tapDeviceModelIdParamTypeId, model));
