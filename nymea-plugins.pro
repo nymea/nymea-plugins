@@ -1,43 +1,44 @@
 TEMPLATE = subdirs
 
 PLUGIN_DIRS = \
-    elro                \
-    intertechno         \
-    networkdetector     \
-    conrad              \
-    openweathermap      \
-    wakeonlan           \
-    mailnotification    \
-    philipshue          \
-    eq-3                \
-    wemo                \
-    lgsmarttv           \
-    datetime            \
-    genericelements     \
-    commandlauncher     \
-    unitec              \
-    leynew              \
-    udpcommander        \
-    tcpcommander        \
-    httpcommander       \
-    kodi                \
-    elgato              \
-    senic               \
-    awattar             \
-    netatmo             \
-    plantcare           \
-    osdomotics          \
-    ws2812              \
-    orderbutton         \
-    denon               \
     avahimonitor        \
-    gpio                \
-    snapd               \
-    simulation          \
-    keba                \
-    remotessh           \
+    awattar             \
+    commandlauncher     \
+    conrad              \
+    datetime            \
+    denon               \
     dweetio             \
+    elgato              \
+    elro                \
+    eq-3                \
     flowercare          \
+    genericelements     \
+    gpio                \
+    httpcommander       \
+    intertechno         \
+    keba                \
+    kodi                \
+    leynew              \
+    lgsmarttv           \
+    mailnotification    \
+    netatmo             \
+    networkdetector     \
+    openweathermap      \
+    orderbutton         \
+    osdomotics          \
+    philipshue          \
+    plantcare           \
+    remotessh           \
+    senic               \
+    simulation          \
+    snapd               \
+    tasmota             \
+    tcpcommander        \
+    udpcommander        \
+    unitec              \
+    wakeonlan           \
+    wemo                \
+    ws2812              \
 
 CONFIG+=all
 
