@@ -76,8 +76,11 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
             return DeviceManager::DeviceSetupStatusFailure;
         }
         MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(device->id(), deviceAddress);
+        if (!channel) {
+            qCWarning(dcTasmota) << "Failed to create MQTT channel.";
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
 
-        Q_UNUSED(device)
         QUrl url("http://10.10.10.90/sv");
         QUrlQuery query;
         query.addQueryItem("w", "2%2C1");
