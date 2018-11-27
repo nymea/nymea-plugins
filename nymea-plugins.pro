@@ -22,6 +22,7 @@ PLUGIN_DIRS = \
     lgsmarttv           \
     mailnotification    \
     multisensor         \
+    mqtt                \
     netatmo             \
     networkdetector     \
     openweathermap      \
