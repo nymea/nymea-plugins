@@ -21,7 +21,7 @@ PLUGIN_DIRS = \
     leynew              \
     lgsmarttv           \
     mailnotification    \
-    mqtt                \
+    mqttclient          \
     netatmo             \
     networkdetector     \
     openweathermap      \
