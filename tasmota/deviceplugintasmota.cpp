@@ -4,19 +4,55 @@
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
- *  nymea is free software: you can redistribute it and/or modify          *
- *  it under the terms of the GNU General Public License as published by   *
- *  the Free Software Foundation, version 2 of the License.                *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
  *                                                                         *
- *  nymea is distributed in the hope that it will be useful,               *
+ *  This library is distributed in the hope that it will be useful,        *
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the           *
- *  GNU General Public License for more details.                           *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
  *                                                                         *
- *  You should have received a copy of the GNU General Public License      *
- *  along with nymea. If not, see <http://www.gnu.org/licenses/>.          *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+/*!
+    \page tasmota.html
+    \title Tasmota (Sonoff) devices
+    \brief Plugin for Tasmota devices (Sonoff devices flashed with Tasmota and others)
+
+    \ingroup plugins
+    \ingroup nymea-plugins-maker
+
+    This plugin allows to make use of Sonoff-Tasmota devices via the nymea internal MQTT broker.
+    There is no external MQTT broker needed.
+
+    Note that Sonoff devices must be flashed with the Tasmota sofware and connected to the WiFi network in order to
+    work with this plugin.
+
+    See https://github.com/arendst/Sonoff-Tasmota/wiki for a list of all supported devices and instructions on how to
+    install Tasmota on those.
+
+    After flashing Tasmota to a Sonoff device and connecting it to WiFi, it can be added to nymea. The only required
+    thing is the IP address to the device. This plugin will create a new isoloated MQTT channel on the nymea internal
+    MQTT broker and provision login details to the Tasmota device via HTTP. Once that is successful, the Tasmota device
+    will connect to the MQTT broker and appear as connected in nymea.
+
+    \chapter Plugin properties
+    When adding a Tasmota device it will add a new Gateway type device representing the Tasmota device itself. In addition
+    to that a power switch device will appear which can be used to control the switches in the Tasmota device. Upon
+    device setup, the user can optionally select the type of the connected hardware, (e.g. a light) which causes this
+    plugin to create a light device in the system which also controls the switches inside the Tasmota device and nicely
+    integrates with the nymea:ux for the given device type.
+
+    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
+
+    \quotefile plugins/deviceplugins/tasmota/deviceplugintasmota.json
+*/
 
 #include "deviceplugintasmota.h"
 #include "plugininfo.h"
