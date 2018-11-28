@@ -133,39 +133,12 @@ The name of the autocreated EventType (DeviceClass: gardenSensor, StateType: con
     </message>
     <message>
         <source>Active status changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: heating, StateType: heatingActive, ID: 47a16375-1027-42cc-82d3-56cbfdb1193c)
-----------
-The name of the autocreated EventType (DeviceClass: heatingRod, StateType: heatingActive, ID: 47a16375-1027-42cc-82d3-56cbfdb1193c)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>target temperature changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: heating, StateType: targetTemperature, ID: 8256a670-85c5-4043-9133-05518812848c)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>change target temperature</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: heating, StateType: targetTemperature, ID: 8256a670-85c5-4043-9133-05518812848c)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: heatingRod, StateType: heatingActive, ID: 47a16375-1027-42cc-82d3-56cbfdb1193c)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>EV Charging Station</source>
         <extracomment>The name of the DeviceClass (1fa40afa-6a07-4a97-918b-76e3944ea0fb)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Current changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: evCharger, StateType: current, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set current</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: evCharger, StateType: current, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>charging status changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: evCharger, StateType: evCharging, ID: 9d3f56e1-bb73-4efd-814c-50477c609c17)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -288,16 +261,6 @@ The name of the autocreated EventType (DeviceClass: heatingRod, StateType: conne
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Power consumption changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: smartMeter, StateType: powerConsumption, ID: d57f4d9c-759e-40eb-999e-a1acbc8df2b1)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Today&apos;s energy production changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: smartMeter, StateType: energyToday, ID: 5ac91819-c855-441c-a734-ee5cc0514822)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Battery</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: temperatureSensor, StateType: batteryLevel, ID: 45c0de32-b519-47d7-9f82-e5f09d1542d4
 ----------
@@ -311,11 +274,6 @@ The name of the ParamType for the autocreated EventType (DeviceClass: gardenSens
     <message>
         <source>Charging amount changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: battery, StateType: charging, ID: c977e60a-e820-4647-addb-cf0b39732ffb)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>charging</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: evCharger, StateType: evCharging, ID: 9d3f56e1-bb73-4efd-814c-50477c609c17</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -364,26 +322,6 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: heatingRo
 The name of the ParamType for the autocreated EventType (DeviceClass: waterValve, StateType: power, ID: b7ff029d-f3a6-4b47-978a-ac1a581aac0f
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: waterValve, StateType: power, ID: b7ff029d-f3a6-4b47-978a-ac1a581aac0f)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max power changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: heatingRod, StateType: maxPower, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set max power</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: heatingRod, StateType: maxPower, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target water temperature changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: heatingRod, StateType: waterTemperature, ID: 49388b11-8076-4698-8091-5c5f5762fd08)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set target water temperature</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: heatingRod, StateType: waterTemperature, ID: 49388b11-8076-4698-8091-5c5f5762fd08)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -478,23 +416,12 @@ The name of the ParamType for the autocreated EventType (DeviceClass: gardenSens
         <source>Active</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: motionDetector, StateType: active, ID: 5ab00bfc-7345-44a2-90d4-852c810e59ec
 ----------
-The name of the ParamType for the autocreated EventType (DeviceClass: heating, StateType: heatingActive, ID: 47a16375-1027-42cc-82d3-56cbfdb1193c
-----------
 The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod, StateType: heatingActive, ID: 47a16375-1027-42cc-82d3-56cbfdb1193c</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Target temperature</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: heating, StateType: targetTemperature, ID: 8256a670-85c5-4043-9133-05518812848c
-----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: heating, StateType: targetTemperature, ID: 8256a670-85c5-4043-9133-05518812848c)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Current</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: evCharger, StateType: current, ID: 87600986-da37-4032-af37-015995910368
-----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: evCharger, StateType: current, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: thermostat, StateType: temperature, ID: edc0ccb6-3a78-44b9-8c7d-638142c27e10</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -528,16 +455,6 @@ The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Power consumtion</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: smartMeter, StateType: powerConsumption, ID: d57f4d9c-759e-40eb-999e-a1acbc8df2b1</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Today&apos;s energy production</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: smartMeter, StateType: energyToday, ID: 5ac91819-c855-441c-a734-ee5cc0514822</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Battery level</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: battery, StateType: batteryLevel, ID: 30fd9fd9-1a6b-4698-93ac-6b2a1ba18500</extracomment>
         <translation type="unfinished"></translation>
@@ -552,20 +469,6 @@ The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: battery, StateType: maxCharging, ID: bdf328a6-eebc-4b67-8165-551bc21e9be6
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: battery, StateType: maxCharging, ID: bdf328a6-eebc-4b67-8165-551bc21e9be6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max power</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod, StateType: maxPower, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883
-----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: heatingRod, StateType: maxPower, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Target water temperature</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod, StateType: waterTemperature, ID: 49388b11-8076-4698-8091-5c5f5762fd08
-----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: heatingRod, StateType: waterTemperature, ID: 49388b11-8076-4698-8091-5c5f5762fd08)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -745,6 +648,120 @@ The name of the ParamType (DeviceClass: fingerPrintSensor, EventType: accessGran
     <message>
         <source>Remove user</source>
         <extracomment>The name of the ActionType 28bf4cd1-bb1c-442b-8ba3-ed019f34abbd of deviceClass fingerPrintSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Percentage changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8)
+----------
+The name of the autocreated EventType (DeviceClass: evCharger, StateType: percentage, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Percentage</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8
+----------
+The name of the ParamType for the autocreated ActionType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8)
+----------
+The name of the ParamType for the autocreated EventType (DeviceClass: evCharger, StateType: percentage, ID: 87600986-da37-4032-af37-015995910368
+----------
+The name of the ParamType for the autocreated ActionType (DeviceClass: evCharger, StateType: percentage, ID: 87600986-da37-4032-af37-015995910368)
+----------
+The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod, StateType: percentage, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883
+----------
+The name of the ParamType for the autocreated ActionType (DeviceClass: heatingRod, StateType: percentage, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set percentage</source>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8)
+----------
+The name of the autocreated ActionType (DeviceClass: evCharger, StateType: percentage, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Thermostat</source>
+        <extracomment>The name of the DeviceClass (227da953-e476-4c31-b3f6-fdd389bb1b7c)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target temperature changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: thermostat, StateType: temperature, ID: edc0ccb6-3a78-44b9-8c7d-638142c27e10)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power power flow changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: smartMeter, StateType: currentPower, ID: d57f4d9c-759e-40eb-999e-a1acbc8df2b1)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current power flow</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: smartMeter, StateType: currentPower, ID: d57f4d9c-759e-40eb-999e-a1acbc8df2b1</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total energy consumption changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: smartMeter, StateType: totalEnergyConsumed, ID: 5ac91819-c855-441c-a734-ee5cc0514822)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total energy consumption</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: smartMeter, StateType: totalEnergyConsumed, ID: 5ac91819-c855-441c-a734-ee5cc0514822</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total energy production changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: smartMeter, StateType: totalEnergyProduced, ID: 7437d92a-ef1a-4e59-979d-1c7a2611b359)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total energy production</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: smartMeter, StateType: totalEnergyProduced, ID: 7437d92a-ef1a-4e59-979d-1c7a2611b359</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Solar panel</source>
+        <extracomment>The name of the DeviceClass (eae9c1b2-a6b2-4c0d-9af3-867c900899f1)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current power production changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: solarPanel, StateType: currentPower, ID: 08f4f53d-b62d-4c2e-913f-87b1c4737d71)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current power production</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: solarPanel, StateType: currentPower, ID: 08f4f53d-b62d-4c2e-913f-87b1c4737d71</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total produced energy changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: solarPanel, StateType: totalEnergyProduced, ID: b60948ca-cee9-447a-ba1c-f908c6db58fb)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Total produced energy</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: solarPanel, StateType: totalEnergyProduced, ID: b60948ca-cee9-447a-ba1c-f908c6db58fb</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum power percentage changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: heatingRod, StateType: percentage, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set maximum power percentage</source>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: heatingRod, StateType: percentage, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Water temperature changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: heatingRod, StateType: temperature, ID: 49388b11-8076-4698-8091-5c5f5762fd08)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Water temperature</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod, StateType: temperature, ID: 49388b11-8076-4698-8091-5c5f5762fd08</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
