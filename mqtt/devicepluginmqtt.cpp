@@ -23,39 +23,32 @@
 /*!
     \page mqtt.html
     \title Generic MQTT
-    \brief Plugin for catching UDP commands from the network.
+    \brief Plugin for subscribing and publishing to an MQTT broker.
 
     \ingroup plugins
     \ingroup nymea-plugins-maker
 
-    This plugin allows to receive UDP packages over a certain UDP port and generates an \l{Event} if the message content matches
-    the \l{Param} command.
+    This plugin allows to subscribe and publish to MQTT brokers (the nymea internal broker and external ones).
 
     \note This plugin is ment to be combined with a \l{nymeaserver::Rule}.
 
     \section3 Example
 
-    If you create an UDP Commander on port 2323 and with the command \c{"Light 1 ON"}, following command will trigger an \l{Event} in nymea
-    and allows you to connect this \l{Event} with a \l{nymeaserver::Rule}.
+    A device is configured to publish its state to a MQTT broker. Using this plugin the user can subscribe to
+    the same topic on that broker and monitor the device's state.
 
-    \note In this example nymea is running on \c localhost
-
-    \code
-    $ echo "Light 1 ON" | nc -u localhost 2323
-    OK
-    \endcode
-
-    This allows you to execute \l{Action}{Actions} in your home automation system when a certain UDP message will be sent to nymea.
-
-    If the command will be recognized from nymea, the sender will receive as answere a \c{"OK"} string.
+    Publishing is also supported. This allows use cases such as controlling IoT things via MQTT by publishing
+    to topics such devices are subscribed to. Other possibilities are to use nymea as a "translator" between other
+    transport layers to MQTT. For instance a sensor might deliver sensor data via Bluetooth to Nymea and using this
+    MQTT plugin and a \l{nymeaserver::Rule} nymea can be configured to forward all those sensor values to a MQTT broker.
 
     \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
+    The plugin implements the inputtrigger and outputtrigger interfaces, adding parameters for topic and payload to
+    the trigger action and triggered event.
 
     For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
 
-    \quotefile plugins/deviceplugins/udpcommander/devicepluginudpcommander.json
+    \quotefile plugins/deviceplugins/mqtt/devicepluginmqtt.json
 */
 
 #include "devicepluginmqtt.h"
