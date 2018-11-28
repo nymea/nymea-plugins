@@ -86,7 +86,7 @@ DeviceManager::DeviceSetupStatus DevicePluginMqtt::setupDevice(Device *device)
     connect(client, &MqttClient::connected, this, [this, device](){
         subscribe(device);
     });
-    connect(client, &MqttClient::subscribed, this, [this, device](quint16 packetId, const Mqtt::SubscribeReturnCodes returnCodes){
+    connect(client, &MqttClient::subscribeResult, this, [this, device](quint16 packetId, const Mqtt::SubscribeReturnCodes returnCodes){
         Q_UNUSED(packetId)
         emit deviceSetupFinished(device, returnCodes.first() == Mqtt::SubscribeReturnCodeFailure ? DeviceManager::DeviceSetupStatusFailure : DeviceManager::DeviceSetupStatusSuccess);
     });
