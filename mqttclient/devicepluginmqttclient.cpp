@@ -48,22 +48,22 @@
 
     For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
 
-    \quotefile plugins/deviceplugins/mqtt/devicepluginmqtt.json
+    \quotefile plugins/deviceplugins/mqtt/devicepluginmqttclient.json
 */
 
-#include "devicepluginmqtt.h"
+#include "devicepluginmqttclient.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
 #include "network/mqtt/mqttprovider.h"
 
 #include "nymea-mqtt/mqttclient.h"
 
-DevicePluginMqtt::DevicePluginMqtt()
+DevicePluginMqttClient::DevicePluginMqttClient()
 {
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginMqtt::setupDevice(Device *device)
+DeviceManager::DeviceSetupStatus DevicePluginMqttClient::setupDevice(Device *device)
 {
     MqttClient *client = nullptr;
     if (device->deviceClassId() == internalMqttClientDeviceClassId) {
@@ -83,8 +83,8 @@ DeviceManager::DeviceSetupStatus DevicePluginMqtt::setupDevice(Device *device)
         Q_UNUSED(packetId)
         emit deviceSetupFinished(device, returnCodes.first() == Mqtt::SubscribeReturnCodeFailure ? DeviceManager::DeviceSetupStatusFailure : DeviceManager::DeviceSetupStatusSuccess);
     });
-    connect(client, &MqttClient::publishReceived, this, &DevicePluginMqtt::publishReceived);
-    connect(client, &MqttClient::published, this, &DevicePluginMqtt::published);
+    connect(client, &MqttClient::publishReceived, this, &DevicePluginMqttClient::publishReceived);
+    connect(client, &MqttClient::published, this, &DevicePluginMqttClient::published);
     // In case we're already connected, manually call subscribe now
     if (client->isConnected()) {
         subscribe(device);
@@ -94,7 +94,7 @@ DeviceManager::DeviceSetupStatus DevicePluginMqtt::setupDevice(Device *device)
 }
 
 
-DeviceManager::DeviceError DevicePluginMqtt::executeAction(Device *device, const Action &action)
+DeviceManager::DeviceError DevicePluginMqttClient::executeAction(Device *device, const Action &action)
 {
     ParamTypeId topicParamTypeId = internalMqttClientTriggerActionTopicParamTypeId;
     ParamTypeId payloadParamTypeId = internalMqttClientTriggerActionDataParamTypeId;
@@ -134,7 +134,7 @@ DeviceManager::DeviceError DevicePluginMqtt::executeAction(Device *device, const
     return DeviceManager::DeviceErrorAsync;
 }
 
-void DevicePluginMqtt::subscribe(Device *device)
+void DevicePluginMqttClient::subscribe(Device *device)
 {
     MqttClient *client = m_clients.value(device);
     if (!client) {
@@ -148,7 +148,7 @@ void DevicePluginMqtt::subscribe(Device *device)
     }
 }
 
-void DevicePluginMqtt::publishReceived(const QString &topic, const QByteArray &payload, bool retained)
+void DevicePluginMqttClient::publishReceived(const QString &topic, const QByteArray &payload, bool retained)
 {
     qCDebug(dcMqttclient()) << "Publish received" << topic << payload << retained;
 
@@ -171,7 +171,7 @@ void DevicePluginMqtt::publishReceived(const QString &topic, const QByteArray &p
     emitEvent(Event(eventTypeId, device->id(), ParamList() << Param(topicParamTypeId, topic) << Param(payloadParamTypeId, payload)));
 }
 
-void DevicePluginMqtt::published(quint16 packetId)
+void DevicePluginMqttClient::published(quint16 packetId)
 {
     if (!m_pendingPublishes.contains(packetId)) {
         return;
@@ -180,7 +180,7 @@ void DevicePluginMqtt::published(quint16 packetId)
     emit actionExecutionFinished(m_pendingPublishes.take(packetId).id(), DeviceManager::DeviceErrorNoError);
 }
 
-void DevicePluginMqtt::deviceRemoved(Device *device)
+void DevicePluginMqttClient::deviceRemoved(Device *device)
 {
     qCDebug(dcMqttclient) << device;
     m_clients.take(device)->deleteLater();

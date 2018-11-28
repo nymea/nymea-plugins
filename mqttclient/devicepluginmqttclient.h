@@ -20,8 +20,8 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINMQTT_H
-#define DEVICEPLUGINMQTT_H
+#ifndef DEVICEPLUGINMQTTCLIENT_H
+#define DEVICEPLUGINMQTTCLIENT_H
 
 #include "plugin/deviceplugin.h"
 
@@ -31,14 +31,14 @@
 
 class MqttClient;
 
-class DevicePluginMqtt: public DevicePlugin
+class DevicePluginMqttClient: public DevicePlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginmqtt.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginmqttclient.json")
     Q_INTERFACES(DevicePlugin)
 
 public:
-    explicit DevicePluginMqtt();
+    explicit DevicePluginMqttClient();
 
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
@@ -58,4 +58,4 @@ private:
     QHash<quint16, Action> m_pendingPublishes;
 };
 
-#endif // DEVICEPLUGINMQTT_H
+#endif // DEVICEPLUGINMQTTCLIENT_H
