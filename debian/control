@@ -693,6 +693,7 @@ Depends: nymea-plugin-commandlauncher,
          nymea-plugin-genericelements,
          nymea-plugin-avahimonitor,
          nymea-plugin-gpio,
+         nymea-plugin-mqtt,
          nymea-plugin-remotessh,
 Replaces: guh-plugins-maker
 Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
