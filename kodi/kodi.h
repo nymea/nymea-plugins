@@ -34,7 +34,7 @@ class Kodi : public QObject
     Q_OBJECT
 public:
 
-    explicit Kodi(const QHostAddress &hostAddress, const int &port = 9090, QObject *parent = 0);
+    explicit Kodi(const QHostAddress &hostAddress, const int &port = 9090, QObject *parent = nullptr);
 
     QHostAddress hostAddress() const;
     int port() const;
@@ -42,18 +42,21 @@ public:
     bool connected() const;
 
     // propertys
-    void setMuted(const bool &muted, const ActionId &actionId);
+    int setMuted(const bool &muted);
     bool muted() const;
 
-    void setVolume(const int &volume, const ActionId &actionId);
+    int setVolume(const int &volume);
     int volume() const;
 
+    int setShuffle(bool shuffle);
+    int setRepeat(const QString &repeat);
+
     // actions
-    void showNotification(const QString &message, const int &displayTime, const QString &notificationType, const ActionId &actionId);
-    void pressButton(const QString &button, const ActionId &actionId);
-    void systemCommand(const QString &command, const ActionId &actionId);
-    void videoLibrary(const QString &command, const ActionId &actionId);
-    void audioLibrary(const QString &command, const ActionId &actionId);
+    int showNotification(const QString &message, const int &displayTime, const QString &notificationType);
+    int pressButton(const QString &button);
+    int systemCommand(const QString &command);
+    int videoLibrary(const QString &command);
+    int audioLibrary(const QString &command);
 
     void update();
     void checkVersion();
@@ -61,26 +64,40 @@ public:
     void connectKodi();
     void disconnectKodi();
 
-private:
-    KodiConnection *m_connection;
-    KodiJsonHandler *m_jsonHandler;
-    bool m_muted;
-    int m_volume;
-    int m_activePlayerCount = 0; // if it's > 0, there is something playing (either music or video or slideshow)
-
 signals:
     void connectionStatusChanged();
     void stateChanged();
-    void actionExecuted(const ActionId &actionId, const bool &success);
+    void activePlayerChanged(const QString &playerType);
+    void actionExecuted(int actionId, const bool &success);
     void updateDataReceived(const QVariantMap &data);
     void versionDataReceived(const QVariantMap &data);
     void playbackStatusChanged(const QString &playbackState);
+    void mediaMetadataChanged(const QString &title, const QString &artist, const QString &collection, const QString &artwork);
+    void shuffleChanged(bool shuffle);
+    void repeatChanged(const QString &repeat);
 
 private slots:
     void onVolumeChanged(const int &volume, const bool &muted);
     void onUpdateFinished(const QVariantMap &data);
     void activePlayersChanged(const QVariantList &data);
     void playerPropertiesReceived(const QVariantMap &properties);
+    void mediaMetaDataReceived(const QVariantMap &data);
+    void onPlaybackStatusChanged(const QString &plabackState);
+
+    void processNotification(const QString &method, const QVariantMap &params);
+    void processResponse(int id, const QString &method, const QVariantMap &response);
+
+    void updatePlayerProperties();
+    void updateMetadata();
+
+private:
+    KodiConnection *m_connection;
+    KodiJsonHandler *m_jsonHandler;
+    bool m_muted;
+    int m_volume;
+    int m_activePlayerCount = 0; // if it's > 0, there is something playing (either music or video or slideshow)
+    int m_activePlayer = -1;
+
 };
 
 #endif // KODI_H

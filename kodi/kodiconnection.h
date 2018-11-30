@@ -32,7 +32,7 @@ class KodiConnection : public QObject
 {
     Q_OBJECT
 public:
-    explicit KodiConnection(const QHostAddress &hostAddress, const int &port = 9090, QObject *parent = 0);
+    explicit KodiConnection(const QHostAddress &hostAddress, const int &port = 9090, QObject *parent = nullptr);
 
     void connectKodi();
     void disconnectKodi();
@@ -61,6 +61,8 @@ signals:
 
 public slots:
     void sendData(const QByteArray &message);
+
+
 
 };
 
