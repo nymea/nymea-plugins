@@ -290,7 +290,6 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-mqtt
 Description: nymea.io plugin for a generic MQTT client
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -693,7 +692,7 @@ Depends: nymea-plugin-commandlauncher,
          nymea-plugin-genericelements,
          nymea-plugin-avahimonitor,
          nymea-plugin-gpio,
-         nymea-plugin-mqtt,
+         nymea-plugin-mqttclient,
          nymea-plugin-remotessh,
 Replaces: guh-plugins-maker
 Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
