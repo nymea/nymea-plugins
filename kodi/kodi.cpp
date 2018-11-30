@@ -23,6 +23,7 @@
 #include "kodi.h"
 #include <QDebug>
 #include "extern-plugininfo.h"
+#include <QUrl>
 
 Kodi::Kodi(const QHostAddress &hostAddress, const int &port, QObject *parent) :
     QObject(parent),
@@ -33,14 +34,8 @@ Kodi::Kodi(const QHostAddress &hostAddress, const int &port, QObject *parent) :
     connect (m_connection, &KodiConnection::connectionStatusChanged, this, &Kodi::connectionStatusChanged);
 
     m_jsonHandler = new KodiJsonHandler(m_connection, this);
-    connect(m_jsonHandler, &KodiJsonHandler::volumeChanged, this, &Kodi::onVolumeChanged);
-    connect(m_jsonHandler, &KodiJsonHandler::actionExecuted, this, &Kodi::actionExecuted);
-    connect(m_jsonHandler, &KodiJsonHandler::versionDataReceived, this, &Kodi::versionDataReceived);
-    connect(m_jsonHandler, &KodiJsonHandler::updateDataReceived, this, &Kodi::updateDataReceived);
-    connect(m_jsonHandler, &KodiJsonHandler::updateDataReceived, this, &Kodi::onUpdateFinished);
-    connect(m_jsonHandler, &KodiJsonHandler::playbackStatusChanged, this, &Kodi::playbackStatusChanged);
-    connect(m_jsonHandler, &KodiJsonHandler::activePlayersChanged, this, &Kodi::activePlayersChanged);
-    connect(m_jsonHandler, &KodiJsonHandler::playerPropertiesReveived, this, &Kodi::playerPropertiesReceived);
+    connect(m_jsonHandler, &KodiJsonHandler::notificationReceived, this, &Kodi::processNotification);
+    connect(m_jsonHandler, &KodiJsonHandler::replyReceived, this, &Kodi::processResponse);
 }
 
 QHostAddress Kodi::hostAddress() const
@@ -58,12 +53,12 @@ bool Kodi::connected() const
     return m_connection->connected();
 }
 
-void Kodi::setMuted(const bool &muted, const ActionId &actionId)
+int Kodi::setMuted(const bool &muted)
 {
     QVariantMap params;
     params.insert("mute", muted);
 
-    m_jsonHandler->sendData("Application.SetMute", params, actionId);
+    return m_jsonHandler->sendData("Application.SetMute", params);
 }
 
 bool Kodi::muted() const
@@ -71,12 +66,12 @@ bool Kodi::muted() const
     return m_muted;
 }
 
-void Kodi::setVolume(const int &volume, const ActionId &actionId)
+int Kodi::setVolume(const int &volume)
 {
     QVariantMap params;
     params.insert("volume", volume);
 
-    m_jsonHandler->sendData("Application.SetVolume", params, actionId);
+    return m_jsonHandler->sendData("Application.SetVolume", params);
 }
 
 int Kodi::volume() const
@@ -84,7 +79,23 @@ int Kodi::volume() const
     return m_volume;
 }
 
-void Kodi::showNotification(const QString &message, const int &displayTime, const QString &notificationType, const ActionId &actionId)
+int Kodi::setShuffle(bool shuffle)
+{
+    QVariantMap params;
+    params.insert("playerid", m_activePlayer);
+    params.insert("shuffle", shuffle);
+    return m_jsonHandler->sendData("Player.SetShuffle", params);
+}
+
+int Kodi::setRepeat(const QString &repeat)
+{
+    QVariantMap params;
+    params.insert("playerid", m_activePlayer);
+    params.insert("repeat", repeat);
+    return m_jsonHandler->sendData("Player.SetRepeat", params);
+}
+
+int Kodi::showNotification(const QString &message, const int &displayTime, const QString &notificationType)
 {
     QVariantMap params;
     params.insert("title", "nymea notification");
@@ -92,17 +103,17 @@ void Kodi::showNotification(const QString &message, const int &displayTime, cons
     params.insert("displaytime", displayTime);
     params.insert("image", notificationType);
 
-    m_jsonHandler->sendData("GUI.ShowNotification", params, actionId);
+    return m_jsonHandler->sendData("GUI.ShowNotification", params);
 }
 
-void Kodi::pressButton(const QString &button, const ActionId &actionId)
+int Kodi::pressButton(const QString &button)
 {
     QVariantMap params;
     params.insert("action", button);
-    m_jsonHandler->sendData("Input.ExecuteAction", params, actionId);
+    return m_jsonHandler->sendData("Input.ExecuteAction", params);
 }
 
-void Kodi::systemCommand(const QString &command, const ActionId &actionId)
+int Kodi::systemCommand(const QString &command)
 {
     QString method;
     if (command == "hibernate") {
@@ -117,10 +128,10 @@ void Kodi::systemCommand(const QString &command, const ActionId &actionId)
         // already checkt with allowed values
     }
 
-    m_jsonHandler->sendData("System." + method, QVariantMap(), actionId);
+    return m_jsonHandler->sendData("System." + method, QVariantMap());
 }
 
-void Kodi::videoLibrary(const QString &command, const ActionId &actionId)
+int Kodi::videoLibrary(const QString &command)
 {
     QString method;
     if (command == "scan") {
@@ -131,10 +142,10 @@ void Kodi::videoLibrary(const QString &command, const ActionId &actionId)
         // already checkt with allowed values
     }
 
-    m_jsonHandler->sendData("VideoLibrary." + method, QVariantMap(), actionId);
+    return m_jsonHandler->sendData("VideoLibrary." + method, QVariantMap());
 }
 
-void Kodi::audioLibrary(const QString &command, const ActionId &actionId)
+int Kodi::audioLibrary(const QString &command)
 {
     QString method;
     if (command == "scan") {
@@ -145,7 +156,7 @@ void Kodi::audioLibrary(const QString &command, const ActionId &actionId)
         // already checkt with allowed values
     }
 
-    m_jsonHandler->sendData("AudioLibrary." + method, QVariantMap(), actionId);
+    return m_jsonHandler->sendData("AudioLibrary." + method, QVariantMap());
 }
 
 void Kodi::update()
@@ -158,15 +169,15 @@ void Kodi::update()
     properties.append("version");
     params.insert("properties", properties);
 
-    m_jsonHandler->sendData("Application.GetProperties", params, ActionId());
+    m_jsonHandler->sendData("Application.GetProperties", params);
 
     params.clear();
-    m_jsonHandler->sendData("Player.GetActivePlayers", params, ActionId());
+    m_jsonHandler->sendData("Player.GetActivePlayers", params);
 }
 
 void Kodi::checkVersion()
 {
-    m_jsonHandler->sendData("JSONRPC.Version", QVariantMap(), ActionId());
+    m_jsonHandler->sendData("JSONRPC.Version", QVariantMap());
 }
 
 void Kodi::connectKodi()
@@ -202,29 +213,162 @@ void Kodi::onUpdateFinished(const QVariantMap &data)
 
 void Kodi::activePlayersChanged(const QVariantList &data)
 {
-    qCDebug(dcKodi()) << "active players changed" << data.count();
+    qCDebug(dcKodi()) << "active players changed" << data.count() << data;
     m_activePlayerCount = data.count();
     if (m_activePlayerCount == 0) {
-        emit playbackStatusChanged("Stopped");
+        onPlaybackStatusChanged("Stopped");
         return;
     }
-    int activePlayer = data.first().toMap().value("playerid").toInt();
-    QVariantMap params;
-    params.insert("playerid", activePlayer);
-    QVariantList properties;
-    properties.append("speed");
-    params.insert("properties", properties);
-    m_jsonHandler->sendData("Player.GetProperties", params, ActionId());
+    m_activePlayer = data.first().toMap().value("playerid").toInt();
+    qCDebug(dcKodi) << "Active Player changed:" << m_activePlayer << data.first().toMap().value("type").toString();
+    emit activePlayerChanged(data.first().toMap().value("type").toString());
+
+    updatePlayerProperties();
 }
 
 void Kodi::playerPropertiesReceived(const QVariantMap &properties)
 {
     qCDebug(dcKodi()) << "player props received" << properties;
+
     if (m_activePlayerCount > 0) {
         if (properties.value("speed").toDouble() > 0) {
-            emit playbackStatusChanged("Playing");
+            onPlaybackStatusChanged("Playing");
         } else {
-            emit playbackStatusChanged("Paused");
+            onPlaybackStatusChanged("Paused");
         }
     }
+
+    emit shuffleChanged(properties.value("shuffled").toBool());
+    emit repeatChanged(properties.value("repeat").toString());
+
+}
+
+void Kodi::mediaMetaDataReceived(const QVariantMap &data)
+{
+    QVariantMap item = data.value("item").toMap();
+
+    QString title = item.value("title").toString();
+    QString artist;
+    QString collection;
+    if (item.value("type").toString() == "song") {
+        artist = !item.value("artist").toList().isEmpty() ? item.value("artist").toList().first().toString() : "";
+        collection = item.value("album").toString();
+    } else if (item.value("type").toString() == "episode") {
+        collection = item.value("showtitle").toString();
+    } else if (item.value("type").toString() == "unknown") {
+        artist = item.value("channel").toString();
+        collection = item.value("showtitle").toString();
+    } else if (item.value("type").toString() == "channel") {
+        artist = item.value("channel").toString();
+        collection = item.value("showtitle").toString();
+    } else if (item.value("type").toString() == "movie") {
+        artist = item.value("director").toStringList().join(", ");
+        collection = item.value("year").toString();
+    }
+
+    QString artwork = item.value("thumbnail").toString();
+    if (artwork.isEmpty()) {
+        artwork = item.value("fanart").toString();
+    }
+    qCDebug(dcKodi) << "title:" << title << artwork;
+    emit mediaMetadataChanged(title, artist, collection, artwork);
+}
+
+void Kodi::onPlaybackStatusChanged(const QString &playbackState)
+{
+    if (playbackState != "Stopped") {
+        updateMetadata();
+    } else {
+        emit mediaMetadataChanged(QString(), QString(), QString(), QString());
+    }
+    emit playbackStatusChanged(playbackState);
+}
+
+void Kodi::processNotification(const QString &method, const QVariantMap &params)
+{
+    qCDebug(dcKodi) << "got notification" << method << params;
+
+    if (method == "Application.OnVolumeChanged") {
+        QVariantMap data = params.value("data").toMap();
+        onVolumeChanged(data.value("volume").toInt(), data.value("muted").toBool());
+    } else if (method == "Player.OnPlay" || method == "Player.OnResume") {
+        emit activePlayersChanged(QVariantList() << params.value("data").toMap().value("player"));
+        onPlaybackStatusChanged("Playing");
+    } else if (method == "Player.OnPause") {
+        emit playbackStatusChanged("Paused");
+    } else if (method == "Player.OnStop") {
+        emit playbackStatusChanged("Stopped");
+        emit activePlayersChanged(QVariantList());
+    }
+}
+
+void Kodi::processResponse(int id, const QString &method, const QVariantMap &response)
+{
+
+    qCDebug(dcKodi) << "response received:" << method << response;
+
+    if (response.contains("error")) {
+        //qCDebug(dcKodi) << QJsonDocument::fromVariant(response).toJson();
+        qCWarning(dcKodi) << "got error response for request " << method << ":" << response.value("error").toMap().value("message").toString();
+        emit actionExecuted(id, false);
+        return;
+    }
+
+    if (method == "Application.GetProperties") {
+        //qCDebug(dcKodi) << "got update response" << reply.method();
+        emit updateDataReceived(response.value("result").toMap());
+        return;
+    }
+
+    if (method == "JSONRPC.Version") {
+        qCDebug(dcKodi) << "got version response" << method;
+        emit versionDataReceived(response.value("result").toMap());
+        return;
+    }
+
+    if (method == "Player.GetActivePlayers") {
+        qCDebug(dcKodi) << "Active players changed" << response;
+        emit activePlayersChanged(response.value("result").toList());
+        return;
+    }
+
+    if (method == "Player.GetProperties") {
+        qCDebug(dcKodi) << "Player properties received" << response;
+        playerPropertiesReceived(response.value("result").toMap());
+        return;
+    }
+
+    if (method == "Player.GetItem") {
+        qCDebug(dcKodi) << "Played item received" << response;
+        emit mediaMetaDataReceived(response.value("result").toMap());
+        return;
+    }
+
+    if (method == "Player.SetShuffle" || method == "Player.SetRepeat") {
+        updatePlayerProperties();
+    }
+
+    emit actionExecuted(id, true);
+
+    qCDebug(dcKodi()) << "unhandled reply" << method << response;
+}
+
+void Kodi::updatePlayerProperties()
+{
+    QVariantMap params;
+    params.insert("playerid", m_activePlayer);
+    QVariantList properties;
+    properties << "speed" << "shuffled" << "repeat";
+    params.insert("properties", properties);
+    m_jsonHandler->sendData("Player.GetProperties", params);
+}
+
+void Kodi::updateMetadata()
+{
+    QVariantMap params;
+    params.insert("playerid", m_activePlayer);
+    QVariantList fields;
+    fields << "title" << "artist" << "album" << "director" << "thumbnail" << "showtitle" << "fanart" << "channel" << "year";
+    params.insert("properties", fields);
+    m_jsonHandler->sendData("Player.GetItem", params);
 }

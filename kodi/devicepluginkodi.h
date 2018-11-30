@@ -52,12 +52,13 @@ private:
     QHash<Kodi *, Device *> m_kodis;
     QList<Kodi *> m_asyncSetups;
 
+    QHash<int, ActionId> m_pendingActions;
+
 private slots:
     void onPluginTimer();
-    void onUpnpDiscoveryFinished();
     void onConnectionChanged();
     void onStateChanged();
-    void onActionExecuted(const ActionId &actionId, const bool &success);
+    void onActionExecuted(int actionId, bool success);
     void versionDataReceived(const QVariantMap &data);
     void onSetupFinished(const QVariantMap &data);
 
