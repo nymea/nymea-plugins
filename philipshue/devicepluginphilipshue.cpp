@@ -1368,6 +1368,11 @@ bool DevicePluginPhilipsHue::lightAlreadyAdded(const QString &uuid)
                 return true;
             }
         }
+        if (device->deviceClassId() == colorTemperatureLightDeviceClassId) {
+            if (device->paramValue(colorTemperatureLightDeviceUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
     }
     return false;
 }
