@@ -216,8 +216,10 @@ DeviceManager::DeviceError DevicePluginTasmota::executeAction(Device *device, co
         ParamTypeId powerActionParamTypeId = ParamTypeId(m_powerStateTypeMap.value(device->deviceClassId()).toString());
         qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString() << (action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
         channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString().toLower(), action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
+        device->setStateValue(m_powerStateTypeMap.value(device->deviceClassId()), action.param(powerActionParamTypeId).value().toBool());
+        return DeviceManager::DeviceErrorNoError;
     }
-    return DeviceManager::DeviceErrorActionTypeNotFound;
+    return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginTasmota::onClientConnected(MqttChannel *channel)
@@ -251,19 +253,35 @@ void DevicePluginTasmota::onPublishReceived(MqttChannel *channel, const QString 
     qCDebug(dcTasmota) << "Publish received from Sonoff device:" << topic << payload;
     Device *dev = m_mqttChannels.key(channel);
     if (m_ipAddressParamTypeMap.contains(dev->deviceClassId())) {
-        if (!topic.startsWith(channel->topicPrefix() + "/sonoff/POWER")) {
-            return;
-        }
-        QString channelName = topic.split("/").last();
+        if (topic.startsWith(channel->topicPrefix() + "/sonoff/POWER")) {
+            QString channelName = topic.split("/").last();
 
-        foreach (Device *child, myDevices()) {
-            if (child->parentId() != dev->id()) {
-                continue;
+            foreach (Device *child, myDevices()) {
+                if (child->parentId() != dev->id()) {
+                    continue;
+                }
+                if (child->paramValue(m_channelParamTypeMap.value(child->deviceClassId())).toString() != channelName) {
+                    continue;
+                }
+                child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), payload == "ON");
             }
-            if (child->paramValue(m_channelParamTypeMap.value(child->deviceClassId())).toString() != channelName) {
-                continue;
+        }
+        if (topic.startsWith(channel->topicPrefix() + "/somoff/STATE")) {
+            QJsonParseError error;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCWarning(dcTasmota) << "Cannot parse JSON from Tasmota device" << error.errorString();
+                return;
             }
-            child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), payload == "ON");
+            foreach (Device *child, myDevices()) {
+                if (child->parentId() != dev->id()) {
+                    continue;
+                }
+                QString childChannel = child->paramValue(m_channelParamTypeMap.value(child->deviceClassId())).toString();
+                QString valueString = jsonDoc.toVariant().toMap().value(childChannel).toString();
+                child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), valueString == "ON");
+            }
+
         }
     }
 }
