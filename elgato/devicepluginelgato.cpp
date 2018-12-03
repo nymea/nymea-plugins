@@ -493,6 +493,7 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorActionTypeId) {
             QColor color = action.param(aveaColorActionColorParamTypeId).value().value<QColor>();
+            color.setAlpha(0); // Alpha is white
             if (!bulb->setColor(color))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
@@ -513,7 +514,8 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             color.setRed(red);
             color.setGreen(0);
             color.setBlue(blue);
-            if (!bulb->setWhite(4095) || !bulb->setColor(color)) {
+            color.setAlpha(255); // Alpha is white
+            if (!bulb->setColor(color)) {
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
             }
             device->setStateValue(aveaColorStateTypeId, color);

@@ -106,7 +106,7 @@ bool AveaBulb::setColor(const QColor &color)
     m_red = scaleColorValueUp(color.red());
     m_green = scaleColorValueUp(color.green());
     m_blue = scaleColorValueUp(color.blue());
-    m_white = 0;
+    m_white = scaleColorValueUp(color.alpha());
 
     m_color = color;
 
