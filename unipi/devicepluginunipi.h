@@ -81,6 +81,7 @@ private:
 
     PluginTimer *m_refreshTimer = nullptr;
 
+    void requestAllData();
     void setOutput(const QString &circuit, bool value);
     void connectToEvok();
 

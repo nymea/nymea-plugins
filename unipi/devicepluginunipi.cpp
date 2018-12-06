@@ -61,12 +61,14 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     if (device->deviceClassId() == digitalInputDeviceClassId) {
 
         m_usedDigitalInputs.insert(device->paramValue(digitalInputDeviceNumberParamTypeId).toString(), device);
+        requestAllData();
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == analogInputDeviceClassId) {
 
         m_usedAnalogInputs.insert(device->paramValue(analogInputDeviceInputNumberParamTypeId).toString(), device);
+        requestAllData();
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -118,8 +120,10 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     if (device->deviceClassId() == temperatureSensorDeviceClassId) {
 
         m_usedTemperatureSensors.insert(device->paramValue(temperatureSensorDeviceAddressParamTypeId).toString(), device);
+        requestAllData();
         return DeviceManager::DeviceSetupStatusSuccess;
     }
+
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
@@ -363,10 +367,9 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 if (m_usedTemperatureSensors.contains(circuit)){
                     continue;
                 }
-                DeviceDescriptor descriptor(deviceClassId, QString("Temperature Sensor %1").arg(circuit), circuit);
+                DeviceDescriptor descriptor(deviceClassId, "Temperature Sensor", circuit);
                 ParamList parameters;
                 parameters.append(Param(temperatureSensorDeviceAddressParamTypeId, circuit));
-                parameters.append(Param(temperatureSensorDeviceTypeParamTypeId, circuit));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -551,12 +554,7 @@ void DevicePluginUniPi::onWebSocketConnected()
     connect(m_webSocket, &QWebSocket::textMessageReceived,
             this, &DevicePluginUniPi::onWebSocketTextMessageReceived);
 
-    QJsonObject json;
-    json["cmd"] = "all";
-
-    QJsonDocument doc(json);
-    QByteArray bytes = doc.toJson();
-    m_webSocket->sendTextMessage(bytes);
+    requestAllData();
 }
 
 void DevicePluginUniPi::onWebSocketDisconnected()
@@ -565,19 +563,27 @@ void DevicePluginUniPi::onWebSocketDisconnected()
 
 }
 
+void DevicePluginUniPi::requestAllData()
+{
+    QJsonObject json;
+    json["cmd"] = "all";
+
+    QJsonDocument doc(json);
+    QByteArray bytes = doc.toJson();
+    m_webSocket->sendTextMessage(bytes);
+}
 
 void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
 {
     QJsonArray array;
-    QJsonObject obj;
     QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
 
     // check validity of the document
     if(!doc.isNull()) {
         if(doc.isObject()) {
-            obj = doc.object();
+            array.append(doc.object());
         } else if (doc.isArray()){
-            array = doc.array();
+            array = doc.array();;
         }else {
             qCDebug(dcUniPi()) << "Document is not an object nor an array";
         }
@@ -586,12 +592,8 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
     }
 
     for (int levelIndex = 0; levelIndex < array.size(); ++levelIndex) {
+        QJsonObject obj;
         obj = array[levelIndex].toObject();
-
-        if (obj["cmd"] == "all") {
-            //read model number
-            qCDebug(dcUniPi()) << message;
-        }
 
         if (obj["dev"] == "relay") {
             qCDebug(dcUniPi()) << "Relay:" << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt() << "Relay Type:" << obj["relay_type"].toString() ;
@@ -713,15 +715,6 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             }
         }
 
-        if (obj["dev"] == "led") { //TODO can't discover leds without toggling it from another client
-            qCDebug(dcUniPi()) << "Led:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt();
-
-            if (!m_leds.contains(obj["circuit"].toString())){
-                //New led detected
-                m_leds.append(obj["circuit"].toString());
-            }
-        }
-
         if (obj["dev"] == "ao") {
             qCDebug(dcUniPi()) << "Analog Output:" << obj["dev"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
 
@@ -759,17 +752,20 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         }
 
         if (obj["dev"] == "temp") {
-            qCDebug(dcUniPi()) << "Temperature Sensor:" << obj["typ"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
+            qCDebug(dcUniPi()) << "Temperature Sensor:" << obj["typ"].toString() << "Address:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
             if (!m_temperatureSensors.contains(obj["circuit"].toString())){
                 //New temperature sensor detected
                 m_temperatureSensors.append(obj["circuit"].toString());
             } else {
+                //Updating states of already added temperature sensor
                 if (m_usedTemperatureSensors.contains(obj["circuit"].toString())) {
                     double value = QVariant(obj["value"]).toDouble();
+                    bool connected = QVariant(obj["lost"]).toBool();
                     Device *device = m_usedTemperatureSensors.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == temperatureSensorDeviceClassId) {
                         device->setStateValue(temperatureSensorTemperatureStateTypeId, value);
+                        device->setStateValue(temperatureSensorConnectedStateTypeId, connected);
                     }
                 }
             }
