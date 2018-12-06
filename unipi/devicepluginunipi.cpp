@@ -115,6 +115,11 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
+    if (device->deviceClassId() == temperatureSensorDeviceClassId) {
+
+        m_usedTemperatureSensors.insert(device->paramValue(temperatureSensorDeviceAddressParamTypeId).toString(), device);
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
@@ -347,6 +352,27 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
             return DeviceManager::DeviceErrorAsync;
         }
+
+        if (deviceClassId == temperatureSensorDeviceClassId) {
+            // Create the list of available temperature sensor
+            QList<DeviceDescriptor> deviceDescriptors;
+            for (int i = 0; i < m_temperatureSensors.count(); i++) {
+                const QString circuit = m_temperatureSensors.at(i);
+
+                // Offer only temperature sensors which aren't in use already
+                if (m_usedTemperatureSensors.contains(circuit)){
+                    continue;
+                }
+                DeviceDescriptor descriptor(deviceClassId, QString("Temperature Sensor %1").arg(circuit), circuit);
+                ParamList parameters;
+                parameters.append(Param(temperatureSensorDeviceAddressParamTypeId, circuit));
+                parameters.append(Param(temperatureSensorDeviceTypeParamTypeId, circuit));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+            emit devicesDiscovered(deviceClassId, deviceDescriptors);
+            return DeviceManager::DeviceErrorAsync;
+        }
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
@@ -420,7 +446,10 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
         DimmerSwitch *dimmerSwitch = m_dimmerSwitches.key(device);
         m_dimmerSwitches.remove(dimmerSwitch);
         dimmerSwitch->deleteLater();
+    } else if (device->deviceClassId() == temperatureSensorDeviceClassId) {
+        m_usedTemperatureSensors.remove(device->paramValue(temperatureSensorDeviceAddressParamTypeId).toString());
     }
+
 
     if (myDevices().isEmpty()) {
         m_webSocket->close();
@@ -702,7 +731,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             } else {
                 if (m_usedAnalogOutputs.contains(obj["circuit"].toString())) {
                     double value = QVariant(obj["value"]).toDouble();
-                    Device *device = m_usedDigitalInputs.value(obj["circuit"].toString());
+                    Device *device = m_usedAnalogOutputs.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == analogOutputDeviceClassId) {
                         device->setStateValue(analogOutputOutputValueStateTypeId, value);
@@ -720,10 +749,27 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             } else {
                 if (m_usedAnalogInputs.contains(obj["circuit"].toString())) {
                     double value = QVariant(obj["value"]).toDouble();
-                    Device *device = m_usedDigitalInputs.value(obj["circuit"].toString());
+                    Device *device = m_usedAnalogInputs.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == analogInputDeviceClassId) {
                         device->setStateValue(analogInputInputValueStateTypeId, value);
+                    }
+                }
+            }
+        }
+
+        if (obj["dev"] == "temp") {
+            qCDebug(dcUniPi()) << "Temperature Sensor:" << obj["typ"] << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
+            if (!m_temperatureSensors.contains(obj["circuit"].toString())){
+                //New temperature sensor detected
+                m_temperatureSensors.append(obj["circuit"].toString());
+            } else {
+                if (m_usedTemperatureSensors.contains(obj["circuit"].toString())) {
+                    double value = QVariant(obj["value"]).toDouble();
+                    Device *device = m_usedTemperatureSensors.value(obj["circuit"].toString());
+
+                    if (device->deviceClassId() == temperatureSensorDeviceClassId) {
+                        device->setStateValue(temperatureSensorTemperatureStateTypeId, value);
                     }
                 }
             }

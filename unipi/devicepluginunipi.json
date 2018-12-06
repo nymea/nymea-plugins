@@ -319,6 +319,45 @@
                             "writable": true
                         }
                     ]
+                },
+                {
+                    "id": "4f0b3cfd-603a-47ec-9719-2db7eeae1143",
+                    "name": "temperatureSensor",
+                    "displayName": "Temperature sensor",
+                    "deviceIcon": "Temperature",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["temperaturesensor", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "9dd8f7e9-a24c-4a67-82cd-1e25e911cf5d",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "4684cee2-674e-4aa4-823d-096bd49f18ee",
+                            "name": "address",
+                            "displayName": "Address",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "7fd10e94-f11d-4084-8d03-414fd5592b6a",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "name": "temperature",
+                            "type": "double",
+                            "defaultValue": 0.00
+                        }
+                    ]
                 }
             ]
         }
