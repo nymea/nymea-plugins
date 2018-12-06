@@ -48,46 +48,46 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
     if (device->deviceClassId() == relayOutputDeviceClassId) {
 
-        m_usedRelais.insert(device->paramValue(relayOutputRelayNumberParamTypeId).toString(), device);
+        m_usedRelais.insert(device->paramValue(relayOutputDeviceNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == digitalOutputDeviceClassId) {
 
-        m_usedDigitalOutputs.insert(device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString(), device);
+        m_usedDigitalOutputs.insert(device->paramValue(digitalOutputDeviceNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == digitalInputDeviceClassId) {
 
-        m_usedDigitalInputs.insert(device->paramValue(digitalInputDigitalInputNumberParamTypeId).toString(), device);
+        m_usedDigitalInputs.insert(device->paramValue(digitalInputDeviceNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == analogInputDeviceClassId) {
 
-        m_usedAnalogInputs.insert(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString(), device);
+        m_usedAnalogInputs.insert(device->paramValue(analogInputDeviceInputNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == analogOutputDeviceClassId) {
 
-        m_usedAnalogOutputs.insert(device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString(), device);
+        m_usedAnalogOutputs.insert(device->paramValue(analogOutputDeviceOutputNumberParamTypeId).toString(), device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == blindDeviceClassId) {
 
-        if (device->paramValue(blindOutputTypeOpenParamTypeId) == GpioType::Relay) {
-            m_usedRelais.insert(device->paramValue(blindOutputOpenParamTypeId).toString(), device);
-        } else if (device->paramValue(blindOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.insert(device->paramValue(blindOutputOpenParamTypeId).toString(), device);
+        if (device->paramValue(blindDeviceOutputTypeOpenParamTypeId) == GpioType::Relay) {
+            m_usedRelais.insert(device->paramValue(blindDeviceOutputOpenParamTypeId).toString(), device);
+        } else if (device->paramValue(blindDeviceOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.insert(device->paramValue(blindDeviceOutputOpenParamTypeId).toString(), device);
         }
 
-        if (device->paramValue(blindOutputTypeCloseParamTypeId) == GpioType::Relay) {
-            m_usedRelais.insert(device->paramValue(blindOutputCloseParamTypeId).toString(), device);
-        } else if (device->paramValue(blindOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.insert(device->paramValue(blindOutputCloseParamTypeId).toString(), device);
+        if (device->paramValue(blindDeviceOutputTypeCloseParamTypeId) == GpioType::Relay) {
+            m_usedRelais.insert(device->paramValue(blindDeviceOutputCloseParamTypeId).toString(), device);
+        } else if (device->paramValue(blindDeviceOutputTypeOpenParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.insert(device->paramValue(blindDeviceOutputCloseParamTypeId).toString(), device);
         }
 
         return DeviceManager::DeviceSetupStatusSuccess;
@@ -95,16 +95,16 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
     if (device->deviceClassId() == lightDeviceClassId) {
 
-        if (device->paramValue(lightOutputTypeParamTypeId) == GpioType::Relay) {
-            m_usedRelais.insert(device->paramValue(lightOutputParamTypeId).toString(), device);
-        } else if (device->paramValue(lightOutputParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.insert(device->paramValue(lightOutputParamTypeId).toString(), device);
+        if (device->paramValue(lightDeviceOutputTypeParamTypeId) == GpioType::Relay) {
+            m_usedRelais.insert(device->paramValue(lightDeviceOutputParamTypeId).toString(), device);
+        } else if (device->paramValue(lightDeviceOutputParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.insert(device->paramValue(lightDeviceOutputParamTypeId).toString(), device);
         }
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
-        m_usedDigitalInputs.insert(device->paramValue(dimmerSwitchInputNumberParamTypeId).toString(), device);
+        m_usedDigitalInputs.insert(device->paramValue(dimmerSwitchDeviceInputNumberParamTypeId).toString(), device);
         DimmerSwitch* dimmerSwitch = new DimmerSwitch(this);
 
         connect(dimmerSwitch, &DimmerSwitch::pressed, this, &DevicePluginUniPi::onDimmerSwitchPressed);
@@ -142,7 +142,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, QString("Relay %1").arg(circuit), circuit);
                 ParamList parameters;
-                parameters.append(Param(relayOutputRelayNumberParamTypeId, circuit));
+                parameters.append(Param(relayOutputDeviceNumberParamTypeId, circuit));
 
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
@@ -163,7 +163,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, QString("Digital output %1").arg(circuit), circuit);
                 ParamList parameters;
-                parameters.append(Param(digitalOutputDigitalOutputNumberParamTypeId, circuit));
+                parameters.append(Param(digitalOutputDeviceNumberParamTypeId, circuit));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -183,7 +183,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, QString("Digital input %1").arg(circuit), circuit);
                 ParamList parameters;
-                parameters.append(Param(digitalInputDigitalInputNumberParamTypeId, circuit));
+                parameters.append(Param(digitalInputDeviceNumberParamTypeId, circuit));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -203,7 +203,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, QString("Analog input %1").arg(circuit), circuit);
                 ParamList parameters;
-                parameters.append(Param(analogInputAnalogInputNumberParamTypeId, circuit));
+                parameters.append(Param(analogInputDeviceInputNumberParamTypeId, circuit));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -223,7 +223,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, QString("Analog Output %1").arg(circuit), circuit);
                 ParamList parameters;
-                parameters.append(Param(analogOutputAnalogOutputNumberParamTypeId, circuit));
+                parameters.append(Param(analogOutputDeviceOutputNumberParamTypeId, circuit));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -250,10 +250,10 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
 
                         DeviceDescriptor descriptor(deviceClassId, "Blind", QString("Opening relay %1 | Closing relay %2").arg(openingCircuit, closingCircuit));
                         ParamList parameters;
-                        parameters.append(Param(blindOutputOpenParamTypeId, openingCircuit));
-                        parameters.append(Param(blindOutputCloseParamTypeId, closingCircuit));
-                        parameters.append(Param(blindOutputTypeOpenParamTypeId, GpioType::Relay));
-                        parameters.append(Param(blindOutputTypeCloseParamTypeId, GpioType::Relay));
+                        parameters.append(Param(blindDeviceOutputOpenParamTypeId, openingCircuit));
+                        parameters.append(Param(blindDeviceOutputCloseParamTypeId, closingCircuit));
+                        parameters.append(Param(blindDeviceOutputTypeOpenParamTypeId, GpioType::Relay));
+                        parameters.append(Param(blindDeviceOutputTypeCloseParamTypeId, GpioType::Relay));
                         descriptor.setParams(parameters);
                         deviceDescriptors.append(descriptor);
                         break;
@@ -277,10 +277,10 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
 
                         DeviceDescriptor descriptor(deviceClassId, "Blind", QString("Opening output %1 | Closing output %2").arg(openingCircuit, closingCircuit));
                         ParamList parameters;
-                        parameters.append(Param(blindOutputOpenParamTypeId, openingCircuit));
-                        parameters.append(Param(blindOutputCloseParamTypeId, closingCircuit));
-                        parameters.append(Param(blindOutputTypeOpenParamTypeId, GpioType::DigitalOutput));
-                        parameters.append(Param(blindOutputTypeCloseParamTypeId, GpioType::DigitalOutput));
+                        parameters.append(Param(blindDeviceOutputOpenParamTypeId, openingCircuit));
+                        parameters.append(Param(blindDeviceOutputCloseParamTypeId, closingCircuit));
+                        parameters.append(Param(blindDeviceOutputTypeOpenParamTypeId, GpioType::DigitalOutput));
+                        parameters.append(Param(blindDeviceOutputTypeCloseParamTypeId, GpioType::DigitalOutput));
                         descriptor.setParams(parameters);
                         deviceDescriptors.append(descriptor);
                         break;
@@ -304,8 +304,8 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, "Light", QString("Relay %1").arg(circuit));
                 ParamList parameters;
-                parameters.append(Param(lightOutputParamTypeId, circuit));
-                parameters.append(Param(lightOutputTypeParamTypeId, GpioType::Relay));
+                parameters.append(Param(lightDeviceOutputParamTypeId, circuit));
+                parameters.append(Param(lightDeviceOutputTypeParamTypeId, GpioType::Relay));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -319,8 +319,8 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, "Light", QString("Digital output %1").arg(circuit));
                 ParamList parameters;
-                parameters.append(Param(lightOutputParamTypeId, circuit));
-                parameters.append(Param(lightOutputTypeParamTypeId, GpioType::DigitalOutput));
+                parameters.append(Param(lightDeviceOutputParamTypeId, circuit));
+                parameters.append(Param(lightDeviceOutputTypeParamTypeId, GpioType::DigitalOutput));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -340,7 +340,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 }
                 DeviceDescriptor descriptor(deviceClassId, "Dimmer switch", QString("Digital Input %1").arg(circuit));
                 ParamList parameters;
-                parameters.append(Param(dimmerSwitchInputNumberParamTypeId, circuit));
+                parameters.append(Param(dimmerSwitchDeviceInputNumberParamTypeId, circuit));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -369,7 +369,7 @@ void DevicePluginUniPi::connectToEvok()
 {
     if ((m_webSocket == NULL) || !m_webSocket) {
 
-        int port = configValue(uniPiPortParamTypeId).toInt();
+        int port = configValue(uniPiPluginPortParamTypeId).toInt();
 
         m_webSocket = new QWebSocket();
         connect(m_webSocket, &QWebSocket::connected, this, &DevicePluginUniPi::onWebSocketConnected);
@@ -386,37 +386,37 @@ void DevicePluginUniPi::connectToEvok()
 void DevicePluginUniPi::deviceRemoved(Device *device)
 {
     if(device->deviceClassId() == relayOutputDeviceClassId) {
-        m_usedRelais.remove(device->paramValue(relayOutputRelayNumberParamTypeId).toString());
+        m_usedRelais.remove(device->paramValue(relayOutputDeviceNumberParamTypeId).toString());
     } else if(device->deviceClassId() == digitalOutputDeviceClassId) {
-        m_usedDigitalOutputs.remove(device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString());
+        m_usedDigitalOutputs.remove(device->paramValue(digitalOutputDeviceNumberParamTypeId).toString());
     } else if(device->deviceClassId() == digitalInputDeviceClassId) {
-        m_usedDigitalInputs.remove(device->paramValue(digitalInputDigitalInputNumberParamTypeId).toString());
+        m_usedDigitalInputs.remove(device->paramValue(digitalInputDeviceNumberParamTypeId).toString());
     } else if (device->deviceClassId() == analogOutputDeviceClassId) {
-        m_usedAnalogOutputs.remove(device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString());
+        m_usedAnalogOutputs.remove(device->paramValue(analogOutputDeviceOutputNumberParamTypeId).toString());
     } else if (device->deviceClassId() == analogInputDeviceClassId) {
-        m_usedAnalogInputs.remove(device->paramValue(analogInputAnalogInputNumberParamTypeId).toString());
+        m_usedAnalogInputs.remove(device->paramValue(analogInputDeviceInputNumberParamTypeId).toString());
 
     } else if (device->deviceClassId() == blindDeviceClassId) {
-        if (device->paramValue(blindOutputTypeOpenParamTypeId) == GpioType::Relay) {
-            m_usedRelais.remove(device->paramValue(blindOutputOpenParamTypeId).toString());
-        } else if (device->paramValue(blindOutputOpenParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.remove(device->paramValue(blindOutputOpenParamTypeId).toString());
+        if (device->paramValue(blindDeviceOutputTypeOpenParamTypeId) == GpioType::Relay) {
+            m_usedRelais.remove(device->paramValue(blindDeviceOutputOpenParamTypeId).toString());
+        } else if (device->paramValue(blindDeviceOutputOpenParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.remove(device->paramValue(blindDeviceOutputOpenParamTypeId).toString());
         }
 
-        if (device->paramValue(blindOutputTypeCloseParamTypeId) == GpioType::Relay) {
-            m_usedRelais.remove(device->paramValue(blindOutputCloseParamTypeId).toString());
-        } else if (device->paramValue(blindOutputOpenParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.remove(device->paramValue(blindOutputCloseParamTypeId).toString());
+        if (device->paramValue(blindDeviceOutputTypeCloseParamTypeId) == GpioType::Relay) {
+            m_usedRelais.remove(device->paramValue(blindDeviceOutputCloseParamTypeId).toString());
+        } else if (device->paramValue(blindDeviceOutputOpenParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.remove(device->paramValue(blindDeviceOutputCloseParamTypeId).toString());
         }
 
     } else if (device->deviceClassId() == lightDeviceClassId) {
-        if (device->paramValue(lightOutputTypeParamTypeId) == GpioType::Relay) {
-            m_usedRelais.remove(device->paramValue(lightOutputParamTypeId).toString());
-        } else if (device->paramValue(lightOutputParamTypeId) == GpioType::DigitalOutput) {
-            m_usedDigitalOutputs.remove(device->paramValue(lightOutputParamTypeId).toString());
+        if (device->paramValue(lightDeviceOutputTypeParamTypeId) == GpioType::Relay) {
+            m_usedRelais.remove(device->paramValue(lightDeviceOutputParamTypeId).toString());
+        } else if (device->paramValue(lightDeviceOutputParamTypeId) == GpioType::DigitalOutput) {
+            m_usedDigitalOutputs.remove(device->paramValue(lightDeviceOutputParamTypeId).toString());
         }
     } else if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
-        m_usedDigitalInputs.remove(device->paramValue(dimmerSwitchInputNumberParamTypeId).toString());
+        m_usedDigitalInputs.remove(device->paramValue(dimmerSwitchDeviceInputNumberParamTypeId).toString());
         DimmerSwitch *dimmerSwitch = m_dimmerSwitches.key(device);
         m_dimmerSwitches.remove(dimmerSwitch);
         dimmerSwitch->deleteLater();
@@ -436,8 +436,8 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
     if (device->deviceClassId() == relayOutputDeviceClassId) {
 
         if (action.actionTypeId() == relayOutputPowerActionTypeId) {
-            QString relayNumber = device->paramValue(relayOutputRelayNumberParamTypeId).toString();
-            int stateValue = action.param(relayOutputPowerActionParamTypeId).value().toInt();
+            QString relayNumber = device->paramValue(relayOutputDeviceNumberParamTypeId).toString();
+            int stateValue = action.param(relayOutputPowerActionPowerParamTypeId).value().toInt();
             setOutput(relayNumber, stateValue);
 
             return DeviceManager::DeviceErrorNoError;
@@ -447,8 +447,8 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 
     if (device->deviceClassId() == digitalOutputDeviceClassId) {
         if (action.actionTypeId() == digitalOutputPowerActionTypeId) {
-            QString digitalOutputNumber = device->paramValue(digitalOutputDigitalOutputNumberParamTypeId).toString();
-            bool stateValue = action.param(digitalOutputPowerActionParamTypeId).value().toBool();
+            QString digitalOutputNumber = device->paramValue(digitalOutputDeviceNumberParamTypeId).toString();
+            bool stateValue = action.param(digitalOutputPowerActionPowerParamTypeId).value().toBool();
             setOutput(digitalOutputNumber, stateValue);
 
             return DeviceManager::DeviceErrorNoError;
@@ -458,9 +458,9 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 
     if (device->deviceClassId() == analogOutputDeviceClassId) {
 
-        if (action.actionTypeId() == analogOutputAnalogOutputValueActionTypeId) {
-            QString analogOutputNumber = device->paramValue(analogOutputAnalogOutputNumberParamTypeId).toString();
-            double analogValue = action.param(analogOutputAnalogOutputValueActionParamTypeId).value().toDouble();
+        if (action.actionTypeId() == analogOutputOutputValueActionTypeId) {
+            QString analogOutputNumber = device->paramValue(analogOutputDeviceOutputNumberParamTypeId).toString();
+            double analogValue = action.param(analogOutputOutputValueActionOutputValueParamTypeId).value().toDouble();
 
             QJsonObject json;
             json["cmd"] = "set";
@@ -478,8 +478,8 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
     }
 
     if (device->deviceClassId() == blindDeviceClassId) {
-        QString circuitOpen = device->paramValue(blindOutputOpenParamTypeId).toString();
-        QString circuitClose = device->paramValue(blindOutputCloseParamTypeId).toString();
+        QString circuitOpen = device->paramValue(blindDeviceOutputOpenParamTypeId).toString();
+        QString circuitClose = device->paramValue(blindDeviceOutputCloseParamTypeId).toString();
 
         if (action.actionTypeId() == blindCloseActionTypeId) {
 
@@ -504,8 +504,8 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 
     if (device->deviceClassId() == lightDeviceClassId) {
 
-        QString circuit = device->paramValue(lightOutputParamTypeId).toString();
-        bool stateValue = action.param(lightPowerActionParamTypeId).value().toBool();
+        QString circuit = device->paramValue(lightDeviceOutputParamTypeId).toString();
+        bool stateValue = action.param(lightPowerActionPowerParamTypeId).value().toBool();
 
         setOutput(circuit, stateValue);
         return DeviceManager::DeviceErrorNoError;
@@ -570,7 +570,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             QString circuit = obj["circuit"].toString();
             bool value = QVariant(obj["value"].toInt()).toBool();
 
-            if (obj["relay_type"].toString() == "physical") {
+            if ((obj["relay_type"].toString() == "physical") || (obj["relay_type"].toString() == "")) {
 
                 if (!m_relais.contains(circuit)) {
                     //New Device detected
@@ -581,7 +581,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                         if (device->deviceClassId() == relayOutputDeviceClassId) {
                             device->setStateValue(relayOutputPowerStateTypeId, value);
                         } else if (device->deviceClassId() == blindDeviceClassId) {
-                            if (circuit == device->paramValue(blindOutputOpenParamTypeId).toString()) {
+                            if (circuit == device->paramValue(blindDeviceOutputOpenParamTypeId).toString()) {
                                 if (value) {
                                     if (device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
                                         device->setStateValue(blindStatusStateTypeId, "opening");
@@ -600,7 +600,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                                     }
                                 }
                             }
-                            if (circuit == device->paramValue(blindOutputCloseParamTypeId).toString()) {
+                            if (circuit == device->paramValue(blindDeviceOutputCloseParamTypeId).toString()) {
                                 if (value) {
                                     if (device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
                                         device->setStateValue(blindStatusStateTypeId, "closing");
@@ -635,7 +635,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                         if (device->deviceClassId() == digitalOutputDeviceClassId) {
                             device->setStateValue(digitalOutputPowerStateTypeId, QVariant(obj["value"].toInt()).toBool());
                         } else if (device->deviceClassId() == blindDeviceClassId) {
-                            if (circuit == device->paramValue(blindOutputOpenParamTypeId).toString()) {
+                            if (circuit == device->paramValue(blindDeviceOutputOpenParamTypeId).toString()) {
                                 if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
                                     device->setStateValue(blindStatusStateTypeId, "opening");
                                 } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
@@ -645,7 +645,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                                     device->setStateValue(blindStatusStateTypeId, "stopped");
                                 }
                             }
-                            if (circuit == device->paramValue(blindOutputCloseParamTypeId).toString()) {
+                            if (circuit == device->paramValue(blindDeviceOutputCloseParamTypeId).toString()) {
                                 if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
                                     device->setStateValue(blindStatusStateTypeId, "closing");
                                 } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
@@ -674,7 +674,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                     bool value = QVariant(obj["value"].toInt()).toBool();
                     Device *device = m_usedDigitalInputs.value(obj["circuit"].toString());
                     if (device->deviceClassId() == digitalInputDeviceClassId) {
-                        device->setStateValue(digitalInputDigitalInputStatusStateTypeId, value);
+                        device->setStateValue(digitalInputInputStatusStateTypeId, value);
                     } else if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
                         device->setStateValue(dimmerSwitchStatusStateTypeId, value);
                         DimmerSwitch *dimmerSwitch = m_dimmerSwitches.key(device);
@@ -705,7 +705,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                     Device *device = m_usedDigitalInputs.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == analogOutputDeviceClassId) {
-                        device->setStateValue(analogOutputAnalogOutputValueStateTypeId, value);
+                        device->setStateValue(analogOutputOutputValueStateTypeId, value);
                     }
                 }
             }
@@ -723,7 +723,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                     Device *device = m_usedDigitalInputs.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == analogInputDeviceClassId) {
-                        device->setStateValue(analogInputAnalogInputValueStateTypeId, value);
+                        device->setStateValue(analogInputInputValueStateTypeId, value);
                     }
                 }
             }
