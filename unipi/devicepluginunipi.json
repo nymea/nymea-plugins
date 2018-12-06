@@ -324,7 +324,7 @@
                     "id": "4f0b3cfd-603a-47ec-9719-2db7eeae1143",
                     "name": "temperatureSensor",
                     "displayName": "Temperature sensor",
-                    "deviceIcon": "Temperature",
+                    "deviceIcon": "Thermometer",
                     "createMethods": ["discovery"],
                     "interfaces": ["temperaturesensor", "connectable"],
                     "paramTypes": [
@@ -346,6 +346,7 @@
                             "id": "7641d379-b832-40fc-a29b-7d32bba79236",
                             "name": "connected",
                             "displayName": "Connected",
+                            "displayNameEvent": "Connection changed",
                             "type": "bool",
                             "defaultValue": false
                         },
