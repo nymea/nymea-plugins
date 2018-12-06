@@ -64,7 +64,7 @@ private:
     QHash<QString, Device*> m_usedDigitalInputs;
     QHash<QString, Device*> m_usedAnalogOutputs;
     QHash<QString, Device*> m_usedAnalogInputs;
-    QHash<QString, Device*> m_usedSensors;
+    QHash<QString, Device*> m_usedTemperatureSensors;
     QHash<QString, Device*> m_usedLeds;
 
     QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
@@ -74,7 +74,7 @@ private:
     QList<QString> m_digitalInputs;
     QList<QString> m_analogOutputs;
     QList<QString> m_analogInputs;
-    QList<QString> m_sensors;
+    QList<QString> m_temperatureSensors;
     QList<QString> m_leds;
 
     QWebSocket *m_webSocket = nullptr;
