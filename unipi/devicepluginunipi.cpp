@@ -408,6 +408,8 @@ void DevicePluginUniPi::connectToEvok()
         url.setPort(port);
         qCDebug(dcUniPi()) << "Conneting to:" << url.toString();
         m_webSocket->open(url);
+    } else {
+        requestAllData();
     }
 }
 
@@ -752,7 +754,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         }
 
         if (obj["dev"] == "temp") {
-            qCDebug(dcUniPi()) << "Temperature Sensor:" << obj["typ"].toString() << "Address:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble();
+            qCDebug(dcUniPi()) << "Temperature Sensor:" << obj["typ"].toString() << "Address:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toDouble() << "Connected:" << ~(QVariant(obj["lost"]).toBool());
             if (!m_temperatureSensors.contains(obj["circuit"].toString())){
                 //New temperature sensor detected
                 m_temperatureSensors.append(obj["circuit"].toString());
@@ -760,7 +762,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                 //Updating states of already added temperature sensor
                 if (m_usedTemperatureSensors.contains(obj["circuit"].toString())) {
                     double value = QVariant(obj["value"]).toDouble();
-                    bool connected = QVariant(obj["lost"]).toBool();
+                    bool connected = ~(QVariant(obj["lost"]).toBool());
                     Device *device = m_usedTemperatureSensors.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == temperatureSensorDeviceClassId) {
