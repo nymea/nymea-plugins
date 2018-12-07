@@ -575,10 +575,17 @@ void DevicePluginUniPi::requestAllData()
     m_webSocket->sendTextMessage(bytes);
 }
 
-void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
+void DevicePluginUniPi::onWebSocketTextMessageReceived(const QString &message)
 {
     QJsonArray array;
-    QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8(), &error);
+
+
+    if(error.error != QJsonParseError::NoError) {
+        qCWarning(dcUniPi) << "failed to parse data" << message << ":" << error.errorString();
+        return;
+    }
 
     // check validity of the document
     if(!doc.isNull()) {
@@ -591,6 +598,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
         }
     } else {
         qCDebug(dcUniPi()) << "Invalid JSON";
+        return;
     }
 
     for (int levelIndex = 0; levelIndex < array.size(); ++levelIndex) {
@@ -601,7 +609,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             qCDebug(dcUniPi()) << "Relay:" << "Circuit:" <<  obj["circuit"].toString() << "Value:" << obj["value"].toInt() << "Relay Type:" << obj["relay_type"].toString() ;
 
             QString circuit = obj["circuit"].toString();
-            bool value = QVariant(obj["value"].toInt()).toBool();
+            bool value = obj["value"].toBool();
 
             if ((obj["relay_type"].toString() == "physical") || (obj["relay_type"].toString() == "")) {
 
@@ -666,7 +674,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                     if (m_usedDigitalOutputs.contains(obj["circuit"].toString())) {
                         Device *device = m_usedDigitalOutputs.value(obj["circuit"].toString());
                         if (device->deviceClassId() == digitalOutputDeviceClassId) {
-                            device->setStateValue(digitalOutputPowerStateTypeId, QVariant(obj["value"].toInt()).toBool());
+                            device->setStateValue(digitalOutputPowerStateTypeId, obj["value"].toBool());
                         } else if (device->deviceClassId() == blindDeviceClassId) {
                             if (circuit == device->paramValue(blindDeviceOutputOpenParamTypeId).toString()) {
                                 if (value && device->stateValue(blindStatusStateTypeId).toString().contains("stopped")) {
@@ -674,7 +682,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                                 } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("opening")) {
                                     device->setStateValue(blindStatusStateTypeId, "stopped");
                                 } else {
-                                    qWarning(dcUniPi()) << "blind" << device << "Output open:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
+                                    qCWarning(dcUniPi()) << "blind" << device << "Output open:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
                                     device->setStateValue(blindStatusStateTypeId, "stopped");
                                 }
                             }
@@ -684,12 +692,12 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                                 } else if (!value && device->stateValue(blindStatusStateTypeId).toString().contains("closing")) {
                                     device->setStateValue(blindStatusStateTypeId, "stopped");
                                 } else {
-                                    qWarning(dcUniPi()) << "blind" << device << "Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
+                                    qCWarning(dcUniPi()) << "blind" << device << "Output close:" << value << "Status: " << device->stateValue(blindStatusStateTypeId).toString();
                                     device->setStateValue(blindStatusStateTypeId, "stopped");
                                 }
                             }
                         } else if (device->deviceClassId() == lightDeviceClassId) {
-                            device->setStateValue(lightPowerStateTypeId, QVariant(obj["value"].toInt()).toBool());
+                            device->setStateValue(lightPowerStateTypeId, obj["value"].toBool());
                         }
                     }
                 }
@@ -704,7 +712,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                 m_digitalInputs.append(obj["circuit"].toString());
             } else {
                 if (m_usedDigitalInputs.contains(obj["circuit"].toString())) {
-                    bool value = QVariant(obj["value"].toInt()).toBool();
+                    bool value = obj["value"].toBool();
                     Device *device = m_usedDigitalInputs.value(obj["circuit"].toString());
                     if (device->deviceClassId() == digitalInputDeviceClassId) {
                         device->setStateValue(digitalInputInputStatusStateTypeId, value);
@@ -725,7 +733,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                 m_analogOutputs.append(obj["circuit"].toString());
             } else {
                 if (m_usedAnalogOutputs.contains(obj["circuit"].toString())) {
-                    double value = QVariant(obj["value"]).toDouble();
+                    double value = obj["value"].toDouble();
                     Device *device = m_usedAnalogOutputs.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == analogOutputDeviceClassId) {
@@ -743,7 +751,7 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
                 m_analogInputs.append(obj["circuit"].toString());
             } else {
                 if (m_usedAnalogInputs.contains(obj["circuit"].toString())) {
-                    double value = QVariant(obj["value"]).toDouble();
+                    double value = obj["value"].toDouble();
                     Device *device = m_usedAnalogInputs.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == analogInputDeviceClassId) {
@@ -761,8 +769,8 @@ void DevicePluginUniPi::onWebSocketTextMessageReceived(QString message)
             } else {
                 //Updating states of already added temperature sensor
                 if (m_usedTemperatureSensors.contains(obj["circuit"].toString())) {
-                    double value = QVariant(obj["value"]).toDouble();
-                    bool connected = !(QVariant(obj["lost"]).toBool());
+                    double value = obj["value"].toDouble();
+                    bool connected = !(obj["lost"]).toBool();
                     Device *device = m_usedTemperatureSensors.value(obj["circuit"].toString());
 
                     if (device->deviceClassId() == temperatureSensorDeviceClassId) {

@@ -88,7 +88,7 @@ private:
 private slots:
     void onWebSocketConnected();
     void onWebSocketDisconnected();
-    void onWebSocketTextMessageReceived(QString message);
+    void onWebSocketTextMessageReceived(const QString &message);
     void onRefreshTimer();
 
     void onDimmerSwitchPressed();
