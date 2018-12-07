@@ -686,7 +686,6 @@ Depends: nymea-plugin-awattar,
          nymea-plugin-elgato,
          nymea-plugin-senic,
          nymea-plugin-keba,
-         nymea-plugin-unipi,
 Replaces: guh-plugins
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
@@ -710,6 +709,7 @@ Depends: nymea-plugin-commandlauncher,
          nymea-plugin-gpio,
          nymea-plugin-mqttclient,
          nymea-plugin-remotessh,
+         nymea-plugin-unipi,
 Replaces: guh-plugins-maker
 Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
