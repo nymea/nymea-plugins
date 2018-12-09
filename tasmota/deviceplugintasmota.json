@@ -1,0 +1,220 @@
+{
+    "name": "tasmota",
+    "displayName": "Sonoff-Tasmota",
+    "id": "d136e0c0-0cbf-4731-aabb-b2201088d6cb",
+    "vendors": [
+        {
+            "name": "tasmota",
+            "displayName": "Sonoff-Tasmota",
+            "id": "789e6173-3de3-44ef-8664-9492c9d15d44",
+            "deviceClasses": [
+                {
+                    "id": "f39fdfa8-73e0-4cf4-8d05-dc237ced7a57",
+                    "name": "sonoff_basic",
+                    "displayName": "Single switch (Sonoff Basic, RF, Touch...)",
+                    "createMethods": ["user"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "cdead654-a765-488c-9fe6-ce6afb550d8b",
+                            "name":"ipAddress",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "f210d0c0-dda1-442d-a0cc-2f2e48c24984",
+                            "name": "attachedDeviceCH1",
+                            "displayName": "Connected device",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light"],
+                            "defaultValue": "None"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9cde6321-2abf-4a58-a1d6-c7418edb9747",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ]
+                },
+                {
+                    "id": "425ab191-833c-4618-8ac8-aff02370b99d",
+                    "name": "sonoff_dual",
+                    "displayName": "Dual switch (Sonoff Dual, T1 2CH...)",
+                    "createMethods": ["user"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "7fe081a4-b9ec-4ca5-b583-50e992a24f4d",
+                            "name":"ipAddress",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "5101ad0d-c887-44b8-998d-021948184ccd",
+                            "name": "attachedDeviceCH1",
+                            "displayName": "Connected device 1",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light"],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "530edfb0-930d-4885-b1c0-3bf51a7671f1",
+                            "name": "attachedDeviceCH2",
+                            "displayName": "Connected device 2",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light"],
+                            "defaultValue": "None"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e2f55332-e706-412e-beb6-abf76b3bcff3",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ]
+                },
+                {
+                    "id": "ae845ec9-be61-4bdf-9015-4c156f937da7",
+                    "name": "sonoff_quad",
+                    "displayName": "4 channel switch (Sonoff 4CH, T1 4CH...)",
+                    "createMethods": ["user"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "dbc3f3b3-2d17-40e9-8f6e-dde0b26952bc",
+                            "name":"ipAddress",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "d6520a7a-d340-4f42-a8c4-b2da8434f40f",
+                            "name": "attachedDeviceCH1",
+                            "displayName": "Connected device 1",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light"],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "b27a1ad0-4455-4264-81a1-d625e312c330",
+                            "name": "attachedDeviceCH2",
+                            "displayName": "Connected device 2",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light"],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "ee2509fb-7690-47f7-af74-05635b460be7",
+                            "name": "attachedDeviceCH3",
+                            "displayName": "Connected device 3",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light"],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "a5bdb44f-9789-4e0a-8274-ec7866e8f148",
+                            "name": "attachedDeviceCH4",
+                            "displayName": "Connected device 4",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light"],
+                            "defaultValue": "None"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5b422d28-9f60-4ea9-ab23-42a0ec605b9e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ]
+                },
+                {
+                    "id": "8a5e69c0-14ad-4ae8-9ff9-10055de6ffdf",
+                    "name": "tasmotaSwitch",
+                    "displayName": "Tasmota power switch",
+                    "createMethods": ["auto"],
+                    "interfaces": ["power", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "564cf6c6-86eb-41a5-9b87-fb32f1b6fcd6",
+                            "name": "channelName",
+                            "displayName": "Channel name",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b4607e5d-70c4-4e76-9d9a-c6de7c50377e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "413503d7-fc9f-417a-95fa-5c350a6f69f9",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "83e5d9e6-5ac8-4e41-9717-481415048d49",
+                    "name": "tasmotaLight",
+                    "displayName": "Tasmota light",
+                    "createMethods": ["auto"],
+                    "interfaces": ["light", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "1f792ae4-cf39-4e12-99ca-c593bd020fcb",
+                            "name": "channelName",
+                            "displayName": "Channel name",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "72050de9-c318-4e53-93e5-36f7c2fc7cab",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "88dbdf8e-45ff-466f-8352-8654a6b5fe68",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
