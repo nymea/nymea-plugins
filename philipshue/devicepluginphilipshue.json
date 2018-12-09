@@ -25,13 +25,6 @@
                     "pairingInfo": "Please press the button on the Hue Bridge within 30 seconds before you continue",
                     "paramTypes": [
                         {
-                            "id": "275b76f2-0174-4f26-b3ec-5f108baf8bdd",
-                            "name": "name",
-                            "displayName": "name",
-                            "type" : "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
                             "id": "8bf5776a-d5a6-4600-8b27-481f0d803a8f",
                             "name": "apiKey",
                             "displayName": "api key",
@@ -163,13 +156,6 @@
                     "primaryActionTypeId": "90aaffe5-6a76-47d2-a14a-550f60390245",
                     "createMethods": ["auto"],
                     "paramTypes": [
-                        {
-                            "id": "0d71522c-08c0-4a66-bb5e-e31eb2dd41e5",
-                            "name": "name",
-                            "displayName": "name",
-                            "type" : "QString",
-                            "inputType": "TextLine"
-                        },
                         {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
@@ -313,13 +299,6 @@
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
-                            "id": "1fcb0645-f552-4d81-9cc3-69ad5bbe2a85",
-                            "name": "name",
-                            "displayName": "name",
-                            "type" : "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
                             "id": "e944795b-7863-488c-805b-a112b836bfbf",
                             "name": "modelId",
                             "displayName": "model id",
@@ -434,13 +413,6 @@
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
-                            "id": "0d71522c-08c0-4a66-bb5e-e31eb2dd41e5",
-                            "name": "name",
-                            "displayName": "name",
-                            "type" : "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
                             "displayName": "model id",
@@ -538,13 +510,6 @@
                     "criticalStateTypeId": "19bb8d10-1b28-4ba3-99b7-a634138dcfde",
                     "createMethods": ["auto"],
                     "paramTypes": [
-                        {
-                            "id": "0d71522c-08c0-4a66-bb5e-e31eb2dd41e5",
-                            "name": "name",
-                            "displayName": "name",
-                            "type" : "QString",
-                            "inputType": "TextLine"
-                        },
                         {
                             "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
                             "name": "modelId",
@@ -682,13 +647,6 @@
                     "interfaces": ["simplemultibutton", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
-                        {
-                            "id": "3d450f00-b521-4a2c-985f-046fad5122cb",
-                            "name": "name",
-                            "displayName": "name",
-                            "type" : "QString",
-                            "inputType": "TextLine"
-                        },
                         {
                             "id": "62d92175-db3a-4da2-a72b-f58f34cb6911",
                             "name": "modelId",
