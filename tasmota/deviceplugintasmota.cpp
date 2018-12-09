@@ -170,13 +170,14 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
             for (int i = 0; i < m_attachedDeviceParamTypeIdMap.value(device->deviceClassId()).count(); i++) {
                 ParamTypeId attachedDeviceParamTypeId = m_attachedDeviceParamTypeIdMap.value(device->deviceClassId()).at(i);
                 if (device->paramValue(attachedDeviceParamTypeId).toString() == "Light") {
-                    DeviceDescriptor descriptor1(tasmotaLightDeviceClassId, device->name() + " CH" + QString::number(i+1), QString(), device->id());
+                    DeviceDescriptor descriptor(tasmotaLightDeviceClassId, device->name() + " CH" + QString::number(i+1), QString(), device->id());
+                    descriptor.setParentDeviceId(device->id());
                     if (m_attachedDeviceParamTypeIdMap.value(device->deviceClassId()).count() == 1) {
-                        descriptor1.setParams(ParamList() << Param(tasmotaLightDeviceChannelNameParamTypeId, "POWER"));
+                        descriptor.setParams(ParamList() << Param(tasmotaLightDeviceChannelNameParamTypeId, "POWER"));
                     } else {
-                        descriptor1.setParams(ParamList() << Param(tasmotaLightDeviceChannelNameParamTypeId, "POWER" + QString::number(i+1)));
+                        descriptor.setParams(ParamList() << Param(tasmotaLightDeviceChannelNameParamTypeId, "POWER" + QString::number(i+1)));
                     }
-                    deviceDescriptors << descriptor1;
+                    deviceDescriptors << descriptor;
                 }
             }
             if (!deviceDescriptors.isEmpty()) {
