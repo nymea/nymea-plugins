@@ -11,7 +11,7 @@
                 {
                     "id": "f39fdfa8-73e0-4cf4-8d05-dc237ced7a57",
                     "name": "sonoff_basic",
-                    "displayName": "Sonoff switch (Basic, RF, Touch...)",
+                    "displayName": "Single switch (Sonoff Basic, RF, Touch...)",
                     "createMethods": ["user"],
                     "interfaces": [ "gateway" ],
                     "paramTypes": [
@@ -45,7 +45,7 @@
                 {
                     "id": "425ab191-833c-4618-8ac8-aff02370b99d",
                     "name": "sonoff_dual",
-                    "displayName": "Sonoff dual switch (Dual, T1 2CH...)",
+                    "displayName": "Dual switch (Sonoff Dual, T1 2CH...)",
                     "createMethods": ["user"],
                     "interfaces": [ "gateway" ],
                     "paramTypes": [
@@ -58,7 +58,7 @@
                         {
                             "id": "5101ad0d-c887-44b8-998d-021948184ccd",
                             "name": "attachedDeviceCH1",
-                            "displayName": "Connected device",
+                            "displayName": "Connected device 1",
                             "type": "QString",
                             "allowedValues": ["None", "Light"],
                             "defaultValue": "None"
@@ -66,7 +66,7 @@
                         {
                             "id": "530edfb0-930d-4885-b1c0-3bf51a7671f1",
                             "name": "attachedDeviceCH2",
-                            "displayName": "Connected device",
+                            "displayName": "Connected device 2",
                             "type": "QString",
                             "allowedValues": ["None", "Light"],
                             "defaultValue": "None"
@@ -87,7 +87,7 @@
                 {
                     "id": "ae845ec9-be61-4bdf-9015-4c156f937da7",
                     "name": "sonoff_quad",
-                    "displayName": "Sonoff 4 channel switch (4CH, T1 4CH...)",
+                    "displayName": "4 channel switch (Sonoff 4CH, T1 4CH...)",
                     "createMethods": ["user"],
                     "interfaces": [ "gateway" ],
                     "paramTypes": [

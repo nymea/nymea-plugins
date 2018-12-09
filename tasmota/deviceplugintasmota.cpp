@@ -244,7 +244,7 @@ void DevicePluginTasmota::onClientDisconnected(MqttChannel *channel)
 
     foreach (Device *child, myDevices()) {
         if (child->parentId() == dev->id()) {
-            child->setStateValue(m_connectedStateTypeMap.value(dev->deviceClassId()), false);
+            child->setStateValue(m_connectedStateTypeMap.value(child->deviceClassId()), false);
         }
     }
 }
@@ -267,7 +267,7 @@ void DevicePluginTasmota::onPublishReceived(MqttChannel *channel, const QString 
                 child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), payload == "ON");
             }
         }
-        if (topic.startsWith(channel->topicPrefix() + "/somoff/STATE")) {
+        if (topic.startsWith(channel->topicPrefix() + "/sonoff/STATE")) {
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
             if (error.error != QJsonParseError::NoError) {
