@@ -37,15 +37,17 @@ DevicePluginUniPi::~DevicePluginUniPi()
 
 void DevicePluginUniPi::init()
 {
-    connectToEvok();
-
-    m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
-    connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginUniPi::onRefreshTimer);
-
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
+    connectToEvok();
+
+    if(myDevices().empty()) {
+        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginUniPi::onRefreshTimer);
+    }
+
     if (device->deviceClassId() == relayOutputDeviceClassId) {
 
         m_usedRelais.insert(device->paramValue(relayOutputDeviceNumberParamTypeId).toString(), device);
