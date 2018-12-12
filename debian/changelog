@@ -1,7 +1,14 @@
-nymea-plugins (0.10.0) UNRELEASED; urgency=medium
+nymea-plugins (0.10.0) xenial; urgency=medium
 
+  [ Michael Zanetti ]
+  * Elgato/Avea: Fix handling white channel in set color action
+  * New plugin: Generic MQTT client plugin (mqttclient)
+  * PhilipsHue: Improve naming of hue devices using nymea's system name
+    and syncing to bridge
+  * New plugin: Sonoff-Tasmota devices plugin (tasmota)
+  * Netatmo: fix after upstream API change, make use of new interfaces
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Thu, 29 Nov 2018 12:48:11 +0100
+ -- Jenkins <jenkins@nymea.io>  Sun, 09 Dec 2018 18:56:19 +0100
 
 nymea-plugins (0.9.39) xenial; urgency=medium
 

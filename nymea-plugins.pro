@@ -38,11 +38,13 @@ PLUGIN_DIRS = \
     tasmota             \
     tcpcommander        \
     udpcommander        \
+    unipi               \
     unitec              \
     usbwde              \
     wakeonlan           \
     wemo                \
     ws2812              \
+
 
 CONFIG+=all
 
