@@ -30,7 +30,7 @@ class NetatmoBaseStation : public QObject
 {
     Q_OBJECT
 public:
-    explicit NetatmoBaseStation(const QString &name, const QString &macAddress, QObject *parent = 0);
+    explicit NetatmoBaseStation(const QString &name, const QString &macAddress, QObject *parent = nullptr);
 
     // Params
     QString name() const;

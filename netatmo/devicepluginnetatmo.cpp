@@ -137,7 +137,7 @@ void DevicePluginNetatmo::refreshData(Device *device, const QString &token)
     QUrlQuery query;
     query.addQueryItem("access_token", token);
 
-    QUrl url("https://api.netatmo.com/api/devicelist");
+    QUrl url("https://api.netatmo.com/api/getstationsdata");
     url.setQuery(query);
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
@@ -214,7 +214,7 @@ Device *DevicePluginNetatmo::findIndoorDevice(const QString &macAddress)
             }
         }
     }
-    return 0;
+    return nullptr;
 }
 
 Device *DevicePluginNetatmo::findOutdoorDevice(const QString &macAddress)
