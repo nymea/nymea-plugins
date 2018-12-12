@@ -63,6 +63,7 @@ private slots:
 private slots:
     void onUpnpDiscoveryFinished();
     void networkManagerReplyReady();
+    void onDeviceNameChanged();
 
 private:
     PluginTimer *m_pluginTimer1Sec = nullptr;
@@ -77,7 +78,7 @@ private:
     QList<QNetworkReply *> m_discoveryRequests;
 
     QHash<QNetworkReply *, Device *> m_lightRefreshRequests;
-    QHash<QNetworkReply *, Device *> m_lightSetNameRequests;
+    QHash<QNetworkReply *, Device *> m_setNameRequests;
     QHash<QNetworkReply *, Device *> m_bridgeRefreshRequests;
     QHash<QNetworkReply *, Device *> m_lightsRefreshRequests;
     QHash<QNetworkReply *, Device *> m_sensorsRefreshRequests;
@@ -100,7 +101,8 @@ private:
     void discoverBridgeDevices(HueBridge *bridge);
     void searchNewDevices(HueBridge *bridge, const QString &serialNumber);
 
-    void setLightName(Device *device, const QString &name);
+    void setLightName(Device *device);
+    void setRemoteName(Device *device);
 
     void processNUpnpResponse(const QByteArray &data);
     void processBridgeLightDiscoveryResponse(Device *device, const QByteArray &data);
