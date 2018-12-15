@@ -51,7 +51,7 @@ public:
         TapButton4Pressed = 18
     };
 
-    explicit HueRemote(QObject *parent = 0);
+    explicit HueRemote(QObject *parent = nullptr);
 
     int battery() const;
     void setBattery(const int &battery);
