@@ -724,7 +724,7 @@ void DevicePluginPhilipsHue::onRemoteButtonEvent(const int &buttonCode)
         id = tapPressedEventTypeId;
         break;
     case HueRemote::TapButton4Pressed:
-        param = Param(tapPressedEventButtonNameParamTypeId, "•••••");
+        param = Param(tapPressedEventButtonNameParamTypeId, "••••");
         id = tapPressedEventTypeId;
         break;
     default:
