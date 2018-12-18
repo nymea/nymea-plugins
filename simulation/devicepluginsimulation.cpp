@@ -57,6 +57,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *dev
     qCDebug(dcSimulation()) << "Set up device" << device->name();
     if (device->deviceClassId() == garageGateDeviceClassId ||
             device->deviceClassId() == extendedAwningDeviceClassId ||
+            device->deviceClassId() == extendedBlindDeviceClassId ||
             device->deviceClassId() == rollerShutterDeviceClassId ||
             device->deviceClassId() == fingerPrintSensorDeviceClassId) {
         m_simulationTimers.insert(device, new QTimer(device));
@@ -419,14 +420,14 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
     if (device->deviceClassId() == extendedBlindDeviceClassId) {
         if (action.actionTypeId() == extendedBlindOpenActionTypeId) {
             qCDebug(dcSimulation()) << "Opening extended blind";
-            m_simulationTimers.value(device)->setProperty("targetValue", 100);
+            m_simulationTimers.value(device)->setProperty("targetValue", 0);
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedBlindMovingStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == extendedBlindCloseActionTypeId) {
             qCDebug(dcSimulation()) << "Closing extended blind";
-            m_simulationTimers.value(device)->setProperty("targetValue", 0);
+            m_simulationTimers.value(device)->setProperty("targetValue", 100);
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedBlindMovingStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
@@ -630,6 +631,15 @@ void DevicePluginSimulation::simulationTimerTimeout()
         if (newValue == targetValue) {
             t->stop();
             device->setStateValue(extendedAwningMovingStateTypeId, false);
+        }
+    } else if (device->deviceClassId() == extendedBlindDeviceClassId) {
+        int currentValue = device->stateValue(extendedBlindPercentageStateTypeId).toInt();
+        int targetValue = t->property("targetValue").toInt();
+        int newValue = targetValue > currentValue ? qMin(targetValue, currentValue + 5) : qMax(targetValue, currentValue - 5);
+        device->setStateValue(extendedBlindPercentageStateTypeId, newValue);
+        if (newValue == targetValue) {
+            t->stop();
+            device->setStateValue(extendedBlindMovingStateTypeId, false);
         }
     } else if (device->deviceClassId() == rollerShutterDeviceClassId) {
         int currentValue = device->stateValue(rollerShutterPercentageStateTypeId).toInt();
