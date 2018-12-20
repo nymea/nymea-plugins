@@ -66,6 +66,7 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                     m_host->setReachable(true);
                     emit reachableChanged(true);
                 }
+                emit seen();
             } else {
                 // ARP claims the device to be stale... try to ping it.
                 qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache but is marked as" << parts.last() << ". Trying to ping it on" << m_host->address();
@@ -95,6 +96,7 @@ void DeviceMonitor::pingFinished(int exitCode)
             m_host->setReachable(true);
             emit reachableChanged(true);
         }
+        emit seen();
     } else {
         qDebug(dcNetworkDetector()) << "Could not ping device" << m_host->macAddress() << m_host->address();
     }

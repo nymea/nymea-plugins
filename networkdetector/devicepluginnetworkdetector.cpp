@@ -80,6 +80,7 @@ DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device
     DeviceMonitor *monitor = new DeviceMonitor(device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString(), device->paramValue(networkDeviceDeviceAddressParamTypeId).toString(), this);
     connect(monitor, &DeviceMonitor::reachableChanged, this, &DevicePluginNetworkDetector::deviceReachableChanged);
     connect(monitor, &DeviceMonitor::addressChanged, this, &DevicePluginNetworkDetector::deviceAddressChanged);
+    connect(monitor, &DeviceMonitor::seen, this, &DevicePluginNetworkDetector::deviceSeen);
     m_monitors.insert(monitor, device);
 
     return DeviceManager::DeviceSetupStatusSuccess;
@@ -144,6 +145,7 @@ void DevicePluginNetworkDetector::deviceReachableChanged(bool reachable)
     if (device->stateValue(networkDeviceConnectedStateTypeId).toBool() != reachable) {
         qCDebug(dcNetworkDetector()) << "Device" << device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() << "reachable changed" << reachable;
         device->setStateValue(networkDeviceConnectedStateTypeId, reachable);
+        device->setStateValue(networkDeviceIsPresentStateTypeId, reachable);
     }
 }
 
@@ -154,4 +156,11 @@ void DevicePluginNetworkDetector::deviceAddressChanged(const QString &address)
     if (device->paramValue(networkDeviceDeviceAddressParamTypeId).toString() != address) {
         device->setParamValue(networkDeviceDeviceAddressParamTypeId.toString(), address);
     }
+}
+
+void DevicePluginNetworkDetector::deviceSeen()
+{
+    DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
+    Device *device = m_monitors.value(monitor);
+    device->setStateValue(networkDeviceLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
 }
