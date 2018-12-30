@@ -135,13 +135,14 @@ void DevicePluginDaylightSensor::updateDevice(Device *device)
     } else if (now < sunset) {
         timeToNext = now.secsTo(sunset);
     } else {
-        timeToNext = now.secsTo(sunrise) + (60 * 60 * 24);
+        timeToNext = (60 * 60 * 24) - (now.time().msecsSinceStartOfDay() / 1000);
     }
     // Refresh at earliest in 5 secs to avoid spamming the system when we get close
-    timeToNext = qMax(static_cast<int>(timeToNext), 5);
+    timeToNext = qMax(static_cast<int>(timeToNext), 1);
 
     timer = hardwareManager()->pluginTimerManager()->registerTimer(static_cast<int>(timeToNext));
     qCDebug(dcDaylightSensor()) << "Recalculating in" << timer->interval() << "seconds";
+    connect(timer, &PluginTimer::timeout, this, &DevicePluginDaylightSensor::pluginTimerEvent);
     m_timers.insert(device, timer);
 }
 
