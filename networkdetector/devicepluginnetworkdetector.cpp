@@ -142,9 +142,8 @@ void DevicePluginNetworkDetector::deviceReachableChanged(bool reachable)
 {
     DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
     Device *device = m_monitors.value(monitor);
-    if (device->stateValue(networkDeviceConnectedStateTypeId).toBool() != reachable) {
-        qCDebug(dcNetworkDetector()) << "Device" << device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() << "reachable changed" << reachable;
-        device->setStateValue(networkDeviceConnectedStateTypeId, reachable);
+    if (device->stateValue(networkDeviceIsPresentStateTypeId).toBool() != reachable) {
+        qCDebug(dcNetworkDetector()) << "Device" << device->name() << device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() << "reachable changed" << reachable;
         device->setStateValue(networkDeviceIsPresentStateTypeId, reachable);
     }
 }
@@ -154,6 +153,7 @@ void DevicePluginNetworkDetector::deviceAddressChanged(const QString &address)
     DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
     Device *device = m_monitors.value(monitor);
     if (device->paramValue(networkDeviceDeviceAddressParamTypeId).toString() != address) {
+        qCDebug(dcNetworkDetector()) << "Device" << device->name() << device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() << "changed IP address to" << address;
         device->setParamValue(networkDeviceDeviceAddressParamTypeId.toString(), address);
     }
 }
