@@ -2,6 +2,8 @@
 
 #include "extern-plugininfo.h"
 
+#include <QNetworkInterface>
+
 DeviceMonitor::DeviceMonitor(const QString &macAddress, const QString &ipAddress, QObject *parent):
     QObject(parent)
 {
@@ -36,13 +38,27 @@ void DeviceMonitor::lookupArpCache()
 void DeviceMonitor::ping()
 {
 //    qCDebug(dcNetworkDetector()) << "Running:" << "ping" << "-c" << "1" << m_host->address();
-    m_pingProcess->start("ping", {"-c", "1", m_host->address()});
+    QNetworkInterface targetInterface;
+    foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
+        foreach (const QNetworkAddressEntry &addressEntry, interface.addressEntries()) {
+            QHostAddress clientAddress(m_host->address());
+            if (clientAddress.isInSubnet(addressEntry.ip(), addressEntry.prefixLength())) {
+                targetInterface = interface;
+                break;
+            }
+        }
+    }
+    if (!targetInterface.isValid()) {
+        qCWarning(dcNetworkDetector()) << "Could not find a suitable interface to ping for" << m_host->address();
+        return;
+    }
+    m_pingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "5", m_host->address()});
 }
 
 void DeviceMonitor::arpLookupFinished(int exitCode)
 {
     if (exitCode != 0) {
-        qWarning(dcNetworkDetector()) << "Error looking up ARP cache.";
+        qCWarning(dcNetworkDetector()) << "Error looking up ARP cache.";
         return;
     }
 
@@ -60,7 +76,7 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                 emit addressChanged(parts.first());
             }
             if (parts.last() == "REACHABLE") {
-                qDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache and claims to be REACHABLE";
+                qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache and claims to be REACHABLE";
                 m_host->seen();
                 if (!m_host->reachable()) {
                     m_host->setReachable(true);
@@ -80,8 +96,8 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
         ping();
     }
 
-    if (m_host->reachable() && m_host->lastSeenTime().addSecs(300) < QDateTime::currentDateTime()) {
-        qCDebug(dcNetworkDetector()) << "Could not reach device for > 5 mins. Marking it as gone." << m_host->address() << m_host->macAddress();
+    if (m_host->reachable() && m_host->lastSeenTime().addSecs(20) < QDateTime::currentDateTime()) {
+        qCDebug(dcNetworkDetector()) << "Could not reach device for 20 seconds. Marking it as gone." << m_host->address() << m_host->macAddress();
         m_host->setReachable(false);
         emit reachableChanged(false);
     }
@@ -91,6 +107,7 @@ void DeviceMonitor::pingFinished(int exitCode)
 {
     if (exitCode == 0) {
         // we were able to ping the device
+        qCDebug(dcNetworkDetector()) << "Ping successful for" << m_host->macAddress() << m_host->address();
         m_host->seen();
         if (!m_host->reachable()) {
             m_host->setReachable(true);
@@ -98,7 +115,7 @@ void DeviceMonitor::pingFinished(int exitCode)
         }
         emit seen();
     } else {
-        qDebug(dcNetworkDetector()) << "Could not ping device" << m_host->macAddress() << m_host->address();
+        qCDebug(dcNetworkDetector()) << "Could not ping device" << m_host->macAddress() << m_host->address();
     }
     // read data to discard it from socket
     QString data = QString::fromLatin1(m_pingProcess->readAll());
