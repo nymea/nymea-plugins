@@ -43,8 +43,7 @@
                             "displayName": "Device is present",
                             "displayNameEvent": "Device is present changed",
                             "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
+                            "defaultValue": false
                         },
                         {
                             "id": "b51d54c9-cce1-43f0-a35d-52fc2d8d302c",

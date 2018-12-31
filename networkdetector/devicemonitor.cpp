@@ -27,6 +27,10 @@ DeviceMonitor::~DeviceMonitor()
 
 void DeviceMonitor::update()
 {
+    if (m_pingProcess->state() != QProcess::NotRunning) {
+        qCDebug(dcNetworkDetector()) << "Previous ping still running for device" << m_host->address() << ". Not updating.";
+        return;
+    }
     lookupArpCache();
 }
 
@@ -50,9 +54,14 @@ void DeviceMonitor::ping()
     }
     if (!targetInterface.isValid()) {
         qCWarning(dcNetworkDetector()) << "Could not find a suitable interface to ping for" << m_host->address();
+        if (m_host->reachable()) {
+            m_host->setReachable(false);
+            emit reachableChanged(false);
+        }
         return;
     }
-    m_pingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "5", m_host->address()});
+
+    m_pingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "90", m_host->address()});
 }
 
 void DeviceMonitor::arpLookupFinished(int exitCode)
@@ -95,12 +104,6 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
         qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "not found in ARP cache. Trying to ping it on" << m_host->address();
         ping();
     }
-
-    if (m_host->reachable() && m_host->lastSeenTime().addSecs(20) < QDateTime::currentDateTime()) {
-        qCDebug(dcNetworkDetector()) << "Could not reach device for 20 seconds. Marking it as gone." << m_host->address() << m_host->macAddress();
-        m_host->setReachable(false);
-        emit reachableChanged(false);
-    }
 }
 
 void DeviceMonitor::pingFinished(int exitCode)
@@ -116,6 +119,10 @@ void DeviceMonitor::pingFinished(int exitCode)
         emit seen();
     } else {
         qCDebug(dcNetworkDetector()) << "Could not ping device" << m_host->macAddress() << m_host->address();
+        if (m_host->reachable()) {
+            m_host->setReachable(false);
+            emit reachableChanged(false);
+        }
     }
     // read data to discard it from socket
     QString data = QString::fromLatin1(m_pingProcess->readAll());

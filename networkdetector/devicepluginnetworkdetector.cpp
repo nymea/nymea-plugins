@@ -82,6 +82,7 @@ DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device
     connect(monitor, &DeviceMonitor::addressChanged, this, &DevicePluginNetworkDetector::deviceAddressChanged);
     connect(monitor, &DeviceMonitor::seen, this, &DevicePluginNetworkDetector::deviceSeen);
     m_monitors.insert(monitor, device);
+    monitor->update();
 
     return DeviceManager::DeviceSetupStatusSuccess;
 }
