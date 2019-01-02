@@ -13,6 +13,24 @@ Build-depends: libboblight-dev,
 Standards-Version: 3.9.3
 
 
+Package: nymea-plugin-anel
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Replaces: guh-plugin-anel
+Description: nymea.io plugin for ANEL Elektronik NET-PwrCtrl power sockets
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for ANEL Elektronik NET-PwrCtrl
+ network controlled power sockets.
+
+
 Package: nymea-plugin-avahimonitor
 Architecture: any
 Section: libs
@@ -742,6 +760,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-httpcommander,
          nymea-plugin-genericelements,
          nymea-plugin-avahimonitor,
+         nymea-plugin-anel,
          nymea-plugin-gpio,
          nymea-plugin-mqttclient,
          nymea-plugin-remotessh,
