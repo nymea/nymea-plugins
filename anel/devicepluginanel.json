@@ -1,0 +1,82 @@
+{
+    "name": "anelElektronik",
+    "displayName": "ANEL-Elektronik AG",
+    "id": "7a3e5b64-20e4-42bd-b86b-989b84afc22a",
+    "vendors": [
+        {
+            "name": "anelElektronik",
+            "displayName": "ANEL-Elektronik AG",
+            "id": "0e0a7d31-9f6b-402f-8029-8f1b2a77f994",
+            "deviceClasses": [
+                {
+                    "id": "d70433ac-9738-49ca-932f-6d3e20bcc6d4",
+                    "name": "netPwrCtl",
+                    "displayName": "NET-PwrCtl",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "1e273e10-3ea0-4337-a221-3b8e26c6e7dc",
+                            "name":"ipAddress",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "81704e09-d283-49d1-9e3f-9c06f8b98d84",
+                            "name": "port",
+                            "displayName": "Web control Port",
+                            "type": "int",
+                            "defaultValue": 80
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9cde6321-2abf-4a58-a1d6-c7418edb9747",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ]
+                },
+                {
+                    "id": "9d8da004-a8a1-457f-a8ee-b86133828a49",
+                    "name": "socket",
+                    "displayName": "NET-PwrCtrl Socket",
+                    "createMethods": ["auto"],
+                    "interfaces": ["powersocket", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "7d18f8b1-4eb8-433f-b833-14059dd190e9",
+                            "name": "number",
+                            "displayName": "Socket number",
+                            "type": "int"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e7e868a0-2de4-46ba-8ce7-87eaa4fc8e06",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "47329958-c33f-478f-b2a0-910abd150da8",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "writable": true,
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
