@@ -52,14 +52,6 @@ DevicePluginAnel::DevicePluginAnel()
 {
     m_connectedStateTypeIdMap.insert(netPwrCtlDeviceClassId, netPwrCtlConnectedStateTypeId);
     m_connectedStateTypeIdMap.insert(socketDeviceClassId, socketConnectedStateTypeId);
-
-    m_nam = new QNetworkAccessManager(this);
-    connect(m_nam, &QNetworkAccessManager::authenticationRequired, this, [](QNetworkReply* reply, QAuthenticator *authenticator){
-        qCDebug(dcAnelElektronik()) << "Auth required";
-        Q_UNUSED(reply)
-        authenticator->setUser("admin");
-        authenticator->setPassword("anel");
-    });
 }
 
 DevicePluginAnel::~DevicePluginAnel()
@@ -107,6 +99,8 @@ DeviceManager::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId
             ParamList params;
             params << Param(netPwrCtlDeviceIpAddressParamTypeId, datagram.senderAddress().toString());
             params << Param(netPwrCtlDevicePortParamTypeId, parts.at(3).toInt());
+            params << Param(netPwrCtlDeviceUsernameParamTypeId, "user7");
+            params << Param(netPwrCtlDevicePasswordParamTypeId, "anel");
             d.setParams(params);
             descriptorList << d;
         }
@@ -125,11 +119,15 @@ DeviceManager::DeviceSetupStatus DevicePluginAnel::setupDevice(Device *device)
 
         QNetworkRequest request;
         request.setUrl(QUrl("http://" + device->paramValue(netPwrCtlDeviceIpAddressParamTypeId).toString() + ":" + device->paramValue(netPwrCtlDevicePortParamTypeId).toString() + "/strg.cfg"));
-        QNetworkReply *reply = m_nam->get(request);
+        QString username = device->paramValue(netPwrCtlDeviceUsernameParamTypeId).toString();
+        QString password = device->paramValue(netPwrCtlDevicePasswordParamTypeId).toString();
+        request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username, password).toUtf8().toBase64());
+        qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << password;
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, device, [this, device, reply](){
             if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcAnelElektronik()) << "Error fetching state for" << device->name();
+                qCWarning(dcAnelElektronik()) << "Error fetching state for" << device->name() << reply->error() << reply->errorString();
                 device->setStateValue(netPwrCtlConnectedStateTypeId, false);
                 emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
                 return;
@@ -236,8 +234,12 @@ DeviceManager::DeviceError DevicePluginAnel::executeAction(Device *device, const
         if (action.actionTypeId() == socketPowerActionTypeId) {
             QUrl url("http://" + parentDevice->paramValue(netPwrCtlDeviceIpAddressParamTypeId).toString() + ":" + parentDevice->paramValue(netPwrCtlDevicePortParamTypeId).toString() + "/ctrl.htm");
             QNetworkRequest request(url);
+            QString username = parentDevice->paramValue(netPwrCtlDeviceUsernameParamTypeId).toString();
+            QString password = parentDevice->paramValue(netPwrCtlDevicePasswordParamTypeId).toString();
+            request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username, password).toUtf8().toBase64());
+            request.setHeader(QNetworkRequest::ContentTypeHeader, "text/plain");
             QByteArray data = QString("F%1=%2").arg(device->paramValue(socketDeviceNumberParamTypeId).toString(), action.param(socketPowerActionPowerParamTypeId).value().toBool() == true ? "1" : "0").toUtf8();
-            QNetworkReply *reply = m_nam->post(request, data);
+            QNetworkReply *reply = hardwareManager()->networkManager()->post(request, data);
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, device, [this, reply, action](){
                 if (reply->error() != QNetworkReply::NoError) {
@@ -265,7 +267,10 @@ void DevicePluginAnel::refreshStates()
 
         QNetworkRequest request;
         request.setUrl(url);
-        QNetworkReply *reply = m_nam->get(request);
+        QString username = device->paramValue(netPwrCtlDeviceUsernameParamTypeId).toString();
+        QString password = device->paramValue(netPwrCtlDevicePasswordParamTypeId).toString();
+        request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username, password).toUtf8().toBase64());
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, device, [this, device, reply](){
             if (reply->error() != QNetworkReply::NoError) {
