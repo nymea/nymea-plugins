@@ -43,7 +43,6 @@
 #include "plugininfo.h"
 #include "plugintimer.h"
 
-#include <QNetworkDatagram>
 #include <network/networkaccessmanager.h>
 #include <QNetworkReply>
 #include <QAuthenticator>
@@ -83,21 +82,24 @@ DeviceManager::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId
     QTimer::singleShot(2000, this, [this, searchSocket](){
         QList<DeviceDescriptor> descriptorList;
         while(searchSocket->hasPendingDatagrams()) {
-            QNetworkDatagram datagram = searchSocket->receiveDatagram();
-            qCDebug(dcAnelElektronik()) << "Have datagram:" << datagram.data();
-            if (!datagram.data().startsWith("NET-CONTROL")) {
-                qCDebug(dcAnelElektronik()) << "Failed to parse discovery datagram from" << datagram.senderAddress() << datagram.data();
+            char buffer[1024];
+            QHostAddress senderAddress;
+            int len = searchSocket->readDatagram(buffer, 1024, &senderAddress);
+            QByteArray data = QByteArray::fromRawData(buffer, len);
+            qCDebug(dcAnelElektronik()) << "Have datagram:" << data;
+            if (!data.startsWith("NET-CONTROL")) {
+                qCDebug(dcAnelElektronik()) << "Failed to parse discovery datagram from" << senderAddress << data;
                 continue;
             }
-            QStringList parts = QString(datagram.data()).split("\r\n");
+            QStringList parts = QString(data).split("\r\n");
             if (parts.count() != 4) {
-                qCDebug(dcAnelElektronik()) << "Failed to parse discovery datagram from" << datagram.senderAddress() << datagram.data();
+                qCDebug(dcAnelElektronik()) << "Failed to parse discovery datagram from" << senderAddress << data;
                 continue;
             }
-            qCDebug(dcAnelElektronik()) << "Found NET-CONTROL:" << datagram.senderAddress() << parts.at(2) << parts.at(3) << datagram.senderAddress().protocol();
-            DeviceDescriptor d(netPwrCtlDeviceClassId, parts.at(2), datagram.senderAddress().toString());
+            qCDebug(dcAnelElektronik()) << "Found NET-CONTROL:" << senderAddress << parts.at(2) << parts.at(3) << senderAddress.protocol();
+            DeviceDescriptor d(netPwrCtlDeviceClassId, parts.at(2), senderAddress.toString());
             ParamList params;
-            params << Param(netPwrCtlDeviceIpAddressParamTypeId, datagram.senderAddress().toString());
+            params << Param(netPwrCtlDeviceIpAddressParamTypeId, senderAddress.toString());
             params << Param(netPwrCtlDevicePortParamTypeId, parts.at(3).toInt());
             params << Param(netPwrCtlDeviceUsernameParamTypeId, "user7");
             params << Param(netPwrCtlDevicePasswordParamTypeId, "anel");
