@@ -21,7 +21,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /*!
-    \page tasmota.html
+    \page anel.html
     \title ANEL Elektronik devices
     \brief Plugin for ANEL Elektronik NET-PwrCtrl network controlled power sockets.
 
