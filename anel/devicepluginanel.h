@@ -54,7 +54,6 @@ private:
     void setConnectedState(Device *device, bool connected);
 
 private:
-    QNetworkAccessManager *m_nam = nullptr;
     PluginTimer *m_pollTimer = nullptr;
 
     QHash<DeviceClassId, StateTypeId> m_connectedStateTypeIdMap;
