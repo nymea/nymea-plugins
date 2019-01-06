@@ -148,6 +148,8 @@ public:
     static QPair<QNetworkRequest, QByteArray> createPairingRequest(const QHostAddress &host, const int &port, const QString &key);
     static QPair<QNetworkRequest, QByteArray> createEndPairingRequest(const QUrl &url);
     static QPair<QNetworkRequest, QByteArray> createEndPairingRequest(const QHostAddress &host, const int &port);
+    static QPair<QNetworkRequest, QByteArray> createEventRequest(const QHostAddress &host, const int &port);
+
     QPair<QNetworkRequest, QByteArray> createPressButtonRequest(const TvDevice::RemoteKey &key);
 
     QNetworkRequest createVolumeInformationRequest();
