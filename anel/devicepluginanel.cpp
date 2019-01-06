@@ -97,6 +97,16 @@ DeviceManager::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId
                 continue;
             }
             qCDebug(dcAnelElektronik()) << "Found NET-CONTROL:" << senderAddress << parts.at(2) << parts.at(3) << senderAddress.protocol();
+            bool existing = false;
+            foreach (Device *existingDev, myDevices()) {
+                if (existingDev->deviceClassId() == netPwrCtlDeviceClassId && existingDev->paramValue(netPwrCtlDeviceIpAddressParamTypeId).toString() == senderAddress.toString()) {
+                    existing = true;
+                }
+            }
+            if (existing) {
+                qCDebug(dcAnelElektronik()) << "Already have device" << senderAddress << "in configured devices. Skipping...";
+                continue;
+            }
             DeviceDescriptor d(netPwrCtlDeviceClassId, parts.at(2), senderAddress.toString());
             ParamList params;
             params << Param(netPwrCtlDeviceIpAddressParamTypeId, senderAddress.toString());
