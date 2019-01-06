@@ -38,6 +38,8 @@ class TvEventHandler : public QTcpServer
     Q_OBJECT
 public:
     explicit TvEventHandler(const QHostAddress &host, const int &port = 8080, QObject *parent = 0);
+
+protected:
     void incomingConnection(qintptr socket) override;
 
 private:

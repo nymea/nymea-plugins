@@ -57,13 +57,12 @@ DevicePluginLgSmartTv::DevicePluginLgSmartTv()
 
 DevicePluginLgSmartTv::~DevicePluginLgSmartTv()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+
 }
 
 void DevicePluginLgSmartTv::init()
 {
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(15);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginLgSmartTv::onPluginTimer);
+
 }
 
 DeviceManager::DeviceError DevicePluginLgSmartTv::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -79,52 +78,61 @@ DeviceManager::DeviceError DevicePluginLgSmartTv::discoverDevices(const DeviceCl
 
 DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::setupDevice(Device *device)
 {
-    if (device->deviceClassId() != lgSmartTvDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusFailure;
-    }
-
-    TvDevice *tvDevice = new TvDevice(QHostAddress(device->paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString()),
-                                      device->paramValue(lgSmartTvDevicePortParamTypeId).toInt(), this);
+    qCDebug(dcLgSmartTv()) << "Setup LG smart TV" << device->name() << device->params();
+    QHostAddress address = QHostAddress(device->paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString());
+    TvDevice *tvDevice = new TvDevice(address, device->paramValue(lgSmartTvDevicePortParamTypeId).toInt(), this);
     tvDevice->setUuid(device->paramValue(lgSmartTvDeviceUuidParamTypeId).toString());
 
-    // if the key is missing, this setup call comes from a pairing procedure
+    // If the key is missing, this setup call comes from a pairing procedure
     if (device->paramValue(lgSmartTvDeviceKeyParamTypeId) == QString()) {
-        // check if we know the key from the pairing procedure
+        // Check if we know the key from the pairing procedure
         if (!m_tvKeys.contains(device->paramValue(lgSmartTvDeviceUuidParamTypeId).toString())) {
             qCWarning(dcLgSmartTv) << "could not find any pairing key";
             return DeviceManager::DeviceSetupStatusFailure;
         }
-        // use the key from the pairing procedure
+        // Use the key from the pairing procedure
         QString key = m_tvKeys.value(device->paramValue(lgSmartTvDeviceUuidParamTypeId).toString());
-
         tvDevice->setKey(key);
         device->setParamValue(lgSmartTvDeviceKeyParamTypeId, key);
     } else {
-        // add the key for editing
+        //Add the key for editing
         if (!m_tvKeys.contains(device->paramValue(lgSmartTvDeviceUuidParamTypeId).toString())) {
             m_tvKeys.insert(tvDevice->uuid(), tvDevice->key());
         }
     }
 
     connect(tvDevice, &TvDevice::stateChanged, this, &DevicePluginLgSmartTv::stateChanged);
-
     m_tvList.insert(tvDevice, device);
-    pairTvDevice(device, true);
 
-    return DeviceManager::DeviceSetupStatusAsync;
+
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(5);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginLgSmartTv::onPluginTimer);
+    }
+
+    return DeviceManager::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginLgSmartTv::deviceRemoved(Device *device)
 {
-    if (!m_tvList.values().contains(device)) {
+    if (!m_tvList.values().contains(device))
         return;
-    }
 
     TvDevice *tvDevice= m_tvList.key(device);
     qCDebug(dcLgSmartTv) << "Remove device" << device->name();
     unpairTvDevice(device);
     m_tvList.remove(tvDevice);
     delete tvDevice;
+
+    if (m_tvList.isEmpty() && m_pluginTimer) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
+    }
+}
+
+void DevicePluginLgSmartTv::postSetupDevice(Device *device)
+{
+    pairTvDevice(device);
 }
 
 DeviceManager::DeviceError DevicePluginLgSmartTv::executeAction(Device *device, const Action &action)
@@ -262,8 +270,9 @@ DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::confirmPairing(const Pai
     return DeviceManager::DeviceSetupStatusAsync;
 }
 
-void DevicePluginLgSmartTv::pairTvDevice(Device *device, const bool &setup)
+void DevicePluginLgSmartTv::pairTvDevice(Device *device)
 {
+    qCDebug(dcLgSmartTv()) << "Send pair request TV" << device->name();
     QHostAddress host = QHostAddress(device->paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString());
     int port = device->paramValue(lgSmartTvDevicePortParamTypeId).toInt();
     QString key = device->paramValue(lgSmartTvDeviceKeyParamTypeId).toString();
@@ -271,11 +280,7 @@ void DevicePluginLgSmartTv::pairTvDevice(Device *device, const bool &setup)
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
 
-    if (setup) {
-        m_asyncSetup.insert(reply, device);
-    } else {
-        m_pairRequests.insert(reply, device);
-    }
+    m_asyncSetup.insert(reply, device);
 }
 
 void DevicePluginLgSmartTv::unpairTvDevice(Device *device)
@@ -297,10 +302,6 @@ void DevicePluginLgSmartTv::refreshTv(Device *device)
     connect(volumeReply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
     m_volumeInfoRequests.insert(volumeReply, device);
 
-    // check channel information
-    QNetworkReply *channelReply = hardwareManager()->networkManager()->get(tv->createChannelInformationRequest());
-    connect(channelReply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
-    m_channelInfoRequests.insert(channelReply, device);
 }
 
 void DevicePluginLgSmartTv::onPluginTimer()
@@ -348,8 +349,10 @@ void DevicePluginLgSmartTv::onUpnpDiscoveryFinished()
 void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+    reply->deleteLater();
+
 
     if (m_showPinReply.contains(reply)) {
         m_showPinReply.removeAll(reply);
@@ -382,17 +385,15 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
         if(status != 200) {
             qCWarning(dcLgSmartTv) << "Pair TV request error:" << status << reply->errorString();
             tv->setPaired(false);
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
         } else {
             qCDebug(dcLgSmartTv) << "Paired TV successfully.";
             tv->setPaired(true);
             refreshTv(device);
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
         }
     } else if (m_deleteTv.contains(reply)) {
         m_deleteTv.removeAll(reply);
         if(status != 200) {
-            qCWarning(dcLgSmartTv) << "Rnd pairing TV (device deleted) request error:" << status << reply->errorString();
+            qCWarning(dcLgSmartTv) << "End pairing TV (device deleted) request error:" << status << reply->errorString();
         } else {
             qCDebug(dcLgSmartTv) << "End pairing TV (device deleted) successfully.";
         }
@@ -402,9 +403,18 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
         if(status != 200) {
             tv->setReachable(false);
             qCWarning(dcLgSmartTv) << "Volume information request error:" << status << reply->errorString();
+            if (status == 401) {
+                qCDebug(dcLgSmartTv()) << status << reply->errorString();
+                pairTvDevice(device);
+            }
         } else {
             tv->setReachable(true);
             tv->onVolumeInformationUpdate(reply->readAll());
+
+            // Check channel information
+            QNetworkReply *channelReply = hardwareManager()->networkManager()->get(tv->createChannelInformationRequest());
+            connect(channelReply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
+            m_channelInfoRequests.insert(channelReply, device);
         }
     } else if (m_channelInfoRequests.keys().contains(reply)) {
         Device *device = m_channelInfoRequests.take(reply);
@@ -412,6 +422,10 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
         if(status != 200) {
             tv->setReachable(false);
             qCWarning(dcLgSmartTv) << "Channel information request error:" << status << reply->errorString();
+            if (status == 401) {
+                qCDebug(dcLgSmartTv()) << status << reply->errorString();
+                pairTvDevice(device);
+            }
         } else {
             tv->setReachable(true);
             tv->onChannelInformationUpdate(reply->readAll());
@@ -425,7 +439,6 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
             emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
         }
     }
-    reply->deleteLater();
 }
 
 void DevicePluginLgSmartTv::stateChanged()
@@ -433,7 +446,7 @@ void DevicePluginLgSmartTv::stateChanged()
     TvDevice *tvDevice = static_cast<TvDevice*>(sender());
     Device *device = m_tvList.value(tvDevice);
 
-    device->setStateValue(lgSmartTvReachableStateTypeId, tvDevice->reachable());
+    device->setStateValue(lgSmartTvConnectedStateTypeId, tvDevice->reachable());
     device->setStateValue(lgSmartTvTv3DModeStateTypeId, tvDevice->is3DMode());
     device->setStateValue(lgSmartTvTvVolumeLevelStateTypeId, tvDevice->volumeLevel());
     device->setStateValue(lgSmartTvTvMuteStateTypeId, tvDevice->mute());
