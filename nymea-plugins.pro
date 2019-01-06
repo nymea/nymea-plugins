@@ -3,6 +3,7 @@ TEMPLATE = subdirs
 PLUGIN_DIRS = \
     avahimonitor        \
     awattar             \
+    boblight            \
     commandlauncher     \
     conrad              \
     datetime            \

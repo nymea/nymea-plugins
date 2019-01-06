@@ -45,6 +45,23 @@ Description: nymea.io plugin for awattar
  This package will install the nymea.io plugin for awattar
 
 
+Package: nymea-plugin-boblight
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for boblight
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for boblight. Boblight allows
+ controlling LEDs via home-brew controllers. See https://github.com/arvydas/boblight
+ for informations on boblight.
+
+
 Package: nymea-plugin-commandlauncher
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -700,7 +717,8 @@ Description: Plugins for nymea IoT server - the default plugin collection
 Package: nymea-plugins-maker
 Section: libs
 Architecture: all
-Depends: nymea-plugin-commandlauncher,
+Depends: nymea-plugin-boblight,
+         nymea-plugin-commandlauncher,
          nymea-plugin-udpcommander,
          nymea-plugin-tcpcommander,
          nymea-plugin-httpcommander,
