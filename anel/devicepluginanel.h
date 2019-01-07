@@ -53,10 +53,21 @@ private slots:
 private:
     void setConnectedState(Device *device, bool connected);
 
+    DeviceManager::DeviceSetupStatus setupHomeProDevice(Device *device);
+    DeviceManager::DeviceSetupStatus setupAdvDevice(Device *device);
+
+    void refreshHomePro(Device *device);
+    void refreshAdv(Device *device);
+    void refreshAdvTemp(Device *device);
+
 private:
     PluginTimer *m_pollTimer = nullptr;
 
     QHash<DeviceClassId, StateTypeId> m_connectedStateTypeIdMap;
+    QHash<DeviceClassId, ParamTypeId> m_ipAddressParamTypeIdMap;
+    QHash<DeviceClassId, ParamTypeId> m_portParamTypeIdMap;
+    QHash<DeviceClassId, ParamTypeId> m_userParamTypeIdMap;
+    QHash<DeviceClassId, ParamTypeId> m_passParamTypeIdMap;
 };
 
 #endif // DEVICEPLUGINANEL_H
