@@ -723,6 +723,7 @@ Section: libs
 Architecture: all
 Depends: nymea-plugin-awattar,
          nymea-plugin-datetime,
+         nymea-plugin-daylightsensor,
          nymea-plugin-denon,
          nymea-plugin-eq-3,
          nymea-plugin-flowercare,
