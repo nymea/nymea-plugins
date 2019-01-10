@@ -163,5 +163,8 @@ void DevicePluginNetworkDetector::deviceSeen()
 {
     DeviceMonitor *monitor = static_cast<DeviceMonitor*>(sender());
     Device *device = m_monitors.value(monitor);
-    device->setStateValue(networkDeviceLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
+    QDateTime oldLastSeen = QDateTime::fromTime_t(device->stateValue(networkDeviceLastSeenTimeStateTypeId).toInt());
+    if (oldLastSeen.addSecs(60) < QDateTime::currentDateTime()) {
+        device->setStateValue(networkDeviceLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
+    }
 }

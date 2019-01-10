@@ -61,7 +61,7 @@ void DeviceMonitor::ping()
         return;
     }
 
-    m_pingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "90", m_host->address()});
+    m_pingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "180", m_host->address()});
 }
 
 void DeviceMonitor::arpLookupFinished(int exitCode)
