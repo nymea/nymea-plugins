@@ -679,7 +679,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Description: nymea.io plugin for remote ssh connection
+Description: nymea.io plugin for UniPi devices
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
@@ -702,6 +702,20 @@ Description: nymea.io plugin for remote ssh connection
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for unipi devices
+
+Package: nymea-plugin-serialportcommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin to send and receive strings over a serial port
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for serial ports
 
 
 Package: nymea-plugins-translations
@@ -767,6 +781,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-mqttclient,
          nymea-plugin-remotessh,
          nymea-plugin-unipi,
+         nymea-plugin-serialportcommander,
 Replaces: guh-plugins-maker
 Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
