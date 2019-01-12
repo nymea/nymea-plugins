@@ -20,6 +20,23 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+/*!
+    \page serialportcommander.html
+    \title Serial Port Commander
+    \brief Plug-In to send and receive strings over a serial port.
+
+    \ingroup plugins
+    \ingroup nymea-plugins
+
+    \chapter Plugin properties
+    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
+    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
+
+    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
+
+    \quotefile plugins/deviceplugins/serialportcommander/devicepluginserialportcommander.json
+*/
+
 #include "devicepluginserialportcommander.h"
 #include "plugininfo.h"
 
@@ -33,7 +50,6 @@ void DevicePluginSerialPortCommander::init()
 
 DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(Device *device)
 {
-
     if (device->deviceClassId() == serialPortCommanderDeviceClassId) {
         QString interface = device->paramValue(serialPortCommanderDeviceSerialPortParamTypeId).toString();
 
@@ -68,7 +84,6 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
                 serialPort->setFlowControl(QSerialPort::FlowControl::NoFlowControl);
             }
 
-
             if (!serialPort->open(QIODevice::ReadWrite)) {
                 qCWarning(dcSerialPortCommander()) << "Could not open serial port" << interface << serialPort->errorString();
                 return DeviceManager::DeviceSetupStatusFailure;
@@ -96,7 +111,6 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
 DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
-
     // Create the list of available serial interfaces
     QList<DeviceDescriptor> deviceDescriptors;
 
