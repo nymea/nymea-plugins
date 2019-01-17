@@ -1,3 +1,24 @@
+nymea-plugins (0.10.2) xenial; urgency=medium
+
+  [ Michael Zanetti ]
+  * Simulation: Make use of powersocket interface
+  * New Plugin: Boblight
+
+  [ Simon Stürz ]
+  * LG smart TV: General update (use of interfaces, improve connectivity
+    with TV)
+
+  [ Michael Zanetti ]
+  * New Plugin: ANEL Elektronik NET-PwrCtrl
+  * Networkdetector: Implement the presencesensor interface
+  * New Plugin: Daylight sensor which works offline and without any
+    hardware
+  * Sumulation: Fix action simulation for simulated blinds
+  * PhilipsHue: Fix hue tap button 4 param value typo
+  * Kodi: Implement new media interfaces
+
+ -- Jenkins <jenkins@nymea.io>  Thu, 17 Jan 2019 15:37:27 +0100
+
 nymea-plugins (0.10.1) xenial; urgency=medium
 
   [ Michael Zanetti ]
