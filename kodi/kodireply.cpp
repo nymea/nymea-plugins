@@ -26,21 +26,10 @@ KodiReply::KodiReply()
 {
 }
 
-KodiReply::KodiReply(const QString &method, const QVariantMap &params, const ActionId &actionId) :
+KodiReply::KodiReply(const QString &method, const QVariantMap &params) :
     m_method(method),
-    m_params(params),
-    m_actionId(actionId)
+    m_params(params)
 {
-}
-
-void KodiReply::setActionId(const ActionId &actionId)
-{
-    m_actionId = actionId;
-}
-
-ActionId KodiReply::actionId() const
-{
-    return m_actionId;
 }
 
 void KodiReply::setMethod(const QString &method)

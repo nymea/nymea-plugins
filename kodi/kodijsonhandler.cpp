@@ -33,82 +33,22 @@ KodiJsonHandler::KodiJsonHandler(KodiConnection *connection, QObject *parent) :
     connect(m_connection, &KodiConnection::dataReady, this, &KodiJsonHandler::processResponse);
 }
 
-void KodiJsonHandler::sendData(const QString &method, const QVariantMap &params, const ActionId &actionId)
+int KodiJsonHandler::sendData(const QString &method, const QVariantMap &params)
 {
+    m_id++;
+
     QVariantMap package;
     package.insert("id", m_id);
     package.insert("method", method);
     package.insert("params", params);
     package.insert("jsonrpc", "2.0");
 
-    m_replys.insert(m_id, KodiReply(method, params, actionId));
+    m_replys.insert(m_id, KodiReply(method, params));
 
     QJsonDocument jsonDoc = QJsonDocument::fromVariant(package);
     m_connection->sendData(jsonDoc.toJson());
     //qCDebug(dcKodi) << "sending data" << jsonDoc.toJson();
-    m_id++;
-}
-
-void KodiJsonHandler::processNotification(const QString &method, const QVariantMap &params)
-{
-    qCDebug(dcKodi) << "got notification" << method;
-
-    if (method == "Application.OnVolumeChanged") {
-        QVariantMap data = params.value("data").toMap();
-        emit volumeChanged(data.value("volume").toInt(), data.value("muted").toBool());
-    } else if (method == "Player.OnPlay" || method == "Player.OnResume") {
-        emit playbackStatusChanged("Playing");
-    } else if (method == "Player.OnPause") {
-        emit playbackStatusChanged("Paused");
-    } else if (method == "Player.OnStop") {
-        emit playbackStatusChanged("Stopped");
-    }
-}
-
-void KodiJsonHandler::processActionResponse(const KodiReply &reply, const QVariantMap &response)
-{
-    if (response.contains("error")) {
-        //qCDebug(dcKodi) << QJsonDocument::fromVariant(response).toJson();
-        qCWarning(dcKodi) << "got error response for action"  << reply.method() << ":" << response.value("error").toMap().value("message").toString();
-        emit actionExecuted(reply.actionId(), false);
-    } else {
-        emit actionExecuted(reply.actionId(), true);
-    }
-}
-
-void KodiJsonHandler::processRequestResponse(const KodiReply &reply, const QVariantMap &response)
-{
-    if (response.contains("error")) {
-        //qCDebug(dcKodi) << QJsonDocument::fromVariant(response).toJson();
-        qCWarning(dcKodi) << "got error response for request " << reply.method() << ":" << response.value("error").toMap().value("message").toString();
-        return;
-    }
-
-    if (reply.method() == "Application.GetProperties") {
-        //qCDebug(dcKodi) << "got update response" << reply.method();
-        emit updateDataReceived(response.value("result").toMap());
-        return;
-    }
-
-    if (reply.method() == "JSONRPC.Version") {
-        qCDebug(dcKodi) << "got version response" << reply.method();
-        emit versionDataReceived(response.value("result").toMap());
-        return;
-    }
-
-    if (reply.method() == "Player.GetActivePlayers") {
-        qCDebug(dcKodi) << "Active players changed" << response;
-        emit activePlayersChanged(response.value("result").toList());
-        return;
-    }
-
-    if (reply.method() == "Player.GetProperties") {
-        qCDebug(dcKodi) << "Player properties received" << response;
-        emit playerPropertiesReveived(response.value("result").toMap());
-        return;
-    }
-
-    qCDebug(dcKodi()) << "unhandled reply" << reply.method() << response;
+    return m_id;
 }
 
 void KodiJsonHandler::processResponse(const QByteArray &data)
@@ -138,18 +78,12 @@ void KodiJsonHandler::processResponse(const QByteArray &data)
             qCWarning(dcKodi) << "method missing in message" << data;
         }
 
-        processNotification(message.value("method").toString(), message.value("params").toMap());
+        emit notificationReceived(message.value("method").toString(), message.value("params").toMap());
         return;
     }
 
     int id = message.value("id").toInt();
     KodiReply reply = m_replys.take(id);
 
-    // check if this message is a response to an action call
-    if (reply.actionId() != ActionId()) {
-        processActionResponse(reply, message);
-        return;
-    }
-
-    processRequestResponse(reply, message);
+    emit replyReceived(id, reply.method(), message);
 }

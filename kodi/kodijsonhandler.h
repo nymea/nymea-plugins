@@ -35,31 +35,21 @@ class KodiJsonHandler : public QObject
 {
     Q_OBJECT
 public:
-    explicit KodiJsonHandler(KodiConnection *connection = 0, QObject *parent = 0);
+    explicit KodiJsonHandler(KodiConnection *connection, QObject *parent = nullptr);
 
-    void sendData(const QString &method, const QVariantMap &params, const ActionId &actionId);
+    int sendData(const QString &method, const QVariantMap &params);
+
+signals:
+    void notificationReceived(const QString &method, const QVariantMap &params);
+    void replyReceived(int id, const QString &method, const QVariantMap &params);
+
+private slots:
+    void processResponse(const QByteArray &data);
 
 private:
     KodiConnection *m_connection;
     int m_id;
     QHash<int, KodiReply> m_replys;
-
-    void processNotification(const QString &method, const QVariantMap &params);
-    void processActionResponse(const KodiReply &reply, const QVariantMap &response);
-    void processRequestResponse(const KodiReply &reply, const QVariantMap &response);
-
-signals:
-    void volumeChanged(const int &volume, const bool &muted);
-    void actionExecuted(const ActionId &actionId, const bool &success);
-    void updateDataReceived(const QVariantMap &data);
-    void versionDataReceived(const QVariantMap &data);
-    void activePlayersChanged(const QVariantList &data);
-    void playerPropertiesReveived(const QVariantMap &properties);
-
-    void playbackStatusChanged(const QString &playbackStatus);
-
-private slots:
-    void processResponse(const QByteArray &data);
 
 };
 

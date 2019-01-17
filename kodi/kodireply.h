@@ -32,10 +32,7 @@ class KodiReply
 {
 public:
     KodiReply();
-    KodiReply(const QString &method, const QVariantMap &params, const ActionId &actionId = ActionId());
-
-    void setActionId(const ActionId &actionId);
-    ActionId actionId() const;
+    KodiReply(const QString &method, const QVariantMap &params);
 
     void setMethod(const QString &method);
     QString method() const;
@@ -46,8 +43,6 @@ public:
 private:
     QString m_method;
     QVariantMap m_params;
-    ActionId m_actionId;
-
 };
 
 #endif // KODIREPLY_H

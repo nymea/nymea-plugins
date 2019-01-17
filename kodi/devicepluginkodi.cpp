@@ -65,6 +65,12 @@
 #include "plugin/device.h"
 #include "plugininfo.h"
 #include "network/upnp/upnpdiscovery.h"
+#include "network/avahi/qtavahiservicebrowser.h"
+#include "network/avahi/avahiserviceentry.h"
+#include "network/networkaccessmanager.h"
+
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 DevicePluginKodi::DevicePluginKodi()
 {
@@ -106,6 +112,56 @@ DeviceManager::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
     connect(kodi, &Kodi::updateDataReceived, this, &DevicePluginKodi::onSetupFinished);
     connect(kodi, &Kodi::playbackStatusChanged, this, &DevicePluginKodi::onPlaybackStatusChanged);
 
+    connect(kodi, &Kodi::activePlayerChanged, device, [device](const QString &playerType){
+        device->setStateValue(kodiPlayerTypeStateTypeId, playerType);
+    });
+    connect(kodi, &Kodi::mediaMetadataChanged, device, [this, device](const QString &title, const QString &artist, const QString &collection, const QString &artwork){
+        device->setStateValue(kodiTitleStateTypeId, title);
+        device->setStateValue(kodiArtistStateTypeId, artist);
+        device->setStateValue(kodiCollectionStateTypeId, collection);
+
+
+        QNetworkRequest request;
+        QHostAddress hostAddr(device->paramValue(kodiDeviceIpParamTypeId).toString());
+        QString addr;
+        if (hostAddr.protocol() == QAbstractSocket::IPv4Protocol) {
+            addr = hostAddr.toString();
+        } else {
+            addr = "[" + hostAddr.toString() + "]";
+        }
+
+        request.setUrl(QUrl("http://" + addr + ":8080/jsonrpc"));
+        qCDebug(dcKodi) << "Prepping file dl" << "http://" + addr + ":" + device->paramValue(kodiDevicePortParamTypeId).toString() + "/jsonrpc";
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QVariantMap map;
+        map.insert("jsonrpc", "2.0");
+        map.insert("method", "Files.PrepareDownload");
+        map.insert("id", QString::number(123));
+        QVariantMap params;
+        params.insert("path", artwork);
+        map.insert("params", params);
+        QJsonDocument jsonDoc = QJsonDocument::fromVariant(map);
+        QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
+        connect(reply, &QNetworkReply::finished, device, [device, reply, addr](){
+            reply->deleteLater();
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+            device->setStateValue(kodiArtworkStateTypeId, "http://" + addr + ":8080/" + jsonDoc.toVariant().toMap().value("result").toMap().value("details").toMap().value("path").toString());
+        });
+
+    });
+
+    connect(kodi, &Kodi::shuffleChanged, device, [device](bool shuffle){
+        device->setStateValue(kodiShuffleStateTypeId, shuffle);
+    });
+    connect(kodi, &Kodi::repeatChanged, device, [device](const QString &repeat){
+        if (repeat == "one") {
+            device->setStateValue(kodiRepeatStateTypeId, "One");
+        } else if (repeat == "all") {
+            device->setStateValue(kodiRepeatStateTypeId, "All");
+        } else {
+            device->setStateValue(kodiRepeatStateTypeId, "None");
+        }
+    });
     m_kodis.insert(kodi, device);
     m_asyncSetups.append(kodi);
 
@@ -127,9 +183,21 @@ DeviceManager::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId
     Q_UNUSED(params)
     Q_UNUSED(deviceClassId)
 
-    qCDebug(dcKodi) << "Start UPnP search";
-    UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices();
-    connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginKodi::onUpnpDiscoveryFinished);
+    QList<DeviceDescriptor> descriptors;
+    foreach (const AvahiServiceEntry &avahiEntry, hardwareManager()->avahiBrowser()->serviceEntries()) {
+        if (avahiEntry.serviceType() == "_xbmc-jsonrpc._tcp") {
+            qCDebug(dcKodi) << "Zeroconf entry:" << avahiEntry;
+            DeviceDescriptor descriptor(kodiDeviceClassId, avahiEntry.name(), avahiEntry.hostName() + " (" + avahiEntry.hostAddress().toString() + ")");
+            ParamList params;
+            params << Param(kodiDeviceIpParamTypeId, avahiEntry.hostAddress().toString());
+            params << Param(kodiDevicePortParamTypeId, avahiEntry.port());
+            descriptor.setParams(params);
+            descriptors << descriptor;
+        }
+    }
+    if (!descriptors.isEmpty()) {
+        emit devicesDiscovered(kodiDeviceClassId, descriptors);
+    }
 
     return DeviceManager::DeviceErrorAsync;
 }
@@ -144,52 +212,52 @@ DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const
             return DeviceManager::DeviceErrorHardwareNotAvailable;
         }
 
+        int commandId = -1;
         if (action.actionTypeId() == kodiShowNotificationActionTypeId) {
-            kodi->showNotification(action.param(kodiShowNotificationActionMessageParamTypeId).value().toString(), 8000, action.param(kodiShowNotificationActionTypeParamTypeId).value().toString(), action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->showNotification(action.param(kodiShowNotificationActionMessageParamTypeId).value().toString(), 8000, action.param(kodiShowNotificationActionTypeParamTypeId).value().toString());
         } else if (action.actionTypeId() == kodiVolumeActionTypeId) {
-            kodi->setVolume(action.param(kodiVolumeActionVolumeParamTypeId).value().toInt(), action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->setVolume(action.param(kodiVolumeActionVolumeParamTypeId).value().toInt());
         } else if (action.actionTypeId() == kodiMuteActionTypeId) {
-            kodi->setMuted(action.param(kodiMuteActionMuteParamTypeId).value().toBool(), action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->setMuted(action.param(kodiMuteActionMuteParamTypeId).value().toBool());
         } else if (action.actionTypeId() == kodiPressButtonActionTypeId) {
-            kodi->pressButton(action.param(kodiPressButtonActionButtonParamTypeId).value().toString(), action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->pressButton(action.param(kodiPressButtonActionButtonParamTypeId).value().toString());
         } else if (action.actionTypeId() == kodiSystemActionTypeId) {
-            kodi->systemCommand(action.param(kodiSystemActionSystemCommandParamTypeId).value().toString(), action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->systemCommand(action.param(kodiSystemActionSystemCommandParamTypeId).value().toString());
         } else if (action.actionTypeId() == kodiVideoLibraryActionTypeId) {
-            kodi->videoLibrary(action.param(kodiVideoLibraryActionVideoCommandParamTypeId).value().toString(), action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->videoLibrary(action.param(kodiVideoLibraryActionVideoCommandParamTypeId).value().toString());
         } else if (action.actionTypeId() == kodiAudioLibraryActionTypeId) {
-            kodi->audioLibrary(action.param(kodiAudioLibraryActionAudioCommandParamTypeId).value().toString(), action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->audioLibrary(action.param(kodiAudioLibraryActionAudioCommandParamTypeId).value().toString());
         } else if(action.actionTypeId() == kodiSkipBackActionTypeId) {
-            kodi->pressButton("skipprevious", action.id());
-            return DeviceManager::DeviceErrorAsync;
-        } else if(action.actionTypeId() == kodiRewindActionTypeId) {
-            kodi->pressButton("rewind", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->pressButton("skipprevious");
+        } else if(action.actionTypeId() == kodiFastRewindActionTypeId) {
+            commandId = kodi->pressButton("rewind");
         } else if(action.actionTypeId() == kodiStopActionTypeId) {
-            kodi->pressButton("stop", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->pressButton("stop");
         } else if(action.actionTypeId() == kodiPlayActionTypeId) {
-            kodi->pressButton("play", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->pressButton("play");
         } else if(action.actionTypeId() == kodiPauseActionTypeId) {
-            kodi->pressButton("pause", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->pressButton("pause");
         } else if(action.actionTypeId() == kodiFastForwardActionTypeId) {
-            kodi->pressButton("fastforward", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->pressButton("fastforward");
         } else if(action.actionTypeId() == kodiSkipNextActionTypeId) {
-            kodi->pressButton("skipnext", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            commandId = kodi->pressButton("skipnext");
+        } else if (action.actionTypeId() == kodiShuffleActionTypeId) {
+            commandId = kodi->setShuffle(action.param(kodiShuffleActionShuffleParamTypeId).value().toBool());
+        } else if (action.actionTypeId() == kodiRepeatActionTypeId) {
+            QString repeat = action.param(kodiRepeatActionRepeatParamTypeId).value().toString();
+            if (repeat == "One") {
+                commandId = kodi->setRepeat("one");
+            } else if (repeat == "All") {
+                commandId = kodi->setRepeat("all");
+            } else {
+                commandId = kodi->setRepeat("off");
+            }
         } else {
             qWarning(dcKodi()) << "Unhandled action type" << action.actionTypeId();
+            return DeviceManager::DeviceErrorActionTypeNotFound;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        m_pendingActions.insert(commandId, action.id());
+        return DeviceManager::DeviceErrorAsync;
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
@@ -202,43 +270,6 @@ void DevicePluginKodi::onPluginTimer()
             continue;
         }
     }
-}
-
-void DevicePluginKodi::onUpnpDiscoveryFinished()
-{
-    qCDebug(dcKodi()) << "Upnp discovery finished";
-    UpnpDiscoveryReply *reply = static_cast<UpnpDiscoveryReply *>(sender());
-    if (reply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
-        qCWarning(dcKodi()) << "Upnp discovery error" << reply->error();
-    }
-    reply->deleteLater();
-
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (const UpnpDeviceDescriptor &upnpDescriptor, reply->deviceDescriptors()) {
-        if (upnpDescriptor.modelName().contains("Kodi")) {
-
-            // check if we already found the kodi on this ip
-            bool alreadyAdded = false;
-            foreach (const DeviceDescriptor dDescriptor, deviceDescriptors) {
-                if (dDescriptor.params().paramValue(kodiDeviceIpParamTypeId).toString() == upnpDescriptor.hostAddress().toString()) {
-                    alreadyAdded = true;
-                    break;
-                }
-            }
-            if (alreadyAdded)
-                continue;
-
-            qCDebug(dcKodi) << upnpDescriptor;
-            DeviceDescriptor deviceDescriptor(kodiDeviceClassId, "Kodi - Media Center", upnpDescriptor.hostAddress().toString());
-            ParamList params;
-            params.append(Param(kodiDeviceNameParamTypeId, upnpDescriptor.friendlyName()));
-            params.append(Param(kodiDeviceIpParamTypeId, upnpDescriptor.hostAddress().toString()));
-            params.append(Param(kodiDevicePortParamTypeId, 9090));
-            deviceDescriptor.setParams(params);
-            deviceDescriptors.append(deviceDescriptor);
-        }
-    }
-    emit devicesDiscovered(kodiDeviceClassId, deviceDescriptors);
 }
 
 void DevicePluginKodi::onConnectionChanged()
@@ -267,13 +298,12 @@ void DevicePluginKodi::onStateChanged()
     device->setStateValue(kodiMuteStateTypeId, kodi->muted());
 }
 
-void DevicePluginKodi::onActionExecuted(const ActionId &actionId, const bool &success)
+void DevicePluginKodi::onActionExecuted(int actionId, bool success)
 {
-    if (success) {
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
-    } else {
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorInvalidParameter);
+    if (!m_pendingActions.contains(actionId)) {
+        return;
     }
+    emit actionExecutionFinished(m_pendingActions.value(actionId), success ? DeviceManager::DeviceErrorNoError : DeviceManager::DeviceErrorInvalidParameter);
 }
 
 void DevicePluginKodi::versionDataReceived(const QVariantMap &data)
@@ -304,7 +334,7 @@ void DevicePluginKodi::onSetupFinished(const QVariantMap &data)
 
     emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
 
-    kodi->showNotification("Connected", 2000, "info", ActionId());
+    kodi->showNotification("Connected", 2000, "info");
 }
 
 void DevicePluginKodi::onPlaybackStatusChanged(const QString &playbackStatus)

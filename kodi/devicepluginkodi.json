@@ -13,7 +13,7 @@
                     "name": "kodi",
                     "displayName": "Kodi",
                     "deviceIcon": "Tv",
-                    "interfaces": ["mediacontroller", "extendedvolumecontroller"],
+                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat"],
                     "basicTags": [
                         "Service",
                         "Multimedia",
@@ -22,13 +22,6 @@
                     "createMethods": ["user", "discovery"],
                     "criticalStateTypeId": "09dfbd40-c97c-4a20-9ecd-f80e389a4864",
                     "paramTypes": [
-                        {
-                            "id": "a704beb1-b0b0-46fc-91fc-3aac01e1a364",
-                            "name": "name",
-                            "displayName": "name",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
                         {
                             "id": "1a897065-57c6-49b3-bac9-1e5db27859e5",
                             "name": "ip",
@@ -89,8 +82,69 @@
                             "displayNameEvent": "playback status changed",
                             "displayNameAction": "set playback status",
                             "writable": true
+                        },
+                        {
+                            "id": "0af58b87-4e45-4f0a-9ef2-0ade74c7c22c",
+                            "type": "QString",
+                            "name": "playerType",
+                            "displayName": "Active player type",
+                            "possibleValues": ["audio", "video"],
+                            "displayNameEvent": "Active player changed",
+                            "defaultValue": "audio"
+                        },
+                        {
+                            "id": "f2209fec-cceb-46ad-8189-4caf42166e6b",
+                            "type": "QString",
+                            "name": "title",
+                            "displayName": "Title",
+                            "displayNameEvent": "Title changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "8cb920a3-3bf1-4231-92d4-8ac27e7b3d65",
+                            "type": "QString",
+                            "name": "artist",
+                            "displayName": "Artist",
+                            "displayNameEvent": "Artist changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "ce399eec-9f6a-4903-9916-0e90e38b255e",
+                            "type": "QString",
+                            "name": "collection",
+                            "displayName": "Collection",
+                            "displayNameEvent": "Collection changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "44304c82-c2f6-433b-b62b-815382617d0b",
+                            "type": "QString",
+                            "name": "artwork",
+                            "displayName": "Artwork",
+                            "displayNameEvent": "Artwork changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "5913aa2a-629d-4de5-bf44-a4a1f130c118",
+                            "type": "bool",
+                            "name": "shuffle",
+                            "displayName": "Shuffle",
+                            "displayNameEvent": "Shuffle changed",
+                            "displayNameAction": "Set shuffle",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e",
+                            "type": "QString",
+                            "name": "repeat",
+                            "displayName": "Repeat",
+                            "displayNameEvent": "Repeat changed",
+                            "displayNameAction": "Set repeat",
+                            "possibleValues": ["None", "One", "All"],
+                            "defaultValue": "None",
+                            "writable": true
                         }
-
                     ],
                     "eventTypes": [
                         {
@@ -117,7 +171,7 @@
                         },
                         {
                             "id": "7e70b47b-7e79-4521-be34-04a3c427e5b1",
-                            "name": "rewind",
+                            "name": "fastRewind",
                             "displayName": "rewind"
                         },
                         {
