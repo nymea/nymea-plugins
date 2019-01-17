@@ -43,6 +43,7 @@ public:
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
+    void postSetupDevice(Device *device) override;
 
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
     DeviceManager::DeviceError displayPin(const PairingTransactionId &pairingTransactionId, const DeviceDescriptor &deviceDescriptor) override;
@@ -60,7 +61,6 @@ private:
 
     // async setup
     QHash<QNetworkReply *, Device *> m_asyncSetup;
-    QHash<QNetworkReply *, Device *> m_pairRequests;
     QList<QNetworkReply *> m_deleteTv;
 
     // action requests
@@ -70,7 +70,7 @@ private:
     QHash<QNetworkReply *, Device *> m_volumeInfoRequests;
     QHash<QNetworkReply *, Device *> m_channelInfoRequests;
 
-    void pairTvDevice(Device *device, const bool &setup = false);
+    void pairTvDevice(Device *device);
     void unpairTvDevice(Device *device);
     void refreshTv(Device *device);
 

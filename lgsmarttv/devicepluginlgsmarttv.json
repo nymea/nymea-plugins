@@ -13,14 +13,9 @@
                     "name": "lgSmartTv",
                     "displayName": "LG Smart Tv",
                     "deviceIcon": "Tv",
-                    "basicTags": [
-                        "Device",
-                        "Multimedia",
-                        "Actuator"
-                    ],
-                    "createMethods": ["discovery"],
+                    "createMethods": [ "discovery" ],
                     "setupMethod": "displayPin",
-                    "criticalStateTypeId": "b056c36b-df87-4177-8d5d-1e7c1e8cdc7a",
+                    "interfaces": ["connectable"],
                     "pairingInfo": "Please enter the pairing key displayed on the Tv.",
                     "paramTypes": [
                         {
@@ -68,9 +63,9 @@
                     "stateTypes": [
                         {
                             "id": "b056c36b-df87-4177-8d5d-1e7c1e8cdc7a",
-                            "name": "reachable",
-                            "displayName": "reachable",
-                            "displayNameEvent": "reachable changed",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -86,7 +81,7 @@
                             "id": "07d39a6e-7eab-42d0-851d-9f3bcd3bbb57",
                             "name": "tvVolumeLevel",
                             "displayName": "volume",
-                            "displayNameEvent": "volume changed",
+                            "displayNameEvent": "Volume changed",
                             "type": "int",
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
