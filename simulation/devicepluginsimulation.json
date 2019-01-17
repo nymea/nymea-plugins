@@ -365,7 +365,7 @@
                             "name": "moving",
                             "type": "bool",
                             "defaultValue": false,
-                            "displayName": "mooving",
+                            "displayName": "moving",
                             "displayNameEvent": "moving changed"
                         }
                     ],
