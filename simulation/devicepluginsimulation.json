@@ -556,11 +556,7 @@
                     "name": "socket",
                     "displayName": "Socket",
                     "createMethods": ["user"],
-                    "deviceIcon": "Socket",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
+                    "interfaces": ["powersocket"],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
