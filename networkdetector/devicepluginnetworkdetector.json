@@ -17,7 +17,7 @@
                         "Device",
                         "Sensor"
                     ],
-                    "interfaces": ["connectable"],
+                    "interfaces": [ "presencesensor" ],
                     "primaryStateTypeId": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
                     "createMethods": ["user", "discovery"],
                     "paramTypes": [
@@ -39,12 +39,20 @@
                     "stateTypes": [
                         {
                             "id": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
-                            "name": "connected",
-                            "displayName": "Device in network",
-                            "displayNameEvent": "Device in network changed",
+                            "name": "isPresent",
+                            "displayName": "Device is present",
+                            "displayNameEvent": "Device is present changed",
                             "type": "bool",
-                            "defaultValue": false,
-                            "cached": false
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b51d54c9-cce1-43f0-a35d-52fc2d8d302c",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
                         }
                     ]
                 }

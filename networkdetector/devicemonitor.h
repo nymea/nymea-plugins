@@ -19,6 +19,7 @@ public:
 signals:
     void addressChanged(const QString &address);
     void reachableChanged(bool reachable);
+    void seen();
 
 private:
     void lookupArpCache();

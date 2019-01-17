@@ -57,6 +57,7 @@ private slots:
 
     void deviceReachableChanged(bool reachable);
     void deviceAddressChanged(const QString &address);
+    void deviceSeen();
 
     void onPluginTimer();
 
