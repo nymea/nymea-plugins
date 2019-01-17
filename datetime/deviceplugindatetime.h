@@ -75,6 +75,8 @@ private:
     void getTimes(const QString &latitude, const QString &longitude);
     void processTimesData(const QByteArray &data);
 
+    QTime parseTime(const QString &timeString) const;
+
 signals:
     void dusk();
     void sunset();

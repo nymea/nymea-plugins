@@ -8,6 +8,7 @@ PLUGIN_DIRS = \
     commandlauncher     \
     conrad              \
     datetime            \
+    daylightsensor      \
     denon               \
     dweetio             \
     elgato              \

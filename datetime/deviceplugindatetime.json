@@ -13,6 +13,7 @@
                     "name": "today",
                     "displayName": "Today",
                     "deviceIcon": "Time",
+                    "interfaces": [ "daylightsensor" ],
                     "basicTags": [
                         "Service",
                         "Time"
@@ -133,7 +134,7 @@
                         },
                         {
                             "id": "3a08824d-285b-412e-a515-9664b491a85c",
-                            "name": "sunrise",
+                            "name": "sunriseTime",
                             "displayName": "sunrise",
                             "displayNameEvent": "sunrise changed",
                             "unit": "UnixTime",
@@ -163,13 +164,21 @@
                         },
                         {
                             "id": "377f04a7-df58-42ad-a234-e9e23bdc2f85",
-                            "name": "sunset",
+                            "name": "sunsetTime",
                             "displayName": "sunset",
                             "displayNameEvent": "sunset changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "eventRuleRelevant": false,
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "1c3d6179-3b00-456c-841a-2d26ce960c25",
+                            "name": "daylight",
+                            "displayName": "Daylight",
+                            "displayNameEvent": "Daylight changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "eventTypes": [
