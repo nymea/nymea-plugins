@@ -588,9 +588,7 @@ The name of the autocreated EventType (DeviceClass: rollerShutter, StateType: mo
     </message>
     <message>
         <source>mooving</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: extendedBlind, StateType: moving, ID: 83559182-f3db-4a4a-8c70-d5fb3ceb57de
-----------
-The name of the ParamType for the autocreated EventType (DeviceClass: extendedAwning, StateType: moving, ID: b2a888b3-c526-410f-bafc-9d6dc459dbf8
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: extendedAwning, StateType: moving, ID: b2a888b3-c526-410f-bafc-9d6dc459dbf8
 ----------
 The name of the ParamType for the autocreated EventType (DeviceClass: rollerShutter, StateType: moving, ID: fd94b07d-4631-450d-9f99-9e9221cc3602</extracomment>
         <translation type="unfinished"></translation>
@@ -762,6 +760,11 @@ The name of the autocreated ActionType (DeviceClass: evCharger, StateType: perce
     <message>
         <source>Water temperature</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod, StateType: temperature, ID: 49388b11-8076-4698-8091-5c5f5762fd08</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>moving</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: extendedBlind, StateType: moving, ID: 83559182-f3db-4a4a-8c70-d5fb3ceb57de</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
