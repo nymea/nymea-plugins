@@ -61,18 +61,6 @@ The name of the DeviceClass (1d41b5a8-74ff-4a12-b365-c7bbe610848f)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="112"/>
-        <source>reachable changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: lgSmartTv, StateType: reachable, ID: b056c36b-df87-4177-8d5d-1e7c1e8cdc7a)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="115"/>
-        <source>reachable</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: lgSmartTv, StateType: reachable, ID: b056c36b-df87-4177-8d5d-1e7c1e8cdc7a</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="118"/>
         <source>3D mode changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: lgSmartTv, StateType: tv3DMode, ID: 8ad3d77f-d340-495d-8c2a-5569a80e9d36)</extracomment>
@@ -85,8 +73,20 @@ The name of the DeviceClass (1d41b5a8-74ff-4a12-b365-c7bbe610848f)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="112"/>
+        <source>Reachable changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: lgSmartTv, StateType: connected, ID: b056c36b-df87-4177-8d5d-1e7c1e8cdc7a)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="115"/>
+        <source>Reachable</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: lgSmartTv, StateType: connected, ID: b056c36b-df87-4177-8d5d-1e7c1e8cdc7a</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="124"/>
-        <source>volume changed</source>
+        <source>Volume changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: lgSmartTv, StateType: tvVolumeLevel, ID: 07d39a6e-7eab-42d0-851d-9f3bcd3bbb57)</extracomment>
         <translation type="unfinished"></translation>
     </message>
