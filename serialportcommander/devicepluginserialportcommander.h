@@ -41,9 +41,7 @@ public:
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params);
-
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-    void init() override;
 
 private:
     QHash<Device *, QSerialPort *> m_serialPorts;

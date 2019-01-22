@@ -44,10 +44,6 @@ DevicePluginSerialPortCommander::DevicePluginSerialPortCommander()
 {
 }
 
-void DevicePluginSerialPortCommander::init()
-{
-}
-
 DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(Device *device)
 {
     if (device->deviceClassId() == serialPortCommanderDeviceClassId) {
@@ -97,8 +93,8 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
             connect(serialPort, SIGNAL(stopBitsChanged(QSerialPort::StopBits)), this, SLOT(onStopBitsChanged(QSerialPort::StopBits)));
             connect(serialPort, SIGNAL(flowControlChanged(QSerialPort::FlowControl)), this, SLOT(onFlowControlChanged(QSerialPort::FlowControl)));
             qCDebug(dcSerialPortCommander()) << "Setup successfully serial port" << interface;
+            m_usedInterfaces.append(interface);
             m_serialPorts.insert(device, serialPort);
-
         } else {
             return DeviceManager::DeviceSetupStatusFailure;
         }
@@ -124,16 +120,11 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(cons
             QString description = port.manufacturer() + " " + port.description();
             DeviceDescriptor descriptor(deviceClassId, port.portName(), description);
             ParamList parameters;
-
-            if (deviceClassId == serialPortCommanderDeviceClassId) {
-                parameters.append(Param(serialPortCommanderDeviceSerialPortParamTypeId, port.portName()));
-            }
-
+            parameters.append(Param(serialPortCommanderDeviceSerialPortParamTypeId, port.portName()));
             descriptor.setParams(parameters);
             deviceDescriptors.append(descriptor);
         }
     }
-
     emit devicesDiscovered(deviceClassId, deviceDescriptors);
     return DeviceManager::DeviceErrorAsync;
 }
@@ -158,15 +149,11 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::executeAction(Device
 
 void DevicePluginSerialPortCommander::deviceRemoved(Device *device)
 {
-    QString interface;
-    QSerialPort *serialPort;
-
     if (device->deviceClassId() == serialPortCommanderDeviceClassId) {
 
         m_usedInterfaces.removeAll(device->paramValue(serialPortCommanderDeviceSerialPortParamTypeId).toString());
-        serialPort = m_serialPorts.value(device);
+        QSerialPort *serialPort = m_serialPorts.take(device);
         serialPort->close();
-        m_serialPorts.remove(device);
         serialPort->deleteLater();
     }
 }
@@ -188,7 +175,7 @@ void DevicePluginSerialPortCommander::onReadyRead()
 
 void DevicePluginSerialPortCommander::onSerialError(QSerialPort::SerialPortError error)
 {
-    Q_UNUSED(error)
+    qCWarning(dcSerialPortCommander) << "Serial Port error happened:" << error;
 }
 
 void DevicePluginSerialPortCommander::onBaudRateChanged(qint32 baudRate, QSerialPort::Direction direction)
