@@ -118,7 +118,7 @@ private:
 
     void bridgeReachableChanged(Device *device, const bool &reachable);
 
-    bool bridgeAlreadyAdded(const QString &id);
+    Device* bridgeForBridgeId(const QString &id);
     bool lightAlreadyAdded(const QString &uuid);
     bool sensorAlreadyAdded(const QString &uuid);
 

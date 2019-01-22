@@ -121,7 +121,6 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *dev
                 // set data which was not known during discovery
                 device->setParamValue(bridgeDeviceApiKeyParamTypeId, b->apiKey());
                 device->setParamValue(bridgeDeviceZigbeeChannelParamTypeId, b->zigbeeChannel());
-                device->setParamValue(bridgeDeviceIdParamTypeId, b->id());
                 device->setParamValue(bridgeDeviceMacParamTypeId, b->macAddress());
                 m_bridges.insert(b, device);
                 device->setStateValue(bridgeConnectedStateTypeId, true);
@@ -283,6 +282,8 @@ DeviceManager::DeviceSetupStatus DevicePluginPhilipsHue::confirmPairing(const Pa
 {
     Q_UNUSED(secret)
 
+    qCDebug(dcPhilipsHue()) << "Confirming pairing for transactionId" << pairingTransactionId;
+
     if (deviceClassId != bridgeDeviceClassId)
         return DeviceManager::DeviceSetupStatusFailure;
 
@@ -408,7 +409,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (device->stateValue(colorLightConnectedStateTypeId).toBool()) {
+            if (device->stateValue(bridgeConnectedStateTypeId).toBool()) {
                 qCWarning(dcPhilipsHue) << "Refresh Hue lights request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
@@ -421,7 +422,7 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            if (device->stateValue(remoteConnectedStateTypeId).toBool() || device->stateValue(tapConnectedStateTypeId).toBool()) {
+            if (device->stateValue(bridgeConnectedStateTypeId).toBool()) {
                 qCWarning(dcPhilipsHue) << "Refresh Hue sensors request error:" << status << reply->errorString();
                 bridgeReachableChanged(device, false);
             }
@@ -764,11 +765,20 @@ void DevicePluginPhilipsHue::onUpnpDiscoveryFinished()
                 }
             }
             params.append(Param(bridgeDeviceHostParamTypeId, upnpDevice.hostAddress().toString()));
+            params.append(Param(bridgeDeviceIdParamTypeId, upnpDevice.serialNumber().toLower()));
+            // Not known yet...
             params.append(Param(bridgeDeviceApiKeyParamTypeId, QString()));
             params.append(Param(bridgeDeviceMacParamTypeId, QString()));
-            params.append(Param(bridgeDeviceIdParamTypeId, upnpDevice.serialNumber().toLower()));
             params.append(Param(bridgeDeviceZigbeeChannelParamTypeId, -1));
             descriptor.setParams(params);
+
+            Device *dev = bridgeForBridgeId(upnpDevice.serialNumber().toLower());
+            if (dev) {
+                qCDebug(dcPhilipsHue()) << "Found already added Hue bridge:" << upnpDevice.serialNumber().toLower();
+                descriptor.setDeviceId(dev->id());
+            } else {
+                qCDebug(dcPhilipsHue()) << "Found new Hue bridge:" << upnpDevice.serialNumber().toLower();
+            }
             deviceDescriptors.append(descriptor);
         }
     }
@@ -1289,13 +1299,6 @@ void DevicePluginPhilipsHue::processInformationResponse(PairingInfo *pairingInfo
     bridge->setName(response.value("name").toString());
     bridge->setZigbeeChannel(response.value("zigbeechannel").toInt());
 
-    if (bridgeAlreadyAdded(bridge->id())) {
-        qCWarning(dcPhilipsHue) << "Bridge with id" << bridge->id() << "already added.";
-        emit pairingFinished(pairingInfo->pairingTransactionId(), DeviceManager::DeviceSetupStatusFailure);
-        bridge->deleteLater();
-        pairingInfo->deleteLater();
-    }
-
     m_unconfiguredBridges.append(bridge);
 
     emit pairingFinished(pairingInfo->pairingTransactionId(), DeviceManager::DeviceSetupStatusSuccess);
@@ -1345,6 +1348,8 @@ void DevicePluginPhilipsHue::bridgeReachableChanged(Device *device, const bool &
                     light->setReachable(false);
                     if (m_lights.value(light)->deviceClassId() == colorLightDeviceClassId) {
                         m_lights.value(light)->setStateValue(colorLightConnectedStateTypeId, false);
+                    } else if (m_lights.value(light)->deviceClassId() == colorTemperatureLightDeviceClassId) {
+                        m_lights.value(light)->setStateValue(colorTemperatureLightConnectedStateTypeId, false);
                     } else if (m_lights.value(light)->deviceClassId() == dimmableLightDeviceClassId) {
                         m_lights.value(light)->setStateValue(dimmableLightConnectedStateTypeId, false);
                     }
@@ -1366,16 +1371,17 @@ void DevicePluginPhilipsHue::bridgeReachableChanged(Device *device, const bool &
 
 }
 
-bool DevicePluginPhilipsHue::bridgeAlreadyAdded(const QString &id)
+Device* DevicePluginPhilipsHue::bridgeForBridgeId(const QString &id)
 {
     foreach (Device *device, myDevices()) {
         if (device->deviceClassId() == bridgeDeviceClassId) {
-            if (device->paramValue(bridgeDeviceIdParamTypeId).toString() == id) {
-                return true;
+            qCDebug(dcPhilipsHue()) << "Have bridge" << device->name() << device->paramValue(bridgeDeviceIdParamTypeId).toString().toLower() << id;
+            if (device->paramValue(bridgeDeviceIdParamTypeId).toString().toLower() == id) {
+                return device;
             }
         }
     }
-    return false;
+    return nullptr;
 }
 
 bool DevicePluginPhilipsHue::lightAlreadyAdded(const QString &uuid)

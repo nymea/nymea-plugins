@@ -172,6 +172,12 @@ void DevicePluginFlowercare::onBluetoothDiscoveryFinished()
                 params.append(Param(flowerCareDeviceNameParamTypeId, deviceInfo.name()));
                 params.append(Param(flowerCareDeviceMacParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(flowerCareDeviceMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                        descriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
                 deviceDescriptors.append(descriptor);
             }
         }

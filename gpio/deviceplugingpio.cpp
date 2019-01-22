@@ -185,6 +185,13 @@ DeviceManager::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId
             }
             descriptor.setParams(parameters);
 
+            foreach (Device *existingDevice, myDevices()) {
+                if (existingDevice->paramValue(gpioOutputRpiDeviceGpioParamTypeId).toInt() == gpioDescriptor.gpio()) {
+                    descriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
+            }
+
             deviceDescriptors.append(descriptor);
         }
 

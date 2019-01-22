@@ -254,6 +254,13 @@ void DevicePluginWemo::onUpnpDiscoveryFinished()
             params.append(Param(wemoSwitchDevicePortParamTypeId, upnpDeviceDescriptor.port()));
             params.append(Param(wemoSwitchDeviceSerialParamTypeId, upnpDeviceDescriptor.serialNumber()));
             descriptor.setParams(params);
+
+            foreach (Device *existingDevice, myDevices()) {
+                if (existingDevice->paramValue(wemoSwitchDeviceSerialParamTypeId).toString() == upnpDeviceDescriptor.serialNumber()) {
+                    descriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
+            }
             deviceDescriptors.append(descriptor);
         }
     }
