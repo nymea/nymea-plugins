@@ -169,8 +169,11 @@ void DevicePluginSerialPortCommander::onReadyRead()
     }
     qDebug(dcSerialPortCommander()) << "Message received" << data;
 
-    device->setStateValue(serialPortCommanderInputDataStateTypeId, data);
-    emitEvent(Event(serialPortCommanderTriggeredEventTypeId, device->id()));
+    Event event(serialPortCommanderTriggeredEventTypeId, device->id());
+    ParamList parameters;
+    parameters.append(Param(serialPortCommanderTriggeredEventInputDataParamTypeId, data));
+    event.setParams(parameters);
+    emitEvent(event);
 }
 
 void DevicePluginSerialPortCommander::onSerialError(QSerialPort::SerialPortError error)

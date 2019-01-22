@@ -94,21 +94,21 @@
                             ]
                         }
                     ],
-                    "stateTypes": [
-                        {
-                            "id": "b98fdacc-59d7-41c4-b790-1fdca50dfb22",
-                            "name": "inputData",
-                            "displayName": "Received Data",
-                            "displayNameEvent": "received data changed",
-                            "type": "QString",
-                            "defaultValue": ""
-                        }
-                    ],
                     "eventTypes": [
                         {
                             "id": "32087633-616c-45a7-85af-4f1695c22359",
                             "name": "triggered",
-                            "displayName": "Data received"
+                            "displayName": "Data received",
+                            "paramTypes": [
+                                {
+                                    "id": "b98fdacc-59d7-41c4-b790-1fdca50dfb22",
+                                    "name": "inputData",
+                                    "displayName": "Received Data",
+                                    "displayNameEvent": "received data changed",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                }
+                            ]
                         }
                     ]
                 }
