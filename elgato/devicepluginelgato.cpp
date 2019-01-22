@@ -608,6 +608,12 @@ void DevicePluginElgato::onBluetoothDiscoveryFinished()
                 params.append(Param(aveaDeviceNameParamTypeId, deviceInfo.name()));
                 params.append(Param(aveaDeviceMacAddressParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(aveaDeviceMacAddressParamTypeId).toString() == deviceInfo.address().toString()) {
+                        descriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
                 deviceDescriptors.append(descriptor);
             }
         }

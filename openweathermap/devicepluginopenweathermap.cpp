@@ -312,16 +312,22 @@ void DevicePluginOpenweathermap::processGeoSearchResponse(QByteArray data)
 void DevicePluginOpenweathermap::processSearchResults(const QList<QVariantMap> &cityList)
 {
     QList<DeviceDescriptor> retList;
-    foreach (QVariantMap elemant, cityList) {
-        DeviceDescriptor descriptor(openweathermapDeviceClassId, elemant.value("name").toString(), elemant.value("country").toString());
+    foreach (QVariantMap element, cityList) {
+        DeviceDescriptor descriptor(openweathermapDeviceClassId, element.value("name").toString(), element.value("country").toString());
         ParamList params;
-        Param nameParam(openweathermapDeviceNameParamTypeId, elemant.value("name"));
+        Param nameParam(openweathermapDeviceNameParamTypeId, element.value("name"));
         params.append(nameParam);
-        Param countryParam(openweathermapDeviceCountryParamTypeId, elemant.value("country"));
+        Param countryParam(openweathermapDeviceCountryParamTypeId, element.value("country"));
         params.append(countryParam);
-        Param idParam(openweathermapDeviceIdParamTypeId, elemant.value("id"));
+        Param idParam(openweathermapDeviceIdParamTypeId, element.value("id"));
         params.append(idParam);
         descriptor.setParams(params);
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(openweathermapDeviceIdParamTypeId).toString() == element.value("id")) {
+                descriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
         retList.append(descriptor);
     }
     emit devicesDiscovered(openweathermapDeviceClassId, retList);

@@ -239,6 +239,12 @@ void DevicePluginMultiSensor::onBluetoothDiscoveryFinished()
                 ParamList params;
                 params.append(Param(sensorTagDeviceNameParamTypeId, deviceInfo.name()));
                 params.append(Param(sensorTagDeviceMacParamTypeId, deviceInfo.address().toString()));
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(sensorTagDeviceMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                        descriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
             }
