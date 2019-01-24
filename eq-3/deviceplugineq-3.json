@@ -53,7 +53,7 @@
                     "stateTypes": [
                         {
                             "id": "d0a9a369-cf8c-47c4-a12e-f2d076bf12fd",
-                            "name": "connection",
+                            "name": "connected",
                             "displayName": "connected",
                             "displayNameEvent": "connected changed",
                             "type": "bool",
@@ -574,6 +574,109 @@
                             "displayNameEvent": "valve position changed",
                             "unit": "Percentage",
                             "type": "int",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "id": "3c51327b-a823-4479-bd4b-f4ba64267ed8",
+                    "name": "eqivaBluetooth",
+                    "displayName": "Eqiva Bluetooth Smart Radiator Thermostat",
+                    "interfaces": ["heating", "thermostat", "connectable"],
+                    "createMethods": ["discovery"],
+                    "setupMethod": "JustAdd",
+                    "paramTypes": [
+                        {
+                            "id": "56a77560-e1a3-44fa-8136-57fe5a8d1cbe",
+                            "name": "macAddress",
+                            "displayName": "MAC Address",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e223666b-596f-42c0-90b9-1135a6f1c98e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "cc5700f3-28b0-4653-b46d-770a99e6cea7",
+                            "name": "power",
+                            "displayName": "On",
+                            "displayNameEvent": "On changed",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "5e9035ed-317d-42ee-b7f4-2996c75ba939",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
+                            "type": "double",
+                            "defaultValue": 21,
+                            "unit": "DegreeCelsius",
+                            "minValue": 5,
+                            "maxValue": 29.5,
+                            "writable": true
+                        },
+                        {
+                            "id": "2d285ccf-6d94-4441-9a28-47373caadc5b",
+                            "name": "lock",
+                            "displayName": "Lock",
+                            "displayNameEvent": "Lock changed",
+                            "displayNameAction": "Set lock",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "36070993-6332-4f6f-9907-36756981cc25",
+                            "name": "mode",
+                            "displayName": "Mode",
+                            "displayNameEvent": "Mode changed",
+                            "displayNameAction": "Set mode",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Auto",
+                                "Manual",
+                                "Holiday"
+                            ],
+                            "writable": true,
+                            "defaultValue": "Auto"
+                        },
+                        {
+                            "id": "ccca3ccd-33d4-4187-b823-efa0f51a1859",
+                            "name": "boost",
+                            "displayName": "Boost",
+                            "displayNameEvent": "Boost enabled changed",
+                            "displayNameAction": "Enable/disable boost",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "dcacdacc-ee47-43b0-9fef-1fe423e4f355",
+                            "name": "windowOpen",
+                            "displayName": "Window open detected",
+                            "displayNameEvent": "Window open changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "757f154f-30ce-4b9b-a009-b22777f96593",
+                            "name": "valveOpen",
+                            "displayName": "Valve open",
+                            "displayNameEvent": "Valve open changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
                             "defaultValue": 0
                         }
                     ]

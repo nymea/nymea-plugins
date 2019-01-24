@@ -1,8 +1,8 @@
 include(../plugins.pri)
 
-QT += network
+QT += network bluetooth
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugineq3)
+TARGET = $$qtLibraryTarget(nymea_deviceplugineq-3)
 
 SOURCES += \
     deviceplugineq-3.cpp    \
@@ -11,7 +11,8 @@ SOURCES += \
     maxdevice.cpp           \
     room.cpp \
     wallthermostat.cpp \
-    radiatorthermostat.cpp
+    radiatorthermostat.cpp \
+    eqivabluetooth.cpp
 
 HEADERS += \
     deviceplugineq-3.h      \
@@ -20,5 +21,6 @@ HEADERS += \
     maxdevice.h             \
     room.h \
     wallthermostat.h \
-    radiatorthermostat.h
+    radiatorthermostat.h \
+    eqivabluetooth.h
 
