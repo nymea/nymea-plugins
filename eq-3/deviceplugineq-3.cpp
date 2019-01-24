@@ -69,6 +69,8 @@
 #include "types/param.h"
 #include "plugininfo.h"
 
+#include "eqivabluetooth.h"
+
 #include <QDebug>
 
 DevicePluginEQ3::DevicePluginEQ3()
@@ -83,18 +85,30 @@ DevicePluginEQ3::~DevicePluginEQ3()
 
 void DevicePluginEQ3::init()
 {
+    qCDebug(dcEQ3()) << "Initializing EQ-3 Plugin";
     m_cubeDiscovery = new MaxCubeDiscovery(this);
     connect(m_cubeDiscovery, &MaxCubeDiscovery::cubesDetected, this, &DevicePluginEQ3::discoveryDone);
 
     m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginEQ3::onPluginTimer);
+
+    m_eqivaBluetoothDiscovery = new EqivaBluetoothDiscovery(hardwareManager()->bluetoothLowEnergyManager(), this);
+    connect(m_eqivaBluetoothDiscovery, &EqivaBluetoothDiscovery::finished, this, &DevicePluginEQ3::bluetoothDiscoveryDone);
 }
 
 DeviceManager::DeviceError DevicePluginEQ3::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
+    qCDebug(dcEQ3()) << "Discover devices called";
     if(deviceClassId == cubeDeviceClassId){
         m_cubeDiscovery->detectCubes();
+        return DeviceManager::DeviceErrorAsync;
+    }
+    if (deviceClassId == eqivaBluetoothDeviceClassId) {
+        bool ret = m_eqivaBluetoothDiscovery->startDiscovery();
+        if (!ret) {
+            return DeviceManager::DeviceErrorHardwareNotAvailable;
+        }
         return DeviceManager::DeviceErrorAsync;
     }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
@@ -136,20 +150,110 @@ DeviceManager::DeviceSetupStatus DevicePluginEQ3::setupDevice(Device *device)
         device->setName("Max! Wall Thermostat (" + device->paramValue(wallThermostateDeviceSerialParamTypeId).toString() + ")");
     }
 
+    if (device->deviceClassId() == eqivaBluetoothDeviceClassId) {
+        EqivaBluetooth *eqivaDevice = new EqivaBluetooth(hardwareManager()->bluetoothLowEnergyManager(), QBluetoothAddress(device->paramValue(eqivaBluetoothDeviceMacAddressParamTypeId).toString()), device->name(), this);
+        m_eqivaDevices.insert(device, eqivaDevice);
+
+        connect(device, &Device::nameChanged, eqivaDevice, [device, eqivaDevice](){
+            eqivaDevice->setName(device->name());
+        });
+
+        // Connected state
+        device->setStateValue(eqivaBluetoothConnectedStateTypeId, eqivaDevice->available());
+        connect(eqivaDevice, &EqivaBluetooth::availableChanged, device, [device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothConnectedStateTypeId, eqivaDevice->available());
+        });
+        // Power state
+        device->setStateValue(eqivaBluetoothPowerStateTypeId, eqivaDevice->enabled());
+        connect(eqivaDevice, &EqivaBluetooth::enabledChanged, device, [device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothPowerStateTypeId, eqivaDevice->enabled());
+        });
+        // Boost state
+        device->setStateValue(eqivaBluetoothBoostStateTypeId, eqivaDevice->boostEnabled());
+        connect(eqivaDevice, &EqivaBluetooth::boostEnabledChanged, device, [device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothBoostStateTypeId, eqivaDevice->boostEnabled());
+        });
+        // Lock state
+        device->setStateValue(eqivaBluetoothLockStateTypeId, eqivaDevice->locked());
+        connect(eqivaDevice, &EqivaBluetooth::lockedChanged, device, [device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothLockStateTypeId, eqivaDevice->locked());
+        });
+        // Mode state
+        device->setStateValue(eqivaBluetoothModeStateTypeId, modeToString(eqivaDevice->mode()));
+        connect(eqivaDevice, &EqivaBluetooth::modeChanged, device, [this, device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothModeStateTypeId, modeToString(eqivaDevice->mode()));
+        });
+        // Target temp state
+        device->setStateValue(eqivaBluetoothTargetTemperatureStateTypeId, eqivaDevice->targetTemperature());
+        connect(eqivaDevice, &EqivaBluetooth::targetTemperatureChanged, device, [device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothTargetTemperatureStateTypeId, eqivaDevice->targetTemperature());
+        });
+        // Window open state
+        device->setStateValue(eqivaBluetoothWindowOpenStateTypeId, eqivaDevice->windowOpen());
+        connect(eqivaDevice, &EqivaBluetooth::windowOpenChanged, device, [device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothWindowOpenStateTypeId, eqivaDevice->windowOpen());
+        });
+        // Valve open state
+        device->setStateValue(eqivaBluetoothValveOpenStateTypeId, eqivaDevice->valveOpen());
+        connect(eqivaDevice, &EqivaBluetooth::valveOpenChanged, device, [device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothValveOpenStateTypeId, eqivaDevice->valveOpen());
+        });
+
+        // Command handler
+        connect(eqivaDevice, &EqivaBluetooth::commandResult, this, [this](int commandId, bool success){
+            if (m_commandMap.contains(commandId)) {
+                emit actionExecutionFinished(m_commandMap.take(commandId), success ? DeviceManager::DeviceErrorNoError : DeviceManager::DeviceErrorHardwareFailure);
+            }
+        });
+    }
+
     return DeviceManager::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginEQ3::deviceRemoved(Device *device)
 {
-    if (!m_cubes.values().contains(device)) {
-        return;
+    if (device->deviceClassId() == cubeDeviceClassId) {
+        MaxCube *cube = m_cubes.key(device);
+        qCDebug(dcEQ3) << "Removing cube" << device->name() << cube->serialNumber();
+        cube->disconnectFromCube();
+        m_cubes.remove(cube);
+        cube->deleteLater();
     }
 
-    MaxCube *cube = m_cubes.key(device);
-    cube->disconnectFromCube();
-    qCDebug(dcEQ3) << "remove cube " << cube->serialNumber();
-    m_cubes.remove(cube);
-    cube->deleteLater();
+    if (device->deviceClassId() == eqivaBluetoothDeviceClassId) {
+        qCDebug(dcEQ3) << "Removing Eqiva device" << device->name();
+        m_eqivaDevices.take(device)->deleteLater();
+    }
+
+}
+
+QString DevicePluginEQ3::modeToString(EqivaBluetooth::Mode mode)
+{
+    switch (mode) {
+    case EqivaBluetooth::ModeAuto:
+        return "Auto";
+    case EqivaBluetooth::ModeManual:
+        return "Manual";
+    case EqivaBluetooth::ModeHoliday:
+        return "Holiday";
+    }
+    Q_ASSERT_X(false, "ModeToString", "Unhandled mode");
+    return QString();
+}
+
+EqivaBluetooth::Mode DevicePluginEQ3::stringToMode(const QString &string)
+{
+    if (string == "Holiday") {
+        return EqivaBluetooth::ModeHoliday;
+    }
+    if (string == "Manual") {
+        return EqivaBluetooth::ModeManual;
+    }
+    if (string == "Auto") {
+        return EqivaBluetooth::ModeAuto;
+    }
+    Q_ASSERT_X(false, "StringToMode", "Unhandled string:" + string.toUtf8());
+    return  EqivaBluetooth::ModeAuto;
 }
 
 DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const Action &action)
@@ -194,6 +298,24 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
                 return DeviceManager::DeviceErrorAsync;
             }
         }
+    } else if (device->deviceClassId() == eqivaBluetoothDeviceClassId) {
+        int commandId;
+        if (action.actionTypeId() == eqivaBluetoothPowerActionTypeId) {
+            commandId = m_eqivaDevices.value(device)->setEnabled(action.param(eqivaBluetoothPowerActionPowerParamTypeId).value().toBool());
+        } else if (action.actionTypeId() == eqivaBluetoothTargetTemperatureActionTypeId) {
+            commandId = m_eqivaDevices.value(device)->setTargetTemperature(action.param(eqivaBluetoothTargetTemperatureActionTargetTemperatureParamTypeId).value().toReal());
+        } else if (action.actionTypeId() == eqivaBluetoothLockActionTypeId) {
+            commandId = m_eqivaDevices.value(device)->setLocked(action.param(eqivaBluetoothLockActionLockParamTypeId).value().toBool());
+        } else if (action.actionTypeId() == eqivaBluetoothModeActionTypeId) {
+            commandId = m_eqivaDevices.value(device)->setMode(stringToMode(action.param(eqivaBluetoothModeActionModeParamTypeId).value().toString()));
+        } else if (action.actionTypeId() == eqivaBluetoothBoostActionTypeId) {
+            commandId = m_eqivaDevices.value(device)->setBoostEnabled(action.param(eqivaBluetoothBoostActionBoostParamTypeId).value().toBool());
+        } else {
+            Q_ASSERT_X(false, "DevicePluginEQ3", "An action type has not been handled!");
+            qCWarning(dcEQ3()) << "An action type has not been handled!";
+        }
+        m_commandMap.insert(commandId, action.id());
+        return DeviceManager::DeviceErrorAsync;
     }
 
     return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -216,7 +338,7 @@ void DevicePluginEQ3::cubeConnectionStatusChanged(const bool &connected)
         if (m_cubes.contains(cube)) {
             device = m_cubes.value(cube);
             device->setName("Max! Cube " + cube->serialNumber());
-            device->setStateValue(cubeConnectionStateTypeId,true);
+            device->setStateValue(cubeConnectedStateTypeId,true);
             emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
         }
     }else{
@@ -224,7 +346,7 @@ void DevicePluginEQ3::cubeConnectionStatusChanged(const bool &connected)
         Device *device;
         if (m_cubes.contains(cube)){
             device = m_cubes.value(cube);
-            device->setStateValue(cubeConnectionStateTypeId,false);
+            device->setStateValue(cubeConnectedStateTypeId,false);
             emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
         }
     }
@@ -249,6 +371,28 @@ void DevicePluginEQ3::discoveryDone(const QList<MaxCube *> &cubeList)
         retList.append(descriptor);
     }
     emit devicesDiscovered(cubeDeviceClassId,retList);
+}
+
+void DevicePluginEQ3::bluetoothDiscoveryDone(const QStringList results)
+{
+    QList<DeviceDescriptor> deviceDescriptors;
+    qCDebug(dcEQ3()) << "Discovery finished";
+    foreach (const QString &result, results) {
+        qCDebug(dcEQ3()) << "Discovered device" << result;
+        DeviceDescriptor descriptor(eqivaBluetoothDeviceClassId, "Eqiva Bluetooth Thermostat", result);
+        ParamList params;
+        params.append(Param(eqivaBluetoothDeviceMacAddressParamTypeId, result));
+        descriptor.setParams(params);
+        foreach (Device* existingDevice, myDevices()) {
+            if (existingDevice->paramValue(eqivaBluetoothDeviceMacAddressParamTypeId).toString() == result) {
+                    descriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
+        deviceDescriptors.append(descriptor);
+    }
+
+    emit devicesDiscovered(eqivaBluetoothDeviceClassId, deviceDescriptors);
 }
 
 void DevicePluginEQ3::commandActionFinished(const bool &succeeded, const ActionId &actionId)
