@@ -74,12 +74,15 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
     QString data = QString::fromLatin1(m_arpLookupProcess->readAll());
     bool found = false;
     bool needsPing = true;
+    QString mostRecentIP = m_host->address();
+    qlonglong secsSinceLastSeen = -1;
     foreach (QString line, data.split('\n')) {
         line.replace(QRegExp("[ ]{1,}"), " ");
         QStringList parts = line.split(" ");
         int lladdrIndex = parts.indexOf("lladdr");
-        if (lladdrIndex >= 0 && parts.count() > lladdrIndex && parts.at(lladdrIndex+1).toLower() == m_host->macAddress().toLower()) {
+        if (lladdrIndex >= 0 && parts.count() > lladdrIndex + 1 && parts.at(lladdrIndex+1).toLower() == m_host->macAddress().toLower()) {
             found = true;
+            QString entryIP = parts.first();
             if (parts.last() == "REACHABLE") {
                 qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache and claims to be REACHABLE";
                 if (!m_host->reachable()) {
@@ -89,18 +92,32 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                 m_host->seen();
                 emit seen();
                 // Verify if IP address is still the same
-                if (parts.first() != m_host->address()) {
-                    m_host->setAddress(parts.first());
-                    emit addressChanged(parts.first());
+                if (entryIP != mostRecentIP) {
+                    mostRecentIP = entryIP;
                 }
                 // If we have a reachable entry, stop processing here
                 needsPing = false;
                 break;
             } else {
                 // ARP claims the device to be stale... Flagging device to require a ping.
-                qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache but is marked as" << parts.last();
+                qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache with IP" << entryIP << "but is marked as" << parts.last();
+
+                int usedIndex = parts.indexOf("used");
+                if (usedIndex >= 0 && parts.count() > usedIndex + 1) {
+                    QString usedFields = parts.at(usedIndex + 1);
+                    qlonglong newSecsSinceLastSeen = usedFields.split("/").first().toInt();
+                    if (secsSinceLastSeen == -1 || newSecsSinceLastSeen < secsSinceLastSeen) {
+                        secsSinceLastSeen = newSecsSinceLastSeen;
+                        mostRecentIP = entryIP;
+                    }
+                }
             }
         }
+    }
+    if (mostRecentIP != m_host->address()) {
+        qCDebug(dcNetworkDetector()) << "IP seems to have changed IP:" << m_host->address() << "->" << mostRecentIP;
+        m_host->setAddress(mostRecentIP);
+        emit addressChanged(mostRecentIP);
     }
     if (!found) {
         qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "not found in ARP cache.";
