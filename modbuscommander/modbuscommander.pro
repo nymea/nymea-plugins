@@ -8,9 +8,11 @@ QT += network
 LIBS += -lmodbus
 
 SOURCES += \
-    devicepluginmodbuscommander.cpp \ 
-    modbustcpclient.cpp
+    devicepluginmodbuscommander.cpp \  
+    modbustcpmaster.cpp \
+    modbusrtumaster.cpp
 
 HEADERS += \
     devicepluginmodbuscommander.h \
-    modbustcpclient.h
+    modbustcpmaster.h \
+    modbusrtumaster.h

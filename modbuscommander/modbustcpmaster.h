@@ -20,47 +20,38 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINMODBUSCOMMANDER_H
-#define DEVICEPLUGINMODBUSCOMMANDER_H
+#ifndef MODBUSTCPMASTER_H
+#define MODBUSTCPMASTER_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
-#include "plugintimer.h"
-#include "modbustcpmaster.h"
-#include "modbusrtumaster.h"
-#include <QSerialPortInfo>
+#include <QObject>
+#include <QHostAddress>
+#include <modbus/modbus.h>
 
-class DevicePluginModbusCommander : public DevicePlugin
+class ModbusTCPMaster : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginmodbuscommander.json")
-    Q_INTERFACES(DevicePlugin)
-
 public:
-    explicit DevicePluginModbusCommander();
-    ~DevicePluginModbusCommander();
-    void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    void postSetupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    explicit ModbusTCPMaster(QHostAddress IPv4Address, int port, int slaveAddress, QObject *parent = 0);
+    ~ModbusTCPMaster();
 
+    bool getCoil(int coilAddress);
+    int getRegister(int registerAddress);
+    void setCoil(int coilAddress, bool status);
+    void setRegister(int registerAddress, int data);
+    void reconnect(int address);
+    QHostAddress ipv4Address();
+    int port();
+    int slaveAddress();
+    bool connected();
 private:
-
-    QHash<Device *, ModbusTCPMaster *> m_modbusSockets;
-    PluginTimer *m_refreshTimer = nullptr;
-
-    QHash<Device *, ModbusRTUMaster *> m_rtuInterfaces;
-    QList<QString> m_usedSerialPorts;
-
-private slots:
-    void onRefreshTimer();
+     modbus_t *m_mb;
+     QHostAddress m_IPv4Address;
+     int m_port;
+     int m_slaveAddress;
 
 signals:
 
-
+public slots:
 };
 
-#endif // DEVICEPLUGINMODBUSCOMMANDER_H
+#endif // MODBUSTCPMASTER_H

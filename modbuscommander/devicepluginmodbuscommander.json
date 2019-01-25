@@ -157,6 +157,183 @@
                             "displayNameEvent": "data received"
                         }
                     ]
+                },
+                {
+                    "id": "776df314-6186-4eb5-b824-f0d916f6d9c3",
+                    "name": "modbusRTUInterface",
+                    "displayName": "Modbus RTU Interface",
+                    "deviceIcon": "Network",
+                    "createMethods": ["discovery", "user"],
+                    "interfaces": ["connectable"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "ed49f7d8-ab18-4c37-9b80-1004b75dcb91",
+                            "name": "serialPort",
+                            "displayName": "Serial port",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": "ttyAMA0"
+                        },
+                        {
+                            "id": "45dfc828-f238-4263-89a3-9b35cf5dea39",
+                            "name": "baudRate",
+                            "displayName": "Baud rate",
+                            "type": "int",
+                            "defaultValue": 9600
+                        },
+                        {
+                            "id": "a27c664b-9f43-4573-a2cc-f65a8fa1a069",
+                            "name": "dataBits",
+                            "displayName": "Data bits",
+                            "type": "int",
+                            "defaultValue": 8
+                        },
+                        {
+                            "id": "4ea8bcdf-d4c5-45a4-a54f-f10ac3f08a78",
+                            "name": "stopBits",
+                            "displayName": "Stop bits",
+                            "type": "int",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "72de1b08-2a27-49c5-90e0-8788c3ea1da3",
+                            "name": "parity",
+                            "displayName": "Parity",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "allowedValues": [
+                                "No Parity",
+                                "Even Parity",
+                                "Odd Parity",
+                                "Space Parity",
+                                "Mark Parity"
+                            ],
+                            "defaultValue": "Even Parity"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f012",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connection status changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "ae7e5eeb-fd81-49ed-83e1-dbfefed70dea",
+                    "name": "modbusRTURead",
+                    "displayName": "Modbus RTU Read",
+                    "deviceIcon": "Network",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
+                            "name": "registerAddress",
+                            "displayName": "register address",
+                            "type": "int",
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "4825b103-edaa-460b-8183-820008c4d73c",
+                            "name": "registerType",
+                            "displayName": "register type",
+                            "type": "QString",
+                            "allowedValues": [
+                                "coil",
+                                "register"
+                            ],
+                            "defaultValue": "coil"
+                        },
+                        {
+                            "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
+                            "name": "slaveAddress",
+                            "displayName": "slave address",
+                            "type": "int",
+                            "defaultValue": 180
+                        },
+                        {
+                            "id": "0606c221-b157-4086-885d-7e7b166540a1",
+                            "name": "updateInterval",
+                            "displayName": "Update interval",
+                            "type": "int",
+                            "unit": "milliSeconds",
+                            "defaultValue": "3000"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "c772bd7f-6e51-4b28-b182-3b979c1298ce",
+                            "name": "readData",
+                            "displayName": "data",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "displayNameEvent": "data received"
+                        }
+                    ]
+                },
+                {
+                    "id": "258ffd84-c67a-4d8d-bca9-2286425860ca",
+                    "name": "modbusRTUWrite",
+                    "displayName": "Modbus RTU Write",
+                    "deviceIcon": "Network",
+                    "createMethods": ["user"],
+                    "interfaces": [],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
+                            "name": "registerAddress",
+                            "displayName": "register address",
+                            "type": "int",
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "4825b103-edaa-460b-8183-820008c4d73c",
+                            "name": "registerType",
+                            "displayName": "Register Type",
+                            "type": "QString",
+                            "allowedValues": [
+                                "coil",
+                                "register"
+                            ],
+                            "defaultValue": "coil"
+                        },
+                        {
+                            "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
+                            "name": "slaveAddress",
+                            "displayName": "slave address",
+                            "type": "int",
+                            "defaultValue": 180
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "23051bdf-3f50-41fa-abde-bc4fe0bcc4fc",
+                            "name": "writeData",
+                            "displayName": "data",
+                            "paramTypes": [
+                                {
+                                    "id": "1cd4cd53-3043-4ed9-9ba8-62985000c599",
+                                    "name": "data",
+                                    "displayName": "write data",
+                                    "type": "int",
+                                    "defaultValue": 0
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }

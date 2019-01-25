@@ -1,7 +1,29 @@
-#include "modbustcpclient.h"
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
+ *                                                                         *
+ *  This file is part of nymea.                                            *
+ *                                                                         *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
+ *                                                                         *
+ *  This library is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
+ *                                                                         *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#include "modbustcpmaster.h"
 #include "extern-plugininfo.h"
 
-ModbusTCPClient::ModbusTCPClient(QHostAddress IPv4Address, int port, int slaveAddress, QObject *parent) :
+ModbusTCPMaster::ModbusTCPMaster(QHostAddress IPv4Address, int port, int slaveAddress, QObject *parent) :
     QObject(parent),
     m_IPv4Address(IPv4Address),
     m_port(port),
@@ -37,7 +59,7 @@ ModbusTCPClient::ModbusTCPClient(QHostAddress IPv4Address, int port, int slaveAd
     }
 }
 
-ModbusTCPClient::~ModbusTCPClient()
+ModbusTCPMaster::~ModbusTCPMaster()
 {
     if (m_mb != NULL) {
         modbus_close(m_mb);
@@ -45,22 +67,22 @@ ModbusTCPClient::~ModbusTCPClient()
      modbus_free(m_mb);
 }
 
-int ModbusTCPClient::port()
+int ModbusTCPMaster::port()
 {
     return m_port;
 }
 
-QHostAddress ModbusTCPClient::ipv4Address()
+QHostAddress ModbusTCPMaster::ipv4Address()
 {
     return m_IPv4Address;
 }
 
-int ModbusTCPClient::slaveAddress()
+int ModbusTCPMaster::slaveAddress()
 {
     return m_slaveAddress;
 }
 
-bool ModbusTCPClient::connected()
+bool ModbusTCPMaster::connected()
 {
     if (!m_mb){
         return false;
@@ -73,7 +95,7 @@ bool ModbusTCPClient::connected()
     }
 }
 
-void ModbusTCPClient::reconnect(int registerAddress)
+void ModbusTCPMaster::reconnect(int registerAddress)
 {
     if (!m_mb){
         return;
@@ -93,7 +115,7 @@ void ModbusTCPClient::reconnect(int registerAddress)
     }
 }
 
-void ModbusTCPClient::setCoil(int coilAddress, bool status)
+void ModbusTCPMaster::setCoil(int coilAddress, bool status)
 {
     if (!m_mb) {
         return;
@@ -103,7 +125,7 @@ void ModbusTCPClient::setCoil(int coilAddress, bool status)
         qCWarning(dcModbusCommander()) << "Could not write Coil" << coilAddress << "Reason:" << modbus_strerror(errno);
 }
 
-void ModbusTCPClient::setRegister(int registerAddress, int data)
+void ModbusTCPMaster::setRegister(int registerAddress, int data)
 {
     if (!m_mb) {
         return;
@@ -113,7 +135,7 @@ void ModbusTCPClient::setRegister(int registerAddress, int data)
         qCWarning(dcModbusCommander()) << "Could not write Register" << registerAddress << "Reason:" << modbus_strerror(errno);
 }
 
-bool ModbusTCPClient::getCoil(int coilAddress)
+bool ModbusTCPMaster::getCoil(int coilAddress)
 {
     if (!m_mb){
         return false;
@@ -126,7 +148,7 @@ bool ModbusTCPClient::getCoil(int coilAddress)
     return bits;
 }
 
-int ModbusTCPClient::getRegister(int registerAddress)
+int ModbusTCPMaster::getRegister(int registerAddress)
 {
     uint16_t reg;
 

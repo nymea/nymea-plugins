@@ -20,47 +20,39 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINMODBUSCOMMANDER_H
-#define DEVICEPLUGINMODBUSCOMMANDER_H
+#ifndef MODBUSRTUMASTER_H
+#define MODBUSRTUMASTER_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
-#include "plugintimer.h"
-#include "modbustcpmaster.h"
-#include "modbusrtumaster.h"
-#include <QSerialPortInfo>
+#include <QObject>
+#include <modbus/modbus.h>
 
-class DevicePluginModbusCommander : public DevicePlugin
+class ModbusRTUMaster : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginmodbuscommander.json")
-    Q_INTERFACES(DevicePlugin)
-
 public:
-    explicit DevicePluginModbusCommander();
-    ~DevicePluginModbusCommander();
-    void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    void postSetupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    explicit ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent = 0);
+    ~ModbusRTUMaster();
+
+    bool getCoil(int slaveAddress, int coilAddress);
+    int getRegister(int slaveAddress, int registerAddress);
+    void setCoil(int slaveAddress, int coilAddress, bool status);
+    void setRegister(int slaveAddress, int registerAddress, int data);
+    void reconnect(int slaveAddress, int address);
+
+    QString serialPort();
+    bool connected();
 
 private:
-
-    QHash<Device *, ModbusTCPMaster *> m_modbusSockets;
-    PluginTimer *m_refreshTimer = nullptr;
-
-    QHash<Device *, ModbusRTUMaster *> m_rtuInterfaces;
-    QList<QString> m_usedSerialPorts;
-
-private slots:
-    void onRefreshTimer();
+     modbus_t *m_mb;
+     QString m_serialPort;
+     int m_baudrate;
+     QString m_parity;
+     int m_dataBits;
+     int m_stopBits;
 
 signals:
 
-
+public slots:
 };
 
-#endif // DEVICEPLUGINMODBUSCOMMANDER_H
+#endif // MODBUSRTUMASTER_H
