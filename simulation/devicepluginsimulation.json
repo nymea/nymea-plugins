@@ -202,7 +202,8 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 100,
-                            "writable": true
+                            "writable": true,
+                            "unit": "Percentage"
                         }
                     ]
                 },
@@ -249,18 +250,43 @@
                     "name": "thermostat",
                     "displayName": "Thermostat",
                     "createMethods": ["user"],
-                    "interfaces": ["temperaturesensor"],
+                    "interfaces": ["heating", "thermostat"],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
                             "id": "edc0ccb6-3a78-44b9-8c7d-638142c27e10",
-                            "name": "temperature",
+                            "name": "targetTemperature",
                             "displayName": "Target temperature",
                             "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0
+                            "defaultValue": 5,
+                            "minValue": 5,
+                            "maxValue": 30,
+                            "writable": true
+                        },
+                        {
+                            "id": "94a7d50c-df3b-4590-a89e-9dae40ad84fa",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "f892f660-87ff-458a-bfa0-5af08591233e",
+                            "name": "boost",
+                            "displayName": "Boost",
+                            "displayNameEvent": "Boost enabled changed",
+                            "displayNameAction": "Enable/disable boost",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
                         }
+
                     ]
                 },
                 {
