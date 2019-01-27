@@ -58,45 +58,37 @@ DevicePluginModbusCommander::~DevicePluginModbusCommander()
 void DevicePluginModbusCommander::init()
 {
     // Refresh timer for TCP read
-    m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+    int refreshTime = configValue(modbusCommanderPluginUpdateIntervalParamTypeId).toInt();
+    m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(refreshTime);
     connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginModbusCommander::onRefreshTimer);
 }
 
 
 DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device *device)
 {
-    if (device->deviceClassId() == modbusTCPWriteDeviceClassId) {
-        QHostAddress ipAddress = QHostAddress(device->paramValue(modbusTCPWriteDeviceIpv4addressParamTypeId).toString());
-        int slaveAddress = device->paramValue(modbusTCPWriteDeviceSlaveAddressParamTypeId).toInt();
-        int port = device->paramValue(modbusTCPWriteDevicePortParamTypeId).toInt();
+    if (device->deviceClassId() == modbusTCPInterfaceDeviceClassId) {
+        QHostAddress ipAddress = QHostAddress(device->paramValue(modbusTCPInterfaceDeviceIpv4addressParamTypeId).toString());
+        int port = device->paramValue(modbusTCPInterfaceDevicePortParamTypeId).toInt();
 
-        foreach(ModbusTCPMaster *modbusTCPMaster, m_modbusSockets.values())
+        foreach(ModbusTCPMaster *modbusTCPMaster, m_modbusTCPMasters.values())
         {
             if ((modbusTCPMaster->ipv4Address() == ipAddress) && (modbusTCPMaster->port() == port)){
-                m_modbusSockets.insert(device, modbusTCPMaster);
+                m_modbusTCPMasters.insert(device, modbusTCPMaster);
                 return DeviceManager::DeviceSetupStatusSuccess;
             }
         }
-        ModbusTCPMaster *modbus = new ModbusTCPMaster(ipAddress, port, slaveAddress, this);
-        m_modbusSockets.insert(device, modbus);
+        ModbusTCPMaster *modbus = new ModbusTCPMaster(ipAddress, port, this);
+        m_modbusTCPMasters.insert(device, modbus);
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == modbusTCPWriteDeviceClassId) {
+
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == modbusTCPReadDeviceClassId) {
 
-        QHostAddress ipAddress = QHostAddress(device->paramValue(modbusTCPReadDeviceIpv4addressParamTypeId).toString());
-        int slaveAddress = device->paramValue(modbusTCPReadDeviceSlaveAddressParamTypeId).toInt();
-        int port = device->paramValue(modbusTCPReadDevicePortParamTypeId).toInt();
-
-        foreach(ModbusTCPMaster *modbusTCPMaster, m_modbusSockets.values())
-        {
-            if ((modbusTCPMaster->ipv4Address() == ipAddress) && (modbusTCPMaster->port() == port)){
-                m_modbusSockets.insert(device, modbusTCPMaster);
-                return DeviceManager::DeviceSetupStatusSuccess;
-            }
-        }
-        ModbusTCPMaster *modbus = new ModbusTCPMaster(ipAddress, port, slaveAddress, this);
-        m_modbusSockets.insert(device, modbus);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -106,10 +98,17 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
         int baudrate = device->paramValue(modbusRTUInterfaceDeviceBaudRateParamTypeId).toInt();
         int stopBits = device->paramValue(modbusRTUInterfaceDeviceStopBitsParamTypeId).toInt();
         int dataBits = device->paramValue(modbusRTUInterfaceDeviceDataBitsParamTypeId).toInt();
-        QString parity = device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString();
+        QString parity;
+        if (device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString().contains("No")) {
+            parity = "N";
+        } else if (device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString().contains("Even")) {
+            parity = "E";
+        } else if (device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString().contains("Odd")) {
+            parity = "O";
+        }
 
         ModbusRTUMaster *modbus = new ModbusRTUMaster(serialPort, baudrate, parity, dataBits, stopBits, this);
-        m_rtuInterfaces.insert(device, modbus);
+        m_modbusRTUMasters.insert(device, modbus);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -151,46 +150,73 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
         emit devicesDiscovered(deviceClassId, deviceDescriptors);
         return DeviceManager::DeviceErrorAsync;
     }
+
+    if (deviceClassId == modbusRTUWriteDeviceClassId) {
+        Q_FOREACH(Device *interfaceDevice, myDevices()){
+            if (interfaceDevice->deviceClassId() == modbusRTUInterfaceDeviceClassId) {
+                DeviceDescriptor descriptor(deviceClassId, interfaceDevice->name(), interfaceDevice->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString());
+                ParamList parameters;
+                parameters.append(Param(modbusRTUWriteDeviceModbusRTUInterfaceParamTypeId, interfaceDevice->name()));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+        }
+        emit devicesDiscovered(deviceClassId, deviceDescriptors);
+        return DeviceManager::DeviceErrorAsync;
+    }
+
+    if (deviceClassId == modbusRTUReadDeviceClassId) {
+        Q_FOREACH(Device *interfaceDevice, myDevices()){
+            if (interfaceDevice->deviceClassId() == modbusRTUInterfaceDeviceClassId) {
+                DeviceDescriptor descriptor(deviceClassId, interfaceDevice->name(), interfaceDevice->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString());
+                ParamList parameters;
+                parameters.append(Param(modbusRTUReadDeviceModbusRTUInterfaceParamTypeId, interfaceDevice->name()));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+        }
+        emit devicesDiscovered(deviceClassId, deviceDescriptors);
+        return DeviceManager::DeviceErrorAsync;
+    }
+
+    if (deviceClassId == modbusTCPReadDeviceClassId) {
+        Q_FOREACH(Device *interfaceDevice, myDevices()){
+            if (interfaceDevice->deviceClassId() == modbusTCPInterfaceDeviceClassId) {
+                DeviceDescriptor descriptor(deviceClassId, interfaceDevice->name(), interfaceDevice->paramValue(modbusTCPInterfaceDeviceIpv4addressParamTypeId).toString() + "Port: " + interfaceDevice->paramValue(modbusTCPInterfaceDevicePortParamTypeId).toString());
+                ParamList parameters;
+                parameters.append(Param(modbusTCPReadDeviceModbusTCPInterfaceParamTypeId, interfaceDevice->name()));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+        }
+        emit devicesDiscovered(deviceClassId, deviceDescriptors);
+        return DeviceManager::DeviceErrorAsync;
+    }
+
+    if (deviceClassId == modbusTCPWriteDeviceClassId) {
+        Q_FOREACH(Device *interfaceDevice, myDevices()){
+            if (interfaceDevice->deviceClassId() == modbusTCPInterfaceDeviceClassId) {
+                DeviceDescriptor descriptor(deviceClassId, interfaceDevice->name(), interfaceDevice->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString());
+                ParamList parameters;
+                parameters.append(Param(modbusTCPWriteDeviceModbusTCPInterfaceParamTypeId, interfaceDevice->name()));
+                descriptor.setParams(parameters);
+                deviceDescriptors.append(descriptor);
+            }
+        }
+        emit devicesDiscovered(deviceClassId, deviceDescriptors);
+        return DeviceManager::DeviceErrorAsync;
+    }
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginModbusCommander::postSetupDevice(Device *device)
 {
-    if (device->deviceClassId() == modbusTCPReadDeviceClassId) {
-        ModbusTCPMaster *modbus = m_modbusSockets.value(device);
-        int reg = device->paramValue(modbusTCPReadDeviceRegisterAddressParamTypeId).toInt();
-
-        if (device->paramValue(modbusTCPReadDeviceRegisterTypeParamTypeId) == "coil"){
-            bool data = modbus->getCoil(reg);
-            device->setStateValue(modbusTCPReadReadDataStateTypeId, data);
-        } else if (device->paramValue(modbusTCPReadDeviceRegisterTypeParamTypeId) == "register") {
-            int data = modbus->getRegister(reg);
-            device->setStateValue(modbusTCPReadReadDataStateTypeId, data);
-        }
-        device->setStateValue(modbusTCPReadConnectedStateTypeId, true);
+    if ((device->deviceClassId() == modbusTCPReadDeviceClassId) || (device->deviceClassId() == modbusRTUReadDeviceClassId)) {
+        readData(device);
     }
 
-    if (device->deviceClassId() == modbusTCPWriteDeviceClassId) {
-        device->setStateValue(modbusTCPWriteConnectedStateTypeId, true);
-    }
-
-    if (device->deviceClassId() == modbusRTUReadDeviceClassId) {
-        ModbusRTUMaster *modbus = m_rtuInterfaces.value(device);
-        int slaveAddress = device->paramValue(modbusRTUReadDeviceSlaveAddressParamTypeId).toInt();
-        int registerAddress = device->paramValue(modbusRTUReadDeviceRegisterAddressParamTypeId).toInt();
-
-        if (device->paramValue(modbusRTUReadDeviceRegisterTypeParamTypeId) == "coil"){
-            bool data = modbus->getCoil(slaveAddress, registerAddress);
-            device->setStateValue(modbusRTUReadReadDataStateTypeId, data);
-        } else if (device->paramValue(modbusRTUReadDeviceRegisterTypeParamTypeId) == "register") {
-            int data = modbus->getRegister(slaveAddress, registerAddress);
-            device->setStateValue(modbusRTUReadReadDataStateTypeId, data);
-        }
-        //device->setStateValue(modbusRTUReadConnectedStateTypeId, true); TODO
-    }
-
-    if (device->deviceClassId() == modbusRTUWriteDeviceClassId) {
-
+    if ((device->deviceClassId() == modbusTCPWriteDeviceClassId) || (device->deviceClassId() == modbusRTUWriteDeviceClassId)){
+        readData(device);
     }
 }
 
@@ -199,64 +225,34 @@ DeviceManager::DeviceError DevicePluginModbusCommander::executeAction(Device *de
 {
     if (device->deviceClassId() == modbusTCPWriteDeviceClassId) {
 
-        if (action.actionTypeId() == modbusTCPWriteWriteDataActionTypeId) {
-
-            ModbusTCPMaster *modbus = m_modbusSockets.value(device);
-            int address = device->paramValue(modbusTCPWriteDeviceRegisterAddressParamTypeId).toInt();
-
-            if (device->paramValue(modbusTCPWriteDeviceRegisterTypeParamTypeId).toString() == "coil") {
-                bool data = action.param(modbusTCPWriteWriteDataActionDataParamTypeId).value().toBool();
-                modbus->setCoil(address, data);
-
-            } else if (device->paramValue(modbusTCPWriteDeviceRegisterTypeParamTypeId).toString() == "register") {
-                int data = action.param(modbusTCPWriteWriteDataActionDataParamTypeId).value().toInt();
-                modbus->setRegister(address, data);
-            }
+        if (action.actionTypeId() == modbusTCPWriteDataActionTypeId) {
+            writeData(device, action);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
     if (device->deviceClassId() == modbusRTUWriteDeviceClassId) {
 
-        if (action.actionTypeId() == modbusRTUWriteWriteDataActionTypeId) {
-
-            Device *parent = myDevices().findById(device->parentId());
-
-            ModbusRTUMaster *modbus = m_rtuInterfaces.value(parent);
-            int registerAddress = device->paramValue(modbusTCPWriteDeviceRegisterAddressParamTypeId).toInt();
-            int slaveAddress = device->paramValue(modbusRTUWriteDeviceSlaveAddressParamTypeId).toInt();
-
-            if (device->paramValue(modbusRTUWriteDeviceRegisterTypeParamTypeId).toString() == "coil") {
-                bool data = action.param(modbusTCPWriteWriteDataActionDataParamTypeId).value().toBool();
-                modbus->setCoil(slaveAddress, registerAddress, data);
-
-            } else if (device->paramValue(modbusRTUWriteDeviceRegisterTypeParamTypeId).toString() == "register") {
-                int data = action.param(modbusRTUWriteWriteDataActionDataParamTypeId).value().toInt();
-                modbus->setRegister(slaveAddress, registerAddress, data);
-            }
-
+        if (action.actionTypeId() == modbusRTUWriteDataActionTypeId) {
+            writeData(device, action);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
-
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
 
 void DevicePluginModbusCommander::deviceRemoved(Device *device)
 {
-    if ((device->deviceClassId() == modbusTCPWriteDeviceClassId) || (device->deviceClassId() == modbusTCPReadDeviceClassId)) {
-        ModbusTCPMaster *modbus = m_modbusSockets.value(device);
-        m_modbusSockets.remove(device);
-        if (!m_modbusSockets.values().contains(modbus)){
-            modbus->deleteLater(); // no device uses this modbus socket anymore
-        }
+    if (device->deviceClassId() == modbusTCPInterfaceDeviceClassId) {
+        ModbusTCPMaster *modbus = m_modbusTCPMasters.take(device);
+        modbus->deleteLater();
     }
 
     if (device->deviceClassId() == modbusRTUInterfaceDeviceClassId) {
         m_usedSerialPorts.removeAll(device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString());
-        ModbusRTUMaster *modbus = m_rtuInterfaces.take(device);
+        ModbusRTUMaster *modbus = m_modbusRTUMasters.take(device);
         modbus->deleteLater();
     }
 }
@@ -264,47 +260,97 @@ void DevicePluginModbusCommander::deviceRemoved(Device *device)
 void DevicePluginModbusCommander::onRefreshTimer()
 {
     foreach (Device *device, myDevices()) {
-        if (device->deviceClassId() == modbusTCPReadDeviceClassId) {
-            ModbusTCPMaster *modbus = m_modbusSockets.value(device);
-            device->setStateValue(modbusTCPReadConnectedStateTypeId, modbus->connected());
-            if (modbus->connected()) {
-                int reg = device->paramValue(modbusTCPReadDeviceRegisterAddressParamTypeId).toInt();
-                if (device->paramValue(modbusTCPReadDeviceRegisterTypeParamTypeId) == "coil"){
-                    bool data = modbus->getCoil(reg);
-                    device->setParamValue(modbusTCPWriteWriteDataActionDataParamTypeId, data);
-                } else if (device->paramValue(modbusTCPReadDeviceRegisterTypeParamTypeId) == "register") {
-                    int data = modbus->getRegister(reg);
-                    device->setParamValue(modbusTCPWriteWriteDataActionDataParamTypeId, data);
-                }
+        if ((device->deviceClassId() == modbusTCPReadDeviceClassId) || (device->deviceClassId() == modbusRTUReadDeviceClassId)) {
+            readData(device);
+        }
+    }
+}
+
+void DevicePluginModbusCommander::readData(Device *device) {
+
+    if (device->deviceClassId() == modbusTCPReadDeviceClassId) {
+        Device *parent = myDevices().findById(device->parentId());
+        ModbusTCPMaster *modbus = m_modbusTCPMasters.value(parent);
+        int registerAddress = device->paramValue(modbusTCPReadDeviceRegisterAddressParamTypeId).toInt();
+        int slaveAddress = device->paramValue(modbusTCPReadDeviceSlaveAddressParamTypeId).toInt();
+
+        if (device->paramValue(modbusTCPReadDeviceRegisterTypeParamTypeId) == "coil"){
+            bool data;
+            if (modbus->getCoil(slaveAddress, registerAddress, &data)) {
+                device->setStateValue(modbusTCPReadReadDataStateTypeId, data);
+                device->setStateValue(modbusTCPReadConnectedStateTypeId, true);
             } else {
-                modbus->reconnect(device->paramValue(modbusTCPReadDeviceRegisterAddressParamTypeId).toInt());
+                device->setStateValue(modbusTCPReadConnectedStateTypeId, false);
+            }
+        } else if (device->paramValue(modbusTCPReadDeviceRegisterTypeParamTypeId) == "register") {
+            int data;
+            if (modbus->getRegister(slaveAddress, registerAddress, &data)) {
+                device->setStateValue(modbusTCPReadReadDataStateTypeId, data);
+                device->setStateValue(modbusTCPReadConnectedStateTypeId, true);
+            } else {
+                device->setStateValue(modbusTCPReadConnectedStateTypeId, false);
             }
         }
+    }
 
-        if (device->deviceClassId() == modbusTCPWriteDeviceClassId) {
-            ModbusTCPMaster *modbus = m_modbusSockets.value(device);
-            device->setStateValue(modbusTCPWriteConnectedStateTypeId, modbus->connected());
-            if (!modbus->connected()) {
-                modbus->reconnect(device->paramValue(modbusTCPWriteDeviceRegisterAddressParamTypeId).toInt());
+    if (device->deviceClassId() == modbusRTUReadDeviceClassId) {
+        Device *parent = myDevices().findById(device->parentId());
+        ModbusRTUMaster *modbus = m_modbusRTUMasters.value(parent);
+        int slaveAddress = device->paramValue(modbusRTUReadDeviceSlaveAddressParamTypeId).toInt();
+        int registerAddress = device->paramValue(modbusRTUReadDeviceRegisterAddressParamTypeId).toInt();
+
+        if (device->paramValue(modbusRTUReadDeviceRegisterTypeParamTypeId) == "coil"){
+            bool data;
+            if (modbus->getCoil(slaveAddress, registerAddress, &data)){
+                device->setStateValue(modbusRTUReadReadDataStateTypeId, data);
+                device->setStateValue(modbusRTUReadConnectedStateTypeId, true);
+            } else {
+                device->setStateValue(modbusRTUReadConnectedStateTypeId, false);
+            }
+        } else if (device->paramValue(modbusRTUReadDeviceRegisterTypeParamTypeId) == "register") {
+            int data;
+            if (modbus->getRegister(slaveAddress, registerAddress, &data)) {
+                device->setStateValue(modbusRTUReadReadDataStateTypeId, data);
+                device->setStateValue(modbusRTUReadConnectedStateTypeId, true);
+            } else {
+                device->setStateValue(modbusRTUReadConnectedStateTypeId, false);
             }
         }
+    }
+}
 
-        if (device->deviceClassId() == modbusRTUReadDeviceClassId) {
+void DevicePluginModbusCommander::writeData(Device *device, Action action) {
 
-            ModbusRTUMaster *modbus = m_rtuInterfaces.value(device);
-            int registerAddress = device->paramValue(modbusRTUReadDeviceRegisterAddressParamTypeId).toInt();
-            int slaveAddress = device->paramValue(modbusRTUReadDeviceSlaveAddressParamTypeId).toInt();
-            if (device->paramValue(modbusRTUReadDeviceRegisterTypeParamTypeId) == "coil"){
-                bool data = modbus->getCoil(slaveAddress, registerAddress);
-                device->setParamValue(modbusTCPWriteWriteDataActionDataParamTypeId, data);
-            } else if (device->paramValue(modbusTCPReadDeviceRegisterTypeParamTypeId) == "register") {
-                int data = modbus->getRegister(slaveAddress, registerAddress);
-                device->setParamValue(modbusTCPWriteWriteDataActionDataParamTypeId, data);
-            }
+    if (device->deviceClassId() == modbusTCPWriteDeviceClassId) {
+        Device *parent = myDevices().findById(device->parentId());
+        ModbusTCPMaster *modbus = m_modbusTCPMasters.value(parent);
+        int registerAddress = device->paramValue(modbusTCPWriteDeviceRegisterAddressParamTypeId).toInt();
+        int slaveAddress = device->paramValue(modbusTCPWriteDeviceSlaveAddressParamTypeId).toInt();
+
+        if (device->paramValue(modbusTCPWriteDeviceRegisterTypeParamTypeId).toString() == "coil") {
+            bool data = action.param(modbusTCPWriteDataActionDataParamTypeId).value().toBool();
+            modbus->setCoil(slaveAddress, registerAddress, data);
+
+        } else if (device->paramValue(modbusTCPWriteDeviceRegisterTypeParamTypeId).toString() == "register") {
+            int data = action.param(modbusTCPWriteDataActionDataParamTypeId).value().toInt();
+            modbus->setRegister(slaveAddress, registerAddress, data);
         }
+    }
 
-        if (device->deviceClassId() == modbusRTUWriteDeviceClassId) {
+    if (device->deviceClassId() == modbusRTUWriteDeviceClassId) {
+        Device *parent = myDevices().findById(device->parentId());
 
+        ModbusRTUMaster *modbus = m_modbusRTUMasters.value(parent);
+        int registerAddress = device->paramValue(modbusTCPWriteDeviceRegisterAddressParamTypeId).toInt();
+        int slaveAddress = device->paramValue(modbusRTUWriteDeviceSlaveAddressParamTypeId).toInt();
+
+        if (device->paramValue(modbusRTUWriteDeviceRegisterTypeParamTypeId).toString() == "coil") {
+            bool data = action.param(modbusRTUWriteDataActionDataParamTypeId).value().toBool();
+            modbus->setCoil(slaveAddress, registerAddress, data);
+
+        } else if (device->paramValue(modbusRTUWriteDeviceRegisterTypeParamTypeId).toString() == "register") {
+            int data = action.param(modbusRTUWriteDataActionDataParamTypeId).value().toInt();
+            modbus->setRegister(slaveAddress, registerAddress, data);
         }
     }
 }

@@ -31,27 +31,7 @@ ModbusRTUMaster::ModbusRTUMaster(QString serialPort, int baudrate, QString parit
     m_dataBits(dataBits),
     m_stopBits(stopBits)
 {
-    //Setting up a RTU interface
-    qDebug(dcModbusCommander()) << "Setting up a RTU interface" << m_serialPort << "baud:" << m_baudrate;
-    char *port = m_serialPort.toLatin1().data();
-    m_mb = modbus_new_rtu(port, m_baudrate,'N', m_dataBits, m_stopBits);
-
-    if(m_mb == NULL){
-        qCWarning(dcModbusCommander()) << "Error modbus RTU: " << modbus_strerror(errno) ;
-        this->deleteLater();
-        return;
-    }
-
-    struct timeval response_timeout;
-
-    response_timeout.tv_sec = 3;
-    response_timeout.tv_usec = 0;
-    modbus_set_response_timeout(m_mb, &response_timeout);
-
-    if(modbus_connect(m_mb) == -1){
-        qCWarning(dcModbusCommander()) << "Error connecting modbus:" << modbus_strerror(errno) ;
-        return;
-    }
+    createInterface();
 }
 
 ModbusRTUMaster::~ModbusRTUMaster()
@@ -62,40 +42,75 @@ ModbusRTUMaster::~ModbusRTUMaster()
     modbus_free(m_mb);
 }
 
-void ModbusRTUMaster::setCoil(int slaveAddress, int coilAddress, bool status)
+bool ModbusRTUMaster::createInterface() {
+    //Setting up a RTU interface
+    qDebug(dcModbusCommander()) << "Setting up a RTU interface" << m_serialPort << "baud:" << m_baudrate;
+    char *port = m_serialPort.toLatin1().data();
+    char parity = m_parity.toUtf8().at(1);
+    m_mb = modbus_new_rtu(port, m_baudrate, parity, m_dataBits, m_stopBits);
+
+    if(m_mb == NULL){
+        qCWarning(dcModbusCommander()) << "Error modbus RTU: " << modbus_strerror(errno) ;
+        this->deleteLater();
+        return 0;
+    }
+
+    struct timeval response_timeout;
+
+    response_timeout.tv_sec = 3;
+    response_timeout.tv_usec = 0;
+    modbus_set_response_timeout(m_mb, &response_timeout);
+
+    if(modbus_connect(m_mb) == -1){
+        qCWarning(dcModbusCommander()) << "Error connecting modbus:" << modbus_strerror(errno) ;
+        return 0;
+    }
+    return 1;
+}
+
+bool ModbusRTUMaster::setCoil(int slaveAddress, int coilAddress, bool status)
 {
     if (!m_mb) {
-        return;
+        if (!createInterface())
+            return 0;
     }
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return;
+        return 0;
     }
 
-    if (modbus_write_bit(m_mb, coilAddress, status) == -1)
+    if (modbus_write_bit(m_mb, coilAddress, status) == -1) {
         qCWarning(dcModbusCommander()) << "Could not write Coil" << coilAddress << "Reason:" << modbus_strerror(errno);
+        return 0;
+    }
+    return 1;
 }
 
-void ModbusRTUMaster::setRegister(int slaveAddress, int registerAddress, int data)
+bool ModbusRTUMaster::setRegister(int slaveAddress, int registerAddress, int data)
 {
     if (!m_mb) {
-        return;
+        if (!createInterface())
+            return 0;
     }
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return;
+        return 0;
     }
 
-    if (modbus_write_register(m_mb, registerAddress, data) == -1)
+    if (modbus_write_register(m_mb, registerAddress, data) == -1) {
         qCWarning(dcModbusCommander()) << "Could not write Register" << registerAddress << "Reason:" << modbus_strerror(errno);
+        return 0;
+    }
+    return 1;
 }
 
-bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress)
+bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
 {
-    if (!m_mb){
-        return false;
+    if (!m_mb) {
+        if (!createInterface())
+            return 0;
     }
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
@@ -103,19 +118,22 @@ bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress)
         return 0;
     }
 
-    uint8_t bits;
-    if (modbus_read_bits(m_mb, coilAddress, 1, &bits) == -1){
+    uint8_t data;
+    if (modbus_read_bits(m_mb, coilAddress, 1, &data) == -1){
         qCWarning(dcModbusCommander()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
+        return 0;
     }
-    return bits;
+    *result = (bool)data;
+    return 1;
 }
 
-int ModbusRTUMaster::getRegister(int slaveAddress, int registerAddress)
+bool ModbusRTUMaster::getRegister(int slaveAddress, int registerAddress, int *result)
 {
-    uint16_t reg;
+    uint16_t data;
 
-    if (!m_mb){
-        return 0;
+    if (!m_mb) {
+        if (!createInterface())
+            return 0;
     }
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
@@ -123,8 +141,10 @@ int ModbusRTUMaster::getRegister(int slaveAddress, int registerAddress)
         return 0;
     }
 
-    if (modbus_read_registers(m_mb, registerAddress, 1, &reg) == -1){
+    if (modbus_read_registers(m_mb, registerAddress, 1, &data) == -1){
         qCWarning(dcModbusCommander()) << "Could not read register" << registerAddress << "Reason:" << modbus_strerror(errno);
+        return 0;
     }
-    return reg;
+    *result = data;
+    return 1;
 }

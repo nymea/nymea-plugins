@@ -49,17 +49,18 @@ public:
 
 private:
 
-    QHash<Device *, ModbusTCPMaster *> m_modbusSockets;
+    void readData(Device *device);
+    void writeData(Device *device, Action action);
     PluginTimer *m_refreshTimer = nullptr;
-
-    QHash<Device *, ModbusRTUMaster *> m_rtuInterfaces;
     QList<QString> m_usedSerialPorts;
+    QHash<Device *, ModbusRTUMaster *> m_modbusRTUMasters;
+    QHash<Device *, ModbusTCPMaster *> m_modbusTCPMasters;
+
 
 private slots:
     void onRefreshTimer();
 
 signals:
-
 
 };
 

@@ -2,6 +2,16 @@
     "displayName": "Modbus Commander",
     "name": "ModbusCommander",
     "id": "7dda1b6d-c37e-4c9f-a696-1666f9de66e6",
+    "paramTypes":[
+        {
+            "id": "0606c221-b157-4086-885d-7e7b166540a1",
+            "name": "updateInterval",
+            "displayName": "Update interval",
+            "type": "int",
+            "unit": "Seconds",
+            "defaultValue": 1
+        }
+    ],
     "vendors": [
         {
             "name": "guh",
@@ -9,9 +19,9 @@
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "deviceClasses": [
                 {
-                    "id": "f53524ea-1d06-40a9-b7a4-041297b21e84",
-                    "name": "modbusTCPWrite",
-                    "displayName": "Modbus TCP Write",
+                    "id": "35d3e7dc-1f33-4b8c-baa3-eb10b4f157a7",
+                    "name": "modbusTCPInterface",
+                    "displayName": "Modbus TCP Interface",
                     "deviceIcon": "Network",
                     "createMethods": ["user"],
                     "interfaces": ["connectable"],
@@ -33,6 +43,36 @@
                             "displayName": "port",
                             "type": "int",
                             "defaultValue": 502
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f012",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connection status changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "f53524ea-1d06-40a9-b7a4-041297b21e84",
+                    "name": "modbusTCPWrite",
+                    "displayName": "Modbus TCP Write",
+                    "deviceIcon": "Network",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["connectable"],
+                    "basicTags": [
+                        "Service"
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "5e9a0889-9014-49c8-9e6d-48b3230502eb",
+                            "name": "modbusTCPInterface",
+                            "displayName": "Modbus TCP Interface",
+                            "type": "QString",
+                            "defaultValue": ""
                         },
                         {
                             "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
@@ -68,22 +108,16 @@
                             "displayNameEvent": "connection status changed",
                             "type": "bool",
                             "defaultValue": false
-                        }
-                    ],
-                    "actionTypes": [
+                        },
                         {
-                            "id": "23051bdf-3f50-41fa-abde-bc4fe0bcc4fc",
-                            "name": "writeData",
+                            "id": "1cd4cd53-3043-4ed9-9ba8-62985000c599",
+                            "name": "data",
                             "displayName": "data",
-                            "paramTypes": [
-                                {
-                                    "id": "1cd4cd53-3043-4ed9-9ba8-62985000c599",
-                                    "name": "data",
-                                    "displayName": "write data",
-                                    "type": "int",
-                                    "defaultValue": 0
-                                }
-                            ]
+                            "displayNameAction": "write data",
+                            "displayNameEvent": "data received",
+                            "type": "int",
+                            "writable": true,
+                            "defaultValue": 0
                         }
                     ]
                 },
@@ -92,26 +126,18 @@
                     "name": "modbusTCPRead",
                     "displayName": "Modbus TCP Read",
                     "deviceIcon": "Network",
-                    "createMethods": ["user"],
+                    "createMethods": ["discovery"],
                     "interfaces": ["connectable"],
                     "basicTags": [
                         "Service"
                     ],
                     "paramTypes": [
                         {
-                            "id": "2a3fcb23-931b-4ba1-b134-c49b656c76f7",
-                            "name": "ipv4address",
-                            "displayName": "ipv4 address",
+                            "id": "5e9a0889-9014-49c8-9e6d-48b3230502eb",
+                            "name": "modbusTCPInterface",
+                            "displayName": "Modbus TCP Interface",
                             "type": "QString",
-                            "inputType": "IPv4Address",
-                            "defaultValue": "127.0.0.1"
-                        },
-                        {
-                            "id": "bee8b151-815a-4159-9d8a-42b76e99b42c",
-                            "name": "port",
-                            "displayName": "port",
-                            "type": "int",
-                            "defaultValue": 502
+                            "defaultValue": ""
                         },
                         {
                             "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
@@ -207,9 +233,7 @@
                             "allowedValues": [
                                 "No Parity",
                                 "Even Parity",
-                                "Odd Parity",
-                                "Space Parity",
-                                "Mark Parity"
+                                "Odd Parity"
                             ],
                             "defaultValue": "Even Parity"
                         }
@@ -230,12 +254,19 @@
                     "name": "modbusRTURead",
                     "displayName": "Modbus RTU Read",
                     "deviceIcon": "Network",
-                    "createMethods": ["user"],
+                    "createMethods": ["discovery", "user"],
                     "interfaces": ["connectable"],
                     "basicTags": [
                         "Service"
                     ],
                     "paramTypes": [
+                        {
+                            "id": "62976da4-d395-4bb4-9dba-dbcb45b958c9",
+                            "name": "modbusRTUInterface",
+                            "displayName": "Modbus RTU interface",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
                         {
                             "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
                             "name": "registerAddress",
@@ -260,17 +291,17 @@
                             "displayName": "slave address",
                             "type": "int",
                             "defaultValue": 180
-                        },
-                        {
-                            "id": "0606c221-b157-4086-885d-7e7b166540a1",
-                            "name": "updateInterval",
-                            "displayName": "Update interval",
-                            "type": "int",
-                            "unit": "milliSeconds",
-                            "defaultValue": "3000"
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f012",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "connection status changed"
+                        },
                         {
                             "id": "c772bd7f-6e51-4b28-b182-3b979c1298ce",
                             "name": "readData",
@@ -286,12 +317,19 @@
                     "name": "modbusRTUWrite",
                     "displayName": "Modbus RTU Write",
                     "deviceIcon": "Network",
-                    "createMethods": ["user"],
-                    "interfaces": [],
+                    "createMethods": ["discovery", "user"],
+                    "interfaces": ["connectable"],
                     "basicTags": [
                         "Service"
                     ],
                     "paramTypes": [
+                        {
+                            "id": "62976da4-d395-4bb4-9dba-dbcb45b958c9",
+                            "name": "modbusRTUInterface",
+                            "displayName": "Modbus RTU interface",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
                         {
                             "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
                             "name": "registerAddress",
@@ -318,20 +356,24 @@
                             "defaultValue": 180
                         }
                     ],
-                    "actionTypes": [
+                    "stateTypes": [
                         {
-                            "id": "23051bdf-3f50-41fa-abde-bc4fe0bcc4fc",
-                            "name": "writeData",
+                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f012",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "connection status changed"
+                        },
+                        {
+                            "id": "1cd4cd53-3043-4ed9-9ba8-62985000c599",
+                            "name": "data",
                             "displayName": "data",
-                            "paramTypes": [
-                                {
-                                    "id": "1cd4cd53-3043-4ed9-9ba8-62985000c599",
-                                    "name": "data",
-                                    "displayName": "write data",
-                                    "type": "int",
-                                    "defaultValue": 0
-                                }
-                            ]
+                            "displayNameAction": "write data",
+                            "displayNameEvent": "data received",
+                            "type": "int",
+                            "writable": true,
+                            "defaultValue": 0
                         }
                     ]
                 }

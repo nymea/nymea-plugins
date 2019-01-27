@@ -33,22 +33,22 @@ public:
     explicit ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent = 0);
     ~ModbusRTUMaster();
 
-    bool getCoil(int slaveAddress, int coilAddress);
-    int getRegister(int slaveAddress, int registerAddress);
-    void setCoil(int slaveAddress, int coilAddress, bool status);
-    void setRegister(int slaveAddress, int registerAddress, int data);
-    void reconnect(int slaveAddress, int address);
+    bool getCoil(int slaveAddress, int coilAddress, bool *result);
+    bool getRegister(int slaveAddress, int registerAddress, int *result);
+    bool setCoil(int slaveAddress, int coilAddress, bool status);
+    bool setRegister(int slaveAddress, int registerAddress, int data);
 
     QString serialPort();
-    bool connected();
 
 private:
-     modbus_t *m_mb;
-     QString m_serialPort;
-     int m_baudrate;
-     QString m_parity;
-     int m_dataBits;
-     int m_stopBits;
+    modbus_t *m_mb;
+    QString m_serialPort;
+    int m_baudrate;
+    QString m_parity;
+    int m_dataBits;
+    int m_stopBits;
+
+    bool createInterface();
 
 signals:
 
