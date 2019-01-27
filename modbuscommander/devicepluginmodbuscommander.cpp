@@ -61,6 +61,8 @@ void DevicePluginModbusCommander::init()
     int refreshTime = configValue(modbusCommanderPluginUpdateIntervalParamTypeId).toInt();
     m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(refreshTime);
     connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginModbusCommander::onRefreshTimer);
+
+    connect(this, &DevicePluginModbusCommander::configValueChanged, this, &DevicePluginModbusCommander::onPluginConfigurationChanged);
 }
 
 
@@ -84,11 +86,13 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
 
     if (device->deviceClassId() == modbusTCPWriteDeviceClassId) {
 
+        device->setParentId(device->paramValue(modbusTCPWriteDeviceParentIdParamTypeId).toString());
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == modbusTCPReadDeviceClassId) {
 
+        device->setParentId(device->paramValue(modbusTCPReadDeviceParentIdParamTypeId).toString());
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -109,16 +113,17 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
 
         ModbusRTUMaster *modbus = new ModbusRTUMaster(serialPort, baudrate, parity, dataBits, stopBits, this);
         m_modbusRTUMasters.insert(device, modbus);
+
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == modbusRTUWriteDeviceClassId) {
-
+        device->setParentId(device->paramValue(modbusRTUWriteDeviceParentIdParamTypeId).toString());
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == modbusRTUReadDeviceClassId) {
-
+        device->setParentId(device->paramValue(modbusRTUReadDeviceParentIdParamTypeId).toString());
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -156,7 +161,7 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             if (interfaceDevice->deviceClassId() == modbusRTUInterfaceDeviceClassId) {
                 DeviceDescriptor descriptor(deviceClassId, interfaceDevice->name(), interfaceDevice->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString());
                 ParamList parameters;
-                parameters.append(Param(modbusRTUWriteDeviceModbusRTUInterfaceParamTypeId, interfaceDevice->name()));
+                parameters.append(Param(modbusRTUWriteDeviceParentIdParamTypeId, interfaceDevice->id()));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -170,7 +175,7 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             if (interfaceDevice->deviceClassId() == modbusRTUInterfaceDeviceClassId) {
                 DeviceDescriptor descriptor(deviceClassId, interfaceDevice->name(), interfaceDevice->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString());
                 ParamList parameters;
-                parameters.append(Param(modbusRTUReadDeviceModbusRTUInterfaceParamTypeId, interfaceDevice->name()));
+                parameters.append(Param(modbusRTUReadDeviceParentIdParamTypeId, interfaceDevice->id()));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -184,7 +189,7 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             if (interfaceDevice->deviceClassId() == modbusTCPInterfaceDeviceClassId) {
                 DeviceDescriptor descriptor(deviceClassId, interfaceDevice->name(), interfaceDevice->paramValue(modbusTCPInterfaceDeviceIpv4addressParamTypeId).toString() + "Port: " + interfaceDevice->paramValue(modbusTCPInterfaceDevicePortParamTypeId).toString());
                 ParamList parameters;
-                parameters.append(Param(modbusTCPReadDeviceModbusTCPInterfaceParamTypeId, interfaceDevice->name()));
+                parameters.append(Param(modbusTCPReadDeviceParentIdParamTypeId, interfaceDevice->id()));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -198,7 +203,7 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             if (interfaceDevice->deviceClassId() == modbusTCPInterfaceDeviceClassId) {
                 DeviceDescriptor descriptor(deviceClassId, interfaceDevice->name(), interfaceDevice->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString());
                 ParamList parameters;
-                parameters.append(Param(modbusTCPWriteDeviceModbusTCPInterfaceParamTypeId, interfaceDevice->name()));
+                parameters.append(Param(modbusTCPWriteDeviceParentIdParamTypeId, interfaceDevice->id()));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -352,5 +357,14 @@ void DevicePluginModbusCommander::writeData(Device *device, Action action) {
             int data = action.param(modbusRTUWriteDataActionDataParamTypeId).value().toInt();
             modbus->setRegister(slaveAddress, registerAddress, data);
         }
+    }
+}
+
+void DevicePluginModbusCommander::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    // Check refresh schedule
+    if (paramTypeId == modbusCommanderPluginUpdateIntervalParamTypeId) {;
+        int refreshTime = value.toInt();
+        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(refreshTime);
     }
 }

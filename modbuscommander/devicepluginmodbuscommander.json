@@ -68,9 +68,9 @@
                     ],
                     "paramTypes": [
                         {
-                            "id": "5e9a0889-9014-49c8-9e6d-48b3230502eb",
-                            "name": "modbusTCPInterface",
-                            "displayName": "Modbus TCP Interface",
+                            "id": "556f13e6-3fc3-462d-9ce1-6f8b9594d3fd",
+                            "name": "parentId",
+                            "displayName": "Parent Id",
                             "type": "QString",
                             "defaultValue": ""
                         },
@@ -133,9 +133,9 @@
                     ],
                     "paramTypes": [
                         {
-                            "id": "5e9a0889-9014-49c8-9e6d-48b3230502eb",
-                            "name": "modbusTCPInterface",
-                            "displayName": "Modbus TCP Interface",
+                            "id": "556f13e6-3fc3-462d-9ce1-6f8b9594d3fd",
+                            "name": "parentId",
+                            "displayName": "Parent Id",
                             "type": "QString",
                             "defaultValue": ""
                         },
@@ -261,9 +261,9 @@
                     ],
                     "paramTypes": [
                         {
-                            "id": "62976da4-d395-4bb4-9dba-dbcb45b958c9",
-                            "name": "modbusRTUInterface",
-                            "displayName": "Modbus RTU interface",
+                            "id": "556f13e6-3fc3-462d-9ce1-6f8b9594d3fd",
+                            "name": "parentId",
+                            "displayName": "Parent Id",
                             "type": "QString",
                             "defaultValue": ""
                         },
@@ -324,9 +324,9 @@
                     ],
                     "paramTypes": [
                         {
-                            "id": "62976da4-d395-4bb4-9dba-dbcb45b958c9",
-                            "name": "modbusRTUInterface",
-                            "displayName": "Modbus RTU interface",
+                            "id": "556f13e6-3fc3-462d-9ce1-6f8b9594d3fd",
+                            "name": "parentId",
+                            "displayName": "Parent Id",
                             "type": "QString",
                             "defaultValue": ""
                         },

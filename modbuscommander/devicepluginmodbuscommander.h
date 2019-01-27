@@ -59,6 +59,7 @@ private:
 
 private slots:
     void onRefreshTimer();
+    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 
 signals:
 
