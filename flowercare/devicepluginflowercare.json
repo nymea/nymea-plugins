@@ -92,6 +92,7 @@
                             "displayName": "Conductivity",
                             "displayNameEvent": "Conductivity changed",
                             "type": "double",
+                            "unit": "MicroSiemensPerCentimeter",
                             "defaultValue": 0
                         }
                     ]
