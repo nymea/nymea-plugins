@@ -52,22 +52,24 @@ DevicePluginModbusCommander::DevicePluginModbusCommander()
 
 DevicePluginModbusCommander::~DevicePluginModbusCommander()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
+
 }
 
 void DevicePluginModbusCommander::init()
 {
-    // Refresh timer for TCP read
-    int refreshTime = configValue(modbusCommanderPluginUpdateIntervalParamTypeId).toInt();
-    m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(refreshTime);
-    connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginModbusCommander::onRefreshTimer);
-
     connect(this, &DevicePluginModbusCommander::configValueChanged, this, &DevicePluginModbusCommander::onPluginConfigurationChanged);
 }
 
 
 DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device *device)
 {
+    if (!m_refreshTimer) {
+        // Refresh timer for TCP read
+        int refreshTime = configValue(modbusCommanderPluginUpdateIntervalParamTypeId).toInt();
+        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(refreshTime);
+        connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginModbusCommander::onRefreshTimer);
+    }
+
     if (device->deviceClassId() == modbusTCPInterfaceDeviceClassId) {
         QHostAddress ipAddress = QHostAddress(device->paramValue(modbusTCPInterfaceDeviceIpv4addressParamTypeId).toString());
         int port = device->paramValue(modbusTCPInterfaceDevicePortParamTypeId).toInt();
@@ -260,6 +262,10 @@ void DevicePluginModbusCommander::deviceRemoved(Device *device)
         ModbusRTUMaster *modbus = m_modbusRTUMasters.take(device);
         modbus->deleteLater();
     }
+
+    if (myDevices().empty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
+    }
 }
 
 void DevicePluginModbusCommander::onRefreshTimer()
@@ -364,7 +370,10 @@ void DevicePluginModbusCommander::onPluginConfigurationChanged(const ParamTypeId
 {
     // Check refresh schedule
     if (paramTypeId == modbusCommanderPluginUpdateIntervalParamTypeId) {;
-        int refreshTime = value.toInt();
-        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(refreshTime);
+        if (m_refreshTimer) {
+            int refreshTime = value.toInt();
+            m_refreshTimer->stop();
+            m_refreshTimer->startTimer(refreshTime);
+        }
     }
 }
