@@ -201,6 +201,7 @@
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
+                            "unit": "Percentage",
                             "defaultValue": 100,
                             "writable": true,
                             "unit": "Percentage"
@@ -892,6 +893,7 @@
                             "displayNameAction": "Set maximum power percentage",
                             "type": "int",
                             "defaultValue": 100,
+                            "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
                             "writable": true
