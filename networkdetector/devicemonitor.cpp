@@ -61,7 +61,7 @@ void DeviceMonitor::ping()
         return;
     }
 
-    m_pingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "180", m_host->address()});
+    m_pingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "90", m_host->address()});
 }
 
 void DeviceMonitor::arpLookupFinished(int exitCode)
@@ -97,6 +97,7 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                 }
                 // If we have a reachable entry, stop processing here
                 needsPing = false;
+                m_failedPings = 0;
                 break;
             } else {
                 // ARP claims the device to be stale... Flagging device to require a ping.
@@ -138,9 +139,11 @@ void DeviceMonitor::pingFinished(int exitCode)
             emit reachableChanged(true);
         }
         emit seen();
+        m_failedPings = 0;
     } else {
         qCDebug(dcNetworkDetector()) << "Could not ping device" << m_host->macAddress() << m_host->address();
-        if (m_host->reachable()) {
+        m_failedPings++;
+        if (m_failedPings > 3 && m_host->reachable()) {
             m_host->setReachable(false);
             emit reachableChanged(false);
         }

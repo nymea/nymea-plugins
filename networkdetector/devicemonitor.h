@@ -33,6 +33,7 @@ private:
     Host *m_host;
     QProcess *m_arpLookupProcess;
     QProcess *m_pingProcess;
+    int m_failedPings = 0;
 
 };
 
