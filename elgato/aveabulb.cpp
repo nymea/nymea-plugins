@@ -206,12 +206,6 @@ bool AveaBulb::syncColor()
         return false;
     }
 
-    m_device->setStateValue(aveaWhiteStateTypeId, m_white);
-    m_device->setStateValue(aveaRedStateTypeId, m_red);
-    m_device->setStateValue(aveaGreenStateTypeId, m_green);
-    m_device->setStateValue(aveaBlueStateTypeId, m_blue);
-    m_device->setStateValue(aveaColorStateTypeId, QColor(scaleColorValueDown(m_red), scaleColorValueDown(m_green), scaleColorValueDown(m_blue)));
-
     // Convert rgb to wrgb
     QByteArray command;
     QDataStream stream(&command, QIODevice::WriteOnly);
@@ -313,20 +307,23 @@ void AveaBulb::onColorServiceCharacteristicChanged(const QLowEnergyCharacteristi
         return;
     }
 
-    //qCDebug(dcElgato()) << "Color characteristic changed" << characteristic.uuid().toString() << value.toHex();
+    qCDebug(dcElgato()) << "Color characteristic changed" << characteristic.uuid().toString() << value.toHex();
 
     QByteArray payload = value;
     QDataStream stream(&payload, QIODevice::ReadOnly);
-    quint8 messageType;
+    quint16 messageType;
     stream.setByteOrder(QDataStream::LittleEndian);
     stream >> messageType;
 
-    //qCDebug(dcElgato()) << "Message type" << messageType << static_cast<ColorMessage>(messageType);
+    qCDebug(dcElgato()) << "Message type" << messageType << static_cast<ColorMessage>(messageType);
 
     switch (messageType) {
     case ColorMessageColor: {
+        quint16 fade;
         quint16 whiteCurrentValue = 0; quint16 blueCurrentValue = 0; quint16 greenCurrentValue = 0; quint16 redCurrentValue = 0;
         quint16 whiteTargetValue = 0; quint16 blueTargetValue = 0; quint16 greenTargetValue = 0; quint16 redTargetValue = 0;
+
+        stream >> fade;
 
         // Read current color
         stream >> whiteCurrentValue >> blueCurrentValue >> greenCurrentValue >> redCurrentValue;
@@ -340,15 +337,27 @@ void AveaBulb::onColorServiceCharacteristicChanged(const QLowEnergyCharacteristi
         quint16 greenCurrentAdjustedValue = greenCurrentValue ^ 0x2000;
         quint16 redCurrentAdjustedValue = redCurrentValue ^ 0x3000;
 
+        quint16 whiteTargetAdjustedValue = whiteTargetValue;
+        quint16 blueTargetAdjustedValue = blueTargetValue ^ 0x1000;
+        quint16 greenTargetAdjustedValue = greenTargetValue ^ 0x2000;
+        quint16 redTargetAdjustedValue = redTargetValue ^ 0x3000;
+
         qCDebug(dcElgato()) << "Received color notification:";
-        qCDebug(dcElgato()) << "    white (current):" << value.mid(1, 2).toHex() << whiteCurrentValue << whiteCurrentAdjustedValue;
-        qCDebug(dcElgato()) << "    blue  (current):" << value.mid(3, 2).toHex() << blueCurrentValue << blueCurrentAdjustedValue;
-        qCDebug(dcElgato()) << "    green (current):" << value.mid(5, 2).toHex() << greenCurrentValue << greenCurrentAdjustedValue;
-        qCDebug(dcElgato()) << "    red   (current):" << value.mid(7, 2).toHex() << redCurrentValue << redCurrentAdjustedValue;
-        qCDebug(dcElgato()) << "    white (target) :" << value.mid(9, 2).toHex() << whiteTargetValue;
-        qCDebug(dcElgato()) << "    blue  (target) :" << value.mid(11, 2).toHex() << blueTargetValue;
-        qCDebug(dcElgato()) << "    green (target) :" << value.mid(13, 2).toHex() << greenTargetValue;
-        qCDebug(dcElgato()) << "    red   (target) :" << value.mid(15, 2).toHex() << redTargetValue;
+        qCDebug(dcElgato()) << "    white (current):" << QString::number(whiteCurrentValue, 16) << whiteCurrentValue << whiteCurrentAdjustedValue;
+        qCDebug(dcElgato()) << "    blue  (current):" << QString::number(blueCurrentValue, 16) << blueCurrentValue << blueCurrentAdjustedValue;
+        qCDebug(dcElgato()) << "    green (current):" << QString::number(greenCurrentValue, 16) << greenCurrentValue << greenCurrentAdjustedValue;
+        qCDebug(dcElgato()) << "    red   (current):" << QString::number(redCurrentValue, 16) << redCurrentValue << redCurrentAdjustedValue;
+        qCDebug(dcElgato()) << "    white (target) :" << QString::number(whiteTargetValue, 16) << whiteTargetValue << whiteTargetAdjustedValue;
+        qCDebug(dcElgato()) << "    blue  (target) :" << QString::number(blueTargetValue, 16) << blueTargetValue << blueTargetAdjustedValue;
+        qCDebug(dcElgato()) << "    green (target) :" << QString::number(greenTargetValue, 16) << greenTargetValue << greenTargetAdjustedValue;
+        qCDebug(dcElgato()) << "    red   (target) :" << QString::number(redTargetValue, 16) << redTargetValue << redTargetAdjustedValue;
+
+        m_device->setStateValue(aveaFadeStateTypeId, fade);
+        m_device->setStateValue(aveaWhiteStateTypeId, scaleColorValueDown(whiteTargetAdjustedValue));
+        m_device->setStateValue(aveaRedStateTypeId, scaleColorValueDown(redTargetAdjustedValue));
+        m_device->setStateValue(aveaGreenStateTypeId, scaleColorValueDown(greenTargetAdjustedValue));
+        m_device->setStateValue(aveaBlueStateTypeId, scaleColorValueDown(blueTargetAdjustedValue));
+        m_device->setStateValue(aveaColorStateTypeId, QColor(scaleColorValueDown(redTargetAdjustedValue), scaleColorValueDown(greenTargetAdjustedValue), scaleColorValueDown(blueTargetAdjustedValue)));
 
         break;
     }
