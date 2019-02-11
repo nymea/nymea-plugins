@@ -756,6 +756,13 @@ void DevicePluginPhilipsHue::onUpnpDiscoveryFinished()
         if (upnpDevice.modelDescription().contains("Philips")) {
             DeviceDescriptor descriptor(bridgeDeviceClassId, "Philips Hue Bridge", upnpDevice.hostAddress().toString());
             ParamList params;
+            QString bridgeId = upnpDevice.serialNumber().toLower();
+            foreach (Device *existingDevice, myDevices()) {
+                if (existingDevice->paramValue(bridgeDeviceIdParamTypeId).toString() == bridgeId) {
+                    descriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
+            }
             params.append(Param(bridgeDeviceHostParamTypeId, upnpDevice.hostAddress().toString()));
             params.append(Param(bridgeDeviceApiKeyParamTypeId, QString()));
             params.append(Param(bridgeDeviceMacParamTypeId, QString()));
