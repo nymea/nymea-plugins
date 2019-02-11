@@ -4,16 +4,19 @@
 
 #include <QNetworkInterface>
 
-DeviceMonitor::DeviceMonitor(const QString &macAddress, const QString &ipAddress, QObject *parent):
-    QObject(parent)
+DeviceMonitor::DeviceMonitor(const QString &name, const QString &macAddress, const QString &ipAddress, bool initialState, QObject *parent):
+    QObject(parent),
+    m_name(name),
+    m_macAddress(macAddress),
+    m_ipAddress(ipAddress),
+    m_reachable(initialState)
 {
-    m_host = new Host();
-    m_host->setMacAddress(macAddress);
-    m_host->setAddress(ipAddress);
-    m_host->setReachable(false);
-
     m_arpLookupProcess = new QProcess(this);
     connect(m_arpLookupProcess, SIGNAL(finished(int)), this, SLOT(arpLookupFinished(int)));
+
+    m_arpingProcess = new QProcess(this);
+    m_arpingProcess->setReadChannelMode(QProcess::MergedChannels);
+    connect(m_arpingProcess, SIGNAL(finished(int)), this, SLOT(arpingFinished(int)));
 
     m_pingProcess = new QProcess(this);
     m_pingProcess->setReadChannelMode(QProcess::MergedChannels);
@@ -22,13 +25,17 @@ DeviceMonitor::DeviceMonitor(const QString &macAddress, const QString &ipAddress
 
 DeviceMonitor::~DeviceMonitor()
 {
-    delete m_host;
+}
+
+void DeviceMonitor::setGracePeriod(int minutes)
+{
+    m_gracePeriod = minutes;
 }
 
 void DeviceMonitor::update()
 {
-    if (m_pingProcess->state() != QProcess::NotRunning) {
-        qCDebug(dcNetworkDetector()) << "Previous ping still running for device" << m_host->address() << ". Not updating.";
+    if (m_arpingProcess->state() != QProcess::NotRunning || m_pingProcess->state() != QProcess::NotRunning) {
+//        log("Previous ping still running. Not updating.");
         return;
     }
     lookupArpCache();
@@ -39,57 +46,31 @@ void DeviceMonitor::lookupArpCache()
     m_arpLookupProcess->start("ip", {"-4", "-s", "neighbor", "list"});
 }
 
-void DeviceMonitor::ping()
-{
-    qCDebug(dcNetworkDetector()) << "Sending ARP Ping to" << m_host->hostName() << m_host->macAddress() << m_host->address();
-    QNetworkInterface targetInterface;
-    foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
-        foreach (const QNetworkAddressEntry &addressEntry, interface.addressEntries()) {
-            QHostAddress clientAddress(m_host->address());
-            if (clientAddress.isInSubnet(addressEntry.ip(), addressEntry.prefixLength())) {
-                targetInterface = interface;
-                break;
-            }
-        }
-    }
-    if (!targetInterface.isValid()) {
-        qCWarning(dcNetworkDetector()) << "Could not find a suitable interface to ping for" << m_host->address();
-        if (m_host->reachable()) {
-            m_host->setReachable(false);
-            emit reachableChanged(false);
-        }
-        return;
-    }
-
-    m_pingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "90", m_host->address()});
-}
-
 void DeviceMonitor::arpLookupFinished(int exitCode)
 {
     if (exitCode != 0) {
-        qCWarning(dcNetworkDetector()) << "Error looking up ARP cache.";
+        warn("Error looking up ARP cache.");
         return;
     }
 
     QString data = QString::fromLatin1(m_arpLookupProcess->readAll());
     bool found = false;
     bool needsPing = true;
-    QString mostRecentIP = m_host->address();
+    QString mostRecentIP = m_ipAddress;
     qlonglong secsSinceLastSeen = -1;
     foreach (QString line, data.split('\n')) {
         line.replace(QRegExp("[ ]{1,}"), " ");
         QStringList parts = line.split(" ");
         int lladdrIndex = parts.indexOf("lladdr");
-        if (lladdrIndex >= 0 && parts.count() > lladdrIndex + 1 && parts.at(lladdrIndex+1).toLower() == m_host->macAddress().toLower()) {
+        if (lladdrIndex >= 0 && parts.count() > lladdrIndex + 1 && parts.at(lladdrIndex+1).toLower() == m_macAddress.toLower()) {
             found = true;
             QString entryIP = parts.first();
             if (parts.last() == "REACHABLE") {
-                qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache and claims to be REACHABLE";
-                if (!m_host->reachable()) {
-                    m_host->setReachable(true);
+                log("Device found in ARP cache and claims to be REACHABLE (Cache IP: " + entryIP + ")");
+                if (!m_reachable) {
+                    m_reachable = true;
                     emit reachableChanged(true);
                 }
-                m_host->seen();
                 emit seen();
                 // Verify if IP address is still the same
                 if (entryIP != mostRecentIP) {
@@ -101,7 +82,7 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                 break;
             } else {
                 // ARP claims the device to be stale... Flagging device to require a ping.
-                qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "found in ARP cache with IP" << entryIP << "but is marked as" << parts.last();
+                log("Device found in ARP cache but is marked as " + parts.last() + " (Cache IP: " + entryIP + ")");
 
                 int usedIndex = parts.indexOf("used");
                 if (usedIndex >= 0 && parts.count() > usedIndex + 1) {
@@ -115,36 +96,88 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
             }
         }
     }
-    if (mostRecentIP != m_host->address()) {
-        qCDebug(dcNetworkDetector()) << "IP seems to have changed IP:" << m_host->address() << "->" << mostRecentIP;
-        m_host->setAddress(mostRecentIP);
+    if (mostRecentIP != m_ipAddress) {
+        log("Device has changed IP: " + m_ipAddress + " -> " + mostRecentIP + ")");
+        m_ipAddress = mostRecentIP;
         emit addressChanged(mostRecentIP);
     }
     if (!found) {
-        qCDebug(dcNetworkDetector()) << "Device" << m_host->macAddress() << "not found in ARP cache.";
-        ping();
+        log("Device not found in ARP cache.");
+        arping();
     } else if (needsPing) {
+        arping();
+    }
+}
+
+void DeviceMonitor::arping()
+{
+    log("Sending ARP Ping...");
+    QNetworkInterface targetInterface;
+    foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
+        foreach (const QNetworkAddressEntry &addressEntry, interface.addressEntries()) {
+            QHostAddress clientAddress(m_ipAddress);
+            if (clientAddress.isInSubnet(addressEntry.ip(), addressEntry.prefixLength())) {
+                targetInterface = interface;
+                break;
+            }
+        }
+    }
+    if (!targetInterface.isValid()) {
+        warn("Could not find a suitable interface to ARP Ping.");
+        if (m_reachable) {
+            m_reachable = false;
+            emit reachableChanged(false);
+        }
+        return;
+    }
+
+    m_arpingProcess->start("arping", {"-I", targetInterface.name(), "-f", "-w", "30", m_ipAddress});
+}
+
+void DeviceMonitor::arpingFinished(int exitCode)
+{
+    if (exitCode == 0) {
+        // we were able to ping the device
+        log("ARP Ping successful.");
+        if (!m_reachable) {
+            m_reachable = true;
+            emit reachableChanged(true);
+        }
+        emit seen();
+        m_failedPings = 0;
+    } else {
+        log("ARP Ping failed.");
         ping();
     }
+    // read data to discard it from socket
+    QString data = QString::fromLatin1(m_pingProcess->readAll());
+    Q_UNUSED(data)
+//    qCDebug(dcNetworkDetector()) << "have ping data" << data;
+}
+
+void DeviceMonitor::ping()
+{
+    log("Sending ICMP Ping...");
+    m_pingProcess->start("ping", {"-c", "30", m_ipAddress});
 }
 
 void DeviceMonitor::pingFinished(int exitCode)
 {
     if (exitCode == 0) {
         // we were able to ping the device
-        qCDebug(dcNetworkDetector()) << "Ping successful for" << m_host->macAddress() << m_host->address();
-        m_host->seen();
-        if (!m_host->reachable()) {
-            m_host->setReachable(true);
+        log("ICMP Ping successful.");
+        if (!m_reachable) {
+            m_reachable = true;
             emit reachableChanged(true);
         }
         emit seen();
         m_failedPings = 0;
     } else {
-        qCDebug(dcNetworkDetector()) << "Could not ping device" << m_host->macAddress() << m_host->address();
         m_failedPings++;
-        if (m_failedPings > 3 && m_host->reachable()) {
-            m_host->setReachable(false);
+        log("ICMP Ping failed for " + QString::number(m_failedPings) + " times. (Grace Period: " + QString::number(m_gracePeriod) + ")");
+        if (m_failedPings > m_gracePeriod && m_reachable) {
+            log("Marking device as offline.");
+            m_reachable = false;
             emit reachableChanged(false);
         }
     }
@@ -152,4 +185,14 @@ void DeviceMonitor::pingFinished(int exitCode)
     QString data = QString::fromLatin1(m_pingProcess->readAll());
     Q_UNUSED(data)
 //    qCDebug(dcNetworkDetector()) << "have ping data" << data;
+}
+
+void DeviceMonitor::log(const QString &message)
+{
+    qCDebug(dcNetworkDetector()).noquote().nospace() << m_name << " (" << m_macAddress  << ", " << m_ipAddress << "): " << message;
+}
+
+void DeviceMonitor::warn(const QString &message)
+{
+    qCWarning(dcNetworkDetector()).noquote().nospace() << m_name << " (" << m_macAddress << ", " << m_ipAddress << "): " << message;
 }

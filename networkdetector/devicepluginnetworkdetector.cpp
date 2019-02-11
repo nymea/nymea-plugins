@@ -77,7 +77,11 @@ void DevicePluginNetworkDetector::init()
 DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *device)
 {
     qCDebug(dcNetworkDetector()) << "Setup" << device->name() << device->params();
-    DeviceMonitor *monitor = new DeviceMonitor(device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString(), device->paramValue(networkDeviceDeviceAddressParamTypeId).toString(), this);
+    DeviceMonitor *monitor = new DeviceMonitor(device->name(),
+                                               device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString(),
+                                               device->paramValue(networkDeviceDeviceAddressParamTypeId).toString(),
+                                               device->stateValue(networkDeviceIsPresentStateTypeId).toBool(),
+                                               this);
     connect(monitor, &DeviceMonitor::reachableChanged, this, &DevicePluginNetworkDetector::deviceReachableChanged);
     connect(monitor, &DeviceMonitor::addressChanged, this, &DevicePluginNetworkDetector::deviceAddressChanged);
     connect(monitor, &DeviceMonitor::seen, this, &DevicePluginNetworkDetector::deviceSeen);
@@ -124,7 +128,15 @@ void DevicePluginNetworkDetector::discoveryFinished(const QList<Host> &hosts)
     qCDebug(dcNetworkDetector()) << "Discovery finished. Found" << hosts.count() << "devices";
     QList<DeviceDescriptor> discoveredDevices;
     foreach (const Host &host, hosts) {
-        DeviceDescriptor descriptor(networkDeviceDeviceClassId, (host.hostName().isEmpty() ? host.address() : host.hostName() + "(" + host.address() + ")"), host.macAddress());
+
+        DeviceDescriptor descriptor(networkDeviceDeviceClassId, host.hostName().isEmpty() ? host.address() : host.hostName(), host.address() + " (" + host.macAddress() + ")");
+
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() == host.macAddress()) {
+                descriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
 
         ParamList paramList;
         Param macAddress(networkDeviceDeviceMacAddressParamTypeId, host.macAddress());
