@@ -231,14 +231,15 @@
                         },
                         {
                             "id": "87600986-da37-4032-af37-015995910368",
-                            "name": "percentage",
-                            "displayName": "Percentage",
-                            "displayNameEvent": "Percentage changed",
-                            "displayNameAction": "Set percentage",
-                            "type": "int",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "defaultValue": 100,
+                            "name": "maxChargingCurrent",
+                            "displayName": "Maximum charging current",
+                            "displayNameEvent": "MAximum charging current changed",
+                            "displayNameAction": "Set maximum charging current",
+                            "type": "uint",
+                            "unit": "MilliAmpere",
+                            "defaultValue": 0,
+                            "minValue": 6000,
+                            "maxValue": 80000,
                             "writable": true
                         }
                     ]
