@@ -155,12 +155,12 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             device->setStateValue(evChargerPowerStateTypeId, power);
             return DeviceManager::DeviceErrorNoError;
 
-        } else if(action.actionTypeId() == evChargerPercentageActionTypeId){
+        } else if(action.actionTypeId() == evChargerMaxChargingCurrentActionTypeId){
             // get the param value
-            Param currentParam = action.param(evChargerPercentageActionPercentageParamTypeId);
-            int percentage = currentParam.value().toInt();
-            qCDebug(dcSimulation()) << "Set percentage" << percentage << "for EV Charger device" << device->name();
-            device->setStateValue(evChargerPercentageStateTypeId, percentage);
+            Param maxChargeParam = action.param(evChargerMaxChargingCurrentActionMaxChargingCurrentParamTypeId);
+            uint maxCharge = maxChargeParam.value().toInt();
+            qCDebug(dcSimulation()) << "Set maximum charging current to" << maxCharge << "for EV Charger device" << device->name();
+            device->setStateValue(evChargerMaxChargingCurrentStateTypeId, maxCharge);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
