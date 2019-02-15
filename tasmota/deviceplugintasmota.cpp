@@ -81,9 +81,12 @@ DevicePluginTasmota::DevicePluginTasmota()
     // Helper maps for virtual childs (aka tasmota*)
     m_channelParamTypeMap[tasmotaSwitchDeviceClassId] = tasmotaSwitchDeviceChannelNameParamTypeId;
     m_channelParamTypeMap[tasmotaLightDeviceClassId] = tasmotaLightDeviceChannelNameParamTypeId;
+    m_openingChannelParamTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterDeviceOpeningChannelParamTypeId;
+    m_closingChannelParamTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterDeviceClosingChannelParamTypeId;
 
     m_powerStateTypeMap[tasmotaSwitchDeviceClassId] = tasmotaSwitchPowerStateTypeId;
     m_powerStateTypeMap[tasmotaLightDeviceClassId] = tasmotaLightPowerStateTypeId;
+
 
     // Helper maps for all devices
     m_connectedStateTypeMap[sonoff_basicDeviceClassId] = sonoff_basicConnectedStateTypeId;
@@ -91,6 +94,7 @@ DevicePluginTasmota::DevicePluginTasmota()
     m_connectedStateTypeMap[sonoff_quadDeviceClassId] = sonoff_quadConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaSwitchDeviceClassId] = tasmotaSwitchConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaLightDeviceClassId] = tasmotaLightConnectedStateTypeId;
+    m_connectedStateTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterConnectedStateTypeId;
 }
 
 DevicePluginTasmota::~DevicePluginTasmota()
@@ -117,17 +121,27 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
             return DeviceManager::DeviceSetupStatusFailure;
         }
 
-        QUrl url("http://10.10.10.90/sv");
+        QUrl url(QString("http://%1/cm").arg(deviceAddress.toString()));
         QUrlQuery query;
-        query.addQueryItem("w", "2%2C1");
-        query.addQueryItem("mh", channel->serverAddress().toString());
-        query.addQueryItem("ml", QString::number(channel->serverPort()));
-        query.addQueryItem("mc", channel->clientId());
-        query.addQueryItem("mu", channel->username());
-        query.addQueryItem("mp", channel->password());
-        query.addQueryItem("mt", "sonoff");
-        query.addQueryItem("mf", channel->topicPrefix() + "/%topic%/");
+        QMap<QString, QString> configItems;
+        configItems.insert("MqttHost", channel->serverAddress().toString());
+        configItems.insert("MqttPort", QString::number(channel->serverPort()));
+        configItems.insert("MqttClient", channel->clientId());
+        configItems.insert("MqttUser", channel->username());
+        configItems.insert("MqttPassword", channel->password());
+        configItems.insert("Topic", "sonoff");
+        configItems.insert("FullTopic", channel->topicPrefix() + "/%topic%/");
+
+        QStringList configList;
+        foreach (const QString &key, configItems.keys()) {
+            configList << key + ' ' + configItems.value(key);
+        }
+        QString fullCommand = "Backlog " + configList.join(';');
+        query.addQueryItem("cmnd", fullCommand.toUtf8().toPercentEncoding());
+
+
         url.setQuery(query);
+        qCDebug(dcTasmota) << "Configuring Tasmota device:" << url.toString();
         QNetworkRequest request(url);
         QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
         connect(reply, &QNetworkReply::finished, this, [this, device, channel, reply](){
@@ -167,9 +181,13 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
 
             qCDebug(dcTasmota) << "Adding Tasmota connected devices";
             deviceDescriptors.clear();
+            int shutterUpChannel = -1;
+            int shutterDownChannel = -1;
             for (int i = 0; i < m_attachedDeviceParamTypeIdMap.value(device->deviceClassId()).count(); i++) {
                 ParamTypeId attachedDeviceParamTypeId = m_attachedDeviceParamTypeIdMap.value(device->deviceClassId()).at(i);
-                if (device->paramValue(attachedDeviceParamTypeId).toString() == "Light") {
+                QString deviceType = device->paramValue(attachedDeviceParamTypeId).toString();
+                qCDebug(dcTasmota) << "Connected Device" << i + 1 << deviceType;
+                if (deviceType == "Light") {
                     DeviceDescriptor descriptor(tasmotaLightDeviceClassId, device->name() + " CH" + QString::number(i+1), QString(), device->id());
                     descriptor.setParentDeviceId(device->id());
                     if (m_attachedDeviceParamTypeIdMap.value(device->deviceClassId()).count() == 1) {
@@ -178,10 +196,26 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
                         descriptor.setParams(ParamList() << Param(tasmotaLightDeviceChannelNameParamTypeId, "POWER" + QString::number(i+1)));
                     }
                     deviceDescriptors << descriptor;
+                } else if (deviceType == "Roller Shutter Up") {
+                    shutterUpChannel = i+1;
+                } else if (deviceType == "Roller Shutter Down") {
+                    shutterDownChannel = i+1;
                 }
             }
             if (!deviceDescriptors.isEmpty()) {
                 emit autoDevicesAppeared(tasmotaLightDeviceClassId, deviceDescriptors);
+            }
+            deviceDescriptors.clear();
+            if (shutterUpChannel != -1 && shutterDownChannel != -1) {
+                qCDebug(dcTasmota) << "Adding Shutter device";
+                DeviceDescriptor descriptor(tasmotaShutterDeviceClassId, device->name() + " Shutter", QString(), device->id());
+                descriptor.setParams(ParamList()
+                                     << Param(tasmotaShutterDeviceOpeningChannelParamTypeId, "POWER" + QString::number(shutterUpChannel))
+                                     << Param(tasmotaShutterDeviceClosingChannelParamTypeId, "POWER" + QString::number(shutterDownChannel)));
+                deviceDescriptors << descriptor;
+            }
+            if (!deviceDescriptors.isEmpty()) {
+                emit autoDevicesAppeared(tasmotaShutterDeviceClassId, deviceDescriptors);
             }
         });
         return DeviceManager::DeviceSetupStatusAsync;
@@ -220,6 +254,30 @@ DeviceManager::DeviceError DevicePluginTasmota::executeAction(Device *device, co
         device->setStateValue(m_powerStateTypeMap.value(device->deviceClassId()), action.param(powerActionParamTypeId).value().toBool());
         return DeviceManager::DeviceErrorNoError;
     }
+    if (device->deviceClassId() == tasmotaShutterDeviceClassId) {
+        Device *parentDev = myDevices().findById(device->parentId());
+        MqttChannel *channel = m_mqttChannels.value(parentDev);
+        ParamTypeId openingChannelParamTypeId = m_openingChannelParamTypeMap.value(device->deviceClassId());
+        ParamTypeId closingChannelParamTypeId = m_closingChannelParamTypeMap.value(device->deviceClassId());
+        if (action.actionTypeId() == tasmotaShutterOpenActionTypeId) {
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "OFF";
+            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "OFF");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "ON";
+            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "ON");
+        } else if (action.actionTypeId() == tasmotaShutterCloseActionTypeId) {
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "OFF";
+            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "OFF");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "ON";
+            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "ON");
+        } else { // Stop
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "OFF";
+            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "OFF");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "OFF";
+            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "OFF");
+        }
+        return DeviceManager::DeviceErrorNoError;
+    }
+    qCWarning(dcTasmota) << "Unhandled execute action call for device" << device;
     return DeviceManager::DeviceErrorDeviceClassNotFound;
 }
 
@@ -264,7 +322,9 @@ void DevicePluginTasmota::onPublishReceived(MqttChannel *channel, const QString 
                 if (child->paramValue(m_channelParamTypeMap.value(child->deviceClassId())).toString() != channelName) {
                     continue;
                 }
-                child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), payload == "ON");
+                if (m_powerStateTypeMap.contains(child->deviceClassId())) {
+                    child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), payload == "ON");
+                }
             }
         }
         if (topic.startsWith(channel->topicPrefix() + "/sonoff/STATE")) {
@@ -278,9 +338,11 @@ void DevicePluginTasmota::onPublishReceived(MqttChannel *channel, const QString 
                 if (child->parentId() != dev->id()) {
                     continue;
                 }
-                QString childChannel = child->paramValue(m_channelParamTypeMap.value(child->deviceClassId())).toString();
-                QString valueString = jsonDoc.toVariant().toMap().value(childChannel).toString();
-                child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), valueString == "ON");
+                if (m_powerStateTypeMap.contains(child->deviceClassId())) {
+                    QString childChannel = child->paramValue(m_channelParamTypeMap.value(child->deviceClassId())).toString();
+                    QString valueString = jsonDoc.toVariant().toMap().value(childChannel).toString();
+                    child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), valueString == "ON");
+                }
             }
 
         }
