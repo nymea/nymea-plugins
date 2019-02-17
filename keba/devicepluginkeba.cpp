@@ -247,7 +247,7 @@ void DevicePluginKeba::readPendingDatagrams()
 
                 m_kebaDevices.value(sender)->setStateValue(wallboxPStateTypeId,data.value("P").toInt());
                 m_kebaDevices.value(sender)->setStateValue(wallboxEPStateTypeId,data.value("E pres").toInt()/10000.00);
-                m_kebaDevices.value(sender)->setStateValue(wallboxETStateTypeId,data.value("E total").toInt()/10000.00);
+                m_kebaDevices.value(sender)->setStateValue(wallboxTotalEnergyConsumedStateTypeId,data.value("E total").toInt()/10000.00);
             }
         }
     }

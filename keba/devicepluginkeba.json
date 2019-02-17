@@ -14,7 +14,7 @@
                     "displayName": "Keba KeContact",
                     "deviceIcon": "Energy",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": ["connectable", "extendedevcharger"],
+                    "interfaces": ["connectable", "extendedevcharger", "smartmeterconsumer"],
                     "basicTags": [
                         "Energy"
                     ],
@@ -179,9 +179,9 @@
                         },
                         {
                             "id": "41e179b3-29a2-43ec-b537-023a527081e8",
-                            "name": "ET",
-                            "displayName": "Total energy",
-                            "displayNameEvent": "Total energy changed",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "displayNameEvent": "Total energy consumption changed",
                             "eventRuleRelevant": false,
                             "type": "double",
                             "unit": "KiloWattHour",
