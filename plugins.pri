@@ -7,7 +7,7 @@ QMAKE_LFLAGS += -std=c++11
 INCLUDEPATH += /usr/include/nymea
 LIBS += -lnymea
 HEADERS += $${OUT_PWD}/plugininfo.h \
-           $${OUT_PWD}/extern-plugininfo.h
+           $${OUT_PWD}/extern-plugininfo.h \
 
 PLUGIN_PATH=/usr/lib/$$system('dpkg-architecture -q DEB_HOST_MULTIARCH')/nymea/plugins/
 
@@ -57,4 +57,6 @@ TRANSLATIONS += $$files($$[QT_SOURCE_TREE]/translations/*.ts, true)
 # Install plugin
 target.path = $$PLUGIN_PATH
 INSTALLS += target translations
+
+SOURCES += \
 
