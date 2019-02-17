@@ -39,7 +39,7 @@
 
     For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
 
-    \quotefile plugins/deviceplugins/networkdetector/devicepluginnetworkdetector.json
+    \quotefile plugins/deviceplugins/modbuscommander/devicepluginmodbuscommander.json
 */
 
 #include "devicepluginmodbuscommander.h"
