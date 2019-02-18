@@ -28,9 +28,9 @@
 #include "plugintimer.h"
 #include "host.h"
 #include "discovery.h"
+#include "kebaconnection.h"
 
 #include <QHash>
-#include <QNetworkReply>
 #include <QUdpSocket>
 
 class DevicePluginKeba : public DevicePlugin
@@ -43,37 +43,25 @@ class DevicePluginKeba : public DevicePlugin
 public:
     explicit DevicePluginKeba();
     ~DevicePluginKeba();
-
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-
     void postSetupDevice(Device* device) override;
     void deviceRemoved(Device* device) override;
-
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_updateTimer = nullptr;
     QUdpSocket *m_kebaSocket = nullptr;
     Discovery *m_discovery = nullptr;
-    QHash<QHostAddress, Device *> m_kebaDevices;
-    QHash<Device *, int> m_connectionTimoutCounter;
-
-
-    void enableOutput(bool state, Device *device);
-    void setMaxAmpere(int milliAmpere, Device *device);
-    void getDeviceInformation(Device *device);
-    void getReport1(Device *device);
-    void getReport2(Device *device);
-    void getReport3(Device *device);
-    void unlockCharger(Device *device);
-    void sendData(const QByteArray &data, const QHostAddress &address);
-    void displayMessage(const QByteArray &message, Device *device);
+    QHash<Device *, KebaConnection *> m_kebaConnections;
     void rediscoverDevice(Device *device);
+
 private slots:
     void readPendingDatagrams();
     void updateData();
     void discoveryFinished(const QList<Host> &hosts);
+    void onConnectionChanged(bool status);
+    void onSendData(const QByteArray &data);
 };
 
 #endif // DEVICEPLUGINKEBA_H

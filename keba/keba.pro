@@ -8,8 +8,10 @@ SOURCES += \
     devicepluginkeba.cpp \
     discovery.cpp \
     host.cpp \
+    kebaconnection.cpp \
 
 HEADERS += \
     devicepluginkeba.h \
     discovery.h \
     host.h \
+    kebaconnection.h \
