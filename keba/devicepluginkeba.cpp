@@ -80,13 +80,6 @@ DeviceManager::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
         return DeviceManager::DeviceSetupStatusFailure;
     }
 
-    // check if IP is already added to another keba device
-    foreach (Device *checkDevice, myDevices()) {
-        if (checkDevice->paramValue(wallboxDeviceIpAddressParamTypeId).toString() == address.toString()) {
-            qCWarning(dcKebaKeContact()) << "Address already taken";
-            return DeviceManager::DeviceSetupStatusFailure;
-        }
-    }
     KebaConnection *kebaConnection = new KebaConnection(address, this);
     m_kebaConnections.insert(device, kebaConnection);
     connect(kebaConnection, &KebaConnection::sendData, this, &DevicePluginKeba::onSendData);
@@ -98,6 +91,10 @@ void DevicePluginKeba::postSetupDevice(Device *device)
 {
     qCDebug(dcKebaKeContact()) << "Post setup" << device->name();
     KebaConnection *kebaConnection = m_kebaConnections.value(device);
+    if (!kebaConnection) {
+        qCWarning(dcKebaKeContact()) << "No Keba Connection";
+        return;
+    }
     kebaConnection->displayMessage("nymea");
     kebaConnection->getReport2();
     kebaConnection->getReport3();
@@ -106,7 +103,8 @@ void DevicePluginKeba::postSetupDevice(Device *device)
 void DevicePluginKeba::deviceRemoved(Device *device)
 {
     // Remove devices
-    m_kebaConnections.remove(device);
+    KebaConnection *kebaConnection = m_kebaConnections.take(device);
+    kebaConnection->deleteLater();
 
     if(m_kebaConnections.isEmpty()){
         m_kebaSocket->close();
@@ -116,6 +114,7 @@ void DevicePluginKeba::deviceRemoved(Device *device)
 
     if (myDevices().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_updateTimer);
+        m_updateTimer = nullptr;
         qCDebug(dcKebaKeContact()) << "device list empty, stopping timer";
     }
 }
@@ -132,6 +131,10 @@ DeviceManager::DeviceError DevicePluginKeba::executeAction(Device *device, const
 {
     if (device->deviceClassId() == wallboxDeviceClassId) {
         KebaConnection *kebaConnection = m_kebaConnections.value(device);
+        if (!kebaConnection) {
+            qCWarning(dcKebaKeContact()) << "No Keba Connection";
+            return DeviceManager::DeviceErrorHardwareNotAvailable;
+        }
 
         if(action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId){
 
@@ -174,8 +177,11 @@ void DevicePluginKeba::readPendingDatagrams()
             {
                 senderUnkown = false;
                 KebaConnection *kebaConnection = m_kebaConnections.value(device);
+                if (!kebaConnection) {
+                    qCWarning(dcKebaKeContact()) << "No Keba Connection";
+                    continue;
+                }
                 kebaConnection->onAnswerReceived();
-                qCDebug(dcKebaKeContact()) << "Got message from" << sender.toString() << datagram;
 
                 if(datagram.contains("TCH-OK")){
                     qCDebug(dcKebaKeContact()) << "Command ACK:" << datagram;

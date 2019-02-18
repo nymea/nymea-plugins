@@ -11,6 +11,12 @@ KebaConnection::KebaConnection(QHostAddress address, QObject *parent) :
     connect(m_timeoutTimer, &QTimer::timeout, this, &KebaConnection::onTimeout);
 }
 
+KebaConnection::~KebaConnection() {
+    qCDebug(dcKebaKeContact()) << "Delete KebaConnection for address" << m_address;
+}
+
+
+
 QHostAddress KebaConnection::getAddress()
 {
     return m_address;

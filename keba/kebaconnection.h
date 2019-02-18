@@ -11,8 +11,9 @@ class KebaConnection : public QObject
     Q_OBJECT
 public:
     explicit KebaConnection(QHostAddress address, QObject *parent = 0);
-    void onAnswerReceived();
+    ~KebaConnection();
 
+    void onAnswerReceived();
     QHostAddress getAddress();
     void setAddress(QHostAddress address);
     bool getDeviceConnectedStatus();
@@ -31,7 +32,7 @@ private:
     QHostAddress m_address;
     QByteArrayList m_commandList;
     bool m_deviceBlocked = false;
-    bool m_connected;
+    bool m_connected = false;
     QTimer *m_timeoutTimer = nullptr;
 
     void sendCommand(const QByteArray &data);
