@@ -707,6 +707,7 @@ Package: nymea-plugin-serialportcommander
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         libqt5serialport5,
          nymea-plugins-translations,
 Description: nymea.io plugin to send and receive strings over a serial port
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
