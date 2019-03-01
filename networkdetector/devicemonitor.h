@@ -25,6 +25,7 @@ private:
     void lookupArpCache();
     void arping();
     void ping();
+    void broadcastPing();
 
     void log(const QString &message);
     void warn(const QString &message);
@@ -33,6 +34,7 @@ private slots:
     void arpLookupFinished(int exitCode);
     void arpingFinished(int exitCode);
     void pingFinished(int exitCode);
+    void broadcastPingFinished(int exitCode);
 
 private:
     QString m_name;
