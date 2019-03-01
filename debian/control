@@ -374,6 +374,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nmap,
+         fping,
          nymea-plugins-translations,
 Replaces: guh-plugin-networkdetector
 Description: nymea.io plugin for networkdetector
