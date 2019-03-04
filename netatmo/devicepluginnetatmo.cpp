@@ -117,12 +117,6 @@ void DevicePluginNetatmo::deviceRemoved(Device *device)
         OAuth2 * authentication = m_authentications.key(device);
         m_authentications.remove(authentication);
         authentication->deleteLater();
-
-        if (m_pluginTimer) {
-            m_pluginTimer->deleteLater();
-            m_pluginTimer = nullptr;
-        }
-
     } else if (device->deviceClassId() == indoorDeviceClassId) {
         NetatmoBaseStation *indoor = m_indoorDevices.key(device);
         m_indoorDevices.remove(indoor);
@@ -131,6 +125,11 @@ void DevicePluginNetatmo::deviceRemoved(Device *device)
         NetatmoOutdoorModule *outdoor = m_outdoorDevices.key(device);
         m_outdoorDevices.remove(outdoor);
         outdoor->deleteLater();
+    }
+
+    if (myDevices().isEmpty() && m_pluginTimer) {
+        m_pluginTimer->deleteLater();
+        m_pluginTimer = nullptr;
     }
 }
 
