@@ -60,14 +60,18 @@ DevicePluginNetatmo::~DevicePluginNetatmo()
 
 void DevicePluginNetatmo::init()
 {
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginNetatmo::onPluginTimer);
+
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
 {
     if (device->deviceClassId() == netatmoConnectionDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo connection" << device->name() << device->params();
+
+        if (!m_pluginTimer) {
+            m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(300);
+            connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginNetatmo::onPluginTimer);
+        }
 
         OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
         authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
@@ -113,6 +117,12 @@ void DevicePluginNetatmo::deviceRemoved(Device *device)
         OAuth2 * authentication = m_authentications.key(device);
         m_authentications.remove(authentication);
         authentication->deleteLater();
+
+        if (m_pluginTimer) {
+            m_pluginTimer->deleteLater();
+            m_pluginTimer = nullptr;
+        }
+
     } else if (device->deviceClassId() == indoorDeviceClassId) {
         NetatmoBaseStation *indoor = m_indoorDevices.key(device);
         m_indoorDevices.remove(indoor);
