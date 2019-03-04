@@ -50,7 +50,7 @@ public slots:
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    PluginTimer *m_pluginTimer;
+    PluginTimer *m_pluginTimer = nullptr;
     QList<Device *> m_asyncSetups;
 
     QHash<OAuth2 *, Device *> m_authentications;
