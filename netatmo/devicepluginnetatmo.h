@@ -45,6 +45,7 @@ public:
     void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
+    void postSetupDevice(Device *device) override;
 
 public slots:
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
@@ -53,6 +54,9 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     QList<Device *> m_asyncSetups;
 
+    QHash<QString, QVariantMap> m_indoorStationInitData;
+    QHash<QString, QVariantMap> m_outdoorStationInitData;
+
     QHash<OAuth2 *, Device *> m_authentications;
     QHash<NetatmoBaseStation *, Device *> m_indoorDevices;
     QHash<NetatmoOutdoorModule *, Device *> m_outdoorDevices;
@@ -60,7 +64,7 @@ private:
     QHash<QNetworkReply *, Device *> m_refreshRequest;
 
     void refreshData(Device *device, const QString &token);
-    void processRefreshData(const QVariantMap &data, const QString &connectionId);
+    void processRefreshData(const QVariantMap &data, Device *connectionDevice);
 
     Device *findIndoorDevice(const QString &macAddress);
     Device *findOutdoorDevice(const QString &macAddress);
