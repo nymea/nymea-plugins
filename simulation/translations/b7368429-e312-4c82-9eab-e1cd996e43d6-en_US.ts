@@ -38,6 +38,8 @@ The name of the autocreated EventType (DeviceClass: heating, StateType: power, I
 ----------
 The name of the autocreated EventType (DeviceClass: evCharger, StateType: power, ID: b786029d-f3a6-4b47-978a-ac1a581aac0f)
 ----------
+The name of the autocreated EventType (DeviceClass: thermostat, StateType: power, ID: 94a7d50c-df3b-4590-a89e-9dae40ad84fa)
+----------
 The name of the autocreated EventType (DeviceClass: colorBulb, StateType: power, ID: 9faaffe5-6a76-47d2-a14a-550f60390245)
 ----------
 The name of the autocreated EventType (DeviceClass: socket, StateType: power, ID: b7ff029d-f3a6-4b47-978a-ac1a581aac0f)
@@ -54,6 +56,8 @@ The name of the autocreated EventType (DeviceClass: waterValve, StateType: power
 The name of the autocreated ActionType (DeviceClass: heating, StateType: power, ID: e1910c53-a6bc-434b-9caa-0d08e214c122)
 ----------
 The name of the autocreated ActionType (DeviceClass: evCharger, StateType: power, ID: b786029d-f3a6-4b47-978a-ac1a581aac0f)
+----------
+The name of the autocreated ActionType (DeviceClass: thermostat, StateType: power, ID: 94a7d50c-df3b-4590-a89e-9dae40ad84fa)
 ----------
 The name of the autocreated ActionType (DeviceClass: colorBulb, StateType: power, ID: 9faaffe5-6a76-47d2-a14a-550f60390245)
 ----------
@@ -305,6 +309,10 @@ The name of the ParamType for the autocreated EventType (DeviceClass: evCharger,
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: evCharger, StateType: power, ID: b786029d-f3a6-4b47-978a-ac1a581aac0f)
 ----------
+The name of the ParamType for the autocreated EventType (DeviceClass: thermostat, StateType: power, ID: 94a7d50c-df3b-4590-a89e-9dae40ad84fa
+----------
+The name of the ParamType for the autocreated ActionType (DeviceClass: thermostat, StateType: power, ID: 94a7d50c-df3b-4590-a89e-9dae40ad84fa)
+----------
 The name of the ParamType for the autocreated EventType (DeviceClass: colorBulb, StateType: power, ID: 9faaffe5-6a76-47d2-a14a-550f60390245
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: colorBulb, StateType: power, ID: 9faaffe5-6a76-47d2-a14a-550f60390245)
@@ -421,7 +429,9 @@ The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod
     </message>
     <message>
         <source>Target temperature</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: thermostat, StateType: temperature, ID: edc0ccb6-3a78-44b9-8c7d-638142c27e10</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: thermostat, StateType: targetTemperature, ID: edc0ccb6-3a78-44b9-8c7d-638142c27e10
+----------
+The name of the ParamType for the autocreated ActionType (DeviceClass: thermostat, StateType: targetTemperature, ID: edc0ccb6-3a78-44b9-8c7d-638142c27e10)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -650,9 +660,7 @@ The name of the ParamType (DeviceClass: fingerPrintSensor, EventType: accessGran
     </message>
     <message>
         <source>Percentage changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8)
-----------
-The name of the autocreated EventType (DeviceClass: evCharger, StateType: percentage, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -661,10 +669,6 @@ The name of the autocreated EventType (DeviceClass: evCharger, StateType: percen
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8)
 ----------
-The name of the ParamType for the autocreated EventType (DeviceClass: evCharger, StateType: percentage, ID: 87600986-da37-4032-af37-015995910368
-----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: evCharger, StateType: percentage, ID: 87600986-da37-4032-af37-015995910368)
-----------
 The name of the ParamType for the autocreated EventType (DeviceClass: heatingRod, StateType: percentage, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: heatingRod, StateType: percentage, ID: 2ab2a0fa-ea66-426c-ba22-d23b42c80883)</extracomment>
@@ -672,9 +676,7 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: heatingRo
     </message>
     <message>
         <source>Set percentage</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8)
-----------
-The name of the autocreated ActionType (DeviceClass: evCharger, StateType: percentage, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: heating, StateType: percentage, ID: 1302cb53-ccdc-49eb-88b6-85659c7d11b8)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -684,7 +686,7 @@ The name of the autocreated ActionType (DeviceClass: evCharger, StateType: perce
     </message>
     <message>
         <source>Target temperature changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: thermostat, StateType: temperature, ID: edc0ccb6-3a78-44b9-8c7d-638142c27e10)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: thermostat, StateType: targetTemperature, ID: edc0ccb6-3a78-44b9-8c7d-638142c27e10)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -765,6 +767,45 @@ The name of the autocreated ActionType (DeviceClass: evCharger, StateType: perce
     <message>
         <source>moving</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: extendedBlind, StateType: moving, ID: 83559182-f3db-4a4a-8c70-d5fb3ceb57de</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MAximum charging current changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: evCharger, StateType: maxChargingCurrent, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum charging current</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: evCharger, StateType: maxChargingCurrent, ID: 87600986-da37-4032-af37-015995910368
+----------
+The name of the ParamType for the autocreated ActionType (DeviceClass: evCharger, StateType: maxChargingCurrent, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set maximum charging current</source>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: evCharger, StateType: maxChargingCurrent, ID: 87600986-da37-4032-af37-015995910368)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set target temperature</source>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: thermostat, StateType: targetTemperature, ID: edc0ccb6-3a78-44b9-8c7d-638142c27e10)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Boost enabled changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: thermostat, StateType: boost, ID: f892f660-87ff-458a-bfa0-5af08591233e)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Boost</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: thermostat, StateType: boost, ID: f892f660-87ff-458a-bfa0-5af08591233e
+----------
+The name of the ParamType for the autocreated ActionType (DeviceClass: thermostat, StateType: boost, ID: f892f660-87ff-458a-bfa0-5af08591233e)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable/disable boost</source>
+        <extracomment>The name of the autocreated ActionType (DeviceClass: thermostat, StateType: boost, ID: f892f660-87ff-458a-bfa0-5af08591233e)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
