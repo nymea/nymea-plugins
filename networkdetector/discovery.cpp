@@ -65,10 +65,10 @@ void Discovery::discoveryFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
     if (exitCode != 0 || exitStatus != QProcess::NormalExit) {
         qCWarning(dcNetworkDetector()) << "Nmap error failed. Is nmap installed correctly?";
-        emit finished({});
         m_discoveryProcesses.removeAll(discoveryProcess);
         discoveryProcess->deleteLater();
         discoveryProcess = nullptr;
+        finishDiscovery();
         return;
     }
 
@@ -139,7 +139,7 @@ void Discovery::discoveryFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
     if (foundHosts == 0 && m_discoveryProcesses.isEmpty()) {
         qCDebug(dcNetworkDetector()) << "Network scan successful but no hosts found in this network";
-        emit finished({});
+        finishDiscovery();
     }
 }
 
