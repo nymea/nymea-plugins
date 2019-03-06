@@ -59,7 +59,8 @@ DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *dev
             device->deviceClassId() == extendedAwningDeviceClassId ||
             device->deviceClassId() == extendedBlindDeviceClassId ||
             device->deviceClassId() == rollerShutterDeviceClassId ||
-            device->deviceClassId() == fingerPrintSensorDeviceClassId) {
+            device->deviceClassId() == fingerPrintSensorDeviceClassId ||
+            device->deviceClassId() == thermostatDeviceClassId) {
         m_simulationTimers.insert(device, new QTimer(device));
         connect(m_simulationTimers[device], &QTimer::timeout, this, &DevicePluginSimulation::simulationTimerTimeout);
     }
@@ -141,6 +142,37 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
+    }
+
+    if (device->deviceClassId() == thermostatDeviceClassId) {
+        if (action.actionTypeId() == thermostatPowerActionTypeId) {
+            bool power = action.param(thermostatPowerActionPowerParamTypeId).value().toBool();
+            if (!power && device->stateValue(thermostatBoostStateTypeId).toBool()) {
+                device->setStateValue(thermostatBoostStateTypeId, false);
+            }
+            qCDebug(dcSimulation()) << "Set power" << power << "for thermostat device" << device->name();
+            device->setStateValue(thermostatPowerStateTypeId, power);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == thermostatBoostActionTypeId) {
+            bool boost = action.param(thermostatBoostActionBoostParamTypeId).value().toBool();
+            if (boost && !device->stateValue(thermostatPowerStateTypeId).toBool()) {
+                device->setStateValue(thermostatPowerStateTypeId, true);
+            }
+            qCDebug(dcSimulation()) << "Set boost" << boost << "for thermostat device" << device->name();
+            device->setStateValue(thermostatBoostStateTypeId, boost);
+            m_simulationTimers.value(device)->start(5 * 60 * 1000);
+            return DeviceManager::DeviceErrorNoError;
+        }
+        if (action.actionTypeId() == thermostatTargetTemperatureActionTypeId) {
+            if (!device->stateValue(thermostatPowerStateTypeId).toBool()) {
+                device->setStateValue(thermostatPowerStateTypeId, true);
+            }
+            double targetTemp = action.param(thermostatTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
+            qCDebug(dcSimulation()) << "Set targetTemp" << targetTemp << "for thermostat device" << device->name();
+            device->setStateValue(thermostatTargetTemperatureStateTypeId, targetTemp);
+            return DeviceManager::DeviceErrorNoError;
+        }
     }
 
     if (device->deviceClassId() == evChargerDeviceClassId){
@@ -668,5 +700,8 @@ void DevicePluginSimulation::simulationTimerTimeout()
         }
         Event event(evt, device->id(), params);
         emitEvent(event);
+    } else if (device->deviceClassId() == thermostatDeviceClassId) {
+        device->setStateValue(thermostatBoostStateTypeId, false);
+        t->stop();
     }
 }
