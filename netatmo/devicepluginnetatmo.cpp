@@ -55,19 +55,23 @@ DevicePluginNetatmo::DevicePluginNetatmo()
 
 DevicePluginNetatmo::~DevicePluginNetatmo()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+
 }
 
 void DevicePluginNetatmo::init()
 {
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginNetatmo::onPluginTimer);
+
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
 {
     if (device->deviceClassId() == netatmoConnectionDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo connection" << device->name() << device->params();
+
+        if (!m_pluginTimer) {
+            m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(600);
+            connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginNetatmo::onPluginTimer);
+        }
 
         OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
         authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
@@ -122,6 +126,26 @@ void DevicePluginNetatmo::deviceRemoved(Device *device)
         m_outdoorDevices.remove(outdoor);
         outdoor->deleteLater();
     }
+
+    if (myDevices().isEmpty() && m_pluginTimer) {
+        m_pluginTimer->deleteLater();
+        m_pluginTimer = nullptr;
+    }
+}
+
+void DevicePluginNetatmo::postSetupDevice(Device *device)
+{
+    if (device->deviceClassId() == indoorDeviceClassId) {
+        QString stationId = device->paramValue(indoorDeviceMacParamTypeId).toString();
+        if (m_indoorStationInitData.contains(stationId) && m_indoorDevices.values().contains(device)) {
+            m_indoorDevices.key(device)->updateStates(m_indoorStationInitData.take(stationId));
+        }
+    } else if (device->deviceClassId() == outdoorDeviceClassId) {
+        QString stationId = device->paramValue(outdoorDeviceMacParamTypeId).toString();
+        if (m_outdoorStationInitData.contains(stationId) && m_outdoorDevices.values().contains(device)) {
+            m_outdoorDevices.key(device)->updateStates(m_outdoorStationInitData.take(stationId));
+        }
+    }
 }
 
 DeviceManager::DeviceError DevicePluginNetatmo::executeAction(Device *device, const Action &action)
@@ -146,10 +170,10 @@ void DevicePluginNetatmo::refreshData(Device *device, const QString &token)
     m_refreshRequest.insert(reply, device);
 }
 
-void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, const QString &connectionId)
+void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, Device *connectionDevice)
 {
+    // Process the data
     if (data.contains("body")) {
-
         // check devices
         if (data.value("body").toMap().contains("devices")) {
             QVariantList deviceList = data.value("body").toMap().value("devices").toList();
@@ -161,11 +185,12 @@ void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, const QStr
                     Device *indoorDevice = findIndoorDevice(deviceMap.value("_id").toString());
                     // check if we have to create the device (auto)
                     if (!indoorDevice) {
-                        DeviceDescriptor descriptor(indoorDeviceClassId, "Indoor Station", deviceMap.value("station_name").toString(), connectionId);
+                        DeviceDescriptor descriptor(indoorDeviceClassId, deviceMap.value("module_name").toString(), deviceMap.value("station_name").toString(), connectionDevice->id());
                         ParamList params;
                         params.append(Param(indoorDeviceNameParamTypeId, deviceMap.value("station_name").toString()));
                         params.append(Param(indoorDeviceMacParamTypeId, deviceMap.value("_id").toString()));
                         descriptor.setParams(params);
+                        m_indoorStationInitData.insert(deviceMap.value("_id").toString(), deviceMap);
                         emit autoDevicesAppeared(indoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
                     } else {
                         if (m_indoorDevices.values().contains(indoorDevice)) {
@@ -173,30 +198,31 @@ void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, const QStr
                         }
                     }
                 }
-            }
-        }
 
-        // check modules
-        if (data.value("body").toMap().contains("modules")) {
-            QVariantList modulesList = data.value("body").toMap().value("modules").toList();
-            // check devices
-            foreach (QVariant moduleVariant, modulesList) {
-                QVariantMap moduleMap = moduleVariant.toMap();
-                // we support currently only NAModule1
-                if (moduleMap.value("type").toString() == "NAModule1") {
-                    Device *outdoorDevice = findOutdoorDevice(moduleMap.value("_id").toString());
-                    // check if we have to create the device (auto)
-                    if (!outdoorDevice) {
-                        DeviceDescriptor descriptor(outdoorDeviceClassId, "Outdoor Module", moduleMap.value("module_name").toString(), connectionId);
-                        ParamList params;
-                        params.append(Param(outdoorDeviceNameParamTypeId, moduleMap.value("module_name").toString()));
-                        params.append(Param(outdoorDeviceMacParamTypeId, moduleMap.value("_id").toString()));
-                        params.append(Param(outdoorDeviceBaseStationParamTypeId, moduleMap.value("main_device").toString()));
-                        descriptor.setParams(params);
-                        emit autoDevicesAppeared(outdoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
-                    } else {
-                        if (m_outdoorDevices.values().contains(outdoorDevice)) {
-                            m_outdoorDevices.key(outdoorDevice)->updateStates(moduleMap);
+                // check modules
+                if (deviceMap.contains("modules")) {
+                    QVariantList modulesList = deviceMap.value("modules").toList();
+                    foreach (QVariant moduleVariant, modulesList) {
+                        QVariantMap moduleMap = moduleVariant.toMap();
+                        // we support currently only NAModule1
+                        if (moduleMap.value("type").toString() == "NAModule1") {
+                            Device *outdoorDevice = findOutdoorDevice(moduleMap.value("_id").toString());
+
+                            // check if we have to create the device (auto)
+                            if (!outdoorDevice) {
+                                DeviceDescriptor descriptor(outdoorDeviceClassId, "Outdoor Module", moduleMap.value("module_name").toString(), connectionDevice->id());
+                                ParamList params;
+                                params.append(Param(outdoorDeviceNameParamTypeId, moduleMap.value("module_name").toString()));
+                                params.append(Param(outdoorDeviceMacParamTypeId, moduleMap.value("_id").toString()));
+                                params.append(Param(outdoorDeviceBaseStationParamTypeId, deviceMap.value("_id").toString()));
+                                descriptor.setParams(params);
+                                m_outdoorStationInitData.insert(moduleMap.value("_id").toString(), moduleMap);
+                                emit autoDevicesAppeared(outdoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
+                            } else {
+                                if (m_outdoorDevices.values().contains(outdoorDevice)) {
+                                    m_outdoorDevices.key(outdoorDevice)->updateStates(moduleMap);
+                                }
+                            }
                         }
                     }
                 }
@@ -226,7 +252,7 @@ Device *DevicePluginNetatmo::findOutdoorDevice(const QString &macAddress)
             }
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void DevicePluginNetatmo::onPluginTimer()
@@ -243,8 +269,9 @@ void DevicePluginNetatmo::onPluginTimer()
 void DevicePluginNetatmo::onNetworkReplyFinished()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    reply->deleteLater();
 
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     // update values request
     if (m_refreshRequest.keys().contains(reply)) {
         Device *device = m_refreshRequest.take(reply);
@@ -253,7 +280,6 @@ void DevicePluginNetatmo::onNetworkReplyFinished()
         if (status != 200) {
             qCWarning(dcNetatmo) << "Device list reply HTTP error:" << status << reply->errorString();
             device->setStateValue(netatmoConnectionConnectedStateTypeId, false);
-            reply->deleteLater();
             return;
         }
 
@@ -262,35 +288,32 @@ void DevicePluginNetatmo::onNetworkReplyFinished()
         QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcNetatmo) << "Device list reply JSON error:" << error.errorString();
-            reply->deleteLater();
             return;
         }
 
-        //qCDebug(dcNetatmo) << jsonDoc.toJson();
-        processRefreshData(jsonDoc.toVariant().toMap(), device->id().toString());
+        qCDebug(dcNetatmo) << qUtf8Printable(jsonDoc.toJson());
+        processRefreshData(jsonDoc.toVariant().toMap(), device);
     }
-
-    reply->deleteLater();
 }
 
 void DevicePluginNetatmo::onAuthenticationChanged()
 {
     OAuth2 *authentication = static_cast<OAuth2 *>(sender());
     Device *device = m_authentications.value(authentication);
-
     if (!device)
         return;
 
-    // set the available state
+    // Set the available state
     device->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
 
     // check if this is was a setup athentication
     if (m_asyncSetups.contains(device)) {
+        m_asyncSetups.removeAll(device);
         if (authentication->authenticated()) {
-            m_asyncSetups.removeAll(device);
             emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
             refreshData(device, authentication->token());
         } else {
+            authentication->deleteLater();
             emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
         }
     }
