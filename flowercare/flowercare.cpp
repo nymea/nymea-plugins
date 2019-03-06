@@ -124,7 +124,7 @@ void FlowerCare::processSensorData(const QByteArray &data)
     QByteArray copy = data;
     QDataStream stream(&copy, QIODevice::ReadOnly);
     stream.setByteOrder(QDataStream::LittleEndian);
-    quint16 temp;
+    qint16 temp;
     stream >> temp;
     qint8 skip;
     stream >> skip;
