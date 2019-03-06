@@ -367,6 +367,13 @@ void DevicePluginEQ3::discoveryDone(const QList<MaxCube *> &cubeList)
         Param serialNumberParam(cubeDeviceSerialParamTypeId, cube->serialNumber());
         params.append(serialNumberParam);
 
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(cubeDeviceSerialParamTypeId).toString() == cube->serialNumber()) {
+                descriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
+
         descriptor.setParams(params);
         retList.append(descriptor);
     }

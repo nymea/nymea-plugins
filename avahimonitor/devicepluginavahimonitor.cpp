@@ -82,6 +82,12 @@ DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const Devic
         params.append(Param(avahiDeviceServiceParamTypeId, service.name()));
         params.append(Param(avahiDeviceHostNameParamTypeId, service.hostName()));
         deviceDescriptor.setParams(params);
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(avahiDeviceServiceParamTypeId).toString() == service.name() && existingDevice->paramValue(avahiDeviceHostNameParamTypeId).toString() == service.hostName()) {
+                deviceDescriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
         deviceDescriptors.append(deviceDescriptor);
     }
 

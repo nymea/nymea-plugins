@@ -154,8 +154,16 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor descriptor(deviceClassId, QString("Relay %1").arg(circuit), circuit);
                 ParamList parameters;
                 parameters.append(Param(relayOutputDeviceNumberParamTypeId, circuit));
-
                 descriptor.setParams(parameters);
+
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(relayOutputDeviceNumberParamTypeId).toString() == circuit) {
+                        descriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
+
+
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);

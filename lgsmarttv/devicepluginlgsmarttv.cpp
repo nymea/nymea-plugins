@@ -340,6 +340,13 @@ void DevicePluginLgSmartTv::onUpnpDiscoveryFinished()
         params.append(Param(lgSmartTvDevicePortParamTypeId, upnpDeviceDescriptor.port()));
         params.append(Param(lgSmartTvDeviceKeyParamTypeId, QString()));
         descriptor.setParams(params);
+
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(lgSmartTvDeviceUuidParamTypeId).toString() == upnpDeviceDescriptor.uuid()) {
+                descriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
         deviceDescriptors.append(descriptor);
     }
     emit devicesDiscovered(lgSmartTvDeviceClassId, deviceDescriptors);

@@ -156,6 +156,13 @@ void DevicePluginNetworkDetector::discoveryFinished(const QList<Host> &hosts)
         paramList.append(address);
         descriptor.setParams(paramList);
 
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() == host.macAddress()) {
+                descriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
+
         discoveredDevices.append(descriptor);
     }
 
