@@ -57,12 +57,13 @@ DevicePluginNetworkDetector::DevicePluginNetworkDetector()
 {
     m_discovery = new Discovery(this);
     connect(m_discovery, &Discovery::finished, this, &DevicePluginNetworkDetector::discoveryFinished);
+
+    m_broadcastPing = new BroadcastPing(this);
+    connect(m_broadcastPing, &BroadcastPing::finished, this, &DevicePluginNetworkDetector::broadcastPingFinished);
 }
 
 DevicePluginNetworkDetector::~DevicePluginNetworkDetector()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-
     if (m_discovery->isRunning()) {
         m_discovery->abort();
     }
@@ -70,8 +71,6 @@ DevicePluginNetworkDetector::~DevicePluginNetworkDetector()
 
 void DevicePluginNetworkDetector::init()
 {
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginNetworkDetector::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *device)
@@ -86,7 +85,13 @@ DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device
     connect(monitor, &DeviceMonitor::addressChanged, this, &DevicePluginNetworkDetector::deviceAddressChanged);
     connect(monitor, &DeviceMonitor::seen, this, &DevicePluginNetworkDetector::deviceSeen);
     m_monitors.insert(monitor, device);
-    monitor->update();
+
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
+        connect(m_pluginTimer, &PluginTimer::timeout, m_broadcastPing, &BroadcastPing::run);
+
+        m_broadcastPing->run();
+    }
 
     return DeviceManager::DeviceSetupStatusSuccess;
 }
@@ -114,9 +119,15 @@ void DevicePluginNetworkDetector::deviceRemoved(Device *device)
     DeviceMonitor *monitor = m_monitors.key(device);
     m_monitors.remove(monitor);
     delete monitor;
+
+    if (m_monitors.isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
+
+    }
 }
 
-void DevicePluginNetworkDetector::onPluginTimer()
+void DevicePluginNetworkDetector::broadcastPingFinished()
 {
     foreach (DeviceMonitor *monitor, m_monitors.keys()) {
         monitor->update();

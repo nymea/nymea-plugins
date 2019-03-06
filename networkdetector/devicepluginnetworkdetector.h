@@ -29,6 +29,7 @@
 #include "discovery.h"
 #include "plugintimer.h"
 #include "devicemonitor.h"
+#include "broadcastping.h"
 
 #include <QProcess>
 #include <QXmlStreamReader>
@@ -59,11 +60,12 @@ private slots:
     void deviceAddressChanged(const QString &address);
     void deviceSeen();
 
-    void onPluginTimer();
+    void broadcastPingFinished();
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
     Discovery *m_discovery = nullptr;
+    BroadcastPing *m_broadcastPing = nullptr;
     QHash<DeviceMonitor*, Device*> m_monitors;
 };
 

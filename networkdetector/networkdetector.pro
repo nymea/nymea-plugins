@@ -8,12 +8,14 @@ SOURCES += \
     devicepluginnetworkdetector.cpp \
     host.cpp \
     discovery.cpp \
-    devicemonitor.cpp
+    devicemonitor.cpp \
+    broadcastping.cpp
 
 HEADERS += \
     devicepluginnetworkdetector.h \
     host.h \
     discovery.h \
-    devicemonitor.h
+    devicemonitor.h \
+    broadcastping.h
 
 

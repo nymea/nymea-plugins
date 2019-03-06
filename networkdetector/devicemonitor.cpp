@@ -62,7 +62,13 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
         line.replace(QRegExp("[ ]{1,}"), " ");
         QStringList parts = line.split(" ");
         int lladdrIndex = parts.indexOf("lladdr");
-        if (lladdrIndex >= 0 && parts.count() > lladdrIndex + 1 && parts.at(lladdrIndex+1).toLower() == m_macAddress.toLower()) {
+        if (lladdrIndex == -1 || parts.count() <= lladdrIndex) {
+            continue;
+        }
+        QString entryIP = parts.first();
+        QString entryMAC = parts.at(lladdrIndex + 1);
+
+        if (entryMAC.toLower() == m_macAddress.toLower()) {
             found = true;
             QString entryIP = parts.first();
             if (parts.last() == "REACHABLE") {
@@ -72,13 +78,13 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                     emit reachableChanged(true);
                 }
                 emit seen();
+                m_lastSeenTime = QDateTime::currentDateTime();
                 // Verify if IP address is still the same
                 if (entryIP != mostRecentIP) {
                     mostRecentIP = entryIP;
                 }
                 // If we have a reachable entry, stop processing here
                 needsPing = false;
-                m_failedPings = 0;
                 break;
             } else {
                 // ARP claims the device to be stale... Flagging device to require a ping.
@@ -94,12 +100,25 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                     }
                 }
             }
+        } else if (entryIP == m_ipAddress) {
+            warn("There seems to be a device with our IP but different MAC. Resetting IP config.");
+            if (mostRecentIP == m_ipAddress) {
+                mostRecentIP.clear();
+            }
         }
     }
     if (mostRecentIP != m_ipAddress) {
         log("Device has changed IP: " + m_ipAddress + " -> " + mostRecentIP + ")");
         m_ipAddress = mostRecentIP;
         emit addressChanged(mostRecentIP);
+    }
+    if (m_ipAddress.isEmpty()) {
+        warn("Device not found in ARP cache and no IP config available. Marking as gone.");
+        if (m_reachable) {
+            m_reachable = false;
+            emit reachableChanged(false);
+        }
+        return;
     }
     if (!found) {
         log("Device not found in ARP cache.");
@@ -144,13 +163,13 @@ void DeviceMonitor::arpingFinished(int exitCode)
             emit reachableChanged(true);
         }
         emit seen();
-        m_failedPings = 0;
+        m_lastSeenTime = QDateTime::currentDateTime();
     } else {
         log("ARP Ping failed.");
         ping();
     }
     // read data to discard it from socket
-    QString data = QString::fromLatin1(m_pingProcess->readAll());
+    QString data = QString::fromLatin1(m_arpingProcess->readAll());
     Q_UNUSED(data)
 //    qCDebug(dcNetworkDetector()) << "have ping data" << data;
 }
@@ -172,16 +191,11 @@ void DeviceMonitor::pingFinished(int exitCode)
             emit reachableChanged(true);
         }
         emit seen();
-        m_failedPings = 0;
+        m_lastSeenTime = QDateTime::currentDateTime();
     } else {
-        m_failedPings++;
-        log("ICMP Ping failed for " + QString::number(m_failedPings) + " times. (Grace Period: " + QString::number(m_gracePeriod) + ")");
-        if (m_failedPings > m_gracePeriod - 1) {
-            // Regular ping fails too... Fire a broadcast ping in case the device has changed IP. After that, our ARP table should be up to date again.
-            broadcastPing();
-        }
-        if (m_failedPings > m_gracePeriod && m_reachable) {
-            log("Marking device as offline.");
+        log("ICMP Ping failed.");
+        if (m_reachable && m_lastSeenTime.addSecs(m_gracePeriod * 60) < QDateTime::currentDateTime()) {
+            log("Exceeded grace period of " + QString::number(m_gracePeriod) + " minutes. Marking device as offline.");
             m_reachable = false;
             emit reachableChanged(false);
         }
@@ -190,41 +204,6 @@ void DeviceMonitor::pingFinished(int exitCode)
     QString data = QString::fromLatin1(m_pingProcess->readAll());
     Q_UNUSED(data)
 //    qCDebug(dcNetworkDetector()) << "have ping data" << data;
-}
-
-void DeviceMonitor::broadcastPing()
-{
-    QNetworkAddressEntry targetAddressEntry;
-    foreach (const QNetworkInterface &interface, QNetworkInterface::allInterfaces()) {
-        foreach (const QNetworkAddressEntry &addressEntry, interface.addressEntries()) {
-            QHostAddress clientAddress(m_ipAddress);
-            if (clientAddress.isInSubnet(addressEntry.ip(), addressEntry.prefixLength())) {
-                targetAddressEntry = addressEntry;
-                break;
-            }
-        }
-    }
-    if (targetAddressEntry.broadcast().isNull()) {
-        warn("Could not find a suitable broadcast address Ping.");
-        if (m_reachable) {
-            m_reachable = false;
-            emit reachableChanged(false);
-        }
-        return;
-    }
-
-    QProcess *p = new QProcess(this);
-    log("Sending Broadcast Ping on " + targetAddressEntry.ip().toString() + '/' + QString::number(targetAddressEntry.prefixLength()) + "...");
-    p->start("fping", {"-a", "-c", "5", "-g", targetAddressEntry.broadcast().toString() + "/" + QString::number(targetAddressEntry.prefixLength())});
-    connect(p, SIGNAL(finished(int)), this, SLOT(broadcastPingFinished(int)));
-}
-
-void DeviceMonitor::broadcastPingFinished(int exitCode)
-{
-    Q_UNUSED(exitCode);
-    log("Broadcast ping finished");
-    QProcess *p = static_cast<QProcess*>(sender());
-    p->deleteLater();
 }
 
 void DeviceMonitor::log(const QString &message)
