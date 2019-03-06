@@ -57,6 +57,8 @@ private:
 
     // Helpers for child devices (virtual ones, starting with tasmota)
     QHash<DeviceClassId, ParamTypeId> m_channelParamTypeMap;
+    QHash<DeviceClassId, ParamTypeId> m_openingChannelParamTypeMap;
+    QHash<DeviceClassId, ParamTypeId> m_closingChannelParamTypeMap;
     QHash<DeviceClassId, StateTypeId> m_powerStateTypeMap;
 
     // Helpers for both devices

@@ -60,7 +60,7 @@
                             "name": "attachedDeviceCH1",
                             "displayName": "Connected device 1",
                             "type": "QString",
-                            "allowedValues": ["None", "Light"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
                             "defaultValue": "None"
                         },
                         {
@@ -68,7 +68,7 @@
                             "name": "attachedDeviceCH2",
                             "displayName": "Connected device 2",
                             "type": "QString",
-                            "allowedValues": ["None", "Light"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
                             "defaultValue": "None"
                         }
                     ],
@@ -211,6 +211,54 @@
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "c63b02f2-3695-4e8c-9789-1b8a705f3a53",
+                    "name": "tasmotaShutter",
+                    "displayName": "Tasmota shutter",
+                    "createMethods": ["auto"],
+                    "interfaces": ["shutter", "closable", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "4d8f113d-f816-4356-b1ff-31df3f4b515f",
+                            "name": "openingChannel",
+                            "displayName": "Opening channel",
+                            "type": "int"
+                        },
+                        {
+                            "id": "600c00fd-6a2c-46cd-8031-2d9a1b1bc710",
+                            "name": "closingChannel",
+                            "displayName": "Closing channel",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7bbf0bbf-abb3-487e-b5e9-077f7b00d8ef",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "8e7fb2f4-2819-4d14-a5ae-95624b097bf7",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "efbe9290-affd-4902-abb7-dd4ea74ccd1b",
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "c9c9c569-e224-4f63-abed-782cba04d61b",
+                            "name": "stop",
+                            "displayName": "Stop"
                         }
                     ]
                 }
