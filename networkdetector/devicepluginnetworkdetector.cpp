@@ -57,12 +57,13 @@ DevicePluginNetworkDetector::DevicePluginNetworkDetector()
 {
     m_discovery = new Discovery(this);
     connect(m_discovery, &Discovery::finished, this, &DevicePluginNetworkDetector::discoveryFinished);
+
+    m_broadcastPing = new BroadcastPing(this);
+    connect(m_broadcastPing, &BroadcastPing::finished, this, &DevicePluginNetworkDetector::broadcastPingFinished);
 }
 
 DevicePluginNetworkDetector::~DevicePluginNetworkDetector()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-
     if (m_discovery->isRunning()) {
         m_discovery->abort();
     }
@@ -70,19 +71,27 @@ DevicePluginNetworkDetector::~DevicePluginNetworkDetector()
 
 void DevicePluginNetworkDetector::init()
 {
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginNetworkDetector::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *device)
 {
     qCDebug(dcNetworkDetector()) << "Setup" << device->name() << device->params();
-    DeviceMonitor *monitor = new DeviceMonitor(device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString(), device->paramValue(networkDeviceDeviceAddressParamTypeId).toString(), this);
+    DeviceMonitor *monitor = new DeviceMonitor(device->name(),
+                                               device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString(),
+                                               device->paramValue(networkDeviceDeviceAddressParamTypeId).toString(),
+                                               device->stateValue(networkDeviceIsPresentStateTypeId).toBool(),
+                                               this);
     connect(monitor, &DeviceMonitor::reachableChanged, this, &DevicePluginNetworkDetector::deviceReachableChanged);
     connect(monitor, &DeviceMonitor::addressChanged, this, &DevicePluginNetworkDetector::deviceAddressChanged);
     connect(monitor, &DeviceMonitor::seen, this, &DevicePluginNetworkDetector::deviceSeen);
     m_monitors.insert(monitor, device);
-    monitor->update();
+
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
+        connect(m_pluginTimer, &PluginTimer::timeout, m_broadcastPing, &BroadcastPing::run);
+
+        m_broadcastPing->run();
+    }
 
     return DeviceManager::DeviceSetupStatusSuccess;
 }
@@ -110,9 +119,15 @@ void DevicePluginNetworkDetector::deviceRemoved(Device *device)
     DeviceMonitor *monitor = m_monitors.key(device);
     m_monitors.remove(monitor);
     delete monitor;
+
+    if (m_monitors.isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
+
+    }
 }
 
-void DevicePluginNetworkDetector::onPluginTimer()
+void DevicePluginNetworkDetector::broadcastPingFinished()
 {
     foreach (DeviceMonitor *monitor, m_monitors.keys()) {
         monitor->update();
@@ -124,7 +139,15 @@ void DevicePluginNetworkDetector::discoveryFinished(const QList<Host> &hosts)
     qCDebug(dcNetworkDetector()) << "Discovery finished. Found" << hosts.count() << "devices";
     QList<DeviceDescriptor> discoveredDevices;
     foreach (const Host &host, hosts) {
-        DeviceDescriptor descriptor(networkDeviceDeviceClassId, (host.hostName().isEmpty() ? host.address() : host.hostName() + "(" + host.address() + ")"), host.macAddress());
+
+        DeviceDescriptor descriptor(networkDeviceDeviceClassId, host.hostName().isEmpty() ? host.address() : host.hostName(), host.address() + " (" + host.macAddress() + ")");
+
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() == host.macAddress()) {
+                descriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
 
         ParamList paramList;
         Param macAddress(networkDeviceDeviceMacAddressParamTypeId, host.macAddress());

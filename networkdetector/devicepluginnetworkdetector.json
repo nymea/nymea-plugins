@@ -34,6 +34,13 @@
                             "displayName": "hardware address",
                             "type": "QString",
                             "inputType": "TextLine"
+                        },
+                        {
+                            "id": "40116f86-e6b3-4a20-b1e9-e1bd4b6d5b70",
+                            "name": "gracePeriod",
+                            "displayName": "Grace period (Minutes)",
+                            "type": "uint",
+                            "defaultValue": 5
                         }
                     ],
                     "stateTypes": [
