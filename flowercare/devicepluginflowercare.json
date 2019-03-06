@@ -84,7 +84,8 @@
                             "displayName": "Light intensity",
                             "displayNameEvent": "Light intensity changed",
                             "type": "double",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "unit": "Lux"
                         },
                         {
                             "id": "f77608b3-8b5b-43a9-aab6-0dc35c694ec3",
@@ -92,6 +93,7 @@
                             "displayName": "Conductivity",
                             "displayNameEvent": "Conductivity changed",
                             "type": "double",
+                            "unit": "MicroSiemensPerCentimeter",
                             "defaultValue": 0
                         }
                     ]
