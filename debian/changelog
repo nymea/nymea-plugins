@@ -1,3 +1,28 @@
+nymea-plugins (0.10.3) xenial; urgency=medium
+
+  [ Simon Stürz ]
+  * Netatmo: Update API changes and improve refresh behavior
+
+  [ Michael Zanetti ]
+  * Simulation: Update ev charger to new interface spec
+  * SonoffTasmota: Fix wrong IP settings in device setup
+  * NetworkDetector: Don't fail the entire discovery if one of the scan
+    targets fails
+  * PhilipsHue: Enable reconfiguring Hue bridges (Re-pairing)
+  * Elgato: Fix reading of color state
+  * Simulation: Add missing unit to heating plugins
+  * FlowerCare: Add unit to conductivity sensor
+  * Simulation: Make use of thermostat interface
+  * NetworkDetector: Improve monitoring, add a grace period parameter
+  * EQ-3: Add support for the Eqiva Bluetooth thermostat
+  * Update Plugins: Set deviceId in Descriptors on discovery
+  * Flower Care: Fix temperature reading for negative values
+
+  [ Bernhard Trinnes ]
+  * New Plugin: Serialport commander
+
+ -- Jenkins <jenkins@nymea.io>  Wed, 06 Mar 2019 21:13:53 +0100
+
 nymea-plugins (0.10.2) xenial; urgency=medium
 
   [ Michael Zanetti ]
