@@ -39,7 +39,9 @@ The name of the autocreated EventType (DeviceClass: sonoff_quad, StateType: conn
 ----------
 The name of the autocreated EventType (DeviceClass: tasmotaSwitch, StateType: connected, ID: b4607e5d-70c4-4e76-9d9a-c6de7c50377e)
 ----------
-The name of the autocreated EventType (DeviceClass: tasmotaLight, StateType: connected, ID: 72050de9-c318-4e53-93e5-36f7c2fc7cab)</extracomment>
+The name of the autocreated EventType (DeviceClass: tasmotaLight, StateType: connected, ID: 72050de9-c318-4e53-93e5-36f7c2fc7cab)
+----------
+The name of the autocreated EventType (DeviceClass: tasmotaShutter, StateType: connected, ID: 7bbf0bbf-abb3-487e-b5e9-077f7b00d8ef)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -52,7 +54,9 @@ The name of the ParamType for the autocreated EventType (DeviceClass: sonoff_qua
 ----------
 The name of the ParamType for the autocreated EventType (DeviceClass: tasmotaSwitch, StateType: connected, ID: b4607e5d-70c4-4e76-9d9a-c6de7c50377e
 ----------
-The name of the ParamType for the autocreated EventType (DeviceClass: tasmotaLight, StateType: connected, ID: 72050de9-c318-4e53-93e5-36f7c2fc7cab</extracomment>
+The name of the ParamType for the autocreated EventType (DeviceClass: tasmotaLight, StateType: connected, ID: 72050de9-c318-4e53-93e5-36f7c2fc7cab
+----------
+The name of the ParamType for the autocreated EventType (DeviceClass: tasmotaShutter, StateType: connected, ID: 7bbf0bbf-abb3-487e-b5e9-077f7b00d8ef</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -129,6 +133,36 @@ The name of the autocreated ActionType (DeviceClass: tasmotaLight, StateType: po
     <message>
         <source>Tasmota light</source>
         <extracomment>The name of the DeviceClass (83e5d9e6-5ac8-4e41-9717-481415048d49)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tasmota shutter</source>
+        <extracomment>The name of the DeviceClass (c63b02f2-3695-4e8c-9789-1b8a705f3a53)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opening channel</source>
+        <extracomment>The name of the ParamType (DeviceClass: tasmotaShutter, Type: device, ID: 4d8f113d-f816-4356-b1ff-31df3f4b515f)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Closing channel</source>
+        <extracomment>The name of the ParamType (DeviceClass: tasmotaShutter, Type: device, ID: 600c00fd-6a2c-46cd-8031-2d9a1b1bc710)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <extracomment>The name of the ActionType 8e7fb2f4-2819-4d14-a5ae-95624b097bf7 of deviceClass tasmotaShutter</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <extracomment>The name of the ActionType efbe9290-affd-4902-abb7-dd4ea74ccd1b of deviceClass tasmotaShutter</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop</source>
+        <extracomment>The name of the ActionType c9c9c569-e224-4f63-abed-782cba04d61b of deviceClass tasmotaShutter</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
