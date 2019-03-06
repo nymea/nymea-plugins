@@ -26,6 +26,7 @@
 #include "plugin/deviceplugin.h"
 #include "maxcubediscovery.h"
 #include "plugintimer.h"
+#include "eqivabluetooth.h"
 
 #include <QHostAddress>
 
@@ -51,10 +52,17 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
+    QString modeToString(EqivaBluetooth::Mode mode);
+    EqivaBluetooth::Mode stringToMode(const QString &string);
+
     PluginTimer *m_pluginTimer = nullptr;
     QList<Param> m_config;
     MaxCubeDiscovery *m_cubeDiscovery = nullptr;
     QHash<MaxCube *, Device *> m_cubes;
+
+    EqivaBluetoothDiscovery *m_eqivaBluetoothDiscovery = nullptr;
+    QHash<Device*, EqivaBluetooth*> m_eqivaDevices;
+    QHash<int, ActionId> m_commandMap;
 
 public slots:
     DeviceManager::DeviceError executeAction(Device *device, const Action &action);
@@ -63,6 +71,7 @@ private slots:
     void onPluginTimer();
     void cubeConnectionStatusChanged(const bool &connected);
     void discoveryDone(const QList<MaxCube *> &cubeList);
+    void bluetoothDiscoveryDone(const QStringList results);
     void commandActionFinished(const bool &succeeded, const ActionId &actionId);
 
     void wallThermostatFound();
