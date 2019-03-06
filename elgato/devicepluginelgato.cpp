@@ -489,7 +489,6 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             if (!bulb->setBrightness(percentage))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
-            device->setStateValue(aveaBrightnessStateTypeId, percentage);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorActionTypeId) {
             QColor color = action.param(aveaColorActionColorParamTypeId).value().value<QColor>();
@@ -497,7 +496,6 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             if (!bulb->setColor(color))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
-            device->setStateValue(aveaColorStateTypeId, color);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorTemperatureActionTypeId) {
             int ctValue = action.param(aveaColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
@@ -518,7 +516,6 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             if (!bulb->setColor(color)) {
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
             }
-            device->setStateValue(aveaColorStateTypeId, color);
             device->setStateValue(aveaColorTemperatureStateTypeId, ctValue);
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaWhiteActionTypeId) {
@@ -547,7 +544,6 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             return DeviceManager::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaFadeActionTypeId) {
             int fadeValue = action.param(aveaFadeActionFadeParamTypeId).value().toInt();
-            device->setStateValue(aveaFadeStateTypeId, fadeValue);
             if (!bulb->setFade(fadeValue))
                 return DeviceManager::DeviceErrorHardwareNotAvailable;
 
