@@ -52,8 +52,9 @@
 #include "network/upnp/upnpdiscoveryreply.h"
 
 #include <QDebug>
-#include <QStringList>
 #include <QColor>
+#include <QDateTime>
+#include <QStringList>
 #include <QJsonDocument>
 
 DevicePluginPhilipsHue::DevicePluginPhilipsHue()
