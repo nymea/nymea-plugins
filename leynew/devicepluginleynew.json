@@ -12,13 +12,6 @@
                     "id": "6b1f8f37-7eb4-46c4-9f15-a6eb4904999c",
                     "name": "rfController",
                     "displayName": "RF Controller (LN-CON-RF20B)",
-                    "deviceIcon": "LightBulb",
-                    "primaryActionTypeId": "35495871-3b80-458b-b60d-5dc614c9fbf1",
-                    "basicTags": [
-                        "Device",
-                        "Actuator",
-                        "Lighting"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {

@@ -49,6 +49,7 @@
 #include <QDebug>
 #include <QStringList>
 #include <QNetworkInterface>
+#include <QDateTime>
 
 DevicePluginAvahiMonitor::DevicePluginAvahiMonitor()
 {
@@ -100,7 +101,8 @@ void DevicePluginAvahiMonitor::onServiceEntryAdded(const AvahiServiceEntry &serv
 {
     foreach (Device *device, myDevices()) {
         if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name()) {
-            device->setStateValue(avahiOnlineStateTypeId, true);
+            device->setStateValue(avahiIsPresentStateTypeId, true);
+            device->setStateValue(avahiLastSeenTimeStateTypeId, QDateTime::currentDateTime());
         }
     }
 }
@@ -109,7 +111,7 @@ void DevicePluginAvahiMonitor::onServiceEntryRemoved(const AvahiServiceEntry &se
 {
     foreach (Device *device, myDevices()) {
         if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name()) {
-            device->setStateValue(avahiOnlineStateTypeId, false);
+            device->setStateValue(avahiIsPresentStateTypeId, false);
         }
     }
 }

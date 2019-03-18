@@ -12,15 +12,8 @@
                     "id": "642aa4c7-19aa-45ed-ba06-aa1ae6c9edf7",
                     "name": "bridge",
                     "displayName": "Hue gateway",
-                    "deviceIcon": "Gateway",
-                    "interfaces": ["gateway", "connectable"],
-                    "basicTags": [
-                        "Device",
-                        "Gateway",
-                        "Lighting"
-                    ],
+                    "interfaces": ["gateway"],
                     "createMethods": ["discovery"],
-                    "criticalStateTypeId": "15794d26-fde8-4a61-8f83-d7830534975f",
                     "setupMethod": "pushButton",
                     "pairingInfo": "Please press the button on the Hue Bridge within 30 seconds before you continue",
                     "paramTypes": [
@@ -84,8 +77,6 @@
                             "name": "apiVersion",
                             "displayName": "api version",
                             "displayNameEvent": "api version changed",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "-",
                             "type": "QString"
                         },
@@ -94,8 +85,6 @@
                             "name": "softwareVersion",
                             "displayName": "software version",
                             "displayNameEvent": "software version changed",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "-",
                             "type": "QString"
                         },
@@ -104,7 +93,6 @@
                             "name": "updateStatus",
                             "displayName": "update status",
                             "displayNameEvent": "update status changed",
-                            "ruleRelevant": false,
                             "type": "QString",
                             "defaultValue": "Up to date",
                             "possibleValues": [
@@ -145,15 +133,7 @@
                     "id": "0edba26c-96ab-44fb-a6a2-c0574d19630e",
                     "name": "colorLight",
                     "displayName": "Hue color light",
-                    "deviceIcon": "LightBulb",
-                    "interfaces": ["colorlight", "connectable"],
-                    "basicTags": [
-                        "Device",
-                        "Lighting",
-                        "Actuator"
-                    ],
-                    "criticalStateTypeId": "19bb8d10-1b28-4ba3-99b7-a634138dcfde",
-                    "primaryActionTypeId": "90aaffe5-6a76-47d2-a14a-550f60390245",
+                    "interfaces": ["colorlight", "colortemperaturelight", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -213,8 +193,6 @@
                             "type": "int",
                             "unit": "Mired",
                             "defaultValue": 170,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "minValue": 153,
                             "maxValue": 500,
                             "writable": true
@@ -226,11 +204,8 @@
                             "displayNameEvent": "color changed",
                             "displayNameAction": "Set color",
                             "type": "QColor",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "#000000",
                             "writable": true
-
                         },
                         {
                             "id": "90e91f64-a208-468c-a5a2-7f47e08859e2",
@@ -239,8 +214,6 @@
                             "displayNameEvent": "brightness changed",
                             "displayNameAction": "Set brigtness",
                             "type": "int",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
@@ -254,8 +227,6 @@
                             "displayName": "effect",
                             "displayNameEvent": "effect changed",
                             "displayNameAction": "Set effect",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "type": "QString",
                             "defaultValue": "none",
                             "possibleValues": [
@@ -289,13 +260,7 @@
                     "id": "35f749f7-b60a-4922-bd25-1bdd2eddcbe3",
                     "name": "colorTemperatureLight",
                     "displayName": "Hue color temperature light",
-                    "deviceIcon": "LightBulb",
                     "interfaces": ["colortemperaturelight", "connectable"],
-                    "basicTags": [
-                        "Device",
-                        "Lighting",
-                        "Actuator"
-                    ],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -355,8 +320,6 @@
                             "type": "int",
                             "unit": "Mired",
                             "defaultValue": 170,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "minValue": 153,
                             "maxValue": 500,
                             "writable": true
@@ -368,8 +331,6 @@
                             "displayNameEvent": "brightness changed",
                             "displayNameAction": "Set brigtness",
                             "type": "int",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
@@ -401,15 +362,7 @@
                     "id": "4fa568ef-7a3a-422b-b0c0-206d37cb4eed",
                     "name": "dimmableLight",
                     "displayName": "Hue dimmable light",
-                    "deviceIcon": "LightBulb",
                     "interfaces": ["dimmablelight", "connectable"],
-                    "basicTags": [
-                        "Device",
-                        "Actuator",
-                        "Lighting"
-                    ],
-                    "criticalStateTypeId": "19bb8d10-1b28-4ba3-99b7-a634138dcfde",
-                    "primaryActionTypeId": "90aaffe5-6a76-47d2-a14a-550f60390245",
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -467,8 +420,6 @@
                             "displayNameEvent": "brightness changed",
                             "displayNameAction": "Set brightness",
                             "type": "int",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
@@ -501,13 +452,7 @@
                     "id": "bb482d39-67ef-46dc-88e9-7b181d642b28",
                     "name": "remote",
                     "displayName": "Hue Remote",
-                    "deviceIcon": "Switch",
                     "interfaces": ["longpressmultibutton", "batterylevel", "connectable"],
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
-                    "criticalStateTypeId": "19bb8d10-1b28-4ba3-99b7-a634138dcfde",
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -643,7 +588,6 @@
                     "id": "2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e",
                     "name": "tap",
                     "displayName": "Hue Tap",
-                    "deviceIcon": "Switch",
                     "interfaces": ["simplemultibutton", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [

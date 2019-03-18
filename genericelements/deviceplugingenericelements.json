@@ -12,12 +12,6 @@
                     "id": "c0f511f9-70f5-499b-bd70-2c0e9ddd68c4",
                     "name": "toggleButton",
                     "displayName": "Toggle Button",
-                    "deviceIcon": "Switch",
-                    "primaryActionTypeId": "b5e90567-54aa-49bd-a78a-3c19fb38aaf5",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [ ],
                     "stateTypes": [
@@ -37,12 +31,6 @@
                     "id": "820b2f2d-0d92-48c8-8fd4-f94ce8fc4103",
                     "name": "button",
                     "displayName": "Button",
-                    "deviceIcon": "Switch",
-                    "primaryActionTypeId": "01f38af1-b2ab-4ec3-844e-ef52f0f229a9",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [ ],
                     "actionTypes": [
@@ -64,11 +52,6 @@
                     "id": "430d188c-476d-4825-a9bd-86dfa3094b56",
                     "name": "onOffButton",
                     "displayName": "ON/OFF Button",
-                    "deviceIcon": "Switch",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [ ],
                     "actionTypes": [

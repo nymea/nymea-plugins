@@ -12,12 +12,7 @@
                     "id": "97f0154d-6945-49b8-bd65-0a8cea0c6652",
                     "displayName": "Avahi Monitor",
                     "name": "avahi",
-                    "deviceIcon": "Network",
-                    "primaryStateTypeId": "b5616fd3-da12-4613-9576-6516b2267180",
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
+                    "interfaces": ["presencesensor"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
@@ -38,11 +33,20 @@
                     "stateTypes": [
                         {
                             "id": "b5616fd3-da12-4613-9576-6516b2267180",
-                            "displayName": "online",
-                            "name": "online",
+                            "name": "isPresent",
+                            "displayName": "Online",
                             "type": "bool",
                             "defaultValue": false,
                             "displayNameEvent": "online changed"
+                        },
+                        {
+                            "id": "4a570e58-d227-4af8-a64e-c018b9d84474",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
                         }
                     ]
                 }

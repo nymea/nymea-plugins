@@ -12,12 +12,8 @@
                     "id": "315ece51-053e-49f9-831f-b09f9f27fb9f",
                     "name": "nuimo",
                     "displayName": "Nuimo",
-                    "deviceIcon": "Switch",
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
                     "createMethods": ["discovery"],
+                    "interfaces": [ "simplemultibutton", "connectable"],
                     "paramTypes": [
                         {
                             "id": "db67d1e6-26fa-44ed-ad55-c6aef45ea2ea",
@@ -119,29 +115,18 @@
                     ],
                     "eventTypes": [
                         {
-                            "id": "5b9e08e8-7a6c-4311-9db6-82547847708c",
-                            "name": "clicked",
-                            "displayName": "clicked"
-                        },
-                        {
-                            "id": "2be36aa0-e2fe-4192-81c5-cf0bb7f08dd4",
-                            "name": "swipeLeft",
-                            "displayName": "Swipe left"
-                        },
-                        {
-                            "id": "81fb61ab-6d3d-4c1b-85fe-3dbd5c8dead7",
-                            "name": "swipeRight",
-                            "displayName": "Swipe right"
-                        },
-                        {
-                            "id": "ab5c575b-b265-491c-93ca-ad9212374bc1",
-                            "name": "swipeUp",
-                            "displayName": "Swipe up"
-                        },
-                        {
-                            "id": "4d97cf28-1030-4a30-bed5-411102dd4b9b",
-                            "name": "swipeDown",
-                            "displayName": "Swipe down"
+                            "id": "24649eb2-47d1-4a2b-8c09-1f074382e2c4",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "8ed643c0-1b8a-4709-8abf-717cf213f4a4",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["•", "←", "↑", "→", "↓"]
+                                }
+                            ]
                         }
                     ]
                 }

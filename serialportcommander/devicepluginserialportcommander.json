@@ -13,12 +13,8 @@
                     "id": "540566d8-a2a6-4ce2-9a1e-a66a989e6199",
                     "name": "serialPortCommander",
                     "displayName": "Serial port commander",
-                    "deviceIcon": "Network",
                     "createMethods": ["user", "discovery"],
                     "interfaces": ["outputtrigger", "inputtrigger"],
-                    "basicTags": [
-                        "Device"
-                    ],
                     "paramTypes": [
                         {
                             "id": "ed49f7d8-ab18-4c37-9b80-1004b75dcb91",

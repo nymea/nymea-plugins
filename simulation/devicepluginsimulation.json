@@ -13,11 +13,7 @@
                     "name": "simpleButton",
                     "displayName": "Simple Button",
                     "createMethods": ["user"],
-                    "deviceIcon": "Switch",
                     "interfaces": ["simplebutton", "outputtrigger"],
-                    "basicTags": [
-                        "Device"
-                    ],
                     "paramTypes": [ ],
                     "actionTypes": [
                         {
@@ -39,10 +35,6 @@
                     "name": "alternativeButton",
                     "displayName": "Power Button",
                     "createMethods": ["user"],
-                    "deviceIcon": "Switch",
-                    "basicTags": [
-                        "Device"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -62,12 +54,7 @@
                     "name": "temperatureSensor",
                     "displayName": "Temperature sensor",
                     "createMethods": ["user"],
-                    "deviceIcon": "Thermometer",
                     "interfaces": ["temperaturesensor", "humiditysensor", "batterylevel", "connectable"],
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -125,11 +112,6 @@
                     "displayName": "Motion Detector",
                     "createMethods": ["user"],
                     "interfaces": ["battery", "connectable"],
-                    "deviceIcon": "MotionDetectors",
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -174,12 +156,7 @@
                     "name": "heating",
                     "displayName": "Heating",
                     "createMethods": ["user"],
-                    "deviceIcon": "Radiator",
                     "interfaces": ["extendedheating"],
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -213,12 +190,7 @@
                     "name": "evCharger",
                     "displayName": "EV Charging Station",
                     "createMethods": ["user"],
-                    "deviceIcon": "Energy",
                     "interfaces": ["extendedevcharger"],
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -295,7 +267,6 @@
                     "name": "garageGate",
                     "displayName": "Garage gate",
                     "createMethods": ["user"],
-                    "deviceIcon": "Garage",
                     "interfaces": [ "garagegate", "light" ],
                     "paramTypes": [ ],
                     "stateTypes": [
@@ -468,7 +439,6 @@
                     "name": "rollerShutter",
                     "displayName": "Roller Shutter",
                     "createMethods": ["user"],
-                    "deviceIcon": "RollerShutter",
                     "interfaces": ["extendedshutter"],
                     "paramTypes": [ ],
                     "stateTypes": [
@@ -517,12 +487,7 @@
                     "name": "colorBulb",
                     "displayName": "Color Bulb",
                     "createMethods": ["user"],
-                    "deviceIcon": "LightBulb",
                     "interfaces": ["colorlight"],
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -544,8 +509,6 @@
                             "type": "int",
                             "unit": "Mired",
                             "defaultValue": 170,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "minValue": 153,
                             "maxValue": 500,
                             "writable": true
@@ -557,8 +520,6 @@
                             "displayNameEvent": "Color changed",
                             "displayNameAction": "Set color",
                             "type": "QColor",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "#000000",
                             "writable": true
                         },
@@ -569,8 +530,6 @@
                             "displayNameEvent": "Brightness changed",
                             "displayNameAction": "Set brigtness",
                             "type": "int",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
@@ -605,11 +564,6 @@
                     "displayName": "Finger Print Sensor",
                     "createMethods": ["user"],
                     "interfaces": ["fingerprintreader", "connectable"],
-                    "deviceIcon": "Network",
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -719,11 +673,7 @@
                     "name": "smartMeter",
                     "displayName": "Smart Meter",
                     "createMethods": ["user"],
-                    "deviceIcon": "Energy",
                     "interfaces": ["extendedsmartmeterconsumer", "extendedsmartmeterproducer", "connectable" ],
-                    "basicTags": [
-                        "Device"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -796,11 +746,7 @@
                     "name": "battery",
                     "displayName": "Battery",
                     "createMethods": ["user"],
-                    "deviceIcon": "Battery",
                     "interfaces": ["battery", "connectable"],
-                    "basicTags": [
-                        "Device"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -829,7 +775,6 @@
                             "displayNameEvent": "Charging amount changed",
                             "type": "double",
                             "unit": "KiloWatt",
-                            "eventRuleRelevant": false,
                             "defaultValue": 0.70
                         },
                         {
@@ -860,11 +805,7 @@
                     "name": "heatingRod",
                     "displayName": "Heating Rod",
                     "createMethods": ["user"],
-                    "deviceIcon": "Thermometer",
                     "interfaces": ["connectable", "extendedheating", "temperaturesensor"],
-                    "basicTags": [
-                        "Device"
-                    ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -921,12 +862,6 @@
                     "id": "7f1696e3-3145-421e-9a42-5bd3b2fd0e2c",
                     "name": "netatmoIndoor",
                     "displayName": "Netatmo Indoor Station",
-                    "deviceIcon": "Thermometer",
-                    "basicTags": [
-                        "Device",
-                        "Weather",
-                        "Sensor"
-                    ],
                     "interfaces": ["temperaturesensor", "humiditysensor", "pressuresensor"],
                     "createMethods": ["user"],
                     "paramTypes": [ ],
@@ -938,8 +873,6 @@
                             "displayNameEvent": "Last update changed",
                             "unit": "UnixTime",
                             "type": "int",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": 0
                         },
                         {
@@ -948,7 +881,6 @@
                             "displayName": "Temperature",
                             "displayNameEvent": "Temperature changed",
                             "unit": "DegreeCelsius",
-                            "graphRelevant": true,
                             "type": "double",
                             "defaultValue": 22.7
                         },
@@ -957,7 +889,6 @@
                             "name": "humidity",
                             "displayName": "Humidity",
                             "displayNameEvent": "Humidity changed",
-                            "graphRelevant": true,
                             "unit": "Percentage",
                             "type": "double",
                             "defaultValue": 37,
@@ -970,7 +901,6 @@
                             "displayName": "Pressure",
                             "displayNameEvent": "Pressure changed",
                             "unit": "MilliBar",
-                            "graphRelevant": true,
                             "type": "double",
                             "defaultValue": 1006
                         },
@@ -979,7 +909,6 @@
                             "name": "noise",
                             "displayName": "Noise",
                             "displayNameEvent": "Noise changed",
-                            "graphRelevant": true,
                             "unit": "Dezibel",
                             "type": "int",
                             "defaultValue": 68
@@ -989,7 +918,6 @@
                             "name": "co2",
                             "displayName": "CO2",
                             "displayNameEvent": "CO2 changed",
-                            "graphRelevant": true,
                             "unit": "PartsPerMillion",
                             "type": "int",
                             "defaultValue": 350
@@ -999,8 +927,6 @@
                             "name": "wifiStrength",
                             "displayName": "Wifi signal strength",
                             "displayNameEvent": "Wifi signal strength changed",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "unit": "Percentage",
                             "type": "int",
                             "defaultValue": 87
@@ -1012,9 +938,7 @@
                     "name": "gardenSensor",
                     "displayName": "Garden sensor",
                     "createMethods": ["user"],
-                    "deviceIcon": "Thermometer",
                     "interfaces": ["temperaturesensor", "battery", "connectable"],
-                    "basicTags": ["Device", "Sensor" ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
@@ -1080,8 +1004,6 @@
                     "name": "waterValve",
                     "displayName": "Water valve",
                     "createMethods": ["user"],
-                    "deviceIcon": "None",
-                    "basicTags": ["Device", "Actuator"],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {

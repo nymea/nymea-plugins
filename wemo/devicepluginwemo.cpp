@@ -104,7 +104,7 @@ DeviceManager::DeviceError DevicePluginWemo::executeAction(Device *device, const
     // Set power
     if (action.actionTypeId() == wemoSwitchPowerActionTypeId) {
         // Check if wemo device is reachable
-        if (device->stateValue(wemoSwitchReachableStateTypeId).toBool()) {
+        if (device->stateValue(wemoSwitchConnectedStateTypeId).toBool()) {
             // setPower returns false, if the curent powerState is already the new powerState
             if (setPower(device, action.param(wemoSwitchPowerActionPowerParamTypeId).value().toBool(), action.id())) {
                 return DeviceManager::DeviceErrorAsync;
@@ -180,12 +180,12 @@ void DevicePluginWemo::processRefreshData(const QByteArray &data, Device *device
 {
     if (data.contains("<BinaryState>0</BinaryState>")) {
         device->setStateValue(wemoSwitchPowerStateTypeId, false);
-        device->setStateValue(wemoSwitchReachableStateTypeId, true);
+        device->setStateValue(wemoSwitchConnectedStateTypeId, true);
     } else if (data.contains("<BinaryState>1</BinaryState>")) {
         device->setStateValue(wemoSwitchPowerStateTypeId, true);
-        device->setStateValue(wemoSwitchReachableStateTypeId, true);
+        device->setStateValue(wemoSwitchConnectedStateTypeId, true);
     } else {
-        device->setStateValue(wemoSwitchReachableStateTypeId, false);
+        device->setStateValue(wemoSwitchConnectedStateTypeId, false);
     }
 }
 
@@ -193,10 +193,10 @@ void DevicePluginWemo::processSetPowerData(const QByteArray &data, Device *devic
 {
     if (data.contains("<BinaryState>1</BinaryState>") || data.contains("<BinaryState>0</BinaryState>")) {
         emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
-        device->setStateValue(wemoSwitchReachableStateTypeId, true);
+        device->setStateValue(wemoSwitchConnectedStateTypeId, true);
         refresh(device);
     } else {
-        device->setStateValue(wemoSwitchReachableStateTypeId, false);
+        device->setStateValue(wemoSwitchConnectedStateTypeId, false);
         emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorHardwareNotAvailable);
     }
 }

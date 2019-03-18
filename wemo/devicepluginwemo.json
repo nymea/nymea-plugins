@@ -12,13 +12,7 @@
                     "id": "69d97d3b-a8e6-42f3-afc0-ca8a53eb7cce",
                     "name": "wemoSwitch",
                     "displayName": "WeMo Switch",
-                    "deviceIcon": "Socket",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
-                    "criticalStateTypeId": "ec2f5b49-585c-4455-a233-b7aa4c608dbc",
-                    "primaryActionTypeId": "7166c4f6-f68c-4188-8f7c-2205d72a5a6d",
+                    "interfaces": ["powersocket", "connectable"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
@@ -53,8 +47,8 @@
                         {
                             "id": "7166c4f6-f68c-4188-8f7c-2205d72a5a6d",
                             "name": "power",
-                            "displayName": "power",
-                            "displayNameEvent": "power changed",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
                             "displayNameAction": "Set power",
                             "type": "bool",
                             "defaultValue": false,
@@ -62,10 +56,9 @@
                         },
                         {
                             "id": "ec2f5b49-585c-4455-a233-b7aa4c608dbc",
-                            "name": "reachable",
-                            "displayName": "reachable",
-                            "displayNameEvent": "reachable changed",
-                            "name": "reachable",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
                             "type": "bool",
                             "defaultValue": false
                         }

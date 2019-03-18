@@ -13,10 +13,6 @@
                     "name": "rplRouter",
                     "displayName": "RPL Router",
                     "interfaces": ["gateway"],
-                    "basicTags": [
-                        "Device",
-                        "Gateway"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
@@ -51,10 +47,6 @@
                     "id": "4454e05e-ac0a-4b10-b9dd-56a1475895d7",
                     "name": "merkurNode",
                     "displayName": "Merkur Node",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {

@@ -143,7 +143,7 @@ DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *de
     // Application
     if (device->deviceClassId() == applicationDeviceClassId ) {
         // execute application...
-        if (action.actionTypeId() == applicationExecuteActionTypeId) {
+        if (action.actionTypeId() == applicationTriggerActionTypeId) {
             // check if we already have started the application
             if (m_applications.values().contains(device)) {
                 if (m_applications.key(device)->state() == QProcess::Running) {
@@ -178,7 +178,7 @@ DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *de
     // Script
     if (device->deviceClassId() == scriptDeviceClassId ) {
         // execute script...
-        if (action.actionTypeId() == scriptExecuteActionTypeId) {
+        if (action.actionTypeId() == scriptTriggerActionTypeId) {
             // check if we already have started the script
             if (m_scripts.values().contains(device)) {
                 if (m_scripts.key(device)->state() == QProcess::Running) {

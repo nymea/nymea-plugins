@@ -11,14 +11,8 @@
                 {
                     "id": "8468a15d-ecc0-43b6-98ca-e1e4ac9e2df3",
                     "displayName": "Unitec switch (48111)",
-                    "deviceIcon": "Switch",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "name": "switch",
                     "createMethods": ["user"],
-                    "primaryActionTypeId": "3ca1ebc2-bb8e-4429-9664-a7bc4569e73b",
                     "paramTypes": [
                         {
                             "id": "2cb59323-bc01-477c-ac0d-312b25c53463",

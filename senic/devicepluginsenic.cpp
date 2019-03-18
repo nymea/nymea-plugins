@@ -195,7 +195,7 @@ void DevicePluginSenic::onButtonPressed()
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
-    emitEvent(Event(nuimoClickedEventTypeId, device->id()));
+    emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "•")));
 }
 
 void DevicePluginSenic::onButtonReleased()
@@ -210,16 +210,16 @@ void DevicePluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
 
     switch (direction) {
     case Nuimo::SwipeDirectionLeft:
-        emitEvent(Event(nuimoSwipeLeftEventTypeId, device->id()));
+        emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "←")));
         break;
     case Nuimo::SwipeDirectionRight:
-        emitEvent(Event(nuimoSwipeRightEventTypeId, device->id()));
+        emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "→")));
         break;
     case Nuimo::SwipeDirectionUp:
-        emitEvent(Event(nuimoSwipeUpEventTypeId, device->id()));
+        emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "↑")));
         break;
     case Nuimo::SwipeDirectionDown:
-        emitEvent(Event(nuimoSwipeDownEventTypeId, device->id()));
+        emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "↓")));
         break;
     }
 }

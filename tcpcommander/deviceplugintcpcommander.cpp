@@ -59,7 +59,7 @@ DeviceManager::DeviceError DevicePluginTcpCommander::executeAction(Device *devic
 {
     if (device->deviceClassId() == tcpOutputDeviceClassId) {
 
-        if (action.actionTypeId() == tcpOutputOutputDataActionTypeId) {
+        if (action.actionTypeId() == tcpOutputTriggerActionTypeId) {
             int port = device->paramValue(tcpOutputDevicePortParamTypeId).toInt();
             QHostAddress address= QHostAddress(device->paramValue(tcpOutputDeviceIpv4addressParamTypeId).toString());
             QTcpSocket *tcpSocket = m_tcpSockets.key(device);
@@ -98,7 +98,7 @@ void DevicePluginTcpCommander::onTcpSocketConnected()
             qDebug(dcTCPCommander()) << device->name() << "Setup finished" ;
             emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
         } else {
-            QByteArray data = device->paramValue(tcpOutputOutputDataActionOutputDataAreaParamTypeId).toByteArray();
+            QByteArray data = device->paramValue(tcpOutputTriggerActionOutputDataAreaParamTypeId).toByteArray();
             tcpSocket->write(data);
         }
         device->setStateValue(tcpOutputConnectedStateTypeId, true);
@@ -170,24 +170,24 @@ void DevicePluginTcpCommander::onTcpServerTextMessageReceived(QByteArray data)
         qDebug(dcTCPCommander()) << "is exactly";
         if (data == device->paramValue(tcpInputDeviceInputDataParamTypeId)) {
             qDebug(dcTCPCommander()) << "comparison successful";
-            emitEvent(Event(tcpInputCommandReceivedEventTypeId, device->id()));
+            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
         }
 
     } else if (device->paramValue(tcpInputDeviceComparisionParamTypeId).toString() == "Contains") {
         if (data.contains(device->paramValue(tcpInputDeviceInputDataParamTypeId).toByteArray())) {
-            emitEvent(Event(tcpInputCommandReceivedEventTypeId, device->id()));
+            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
         }
 
     } else if (device->paramValue(tcpInputDeviceComparisionParamTypeId) == "Contains not") {
         if (!data.contains(device->paramValue(tcpInputDeviceInputDataParamTypeId).toByteArray()))
-            emitEvent(Event(tcpInputCommandReceivedEventTypeId, device->id()));
+            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
 
     } else if (device->paramValue(tcpInputDeviceComparisionParamTypeId) == "Starts with") {
         if (data.startsWith(device->paramValue(tcpInputDeviceInputDataParamTypeId).toByteArray()))
-            emitEvent(Event(tcpInputCommandReceivedEventTypeId, device->id()));
+            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
 
     } else if (device->paramValue(tcpInputDeviceComparisionParamTypeId) == "Ends with") {
         if (data.endsWith(device->paramValue(tcpInputDeviceInputDataParamTypeId).toByteArray()))
-            emitEvent(Event(tcpInputCommandReceivedEventTypeId, device->id()));
+            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
     }
 }

@@ -56,7 +56,6 @@
                             "displayNameEvent": "current market price changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
-                            "graphRelevant": true,
                             "defaultValue": 0
                         },
                         {
@@ -66,7 +65,6 @@
                             "displayNameEvent": "average deviation changed",
                             "type": "int",
                             "unit": "Percentage",
-                            "graphRelevant": true,
                             "defaultValue": 0
                         },
                         {
@@ -76,8 +74,6 @@
                             "displayNameEvent": "valid until changed",
                             "unit": "UnixTime",
                             "type": "int",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": 0
                         },
                         {
@@ -87,7 +83,6 @@
                             "displayNameEvent": "average market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
-                            "graphRelevant": true,
                             "defaultValue": 0
                         },
                         {
@@ -97,8 +92,6 @@
                             "displayNameEvent": "lowest market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": 0
                         },
                         {
@@ -108,8 +101,6 @@
                             "displayNameEvent": "highest market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": 0
                         },
                         {

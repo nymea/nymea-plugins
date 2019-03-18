@@ -24,11 +24,6 @@
                     "name": "orderbutton",
                     "createMethods": ["discovery"],
                     "interfaces": ["gateway"],
-                    "basicTags": [
-                        "Device",
-                        "Gateway"
-                    ],
-                    "criticalStateTypeId": "783e74ee-ffd6-4dd7-ade5-3a961452cf15",
                     "paramTypes": [
                         {
                             "id": "53a00a7b-e168-4917-86b5-d4329a0a720c",

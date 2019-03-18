@@ -24,11 +24,6 @@
                     "name": "plantCare",
                     "createMethods": ["discovery"],
                     "interfaces": ["gateway"],
-                    "basicTags": [
-                        "Device",
-                        "Gateway"
-                    ],
-                    "criticalStateTypeId": "8384e07b-8b91-492a-b6c8-e72b325ba0b4",
                     "paramTypes": [
                         {
                             "id": "7ab5f794-459f-45f5-855e-40a76f494e20",
@@ -54,7 +49,6 @@
                             "displayName": "moisture",
                             "displayNameEvent": "moisture changed",
                             "type": "int",
-                            "graphRelevant": true,
                             "unit": "Percentage",
                             "defaultValue": 0
                         },

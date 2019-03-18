@@ -13,12 +13,7 @@
                     "name": "application",
                     "displayName": "Application launcher",
                     "createMethods": ["user"],
-                    "primaryActionTypeId": "cf52b41d-3108-423c-8907-ca5b4d97cac5",
-                    "primaryStateTypeId": "28d7e933-ff05-4f4c-95a0-482689543de5",
-                    "basicTags": [
-                        "Service",
-                        "Actuator"
-                    ],
+                    "interfaces": ["outputtrigger"],
                     "paramTypes": [
                         {
                             "id": "79e54f91-2771-459a-9cb0-1d37759d2e33",
@@ -32,7 +27,7 @@
                         {
                             "id": "28d7e933-ff05-4f4c-95a0-482689543de5",
                             "name": "running",
-                            "displayName": "running",
+                            "displayName": "Running",
                             "displayNameEvent": "running changed",
                             "type": "bool",
                             "defaultValue": false
@@ -41,13 +36,13 @@
                     "actionTypes": [
                         {
                             "id": "cf52b41d-3108-423c-8907-ca5b4d97cac5",
-                            "name": "execute",
-                            "displayName": "execute"
+                            "name": "trigger",
+                            "displayName": "Execute"
                         },
                         {
                             "id": "d21b1fed-1dd9-4c5a-a64e-0c6ba94059be",
                             "name": "kill",
-                            "displayName": "kill"
+                            "displayName": "Kill"
                         }
                     ]
                 },
@@ -55,12 +50,8 @@
                     "id": "96044325-a6fb-47c9-9117-f29c3b327978",
                     "name": "script",
                     "displayName": "Bashscript launcher",
-                    "basicTags": [
-                        "Service",
-                        "Actuator"
-                    ],
                     "createMethods": ["user"],
-                    "primaryActionTypeId": "cf52b41d-3108-423c-8907-ca5b4d97cac5",
+                    "interfaces": ["outputtrigger"],
                     "paramTypes": [
                         {
                             "id": "391cf4af-ccb4-4ec0-9711-00c1b53a3c4c",
@@ -83,13 +74,13 @@
                     "actionTypes": [
                         {
                             "id": "cf52b41d-3108-423c-8907-ca5b4d97cac5",
-                            "name": "execute",
-                            "displayName": "execute"
+                            "name": "trigger",
+                            "displayName": "Execute"
                         },
                         {
                             "id": "d21b1fed-1dd9-4c5a-a64e-0c6ba94059be",
                             "name": "kill",
-                            "displayName": "kill"
+                            "displayName": "Kill"
                         }
                     ]
                 }
