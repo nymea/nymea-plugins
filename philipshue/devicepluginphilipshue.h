@@ -30,6 +30,7 @@
 #include "hueremote.h"
 #include "pairinginfo.h"
 #include "plugintimer.h"
+#include "hueoutdoorsensor.h"
 #include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
 
@@ -58,7 +59,14 @@ public slots:
 private slots:
     void lightStateChanged();
     void remoteStateChanged();
-    void onRemoteButtonEvent(const int &buttonCode);
+    void onRemoteButtonEvent(int buttonCode);
+
+    // Outdoor sensor
+    void onOutdoorSensorReachableChanged(bool reachable);
+    void onOutdoorSensorBatteryLevelChanged(int batteryLevel);
+    void onOutdoorSensorTemperatureChanged(double temperature);
+    void onOutdoorSensorPresenceChanged(bool presence);
+    void onOutdoorSensorLightIntensityChanged(double lightIntensity);
 
 private slots:
     void onUpnpDiscoveryFinished();
@@ -91,6 +99,7 @@ private:
     QHash<HueBridge *, Device *> m_bridges;
     QHash<HueLight *, Device *> m_lights;
     QHash<HueRemote *, Device *> m_remotes;
+    QHash<HueOutdoorSensor *, Device *> m_outdoorSensors;
 
     void refreshLight(Device *device);
     void refreshBridge(Device *device);

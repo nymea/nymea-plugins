@@ -115,6 +115,22 @@ bool HueDevice::reachable() const
 
 void HueDevice::setReachable(const bool &reachable)
 {
+    if (m_reachable == reachable)
+        return;
+
     m_reachable = reachable;
+    emit reachableChanged(m_reachable);
+}
+
+QString HueDevice::getBaseUuid(const QString &uuid)
+{
+    // Example: the hue gives uuid's starting with a mac address, followd by an id
+    //          "00:17:88:01:06:44:36:86-02-0406" -> "00:17:88:01:06:44:36:86"
+    int dashIndex = uuid.indexOf("-");
+    if (dashIndex < 0) {
+        return uuid;
+    }
+
+    return uuid.left(dashIndex);
 }
 

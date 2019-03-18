@@ -62,6 +62,8 @@ public:
     bool reachable() const;
     void setReachable(const bool &reachable);
 
+    static QString getBaseUuid(const QString &uuid);
+
 private:
     int m_id;
     QString m_name;
@@ -73,6 +75,10 @@ private:
     QString m_softwareVersion;
 
     bool m_reachable;
+
+signals:
+    void reachableChanged(bool reachable);
+
 };
 
 #endif // HUEDEVICE_H

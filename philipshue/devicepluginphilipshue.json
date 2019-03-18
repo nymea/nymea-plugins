@@ -702,6 +702,137 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "id": "32dc6390-600f-4eb4-b349-cc2d6796a82a",
+                    "name": "outdoorSensor",
+                    "displayName": "Hue Outdoor Sensor",
+                    "deviceIcon": "MotionDetectors",
+                    "interfaces": ["presencesensor", "temperaturesensor", "lightsensor", "batterylevel", "connectable"],
+                    "basicTags": [ "Device", "Sensor" ],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "3ca8632d-7bd1-45a9-86af-c856e006c334",
+                            "name": "modelId",
+                            "displayName": "Model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "4a15f861-cad6-464a-b250-08793c68ae30",
+                            "name": "uuid",
+                            "displayName": "Uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "c732fefd-ca6b-4e27-a6d2-11595c4aab3e",
+                            "name": "sensorIdTemperature",
+                            "displayName": "Temperature sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "2fdb34e8-25ca-4c5d-85c9-9a12bd48dbed",
+                            "name": "sensorUuidTemperature",
+                            "displayName": "Temperature sensor uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "3ca82a24-5eca-4285-83c2-f862d387c3bc",
+                            "name": "sensorIdPresence",
+                            "displayName": "Presence sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "7d55ed97-3a32-41e9-9112-8cc5b44aab23",
+                            "name": "sensorUuidPresence",
+                            "displayName": "Presence sensor uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "22a164fc-fa6e-427a-9a60-7a1872901fd6",
+                            "name": "sensorIdLight",
+                            "displayName": "Light sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "db678144-de2b-4767-a2f6-9ada8377b96c",
+                            "name": "sensorUuidLight",
+                            "displayName": "Light sensor uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9fe43e6b-3c29-43a9-bb96-3b80eacc10db",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "19b18531-61e5-4998-89d1-765d740e24eb",
+                            "name": "batteryLevel",
+                            "displayName": "battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "617aa352-789c-46e7-bf55-7455b1e5018e",
+                            "name": "batteryCritical",
+                            "displayName": "battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "88f5b708-65bb-41a7-885f-01be46074713",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4fb12c06-981c-4c42-b55c-46bdfe68681a",
+                            "name": "lightIntensity",
+                            "displayName": "Ambient light",
+                            "displayNameEvent": "Ambient light changed",
+                            "unit": "Lux",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "680f79cf-c17c-4ffd-96fa-a5b286e2c117",
+                            "name": "isPresent",
+                            "displayName": "Is present",
+                            "displayNameEvent": "Is present changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "6fa16fb2-053c-4c3c-a39b-9548c1b15089",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
+                        }
+                    ]
                 }
             ]
         }
