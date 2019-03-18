@@ -781,7 +781,7 @@
                         {
                             "id": "19b18531-61e5-4998-89d1-765d740e24eb",
                             "name": "batteryLevel",
-                            "displayName": "battery",
+                            "displayName": "Battery",
                             "displayNameEvent": "Battery changed",
                             "type": "int",
                             "unit": "Percentage",
@@ -792,7 +792,7 @@
                         {
                             "id": "617aa352-789c-46e7-bf55-7455b1e5018e",
                             "name": "batteryCritical",
-                            "displayName": "battery critical",
+                            "displayName": "Battery critical",
                             "displayNameEvent": "Battery critical changed",
                             "type": "bool",
                             "defaultValue": false
@@ -818,8 +818,8 @@
                         {
                             "id": "680f79cf-c17c-4ffd-96fa-a5b286e2c117",
                             "name": "isPresent",
-                            "displayName": "Is present",
-                            "displayNameEvent": "Is present changed",
+                            "displayName": "Person is present",
+                            "displayNameEvent": "Person is present changed",
                             "type": "bool",
                             "defaultValue": false
                         },
