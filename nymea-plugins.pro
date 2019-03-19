@@ -67,7 +67,7 @@ for (entry, PLUGIN_DIRS):lupdate.commands += make -C $${entry} lupdate;
 QMAKE_EXTRA_TARGETS += lupdate
 
 # make lrelease to build .qm from .ts
-lrelease.depends = FORCE
+lrelease.depends = plugininfo FORCE
 for (entry, PLUGIN_DIRS):lrelease.commands += make -C $${entry} lrelease;
 for (entry, PLUGIN_DIRS):lrelease.commands += rsync -a $$PWD/$${entry}/translations/*.qm $$OUT_PWD/translations/;
 QMAKE_EXTRA_TARGETS += lrelease
