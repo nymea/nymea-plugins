@@ -50,6 +50,11 @@ lupdate.depends += plugininfo.h
 lupdate.commands = lupdate -recursive -no-obsolete $$PWD/"$$TARGET"/"$$TARGET".pro;
 QMAKE_EXTRA_TARGETS += lupdate
 
+lrelease.depends = FORCE
+lrelease.depends += plugininfo.h
+lrelease.commands = lrelease $$files($$PWD/$${TARGET}/translations/*.ts, true);
+QMAKE_EXTRA_TARGETS += lrelease
+
 translations.path = /usr/share/nymea/translations
 translations.files = $$[QT_SOURCE_TREE]/translations/*.qm
 TRANSLATIONS += $$files($$[QT_SOURCE_TREE]/translations/*.ts, true)
