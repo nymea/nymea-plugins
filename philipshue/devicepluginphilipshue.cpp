@@ -796,7 +796,7 @@ void DevicePluginPhilipsHue::onOutdoorSensorPresenceChanged(bool presence)
     HueOutdoorSensor *sensor = static_cast<HueOutdoorSensor *>(sender());
     Device *sensorDevice = m_outdoorSensors.value(sensor);
     sensorDevice->setStateValue(outdoorSensorIsPresentStateTypeId, presence);
-    if (presence) sensorDevice->setStateValue(outdoorSensorLastSeenTimeStateTypeId, QDateTime::currentSecsSinceEpoch());
+    if (presence) sensorDevice->setStateValue(outdoorSensorLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
 }
 
 void DevicePluginPhilipsHue::onOutdoorSensorLightIntensityChanged(double lightIntensity)
