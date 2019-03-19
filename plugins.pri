@@ -60,6 +60,7 @@ INSTALLS += target translations
 
 # Copy translation to build dir
 copydata.commands = rsync -a $$PWD/$${TARGET}/translations/*.qm $$OUT_PWD;
+copydata.depends = lrelease
 first.depends = $(first) copydata
 export(first.depends)
 export(copydata.commands)
