@@ -46,12 +46,12 @@ QMAKE_EXTRA_TARGETS += clean plugininfo_clean
 # Install translation files
 TRANSLATIONS *= $$files($${PWD}/$${TARGET}/translations/*ts, true)
 lupdate.depends = FORCE
-lupdate.depends += plugininfo.h
+lupdate.depends += plugininfo
 lupdate.commands = lupdate -recursive -no-obsolete $$PWD/"$$TARGET"/"$$TARGET".pro;
 QMAKE_EXTRA_TARGETS += lupdate
 
 lrelease.depends = FORCE
-lrelease.depends += plugininfo.h
+lrelease.depends += plugininfo
 lrelease.commands = lrelease $$files($$PWD/$${TARGET}/translations/*.ts, true);
 QMAKE_EXTRA_TARGETS += lrelease
 
