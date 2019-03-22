@@ -109,7 +109,7 @@ The name of the autocreated EventType (DeviceClass: tap, StateType: connected, I
         <location filename="../plugininfo.h" line="222"/>
         <source>Serial Number (optional)</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, ActionType: searchNewDevices, ID: 1924bdb5-f8f1-4dcd-bc09-21ad7c5ce377)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Seriennummer (Optional)</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="225"/>
@@ -325,13 +325,13 @@ The name of the autocreated ActionType (DeviceClass: colorTemperatureLight, Stat
         <location filename="../plugininfo.h" line="318"/>
         <source>Hue color temperature light</source>
         <extracomment>The name of the DeviceClass (35f749f7-b60a-4922-bd25-1bdd2eddcbe3)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Farbtemperatur-Licht</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="381"/>
         <source>Hue dimmable light</source>
         <extracomment>The name of the DeviceClass (4fa568ef-7a3a-422b-b0c0-206d37cb4eed)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue dimmbares Licht</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="459"/>
@@ -415,7 +415,7 @@ The name of the ParamType for the autocreated EventType (DeviceClass: tap, State
         <location filename="../plugininfo.h" line="231"/>
         <source>Hue color light</source>
         <extracomment>The name of the DeviceClass (0edba26c-96ab-44fb-a6a2-c0574d19630e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Farblicht</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="267"/>
