@@ -7,13 +7,13 @@
         <location filename="../plugininfo.h" line="36"/>
         <source>Network Detector</source>
         <extracomment>The name of the plugin NetworkDetector (8e0f791e-b273-4267-8605-b7c2f55a68ab)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Netzwerk Detektor</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="39"/>
         <source>guh GmbH</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>guh GmbH</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="42"/>
