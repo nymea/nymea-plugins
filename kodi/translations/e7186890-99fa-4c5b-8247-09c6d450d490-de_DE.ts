@@ -106,67 +106,67 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, Sta
         <location filename="../plugininfo.h" line="150"/>
         <source>Active player changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: playerType, ID: 0af58b87-4e45-4f0a-9ef2-0ade74c7c22c)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Aktives Abspielgerät geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="153"/>
         <source>Active player type</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: playerType, ID: 0af58b87-4e45-4f0a-9ef2-0ade74c7c22c</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Typ des aktiven Abspielgerätes</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="156"/>
         <source>Title changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: title, ID: f2209fec-cceb-46ad-8189-4caf42166e6b)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Titel geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="159"/>
         <source>Title</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: title, ID: f2209fec-cceb-46ad-8189-4caf42166e6b</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Titel</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="162"/>
         <source>Artist changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: artist, ID: 8cb920a3-3bf1-4231-92d4-8ac27e7b3d65)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Künstler geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="165"/>
         <source>Artist</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: artist, ID: 8cb920a3-3bf1-4231-92d4-8ac27e7b3d65</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Künstler</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="168"/>
         <source>Collection changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: collection, ID: ce399eec-9f6a-4903-9916-0e90e38b255e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sammlung geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="171"/>
         <source>Collection</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: collection, ID: ce399eec-9f6a-4903-9916-0e90e38b255e</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sammlung</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="174"/>
         <source>Artwork changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: artwork, ID: 44304c82-c2f6-433b-b62b-815382617d0b)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Illustration geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="177"/>
         <source>Artwork</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: artwork, ID: 44304c82-c2f6-433b-b62b-815382617d0b</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Illustration</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="180"/>
         <source>Shuffle changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: shuffle, ID: 5913aa2a-629d-4de5-bf44-a4a1f130c118)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zufallswiedergabe geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="183"/>
@@ -175,19 +175,19 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, Sta
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: shuffle, ID: 5913aa2a-629d-4de5-bf44-a4a1f130c118
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: shuffle, ID: 5913aa2a-629d-4de5-bf44-a4a1f130c118)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zufallswiedergabe</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="186"/>
         <source>Set shuffle</source>
         <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: shuffle, ID: 5913aa2a-629d-4de5-bf44-a4a1f130c118)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zufallswiedergabe setzen</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="192"/>
         <source>Repeat changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: repeat, ID: bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wiederholen geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="195"/>
@@ -196,13 +196,13 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, Sta
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: repeat, ID: bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e
 ----------
 The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: repeat, ID: bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wiederholen</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="198"/>
         <source>Set repeat</source>
         <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: repeat, ID: bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Wiederholen</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="204"/>
@@ -244,7 +244,7 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, Sta
         <location filename="../plugininfo.h" line="222"/>
         <source>skipNext</source>
         <extracomment>The name of the ActionType 85d7126a-b123-4a28-aeb4-d84bcfb4d14f of deviceClass kodi</extracomment>
-        <translation type="unfinished">Überspringen</translation>
+        <translation>Überspringen</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="225"/>
