@@ -211,13 +211,13 @@ The name of the EventType f40d6e0f-fda2-475e-a6ae-c3fee03138b9 of deviceClass to
         <location filename="../plugininfo.h" line="201"/>
         <source>Daylight changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: today, StateType: daylight, ID: 1c3d6179-3b00-456c-841a-2d26ce960c25)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tageslicht geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="204"/>
         <source>Daylight</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: today, StateType: daylight, ID: 1c3d6179-3b00-456c-841a-2d26ce960c25</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tageslicht</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="213"/>
