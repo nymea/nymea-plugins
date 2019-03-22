@@ -148,13 +148,13 @@ The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, S
         <location filename="../plugininfo.h" line="228"/>
         <source>battery critical changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoor, StateType: batteryCritical, ID: f8aeb144-014d-4ccb-81db-64ffc70f1c97)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie kritisch geändert</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="231"/>
         <source>battery critical</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: batteryCritical, ID: f8aeb144-014d-4ccb-81db-64ffc70f1c97</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie kritisch</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="144"/>
