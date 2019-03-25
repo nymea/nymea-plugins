@@ -1,0 +1,549 @@
+{
+    "name": "Knx",
+    "displayName": "Knx",
+    "id": "cadef44b-223b-405f-a240-3e08fb9540ac",
+    "paramTypes": [
+        {
+            "id": "42f72457-f9d1-4166-95ea-81b8dec768c6",
+            "name": "genericDevicesEnabled",
+            "displayName": "Create generic devices for known DataPoints",
+            "type": "bool",
+            "defaultValue": true
+        }
+    ],
+    "vendors": [
+        {
+            "name": "Knx",
+            "displayName": "Knx",
+            "id": "5971d18f-770c-4bc2-9025-8f2c70196f31",
+            "deviceClasses": [
+                {
+                    "id": "1322570a-cc4d-417c-90da-f24ccf59ebdb",
+                    "name": "knxNetIpServer",
+                    "displayName": "KNX NetIp server",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "6eec90a3-936c-4885-830e-a2500426ed64",
+                            "name": "address",
+                            "displayName": "Server address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.8.140"
+                        },
+                        {
+                            "id": "fab7c5dd-c5cf-445f-833b-cf3379672b14",
+                            "name": "port",
+                            "displayName": "Server port",
+                            "type": "uint",
+                            "defaultValue": 3671
+                        },
+                        {
+                            "id": "a75955c9-edce-46b2-a95a-1c1ab88007f7",
+                            "name": "knxProjectFile",
+                            "displayName": "Knx project file path",
+                            "type": "QString",
+                            "defaultValue": "/etc/nymea/installation.knxproj"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "aa75257f-45cc-440a-990d-6f3a8f696883",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "d0845f3d-fe84-4eb8-a11f-fe48a6f7cae7",
+                            "name": "autoCreateDevices",
+                            "displayName": "Auto create devices from project file"
+                        }
+                    ]
+                },
+                {
+                    "id": "943e1329-cf5f-4759-94b3-141b6d3ce0ba",
+                    "name": "knxGenericSwitch",
+                    "displayName": "Knx generic switch",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "power", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "dc38bb80-3d84-4f40-8939-4fd1e8573f80",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "69908c22-7fe1-4573-b3a2-32bf214d38c6",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5453d80d-6a1e-4fe1-b9e0-bc9177ccef55",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "dc82f8ca-6bb8-4fc6-b46c-2d6a6e6e6d2f",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "7ad6cea9-993c-4e09-aeee-348948425bc6",
+                            "name": "read",
+                            "displayName": "Read value"
+                        }
+                    ]
+                },
+                {
+                    "id": "7fd223fb-002f-4ab7-b77e-1073576f9241",
+                    "name": "knxGenericUpDown",
+                    "displayName": "Knx generic UpDown",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "simpleclosable", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "9c4c0a21-5a7b-4ab1-a096-6adea3d4a277",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "c81816fa-0394-473c-b0ca-5e74965d1f43",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f9403240-2425-49b1-bd9d-8b0f1c872d8b",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "5f1d6f15-6874-485e-a0ca-7bbd397ea25f",
+                            "name": "open",
+                            "displayName": "Up"
+                        },
+                        {
+                            "id": "f3c0f798-ccaa-4943-975d-736dc09f5850",
+                            "name": "close",
+                            "displayName": "Down"
+                        }
+                    ]
+                },
+                {
+                    "id": "9b24c5ad-a36f-42d0-8489-275935149894",
+                    "name": "knxGenericScaling",
+                    "displayName": "Knx generic scale",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "2d984fc0-daa5-45d4-aee0-e46a74d5d905",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "d3558e8d-3f33-4276-977e-a02d23d0d985",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8b912679-d42c-48cc-834d-cdea68f44e1e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "aa8f8366-b65a-45e3-a10c-9f31b8f6d189",
+                            "name": "scale",
+                            "displayName": "Scale",
+                            "displayNameEvent": "Scale changed",
+                            "displayNameAction": "Set scale",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "type": "int",
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "1bfa8fbd-0845-4e85-9c50-cacf22f71363",
+                    "name": "knxGenericTemperatureSensor",
+                    "displayName": "Knx generic temperature sensor",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "temperaturesensor", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "51ed9d20-b716-434f-ac00-60f10580fd9e",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "fa55f9de-229c-46ce-aeff-99c3a8c5dad9",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8c9c94e8-90c6-471d-8b5a-63728776223e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d6a04ed7-df21-4bf4-8946-76a2802d7172",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "defaultValue": 0,
+                            "unit": "DegreeCelsius",
+                            "type": "double"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "07b829fb-31b5-4219-8f64-1a11e0176282",
+                            "name": "read",
+                            "displayName": "Read value"
+                        }
+                    ]
+                },
+                {
+                    "id": "3d53cf0b-75b3-44a5-b0ec-36b054d9faa9",
+                    "name": "knxGenericLightSensor",
+                    "displayName": "Knx generic light sensor",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "lightsensor", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "4f8419ee-d753-4894-b9b4-b1c3a3bc326a",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "0c09a401-fb87-4855-925e-515fb84e06af",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4308c130-0c6f-4b7d-84da-766a1724c2cd",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8bfb2a30-c49f-4a0b-aae1-65b04e0f02d7",
+                            "name": "lightIntensity",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "defaultValue": 0,
+                            "unit": "Lux",
+                            "type": "double"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "96c531b9-9bd8-4e61-8e26-019381f3063d",
+                            "name": "read",
+                            "displayName": "Read value"
+                        }
+                    ]
+                },
+                {
+                    "id": "c0e8778a-040a-472c-9eca-d9e21d4e10e6",
+                    "name": "knxGenericWindSpeedSensor",
+                    "displayName": "Knx generic wind speed sensor",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "windspeedsensor", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "8579633a-834f-4741-8105-bc3db55814b1",
+                            "name": "knxName",
+                            "displayName": "Knx name",
+                            "type": "QString",
+                            "defaultValue": "Internal name"
+                        },
+                        {
+                            "id": "db454198-a24d-463d-81c4-6260fe93f3bf",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "0/0/1"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "20cbdab2-0746-4d11-be46-fb1621dfd5ec",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8c4ab56f-7d6f-4ed0-b602-02591cd55583",
+                            "name": "windSpeed",
+                            "displayName": "Wind speed",
+                            "displayNameEvent": "Wind speed changed",
+                            "defaultValue": 0,
+                            "unit": "MeterPerSecond",
+                            "type": "double"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "3d113a52-4514-41d9-9b15-53b361a36f84",
+                            "name": "read",
+                            "displayName": "Read value"
+                        }
+                    ]
+                },
+                {
+                    "id": "fef0f771-cd90-4f27-8538-59c4eb5acb35",
+                    "name": "knxShutter",
+                    "displayName": "Knx shutter",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["user", "auto"],
+                    "interfaces": [ "closable", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "6ce97eeb-37d9-4980-963d-f3ca4084e189",
+                            "name": "address",
+                            "displayName": "Server address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.8.140"
+                        },
+                        {
+                            "id": "881461a9-e38a-4305-bad4-9770c204db54",
+                            "name": "knxAddressUpDown",
+                            "displayName": "Knx address UpDown",
+                            "type": "QString",
+                            "defaultValue": "1/0/0"
+                        },
+                        {
+                            "id": "94991675-3b8d-438e-acfa-bb8694b4ccdb",
+                            "name": "knxAddressStep",
+                            "displayName": "Knx address step",
+                            "type": "QString",
+                            "defaultValue": "1/1/0"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "0a2f783b-3f2c-45d2-8b04-7e317127c65b",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "f46af15e-5f9b-4d34-bacc-6e0f220caf5d",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "178021d3-3916-4cba-812d-a010953d6311",
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "3f133a78-c75e-48a6-990e-d2ace96ffdae",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ]
+                },
+                {
+                    "id": "34582d5d-8755-41f3-9eb5-43898466d86f",
+                    "name": "knxLight",
+                    "displayName": "Knx light",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["user"],
+                    "interfaces": [ "light", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "c1204f72-f0a1-42cd-a579-596bae4d0de7",
+                            "name": "address",
+                            "displayName": "Server address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.8.140"
+                        },
+                        {
+                            "id": "97abac83-54ca-477f-b1c7-6f5ebaa79102",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "1/0/0"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1a39109f-d1d4-45e8-832a-d94b9bc90c1b",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b6fcc7fc-345c-40cf-88ab-698391e584d9",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "7510dada-5be0-4c66-baa3-4d03cf13289e",
+                            "name": "read",
+                            "displayName": "Read value"
+                        }
+                    ]
+                },
+                {
+                    "id": "9debbc19-538b-4ad2-9831-8bc93649cdbd",
+                    "name": "knxDimmableLight",
+                    "displayName": "Knx dimmable light",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["user", "auto"],
+                    "interfaces": [ "dimmablelight", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "c3176e2e-aeb8-40fa-a555-ae1620af7cc0",
+                            "name": "address",
+                            "displayName": "Server address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.8.140"
+                        },
+                        {
+                            "id": "bf149d09-8014-4572-8170-28b48bb67c0c",
+                            "name": "knxSwitchAddress",
+                            "displayName": "Knx switch address",
+                            "type": "QString",
+                            "defaultValue": "1/0/0"
+                        },
+                        {
+                            "id": "c8728c5b-ac6e-4545-8ed7-bdd347757b12",
+                            "name": "knxScalingAddress",
+                            "displayName": "Knx scaling address",
+                            "type": "QString",
+                            "defaultValue": "1/0/0"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f73c112c-2a22-4d6a-8f94-13a9aa4f3abf",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b5dbb059-f408-468c-85e7-c052622d9a59",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "ce8fc00a-e8cb-4517-94a8-6e2b2ae71bf0",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brightness",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "type": "int",
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "fa83f289-7bd2-4595-b4e4-52634f5098a1",
+                            "name": "read",
+                            "displayName": "Read value"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
