@@ -20,6 +20,7 @@ PLUGIN_DIRS = \
     httpcommander       \
     intertechno         \
     keba                \
+    knx                 \
     kodi                \
     leynew              \
     lgsmarttv           \
