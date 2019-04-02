@@ -32,6 +32,7 @@ PLUGIN_DIRS = \
     osdomotics          \
     philipshue          \
     plantcare           \
+    pushbullet          \
     remotessh           \
     senic               \
     serialportcommander \
