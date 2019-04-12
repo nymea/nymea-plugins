@@ -1,0 +1,54 @@
+{
+    "displayName": "Pushbullet",
+    "name": "Pushbullet",
+    "id": "46986575-0e62-483d-b5a8-76ac356fcce7",
+    "vendors": [
+        {
+            "displayName": "Pushbullet",
+            "name": "pushbullet",
+            "id": "b5e1896e-b7fa-4c19-ac2b-10bd489f8302",
+            "deviceClasses": [
+                {
+                    "id": "56029c6d-777b-4889-9e17-29f813d34da4",
+                    "name": "pushNotification",
+                    "displayName": "Push Notification",
+                    "createMethods": ["user"],
+                    "interfaces": ["notifications"],
+                    "paramTypes": [
+                        {
+                            "id": "1f37ce22-50b8-4183-8b74-557fdb2d3076",
+                            "name": "token",
+                            "displayName": "access token",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "1378480f-6583-44e2-8fdd-22afe979a9a3",
+                            "name": "notify",
+                            "displayName": "notify",
+                            "paramTypes": [
+                                {
+                                    "id": "ceed6e66-0dcb-4405-832d-e9091f882acc",
+                                    "name": "title",
+                                    "displayName": "title",
+                                    "type": "QString",
+                                    "inputType": "TextLine",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "f72cc56c-4d0b-4b96-ab9b-ff3ca92b00e2",
+                                    "name": "body",
+                                    "displayName": "body",
+                                    "type": "QString",
+                                    "inputType": "TextArea",
+                                    "defaultValue": ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

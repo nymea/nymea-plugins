@@ -467,6 +467,21 @@ Description: nymea.io plugin for plantcare
  This package will install the nymea.io plugin for plantcare
 
 
+Package: nymea-plugin-pushbullet
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Replaces: guh-plugin-pushbullet
+Description: nymea.io plugin for Pushbullet
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for sending messages via Pushbullet.
+
 
 Package: nymea-plugin-tasmota
 Architecture: any
@@ -750,6 +765,7 @@ Depends: nymea-plugin-awattar,
          nymea-plugin-networkdetector,
          nymea-plugin-openweathermap,
          nymea-plugin-philipshue,
+         nymea-plugin-pushbullet,
          nymea-plugin-wakeonlan,
          nymea-plugin-tasmota,
          nymea-plugin-wemo,
