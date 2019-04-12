@@ -1,6 +1,17 @@
-nymea-plugins (0.12.0) UNRELEASED; urgency=medium
+nymea-plugins (0.12.0) xenial; urgency=medium
+  [ Michael Zanetti ]
+  * aWATTar: Cleanup old unused code and use connectable interface
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Fri, 22 Mar 2019 00:52:48 +0100
+  [ Simon Stürz ]
+  * PhilipsHue plugin: Add Hue Outdoor sensor
+
+  [ Michael Zanetti ]
+  * All Plugins: Update to API changes in core.
+  * Boblight: Build using internal plugins.pri
+  * New plugin: Pushbullet
+  * New Plugin: TexasInstruments, replaces MultiSensor plugin
+
+ -- Jenkins <jenkins@nymea.io>  Fri, 12 Apr 2019 13:42:46 +0200
 
 nymea-plugins (0.10.3) xenial; urgency=medium
 
