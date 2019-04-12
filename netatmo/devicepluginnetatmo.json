@@ -12,14 +12,7 @@
                     "id": "728d5a67-27a3-400e-b83c-2765f5196f69",
                     "name": "netatmoConnection",
                     "displayName": "Netatmo Connection",
-                    "criticalStateTypeId": "2f79bc1d-27ed-480a-b583-728363c83ea6",
-                    "deviceIcon": "Network",
                     "interfaces": ["gateway"],
-                    "basicTags": [
-                        "Service",
-                        "Gateway",
-                        "Weather"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
@@ -52,14 +45,7 @@
                     "id": "1c809049-04f2-4710-99f5-6ed379a2934f",
                     "name": "indoor",
                     "displayName": "Indoor Station",
-                    "deviceIcon": "Thermometer",
-                    "basicTags": [
-                        "Device",
-                        "Weather",
-                        "Sensor"
-                    ],
                     "interfaces": ["temperaturesensor", "humiditysensor", "pressuresensor", "noisesensor", "co2sensor"],
-                    "primaryStateTypeId": "3cb25538-e463-40ae-92f9-8f34f0c06b92",
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -86,8 +72,6 @@
                             "displayNameEvent": "last update changed",
                             "unit": "UnixTime",
                             "type": "int",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": 0
                         },
                         {
@@ -96,7 +80,6 @@
                             "displayName": "temperature",
                             "displayNameEvent": "temperature changed",
                             "unit": "DegreeCelsius",
-                            "graphRelevant": true,
                             "type": "double",
                             "defaultValue": 0
                         },
@@ -123,7 +106,6 @@
                             "name": "humidity",
                             "displayName": "humidity",
                             "displayNameEvent": "humidity changed",
-                            "graphRelevant": true,
                             "unit": "Percentage",
                             "type": "double",
                             "defaultValue": 0,
@@ -136,7 +118,6 @@
                             "displayName": "pressure",
                             "displayNameEvent": "pressure changed",
                             "unit": "MilliBar",
-                            "graphRelevant": true,
                             "type": "double",
                             "defaultValue": 0
                         },
@@ -145,7 +126,6 @@
                             "name": "noise",
                             "displayName": "noise",
                             "displayNameEvent": "noise changed",
-                            "graphRelevant": true,
                             "unit": "Dezibel",
                             "type": "double",
                             "defaultValue": 0
@@ -155,7 +135,6 @@
                             "name": "co2",
                             "displayName": "co2",
                             "displayNameEvent": "co2 changed",
-                            "graphRelevant": true,
                             "unit": "PartsPerMillion",
                             "type": "double",
                             "defaultValue": 0
@@ -165,8 +144,6 @@
                             "name": "wifiStrength",
                             "displayName": "wifi signal strength",
                             "displayNameEvent": "wifi signal strength changed",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "unit": "Percentage",
                             "type": "int",
                             "defaultValue": 0
@@ -177,14 +154,7 @@
                     "id": "6cc01d62-7317-4ec4-8ac4-a4cab762c179",
                     "name": "outdoor",
                     "displayName": "Outdoor Station",
-                    "deviceIcon": "Thermometer",
-                    "basicTags": [
-                        "Device",
-                        "Weather",
-                        "Sensor"
-                    ],
                     "interfaces": ["temperaturesensor", "humiditysensor", "batterylevel"],
-                    "primaryStateTypeId": "3cb25538-e463-40ae-92f9-8f34f0c06b92",
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -218,8 +188,6 @@
                             "displayName": "last update",
                             "displayNameEvent": "last update changed",
                             "unit": "UnixTime",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "type": "int",
                             "defaultValue": 0
                         },
@@ -228,7 +196,6 @@
                             "name": "temperature",
                             "displayName": "temperature",
                             "displayNameEvent": "temperature changed",
-                            "graphRelevant": true,
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -256,7 +223,6 @@
                             "name": "humidity",
                             "displayName": "humidity",
                             "displayNameEvent": "humidity changed",
-                            "graphRelevant": true,
                             "unit": "Percentage",
                             "type": "double",
                             "defaultValue": 0,
@@ -269,8 +235,6 @@
                             "displayName": "signal strength",
                             "displayNameEvent": "signal strength changed",
                             "unit": "Percentage",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "type": "int",
                             "defaultValue": 0
                         },

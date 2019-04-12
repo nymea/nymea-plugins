@@ -12,11 +12,7 @@
                     "id": "b101abdf-86fd-4d2e-a657-ee76044235bd",
                     "name": "httpPostCommander",
                     "displayName": "HTTP post commander",
-                    "deviceIcon": "Network",
                     "createMethods": ["user"],
-                    "basicTags": [
-                        "Service"
-                    ],
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
@@ -74,12 +70,8 @@
                     "id": "05bf65f5-ff13-43e3-b6ae-77019e79d8a1",
                     "name": "httpPutCommander",
                     "displayName": "HTTP put commander",
-                    "deviceIcon": "Network",
                     "createMethods": ["user"],
                     "interfaces": ["connectable"],
-                    "basicTags": [
-                        "Service"
-                    ],
                     "paramTypes": [
                         {
                             "id": "1a3fcb23-931b-4ba1-b134-c49b656c76f7",
@@ -136,11 +128,7 @@
                     "id": "8f3f6dde-9db3-4237-800b-bb7f804098c9",
                     "name": "httpGetCommander",
                     "displayName": "HTTP get",
-                    "deviceIcon": "Network",
                     "createMethods": ["user"],
-                    "basicTags": [
-                        "Service"
-                    ],
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {

@@ -12,13 +12,8 @@
                     "id": "c67d059f-694f-47cb-8e1d-9e3e6d014c1a",
                     "name": "tcpOutput",
                     "displayName": "TCP Output",
-                    "deviceIcon": "Network",
                     "createMethods": ["user"],
-                    "basicTags": [
-                        "Service"
-                    ],
-                    "criticalStateTypeId": "725b541a-9e0c-4634-81eb-e415c0b8f025",
-                    "primaryStateTypeId": "725b541a-9e0c-4634-81eb-e415c0b8f025",
+                    "interfaces": ["outputtrigger", "connectable"],
                     "paramTypes": [
                         {
                             "id": "2a3fcb23-931b-4ba1-b134-c49b656c76f7",
@@ -49,7 +44,7 @@
                     "actionTypes": [
                         {
                             "id": "6bc52462-b192-46a4-a6df-92cc5a479c89",
-                            "name": "outputData",
+                            "name": "trigger",
                             "displayName": "Send Data",
                             "paramTypes": [
                                 {
@@ -67,12 +62,8 @@
                     "id": "bc40e84a-69c4-4fd2-beb0-bd65f19aa8ff",
                     "name": "tcpInput",
                     "displayName": "TCP Input",
-                    "deviceIcon": "Network",
                     "createMethods": ["user"],
-                    "basicTags": [
-                        "Service"
-                    ],
-                    "primaryStateTypeId": "725b541a-9e0c-4634-81eb-e415c0b8f025",
+                    "interfaces": ["inputtrigger", "connectable"],
                     "paramTypes": [
                         {
                             "id": "bee8b151-815a-4159-9d8a-42b76e99b42c",
@@ -125,8 +116,16 @@
                     "eventTypes": [
                         {
                             "id": "6d7c6df6-cb61-4d9e-b0d7-37c43911ca4b",
-                            "name": "commandReceived",
-                            "displayName": "Command Received"
+                            "name": "triggered",
+                            "displayName": "Command Received",
+                            "paramTypes": [
+                                {
+                                    "id": "97d7ee8c-d9db-40b4-9855-4ceecd64c411",
+                                    "name": "data",
+                                    "displayName": "Data",
+                                    "type": "QString"
+                                }
+                            ]
                         }
                     ]
                 }

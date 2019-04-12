@@ -13,12 +13,6 @@
                     "name": "switch",
                     "displayName": "Intertechno switch",
                     "createMethods": ["user"],
-                    "deviceIcon": "Switch",
-                    "primaryActionTypeId": "df19fb51-c3cd-4b95-8d88-ebbb535f4789",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
                     "paramTypes": [
                         {
                             "id": "c4e2ec44-5e8e-4168-9f6d-a905ea3329c9",

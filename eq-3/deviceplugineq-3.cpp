@@ -265,8 +265,8 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
                 QByteArray rfAddress = device->paramValue(wallThermostateDeviceRfParamTypeId).toByteArray();
                 int roomId = device->paramValue(wallThermostateDeviceRoomParamTypeId).toInt();
 
-                if (action.actionTypeId() == wallThermostateDesiredTemperatureActionTypeId){
-                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostateDesiredTemperatureActionDesiredTemperatureParamTypeId).value().toDouble(), action.id());
+                if (action.actionTypeId() == wallThermostateTargetTemperatureActionTypeId){
+                    cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostateTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble(), action.id());
                 } else if (action.actionTypeId() == wallThermostateSetAutoModeActionTypeId){
                     cube->setDeviceAutoMode(rfAddress, roomId, action.id());
                 } else if (action.actionTypeId() == wallThermostateSetManualModeActionTypeId){
@@ -496,21 +496,21 @@ void DevicePluginEQ3::wallThermostatDataUpdated()
     foreach (WallThermostat *wallThermostat, cube->wallThermostatList()) {
         foreach (Device *device, deviceManager()->findConfiguredDevices(wallThermostateDeviceClassId)){
             if(device->paramValue(wallThermostateDeviceSerialParamTypeId).toString() == wallThermostat->serialNumber()){
-                device->setStateValue(wallThermostateComfortTempStateTypeId, wallThermostat->comfortTemp());
+                device->setStateValue(wallThermostateComfortTemperatureStateTypeId, wallThermostat->comfortTemp());
                 device->setStateValue(wallThermostateEcoTempStateTypeId, wallThermostat->ecoTemp());
                 device->setStateValue(wallThermostateMaxSetpointTempStateTypeId, wallThermostat->maxSetPointTemp());
                 device->setStateValue(wallThermostateMinSetpointTempStateTypeId, wallThermostat->minSetPointTemp());
                 device->setStateValue(wallThermostateErrorOccurredStateTypeId, wallThermostat->errorOccurred());
                 device->setStateValue(wallThermostateInitializedStateTypeId, wallThermostat->initialized());
-                device->setStateValue(wallThermostateBatteryLowStateTypeId, wallThermostat->batteryLow());
+                device->setStateValue(wallThermostateBatteryCriticalStateTypeId, wallThermostat->batteryLow());
                 device->setStateValue(wallThermostateLinkStatusOKStateTypeId, wallThermostat->linkStatusOK());
                 device->setStateValue(wallThermostatePanelLockedStateTypeId, wallThermostat->panelLocked());
                 device->setStateValue(wallThermostateGatewayKnownStateTypeId, wallThermostat->gatewayKnown());
                 device->setStateValue(wallThermostateDtsActiveStateTypeId, wallThermostat->dtsActive());
                 device->setStateValue(wallThermostateDeviceModeStateTypeId, wallThermostat->deviceMode());
                 device->setStateValue(wallThermostateDeviceModeStringStateTypeId, wallThermostat->deviceModeString());
-                device->setStateValue(wallThermostateDesiredTemperatureStateTypeId, wallThermostat->setpointTemperature());
-                device->setStateValue(wallThermostateCurrentTemperatureStateTypeId, wallThermostat->currentTemperature());
+                device->setStateValue(wallThermostateTargetTemperatureStateTypeId, wallThermostat->setpointTemperature());
+                device->setStateValue(wallThermostateTemperatureStateTypeId, wallThermostat->currentTemperature());
             }
         }
     }

@@ -12,13 +12,8 @@
                     "id": "3c8f2447-dcd0-4882-8c09-99e579e4d24c",
                     "name": "wol",
                     "displayName": "Wake On Lan",
-                    "deviceIcon": "Network",
-                    "basicTags": [
-                        "Device",
-                        "Actuator"
-                    ],
-                    "primaryActionTypeId": "fb9b9d87-218f-4f0d-9e16-39f8a105029a",
                     "createMethods": ["user"],
+                    "interfaces": ["outputtrigger"],
                     "paramTypes": [
                         {
                             "id": "e2ba04ac-9fe1-4f9d-8152-024c27030cde",
@@ -31,8 +26,8 @@
                     "actionTypes": [
                         {
                             "id": "fb9b9d87-218f-4f0d-9e16-39f8a105029a",
-                            "name": "wol",
-                            "displayName": "wake up device"
+                            "name": "trigger",
+                            "displayName": "Wake up device"
                         }
                     ]
                 }

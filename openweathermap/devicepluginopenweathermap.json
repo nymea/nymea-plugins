@@ -12,16 +12,8 @@
                     "id": "985195aa-17ad-4530-88a4-cdd753d747d7",
                     "name": "openweathermap",
                     "displayName": "Weather",
-                    "deviceIcon": "Weather",
-                    "basicTags": [
-                        "Service",
-                        "Weather",
-                        "Sensor"
-                    ],
                     "interfaces": ["weather"],
                     "createMethods": ["discovery"],
-                    "primaryStateTypeId": "6013402f-b5b1-46b3-8490-f0c20d62fe61",
-                    "primaryActionTypeId": "cfbc6504-d86f-4856-8dfa-97b6fbb385e4",
                     "discoveryParamTypes": [
                         {
                             "id": "f370b076-a783-4b46-85b2-6f4a9dba55d8",
@@ -78,8 +70,6 @@
                             "displayName": "last update",
                             "displayNameEvent": "last update changed",
                             "unit": "UnixTime",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "type": "int",
                             "defaultValue": 0
                         },
@@ -89,7 +79,6 @@
                             "displayName": "temperature",
                             "displayNameEvent": "temperature changed",
                             "unit": "DegreeCelsius",
-                            "graphRelevant": true,
                             "type": "double",
                             "defaultValue": 0
                         },
@@ -125,7 +114,6 @@
                             "name": "pressure",
                             "displayName": "pressure",
                             "displayNameEvent": "pressure changed",
-                            "graphRelevant": true,
                             "unit": "HectoPascal",
                             "type": "double",
                             "defaultValue": 0
@@ -136,7 +124,6 @@
                             "displayName": "wind speed",
                             "displayNameEvent": "wind speed changed",
                             "unit": "MeterPerSecond",
-                            "graphRelevant": true,
                             "type": "double",
                             "defaultValue": 0
                         },
@@ -155,7 +142,6 @@
                             "displayName": "cloudiness",
                             "displayNameEvent": "cloudiness changed",
                             "unit": "Percentage",
-                            "graphRelevant": true,
                             "type": "int",
                             "defaultValue": 0
                         },
@@ -165,7 +151,6 @@
                             "displayName": "visibility",
                             "displayNameEvent": "visibility changed",
                             "unit": "Meter",
-                            "graphRelevant": true,
                             "type": "int",
                             "defaultValue": 0
                         },

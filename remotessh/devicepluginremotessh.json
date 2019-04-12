@@ -12,9 +12,7 @@
                     "id": "a4f12741-4f30-40ca-a319-7f15e9c0c43a",
                     "name": "reverseSsh",
                     "displayName": "Reverse SSH",
-                    "deviceIcon": "Network",
                     "createMethods": ["user"],
-                    "basicTags": ["Service"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {

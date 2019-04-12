@@ -12,9 +12,7 @@
                     "id": "164f9602-90ee-4693-bda3-9cafae37603e",
                     "name": "avea",
                     "displayName": "Avea",
-                    "deviceIcon": "LightBulb",
-                    "basicTags": ["Device", "Actuator", "Lighting"],
-                    "interfaces": ["connectable", "light", "colorlight"],
+                    "interfaces": ["connectable", "light", "colorlight", "colortemperaturelight"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
@@ -60,10 +58,8 @@
                             "displayNameAction": "Set brightness",
                             "type": "int",
                             "defaultValue": 100,
-                            "ruleRelevant": false,
                             "minValue": 0,
                             "maxValue": 100,
-                            "eventRuleRelevant": false,
                             "writable": true
                         },
                         {
@@ -73,8 +69,6 @@
                             "displayNameEvent": "Color changed",
                             "displayNameAction": "Set color",
                             "type": "QColor",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "#000000",
                             "writable": true
                         },
@@ -99,10 +93,8 @@
                             "displayNameAction": "Set white",
                             "type": "int",
                             "defaultValue": 0,
-                            "ruleRelevant": false,
                             "minValue": 0,
                             "maxValue": 4095,
-                            "eventRuleRelevant": false,
                             "writable": true
                         },
                         {
@@ -113,10 +105,8 @@
                             "displayNameAction": "Set red",
                             "type": "int",
                             "defaultValue": 0,
-                            "ruleRelevant": false,
                             "minValue": 0,
                             "maxValue": 4095,
-                            "eventRuleRelevant": false,
                             "writable": true
                         },
                         {
@@ -127,10 +117,8 @@
                             "displayNameAction": "Set green",
                             "type": "int",
                             "defaultValue": 0,
-                            "ruleRelevant": false,
                             "minValue": 0,
                             "maxValue": 4095,
-                            "eventRuleRelevant": false,
                             "writable": true
                         },
                         {
@@ -141,10 +129,8 @@
                             "displayNameAction": "Set blue",
                             "type": "int",
                             "defaultValue": 0,
-                            "ruleRelevant": false,
                             "minValue": 0,
                             "maxValue": 4095,
-                            "eventRuleRelevant": false,
                             "writable": true
                         },
                         {
@@ -155,10 +141,8 @@
                             "displayNameAction": "Set fade",
                             "type": "int",
                             "defaultValue": 0,
-                            "ruleRelevant": false,
                             "minValue": 0,
                             "maxValue": 1000,
-                            "eventRuleRelevant": false,
                             "writable": true
                         }
                     ]

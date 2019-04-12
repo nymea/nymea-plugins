@@ -21,10 +21,8 @@
                     "id": "58f9db7f-fd33-45af-8c98-047b67ae5267",
                     "name": "relayOutput",
                     "displayName": "Relay output",
-                    "deviceIcon": "Power",
                     "createMethods": ["discovery"],
                     "interfaces": ["power"],
-                    "basicTags": ["Device"],
                     "paramTypes": [
                         {
                             "id": "7a09e3ad-452c-4bf4-a00c-f8114ed9a7a1",
@@ -50,10 +48,8 @@
                     "id": "0bec278a-98f1-416b-b496-6d00740f178a",
                     "name": "digitalInput",
                     "displayName": "Digital input",
-                    "deviceIcon": "Switch",
                     "createMethods": ["discovery"],
                     "interfaces": [ ],
-                    "basicTags": ["Sensor"],
                     "paramTypes": [
                         {
                             "id": "9c84d9b8-fdc7-41c1-9559-08f061ffc7a6",
@@ -77,10 +73,8 @@
                     "id": "71e03d00-1b62-412b-b55d-ab90ad2eddff",
                     "name": "dimmerSwitch",
                     "displayName": "Dimmer switch",
-                    "deviceIcon": "Switch",
                     "createMethods": ["discovery"],
                     "interfaces": ["longpressbutton"],
-                    "basicTags": ["Sensor"],
                     "paramTypes": [
                         {
                             "id": "2344dedb-3e21-4f59-a016-0fc6233a38ac",
@@ -130,10 +124,8 @@
                     "id": "f3a3c5ed-461a-4ca8-930b-df3af821b9e0",
                     "name": "digitalOutput",
                     "displayName": "Digital output",
-                    "deviceIcon": "Power",
                     "createMethods": ["discovery"],
                     "interfaces": ["power"],
-                    "basicTags": ["Device"],
                     "paramTypes": [
                         {
                             "id": "c01d5bde-de5d-42c5-b462-79745827875a",
@@ -159,10 +151,8 @@
                     "id": "9094a69f-f475-4050-a345-5ab52cb19774",
                     "name": "analogOutput",
                     "displayName": "Analog output",
-                    "deviceIcon": "Power",
                     "createMethods": ["discovery"],
                     "interfaces": [ ],
-                    "basicTags": ["Device"],
                     "paramTypes": [
                         {
                             "id": "46e606cc-67ee-4891-bc39-8fb0565c87da",
@@ -191,10 +181,8 @@
                     "id": "06abd6a4-e655-4243-bc9c-9bd4ef5be2e6",
                     "name": "analogInput",
                     "displayName": "Analog Input",
-                    "deviceIcon": "Power",
                     "createMethods": ["discovery"],
                     "interfaces": [ ],
-                    "basicTags": ["Sensor"],
                     "paramTypes": [
                         {
                             "id": "cc6eb664-9fd2-457d-9d0d-0eb9703db4a2",
@@ -219,10 +207,8 @@
                     "id": "eadddc99-ce7d-4169-a2f9-a829fa105ad2",
                     "name": "blind",
                     "displayName": "Blind",
-                    "deviceIcon": "Blinds",
                     "createMethods": ["discovery"],
                     "interfaces": ["blind"],
-                    "basicTags": ["Actuator"],
                     "paramTypes": [
                         {
                             "id": "7878ef4b-2395-4995-b17d-b69cb7d280e1",
@@ -288,10 +274,8 @@
                     "id": "34fc941e-3465-4618-acf6-dda9c7242e27",
                     "name": "light",
                     "displayName": "Light",
-                    "deviceIcon": "LightBulb",
                     "createMethods": ["discovery"],
                     "interfaces": ["light"],
-                    "basicTags": ["Actuator"],
                     "paramTypes": [
                         {
                             "id": "e1375def-edd6-4886-8e87-73cf3ebc819d",
@@ -324,7 +308,6 @@
                     "id": "4f0b3cfd-603a-47ec-9719-2db7eeae1143",
                     "name": "temperatureSensor",
                     "displayName": "Temperature sensor",
-                    "deviceIcon": "Thermometer",
                     "createMethods": ["discovery"],
                     "interfaces": ["temperaturesensor", "connectable"],
                     "paramTypes": [

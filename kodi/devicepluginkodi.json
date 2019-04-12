@@ -12,15 +12,8 @@
                     "id": "d09953e3-c5bd-415b-973b-0d0bf2be3f69",
                     "name": "kodi",
                     "displayName": "Kodi",
-                    "deviceIcon": "Tv",
-                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat"],
-                    "basicTags": [
-                        "Service",
-                        "Multimedia",
-                        "Actuator"
-                    ],
+                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
                     "createMethods": ["user", "discovery"],
-                    "criticalStateTypeId": "09dfbd40-c97c-4a20-9ecd-f80e389a4864",
                     "paramTypes": [
                         {
                             "id": "1a897065-57c6-49b3-bac9-1e5db27859e5",
@@ -53,8 +46,6 @@
                             "displayNameAction": "Set mute",
                             "type": "bool",
                             "defaultValue": true,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "writable": true
                         },
                         {
@@ -67,8 +58,6 @@
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": 50,
                             "writable": true
                         },

@@ -13,12 +13,7 @@
                     "name": "post",
                     "displayName": "Post",
                     "createMethods": ["user"],
-                    "criticalStateTypeId": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
-                    "deviceIcon": "Network",
                     "interfaces": [],
-                    "basicTags": [
-                        "Service"
-                    ],
                     "paramTypes": [
                         {
                             "id": "b50b3682-fb2e-4185-b7aa-31741648d9bb",
@@ -75,12 +70,7 @@
                     "name": "get",
                     "displayName": "Get",
                     "createMethods": ["user"],
-                    "criticalStateTypeId": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
-                    "deviceIcon": "Network",
-                    "interfaces": [],
-                    "basicTags": [
-                        "Service"
-                    ],
+                    "interfaces": ["connectable"],
                     "paramTypes": [
                         {
                             "id": "b50b3682-fb2e-4185-b7aa-31741648d9bb",

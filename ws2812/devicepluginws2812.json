@@ -24,11 +24,6 @@
                     "name": "ws2812",
                     "createMethods": ["discovery"],
                     "interfaces": ["gateway"],
-                    "basicTags": [
-                        "Device",
-                        "Gateway"
-                    ],
-                    "criticalStateTypeId": "08091cde-983d-42f7-bdd7-d89c312ccbed",
                     "paramTypes": [
                         {
                             "id": "ccf1f6b1-54c4-46c1-b978-6abcf3fad882",
@@ -63,8 +58,6 @@
                             "displayNameEvent": "color changed",
                             "displayNameAction": "set color",
                             "type": "QColor",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "#000000",
                             "writable": true
 
@@ -79,8 +72,6 @@
                             "unit": "Percentage",
                             "defaultValue": 0,
                             "minValue": 0,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "maxValue": 100,
                             "writable": true
                         },
@@ -94,8 +85,6 @@
                             "defaultValue": 240,
                             "minValue": 0,
                             "maxValue": 240,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "writable": true
                         },
                         {
@@ -108,8 +97,6 @@
                             "defaultValue": 60,
                             "minValue": 60,
                             "maxValue": 240,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "writable": true
                         },
                         {
@@ -120,8 +107,6 @@
                             "displayNameAction": "set effect mode",
                             "type": "QString",
                             "writable": true,
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "possibleValues": [
                                 "Off",
                                 "Color On",
@@ -143,11 +128,8 @@
                             "displayNameAction": "set tricolore color 1",
                             "name": "tcolor1",
                             "type": "QColor",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "#000000",
                             "writable": true
-
                         },
                         {
                             "id": "dd4ad65b-007a-4eae-8ce0-b76d6cbf093e",
@@ -156,11 +138,8 @@
                             "displayNameAction": "set tricolore color 2",
                             "name": "tcolor2",
                             "type": "QColor",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "#000000",
                             "writable": true
-
                         },
                         {
                             "id": "97c83be0-7ba7-4758-b52b-d997a80bfbe5",
@@ -169,8 +148,6 @@
                             "displayNameAction": "set tricolore color 3",
                             "name": "tcolor3",
                             "type": "QColor",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
                             "defaultValue": "#000000",
                             "writable": true
                         }

@@ -60,7 +60,7 @@ DevicePluginWakeOnLan::DevicePluginWakeOnLan()
 
 DeviceManager::DeviceError DevicePluginWakeOnLan::executeAction(Device *device, const Action &action)
 {
-    if(action.actionTypeId() == wolWolActionTypeId){
+    if(action.actionTypeId() == wolTriggerActionTypeId){
         qCDebug(dcWakeOnLan) << "Wake up" << device->name();
         wakeup(device->paramValue(wolDeviceMacParamTypeId).toString());
     }

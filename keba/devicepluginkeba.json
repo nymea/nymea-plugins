@@ -12,13 +12,8 @@
                     "id": "900dacec-cae7-4a37-95ba-501846368ea2",
                     "name": "wallbox",
                     "displayName": "Keba KeContact P30",
-                    "deviceIcon": "Energy",
                     "createMethods": ["user"],
                     "interfaces": [],
-                    "criticalStateTypeId": "b1a574a6-46b6-44ea-a0bb-9b4de3198967",
-                    "basicTags": [
-                        "Energy"
-                    ],
                     "paramTypes":[
                         {
                             "id": "730cd3d3-5f0e-4028-a8c2-ced7574f13f3",

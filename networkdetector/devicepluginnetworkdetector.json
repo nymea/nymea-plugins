@@ -12,13 +12,7 @@
                     "id": "bd216356-f1ec-4324-9785-6982d2174e17",
                     "name": "networkDevice",
                     "displayName": "Network Device",
-                    "deviceIcon": "Network",
-                    "basicTags": [
-                        "Device",
-                        "Sensor"
-                    ],
                     "interfaces": [ "presencesensor" ],
-                    "primaryStateTypeId": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
                     "createMethods": ["user", "discovery"],
                     "paramTypes": [
                         {

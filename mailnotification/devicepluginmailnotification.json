@@ -12,11 +12,6 @@
                     "id": "f4844c97-7ca6-4349-904e-ff9749a9fe74",
                     "name": "customMail",
                     "displayName": "Custom mail",
-                    "deviceIcon": "Mail",
-                    "basicTags": [
-                        "Service",
-                        "Notification"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
@@ -112,11 +107,6 @@
                     "id": "3869884a-1592-4b8f-84a7-994be18ff555",
                     "name": "googleMail",
                     "displayName": "Google mail",
-                    "deviceIcon": "Mail",
-                    "basicTags": [
-                        "Service",
-                        "Notification"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
@@ -176,11 +166,6 @@
                     "id": "59409e8f-0c83-414f-abd5-bbbf2758acba",
                     "name": "yahooMail",
                     "displayName": "Yahoo mail",
-                    "deviceIcon": "Mail",
-                    "basicTags": [
-                        "Service",
-                        "Notification"
-                    ],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
