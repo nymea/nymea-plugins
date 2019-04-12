@@ -12,7 +12,8 @@ SOURCES += \
     huelight.cpp \
     pairinginfo.cpp \
     hueremote.cpp \
-    huedevice.cpp
+    huedevice.cpp \
+    hueoutdoorsensor.cpp
 
 HEADERS += \
     devicepluginphilipshue.h \
@@ -23,7 +24,8 @@ HEADERS += \
     huelight.h \
     pairinginfo.h \
     hueremote.h \
-    huedevice.h
+    huedevice.h \
+    hueoutdoorsensor.h
 
 
 
