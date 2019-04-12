@@ -40,6 +40,7 @@ PLUGIN_DIRS = \
     snapd               \
     tasmota             \
     tcpcommander        \
+    texasinstruments    \
     udpcommander        \
     unipi               \
     unitec              \
