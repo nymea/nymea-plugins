@@ -44,46 +44,16 @@ public:
     explicit DevicePluginAwattar();
     ~DevicePluginAwattar();
 
-    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QPointer<Device> m_device;
-    QList<QPointer<HeatPump> > m_heatPumps;
-
-    QList<QPointer<QNetworkReply> > m_searchPumpReplies;
-    QList<QPointer<QNetworkReply> > m_updatePrice;
-    QList<QPointer<QNetworkReply> > m_updateUserData;
-
-    QString m_token;
-    QString m_userUuid;
-
-    int m_autoSgMode;
-    int m_manualSgMode;
-
-    QNetworkReply *requestPriceData(const QString& token);
-    QNetworkReply *requestUserData(const QString& token, const QString &userId);
-
-    void updateData();
-    void searchHeatPumps();
-
-    void processPriceData(const QVariantMap &data);
-    void processUserData(const QVariantMap &data);
-    void processPumpSearchData(const QByteArray &data);
-
-    void setSgMode(const int &sgMode);
-    void setOnlineStatus(const bool &online);
-    bool heatPumpExists(const QHostAddress &pumpAddress);
 
 private slots:
     void onPluginTimer();
-    void onNetworkReplyFinished();
-    void onHeatPumpReachableChanged();
-
+    void requestPriceData(Device* device, bool setupInProgress = false);
+    void processPriceData(Device *device, const QVariantMap &data);
 };
 
 #endif // DEVICEPLUGINAWATTAR_H

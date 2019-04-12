@@ -23,15 +23,7 @@
                     "displayName": "aWATTar",
                     "name": "awattar",
                     "createMethods": ["user"],
-                    "deviceIcon": "Energy",
-                    "primaryStateTypeId": "eab37309-3dd8-46a0-94d4-bd05b5bb0430",
-                    "criticalStateTypeId": "470b9b88-17f3-42e3-9250-cc181984eafe",
-                    "basicTags": [
-                        "Service",
-                        "Actuator",
-                        "Energy",
-                        "Heating"
-                    ],
+                    "interfaces": ["connectable"],
                     "paramTypes": [
                         {
                             "id": "cbbf6f0a-6a91-4844-83f5-60eadb46099b",
@@ -49,6 +41,14 @@
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "470b9b88-17f3-42e3-9250-cc181984eafe",
+                            "name": "connected",
+                            "displayName": "Online",
+                            "displayNameEvent": "Online changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
                         {
                             "id": "eab37309-3dd8-46a0-94d4-bd05b5bb0430",
                             "name": "currentMarketPrice",
@@ -111,75 +111,6 @@
                             "ruleRelevant": false,
                             "eventRuleRelevant": false,
                             "defaultValue": 0
-                        },
-                        {
-                            "id": "470b9b88-17f3-42e3-9250-cc181984eafe",
-                            "name": "online",
-                            "displayName": "online",
-                            "displayNameEvent": "online changed",
-                            "type": "bool",
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "1c9d139a-6618-4a39-bc83-37f80942017d",
-                            "name": "reachable",
-                            "displayName": "pump reachable",
-                            "displayNameEvent": "pump reachable changed",
-                            "type": "bool",
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "b83d3533-aeae-4a9b-95d8-28466bf6c0cf",
-                            "name": "sgMode",
-                            "displayName": "sg-mode",
-                            "displayNameEvent": "sg-mode changed",
-                            "type": "QString",
-                            "possibleValues": [
-                                "0 - Invalid",
-                                "1 - Off",
-                                "2 - Normal",
-                                "3 - High Temperature",
-                                "4 - On"
-                            ],
-                            "defaultValue": "0 - Invalid"
-                        },
-                        {
-                            "id": "4c303bcd-152d-45ad-874d-d57fc87a26bb",
-                            "name": "sgSyncMode",
-                            "displayName": "sync mode",
-                            "displayNameEvent": "sync mode changed",
-                            "type": "QString",
-                            "ruleRelevant": false,
-                            "eventRuleRelevant": false,
-                            "possibleValues": [
-                                "auto",
-                                "manual"
-                            ],
-                            "defaultValue": "auto",
-                            "writable": true,
-                            "displayNameAction": "Set sync mode"
-                        }
-                    ],
-                    "actionTypes": [
-                        {
-                            "id": "dd82f6c7-5e92-48ca-b0bc-bdc55d3e1482",
-                            "name": "setSgMode",
-                            "displayName": "set sg-mode",
-                            "paramTypes": [
-                                {
-                                    "id": "c7b13a33-1c05-457c-a087-20ecc1b8ca01",
-                                    "name": "sgMode",
-                                    "displayName": "sg-mode",
-                                    "type": "QString",
-                                    "allowedValues": [
-                                        "1 - Off",
-                                        "2 - Normal",
-                                        "3 - High Temperature",
-                                        "4 - On"
-                                    ],
-                                    "defaultValue": "2 - Normal"
-                                }
-                            ]
                         }
                     ]
                 }
