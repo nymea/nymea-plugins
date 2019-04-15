@@ -109,7 +109,7 @@ The name of the autocreated EventType (DeviceClass: tap, StateType: connected, I
         <location filename="../plugininfo.h" line="252"/>
         <source>Serial Number (optional)</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, ActionType: searchNewDevices, ID: 1924bdb5-f8f1-4dcd-bc09-21ad7c5ce377)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Serienummer (valgfrit)</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="255"/>
@@ -325,13 +325,13 @@ The name of the autocreated ActionType (DeviceClass: colorTemperatureLight, Stat
         <location filename="../plugininfo.h" line="348"/>
         <source>Hue color temperature light</source>
         <extracomment>The name of the DeviceClass (35f749f7-b60a-4922-bd25-1bdd2eddcbe3)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue farvetemperatur lys</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="411"/>
         <source>Hue dimmable light</source>
         <extracomment>The name of the DeviceClass (4fa568ef-7a3a-422b-b0c0-206d37cb4eed)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue dæmpeligt lys</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="489"/>
@@ -376,19 +376,19 @@ The name of the ParamType (DeviceClass: tap, EventType: pressed, ID: 8ed643c0-1b
         <location filename="../plugininfo.h" line="558"/>
         <source>Hue Outdoor Sensor</source>
         <extracomment>The name of the DeviceClass (32dc6390-600f-4eb4-b349-cc2d6796a82a)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue udendørs sensor</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="561"/>
         <source>Model id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 3ca8632d-7bd1-45a9-86af-c856e006c334)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Model id</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="564"/>
         <source>Uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 4a15f861-cad6-464a-b250-08793c68ae30)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Uuid</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="567"/>
