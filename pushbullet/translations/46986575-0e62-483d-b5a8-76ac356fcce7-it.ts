@@ -40,7 +40,7 @@ The name of the vendor (b5e1896e-b7fa-4c19-ac2b-10bd489f8302)</extracomment>
         <location filename="../plugininfo.h" line="49"/>
         <source>body</source>
         <extracomment>The name of the ParamType (DeviceClass: pushNotification, ActionType: notify, ID: f72cc56c-4d0b-4b96-ab9b-ff3ca92b00e2)</extracomment>
-        <translation>corpo</translation>
+        <translation>testo</translation>
     </message>
 </context>
 </TS>
