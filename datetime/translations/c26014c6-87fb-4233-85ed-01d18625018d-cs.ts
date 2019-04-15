@@ -265,7 +265,7 @@ The name of the EventType f40d6e0f-fda2-475e-a6ae-c3fee03138b9 of deviceClass to
         <location filename="../plugininfo.h" line="234"/>
         <source>sunday</source>
         <extracomment>The name of the ParamType (DeviceClass: alarm, Type: device, ID: 2d519d8f-4bda-4d30-801f-48fe6c10c540)</extracomment>
-        <translation> neděle</translation>
+        <translation>neděle</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="237"/>
