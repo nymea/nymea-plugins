@@ -38,17 +38,14 @@ The name of the autocreated EventType (DeviceClass: script, StateType: running, 
     </message>
     <message>
         <location filename="../plugininfo.h" line="55"/>
-        <location filename="../plugininfo.h" line="73"/>
-        <source>running</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: application, StateType: running, ID: 28d7e933-ff05-4f4c-95a0-482689543de5
-----------
-The name of the ParamType for the autocreated EventType (DeviceClass: script, StateType: running, ID: 28d7e933-ff05-4f4c-95a0-482689543de5</extracomment>
+        <source>Running</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: application, StateType: running, ID: 28d7e933-ff05-4f4c-95a0-482689543de5</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="58"/>
         <location filename="../plugininfo.h" line="76"/>
-        <source>execute</source>
+        <source>Execute</source>
         <extracomment>The name of the ActionType cf52b41d-3108-423c-8907-ca5b4d97cac5 of deviceClass application
 ----------
 The name of the ActionType cf52b41d-3108-423c-8907-ca5b4d97cac5 of deviceClass script</extracomment>
@@ -57,10 +54,16 @@ The name of the ActionType cf52b41d-3108-423c-8907-ca5b4d97cac5 of deviceClass s
     <message>
         <location filename="../plugininfo.h" line="61"/>
         <location filename="../plugininfo.h" line="79"/>
-        <source>kill</source>
+        <source>Kill</source>
         <extracomment>The name of the ActionType d21b1fed-1dd9-4c5a-a64e-0c6ba94059be of deviceClass application
 ----------
 The name of the ActionType d21b1fed-1dd9-4c5a-a64e-0c6ba94059be of deviceClass script</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="73"/>
+        <source>running</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: script, StateType: running, ID: 28d7e933-ff05-4f4c-95a0-482689543de5</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -73,12 +76,6 @@ The name of the ActionType d21b1fed-1dd9-4c5a-a64e-0c6ba94059be of deviceClass s
         <location filename="../plugininfo.h" line="67"/>
         <source>script</source>
         <extracomment>The name of the ParamType (DeviceClass: script, Type: device, ID: 391cf4af-ccb4-4ec0-9711-00c1b53a3c4c)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/commandlauncher/plugininfo.h" line="59"/>
-        <source>Bashscript launcher</source>
-        <extracomment>The name of the DeviceClass (96044325-a6fb-47c9-9117-f29c3b327978)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

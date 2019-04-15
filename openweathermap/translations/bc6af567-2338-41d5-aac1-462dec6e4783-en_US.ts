@@ -216,29 +216,5 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <extracomment>The name of the ActionType cfbc6504-d86f-4856-8dfa-97b6fbb385e4 of deviceClass openweathermap</extracomment>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="80"/>
-        <source>name</source>
-        <extracomment>The name of the paramType (394d3983-49d4-47f7-888b-243f3f5e9972) of Weather</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="83"/>
-        <source>country</source>
-        <extracomment>The name of the paramType (f0cd96bb-ddd1-4484-8353-8b6633fa101d) of Weather</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="86"/>
-        <source>id</source>
-        <extracomment>The name of the paramType (286342e1-b299-4f67-9d8f-2ed9e8844466) of Weather</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="89"/>
-        <source>location</source>
-        <extracomment>The name of the paramType (f370b076-a783-4b46-85b2-6f4a9dba55d8) of Weather</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 </TS>

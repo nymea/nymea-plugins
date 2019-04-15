@@ -29,7 +29,7 @@
     </message>
     <message>
         <location filename="../plugininfo.h" line="41"/>
-        <source>wake up device</source>
+        <source>Wake up device</source>
         <extracomment>The name of the ActionType fb9b9d87-218f-4f0d-9e16-39f8a105029a of deviceClass wol</extracomment>
         <translation type="unfinished"></translation>
     </message>

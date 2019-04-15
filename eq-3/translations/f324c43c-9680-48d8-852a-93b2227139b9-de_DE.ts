@@ -19,33 +19,42 @@ The name of the vendor (2cac0645-855e-44fa-837e-1cab0ae4304c)</extracomment>
         <translation>Max! Cube LAN Gateway</translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="158"/>
+        <location filename="../plugininfo.h" line="243"/>
         <source>Max! Wall Thermostat</source>
         <extracomment>The name of the DeviceClass (ffbfec5d-06e8-4082-b62b-92cc5c3e8c4e)</extracomment>
         <translation>Max! Wandthermostat</translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="269"/>
+        <location filename="../plugininfo.h" line="360"/>
+        <location filename="../plugininfo.h" line="534"/>
         <source>set auto mode</source>
-        <extracomment>The name of the ActionType 162b4b3d-9923-4f2c-a755-b50c8a06a6f0 of deviceClass Max! Wall Thermostat</extracomment>
+        <extracomment>The name of the ActionType 162b4b3d-9923-4f2c-a755-b50c8a06a6f0 of deviceClass wallThermostate
+----------
+The name of the ActionType 162b4b3d-9923-4f2c-a755-b50c8a06a6f0 of deviceClass radiatorThermostate</extracomment>
         <translation>Setze auto-Modus</translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="272"/>
+        <location filename="../plugininfo.h" line="363"/>
+        <location filename="../plugininfo.h" line="537"/>
         <source>set manual mode</source>
-        <extracomment>The name of the ActionType 8e604437-9f5b-4c17-b5b0-e2db6007af5b of deviceClass Max! Wall Thermostat</extracomment>
+        <extracomment>The name of the ActionType 8e604437-9f5b-4c17-b5b0-e2db6007af5b of deviceClass wallThermostate
+----------
+The name of the ActionType 8e604437-9f5b-4c17-b5b0-e2db6007af5b of deviceClass radiatorThermostate</extracomment>
         <translation>Setze manuellen-Modus</translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="275"/>
+        <location filename="../plugininfo.h" line="366"/>
+        <location filename="../plugininfo.h" line="540"/>
         <source>set eco mode</source>
-        <extracomment>The name of the ActionType 27a981e8-ec23-4ba8-921e-33b911a7dd89 of deviceClass Max! Wall Thermostat</extracomment>
+        <extracomment>The name of the ActionType 27a981e8-ec23-4ba8-921e-33b911a7dd89 of deviceClass wallThermostate
+----------
+The name of the ActionType 27a981e8-ec23-4ba8-921e-33b911a7dd89 of deviceClass radiatorThermostate</extracomment>
         <translation>Setze eco-Modus</translation>
     </message>
     <message>
-        <location filename="../../../build-guh-plugins-Desktop-Debug/eq-3/plugininfo.h" line="278"/>
+        <location filename="../plugininfo.h" line="369"/>
         <source>display current temperature</source>
-        <extracomment>The name of the ActionType 184fb112-7a03-4560-8634-0257c969c26e of deviceClass Max! Wall Thermostat</extracomment>
+        <extracomment>The name of the ActionType 184fb112-7a03-4560-8634-0257c969c26e of deviceClass wallThermostate</extracomment>
         <translation>Zeige aktuelle Temperatur</translation>
     </message>
     <message>
@@ -103,12 +112,6 @@ The name of the ParamType (DeviceClass: radiatorThermostate, Type: device, ID: 6
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="243"/>
-        <source>Max! Wall Thermostat</source>
-        <extracomment>The name of the DeviceClass (ffbfec5d-06e8-4082-b62b-92cc5c3e8c4e)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="249"/>
         <location filename="../plugininfo.h" line="381"/>
         <source>name</source>
@@ -156,14 +159,14 @@ The name of the ParamType (DeviceClass: radiatorThermostate, Type: device, ID: 1
     <message>
         <location filename="../plugininfo.h" line="264"/>
         <source>confort temperature changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: comfortTemp, ID: 850380ee-a787-43e7-adb8-768a21a6e64d)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: comfortTemperature, ID: 850380ee-a787-43e7-adb8-768a21a6e64d)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="267"/>
         <location filename="../plugininfo.h" line="399"/>
         <source>comfort temperature</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wallThermostate, StateType: comfortTemp, ID: 850380ee-a787-43e7-adb8-768a21a6e64d
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wallThermostate, StateType: comfortTemperature, ID: 850380ee-a787-43e7-adb8-768a21a6e64d
 ----------
 The name of the ParamType for the autocreated EventType (DeviceClass: radiatorThermostate, StateType: comfortTemp, ID: 850380ee-a787-43e7-adb8-768a21a6e64d</extracomment>
         <translation type="unfinished"></translation>
@@ -250,21 +253,15 @@ The name of the ParamType for the autocreated EventType (DeviceClass: radiatorTh
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="300"/>
         <location filename="../plugininfo.h" line="426"/>
         <source>battery low changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: batteryLow, ID: 53b89f32-8894-4290-92a0-6a470c6b69ab)
-----------
-The name of the autocreated EventType (DeviceClass: radiatorThermostate, StateType: batteryLow, ID: 53b89f32-8894-4290-92a0-6a470c6b69ab)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: radiatorThermostate, StateType: batteryLow, ID: 53b89f32-8894-4290-92a0-6a470c6b69ab)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="303"/>
         <location filename="../plugininfo.h" line="429"/>
         <source>battery low</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wallThermostate, StateType: batteryLow, ID: 53b89f32-8894-4290-92a0-6a470c6b69ab
-----------
-The name of the ParamType for the autocreated EventType (DeviceClass: radiatorThermostate, StateType: batteryLow, ID: 53b89f32-8894-4290-92a0-6a470c6b69ab</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: radiatorThermostate, StateType: batteryLow, ID: 53b89f32-8894-4290-92a0-6a470c6b69ab</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -274,6 +271,18 @@ The name of the ParamType for the autocreated EventType (DeviceClass: radiatorTh
         <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: linkStatusOK, ID: aff38be8-7ea6-4fd8-b0fa-e987ab05c719)
 ----------
 The name of the autocreated EventType (DeviceClass: radiatorThermostate, StateType: linkStatusOk, ID: aff38be8-7ea6-4fd8-b0fa-e987ab05c719)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="300"/>
+        <source>Battery low changed</source>
+        <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: batteryCritical, ID: 53b89f32-8894-4290-92a0-6a470c6b69ab)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="303"/>
+        <source>Battery low</source>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wallThermostate, StateType: batteryCritical, ID: 53b89f32-8894-4290-92a0-6a470c6b69ab</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -376,7 +385,7 @@ The name of the ParamType for the autocreated EventType (DeviceClass: radiatorTh
         <location filename="../plugininfo.h" line="342"/>
         <location filename="../plugininfo.h" line="468"/>
         <source>desired temperature changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: desiredTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1)
+        <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: targetTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1)
 ----------
 The name of the autocreated EventType (DeviceClass: radiatorThermostate, StateType: desiredTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1)</extracomment>
         <translation type="unfinished"></translation>
@@ -387,9 +396,9 @@ The name of the autocreated EventType (DeviceClass: radiatorThermostate, StateTy
         <location filename="../plugininfo.h" line="471"/>
         <location filename="../plugininfo.h" line="477"/>
         <source>desired temperature</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wallThermostate, StateType: desiredTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wallThermostate, StateType: targetTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1
 ----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: wallThermostate, StateType: desiredTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1)
+The name of the ParamType for the autocreated ActionType (DeviceClass: wallThermostate, StateType: targetTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1)
 ----------
 The name of the ParamType for the autocreated EventType (DeviceClass: radiatorThermostate, StateType: desiredTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1
 ----------
@@ -400,7 +409,7 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: radiatorT
         <location filename="../plugininfo.h" line="348"/>
         <location filename="../plugininfo.h" line="474"/>
         <source>Set desired temperature</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: wallThermostate, StateType: desiredTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1)
+        <extracomment>The name of the autocreated ActionType (DeviceClass: wallThermostate, StateType: targetTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1)
 ----------
 The name of the autocreated ActionType (DeviceClass: radiatorThermostate, StateType: desiredTemperature, ID: 579aa8c6-8814-491b-9e7c-b98108c323d1)</extracomment>
         <translation type="unfinished"></translation>
@@ -408,46 +417,13 @@ The name of the autocreated ActionType (DeviceClass: radiatorThermostate, StateT
     <message>
         <location filename="../plugininfo.h" line="354"/>
         <source>current temperature changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: currentTemperature, ID: 852e7708-db1d-42d1-96e4-19c13598262c)</extracomment>
+        <extracomment>The name of the autocreated EventType (DeviceClass: wallThermostate, StateType: temperature, ID: 852e7708-db1d-42d1-96e4-19c13598262c)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="357"/>
         <source>current temperature</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wallThermostate, StateType: currentTemperature, ID: 852e7708-db1d-42d1-96e4-19c13598262c</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="360"/>
-        <location filename="../plugininfo.h" line="534"/>
-        <source>set auto mode</source>
-        <extracomment>The name of the ActionType 162b4b3d-9923-4f2c-a755-b50c8a06a6f0 of deviceClass wallThermostate
-----------
-The name of the ActionType 162b4b3d-9923-4f2c-a755-b50c8a06a6f0 of deviceClass radiatorThermostate</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="363"/>
-        <location filename="../plugininfo.h" line="537"/>
-        <source>set manual mode</source>
-        <extracomment>The name of the ActionType 8e604437-9f5b-4c17-b5b0-e2db6007af5b of deviceClass wallThermostate
-----------
-The name of the ActionType 8e604437-9f5b-4c17-b5b0-e2db6007af5b of deviceClass radiatorThermostate</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="366"/>
-        <location filename="../plugininfo.h" line="540"/>
-        <source>set eco mode</source>
-        <extracomment>The name of the ActionType 27a981e8-ec23-4ba8-921e-33b911a7dd89 of deviceClass wallThermostate
-----------
-The name of the ActionType 27a981e8-ec23-4ba8-921e-33b911a7dd89 of deviceClass radiatorThermostate</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="369"/>
-        <source>display current temperature</source>
-        <extracomment>The name of the ActionType 184fb112-7a03-4560-8634-0257c969c26e of deviceClass wallThermostate</extracomment>
+        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wallThermostate, StateType: temperature, ID: 852e7708-db1d-42d1-96e4-19c13598262c</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

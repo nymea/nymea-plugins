@@ -53,8 +53,10 @@ The name of the vendor (83c649b4-49b0-4482-9334-d86a85bfbd2a)</extracomment>
         <source>red</source>
         <extracomment>The name of the ActionType 737f77b6-fe2a-45ad-9945-8f0197e57741 of deviceClass rfController</extracomment>
         <translation type="unfinished"></translation>
-        <extracomment>The name of the ActionType 6471e804-fd54-41dd-88ed-ec46d6cc33db of deviceClass RF Controller (LN-CON-RF20B)</extracomment>
-        <translation>Grün</translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="75"/>
+        <source>green</source>
         <extracomment>The name of the ActionType 6471e804-fd54-41dd-88ed-ec46d6cc33db of deviceClass rfController</extracomment>
         <translation type="unfinished"></translation>
     </message>
