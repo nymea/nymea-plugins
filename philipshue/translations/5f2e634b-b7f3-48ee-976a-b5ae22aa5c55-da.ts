@@ -109,7 +109,7 @@ The name of the autocreated EventType (DeviceClass: tap, StateType: connected, I
         <location filename="../plugininfo.h" line="252"/>
         <source>Serial Number (optional)</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, ActionType: searchNewDevices, ID: 1924bdb5-f8f1-4dcd-bc09-21ad7c5ce377)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Serienummer (valgfrit)</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="255"/>
@@ -325,13 +325,13 @@ The name of the autocreated ActionType (DeviceClass: colorTemperatureLight, Stat
         <location filename="../plugininfo.h" line="348"/>
         <source>Hue color temperature light</source>
         <extracomment>The name of the DeviceClass (35f749f7-b60a-4922-bd25-1bdd2eddcbe3)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue farvetemperatur lys</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="411"/>
         <source>Hue dimmable light</source>
         <extracomment>The name of the DeviceClass (4fa568ef-7a3a-422b-b0c0-206d37cb4eed)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue dæmpeligt lys</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="489"/>
@@ -376,139 +376,139 @@ The name of the ParamType (DeviceClass: tap, EventType: pressed, ID: 8ed643c0-1b
         <location filename="../plugininfo.h" line="558"/>
         <source>Hue Outdoor Sensor</source>
         <extracomment>The name of the DeviceClass (32dc6390-600f-4eb4-b349-cc2d6796a82a)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue udendørs sensor</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="561"/>
         <source>Model id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 3ca8632d-7bd1-45a9-86af-c856e006c334)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Model id</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="564"/>
         <source>Uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 4a15f861-cad6-464a-b250-08793c68ae30)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Uuid</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="567"/>
         <source>Temperature sensor id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: c732fefd-ca6b-4e27-a6d2-11595c4aab3e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperaturføler id</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="570"/>
         <source>Temperature sensor uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 2fdb34e8-25ca-4c5d-85c9-9a12bd48dbed)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperaturfølerens uuid</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="573"/>
         <source>Presence sensor id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 3ca82a24-5eca-4285-83c2-f862d387c3bc)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tilstedeværelsessensor id</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="576"/>
         <source>Presence sensor uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 7d55ed97-3a32-41e9-9112-8cc5b44aab23)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tilstedeværelsessensor uuid</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="579"/>
         <source>Light sensor id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 22a164fc-fa6e-427a-9a60-7a1872901fd6)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lyssensor id</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="582"/>
         <source>Light sensor uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: db678144-de2b-4767-a2f6-9ada8377b96c)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lyssensor uuid</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="585"/>
         <source>Reachable changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: connected, ID: 9fe43e6b-3c29-43a9-bb96-3b80eacc10db)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tilgængelighed ændret</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="588"/>
         <source>Reachable</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: connected, ID: 9fe43e6b-3c29-43a9-bb96-3b80eacc10db</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tilgængelig</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="591"/>
         <source>Battery changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: batteryLevel, ID: 19b18531-61e5-4998-89d1-765d740e24eb)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batteriladningen ændret</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="594"/>
         <source>Battery</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: batteryLevel, ID: 19b18531-61e5-4998-89d1-765d740e24eb</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batteri</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="597"/>
         <source>Battery critical changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: batteryCritical, ID: 617aa352-789c-46e7-bf55-7455b1e5018e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterikritisk ændret</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="600"/>
         <source>Battery critical</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: batteryCritical, ID: 617aa352-789c-46e7-bf55-7455b1e5018e</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterikritisk</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="603"/>
         <source>Temperature changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: temperature, ID: 88f5b708-65bb-41a7-885f-01be46074713)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur ændret</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="606"/>
         <source>Temperature</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: temperature, ID: 88f5b708-65bb-41a7-885f-01be46074713</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="609"/>
         <source>Ambient light changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: lightIntensity, ID: 4fb12c06-981c-4c42-b55c-46bdfe68681a)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Omgivende lys ændret</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="612"/>
         <source>Ambient light</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: lightIntensity, ID: 4fb12c06-981c-4c42-b55c-46bdfe68681a</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>omgivende lys</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="615"/>
         <source>Person is present changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: isPresent, ID: 680f79cf-c17c-4ffd-96fa-a5b286e2c117)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Person til stede ændret</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="618"/>
         <source>Person is present</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: isPresent, ID: 680f79cf-c17c-4ffd-96fa-a5b286e2c117</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Person til stede</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="621"/>
         <source>Last seen time changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: lastSeenTime, ID: 6fa16fb2-053c-4c3c-a39b-9548c1b15089)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sidst set ændret</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="624"/>
         <source>Last seen time</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: lastSeenTime, ID: 6fa16fb2-053c-4c3c-a39b-9548c1b15089</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sidst set</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="195"/>
@@ -553,7 +553,7 @@ The name of the ParamType for the autocreated EventType (DeviceClass: tap, State
         <location filename="../plugininfo.h" line="261"/>
         <source>Hue color light</source>
         <extracomment>The name of the DeviceClass (0edba26c-96ab-44fb-a6a2-c0574d19630e)</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue farve lys</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="297"/>
