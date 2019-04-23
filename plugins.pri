@@ -4,10 +4,9 @@ CONFIG += plugin
 QMAKE_CXXFLAGS += -Werror -std=c++11 -g
 QMAKE_LFLAGS += -std=c++11
 
-# FIXME: Ideally libnymea-dev would ship pkgconfig files so we get libnymea includes from there
-INCLUDEPATH += $$[QT_INSTALL_HEADERS]/../nymea
+CONFIG += link_pkgconfig
+PKGCONFIG += nymea
 
-LIBS += -lnymea
 HEADERS += $${OUT_PWD}/plugininfo.h \
            $${OUT_PWD}/extern-plugininfo.h
 
