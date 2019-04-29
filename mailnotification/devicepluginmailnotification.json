@@ -12,7 +12,8 @@
                     "id": "f4844c97-7ca6-4349-904e-ff9749a9fe74",
                     "name": "customMail",
                     "displayName": "Custom mail",
-                    "createMethods": ["user"],
+                    "createMethods": [ "user" ],
+                    "interfaces": [ "notifications" ],
                     "paramTypes": [
                         {
                             "id": "af30ce7b-fb6b-42f0-889d-20b32f8b8fa4",
@@ -75,130 +76,12 @@
                     "actionTypes": [
                         {
                             "id": "054613b0-3666-4dad-9252-e0ebca187edc",
-                            "name": "send",
+                            "name": "notify",
                             "displayName": "send mail",
                             "paramTypes": [
                                 {
                                     "id": "2047e0f4-3d34-4214-bc8f-9ab741ae6006",
-                                    "name": "subject",
-                                    "displayName": "subject",
-                                    "type": "QString",
-                                    "inputType": "TextLine"
-                                },
-                                {
-                                    "id": "aeb6e79e-9862-43e1-9873-cbdce549344a",
-                                    "name": "body",
-                                    "displayName": "body",
-                                    "type": "QString",
-                                    "inputType": "TextArea"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "google",
-            "displayName": "Google",
-            "id": "d02399c5-8e79-40be-8cf6-e00b55bbfe7c",
-            "deviceClasses": [
-                {
-                    "id": "3869884a-1592-4b8f-84a7-994be18ff555",
-                    "name": "googleMail",
-                    "displayName": "Google mail",
-                    "createMethods": ["user"],
-                    "paramTypes": [
-                        {
-                            "id": "0a4ea3ff-ea76-4a5f-adbb-b8f79faa2156",
-                            "name": "user",
-                            "displayName": "user",
-                            "type": "QString",
-                            "inputType": "Mail"
-                        },
-                        {
-                            "id": "f63f6486-5340-472a-b37c-be828111725c",
-                            "name": "password",
-                            "displayName": "password",
-                            "type": "QString",
-                            "inputType": "Password"
-                        },
-                        {
-                            "id": "76697fe2-3393-4ed0-a15d-9d041502cfd3",
-                            "name": "recipient",
-                            "displayName": "recipient",
-                            "type": "QString",
-                            "inputType": "Mail"
-                        }
-                    ],
-                    "actionTypes": [
-                        {
-                            "id": "054613b0-3666-4dad-9252-e0ebca187edc",
-                            "name": "sendMail",
-                            "displayName": "send mail",
-                            "paramTypes": [
-                                {
-                                    "id": "2047e0f4-3d34-4214-bc8f-9ab741ae6006",
-                                    "name": "subject",
-                                    "displayName": "subject",
-                                    "type": "QString",
-                                    "inputType": "TextLine"
-                                },
-                                {
-                                    "id": "aeb6e79e-9862-43e1-9873-cbdce549344a",
-                                    "name": "body",
-                                    "displayName": "body",
-                                    "type": "QString",
-                                    "inputType": "TextArea"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "yahoo",
-            "displayName": "Yahoo",
-            "id": "5eb3e1e9-25a7-4740-806e-5cfc836e4bf5",
-            "deviceClasses": [
-                {
-                    "id": "59409e8f-0c83-414f-abd5-bbbf2758acba",
-                    "name": "yahooMail",
-                    "displayName": "Yahoo mail",
-                    "createMethods": ["user"],
-                    "paramTypes": [
-                        {
-                            "id": "0a4ea3ff-ea76-4a5f-adbb-b8f79faa2156",
-                            "name": "user",
-                            "displayName": "user",
-                            "type": "QString",
-                            "inputType": "Mail"
-                        },
-                        {
-                            "id": "f63f6486-5340-472a-b37c-be828111725c",
-                            "name": "password",
-                            "displayName": "password",
-                            "type": "QString",
-                            "inputType": "Password"
-                        },
-                        {
-                            "id": "76697fe2-3393-4ed0-a15d-9d041502cfd3",
-                            "name": "recipient",
-                            "displayName": "recipient",
-                            "type": "QString",
-                            "inputType": "Mail"
-                        }
-                    ],
-                    "actionTypes": [
-                        {
-                            "id": "054613b0-3666-4dad-9252-e0ebca187edc",
-                            "name": "send",
-                            "displayName": "send mail",
-                            "paramTypes": [
-                                {
-                                    "id": "2047e0f4-3d34-4214-bc8f-9ab741ae6006",
-                                    "name": "subject",
+                                    "name": "title",
                                     "displayName": "subject",
                                     "type": "QString",
                                     "inputType": "TextLine"

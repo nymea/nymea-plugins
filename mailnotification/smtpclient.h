@@ -35,10 +35,11 @@ class SmtpClient : public QObject
     Q_OBJECT
 public:
 
-    enum AuthMethod{
-        AuthMethodPlain,
-        AuthMethodLogin
+    enum AuthenticationMethod{
+        AuthenticationMethodPlain,
+        AuthenticationMethodLogin
     };
+    Q_ENUM(AuthenticationMethod)
 
     enum SendState{
         InitState,
@@ -55,12 +56,14 @@ public:
         QuitState,
         CloseState
     };
+    Q_ENUM(SendState)
 
     enum EncryptionType{
         EncryptionTypeNone,
         EncryptionTypeSSL,
         EncryptionTypeTLS
     };
+    Q_ENUM(EncryptionType)
 
     explicit SmtpClient(QObject *parent = 0);
 
@@ -71,22 +74,22 @@ public:
     void setHost(const QString &host);
     void setPort(const int &port);
     void setEncryptionType(const EncryptionType &encryptionType);
-    void setAuthMethod(const AuthMethod &authMethod);
+    void setAuthenticationMethod(const AuthenticationMethod &authenticationMethod);
     void setUser(const QString &user);
     void setPassword(const QString &password);
     void setSender(const QString &sender);
     void setRecipient(const QString &rcpt);
 
-
 private:
-    QSslSocket *m_socket;
-    SendState m_state;
-    QString m_host;
-    int m_port;
+    QSslSocket *m_socket = nullptr;
+    SendState m_state = InitState;
+    QString m_host = "127.0.0.1";
+    int m_port = 25;
+
     QString m_user;
     QString m_password;
     QString m_sender;
-    AuthMethod m_authMethod;
+    AuthenticationMethod m_authenticationMethod;
     EncryptionType m_encryptionType;
     QString m_rcpt;
     QString m_subject;
@@ -94,14 +97,14 @@ private:
     QString m_message;
     ActionId m_actionId;
 
-    bool m_testLogin;
+    bool m_testLogin = false;
 
 signals:
     void sendMailFinished(const bool &success, const ActionId &actionId);
     void testLoginFinished(const bool &success);
 
 private slots:
-    void socketError(QAbstractSocket::SocketError error);
+    void onSocketError(QAbstractSocket::SocketError error);
     void connected();
     void disconnected();
     void readData();

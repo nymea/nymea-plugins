@@ -27,29 +27,22 @@ SmtpClient::SmtpClient(QObject *parent):
     QObject(parent)
 {
     m_socket = new QSslSocket(this);
-    m_state = InitState;
-    m_testLogin = false;
 
-    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
-    // error because QSslSocket has also a method called error...also QAbstractSocket or QTcpSocket don't work...
-    //connect(m_socket, &QSslSocket::error, this, &SmtpClient::socketError);
     connect(m_socket, &QSslSocket::connected, this, &SmtpClient::connected);
     connect(m_socket, &QSslSocket::readyRead, this, &SmtpClient::readData);
     connect(m_socket, &QSslSocket::disconnected, this, &SmtpClient::disconnected);
-
+    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 }
 
 void SmtpClient::connectToHost()
 {
     switch (m_encryptionType) {
     case EncryptionTypeNone:
+    case EncryptionTypeTLS:
         m_socket->connectToHost(m_host, m_port);
         break;
     case EncryptionTypeSSL:
         m_socket->connectToHostEncrypted(m_host, m_port);
-        break;
-    case EncryptionTypeTLS:
-        m_socket->connectToHost(m_host,m_port);
         break;
     default:
         break;
@@ -80,59 +73,68 @@ void SmtpClient::readData()
         responseLine = m_socket->readLine();
         response.append(responseLine);
     }
-    responseLine.truncate( 3 );
+    responseLine.truncate(3);
+
+    qCDebug(dcMailNotification()) << "<--" << response << "|" << responseLine;
 
     switch (m_state) {
     case InitState:
-        if(responseLine == "220") {
+        if (responseLine == "220") {
             send("EHLO localhost");
-            if(m_encryptionType == EncryptionTypeNone) {
+
+            if (m_encryptionType == EncryptionTypeNone) {
                 m_state = AuthentificationState;
                 break;
             }
-            if(m_encryptionType == EncryptionTypeSSL) {
+
+            if (m_encryptionType == EncryptionTypeSSL) {
                 m_state = HandShakeState;
                 break;
             }
-            if(m_encryptionType == EncryptionTypeTLS) {
+
+            if (m_encryptionType == EncryptionTypeTLS) {
                 m_state = StartTlsState;
                 break;
             }
         }
         break;
     case HandShakeState:
-        if(responseLine == "250") {
-            if(!m_socket->isEncrypted() && m_encryptionType != EncryptionTypeNone) {
+        if (responseLine == "250") {
+            if (!m_socket->isEncrypted() && m_encryptionType != EncryptionTypeNone) {
                 m_socket->startClientEncryption();
             }
             send("EHLO localhost");
             m_state = AuthentificationState;
         }
-        if(responseLine == "220") {
-            if(!m_socket->isEncrypted() && m_encryptionType != EncryptionTypeNone) {
+
+        if (responseLine == "220") {
+            if (!m_socket->isEncrypted() && m_encryptionType != EncryptionTypeNone) {
                 m_socket->startClientEncryption();
             }
+
             send("EHLO localhost");
             m_state = AuthentificationState;
         }
+
         break;
     case StartTlsState:
-        if(responseLine == "250") {
+        if (responseLine == "250") {
             send("STARTTLS");
             m_state = HandShakeState;
         }
+
         break;
     case AuthentificationState:
-        if(responseLine == "250") {
-            if(m_authMethod == AuthMethodLogin) {
+        if (responseLine == "250") {
+            if (m_authenticationMethod == AuthenticationMethodLogin) {
                 send("AUTH LOGIN");
                 m_state = UserState;
                 break;
             }
-            if(m_authMethod == AuthMethodPlain) {
+            if (m_authenticationMethod == AuthenticationMethodPlain) {
                 send("AUTH PLAIN " + QByteArray().append((char) 0).append(m_user).append((char) 0).append(m_password).toBase64());
                 // if we just want to test the Login, we are almost done here
-                if(!m_testLogin) {
+                if (!m_testLogin) {
                     m_state = MailState;
                 } else {
                     m_state = TestLoginFinishedState;
@@ -142,16 +144,16 @@ void SmtpClient::readData()
         }
         break;
     case UserState:
-        if(responseLine == "334") {
+        if (responseLine == "334") {
             send(QByteArray().append(m_user).toBase64());
             m_state = PasswordState;
         }
         break;
     case PasswordState:
-        if(responseLine == "334") {
+        if (responseLine == "334") {
             send(QByteArray().append(m_password).toBase64());
             // if we just want to test the Login, we are almost done here
-            if(!m_testLogin) {
+            if (!m_testLogin) {
                 m_state = MailState;
             } else {
                 m_state = TestLoginFinishedState;
@@ -160,7 +162,7 @@ void SmtpClient::readData()
         }
         break;
     case TestLoginFinishedState:
-        if(responseLine == "235") {
+        if (responseLine == "235") {
             emit testLoginFinished(true);
         } else {
             emit testLoginFinished(false);
@@ -169,38 +171,38 @@ void SmtpClient::readData()
         m_testLogin = false;
         break;
     case MailState:
-        if(responseLine == "235") {
+        if (responseLine == "235") {
             send("MAIL FROM:<" + m_sender + ">");
             m_state = RcptState;
         }
         break;
     case RcptState:
-        if(responseLine == "250") {
+        if (responseLine == "250") {
             send("RCPT TO:<" + m_rcpt + ">");
             m_state = DataState;
         }
         break;
     case DataState:
-        if(responseLine == "250") {
+        if (responseLine == "250") {
             send("DATA");
             m_state = BodyState;
         }
         break;
     case BodyState:
-        if(responseLine == "354") {
+        if (responseLine == "354") {
             send(m_message + "\r\n.\r\n");
             m_state = QuitState;
         }
         break;
     case QuitState:
-        if(responseLine == "250") {
+        if (responseLine == "250") {
             emit sendMailFinished(true, m_actionId);
             send("QUIT");
             m_state = CloseState;
         }
         break;
     case CloseState:
-        if(responseLine == "221") {
+        if (responseLine == "221") {
             m_socket->close();
         }
         // some mail server does not recognize the QUIT command...so close the connection either way
@@ -208,7 +210,7 @@ void SmtpClient::readData()
         break;
     default:
         // unexpecterd response code received...
-        if(m_testLogin) {
+        if (m_testLogin) {
             emit testLoginFinished(false);
             m_testLogin = false;
             m_socket->close();
@@ -256,9 +258,9 @@ void SmtpClient::setEncryptionType(const SmtpClient::EncryptionType &encryptionT
     m_encryptionType = encryptionType;
 }
 
-void SmtpClient::setAuthMethod(const SmtpClient::AuthMethod &authMethod)
+void SmtpClient::setAuthenticationMethod(const SmtpClient::AuthenticationMethod &authenticationMethod)
 {
-    m_authMethod = authMethod;
+    m_authenticationMethod = authenticationMethod;
 }
 
 void SmtpClient::setUser(const QString &user)
@@ -281,13 +283,14 @@ void SmtpClient::setRecipient(const QString &rcpt)
     m_rcpt = rcpt;
 }
 
-void SmtpClient::socketError(QAbstractSocket::SocketError error)
+void SmtpClient::onSocketError(QAbstractSocket::SocketError error)
 {
-    qCWarning(dcMailNotification) << "Mail socket -> " << error << m_socket->errorString();
+    qCWarning(dcMailNotification) << "Mail socket error" << error << m_socket->errorString();
 }
 
 void SmtpClient::send(const QString &data)
 {
+    qCDebug(dcMailNotification()) << "-->" << qUtf8Printable(data.toUtf8());
     m_socket->write(data.toUtf8() + "\r\n");
     m_socket->flush();
 }
