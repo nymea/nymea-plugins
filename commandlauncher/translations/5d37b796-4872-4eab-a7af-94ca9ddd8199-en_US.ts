@@ -10,12 +10,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="43"/>
-        <source>guh GmbH</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="46"/>
         <source>Application launcher</source>
         <extracomment>The name of the DeviceClass (0f39fe9e-51ea-4230-9646-2482c6234791)</extracomment>
@@ -70,6 +64,12 @@ The name of the ActionType d21b1fed-1dd9-4c5a-a64e-0c6ba94059be of deviceClass s
         <location filename="../plugininfo.h" line="64"/>
         <source>Bashscript launcher</source>
         <extracomment>The name of the DeviceClass (96044325-a6fb-47c9-9117-f29c3b327978)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="43"/>
+        <source>nymea</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

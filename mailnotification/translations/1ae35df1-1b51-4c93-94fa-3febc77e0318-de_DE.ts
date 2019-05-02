@@ -10,6 +10,12 @@
         <translation>Mail Benachrichtigung</translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="57"/>
+        <source>nymea</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="60"/>
         <source>Custom mail</source>
         <extracomment>The name of the DeviceClass (f4844c97-7ca6-4349-904e-ff9749a9fe74)</extracomment>
@@ -128,12 +134,6 @@ The name of the ActionType 054613b0-3666-4dad-9252-e0ebca187edc of deviceClass g
 ----------
 The name of the ActionType 054613b0-3666-4dad-9252-e0ebca187edc of deviceClass yahooMail</extracomment>
         <translation>Sende Mail</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="57"/>
-        <source>guh GmbH</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation>guh GmbH</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="120"/>

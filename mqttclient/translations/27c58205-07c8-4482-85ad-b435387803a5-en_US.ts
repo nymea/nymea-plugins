@@ -11,11 +11,6 @@ The name of the DeviceClass (e325b581-8d7f-446e-b761-67554c5aacd4)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>guh GmbH</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Internal MQTT client</source>
         <extracomment>The name of the DeviceClass (19117099-a5ef-44a1-b2bb-2efafe00f197)</extracomment>
         <translation type="unfinished"></translation>
@@ -98,6 +93,11 @@ The name of the ParamType (DeviceClass: mqttClient, EventType: triggered, ID: a9
     <message>
         <source>Password</source>
         <extracomment>The name of the ParamType (DeviceClass: mqttClient, Type: device, ID: d8211599-52f7-46f6-a741-a7204b987309)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>nymea</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

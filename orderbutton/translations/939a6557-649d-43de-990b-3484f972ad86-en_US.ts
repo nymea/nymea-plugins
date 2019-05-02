@@ -10,12 +10,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="51"/>
-        <source>guh GmbH</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="54"/>
         <source>OrderButton</source>
         <extracomment>The name of the DeviceClass (af4df281-2b3b-490f-8352-2b99ff23fc15)</extracomment>
@@ -37,6 +31,12 @@
         <location filename="../plugininfo.h" line="45"/>
         <source>Order Button</source>
         <extracomment>The name of the plugin orderButton (939a6557-649d-43de-990b-3484f972ad86)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="51"/>
+        <source>nymea</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
