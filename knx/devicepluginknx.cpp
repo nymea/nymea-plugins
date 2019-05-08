@@ -81,6 +81,23 @@ DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
         m_tunnels.insert(tunnel, device);
     }
 
+    if (device->deviceClassId() == knxTriggerDeviceClassId) {
+        QHostAddress tunnelAddress =  QHostAddress(device->paramValue(knxTriggerDeviceAddressParamTypeId).toString());
+        KnxTunnel *tunnel = nullptr;
+        foreach (KnxTunnel *knxTunnel, m_tunnels.keys()) {
+            if (knxTunnel->remoteAddress() == tunnelAddress) {
+                tunnel = knxTunnel;
+            }
+        }
+
+        if (!tunnel) {
+            qCWarning(dcKnx()) << "Could not find tunnel for address" << tunnelAddress.toString();
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
+
+        device->setParentId(m_tunnels.value(tunnel)->id());
+    }
+
     if (device->deviceClassId() == knxShutterDeviceClassId) {
         QHostAddress tunnelAddress =  QHostAddress(device->paramValue(knxShutterDeviceAddressParamTypeId).toString());
         KnxTunnel *tunnel = nullptr;
@@ -206,6 +223,10 @@ void DevicePluginKnx::postSetupDevice(Device *device)
         }
     }
 
+    if (device->deviceClassId() == knxTriggerDeviceClassId) {
+        KnxTunnel *tunnel = getTunnelForDevice(device);
+        if (tunnel) device->setStateValue(knxTriggerConnectedStateTypeId, tunnel->connected());
+    }
 
     if (device->deviceClassId() == knxShutterDeviceClassId) {
         QHostAddress tunnelAddress =  QHostAddress(device->paramValue(knxShutterDeviceAddressParamTypeId).toString());
@@ -899,6 +920,8 @@ void DevicePluginKnx::onTunnelConnectedChanged()
                     QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, d->paramValue(knxGenericWindSpeedSensorDeviceKnxAddressParamTypeId).toString());
                     tunnel->readKnxGroupValue(knxAddress);
                 }
+            } else if (d->deviceClassId() == knxTriggerDeviceClassId) {
+                d->setStateValue(knxTriggerConnectedStateTypeId, tunnel->connected());
             } else if (d->deviceClassId() == knxShutterDeviceClassId) {
                 d->setStateValue(knxShutterConnectedStateTypeId, tunnel->connected());
             } else if (d->deviceClassId() == knxLightDeviceClassId) {
@@ -1033,6 +1056,19 @@ void DevicePluginKnx::onTunnelFrameReceived(const QKnxLinkLayerFrame &frame)
                 if (!frame.tpdu().data().toByteArray().isEmpty()) {
                     device->setStateValue(knxGenericWindSpeedSensorWindSpeedStateTypeId, windSpeed);
                 }
+            }
+        }
+
+        // Trigger
+        if (device->deviceClassId() == knxTriggerDeviceClassId) {
+            if (device->paramValue(knxShutterDeviceKnxAddressStepParamTypeId).toString() == frame.destinationAddress().toString()) {
+                qCDebug(dcKnx()) << QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss")
+                                 << "Trigger notification"
+                                 << device->name()
+                                 << frame.sourceAddress().toString() << "-->" << frame.destinationAddress().toString()
+                                 << frame.tpdu().data().toHex().toByteArray();
+
+                emitEvent(Event(knxTriggerTriggeredEventTypeId, device->id()));
             }
         }
 

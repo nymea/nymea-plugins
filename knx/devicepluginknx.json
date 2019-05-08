@@ -360,6 +360,48 @@
                     ]
                 },
                 {
+                    "id": "c8591074-582a-45c9-9b56-04ab87ef408d",
+                    "name": "knxTrigger",
+                    "displayName": "Knx trigger",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["user"],
+                    "interfaces": [ "inputtrigger", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "fe697859-4cd1-49f8-b340-3794a3663f56",
+                            "name": "address",
+                            "displayName": "Server address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.8.140"
+                        },
+                        {
+                            "id": "ab580353-98f4-4ea3-8e7a-91cc76043dac",
+                            "name": "knxAddress",
+                            "displayName": "Knx address",
+                            "type": "QString",
+                            "defaultValue": "1/0/0"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "53e9e279-e355-4fa3-9480-c83f676274f8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "5f191a93-22e2-4528-abb7-efb2cd2ef4ad",
+                            "name": "triggered",
+                            "displayName": "Button clicked"
+                        }
+                    ]
+                },
+                {
                     "id": "fef0f771-cd90-4f27-8538-59c4eb5acb35",
                     "name": "knxShutter",
                     "displayName": "Knx shutter",

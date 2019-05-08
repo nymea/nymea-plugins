@@ -29,6 +29,9 @@
 #include <QQueue>
 #include <QHostAddress>
 #include <QKnxNetIpTunnel>
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(dcKnxTunnelTraffic)
 
 class KnxTunnel : public QObject
 {
