@@ -12,8 +12,7 @@
                     "id": "1cd3d67e-aba0-450e-9e2a-483a1527aba6",
                     "name": "AVRX1000",
                     "displayName": "AVR X1000",
-                    "createMethods": ["user"],
-                    "deviceIcon": "Hifi",
+                    "createMethods": ["discovery"],
                     "interfaces": ["connectable", "power", "extendedvolumecontroller"],
                     "paramTypes": [
                         {

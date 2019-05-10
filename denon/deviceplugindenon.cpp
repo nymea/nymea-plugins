@@ -60,8 +60,25 @@ DeviceManager::DeviceError DevicePluginDenon::discoverDevices(const DeviceClassI
     Q_UNUSED(params)
 
     if (deviceClassId == AVRX1000DeviceClassId) {
-        QtAvahiServiceBrowser *avahiBrowser = hardwareManager()->avahiBrowser();
-        connect(avahiBrowser, &QtAvahiServiceBrowser::serviceEntryAdded, this, &DevicePluginDenon::onAvahiEntryAdded);
+
+        QList<DeviceDescriptor> deviceDescriptors;
+        foreach (const AvahiServiceEntry &service, hardwareManager()->avahiBrowser()->serviceEntries()) {
+            if (service.name().contains("AVR-X1000")) {
+                DeviceDescriptor deviceDescriptor(AVRX1000DeviceClassId, service.hostName().remove(".local"), service.hostAddress().toString());
+                ParamList params;
+                qCDebug(dcDenon) << "Avahi discovered device: " << service.name() << service.hostName() << service.serviceType();
+                params.append(Param(AVRX1000DeviceIpParamTypeId, service.hostAddress().toString()));
+                deviceDescriptor.setParams(params);
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(AVRX1000DeviceIpParamTypeId).toString() == service.hostAddress().toString()) {
+                        deviceDescriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
+                deviceDescriptors.append(deviceDescriptor);
+            }
+        }
+        emit devicesDiscovered(AVRX1000DeviceClassId, deviceDescriptors);
         return DeviceManager::DeviceErrorAsync;
     }
 
@@ -173,7 +190,7 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
             qCDebug(dcDenon) << "set power action" << action.id();
             qCDebug(dcDenon) << "power: " << action.param(AVRX1000PowerActionPowerParamTypeId).value().Bool;
 
-            if (action.param(AVRX1000PowerActionPowerParamTypeId).value().toBool() == true){
+            if (action.param(AVRX1000PowerActionPowerParamTypeId).value().toBool() == true) {
                 QByteArray cmd = "PWON\r";
                 qCDebug(dcDenon) << "Execute power: " << action.id() << cmd;
                 denonConnection->sendData(cmd);
@@ -192,8 +209,7 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
 
             qCDebug(dcDenon) << "Execute volume" << action.id() << cmd;
             denonConnection->sendData(cmd);
-
-            return Device::DeviceErrorNoError;
+            return DeviceManager::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == AVRX1000ChannelActionTypeId) {
 
@@ -203,22 +219,20 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
 
             qCDebug(dcDenon) << "Change to channel:" << cmd;
             denonConnection->sendData(cmd);
-
             return DeviceManager::DeviceErrorNoError;
+
         } else if (action.actionTypeId() == AVRX1000IncreaseVolumeActionTypeId) {
             QByteArray cmd = "MVUP\r";
             qCDebug(dcDenon) << "Execute volume increase" << action.id() << cmd;
             denonConnection->sendData(cmd);
-
             return DeviceManager::DeviceErrorNoError;
+
         } else if (action.actionTypeId() == AVRX1000DecreaseVolumeActionTypeId) {
             QByteArray cmd = "MVDOWN\r";
             qCDebug(dcDenon) << "Execute volume decrease" << action.id() << cmd;
             denonConnection->sendData(cmd);
             return DeviceManager::DeviceErrorNoError;
         }
-
-
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
 
@@ -297,7 +311,6 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
             heos->playNext(playerId);
             return DeviceManager::DeviceErrorNoError;
         }
-
         return DeviceManager::DeviceErrorActionTypeNotFound;
     }
     return Device::DeviceErrorDeviceClassNotFound;
@@ -358,7 +371,6 @@ void DevicePluginDenon::onPluginTimer()
             heos->registerForChangeEvents(true);
         }
 
-
         if (device->deviceClassId() == heosPlayerDeviceClassId) {
             Device *heosDevice = myDevices().findById(device->parentId());
             Heos *heos = m_heos.value(heosDevice);
@@ -408,7 +420,7 @@ void DevicePluginDenon::onAVRDataReceived(const QByteArray &data)
         }
 
         if (data.contains("SI")) {
-            QString cmd = NULL;
+            QString cmd;
             if (data.contains("TUNER")) {
                 cmd = "TUNER";
             } else if (data.contains("DVD")) {
@@ -526,10 +538,6 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
     }
 
     emit devicesDiscovered(heosDeviceClassId, deviceDescriptors);
-}
-
-void DevicePluginDenon::onAvahiEntryAdded() {
-    qCDebug(dcDenon) << "Avahi entry added";
 }
 
 void DevicePluginDenon::onHeosConnectionChanged()

@@ -73,7 +73,6 @@ private slots:
     void onAVRSocketError();
 
     void onUpnpDiscoveryFinished();
-    void onAvahiEntryAdded();
 
     void onHeosConnectionChanged();
     void onHeosPlayerDiscovered(HeosPlayer *heosPlayer);
