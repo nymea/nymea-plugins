@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
- *  Copyright (C) 2016 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
+ *  Copyright (C) 2015 Simon Stürz <simon.stuerz@nymea.io>                 *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -26,7 +26,6 @@
 
 #include "devices/deviceplugin.h"
 
-
 #include <QHash>
 #include <QObject>
 #include <QPointer>
@@ -35,6 +34,8 @@
 
 #include "plugintimer.h"
 #include "denonconnection.h"
+#include "heos.h"
+#include <QPair>
 
 class DevicePluginDenon : public DevicePlugin
 {
@@ -45,27 +46,43 @@ class DevicePluginDenon : public DevicePlugin
 
 public:
     explicit DevicePluginDenon();
-    ~DevicePluginDenon();
 
-    void init() override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void startMonitoringAutoDevices() override;
+    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    void postSetupDevice(Device * device) override;
+    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QPointer<Device> m_device;
-    QPointer<DenonConnection> m_denonConnection;
+    QHash<Device *, DenonConnection*> m_denonConnections;
+    QHash<Device *, Heos*> m_heos;
+
     QList<DenonConnection *> m_asyncSetups;
 
-    QHash <ActionId, Device *> m_asyncActions;
-    QHash <QNetworkReply *, ActionId> m_asyncActionReplies;
+    QHash<int, Device *> m_playerIds;
+    QHash<int, Device *> m_discoveredPlayerIds;
+    QHash<const Action *, int> m_asyncActions;
+
 
 private slots:
     void onPluginTimer();
-    void onConnectionChanged();
-    void onDataReceived(const QByteArray &data);
-    void onSocketError();
+    void onAVRConnectionChanged();
+    void onAVRDataReceived(const QByteArray &data);
+    void onAVRSocketError();
+
+    void onUpnpDiscoveryFinished();
+    void onAvahiEntryAdded();
+
+    void onHeosConnectionChanged();
+    void onHeosPlayerDiscovered(HeosPlayer *heosPlayer);
+    void onHeosPlayStateReceived(int playerId, Heos::HeosPlayerState state);
+    void onHeosShuffleModeReceived(int playerId, bool shuffle);
+    void onHeosRepeatModeReceived(int playerId, Heos::HeosRepeatMode repeatMode);
+    void onHeosMuteStatusReceived(int playerId, bool mute);
+    void onHeosVolumeStatusReceived(int playerId, int volume);
+    void onHeosNowPlayingMediaStatusReceived(int playerId, QString source, QString artist, QString album, QString Song, QString artwork);
 };
 
 #endif // DEVICEPLUGINDENON_H
