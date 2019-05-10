@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
- *  Copyright (C) 2018 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
+ *  Copyright (C) 2018 Simon Stürz <simon.stuerz@nymea.io>                 *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -26,26 +26,33 @@
 #include "plugininfo.h"
 
 
+/*!
+    \page httpcommander.html
+    \title HTTP commander
+    \brief Plugin for generic HTTP commands
+    \ingroup plugins
+    \ingroup nymea-plugins
+    This plug-in supports generic HTTP calls like get, put, post
+    \chapter Plugin properties
+    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
+    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
+    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
+    \quotefile plugins/deviceplugins/denon/devicepluginhttpcommander.json
+*/
+
 DevicePluginHttpCommander::DevicePluginHttpCommander()
 {
-}
-
-DevicePluginHttpCommander::~DevicePluginHttpCommander()
-{
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-}
-
-void DevicePluginHttpCommander::init()
-{
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginHttpCommander::onPluginTimer);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginHttpCommander::setupDevice(Device *device)
 {
     qDebug(dcHttpCommander()) << "Setup device" << device->name() << device->params();
 
-    // Get
+    if(!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginHttpCommander::onPluginTimer);
+    }
+
     if (device->deviceClassId() == httpGetCommanderDeviceClassId) {
         QUrl url = device->paramValue(httpGetCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
@@ -56,28 +63,23 @@ DeviceManager::DeviceSetupStatus DevicePluginHttpCommander::setupDevice(Device *
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
-    // Put
     if (device->deviceClassId() == httpPutCommanderDeviceClassId) {
         QUrl url = device->paramValue(httpPutCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
             qDebug(dcHttpCommander()) << "Given URL is not valid";
             return DeviceManager::DeviceSetupStatusFailure;
         }
-
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
-    // Post
     if (device->deviceClassId() == httpPostCommanderDeviceClassId) {
         QUrl url = device->paramValue(httpPostCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
             qDebug(dcHttpCommander()) << "Given URL is not valid";
             return DeviceManager::DeviceSetupStatusFailure;
         }
-
         return DeviceManager::DeviceSetupStatusSuccess;
     }
-
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
@@ -86,16 +88,6 @@ void  DevicePluginHttpCommander::postSetupDevice(Device *device)
 {
     if (device->deviceClassId() == httpGetCommanderDeviceClassId) {
         makeGetCall(device);
-    }
-
-    if (device->deviceClassId() == httpPostCommanderDeviceClassId) {
-        //TODO find a way to check it the URL is reachable
-        device->setStateValue(httpPostCommanderConnectedStateTypeId, true);
-    }
-
-    if (device->deviceClassId() == httpPutCommanderDeviceClassId) {
-        //TODO find a way to check it the URL is reachable
-        device->setStateValue(httpPutCommanderConnectedStateTypeId, true);
     }
 }
 
@@ -124,10 +116,10 @@ DeviceManager::DeviceError DevicePluginHttpCommander::executeAction(Device *devi
 
         // check if this is the "press" action
         if (action.actionTypeId() == httpPutCommanderPutActionTypeId) {
-
             QUrl url = device->paramValue(httpPutCommanderDeviceUrlParamTypeId).toUrl();
             url.setPort(device->paramValue(httpPutCommanderDevicePortParamTypeId).toInt());
             QByteArray payload = action.param(httpPutCommanderPutActionDataParamTypeId).value().toByteArray();
+
             QNetworkReply *reply = hardwareManager()->networkManager()->put(QNetworkRequest(url), payload);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginHttpCommander::onPutRequestFinished);
 
@@ -145,7 +137,7 @@ void DevicePluginHttpCommander::makeGetCall(Device *device)
     url.setPort(device->paramValue(httpGetCommanderDevicePortParamTypeId).toInt());
     QNetworkRequest request;
     request.setUrl(url);
-    request.setRawHeader("User-Agent", "guhIO 1.0");
+    request.setRawHeader("User-Agent", "nymea 1.0");
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginHttpCommander::onGetRequestFinished);
@@ -176,16 +168,12 @@ void DevicePluginHttpCommander::onGetRequestFinished()
 
     Device *device = m_httpRequests.take(reply);
     device->setStateValue(httpGetCommanderResponseStateTypeId, data);
+    device->setStateValue(httpGetCommanderStatusStateTypeId, true);
 
     // Check HTTP status code
     if (status != 200 || reply->error() != QNetworkReply::NoError) {
         qCWarning(dcHttpCommander()) << "Request error:" << status << reply->errorString();
-        device->setStateValue(httpGetCommanderConnectedStateTypeId, false);
-        reply->deleteLater();
-        return;
     }
-
-    device->setStateValue(httpGetCommanderConnectedStateTypeId, true);
     reply->deleteLater();
 }
 
@@ -203,16 +191,12 @@ void DevicePluginHttpCommander::onPostRequestFinished()
 
     Device *device = m_httpRequests.take(reply);
     device->setStateValue(httpPostCommanderResponseStateTypeId, data);
+    device->setStateValue(httpPostCommanderStatusStateTypeId, status);
 
     // Check HTTP status code
     if (status != 200 || reply->error() != QNetworkReply::NoError) {
         qCWarning(dcHttpCommander()) << "Request error:" << status << reply->errorString();
-        device->setStateValue(httpPostCommanderConnectedStateTypeId, false);
-        reply->deleteLater();
-        return;
     }
-
-    device->setStateValue(httpPostCommanderConnectedStateTypeId, true);
     reply->deleteLater();
 }
 
@@ -230,26 +214,30 @@ void DevicePluginHttpCommander::onPutRequestFinished()
 
     Device *device = m_httpRequests.take(reply);
     device->setStateValue(httpPutCommanderResponseStateTypeId, data);
+    device->setStateValue(httpPutCommanderStatusStateTypeId, status);
 
     // Check HTTP status code
     if (status != 200 || reply->error() != QNetworkReply::NoError) {
         qCWarning(dcHttpCommander()) << "Request error:" << status << reply->errorString();
-        device->setStateValue(httpPutCommanderConnectedStateTypeId, false);
-        reply->deleteLater();
-        return;
     }
-
-    device->setStateValue(httpPutCommanderConnectedStateTypeId, true);
     reply->deleteLater();
 }
 
 
 void DevicePluginHttpCommander::deviceRemoved(Device *device)
 {
-    if (m_httpRequests.values().contains(device)) {
-        QNetworkReply *reply = m_httpRequests.key(device);
-        m_httpRequests.remove(reply);
-        // Note: will be deleted once finished
+    if ((device->deviceClassId() == httpPostCommanderDeviceClassId) ||
+            (device->deviceClassId() == httpPutCommanderDeviceClassId) ||
+            (device->deviceClassId() == httpGetCommanderDeviceClassId)) {
+
+        while (m_httpRequests.values().contains(device)) {
+            QNetworkReply *reply = m_httpRequests.key(device);
+            m_httpRequests.remove(reply);
+            reply->deleteLater();
+        }
+    }
+
+    if (myDevices().empty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
     }
 }
-

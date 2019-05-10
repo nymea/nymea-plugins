@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
- *  Copyright (C) 2018 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
+ *  Copyright (C) 2018 Simon Stürz <simon.stuerz@nymea.io>                 *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -29,6 +29,7 @@
 #include "plugintimer.h"
 
 #include <QNetworkReply>
+#include <QHostInfo>
 
 class DevicePluginHttpCommander : public DevicePlugin
 {
@@ -39,9 +40,7 @@ class DevicePluginHttpCommander : public DevicePlugin
 
 public:
     explicit DevicePluginHttpCommander();
-    ~DevicePluginHttpCommander();
 
-    void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void  postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
