@@ -403,22 +403,6 @@ Description: nymea.io plugin for openweathermap
  This package will install the nymea.io plugin for openweathermap
 
 
-Package: nymea-plugin-orderbutton
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-orderbutton
-Description: nymea.io plugin for orderbutton
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for orderbutton
-
-
 Package: nymea-plugin-osdomotics
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -449,22 +433,6 @@ Description: nymea.io plugin for philipshue
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for philipshue
-
-
-Package: nymea-plugin-plantcare
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-plantcare
-Description: nymea.io plugin for plantcare
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for plantcare
 
 
 Package: nymea-plugin-pushbullet
@@ -575,22 +543,6 @@ Description: nymea.io plugin for wemo
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for wemo
-
-
-Package: nymea-plugin-ws2812
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-ws2812
-Description: nymea.io plugin for ws2812
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for ws2812
 
 
 Package: nymea-plugin-tcpcommander
@@ -829,9 +781,6 @@ Package: nymea-plugins-merkurboard
 Section: libs
 Architecture: all
 Depends: nymea-plugin-osdomotics,
-         nymea-plugin-plantcare,
-         nymea-plugin-ws2812,
-         nymea-plugin-orderbutton,
 Replaces: guh-plugins-merkurboard
 Description: Plugins for nymea IoT server - Meta package for 6LoWPAN Merkur boards
  The nymea daemon is a plugin based IoT (Internet of Things) server. The

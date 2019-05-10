@@ -28,10 +28,8 @@ PLUGIN_DIRS = \
     netatmo             \
     networkdetector     \
     openweathermap      \
-    orderbutton         \
     osdomotics          \
     philipshue          \
-    plantcare           \
     pushbullet          \
     remotessh           \
     senic               \
@@ -46,7 +44,6 @@ PLUGIN_DIRS = \
     unitec              \
     wakeonlan           \
     wemo                \
-    ws2812              \
 
 
 message(============================================)
