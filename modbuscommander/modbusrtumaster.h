@@ -30,9 +30,10 @@ class ModbusRTUMaster : public QObject
 {
     Q_OBJECT
 public:
-    explicit ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent = 0);
+    explicit ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent = nullptr);
     ~ModbusRTUMaster();
 
+    bool createInterface();
     bool getCoil(int slaveAddress, int coilAddress, bool *result);
     bool getRegister(int slaveAddress, int registerAddress, int *result);
     bool setCoil(int slaveAddress, int coilAddress, bool status);
@@ -47,8 +48,6 @@ private:
     QString m_parity;
     int m_dataBits;
     int m_stopBits;
-
-    bool createInterface();
 
 signals:
 

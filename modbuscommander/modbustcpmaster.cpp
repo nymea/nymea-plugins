@@ -33,9 +33,12 @@ ModbusTCPMaster::ModbusTCPMaster(QHostAddress IPv4Address, int port, QObject *pa
 
 ModbusTCPMaster::~ModbusTCPMaster()
 {
-    if (m_mb != NULL) {
-        modbus_close(m_mb);
+    if (m_mb == nullptr) {
+        qCWarning(dcModbusCommander()) << "Error m_mb was nullpointer";
+        return;
     }
+
+    modbus_close(m_mb);
     modbus_free(m_mb);
 }
 
@@ -49,12 +52,6 @@ bool ModbusTCPMaster::createInterface() {
         qCWarning(dcModbusCommander()) << "Error modbus TCP: " << modbus_strerror(errno) ;
         return false;
     }
-
-    // Extend the timeout to 3 seconds
-    struct timeval response_timeout;
-    response_timeout.tv_sec = 3;
-    response_timeout.tv_usec = 0;
-    modbus_set_response_timeout(m_mb, &response_timeout);
 
     if(modbus_connect(m_mb) == -1){
         qCWarning(dcModbusCommander()) << "Error connecting modbus:" << modbus_strerror(errno) ;
@@ -145,7 +142,7 @@ bool ModbusTCPMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
         qCWarning(dcModbusCommander()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
         return false;
     }
-    *result = (bool)status;
+    *result = static_cast<bool>(status);
     return true;
 }
 

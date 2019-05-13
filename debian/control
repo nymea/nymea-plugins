@@ -371,6 +371,22 @@ Description: nymea.io plugin for mailnotification
  This package will install the nymea.io plugin for mailnotification
 
 
+Package: nymea-plugin-modbuscommander
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libmodbus5,
+         nymea-plugins-translations,
+Replaces: guh-plugin-mailnotification
+Description: nymea.io plugin to send and receive generic modbus commands
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io modbus commander plug-in
+
 Package: nymea-plugin-mqttclient
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -818,6 +834,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-remotessh,
          nymea-plugin-unipi,
          nymea-plugin-serialportcommander,
+         nymea-plugin-modbuscommander,
 Replaces: guh-plugins-maker
 Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
  The nymea daemon is a plugin based IoT (Internet of Things) server. The

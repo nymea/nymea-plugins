@@ -39,7 +39,7 @@ class DevicePluginModbusCommander : public DevicePlugin
 
 public:
     explicit DevicePluginModbusCommander();
-    ~DevicePluginModbusCommander();
+
     void init() override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;

@@ -31,10 +31,10 @@ class ModbusTCPMaster : public QObject
 {
     Q_OBJECT
 public:
-    explicit ModbusTCPMaster(QHostAddress IPv4Address, int port, QObject *parent = 0);
+    explicit ModbusTCPMaster(QHostAddress IPv4Address, int port, QObject *parent = nullptr);
     ~ModbusTCPMaster();
 
-
+    bool createInterface();
     bool getCoil(int slaveAddress, int coilAddress, bool *result);
     bool getRegister(int slaveAddress, int registerAddress, int *result);
     bool setCoil(int slaveAddress, int coilAddress, bool status);
@@ -49,7 +49,6 @@ private:
     QHostAddress m_IPv4Address;
     int m_port;
 
-    bool createInterface();
 signals:
 
 public slots:

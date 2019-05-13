@@ -31,41 +31,46 @@ ModbusRTUMaster::ModbusRTUMaster(QString serialPort, int baudrate, QString parit
     m_dataBits(dataBits),
     m_stopBits(stopBits)
 {
-    createInterface();
 }
 
 ModbusRTUMaster::~ModbusRTUMaster()
 {
-    if (m_mb != NULL) {
-        modbus_close(m_mb);
+    if (m_mb == nullptr) {
+        qCWarning(dcModbusCommander()) << "Error m_mb was nullpointer";
+        return;
     }
+
+    modbus_close(m_mb);
     modbus_free(m_mb);
+}
+
+QString ModbusRTUMaster::serialPort()
+{
+    return m_serialPort;
 }
 
 bool ModbusRTUMaster::createInterface() {
     //Setting up a RTU interface
-    qDebug(dcModbusCommander()) << "Setting up a RTU interface" << m_serialPort << "baud:" << m_baudrate;
-    char *port = m_serialPort.toLatin1().data();
-    if (m_parity.size() != 1) {
+    qDebug(dcModbusCommander()) << "Setting up a RTU interface" << m_serialPort << "baud:" << m_baudrate << "parity:" << m_parity << "stop bits:" << m_stopBits << "data bits:" << m_dataBits ;
+
+    char parity;
+    if (m_parity.size() == 1) {
+        parity = m_parity.toUtf8().at(0);
+    } else {
+        qCWarning(dcModbusCommander()) << "Error parity wrong: " << m_parity;
         return false;
     }
-    char parity = m_parity.toUtf8().at(1);
+
+    char *port = m_serialPort.toLatin1().data();
     m_mb = modbus_new_rtu(port, m_baudrate, parity, m_dataBits, m_stopBits);
 
     if(m_mb == nullptr){
-        qCWarning(dcModbusCommander()) << "Error modbus RTU: " << modbus_strerror(errno) ;
-        this->deleteLater();
+        qCWarning(dcModbusCommander()) << "Error modbus RTU: " << modbus_strerror(errno);
         return false;
     }
 
-    struct timeval response_timeout;
-
-    response_timeout.tv_sec = 3;
-    response_timeout.tv_usec = 0;
-    modbus_set_response_timeout(m_mb, &response_timeout);
-
     if(modbus_connect(m_mb) == -1){
-        qCWarning(dcModbusCommander()) << "Error connecting modbus:" << modbus_strerror(errno) ;
+        qCWarning(dcModbusCommander()) << "Error connecting modbus:" << modbus_strerror(errno) << port;
         return false;
     }
     return true;
@@ -126,7 +131,7 @@ bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
         qCWarning(dcModbusCommander()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
         return false;
     }
-    *result = (bool)data;
+    *result = static_cast<bool>(data);
     return true;
 }
 

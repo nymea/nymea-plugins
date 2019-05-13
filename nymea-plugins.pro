@@ -26,6 +26,7 @@ PLUGIN_DIRS = \
     leynew              \
     lgsmarttv           \
     mailnotification    \
+    modbuscommander     \
     mqttclient          \
     netatmo             \
     networkdetector     \

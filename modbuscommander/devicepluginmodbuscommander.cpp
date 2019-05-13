@@ -50,11 +50,6 @@ DevicePluginModbusCommander::DevicePluginModbusCommander()
 {
 }
 
-DevicePluginModbusCommander::~DevicePluginModbusCommander()
-{
-
-}
-
 void DevicePluginModbusCommander::init()
 {
     connect(this, &DevicePluginModbusCommander::configValueChanged, this, &DevicePluginModbusCommander::onPluginConfigurationChanged);
@@ -82,6 +77,10 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
             }
         }
         ModbusTCPMaster *modbus = new ModbusTCPMaster(ipAddress, port, this);
+        if (!modbus->createInterface()) {
+            modbus->deleteLater();
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
         m_modbusTCPMasters.insert(device, modbus);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
@@ -105,17 +104,21 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
         int stopBits = device->paramValue(modbusRTUInterfaceDeviceStopBitsParamTypeId).toInt();
         int dataBits = device->paramValue(modbusRTUInterfaceDeviceDataBitsParamTypeId).toInt();
         QString parity;
-        if (device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString().contains("No")) {
+        if (device->paramValue(modbusRTUInterfaceDeviceParityParamTypeId).toString().contains("No")) {
             parity = "N";
-        } else if (device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString().contains("Even")) {
+        } else if (device->paramValue(modbusRTUInterfaceDeviceParityParamTypeId).toString().contains("Even")) {
             parity = "E";
-        } else if (device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString().contains("Odd")) {
+        } else if (device->paramValue(modbusRTUInterfaceDeviceParityParamTypeId).toString().contains("Odd")) {
             parity = "O";
         }
 
         ModbusRTUMaster *modbus = new ModbusRTUMaster(serialPort, baudrate, parity, dataBits, stopBits, this);
+        if (!modbus->createInterface()) {
+            modbus->deleteLater();
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
+        m_usedSerialPorts.append(serialPort);
         m_modbusRTUMasters.insert(device, modbus);
-
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -128,7 +131,6 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
         device->setParentId(device->paramValue(modbusRTUReadDeviceParentIdParamTypeId).toString());
         return DeviceManager::DeviceSetupStatusSuccess;
     }
-
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
@@ -145,11 +147,11 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
                 qCDebug(dcModbusCommander()) << "Found serial port that is already used:" << port.portName();
             } else {
                 //Serial port is not yet used, create now a new one
-                qCDebug(dcModbusCommander()) << "Found serial port:" << port.portName();
+                qCDebug(dcModbusCommander()) << "Found serial port:" << port.systemLocation();
                 QString description = port.manufacturer() + " " + port.description();
                 DeviceDescriptor descriptor(deviceClassId, port.portName(), description);
                 ParamList parameters;
-                parameters.append(Param(modbusRTUInterfaceDeviceSerialPortParamTypeId, port.portName()));
+                parameters.append(Param(modbusRTUInterfaceDeviceSerialPortParamTypeId, port.systemLocation()));
                 descriptor.setParams(parameters);
                 deviceDescriptors.append(descriptor);
             }
@@ -264,6 +266,7 @@ void DevicePluginModbusCommander::deviceRemoved(Device *device)
     }
 
     if (myDevices().empty()) {
+        m_refreshTimer->stop();
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
     }
 }
