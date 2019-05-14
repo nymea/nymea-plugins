@@ -14,7 +14,7 @@
                     "name": "serialPortCommander",
                     "displayName": "Serial port commander",
                     "createMethods": ["user", "discovery"],
-                    "interfaces": ["outputtrigger", "inputtrigger"],
+                    "interfaces": ["connectable", "outputtrigger", "inputtrigger"],
                     "paramTypes": [
                         {
                             "id": "ed49f7d8-ab18-4c37-9b80-1004b75dcb91",
@@ -72,6 +72,16 @@
                                 "Mark Parity"
                             ],
                             "defaultValue": "No Parity"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e308259d-9180-4880-a0bf-1734b52de9ac",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         }
                     ],
                     "actionTypes": [
