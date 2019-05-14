@@ -160,7 +160,7 @@ The name of the vendor (bf1e96f0-9650-4e7c-a56c-916d54d18e7a)</extracomment>
         <location filename="../plugininfo.h" line="152"/>
         <source>cloudiness</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: openweathermap, StateType: cloudiness, ID: 798553bc-45c7-42eb-9105-430bddb5d9b7</extracomment>
-        <translation>Bewölungsgrad</translation>
+        <translation>Bewölkungsgrad</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="155"/>
