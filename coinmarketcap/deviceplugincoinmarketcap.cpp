@@ -31,7 +31,7 @@ DevicePluginCoinMarketCap::DevicePluginCoinMarketCap()
 DeviceManager::DeviceSetupStatus DevicePluginCoinMarketCap::setupDevice(Device *device)
 {
     if(!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
         connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginCoinMarketCap::onPluginTimer);
     }
 
@@ -82,12 +82,12 @@ void DevicePluginCoinMarketCap::onPriceCallFinished()
         qCWarning(dcCoinMarketCap()) << "Request error:" << status << reply->errorString();
         device->setStateValue(currentPricesConnectedStateTypeId, false);
     }
-    reply->deleteLater();
 
     // check JSON file
     QJsonParseError error;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(reply->readAll(), &error);
-    qDebug(dcCoinMarketCap()) << jsonResponse;
+    reply->deleteLater();
+
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcCoinMarketCap()) << "Update reply JSON error:" << error.errorString();
         reply->deleteLater();
