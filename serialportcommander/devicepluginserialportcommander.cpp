@@ -93,7 +93,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
 
         connect(serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
         connect(serialPort, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-        connect(serialPort, SIGNAL(baudRateChanged(qint32, QSerialPort::Direction)), this, SLOT(onBaudRateChanged(qint32, QSerialPort::Direction)));
+        connect(serialPort, SIGNAL(baudRateChanged(qint32, QSerialPort::Directions)), this, SLOT(onBaudRateChanged(qint32, QSerialPort::Directions)));
         connect(serialPort, SIGNAL(parityChanged(QSerialPort::Parity)), this, SLOT(onParityChanged(QSerialPort::Parity)));
         connect(serialPort, SIGNAL(dataBitsChanged(QSerialPort::DataBits)), this, SLOT(onDataBitsChanged(QSerialPort::DataBits)));
         connect(serialPort, SIGNAL(stopBitsChanged(QSerialPort::StopBits)), this, SLOT(onStopBitsChanged(QSerialPort::StopBits)));
@@ -202,7 +202,7 @@ void DevicePluginSerialPortCommander::onSerialError(const QSerialPort::SerialPor
     }
 }
 
-void DevicePluginSerialPortCommander::onBaudRateChanged(qint32 baudRate, QSerialPort::Direction direction)
+void DevicePluginSerialPortCommander::onBaudRateChanged(qint32 baudRate, QSerialPort::Directions direction)
 {
     Q_UNUSED(direction)
     QSerialPort *serialPort =  static_cast<QSerialPort*>(sender());

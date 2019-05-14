@@ -52,7 +52,7 @@ private:
 private slots:
     void onReadyRead();
     void onSerialError(const QSerialPort::SerialPortError &error);
-    void onBaudRateChanged(qint32 baudRate, QSerialPort::Direction direction);
+    void onBaudRateChanged(qint32 baudRate, QSerialPort::Directions direction);
     void onParityChanged(QSerialPort::Parity parity);
     void onDataBitsChanged(QSerialPort::DataBits dataBits);
     void onStopBitsChanged(QSerialPort::StopBits stopBits);
