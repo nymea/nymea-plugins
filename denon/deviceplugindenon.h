@@ -24,18 +24,18 @@
 #ifndef DEVICEPLUGINDENON_H
 #define DEVICEPLUGINDENON_H
 
-#include "devices/deviceplugin.h"
+#include "devicemanager.h"
+#include "plugin/deviceplugin.h"
+#include "plugintimer.h"
+#include "denonconnection.h"
+#include "heos.h"
 
+#include <QPair>
 #include <QHash>
 #include <QObject>
 #include <QPointer>
 #include <QHostAddress>
 #include <QNetworkReply>
-
-#include "plugintimer.h"
-#include "denonconnection.h"
-#include "heos.h"
-#include <QPair>
 
 class DevicePluginDenon : public DevicePlugin
 {
@@ -47,7 +47,6 @@ class DevicePluginDenon : public DevicePlugin
 public:
     explicit DevicePluginDenon();
 
-    void startMonitoringAutoDevices() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void postSetupDevice(Device * device) override;

@@ -131,7 +131,6 @@ Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
         Heos *heos = new Heos(address, this);
         connect(heos, &Heos::connectionStatusChanged, this, &DevicePluginDenon::onHeosConnectionChanged);
         connect(heos, &Heos::playerDiscovered, this, &DevicePluginDenon::onHeosPlayerDiscovered);
-
         connect(heos, &Heos::playStateReceived, this, &DevicePluginDenon::onHeosPlayStateReceived);
         connect(heos, &Heos::repeatModeReceived, this, &DevicePluginDenon::onHeosRepeatModeReceived);
         connect(heos, &Heos::shuffleModeReceived, this, &DevicePluginDenon::onHeosShuffleModeReceived);
@@ -147,7 +146,6 @@ Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
     if (device->deviceClassId() == heosPlayerDeviceClassId) {
         return DeviceManager::DeviceSetupStatusSuccess;
     }
-
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
@@ -169,9 +167,6 @@ void DevicePluginDenon::deviceRemoved(Device *device)
             denonConnection->disconnectDenon();
             denonConnection->deleteLater();
         }
-    }
-
-    if (device->deviceClassId() == heosPlayerDeviceClassId) {
     }
 
     if (myDevices().empty()) {
@@ -263,7 +258,6 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
             } else if (playbackStatus == "pausing") {
                 heos->setPlayerState(playerId, Heos::HeosPlayerState::Pause);
             }
-
             return DeviceManager::DeviceErrorNoError;
         }
 
@@ -318,11 +312,8 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
 
 void DevicePluginDenon::postSetupDevice(Device *device)
 {
-    if (device->deviceClassId() == AVRX1000DeviceClassId) {
-
-    }
-
     if (device->deviceClassId() == heosDeviceClassId) {
+
         Heos *heos = m_heos.value(device);
         heos->getPlayers();
         device->setStateValue(heosConnectedStateTypeId, heos->connected());
@@ -342,10 +333,6 @@ void DevicePluginDenon::postSetupDevice(Device *device)
     }
 }
 
-void DevicePluginDenon::startMonitoringAutoDevices()
-{
-
-}
 
 void DevicePluginDenon::onPluginTimer()
 {
@@ -462,7 +449,6 @@ void DevicePluginDenon::onAVRDataReceived(const QByteArray &data)
             } else if (data.contains("FVP")) {
                 cmd = "FVP";
             }
-
             qCDebug(dcDenon) << "Update channel:" << cmd;
             device->setStateValue(AVRX1000ChannelStateTypeId, cmd);
         }
@@ -497,7 +483,6 @@ void DevicePluginDenon::onAVRSocketError()
     }
 }
 
-
 void DevicePluginDenon::onUpnpDiscoveryFinished()
 {
     qCDebug(dcDenon()) << "Upnp discovery finished";
@@ -511,32 +496,31 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
         qCDebug(dcDenon) << "No UPnP device found.";
         return;
     }
-    QList<QString> serialNumbers;
-    foreach (Device *device, myDevices()) {
-        if (device->deviceClassId() == heosDeviceClassId){
-            serialNumbers.append(device->paramValue(heosDeviceSerialNumberParamTypeId).toString());
-        }
-    }
 
     QList<DeviceDescriptor> deviceDescriptors;
     foreach (const UpnpDeviceDescriptor &upnpDevice, reply->deviceDescriptors()) {
-        qCDebug(dcDenon) << "UPnP device found:" << upnpDevice.modelDescription() << upnpDevice.friendlyName() << upnpDevice.hostAddress().toString() << upnpDevice.modelName() << upnpDevice.manufacturer() << upnpDevice.serialNumber() << upnpDevice.deviceType() << upnpDevice.location();
+
         if (upnpDevice.modelName().contains("HEOS")) {
-            //check if not already addded
             QString serialNumber = upnpDevice.serialNumber();
-            if ((!serialNumbers.contains(serialNumber)) && (serialNumber !=("0000001"))) {
+            if (serialNumber != "0000001") {
+                // child devices have serial number 0000001
+                qCDebug(dcDenon) << "UPnP device found:" << upnpDevice.modelDescription() << upnpDevice.friendlyName() << upnpDevice.hostAddress().toString() << upnpDevice.modelName() << upnpDevice.manufacturer() << upnpDevice.serialNumber();
                 DeviceDescriptor descriptor(heosDeviceClassId, upnpDevice.modelName(), serialNumber);
                 ParamList params;
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(heosDeviceSerialNumberParamTypeId).toString() == serialNumber) {
+                        descriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
                 params.append(Param(heosDeviceModelNameParamTypeId, upnpDevice.modelName()));
                 params.append(Param(heosDeviceIpParamTypeId, upnpDevice.hostAddress().toString()));
                 params.append(Param(heosDeviceSerialNumberParamTypeId, serialNumber));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
-                serialNumbers.append(serialNumber);
             }
         }
     }
-
     emit devicesDiscovered(heosDeviceClassId, deviceDescriptors);
 }
 
@@ -576,88 +560,69 @@ void DevicePluginDenon::onHeosPlayerDiscovered(HeosPlayer *heosPlayer) {
 
 void DevicePluginDenon::onHeosPlayStateReceived(int playerId, Heos::HeosPlayerState state)
 {
-    foreach (Device *device, myDevices()) {
-        if(device->deviceClassId() == heosPlayerDeviceClassId) {
-            if (device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt() == playerId) {
-                if (state == Heos::HeosPlayerState::Pause) {
-                    device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Paused");
-                } else if (state == Heos::HeosPlayerState::Play) {
-                    device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Playing");
-                } else if (state == Heos::HeosPlayerState::Stop) {
-                    device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Stopped");
-                }
-            }
+    foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
+        if (state == Heos::HeosPlayerState::Pause) {
+            device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Paused");
+        } else if (state == Heos::HeosPlayerState::Play) {
+            device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Playing");
+        } else if (state == Heos::HeosPlayerState::Stop) {
+            device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Stopped");
         }
+        break;
     }
 }
 
 
 void DevicePluginDenon::onHeosRepeatModeReceived(int playerId, Heos::HeosRepeatMode repeatMode)
 {
-    foreach (Device *device, myDevices()) {
-        if(device->deviceClassId() == heosPlayerDeviceClassId) {
-            if (device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt() == playerId) {
-                if (repeatMode == Heos::HeosRepeatMode::All) {
-                    device->setStateValue(heosPlayerRepeatStateTypeId, "All");
-                } else  if (repeatMode == Heos::HeosRepeatMode::One) {
-                    device->setStateValue(heosPlayerRepeatStateTypeId, "One");
-                } else  if (repeatMode == Heos::HeosRepeatMode::Off) {
-                    device->setStateValue(heosPlayerRepeatStateTypeId, "None");
-                }
-            }
+    foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
+        if (repeatMode == Heos::HeosRepeatMode::All) {
+            device->setStateValue(heosPlayerRepeatStateTypeId, "All");
+        } else  if (repeatMode == Heos::HeosRepeatMode::One) {
+            device->setStateValue(heosPlayerRepeatStateTypeId, "One");
+        } else  if (repeatMode == Heos::HeosRepeatMode::Off) {
+            device->setStateValue(heosPlayerRepeatStateTypeId, "None");
         }
+        break;
     }
 }
 
 void DevicePluginDenon::onHeosShuffleModeReceived(int playerId, bool shuffle)
 {
-    foreach (Device *device, myDevices()) {
-        if(device->deviceClassId() == heosPlayerDeviceClassId) {
-            if (device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt() == playerId) {
-
-                if (shuffle) {
-                    device->setStateValue(heosPlayerMuteStateTypeId, true);
-                } else {
-                    device->setStateValue(heosPlayerMuteStateTypeId, false);
-                }
-            }
+    foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
+        if (shuffle) {
+            device->setStateValue(heosPlayerMuteStateTypeId, true);
+        } else {
+            device->setStateValue(heosPlayerMuteStateTypeId, false);
         }
+        break;
     }
 }
 
 void DevicePluginDenon::onHeosMuteStatusReceived(int playerId, bool mute)
 {
-    foreach (Device *device, myDevices()) {
-        if(device->deviceClassId() == heosPlayerDeviceClassId) {
-            if (device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt() == playerId) {
-                device->setStateValue(heosPlayerMuteStateTypeId, mute);
-            }
-        }
+    foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
+        device->setStateValue(heosPlayerMuteStateTypeId, mute);
+        break;
     }
 }
 
 void DevicePluginDenon::onHeosVolumeStatusReceived(int playerId, int volume)
 {
-    foreach (Device *device, myDevices()) {
-        if(device->deviceClassId() == heosPlayerDeviceClassId) {
-            if (device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt() == playerId) {
-                device->setStateValue(heosPlayerVolumeStateTypeId, volume);
-            }
-        }
+    foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
+        device->setStateValue(heosPlayerVolumeStateTypeId, volume);
+        break;
     }
 }
 
 void DevicePluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, QString source, QString artist, QString album, QString song, QString artwork)
 {
-    foreach (Device *device, myDevices()) {
-        if(device->deviceClassId() == heosPlayerDeviceClassId) {
-            if (device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt() == playerId) {
-                device->setStateValue(heosPlayerArtistStateTypeId, artist);
-                device->setStateValue(heosPlayerTitleStateTypeId, song);
-                device->setStateValue(heosPlayerArtworkStateTypeId, artwork);
-                device->setStateValue(heosPlayerCollectionStateTypeId, album);
-                device->setStateValue(heosPlayerSourceStateTypeId, source);
-            }
-        }
+    foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
+        device->setStateValue(heosPlayerArtistStateTypeId, artist);
+        device->setStateValue(heosPlayerTitleStateTypeId, song);
+        device->setStateValue(heosPlayerArtworkStateTypeId, artwork);
+        device->setStateValue(heosPlayerCollectionStateTypeId, album);
+        device->setStateValue(heosPlayerSourceStateTypeId, source);
+        break;
     }
 }

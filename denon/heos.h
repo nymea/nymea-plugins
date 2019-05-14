@@ -1,9 +1,32 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
+ *                                                                         *
+ *  This file is part of nymea.                                            *
+ *                                                                         *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
+ *                                                                         *
+ *  This library is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
+ *                                                                         *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #ifndef HEOS_H
 #define HEOS_H
 
 #include <QObject>
 #include <QHostAddress>
 #include <QTcpSocket>
+
 #include "heosplayer.h"
 
 class Heos : public QObject
@@ -22,7 +45,7 @@ public:
         All = 2
     };
 
-    explicit Heos(const QHostAddress &hostAddress, QObject *parent = 0);
+    explicit Heos(const QHostAddress &hostAddress, QObject *parent = nullptr);
     ~Heos();
 
     void setAddress(QHostAddress address);
@@ -47,10 +70,10 @@ public:
     void sendHeartbeat();
 
 private:
-    bool m_connected;
-    bool m_eventRegistered;
+    bool m_connected = false;
+    bool m_eventRegistered = false;
     QHostAddress m_hostAddress;
-    QTcpSocket *m_socket;
+    QTcpSocket *m_socket = nullptr;
     QHash<int, HeosPlayer*> m_heosPlayers;
     void setConnected(const bool &connected);
 
