@@ -383,14 +383,14 @@ void DevicePluginOpenweathermap::processWeatherData(const QByteArray &data, Devi
     }
 
     if (dataMap.contains("sys")) {
-        uint sunrise = dataMap.value("sys").toMap().value("sunrise").toUInt();
-        uint sunset = dataMap.value("sys").toMap().value("sunset").toUInt();
+        qint64 sunrise = dataMap.value("sys").toMap().value("sunrise").toLongLong();
+        qint64 sunset = dataMap.value("sys").toMap().value("sunset").toLongLong();
 
         device->setStateValue(openweathermapSunriseTimeStateTypeId, sunrise);
         device->setStateValue(openweathermapSunsetTimeStateTypeId, sunset);
         QTimeZone tz = QTimeZone(QTimeZone::systemTimeZoneId());
-        QDateTime up = QDateTime::fromSecsSinceEpoch(sunrise);
-        QDateTime down = QDateTime::fromSecsSinceEpoch(sunset);
+        QDateTime up = QDateTime::fromMSecsSinceEpoch(sunrise * 1000);
+        QDateTime down = QDateTime::fromMSecsSinceEpoch(sunset * 1000);
         QDateTime now = QDateTime::currentDateTime().toTimeZone(tz);
         device->setStateValue(openweathermapDaylightStateTypeId, up < now && down > now);
     }
