@@ -18,28 +18,28 @@
                         {
                             "id": "af30ce7b-fb6b-42f0-889d-20b32f8b8fa4",
                             "name": "customSender",
-                            "displayName": "sender mail",
+                            "displayName": "Sender mail",
                             "type": "QString",
                             "inputType": "Mail"
                         },
                         {
                             "id": "b91d0ecc-6903-4991-ae8d-f36757ce40a7",
                             "name": "customUser",
-                            "displayName": "user",
+                            "displayName": "User",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
                             "id": "ac29e643-1d18-4612-8d2f-65fb07a67182",
                             "name": "customPassword",
-                            "displayName": "password",
+                            "displayName": "Password",
                             "type": "QString",
                             "inputType": "Password"
                         },
                         {
                             "id": "d657f002-9741-42e1-9fef-32eae96dacdb",
                             "name": "customRecipient",
-                            "displayName": "recipient",
+                            "displayName": "Recipient",
                             "type": "QString",
                             "inputType": "Mail"
                         },
@@ -53,9 +53,9 @@
                         {
                             "id": "56ec204f-2e02-4a17-b9d1-e855e384b689",
                             "name": "port",
-                            "displayName": "port",
+                            "displayName": "Port",
                             "type": "int",
-                            "defaultValue": "465"
+                            "defaultValue": 25
                         },
                         {
                             "id": "789b963b-4143-4e21-853c-2612707d726f",

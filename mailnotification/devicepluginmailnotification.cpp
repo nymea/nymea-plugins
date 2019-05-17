@@ -148,9 +148,11 @@ void DevicePluginMailNotification::testLoginFinished(const bool &success)
 {
     SmtpClient *smtpClient = static_cast<SmtpClient*>(sender());
     Device *device = m_clients.value(smtpClient);
-    if(success) {
+    if (success) {
+        qCDebug(dcMailNotification()) << "Email login test successfull";
         emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
     } else {
+        qCWarning(dcMailNotification()) << "Email login test failed";
         emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
         if(m_clients.contains(smtpClient)) {
             m_clients.remove(smtpClient);
@@ -161,9 +163,11 @@ void DevicePluginMailNotification::testLoginFinished(const bool &success)
 
 void DevicePluginMailNotification::sendMailFinished(const bool &success, const ActionId &actionId)
 {
-    if(success) {
+    if (success) {
+        qCDebug(dcMailNotification()) << "Email sent successfully";
         emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
     } else {
+        qCWarning(dcMailNotification()) << "Email sending failed";
         emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorDeviceNotFound);
     }
 }
