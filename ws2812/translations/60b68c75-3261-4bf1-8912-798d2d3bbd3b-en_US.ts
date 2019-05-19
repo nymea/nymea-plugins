@@ -19,6 +19,12 @@ The name of the DeviceClass (3142db46-5c6f-42d6-9001-753150763385)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../plugininfo.h" line="81"/>
+        <source>nymea</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../plugininfo.h" line="87"/>
         <source>host</source>
         <extracomment>The name of the ParamType (DeviceClass: ws2812, Type: device, ID: ccf1f6b1-54c4-46c1-b978-6abcf3fad882)</extracomment>
@@ -34,12 +40,6 @@ The name of the DeviceClass (3142db46-5c6f-42d6-9001-753150763385)</extracomment
         <location filename="../plugininfo.h" line="96"/>
         <source>reachable changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: ws2812, StateType: connected, ID: 08091cde-983d-42f7-bdd7-d89c312ccbed)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="81"/>
-        <source>guh GmbH</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

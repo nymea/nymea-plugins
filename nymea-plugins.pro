@@ -49,8 +49,6 @@ PLUGIN_DIRS = \
     ws2812              \
 
 
-CONFIG+=all
-
 message(============================================)
 message("Qt version:" $$[QT_VERSION])
 
@@ -73,12 +71,9 @@ QMAKE_EXTRA_TARGETS += lrelease
 
 # For Qt-Creator's code model: Add CPATH to INCLUDEPATH explicitly
 INCLUDEPATH += $$(CPATH)
-message(" cpath is $$(CPATH)")
 
 # Verify if building only a selection of plugins
 contains(CONFIG, selection) {
-    CONFIG-=all
-
     # Check each plugin if the subdir exists
     for(plugin, PLUGINS) {
         contains(PLUGIN_DIRS, $${plugin}) {
@@ -88,9 +83,7 @@ contains(CONFIG, selection) {
         }
     }
     message("Building plugin selection: $${SUBDIRS}")
-}
-
-all {
+} else {
     SUBDIRS *= $${PLUGIN_DIRS}
     message("Building all plugins")
 }

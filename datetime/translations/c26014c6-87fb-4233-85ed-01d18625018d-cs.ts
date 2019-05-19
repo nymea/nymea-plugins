@@ -100,16 +100,16 @@
         <translation>název dne v týdnu změněn</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="105"/>
-        <source>guh GmbH</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation>guh GmbH</translation>
-    </message>
-    <message>
         <location filename="../plugininfo.h" line="102"/>
         <source>Time</source>
         <extracomment>The name of the plugin DateTime (c26014c6-87fb-4233-85ed-01d18625018d)</extracomment>
         <translation>Čas</translation>
+    </message>
+    <message>
+        <location filename="../plugininfo.h" line="105"/>
+        <source>nymea</source>
+        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="114"/>
@@ -265,7 +265,7 @@ The name of the EventType f40d6e0f-fda2-475e-a6ae-c3fee03138b9 of deviceClass to
         <location filename="../plugininfo.h" line="234"/>
         <source>sunday</source>
         <extracomment>The name of the ParamType (DeviceClass: alarm, Type: device, ID: 2d519d8f-4bda-4d30-801f-48fe6c10c540)</extracomment>
-        <translation> neděle</translation>
+        <translation>neděle</translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="237"/>
