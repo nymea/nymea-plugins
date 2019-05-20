@@ -44,6 +44,34 @@ DevicePluginSerialPortCommander::DevicePluginSerialPortCommander()
 {
 }
 
+
+DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+{
+    Q_UNUSED(params)
+    // Create the list of available serial interfaces
+    QList<DeviceDescriptor> deviceDescriptors;
+
+    foreach(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
+
+        qCDebug(dcSerialPortCommander()) << "Found serial port:" << port.portName();
+        QString description = port.manufacturer() + " " + port.description();
+        DeviceDescriptor deviceDescriptor(deviceClassId, port.portName(), description);
+        ParamList parameters;
+        foreach (Device *existingDevice, myDevices()) {
+            if (existingDevice->paramValue(serialPortCommanderDeviceSerialPortParamTypeId).toString() == port.portName()) {
+                deviceDescriptor.setDeviceId(existingDevice->id());
+                break;
+            }
+        }
+        parameters.append(Param(serialPortCommanderDeviceSerialPortParamTypeId, port.portName()));
+        deviceDescriptor.setParams(parameters);
+        deviceDescriptors.append(deviceDescriptor);
+    }
+    emit devicesDiscovered(deviceClassId, deviceDescriptors);
+    return DeviceManager::DeviceErrorAsync;
+}
+
+
 DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(Device *device)
 {
     if(!m_reconnectTimer) {
@@ -105,33 +133,6 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
 }
 
 
-DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
-{
-    Q_UNUSED(params)
-    // Create the list of available serial interfaces
-    QList<DeviceDescriptor> deviceDescriptors;
-
-    foreach(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
-
-        qCDebug(dcSerialPortCommander()) << "Found serial port:" << port.portName();
-        QString description = port.manufacturer() + " " + port.description();
-        DeviceDescriptor deviceDescriptor(deviceClassId, port.portName(), description);
-        ParamList parameters;
-        foreach (Device *existingDevice, myDevices()) {
-            if (existingDevice->paramValue(serialPortCommanderDeviceSerialPortParamTypeId).toString() == port.portName()) {
-                deviceDescriptor.setDeviceId(existingDevice->id());
-                break;
-            }
-        }
-        parameters.append(Param(serialPortCommanderDeviceSerialPortParamTypeId, port.portName()));
-        deviceDescriptor.setParams(parameters);
-        deviceDescriptors.append(deviceDescriptor);
-    }
-    emit devicesDiscovered(deviceClassId, deviceDescriptors);
-    return DeviceManager::DeviceErrorAsync;
-}
-
-
 DeviceManager::DeviceError DevicePluginSerialPortCommander::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == serialPortCommanderDeviceClassId ) {
@@ -189,7 +190,7 @@ void DevicePluginSerialPortCommander::onReadyRead()
     emitEvent(event);
 }
 
-void DevicePluginSerialPortCommander::onSerialError(const QSerialPort::SerialPortError &error)
+void DevicePluginSerialPortCommander::onSerialError(QSerialPort::SerialPortError error)
 {
     QSerialPort *serialPort =  static_cast<QSerialPort*>(sender());
     Device *device = m_serialPorts.key(serialPort);

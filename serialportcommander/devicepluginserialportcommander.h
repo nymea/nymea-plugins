@@ -25,8 +25,8 @@
 
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
-#include <QTimer>
 
+#include <QTimer>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 
@@ -51,14 +51,13 @@ private:
 
 private slots:
     void onReadyRead();
-    void onSerialError(const QSerialPort::SerialPortError &error);
+    void onSerialError(QSerialPort::SerialPortError error);
     void onBaudRateChanged(qint32 baudRate, QSerialPort::Directions direction);
     void onParityChanged(QSerialPort::Parity parity);
     void onDataBitsChanged(QSerialPort::DataBits dataBits);
     void onStopBitsChanged(QSerialPort::StopBits stopBits);
     void onFlowControlChanged(QSerialPort::FlowControl flowControl);
     void onReconnectTimer();
-
 };
 
 #endif // DEVICEPLUGINSERIALPORTCOMMANDER_H
