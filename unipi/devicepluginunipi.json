@@ -19,9 +19,116 @@
             "deviceClasses": [
                 {
                     "id": "58f9db7f-fd33-45af-8c98-047b67ae5267",
+                    "name": "neuronL403",
+                    "displayName": "Neuron L403",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "7a09e3ad-452c-4bf4-a00c-f8114ed9a7a1",
+                            "name": "relay1Function",
+                            "displayName": "Relay 1 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "261d3976-7328-43ce-8705-abae72035beb",
+                            "name": "relay1Group",
+                            "displayName": "Relay 1 group",
+                            "type": "int",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "ce97c571-f853-4156-9967-3498f0855dca",
+                            "name": "relay2Function",
+                            "displayName": "Relay 2 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "fe22ec23-0a77-4359-8718-56a30a94fbf8",
+                            "name": "relay3Group",
+                            "displayName": "Relay 2 group",
+                            "type": "int",
+                            "defaultValue": 2
+                        },
+                        {
+                            "id": "762563a8-0d43-4a32-9a4a-f4fa78f67555",
+                            "name": "relay3Function",
+                            "displayName": "Relay 3 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "fc04ecb7-4ac5-4707-bb54-81b008d32f94",
+                            "name": "relay3Group",
+                            "displayName": "Relay 3 group",
+                            "type": "int",
+                            "defaultValue": 3
+                        },
+                        {
+                            "id": "49a17d56-c23d-40f4-a321-40b86186b822",
+                            "name": "relay4Function",
+                            "displayName": "Relay 4 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "29c2cf14-94cd-431c-ad16-4c0a519d2554",
+                            "name": "relay4Group",
+                            "displayName": "Relay 4 group",
+                            "type": "int",
+                            "defaultValue": 4
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connection changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "58f9db7f-fd33-45af-8c98-047b67ae5267",
                     "name": "relayOutput",
                     "displayName": "Relay output",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": ["power"],
                     "paramTypes": [
                         {
@@ -48,7 +155,7 @@
                     "id": "0bec278a-98f1-416b-b496-6d00740f178a",
                     "name": "digitalInput",
                     "displayName": "Digital input",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": [ ],
                     "paramTypes": [
                         {
@@ -73,7 +180,7 @@
                     "id": "71e03d00-1b62-412b-b55d-ab90ad2eddff",
                     "name": "dimmerSwitch",
                     "displayName": "Dimmer switch",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": ["longpressbutton"],
                     "paramTypes": [
                         {
@@ -124,7 +231,7 @@
                     "id": "f3a3c5ed-461a-4ca8-930b-df3af821b9e0",
                     "name": "digitalOutput",
                     "displayName": "Digital output",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": ["power"],
                     "paramTypes": [
                         {
@@ -151,7 +258,7 @@
                     "id": "9094a69f-f475-4050-a345-5ab52cb19774",
                     "name": "analogOutput",
                     "displayName": "Analog output",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": [ ],
                     "paramTypes": [
                         {
@@ -181,7 +288,7 @@
                     "id": "06abd6a4-e655-4243-bc9c-9bd4ef5be2e6",
                     "name": "analogInput",
                     "displayName": "Analog Input",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": [ ],
                     "paramTypes": [
                         {
@@ -207,7 +314,7 @@
                     "id": "eadddc99-ce7d-4169-a2f9-a829fa105ad2",
                     "name": "blind",
                     "displayName": "Blind",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": ["blind"],
                     "paramTypes": [
                         {
@@ -274,7 +381,7 @@
                     "id": "34fc941e-3465-4618-acf6-dda9c7242e27",
                     "name": "light",
                     "displayName": "Light",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": ["light"],
                     "paramTypes": [
                         {
@@ -308,7 +415,7 @@
                     "id": "4f0b3cfd-603a-47ec-9719-2db7eeae1143",
                     "name": "temperatureSensor",
                     "displayName": "Temperature sensor",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": ["temperaturesensor", "connectable"],
                     "paramTypes": [
                         {
