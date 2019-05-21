@@ -68,8 +68,8 @@ DevicePluginOpenweathermap::DevicePluginOpenweathermap()
     // max 50000 calls/day
     m_apiKey = "c1b9d5584bb740804871583f6c62744f";
 
-    QSettings settings(NymeaSettings::settingsPath());
-    settings.beginGroup("openweathermap");
+    QSettings settings(NymeaSettings::settingsPath() + "/nymead.conf", QSettings::IniFormat);
+    settings.beginGroup("OpenWeatherMap");
     if (settings.contains("apiKey")) {
         m_apiKey = settings.value("apiKey").toString();
         qCDebug(dcOpenWeatherMap()) << "Using custom API key:" << m_apiKey.replace(m_apiKey.length() - 10, 10, "**********");
