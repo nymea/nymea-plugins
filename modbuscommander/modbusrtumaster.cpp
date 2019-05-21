@@ -23,6 +23,8 @@
 #include "modbusrtumaster.h"
 #include "extern-plugininfo.h"
 
+#include <QSerialPortInfo>
+
 ModbusRTUMaster::ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent) :
     QObject(parent),
     m_serialPort(serialPort),
@@ -39,7 +41,14 @@ ModbusRTUMaster::~ModbusRTUMaster()
         qCWarning(dcModbusCommander()) << "Error m_mb was nullpointer";
         return;
     }
-
+    if(!isConnected()){
+        qCWarning(dcModbusCommander()) << "Error serial interface not available";
+        // probably the serial port was disconnected,
+        /* NOTE: freeing the modbus instance would lead to a segfault
+         * this way of handling the modbus instance leaks memory, but only if the device was disconnected before.
+         * */
+        return;
+    }
     modbus_close(m_mb);
     modbus_free(m_mb);
 }
@@ -49,9 +58,13 @@ QString ModbusRTUMaster::serialPort()
     return m_serialPort;
 }
 
-bool ModbusRTUMaster::createInterface() {
+bool ModbusRTUMaster::createInterface()
+{
     //Setting up a RTU interface
     qDebug(dcModbusCommander()) << "Setting up a RTU interface" << m_serialPort << "baud:" << m_baudrate << "parity:" << m_parity << "stop bits:" << m_stopBits << "data bits:" << m_dataBits ;
+
+    if (!isConnected())
+        return false;
 
     char parity;
     if (m_parity.size() == 1) {
@@ -76,12 +89,25 @@ bool ModbusRTUMaster::createInterface() {
     return true;
 }
 
+bool ModbusRTUMaster::isConnected()
+{
+    Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
+
+        if (m_serialPort == port.systemLocation()) {
+
+            if(modbus_connect(m_mb) == -1){
+                return false;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
 bool ModbusRTUMaster::setCoil(int slaveAddress, int coilAddress, bool status)
 {
-    if (!m_mb) {
-        if (!createInterface())
-            return false;
-    }
+    if (!isConnected())
+        return false;
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
@@ -102,6 +128,9 @@ bool ModbusRTUMaster::setRegister(int slaveAddress, int registerAddress, int dat
             return false;
     }
 
+    if (!isConnected())
+        return false;
+
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
         return false;
@@ -120,6 +149,9 @@ bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
         if (!createInterface())
             return false;
     }
+
+    if (!isConnected())
+        return false;
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
@@ -143,6 +175,9 @@ bool ModbusRTUMaster::getRegister(int slaveAddress, int registerAddress, int *re
         if (!createInterface())
             return false;
     }
+
+    if (!isConnected())
+        return false;
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;

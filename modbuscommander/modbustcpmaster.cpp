@@ -60,6 +60,20 @@ bool ModbusTCPMaster::createInterface() {
     return true;
 }
 
+bool ModbusTCPMaster::isConnected()
+{
+    if(m_mb == nullptr){
+        qCWarning(dcModbusCommander()) << "Error modbus TCP: " << modbus_strerror(errno) ;
+        return false;
+    }
+
+    if(modbus_connect(m_mb) == -1){
+        qCWarning(dcModbusCommander()) << "Error modbus:" << modbus_strerror(errno) ;
+        return false;
+    }
+    return true;
+}
+
 int ModbusTCPMaster::port()
 {
     return m_port;

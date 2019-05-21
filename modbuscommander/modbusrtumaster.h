@@ -34,6 +34,8 @@ public:
     ~ModbusRTUMaster();
 
     bool createInterface();
+    bool isConnected();
+
     bool getCoil(int slaveAddress, int coilAddress, bool *result);
     bool getRegister(int slaveAddress, int registerAddress, int *result);
     bool setCoil(int slaveAddress, int coilAddress, bool status);
@@ -43,15 +45,12 @@ public:
 
 private:
     modbus_t *m_mb;
+
     QString m_serialPort;
     int m_baudrate;
     QString m_parity;
     int m_dataBits;
     int m_stopBits;
-
-signals:
-
-public slots:
 };
 
 #endif // MODBUSRTUMASTER_H

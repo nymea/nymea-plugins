@@ -117,7 +117,7 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
             modbus->deleteLater();
             return DeviceManager::DeviceSetupStatusFailure;
         }
-        m_usedSerialPorts.append(serialPort);
+        device->setStateValue(modbusRTUInterfaceConnectedStateTypeId, true);
         m_modbusRTUMasters.insert(device, modbus);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
@@ -142,19 +142,21 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
 
     if (deviceClassId == modbusRTUInterfaceDeviceClassId) {
         Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
-            if (m_usedSerialPorts.contains(port.portName())){
-                //device already in use
-                qCDebug(dcModbusCommander()) << "Found serial port that is already used:" << port.portName();
-            } else {
-                //Serial port is not yet used, create now a new one
-                qCDebug(dcModbusCommander()) << "Found serial port:" << port.systemLocation();
-                QString description = port.manufacturer() + " " + port.description();
-                DeviceDescriptor descriptor(deviceClassId, port.portName(), description);
-                ParamList parameters;
-                parameters.append(Param(modbusRTUInterfaceDeviceSerialPortParamTypeId, port.systemLocation()));
-                descriptor.setParams(parameters);
-                deviceDescriptors.append(descriptor);
+            //Serial port is not yet used, create now a new one
+            qCDebug(dcModbusCommander()) << "Found serial port:" << port.systemLocation();
+            QString description = port.manufacturer() + " " + port.description();
+            DeviceDescriptor deviceDescriptor(deviceClassId, port.portName(), description);
+            ParamList parameters;
+            QString serialPort = port.systemLocation();
+            foreach (Device *existingDevice, myDevices()) {
+                if (existingDevice->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString() == serialPort) {
+                    deviceDescriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
             }
+            parameters.append(Param(modbusRTUInterfaceDeviceSerialPortParamTypeId, serialPort));
+            deviceDescriptor.setParams(parameters);
+            deviceDescriptors.append(deviceDescriptor);
         }
         emit devicesDiscovered(deviceClassId, deviceDescriptors);
         return DeviceManager::DeviceErrorAsync;
@@ -260,7 +262,6 @@ void DevicePluginModbusCommander::deviceRemoved(Device *device)
     }
 
     if (device->deviceClassId() == modbusRTUInterfaceDeviceClassId) {
-        m_usedSerialPorts.removeAll(device->paramValue(modbusRTUInterfaceDeviceSerialPortParamTypeId).toString());
         ModbusRTUMaster *modbus = m_modbusRTUMasters.take(device);
         modbus->deleteLater();
     }
@@ -274,7 +275,30 @@ void DevicePluginModbusCommander::deviceRemoved(Device *device)
 void DevicePluginModbusCommander::onRefreshTimer()
 {
     foreach (Device *device, myDevices()) {
-        if ((device->deviceClassId() == modbusTCPReadDeviceClassId) || (device->deviceClassId() == modbusRTUReadDeviceClassId)) {
+        if (device->deviceClassId() == modbusRTUInterfaceDeviceClassId) {
+            ModbusRTUMaster *modbus = m_modbusRTUMasters.value(device);
+            if (!modbus)
+                return;
+            if (modbus->isConnected()) {
+                device->setStateValue(modbusRTUInterfaceConnectedStateTypeId, true);
+            } else {
+                device->setStateValue(modbusRTUInterfaceConnectedStateTypeId, false);
+            }
+        }
+
+        if (device->deviceClassId() == modbusTCPInterfaceDeviceClassId) {
+            ModbusTCPMaster *modbus = m_modbusTCPMasters.value(device);
+            if (!modbus)
+                return;
+            if (modbus->isConnected()) {
+                device->setStateValue(modbusTCPInterfaceConnectedStateTypeId, true);
+            } else {
+                device->setStateValue(modbusTCPInterfaceConnectedStateTypeId, false);
+            }
+        }
+
+        if ((device->deviceClassId() == modbusTCPReadDeviceClassId) ||
+                (device->deviceClassId() == modbusRTUReadDeviceClassId)) {
             readData(device);
         }
     }

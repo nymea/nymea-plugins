@@ -35,6 +35,8 @@ public:
     ~ModbusTCPMaster();
 
     bool createInterface();
+    bool isConnected();
+
     bool getCoil(int slaveAddress, int coilAddress, bool *result);
     bool getRegister(int slaveAddress, int registerAddress, int *result);
     bool setCoil(int slaveAddress, int coilAddress, bool status);
@@ -46,12 +48,9 @@ public:
 
 private:
     modbus_t *m_mb;
+
     QHostAddress m_IPv4Address;
     int m_port;
-
-signals:
-
-public slots:
 };
 
 #endif // MODBUSTCPMASTER_H

@@ -28,6 +28,7 @@
 #include "plugintimer.h"
 #include "modbustcpmaster.h"
 #include "modbusrtumaster.h"
+
 #include <QSerialPortInfo>
 
 class DevicePluginModbusCommander : public DevicePlugin
@@ -41,27 +42,24 @@ public:
     explicit DevicePluginModbusCommander();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    void deviceRemoved(Device *device) override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void postSetupDevice(Device *device) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    void deviceRemoved(Device *device) override;
 
 private:
-
-    void readData(Device *device);
-    void writeData(Device *device, Action action);
     PluginTimer *m_refreshTimer = nullptr;
     QList<QString> m_usedSerialPorts;
     QHash<Device *, ModbusRTUMaster *> m_modbusRTUMasters;
     QHash<Device *, ModbusTCPMaster *> m_modbusTCPMasters;
 
+    void readData(Device *device);
+    void writeData(Device *device, Action action);
 
 private slots:
     void onRefreshTimer();
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
-
-signals:
 
 };
 
