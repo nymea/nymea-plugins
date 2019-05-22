@@ -280,7 +280,7 @@ bool DevicePluginUniPi::getExtensionDigitalInput(DevicePluginUniPi::ExtensionTyp
             if (!m_modbusRTUMaster->getCoil(slaveAddress, modbusAddress, &value)) {
                 qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
             }
-            break
+            break;
         }
     }
     csvFile->deleteLater();
