@@ -50,18 +50,37 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         }
         m_neuronModel = "L403";
 
+        QList<DeviceDescriptor> relayOutputDescriptors;
         QList<DeviceDescriptor> lightDescriptors;
+        QList<DeviceDescriptor> blindDescriptors;
+
         foreach (Param param, device->params()) {
             if (param.value().toString() == "Generic") {
+                DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
+                QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
+                QString outputNumber = displayName.split(" ").at(1);
 
+                if(!myDevices().filterByParam(relayOutputDeviceNumberParamTypeId, outputNumber).isEmpty()) {
+                    continue;
+                }
+
+                DeviceDescriptor deviceDescriptor(relayOutputDeviceClassId, QString("Relais %1").arg(outputNumber), "");
+                ParamList params;
+                params.append(Param(relayOutputDeviceNumberParamTypeId, outputNumber));
+                deviceDescriptor.setParams(params);
+                lightDescriptors.append(deviceDescriptor);
             }
 
             if (param.value().toString() == "Light") {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
-                QString outputNumber = displayName.mid(5, 3);
+                QString outputNumber = displayName.split(" ").at(1);
 
-                DeviceDescriptor deviceDescriptor(lightDeviceClassId, "Light", outputNumber);
+                if(!myDevices().filterByParam(lightDeviceOutputParamTypeId, outputNumber).isEmpty()) {
+                    continue;
+                }
+
+                DeviceDescriptor deviceDescriptor(lightDeviceClassId, QString("Light %1").arg(outputNumber), "");
                 ParamList params;
                 params.append(Param(lightDeviceOutputParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
@@ -71,24 +90,42 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             if (param.value().toString() == "Blind open") {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
-                QString outputNumber = displayName.mid(5, 3);
+                QString outputOpenNumber = displayName.split(" ").at(1);
 
-                DeviceDescriptor deviceDescriptor(lightDeviceClassId, "Blind", outputNumber);
+                if(!myDevices().filterByParam(blindDeviceOutputOpenParamTypeId, outputOpenNumber).isEmpty()) {
+                    continue;
+                }
+
+                // TODO get open relais group id
+                QString outputCloseNumber = "1.01";
+
+                // TODO find second relais with the same group od
+
+                // TODO check if the other relais with the same id have function "blind down"
+
+                DeviceDescriptor deviceDescriptor(lightDeviceClassId, QString("Blind %1").arg(outputOpenNumber), "");
                 ParamList params;
-                params.append(Param(blindDeviceOutputOpenParamTypeId, outputNumber));
-                params.append(Param(blindDeviceOutputCloseParamTypeId, outputNumber));
+                params.append(Param(blindDeviceOutputOpenParamTypeId, outputOpenNumber));
+                params.append(Param(blindDeviceOutputCloseParamTypeId, outputCloseNumber));
                 deviceDescriptor.setParams(params);
                 lightDescriptors.append(deviceDescriptor);
             }
         }
+        if (!relayOutputDescriptors.isEmpty())
+            emit autoDevicesAppeared(relayOutputDeviceClassId, relayOutputDescriptors);
+
         if (!lightDescriptors.isEmpty())
             emit autoDevicesAppeared(lightDeviceClassId, lightDescriptors);
+
+        if (!blindDescriptors.isEmpty())
+            emit autoDevicesAppeared(blindDeviceClassId, blindDescriptors);
 
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if(device->deviceClassId() == neuronXS30DeviceClassId) {
 
+        QList<DeviceDescriptor> digitalInputDescriptors;
         QString serialPort = configValue(uniPiPluginSerialPortParamTypeId).toString();
         m_modbusRTUMaster = new ModbusRTUMaster(serialPort, 19600, "E", 8, 1, this);
         if(!m_modbusRTUMaster->createInterface()) {
@@ -102,15 +139,23 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             if (param.value().toString() == "Generic") {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronXS30DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
-                QString inputNumber = displayName.mid(5, 3);
+                QString inputNumber = displayName.split(" ").at(1);
 
-                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, "Digital input", inputNumber);
+                if(!myDevices().filterByParam(digitalInputDeviceNumberParamTypeId, inputNumber).isEmpty()) {
+                    continue;
+                }
+
+                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(inputNumber), "");
                 ParamList params;
                 params.append(Param(digitalInputDeviceNumberParamTypeId, inputNumber));
                 deviceDescriptor.setParams(params);
                 lightDescriptors.append(deviceDescriptor);
             }
         }
+
+        if (!digitalInputDescriptors.isEmpty())
+            emit autoDevicesAppeared(digitalInputDeviceClassId, digitalInputDescriptors);
+
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
