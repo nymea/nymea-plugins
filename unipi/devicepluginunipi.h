@@ -66,6 +66,10 @@ private:
     void setDigitalOutput(const QString &circuit, bool value);
     bool getDigitalOutput(const QString &circuit);
 
+    void setExtensionDigitalOutput(const QString &circuit, bool value);
+    bool getExtensionDigitalOutput(const QString &circuit);
+    bool getExtensionDigitalInput(const QString &circuit);
+
 private slots:
     void onRefreshTimer();
 

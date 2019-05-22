@@ -16,6 +16,13 @@
             "displayName": "Address",
             "type": "QString",
             "defaultValue": "127.0.0.1"
+        },
+        {
+            "id": "1e34aec6-0ff4-400d-80ff-32094612b325",
+            "name": "serialPort",
+            "displayName": "Serial port",
+            "type": "QString",
+            "defaultValue": "/dev/ttyAMA0"
         }
     ],
     "vendors": [
@@ -127,6 +134,285 @@
                     "stateTypes": [
                         {
                             "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connection changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "a1ec57b1-fcf9-4540-80c9-40f78cddc85f",
+                    "name": "neuronXS30",
+                    "displayName": "Neuron xS30",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "687b0206-05ad-4dc1-8a10-7be03f8e93f6",
+                            "name": "slaveAddress",
+                            "displayName": "Modbus slave address",
+                            "type": "int",
+                            "defaultValue": 16
+                        },
+                        {
+                            "id": "bb83bf51-e4f3-4bc5-92b1-056cb7b8056d",
+                            "name": "digitalInput101Function",
+                            "displayName": "Digital input 1.1 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "0a4b8ba6-5bc4-4bad-ae80-a6916d2c21ae",
+                            "name": "digitalInput102Function",
+                            "displayName": "Digital input 1.2 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "c20c3004-8bcd-42bd-9753-7390074fe2a5",
+                            "name": "digitalInput103Function",
+                            "displayName": "Digital input 1.3 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "4104946d-9297-4787-9843-63c0733a14c4",
+                            "name": "digitalInput104Function",
+                            "displayName": "Digital input 1.4 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "6cec2f84-e679-4551-815e-38de3debaa3c",
+                            "name": "digitalInput105Function",
+                            "displayName": "Digital input 1.5 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "579a4fa3-1e2b-4440-8fea-798e50d7b304",
+                            "name": "digitalInput106Function",
+                            "displayName": "Digital input 1.6 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "256bbffb-f32b-4b7b-b4aa-2c74ab5eb188",
+                            "name": "digitalInput107Function",
+                            "displayName": "Digital input 1.7 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "23980e63-4290-4f48-a1c1-dfd611dc5ff9",
+                            "name": "digitalInput108Function",
+                            "displayName": "Digital input 1.8 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "88bc5c69-74b7-42e9-afc4-0939718ba226",
+                            "name": "digitalInput109Function",
+                            "displayName": "Digital input 1.9 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "4a05f711-56c3-493f-851e-a4404dbcff35",
+                            "name": "digitalInput110Function",
+                            "displayName": "Digital input 1.10 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "7bf13d8c-085d-4659-98e4-9fb53676a9ea",
+                            "name": "digitalInput111Function",
+                            "displayName": "Digital input 1.11 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "a2aac432-6e7e-4365-bb61-a74aba77bea5",
+                            "name": "digitalInput112Function",
+                            "displayName": "Digital input 1.12 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "3678e938-30ac-4ddb-84d1-03eca3d2bda5",
+                            "name": "digitalInput113Function",
+                            "displayName": "Digital input 1.13 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "75139554-817d-444d-b1c6-fe13df985119",
+                            "name": "digitalInput114Function",
+                            "displayName": "Digital input 1.14 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "78a30550-2315-4bfc-96f3-aedd2588f1e4",
+                            "name": "digitalInput115Function",
+                            "displayName": "Digital input 1.15 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "8a1bd39c-c630-4861-9463-08a16b215f86",
+                            "name": "digitalInput116Function",
+                            "displayName": "Digital input 1.16 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "f1a0c124-537b-4888-91f0-9020c59968bb",
+                            "name": "digitalInput117Function",
+                            "displayName": "Digital input 1.17 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "a26020a2-0e14-4cdc-a8eb-0ad429da7334",
+                            "name": "digitalInput118Function",
+                            "displayName": "Digital input 1.18 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "cdae504b-8420-470f-8280-1a42e563ddbe",
+                            "name": "digitalInput119Function",
+                            "displayName": "Digital input 1.19 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "76a6ad96-a595-496e-8dac-47e2227be575",
+                            "name": "digitalInput120Function",
+                            "displayName": "Digital input 1.20 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "dd92dc65-c481-44ef-bc6c-145d23ec622c",
+                            "name": "digitalInput121Function",
+                            "displayName": "Digital input 1.21 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "74e557f6-2e39-45bb-bdf4-58024d627210",
+                            "name": "digitalInput122Function",
+                            "displayName": "Digital input 1.22 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "1c3f392b-2c90-4c42-be04-7816e447a927",
+                            "name": "digitalInput123Function",
+                            "displayName": "Digital input 1.23 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5f3af5d8-f42f-4654-ab12-6b046b32660c",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
