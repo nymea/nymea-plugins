@@ -6,6 +6,8 @@ QT += \
     network \
     serialport \
 
+LIBS += -lmodbus
+
 SOURCES += \
     devicepluginunipi.cpp \
     dimmerswitch.cpp \

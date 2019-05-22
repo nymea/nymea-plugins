@@ -65,7 +65,6 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
                 ParamList params;
                 params.append(Param(lightDeviceOutputParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
-                deviceDescriptor.setParentDeviceId(device->id());
                 lightDescriptors.append(deviceDescriptor);
             }
 
@@ -79,7 +78,6 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
                 params.append(Param(blindDeviceOutputOpenParamTypeId, outputNumber));
                 params.append(Param(blindDeviceOutputCloseParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
-                deviceDescriptor.setParentDeviceId(device->id());
                 lightDescriptors.append(deviceDescriptor);
             }
         }
@@ -110,7 +108,6 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
                 ParamList params;
                 params.append(Param(digitalInputDeviceNumberParamTypeId, inputNumber));
                 deviceDescriptor.setParams(params);
-                deviceDescriptor.setParentDeviceId(device->id());
                 lightDescriptors.append(deviceDescriptor);
             }
         }
@@ -202,19 +199,19 @@ bool DevicePluginUniPi::getExtensionDigitalInput(DevicePluginUniPi::ExtensionTyp
     QString csvFilePath;
     switch(extensionType){
     case ExtensionTypes::xS10:
-        csvFilePath = QString("/opt/neuron/Neuron_xS10/Neuron_xS10-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS10/Neuron_xS10-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case ExtensionTypes::xS20:
-        csvFilePath = QString("/opt/neuron/Neuron_xS20/Neuron_xS20-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS20/Neuron_xS20-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case ExtensionTypes::xS30:
-        csvFilePath = QString("/opt/neuron/Neuron_xS30/Neuron_xS30-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS30/Neuron_xS30-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case ExtensionTypes::xS40:
-        csvFilePath = QString("/opt/neuron/Neuron_xS40/Neuron_xS40-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS40/Neuron_xS40-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case ExtensionTypes::xS50:
-        csvFilePath = QString("/opt/neuron/Neuron_xS50/Neuron_xS50-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS50/Neuron_xS50-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     }
 
@@ -251,19 +248,19 @@ void DevicePluginUniPi::setExtensionDigitalOutput(DevicePluginUniPi::ExtensionTy
     QString csvFilePath;
     switch(extensionType){
     case ExtensionTypes::xS10:
-        csvFilePath = QString("/opt/neuron/Neuron_xS10/Neuron_xS10-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS10/Neuron_xS10-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case ExtensionTypes::xS20:
-        csvFilePath = QString("/opt/neuron/Neuron_xS20/Neuron_xS20-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS20/Neuron_xS20-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case ExtensionTypes::xS30:
-        csvFilePath = QString("/opt/neuron/Neuron_xS30/Neuron_xS30-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS30/Neuron_xS30-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case ExtensionTypes::xS40:
-        csvFilePath = QString("/opt/neuron/Neuron_xS40/Neuron_xS40-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS40/Neuron_xS40-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case ExtensionTypes::xS50:
-        csvFilePath = QString("/opt/neuron/Neuron_xS50/Neuron_xS50-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_xS50/Neuron_xS50-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     }
 
@@ -298,13 +295,13 @@ void DevicePluginUniPi::setDigitalOutput(DevicePluginUniPi::NeuronTypes neuronTy
 
     switch (neuronType) {
     case NeuronTypes::S103:
-        csvFilePath = QString("/opt/neuron/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case NeuronTypes::L403:
-        csvFilePath = QString("/opt/neuron/Neuron_L403/Neuron_L403-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     default:
-        csvFilePath = QString("/opt/neuron/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
     }
 
     qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
@@ -337,13 +334,13 @@ bool DevicePluginUniPi::getDigitalOutput(DevicePluginUniPi::NeuronTypes neuronTy
 
     switch (neuronType) {
     case NeuronTypes::S103:
-        csvFilePath = QString("/opt/neuron/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     case NeuronTypes::L403:
-        csvFilePath = QString("/opt/neuron/Neuron_L403/Neuron_L403-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Coils-group-%1.csv").arg(circuit.at(0));
         break;
     default:
-        csvFilePath = QString("/opt/neuron/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
+        csvFilePath = QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
     }
 
     qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
