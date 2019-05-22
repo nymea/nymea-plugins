@@ -1,0 +1,108 @@
+Via Unit 0,Via Unit 1,Register Count,R/W,Data Type,Content,Start Bit Nr.,Category
+0,0,1,R,MixedBits,Digital Input 1.1,0,Basic
+0,0,1,R,MixedBits,Digital Input 1.2,1,Basic
+0,0,1,R,MixedBits,Digital Input 1.3,2,Basic
+0,0,1,R,MixedBits,Digital Input 1.4,3,Basic
+0,0,1,R,MixedBits,Digital Input 1.5,4,Basic
+0,0,1,R,MixedBits,Digital Input 1.6,5,Basic
+0,0,1,R,MixedBits,Digital Input 1.7,6,Basic
+0,0,1,R,MixedBits,Digital Input 1.8,7,Basic
+0,0,1,R,MixedBits,Digital Input 1.9,8,Basic
+0,0,1,R,MixedBits,Digital Input 1.10,9,Basic
+0,0,1,R,MixedBits,Digital Input 1.11,10,Basic
+0,0,1,R,MixedBits,Digital Input 1.12,11,Basic
+0,0,1,R,MixedBits,Digital Input 1.13,12,Basic
+0,0,1,R,MixedBits,Digital Input 1.14,13,Basic
+0,0,1,R,MixedBits,Digital Input 1.15,14,Basic
+0,0,1,R,MixedBits,Digital Input 1.16,15,Basic
+1,1,1,R,MixedBits,Digital Input 1.17,0,Basic
+1,1,1,R,MixedBits,Digital Input 1.18,1,Basic
+1,1,1,R,MixedBits,Digital Input 1.19,2,Basic
+1,1,1,R,MixedBits,Digital Input 1.20,3,Basic
+1,1,1,R,MixedBits,Digital Input 1.21,4,Basic
+1,1,1,R,MixedBits,Digital Input 1.22,5,Basic
+1,1,1,R,MixedBits,Digital Input 1.23,6,Basic
+1,1,1,R,MixedBits,Digital Input 1.24,7,Basic
+2,2,1,RW,MixedBits,Group MasterWatchDog (MWD) Status,,Advanced
+3,3,2,RW,DWord,Counter of Digital Input 1.1,,Basic
+5,5,2,RW,DWord,Counter of Digital Input 1.2,,Basic
+7,7,2,RW,DWord,Counter of Digital Input 1.3,,Basic
+9,9,2,RW,DWord,Counter of Digital Input 1.4,,Basic
+11,11,2,RW,DWord,Counter of Digital Input 1.5,,Basic
+13,13,2,RW,DWord,Counter of Digital Input 1.6,,Basic
+15,15,2,RW,DWord,Counter of Digital Input 1.7,,Basic
+17,17,2,RW,DWord,Counter of Digital Input 1.8,,Basic
+19,19,2,RW,DWord,Counter of Digital Input 1.9,,Basic
+21,21,2,RW,DWord,Counter of Digital Input 1.10,,Basic
+23,23,2,RW,DWord,Counter of Digital Input 1.11,,Basic
+25,25,2,RW,DWord,Counter of Digital Input 1.12,,Basic
+27,27,2,RW,DWord,Counter of Digital Input 1.13,,Basic
+29,29,2,RW,DWord,Counter of Digital Input 1.14,,Basic
+31,31,2,RW,DWord,Counter of Digital Input 1.15,,Basic
+33,33,2,RW,DWord,Counter of Digital Input 1.16,,Basic
+35,35,2,RW,DWord,Counter of Digital Input 1.17,,Basic
+37,37,2,RW,DWord,Counter of Digital Input 1.18,,Basic
+39,39,2,RW,DWord,Counter of Digital Input 1.19,,Basic
+41,41,2,RW,DWord,Counter of Digital Input 1.20,,Basic
+43,43,2,RW,DWord,Counter of Digital Input 1.21,,Basic
+45,45,2,RW,DWord,Counter of Digital Input 1.22,,Basic
+47,47,2,RW,DWord,Counter of Digital Input 1.23,,Basic
+49,49,2,RW,DWord,Counter of Digital Input 1.24,,Basic
+51,51,1,RW,MixedBits,User LED 1.1,0,Basic
+51,51,1,RW,MixedBits,User LED 1.2,1,Basic
+51,51,1,RW,MixedBits,User LED 1.3,2,Basic
+51,51,1,RW,MixedBits,User LED 1.4,3,Basic
+,100,2,RW,DWord,(Internal) RS485 Full Mode Configuration 1.1,,Obsolete
+,500,1,RW,Word,RS485 TERMIOS CFlags 1.1,,Expert
+,501,1,RW,Word,RS485 TERMIOS LFlags 1.1,,Expert
+,502,1,RW,Word,RS485 TERMIOS IFlags 1.1,,Expert
+,503,1,RW,Word,RS485 TERMIOS LDisc 1.1,,Expert
+,504,1,RW,Word,RS485 ModBus Timeout 1.1,,Basic
+505,505,1,W,Word,Reserved - Do Not Use,,Reserved
+506,506,1,W,Word,Reserved - Do Not Use,,Reserved
+507,507,1,W,Word,Reserved - Do Not Use,,Reserved
+508,508,1,W,Word,Reserved - Do Not Use,,Reserved
+509,509,1,W,Word,Reserved - Do Not Use,,Reserved
+,510,1,RW,Word,(Internal) Stored Firmware Version,,Expert
+,511,1,RW,Word,(Internal) Stored Firmware Revision,,Expert
+,512,1,RW,Word,(Internal) Stored Base Firmware Revision,,Expert
+,513,1,RW,Word,(Internal) Stored Expanded Flash Magic Value,,Expert
+,514,1,RW,Word,(Internal) Stored PCB Revision,,Expert
+,515,1,RW,Word,(Internal) Stored PCB Serial Number,,Expert
+,516,1,RW,Word,(Internal) Stored HW Revision Number,,Expert
+1000,1000,1,R,Word,Firmware Version,,Expert
+1001,1001,1,R,Word,Number of I/Os,,Advanced
+1002,1002,1,R,Word,Number of peripherals,,Advanced
+1003,1003,1,R,Word,Firmware ID,,Expert
+1004,1004,1,R,Word,Hardware ID,,Expert
+1005,1005,2,R,DWord,PCB Serial Number,,Expert
+1007,1007,1,RW,Word,Interrupt Mask,,Expert
+1008,1008,1,RW,Word,Group MasterWatchDog (MWD) Timeout (in 100us),,Advanced
+1009,1009,1,R,Word,VRef of MCU,,Expert
+1010,1010,1,RW,Word,Debounce time (in 100us) for DI 1.1,,Advanced
+1011,1011,1,RW,Word,Debounce time (in 100us) for DI 1.2,,Advanced
+1012,1012,1,RW,Word,Debounce time (in 100us) for DI 1.3,,Advanced
+1013,1013,1,RW,Word,Debounce time (in 100us) for DI 1.4,,Advanced
+1014,1014,1,RW,Word,Debounce time (in 100us) for DI 1.5,,Advanced
+1015,1015,1,RW,Word,Debounce time (in 100us) for DI 1.6,,Advanced
+1016,1016,1,RW,Word,Debounce time (in 100us) for DI 1.7,,Advanced
+1017,1017,1,RW,Word,Debounce time (in 100us) for DI 1.8,,Advanced
+1018,1018,1,RW,Word,Debounce time (in 100us) for DI 1.9,,Advanced
+1019,1019,1,RW,Word,Debounce time (in 100us) for DI 1.10,,Advanced
+1020,1020,1,RW,Word,Debounce time (in 100us) for DI 1.11,,Advanced
+1021,1021,1,RW,Word,Debounce time (in 100us) for DI 1.12,,Advanced
+1022,1022,1,RW,Word,Debounce time (in 100us) for DI 1.13,,Advanced
+1023,1023,1,RW,Word,Debounce time (in 100us) for DI 1.14,,Advanced
+1024,1024,1,RW,Word,Debounce time (in 100us) for DI 1.15,,Advanced
+1025,1025,1,RW,Word,Debounce time (in 100us) for DI 1.16,,Advanced
+1026,1026,1,RW,Word,Debounce time (in 100us) for DI 1.17,,Advanced
+1027,1027,1,RW,Word,Debounce time (in 100us) for DI 1.18,,Advanced
+1028,1028,1,RW,Word,Debounce time (in 100us) for DI 1.19,,Advanced
+1029,1029,1,RW,Word,Debounce time (in 100us) for DI 1.20,,Advanced
+1030,1030,1,RW,Word,Debounce time (in 100us) for DI 1.21,,Advanced
+1031,1031,1,RW,Word,Debounce time (in 100us) for DI 1.22,,Advanced
+1032,1032,1,RW,Word,Debounce time (in 100us) for DI 1.23,,Advanced
+1033,1033,1,RW,Word,Debounce time (in 100us) for DI 1.24,,Advanced
+1034,1034,1,RW,MixedBits,RS485 Configuration,,Basic
+1035,1035,1,RW,MixedBits,Modbus Address Configuration (1-254),,Basic
+,2000,220,W,Word,Reserved - Do Not Use,,Reserved

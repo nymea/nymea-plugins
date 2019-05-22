@@ -18,4 +18,7 @@ HEADERS += \
     modbustcpmaster.h \
     modbusrtumaster.h \
 
+MAP_FILES.files = modbus_maps/
+MAP_FILES.path = /usr/share/nymea/modbus/
+INSTALLS += MAP_FiLES
 
