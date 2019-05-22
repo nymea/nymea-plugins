@@ -1,0 +1,35 @@
+Via Unit 0,Via Unit 3,R/W,Content,Category
+200,0,RW,Digital Output 3.1,Basic
+201,1,RW,Digital Output 3.2,Basic
+202,2,RW,Digital Output 3.3,Basic
+203,3,RW,Digital Output 3.4,Basic
+204,4,RW,Digital Output 3.5,Basic
+205,5,RW,Digital Output 3.6,Basic
+206,6,RW,Digital Output 3.7,Basic
+207,7,RW,Digital Output 3.8,Basic
+208,8,RW,Digital Output 3.9,Basic
+209,9,RW,Digital Output 3.10,Basic
+210,10,RW,Digital Output 3.11,Basic
+211,11,RW,Digital Output 3.12,Basic
+212,12,RW,Digital Output 3.13,Basic
+213,13,RW,Digital Output 3.14,Basic
+214,14,RW,Digital Output 3.15,Basic
+215,15,RW,Digital Output 3.16,Basic
+216,16,RW,Digital Output 3.17,Basic
+217,17,RW,Digital Output 3.18,Basic
+218,18,RW,Digital Output 3.19,Basic
+219,19,RW,Digital Output 3.20,Basic
+220,20,RW,Digital Output 3.21,Basic
+221,21,RW,Digital Output 3.22,Basic
+222,22,RW,Digital Output 3.23,Basic
+223,23,RW,Digital Output 3.24,Basic
+224,24,RW,Digital Output 3.25,Basic
+225,25,RW,Digital Output 3.26,Basic
+226,26,RW,Digital Output 3.27,Basic
+227,27,RW,Digital Output 3.28,Basic
+1200,1000,RW,MWD reset indication,Advanced
+1202,1002,R,Reset group MCU,Advanced
+1203,1003,RW,Save current configuration and use on startup,Advanced
+1204,1004,RW,(Internal) Firmware programming toggle,Expert
+1205,1005,RW,(Internal) Firmware reprogramming toggle,Expert
+1206,1006,RW,(Internal) Firmware calibration programming toggle,Expert

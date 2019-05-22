@@ -1,0 +1,32 @@
+Via Unit 0,Via Unit 1,R/W,Content,Category
+0,0,RW,Digital Output 1.1,Basic
+1,1,RW,Digital Output 1.2,Basic
+2,2,RW,Digital Output 1.3,Basic
+3,3,RW,Digital Output 1.4,Basic
+4,4,R,Digital Input 1.1,Basic
+5,5,R,Digital Input 1.2,Basic
+6,6,R,Digital Input 1.3,Basic
+7,7,R,Digital Input 1.4,Basic
+8,8,RW,User Programmable LED 1.1,Basic
+9,9,RW,User Programmable LED 1.2,Basic
+10,10,RW,User Programmable LED 1.3,Basic
+11,11,RW,User Programmable LED 1.4,Basic
+1000,1000,RW,MWD reset indication,Advanced
+1001,1001,RW,Enable/Disable 1Wire Bus,Advanced
+1002,1002,R,Reset group MCU,Advanced
+1003,1003,RW,Save current configuration and use on startup,Advanced
+1004,1004,RW,(Internal) Firmware programming toggle,Expert
+1005,1005,RW,(Internal) Firmware reprogramming toggle,Expert
+1006,1006,RW,(Internal) Firmware calibration programming toggle,Expert
+1007,1007,RW,Enable DirectSwitch on DI 1.1,Advanced
+1008,1008,RW,Enable DirectSwitch on DI 1.2,Advanced
+1009,1009,RW,Enable DirectSwitch on DI 1.3,Advanced
+1010,1010,RW,Enable DirectSwitch on DI 1.4,Advanced
+1011,1011,RW,Invert DirectSwitch Polarity on DI 1.1,Advanced
+1012,1012,RW,Invert DirectSwitch Polarity on DI 1.2,Advanced
+1013,1013,RW,Invert DirectSwitch Polarity on DI 1.3,Advanced
+1014,1014,RW,Invert DirectSwitch Polarity on DI 1.4,Advanced
+1015,1015,RW,Enable DirectSwitch Toggle Mode on DI 1.1,Advanced
+1016,1016,RW,Enable DirectSwitch Toggle Mode on DI 1.2,Advanced
+1017,1017,RW,Enable DirectSwitch Toggle Mode on DI 1.3,Advanced
+1018,1018,RW,Enable DirectSwitch Toggle Mode on DI 1.4,Advanced

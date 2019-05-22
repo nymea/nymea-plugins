@@ -1,0 +1,92 @@
+Via Unit 0,Via Unit 3,Register Count,R/W,Data Type,Content,Start Bit Nr.,Category
+200,0,1,R,MixedBits,Digital Input 3.1,0,Basic
+200,0,1,R,MixedBits,Digital Input 3.2,1,Basic
+200,0,1,R,MixedBits,Digital Input 3.3,2,Basic
+200,0,1,R,MixedBits,Digital Input 3.4,3,Basic
+200,0,1,R,MixedBits,Digital Input 3.5,4,Basic
+200,0,1,R,MixedBits,Digital Input 3.6,5,Basic
+201,1,1,RW,MixedBits,Relay Output 3.1,0,Basic
+201,1,1,RW,MixedBits,Relay Output 3.2,1,Basic
+201,1,1,RW,MixedBits,Relay Output 3.3,2,Basic
+201,1,1,RW,MixedBits,Relay Output 3.4,3,Basic
+201,1,1,RW,MixedBits,Relay Output 3.5,4,Basic
+202,2,1,RW,Word,Analog Output Value 3.1 (0..4000 ~ 0..10V),,Basic
+203,3,1,RW,Word,Analog Output Value 3.2 (0..4000 ~ 0..10V),,Basic
+204,4,1,RW,Word,Analog Output Value 3.3 (0..4000 ~ 0..10V),,Basic
+205,5,1,RW,Word,Analog Output Value 3.4 (0..4000 ~ 0..10V),,Basic
+206,6,2,R,Real,Analog Input Value 3.1,,Basic
+208,8,2,R,Real,Analog Input Value 3.2,,Basic
+210,10,2,R,Real,Analog Input Value 3.3,,Basic
+212,12,2,R,Real,Analog Input Value 3.4,,Basic
+214,14,1,RW,MixedBits,Group MasterWatchDog (MWD) Status,,Advanced
+215,15,1,R,Word,Length of RS485 TX Queue 3.1,,Obsolete
+216,16,2,RW,DWord,Counter of Digital Input 3.1,,Basic
+218,18,2,RW,DWord,Counter of Digital Input 3.2,,Basic
+220,20,2,RW,DWord,Counter of Digital Input 3.3,,Basic
+222,22,2,RW,DWord,Counter of Digital Input 3.4,,Basic
+224,24,2,RW,DWord,Counter of Digital Input 3.5,,Basic
+226,26,2,RW,DWord,Counter of Digital Input 3.6,,Basic
+228,28,1,RW,MixedBits,Synchronised DO/RO 3.1,0,Advanced
+228,28,1,RW,MixedBits,Synchronised DO/RO 3.2,1,Advanced
+228,28,1,RW,MixedBits,Synchronised DO/RO 3.3,2,Advanced
+228,28,1,RW,MixedBits,Synchronised DO/RO 3.4,3,Advanced
+228,28,1,RW,MixedBits,Synchronised DO/RO 3.5,4,Advanced
+229,29,1,RW,MixedBits,Synchronised DO/RO Lock 3.1,0,Advanced
+229,29,1,RW,MixedBits,Synchronised DO/RO Lock 3.2,1,Advanced
+229,29,1,RW,MixedBits,Synchronised DO/RO Lock 3.3,2,Advanced
+229,29,1,RW,MixedBits,Synchronised DO/RO Lock 3.4,3,Advanced
+229,29,1,RW,MixedBits,Synchronised DO/RO Lock 3.5,4,Advanced
+,100,2,RW,DWord,(Internal) RS485 Full Mode Configuration 3.1,,Obsolete
+,500,1,RW,Word,RS485 TERMIOS CFlags 3.1,,Expert
+,501,1,RW,Word,RS485 TERMIOS LFlags 3.1,,Expert
+,502,1,RW,Word,RS485 TERMIOS IFlags 3.1,,Expert
+,503,1,RW,Word,RS485 TERMIOS LDisc 3.1,,Expert
+,504,1,RW,Word,RS485 ModBus Timeout 3.1,,Basic
+705,505,1,W,Word,Reserved - Do Not Use,,Reserved
+706,506,1,W,Word,Reserved - Do Not Use,,Reserved
+707,507,1,W,Word,Reserved - Do Not Use,,Reserved
+708,508,1,W,Word,Reserved - Do Not Use,,Reserved
+709,509,1,W,Word,Reserved - Do Not Use,,Reserved
+,510,1,RW,Word,(Internal) Stored Firmware Version,,Expert
+,511,1,RW,Word,(Internal) Stored Firmware Revision,,Expert
+,512,1,RW,Word,(Internal) Stored Base Firmware Revision,,Expert
+,513,1,RW,Word,(Internal) Stored Expanded Flash Magic Value,,Expert
+,514,1,RW,Word,(Internal) Stored PCB Revision,,Expert
+,515,1,RW,Word,(Internal) Stored PCB Serial Number,,Expert
+,516,1,RW,Word,(Internal) Stored HW Revision Number,,Expert
+1200,1000,1,R,Word,Firmware Version,,Expert
+1201,1001,1,R,Word,Number of I/Os,,Advanced
+1202,1002,1,R,Word,Number of peripherals,,Advanced
+1203,1003,1,R,Word,Firmware ID,,Expert
+1204,1004,1,R,Word,Hardware ID,,Expert
+1205,1005,2,R,DWord,PCB Serial Number,,Expert
+1207,1007,1,RW,Word,Interrupt Mask,,Expert
+1208,1008,1,RW,Word,Group MasterWatchDog (MWD) Timeout (in 100us),,Advanced
+1209,1009,1,R,Word,VRef of MCU,,Expert
+1210,1010,1,RW,Word,Debounce time (in 100us) for DI 3.1,,Advanced
+1211,1011,1,RW,Word,Debounce time (in 100us) for DI 3.2,,Advanced
+1212,1012,1,RW,Word,Debounce time (in 100us) for DI 3.3,,Advanced
+1213,1013,1,RW,Word,Debounce time (in 100us) for DI 3.4,,Advanced
+1214,1014,1,RW,Word,Debounce time (in 100us) for DI 3.5,,Advanced
+1215,1015,1,RW,Word,Debounce time (in 100us) for DI 3.6,,Advanced
+1216,1016,1,RW,MixedBits,Enable DirectSwitch on DI 3.1,0,Basic
+1216,1016,1,RW,MixedBits,Enable DirectSwitch on DI 3.2,1,Basic
+1216,1016,1,RW,MixedBits,Enable DirectSwitch on DI 3.3,2,Basic
+1216,1016,1,RW,MixedBits,Enable DirectSwitch on DI 3.4,3,Basic
+1216,1016,1,RW,MixedBits,Enable DirectSwitch on DI 3.5,4,Basic
+1217,1017,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.1,0,Basic
+1217,1017,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.2,1,Basic
+1217,1017,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.3,2,Basic
+1217,1017,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.4,3,Basic
+1217,1017,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.5,4,Basic
+1218,1018,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.1,0,Basic
+1218,1018,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.2,1,Basic
+1218,1018,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.3,2,Basic
+1218,1018,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.4,3,Basic
+1218,1018,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.5,4,Basic
+1219,1019,1,RW,Word,Analog Input Configuration(U/I/R) 3.1,,Basic
+1220,1020,1,RW,Word,Analog Input Configuration(U/I/R) 3.2,,Basic
+1221,1021,1,RW,Word,Analog Input Configuration(U/I/R) 3.3,,Basic
+1222,1022,1,RW,Word,Analog Input Configuration(U/I/R) 3.4,,Basic
+1223,1023,1,RW,MixedBits,RS485 Configuration 3.1,,Obsolete
+,2000,220,W,Word,Reserved - Do Not Use,,Reserved

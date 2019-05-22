@@ -20,94 +20,94 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "modbustcpmaster.h"
+#include "modbusrtumaster.h"
 #include "extern-plugininfo.h"
 
-ModbusTCPMaster::ModbusTCPMaster(QHostAddress IPv4Address, int port, QObject *parent) :
+#include <QSerialPortInfo>
+
+ModbusRTUMaster::ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent) :
     QObject(parent),
-    m_IPv4Address(IPv4Address),
-    m_port(port)
+    m_serialPort(serialPort),
+    m_baudrate(baudrate),
+    m_parity(parity),
+    m_dataBits(dataBits),
+    m_stopBits(stopBits)
 {
-    createInterface();
 }
 
-ModbusTCPMaster::~ModbusTCPMaster()
+ModbusRTUMaster::~ModbusRTUMaster()
 {
     if (m_mb == nullptr) {
         qCWarning(dcUniPi()) << "Error m_mb was nullpointer";
         return;
     }
-
+    if(!isConnected()){
+        qCWarning(dcUniPi()) << "Error serial interface not available";
+        // probably the serial port was disconnected,
+        /* NOTE: freeing the modbus instance would lead to a segfault
+         * this way of handling the modbus instance leaks memory, but only if the device was disconnected before.
+         * */
+        return;
+    }
     modbus_close(m_mb);
     modbus_free(m_mb);
 }
 
-bool ModbusTCPMaster::createInterface() {
-    // TCP connction to target device
-    qDebug(dcUniPi()) << "Setting up TCP connecion" << m_IPv4Address.toString() << "port:" << m_port;
-    const char *address = m_IPv4Address.toString().toLatin1().data();
-    m_mb = modbus_new_tcp(address, m_port);
+QString ModbusRTUMaster::serialPort()
+{
+    return m_serialPort;
+}
+
+bool ModbusRTUMaster::createInterface()
+{
+    //Setting up a RTU interface
+    qDebug(dcUniPi()) << "Setting up a RTU interface" << m_serialPort << "baud:" << m_baudrate << "parity:" << m_parity << "stop bits:" << m_stopBits << "data bits:" << m_dataBits ;
+
+    if (!isConnected())
+        return false;
+
+    char parity;
+    if (m_parity.size() == 1) {
+        parity = m_parity.toUtf8().at(0);
+    } else {
+        qCWarning(dcUniPi()) << "Error parity wrong: " << m_parity;
+        return false;
+    }
+
+    char *port = m_serialPort.toLatin1().data();
+    m_mb = modbus_new_rtu(port, m_baudrate, parity, m_dataBits, m_stopBits);
 
     if(m_mb == nullptr){
-        qCWarning(dcUniPi()) << "Error modbus TCP: " << modbus_strerror(errno) ;
+        qCWarning(dcUniPi()) << "Error modbus RTU: " << modbus_strerror(errno);
         return false;
     }
 
     if(modbus_connect(m_mb) == -1){
-        qCWarning(dcUniPi()) << "Error connecting modbus:" << modbus_strerror(errno) ;
+        qCWarning(dcUniPi()) << "Error connecting modbus:" << modbus_strerror(errno) << port;
         return false;
     }
     return true;
 }
 
-bool ModbusTCPMaster::isConnected()
+bool ModbusRTUMaster::isConnected()
 {
-    if(m_mb == nullptr){
-        qCWarning(dcUniPi()) << "Error modbus TCP: " << modbus_strerror(errno) ;
+    Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
+
+        if (m_serialPort == port.systemLocation()) {
+
+            if(modbus_connect(m_mb) == -1){
+                return false;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+bool ModbusRTUMaster::setCoil(int slaveAddress, int coilAddress, bool status)
+{
+    if (!isConnected())
         return false;
-    }
-
-    if(modbus_connect(m_mb) == -1){
-        qCWarning(dcUniPi()) << "Error modbus:" << modbus_strerror(errno) ;
-        return false;
-    }
-    return true;
-}
-
-int ModbusTCPMaster::port()
-{
-    return m_port;
-}
-
-bool ModbusTCPMaster::setIPv4Address(QHostAddress ipv4Address)
-{
-    m_IPv4Address = ipv4Address;
-    if (!createInterface()) {
-        return false;
-    }
-    return true;
-}
-
-bool ModbusTCPMaster::setPort(int port)
-{
-    m_port = port;
-    if (!createInterface()) {
-        return false;
-    }
-    return true;
-}
-
-QHostAddress ModbusTCPMaster::ipv4Address()
-{
-    return m_IPv4Address;
-}
-
-bool ModbusTCPMaster::setCoil(int slaveAddress, int coilAddress, bool status)
-{
-    if (m_mb == nullptr) {
-        if (!createInterface())
-            return false;
-    }
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
@@ -121,12 +121,16 @@ bool ModbusTCPMaster::setCoil(int slaveAddress, int coilAddress, bool status)
     return true;
 }
 
-bool ModbusTCPMaster::setRegister(int slaveAddress, int registerAddress, int data)
+bool ModbusRTUMaster::setRegister(int slaveAddress, int registerAddress, int data)
 {
-    if (m_mb == nullptr) {
+    if (!m_mb) {
         if (!createInterface())
             return false;
     }
+
+    if (!isConnected())
+        return false;
+
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
         return false;
@@ -139,35 +143,41 @@ bool ModbusTCPMaster::setRegister(int slaveAddress, int registerAddress, int dat
     return true;
 }
 
-bool ModbusTCPMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
+bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
 {
-    if (m_mb == nullptr) {
+    if (!m_mb) {
         if (!createInterface())
             return false;
     }
+
+    if (!isConnected())
+        return false;
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
         return false;
     }
 
-    uint8_t status;
-    if (modbus_read_bits(m_mb, coilAddress, 1, &status) == -1){
+    uint8_t data;
+    if (modbus_read_bits(m_mb, coilAddress, 1, &data) == -1){
         qCWarning(dcUniPi()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
         return false;
     }
-    *result = static_cast<bool>(status);
+    *result = static_cast<bool>(data);
     return true;
 }
 
-bool ModbusTCPMaster::getRegister(int slaveAddress, int registerAddress, int *result)
+bool ModbusRTUMaster::getRegister(int slaveAddress, int registerAddress, int *result)
 {
     uint16_t data;
 
-    if (m_mb == nullptr) {
+    if (!m_mb) {
         if (!createInterface())
             return false;
     }
+
+    if (!isConnected())
+        return false;
 
     if(modbus_set_slave(m_mb, slaveAddress) == -1){
         qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;

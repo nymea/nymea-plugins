@@ -1,0 +1,47 @@
+Via Unit 0,Via Unit 2,R/W,Content,Category
+100,0,RW,Digital Output 2.1,Basic
+101,1,RW,Digital Output 2.2,Basic
+102,2,RW,Digital Output 2.3,Basic
+103,3,RW,Digital Output 2.4,Basic
+104,4,RW,Digital Output 2.5,Basic
+105,5,RW,Digital Output 2.6,Basic
+106,6,RW,Digital Output 2.7,Basic
+107,7,RW,Digital Output 2.8,Basic
+108,8,R,Digital Input 2.1,Basic
+109,9,R,Digital Input 2.2,Basic
+110,10,R,Digital Input 2.3,Basic
+111,11,R,Digital Input 2.4,Basic
+112,12,R,Digital Input 2.5,Basic
+113,13,R,Digital Input 2.6,Basic
+114,14,R,Digital Input 2.7,Basic
+115,15,R,Digital Input 2.8,Basic
+1100,1000,RW,MWD reset indication,Advanced
+1102,1002,R,Reset group MCU,Advanced
+1103,1003,RW,Save current configuration and use on startup,Advanced
+1104,1004,RW,(Internal) Firmware programming toggle,Expert
+1105,1005,RW,(Internal) Firmware reprogramming toggle,Expert
+1106,1006,RW,(Internal) Firmware calibration programming toggle,Expert
+1107,1007,RW,Enable DirectSwitch on DI 2.1,Advanced
+1108,1008,RW,Enable DirectSwitch on DI 2.2,Advanced
+1109,1009,RW,Enable DirectSwitch on DI 2.3,Advanced
+1110,1010,RW,Enable DirectSwitch on DI 2.4,Advanced
+1111,1011,RW,Enable DirectSwitch on DI 2.5,Advanced
+1112,1012,RW,Enable DirectSwitch on DI 2.6,Advanced
+1113,1013,RW,Enable DirectSwitch on DI 2.7,Advanced
+1114,1014,RW,Enable DirectSwitch on DI 2.8,Advanced
+1115,1015,RW,Invert DirectSwitch Polarity on DI 2.1,Advanced
+1116,1016,RW,Invert DirectSwitch Polarity on DI 2.2,Advanced
+1117,1017,RW,Invert DirectSwitch Polarity on DI 2.3,Advanced
+1118,1018,RW,Invert DirectSwitch Polarity on DI 2.4,Advanced
+1119,1019,RW,Invert DirectSwitch Polarity on DI 2.5,Advanced
+1120,1020,RW,Invert DirectSwitch Polarity on DI 2.6,Advanced
+1121,1021,RW,Invert DirectSwitch Polarity on DI 2.7,Advanced
+1122,1022,RW,Invert DirectSwitch Polarity on DI 2.8,Advanced
+1123,1023,RW,Enable DirectSwitch Toggle Mode on DI 2.1,Advanced
+1124,1024,RW,Enable DirectSwitch Toggle Mode on DI 2.2,Advanced
+1125,1025,RW,Enable DirectSwitch Toggle Mode on DI 2.3,Advanced
+1126,1026,RW,Enable DirectSwitch Toggle Mode on DI 2.4,Advanced
+1127,1027,RW,Enable DirectSwitch Toggle Mode on DI 2.5,Advanced
+1128,1028,RW,Enable DirectSwitch Toggle Mode on DI 2.6,Advanced
+1129,1029,RW,Enable DirectSwitch Toggle Mode on DI 2.7,Advanced
+1130,1030,RW,Enable DirectSwitch Toggle Mode on DI 2.8,Advanced

@@ -1,0 +1,37 @@
+Via Unit 0,Via Unit 2,R/W,Content,Category
+100,0,R,Digital Input 2.1,Basic
+101,1,R,Digital Input 2.2,Basic
+102,2,R,Digital Input 2.3,Basic
+103,3,R,Digital Input 2.4,Basic
+104,4,R,Digital Input 2.5,Basic
+105,5,R,Digital Input 2.6,Basic
+106,6,R,Digital Input 2.7,Basic
+107,7,R,Digital Input 2.8,Basic
+108,8,R,Digital Input 2.9,Basic
+109,9,R,Digital Input 2.10,Basic
+110,10,R,Digital Input 2.11,Basic
+111,11,R,Digital Input 2.12,Basic
+112,12,R,Digital Input 2.13,Basic
+113,13,R,Digital Input 2.14,Basic
+114,14,R,Digital Input 2.15,Basic
+115,15,R,Digital Input 2.16,Basic
+116,16,R,Digital Input 2.17,Basic
+117,17,R,Digital Input 2.18,Basic
+118,18,R,Digital Input 2.19,Basic
+119,19,R,Digital Input 2.20,Basic
+120,20,R,Digital Input 2.21,Basic
+121,21,R,Digital Input 2.22,Basic
+122,22,R,Digital Input 2.23,Basic
+123,23,R,Digital Input 2.24,Basic
+124,24,R,Digital Input 2.25,Basic
+125,25,R,Digital Input 2.26,Basic
+126,26,R,Digital Input 2.27,Basic
+127,27,R,Digital Input 2.28,Basic
+128,28,R,Digital Input 2.29,Basic
+129,29,R,Digital Input 2.30,Basic
+1100,1000,RW,MWD reset indication,Advanced
+1102,1002,R,Reset group MCU,Advanced
+1103,1003,RW,Save current configuration and use on startup,Advanced
+1104,1004,RW,(Internal) Firmware programming toggle,Expert
+1105,1005,RW,(Internal) Firmware reprogramming toggle,Expert
+1106,1006,RW,(Internal) Firmware calibration programming toggle,Expert
