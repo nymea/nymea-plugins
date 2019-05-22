@@ -48,6 +48,7 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             m_modbusTCPMaster->deleteLater();
             return DeviceManager::DeviceSetupStatusFailure;
         }
+        device->setStateValue(neuronL403ConnectedStateTypeId, true);
 
         QList<DeviceDescriptor> relayOutputDescriptors;
         QList<DeviceDescriptor> lightDescriptors;
@@ -215,23 +216,6 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
 
     } else if(device->deviceClassId() == neuronXS30DeviceClassId) {
         m_modbusRTUMaster->deleteLater();
-
-    } else if(device->deviceClassId() == relayOutputDeviceClassId) {
-
-    } else if(device->deviceClassId() == digitalOutputDeviceClassId) {
-
-    } else if(device->deviceClassId() == digitalInputDeviceClassId) {
-
-    } else if (device->deviceClassId() == analogOutputDeviceClassId) {
-
-    } else if (device->deviceClassId() == analogInputDeviceClassId) {
-
-    } else if (device->deviceClassId() == blindDeviceClassId) {
-
-    } else if (device->deviceClassId() == lightDeviceClassId) {
-
-    } else if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
-
     }
 
     if (myDevices().isEmpty()) {

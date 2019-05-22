@@ -156,7 +156,12 @@ bool ModbusTCPMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
         qCWarning(dcUniPi()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
         return false;
     }
-    *result = static_cast<bool>(status);
+    if (status&0x01) {
+        *result = true;
+    } else {
+        *result = false;
+    }
+
     return true;
 }
 
