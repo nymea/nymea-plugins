@@ -1,0 +1,125 @@
+{
+    "name": "HoneywellScanner",
+    "displayName": "Honeywell scanner",
+    "id": "9bcb4746-9c0d-40f7-b456-96707f9fb48a",
+    "vendors": [
+        {
+            "name": "honeywell",
+            "displayName": "Honeywell",
+            "id": "549959f9-1412-4c5c-8f07-611401f2ae12",
+            "deviceClasses": [
+                {
+                    "name": "scanner",
+                    "displayName": "Scanner",
+                    "id": "912476ab-ca46-42e7-b060-aa4a5fb1d807",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Discovery" ],
+                    "interfaces": [ "connectable", "inputtrigger" ],
+                    "paramTypes": [
+                        {
+                            "id": "5a0e60ab-2e22-48ec-b547-1eeeae90c8e8",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "82e2331c-cdaa-4709-aa9a-3239c491fa09",
+                            "name": "serialPort",
+                            "displayName": "Serial port",
+                            "type": "QString",
+                            "defaultValue": "/dev/ttyACM0"
+                        },
+                        {
+                            "id": "7bbc9812-a063-4e48-b3a6-6336541d0a3c",
+                            "name": "baudrate",
+                            "displayName": "Baudtate",
+                            "type": "uint",
+                            "defaultValue": 115200
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "803ad62f-65dc-4aec-b4f8-d3fcf35ec3ea",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "9577b810-80f9-444d-b5da-e5ca9456892e",
+                            "name": "scannedCode",
+                            "displayName": "Scanned code",
+                            "displayNameEvent": "Scanned code changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "742534cc-261d-4f28-bb18-e4de1c5fb53f",
+                            "name": "mode",
+                            "displayName": "Trigger mode",
+                            "displayNameEvent": "Trigger mode changed",
+                            "displayNameAction": "Set trigger mode",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Manual",
+                                "Presentation"
+                            ],
+                            "defaultValue": "Presentation",
+                            "writable": true
+                        },
+                        {
+                            "id": "9c1d01a5-978f-45de-898f-7a23b9a71aec",
+                            "name": "ledPower",
+                            "displayName": "LED power",
+                            "displayNameEvent": "LED power changed",
+                            "displayNameAction": "Set LED power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "497ed078-dade-438d-b0d0-8c51c3a0806f",
+                            "name": "powerUpBeep",
+                            "displayName": "Power up beep beep",
+                            "displayNameEvent": "Power up beep enabled changed",
+                            "displayNameAction": "Set power up beep enabled",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "be011d6a-9c38-4463-a2f3-1ae8ab171a2c",
+                            "name": "reset",
+                            "displayName": "Reset"
+                        },
+                        {
+                            "id": "009e0ae7-c753-4acf-a514-d5f91efc847f",
+                            "name": "defaults",
+                            "displayName": "Defaults"
+                        },
+                        {
+                            "id": "bb6abfe4-a45b-4d76-98e7-56b281952127",
+                            "name": "trigger",
+                            "displayName": "Scan"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "874fc3f5-6894-467a-b75f-633d51f25e29",
+                            "name": "trigger",
+                            "displayName": "Code scanned"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+

@@ -18,6 +18,7 @@ PLUGIN_DIRS = \
     genericelements     \
     gpio                \
     httpcommander       \
+    honeywellscanner    \
     intertechno         \
     keba                \
     kodi                \
