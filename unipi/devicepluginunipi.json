@@ -32,7 +32,7 @@
             "id": "c82bfe27-d14d-40bd-b12f-ddba214b5fc5",
             "deviceClasses": [
                 {
-                    "id": "58f9db7f-fd33-45af-8c98-047b67ae5267",
+                    "id": "72637166-6730-4b2c-9b5d-4d2066c2fea8",
                     "name": "neuronL403",
                     "displayName": "Neuron L403",
                     "createMethods": ["user"],
@@ -1238,13 +1238,6 @@
                             "name": "output",
                             "displayName": "Output",
                             "type": "QString"
-                        },
-                        {
-                            "id": "5853de25-94c6-4f50-95cd-f1e3ef2ebc59",
-                            "name": "outputType",
-                            "displayName": "Output Type",
-                            "type": "QString",
-                            "readOnly": true
                         }
                     ],
                     "stateTypes":[
@@ -1257,39 +1250,6 @@
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
-                        }
-                    ]
-                },
-                {
-                    "id": "4f0b3cfd-603a-47ec-9719-2db7eeae1143",
-                    "name": "temperatureSensor",
-                    "displayName": "Temperature sensor",
-                    "createMethods": ["auto"],
-                    "interfaces": ["temperaturesensor", "connectable"],
-                    "paramTypes": [
-                        {
-                            "id": "4684cee2-674e-4aa4-823d-096bd49f18ee",
-                            "name": "address",
-                            "displayName": "Address",
-                            "type": "QString"
-                        }
-                    ],
-                    "stateTypes":[
-                        {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
-                            "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connection changed",
-                            "type": "bool",
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "7fd10e94-f11d-4084-8d03-414fd5592b6a",
-                            "displayName": "Temperature",
-                            "displayNameEvent": "Temperature changed",
-                            "name": "temperature",
-                            "type": "double",
-                            "defaultValue": 0.00
                         }
                     ]
                 }
