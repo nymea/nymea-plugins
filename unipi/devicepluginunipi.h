@@ -58,17 +58,40 @@ private:
         AnalogOutput
     };
 
+    enum NeuronTypes {
+        S103,
+        M103,
+        M203,
+        M303,
+        M403,
+        M503,
+        L203,
+        L303,
+        L403,
+        L503,
+        L513
+    };
+
+    enum ExtensionTypes {
+        xS10,
+        xS20,
+        xS30,
+        xS40,
+        xS50
+    };
+
     QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
     PluginTimer *m_refreshTimer = nullptr;
     ModbusTCPMaster *m_modbusTCPMaster = nullptr;
+    ModbusRTUMaster *m_modbusRTUMaster = nullptr;
     QString m_neuronModel;
 
-    void setDigitalOutput(const QString &circuit, bool value);
-    bool getDigitalOutput(const QString &circuit);
+    void setDigitalOutput(NeuronTypes neuronType, const QString &circuit, bool value);
+    bool getDigitalOutput(NeuronTypes neuronType, const QString &circuit);
 
-    void setExtensionDigitalOutput(const QString &circuit, bool value);
-    bool getExtensionDigitalOutput(const QString &circuit);
-    bool getExtensionDigitalInput(const QString &circuit);
+    void setExtensionDigitalOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit, bool value);
+    bool getExtensionDigitalOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
+    bool getExtensionDigitalInput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
 
 private slots:
     void onRefreshTimer();

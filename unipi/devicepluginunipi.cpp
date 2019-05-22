@@ -43,6 +43,11 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         int port = configValue(uniPiPluginPortParamTypeId).toInt();;
         QHostAddress ipAddress = QHostAddress(configValue(uniPiPluginAddressParamTypeId).toString());
         m_modbusTCPMaster = new ModbusTCPMaster(ipAddress, port, this);
+        if(!m_modbusTCPMaster->createInterface()) {
+            qCWarning(dcUniPi()) << "Could not create interface";
+            m_modbusTCPMaster->deleteLater();
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
         m_neuronModel = "L403";
 
         QList<DeviceDescriptor> lightDescriptors;
@@ -81,6 +86,34 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         if (!lightDescriptors.isEmpty())
             emit autoDevicesAppeared(lightDeviceClassId, lightDescriptors);
 
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if(device->deviceClassId() == neuronXS30DeviceClassId) {
+
+        QString serialPort = configValue(uniPiPluginSerialPortParamTypeId).toString();
+        m_modbusRTUMaster = new ModbusRTUMaster(serialPort, 19600, "E", 8, 1, this);
+        if(!m_modbusRTUMaster->createInterface()) {
+            qCWarning(dcUniPi()) << "Could not create interface";
+            m_modbusRTUMaster->deleteLater();
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
+
+        QList<DeviceDescriptor> lightDescriptors;
+        foreach (Param param, device->params()) {
+            if (param.value().toString() == "Generic") {
+                DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronXS30DeviceClassId);
+                QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
+                QString inputNumber = displayName.mid(5, 3);
+
+                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, "Digital input", inputNumber);
+                ParamList params;
+                params.append(Param(digitalInputDeviceNumberParamTypeId, inputNumber));
+                deviceDescriptor.setParams(params);
+                deviceDescriptor.setParentDeviceId(device->id());
+                lightDescriptors.append(deviceDescriptor);
+            }
+        }
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
@@ -164,10 +197,116 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
     }
 }
 
-void DevicePluginUniPi::setDigitalOutput(const QString &circuit, bool value)
+bool DevicePluginUniPi::getExtensionDigitalInput(DevicePluginUniPi::ExtensionTypes extensionType, int slaveAddress, const QString &circuit)
+{
+    QString csvFilePath;
+    switch(extensionType){
+    case ExtensionTypes::xS10:
+        csvFilePath = QString("/opt/neuron/Neuron_xS10/Neuron_xS10-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case ExtensionTypes::xS20:
+        csvFilePath = QString("/opt/neuron/Neuron_xS20/Neuron_xS20-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case ExtensionTypes::xS30:
+        csvFilePath = QString("/opt/neuron/Neuron_xS30/Neuron_xS30-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case ExtensionTypes::xS40:
+        csvFilePath = QString("/opt/neuron/Neuron_xS40/Neuron_xS40-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case ExtensionTypes::xS50:
+        csvFilePath = QString("/opt/neuron/Neuron_xS50/Neuron_xS50-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    }
+
+    qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
+    QFile *csvFile = new QFile(csvFilePath);
+    if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qCWarning(dcUniPi()) << csvFile->errorString();
+        csvFile->deleteLater();
+        return false;
+    }
+
+    QTextStream *textStream = new QTextStream(csvFile);
+    while (!textStream->atEnd()) {
+        QString line = textStream->readLine();
+        QStringList list = line.split(',');
+        if (list[3].contains(circuit)) {
+            int modbusAddress = list[0].toInt();
+            bool value;
+            if (!m_modbusRTUMaster->getCoil(slaveAddress, modbusAddress, &value)) {
+                qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+                return false;
+            } else {
+                return value;
+            }
+        }
+    }
+    csvFile->deleteLater();
+    return false;
+}
+
+
+void DevicePluginUniPi::setExtensionDigitalOutput(DevicePluginUniPi::ExtensionTypes extensionType, int slaveAddress, const QString &circuit, bool value)
+{
+    QString csvFilePath;
+    switch(extensionType){
+    case ExtensionTypes::xS10:
+        csvFilePath = QString("/opt/neuron/Neuron_xS10/Neuron_xS10-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case ExtensionTypes::xS20:
+        csvFilePath = QString("/opt/neuron/Neuron_xS20/Neuron_xS20-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case ExtensionTypes::xS30:
+        csvFilePath = QString("/opt/neuron/Neuron_xS30/Neuron_xS30-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case ExtensionTypes::xS40:
+        csvFilePath = QString("/opt/neuron/Neuron_xS40/Neuron_xS40-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case ExtensionTypes::xS50:
+        csvFilePath = QString("/opt/neuron/Neuron_xS50/Neuron_xS50-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    }
+
+    qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
+    QFile *csvFile = new QFile(csvFilePath);
+    if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qCDebug(dcUniPi()) << csvFile->errorString();
+        csvFile->deleteLater();
+        return;
+    }
+
+    QTextStream *textStream = new QTextStream(csvFile);
+    while (!textStream->atEnd()) {
+        QString line = textStream->readLine();
+        QStringList list = line.split(',');
+        if (list[3].contains(circuit)) {
+            int modbusAddress = list[0].toInt();
+            if(!m_modbusTCPMaster->setCoil(slaveAddress, modbusAddress, value)) {
+                qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+            }
+            break;
+        }
+    }
+    csvFile->deleteLater();
+}
+
+
+void DevicePluginUniPi::setDigitalOutput(DevicePluginUniPi::NeuronTypes neuronType, const QString &circuit, bool value)
 {
     //read CSV file
-    QString csvFilePath = QString("/opt/neuron/Neuron_%1/Neuron_%2-Coils-group-%3.csv").arg(m_neuronModel).arg(m_neuronModel).arg(circuit.at(0));
+    QString csvFilePath;
+
+    switch (neuronType) {
+    case NeuronTypes::S103:
+        csvFilePath = QString("/opt/neuron/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case NeuronTypes::L403:
+        csvFilePath = QString("/opt/neuron/Neuron_L403/Neuron_L403-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    default:
+        csvFilePath = QString("/opt/neuron/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
+    }
+
     qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
     QFile *csvFile = new QFile(csvFilePath);
     if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -191,10 +330,22 @@ void DevicePluginUniPi::setDigitalOutput(const QString &circuit, bool value)
     csvFile->deleteLater();
 }
 
-bool DevicePluginUniPi::getDigitalOutput(const QString &circuit)
+bool DevicePluginUniPi::getDigitalOutput(DevicePluginUniPi::NeuronTypes neuronType, const QString &circuit)
 {
     //read CSV file
-    QString csvFilePath = QString("/opt/neuron/Neuron_%1/Neuron_%2-Coils-group-%3.csv").arg(m_neuronModel).arg(m_neuronModel).arg(circuit.at(0));
+    QString csvFilePath;
+
+    switch (neuronType) {
+    case NeuronTypes::S103:
+        csvFilePath = QString("/opt/neuron/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    case NeuronTypes::L403:
+        csvFilePath = QString("/opt/neuron/Neuron_L403/Neuron_L403-Coils-group-%1.csv").arg(circuit.at(0));
+        break;
+    default:
+        csvFilePath = QString("/opt/neuron/Neuron_S103/Neuron_S103-Coils-group-%1.csv").arg(circuit.at(0));
+    }
+
     qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
     QFile *csvFile = new QFile(csvFilePath);
     if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -222,7 +373,8 @@ bool DevicePluginUniPi::getDigitalOutput(const QString &circuit)
     return false;
 }
 
-Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
+
+DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
 {
     if (!m_modbusTCPMaster)
         return DeviceManager::DeviceErrorHardwareNotAvailable;
@@ -232,7 +384,7 @@ Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Actio
         if (action.actionTypeId() == relayOutputPowerActionTypeId) {
             QString relayNumber = device->paramValue(relayOutputDeviceNumberParamTypeId).toString();
             int stateValue = action.param(relayOutputPowerActionPowerParamTypeId).value().toInt();
-            setDigitalOutput(relayNumber, stateValue);
+            setDigitalOutput(NeuronTypes::L403, relayNumber, stateValue);
 
             return Device::DeviceErrorNoError;
         }
@@ -243,7 +395,7 @@ Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Actio
         if (action.actionTypeId() == digitalOutputPowerActionTypeId) {
             QString digitalOutputNumber = device->paramValue(digitalOutputDeviceNumberParamTypeId).toString();
             bool stateValue = action.param(digitalOutputPowerActionPowerParamTypeId).value().toBool();
-            setDigitalOutput(digitalOutputNumber, stateValue);
+            setDigitalOutput(NeuronTypes::L403, digitalOutputNumber, stateValue);
 
             return Device::DeviceErrorNoError;
         }
@@ -267,19 +419,19 @@ Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Actio
 
         if (action.actionTypeId() == blindCloseActionTypeId) {
 
-            setDigitalOutput(circuitOpen, false);
-            setDigitalOutput(circuitClose, true);
+            setDigitalOutput(NeuronTypes::L403, circuitOpen, false);
+            setDigitalOutput(NeuronTypes::L403, circuitClose, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindOpenActionTypeId) {
 
-            setDigitalOutput(circuitClose, false);
-            setDigitalOutput(circuitOpen, true);
+            setDigitalOutput(NeuronTypes::L403, circuitClose, false);
+            setDigitalOutput(NeuronTypes::L403, circuitOpen, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindStopActionTypeId) {
-            setDigitalOutput(circuitOpen, false);
-            setDigitalOutput(circuitClose, false);
+            setDigitalOutput(NeuronTypes::L403, circuitOpen, false);
+            setDigitalOutput(NeuronTypes::L403, circuitClose, false);
 
             return Device::DeviceErrorNoError;
         }
@@ -291,7 +443,7 @@ Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Actio
         QString circuit = device->paramValue(lightDeviceOutputParamTypeId).toString();
         bool stateValue = action.param(lightPowerActionPowerParamTypeId).value().toBool();
 
-        setDigitalOutput(circuit, stateValue);
+        setDigitalOutput(NeuronTypes::L403, circuit, stateValue);
         return DeviceManager::DeviceErrorNoError;
     }
 
@@ -307,15 +459,15 @@ void DevicePluginUniPi::onRefreshTimer()
 
         if (device->deviceClassId() == lightDeviceClassId) {
             QString outputNumber = device->paramValue(lightDeviceOutputParamTypeId).toString();
-            bool value = getDigitalOutput(outputNumber);
+            bool value = getDigitalOutput(NeuronTypes::L403, outputNumber);
             device->setStateValue(lightPowerStateTypeId, value);
         }
 
         if (device->deviceClassId() == blindDeviceClassId) {
             QString openOutputNumber = device->paramValue(blindDeviceOutputOpenParamTypeId).toString();
             QString closeOutputNumber = device->paramValue(blindDeviceOutputOpenParamTypeId).toString();
-            bool openValue = getDigitalOutput(openOutputNumber);
-            bool closeValue = getDigitalOutput(closeOutputNumber);
+            bool openValue = getDigitalOutput(NeuronTypes::L403, openOutputNumber);
+            bool closeValue = getDigitalOutput(NeuronTypes::L403, closeOutputNumber);
             if (!openValue && !closeValue) {
                 device->setStateValue(blindStatusStateTypeId, "stopped");
             } else if (openValue && !closeValue) {
