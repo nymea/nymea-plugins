@@ -48,7 +48,6 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             m_modbusTCPMaster->deleteLater();
             return DeviceManager::DeviceSetupStatusFailure;
         }
-        m_neuronModel = "L403";
 
         QList<DeviceDescriptor> relayOutputDescriptors;
         QList<DeviceDescriptor> lightDescriptors;
@@ -213,7 +212,9 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
 {
     if(device->deviceClassId() == neuronL403DeviceClassId) {
         m_modbusTCPMaster->deleteLater();
-        m_neuronModel = nullptr;
+
+    } else if(device->deviceClassId() == neuronXS30DeviceClassId) {
+        m_modbusRTUMaster->deleteLater();
 
     } else if(device->deviceClassId() == relayOutputDeviceClassId) {
 
@@ -268,19 +269,18 @@ bool DevicePluginUniPi::getExtensionDigitalInput(DevicePluginUniPi::ExtensionTyp
         return false;
     }
 
+    bool value;
     QTextStream *textStream = new QTextStream(csvFile);
     while (!textStream->atEnd()) {
         QString line = textStream->readLine();
         QStringList list = line.split(',');
         if (list[3].contains(circuit)) {
             int modbusAddress = list[0].toInt();
-            bool value;
+
             if (!m_modbusRTUMaster->getCoil(slaveAddress, modbusAddress, &value)) {
                 qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
-                return false;
-            } else {
-                return value;
             }
+            break
         }
     }
     csvFile->deleteLater();
@@ -363,8 +363,9 @@ void DevicePluginUniPi::setDigitalOutput(DevicePluginUniPi::NeuronTypes neuronTy
         QStringList list = line.split(',');
         if (list[3].contains(circuit)) {
             int modbusAddress = list[0].toInt();
+            qCDebug(dcUniPi()) << "Write modbus:" << circuit << modbusAddress << value;
             if(!m_modbusTCPMaster->setCoil(0, modbusAddress, value)) {
-                qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+                qCWarning(dcUniPi()) << "Error writing coil:" << modbusAddress;
             }
             break;
         }
@@ -396,23 +397,25 @@ bool DevicePluginUniPi::getDigitalOutput(DevicePluginUniPi::NeuronTypes neuronTy
         return false;
     }
 
+    bool value = false;
     QTextStream *textStream = new QTextStream(csvFile);
     while (!textStream->atEnd()) {
         QString line = textStream->readLine();
         QStringList list = line.split(',');
         if (list[3].contains(circuit)) {
             int modbusAddress = list[0].toInt();
-            bool value;
+
+            qCDebug(dcUniPi()) << "Read modbus:" << circuit << modbusAddress;
             if (!m_modbusTCPMaster->getCoil(0, modbusAddress, &value)) {
                 qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
-            } else {
-                return value;
+                value = false;
             }
             break;
         }
     }
+    csvFile->close();
     csvFile->deleteLater();
-    return false;
+    return value;
 }
 
 

@@ -50,14 +50,6 @@ public:
 
 private:
 
-    enum GpioType {
-        Relay,
-        DigitalInput,
-        DigitalOutput,
-        AnalogInput,
-        AnalogOutput
-    };
-
     enum NeuronTypes {
         S103,
         M103,
@@ -84,14 +76,22 @@ private:
     PluginTimer *m_refreshTimer = nullptr;
     ModbusTCPMaster *m_modbusTCPMaster = nullptr;
     ModbusRTUMaster *m_modbusRTUMaster = nullptr;
-    QString m_neuronModel;
 
     void setDigitalOutput(NeuronTypes neuronType, const QString &circuit, bool value);
     bool getDigitalOutput(NeuronTypes neuronType, const QString &circuit);
+    bool getDigitalInput(NeuronTypes neuronType, const QString &circuit);
+
+    void setAnalogOutput(NeuronTypes neuronType, const QString &circuit, double value);
+    double getAnalogOutput(NeuronTypes neuronType, const QString &circuit);
+    double getAnalogInput(NeuronTypes neuronType, const QString &circuit);
 
     void setExtensionDigitalOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit, bool value);
     bool getExtensionDigitalOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
     bool getExtensionDigitalInput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
+
+    void setExtensionAnalogOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit, double value);
+    double getExtensionAnalogOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
+    double getExtensionAnalogInput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
 
 private slots:
     void onRefreshTimer();

@@ -87,7 +87,7 @@
                         {
                             "id": "762563a8-0d43-4a32-9a4a-f4fa78f67555",
                             "name": "relay203Function",
-                            "displayName": "Relay 2..3 function",
+                            "displayName": "Relay 2.3 function",
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
@@ -292,7 +292,7 @@
                             "defaultValue": 11
                         },
                         {
-                            "id": "",
+                            "id": "27f1a5a8-9011-4466-a47a-78c4c83f6399",
                             "name": "relay212Function",
                             "displayName": "Relay 2.12 function",
                             "type": "QString",
@@ -338,7 +338,7 @@
                             "defaultValue": 13
                         },
                         {
-                            "id": "",
+                            "id": "db94c3bb-4a9f-4cd8-9e02-db14d4326451",
                             "name": "relay214Function",
                             "displayName": "Relay 2.14 function",
                             "type": "QString",
@@ -407,7 +407,7 @@
                             "defaultValue": 16
                         },
                         {
-                            "id": "",
+                            "id": "4b9dd31a-91e5-4348-be72-494b1439ad1f",
                             "name": "relay217Function",
                             "displayName": "Relay 2.17 function",
                             "type": "QString",
@@ -681,6 +681,650 @@
                             "displayName": "Relay 2.28 group",
                             "type": "int",
                             "defaultValue": 28
+                        },
+                        {
+                            "id": "04838302-548e-40c3-aa2a-89e34170ac98",
+                            "name": "relay301Function",
+                            "displayName": "Relay 3.1 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "f083e2f8-75f6-4420-8254-505ac3838b7c",
+                            "name": "relay301Group",
+                            "displayName": "Relay 3.1 group",
+                            "type": "int",
+                            "defaultValue": 29
+                        },
+                        {
+                            "id": "b5cb2282-584b-4d2d-829a-129c9cc684fb",
+                            "name": "relay302Function",
+                            "displayName": "Relay 3.2 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "906690a2-5809-4f17-8670-1291c83559da",
+                            "name": "relay302Group",
+                            "displayName": "Relay 3.2 group",
+                            "type": "int",
+                            "defaultValue": 30
+                        },
+                        {
+                            "id": "54e3b096-50b0-472c-9961-f6eaec0f90ee",
+                            "name": "relay303Function",
+                            "displayName": "Relay 3.3 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "bdfc04bb-c34c-4a58-82d9-6e397023501f",
+                            "name": "relay303Group",
+                            "displayName": "Relay 3.3 group",
+                            "type": "int",
+                            "defaultValue": 31
+                        },
+                        {
+                            "id": "909a5667-d1b5-4d4b-8720-3cb35c38ebe6",
+                            "name": "relay304Function",
+                            "displayName": "Relay 3.4 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "591a7583-6850-4b35-b1fb-d3b3101887fe",
+                            "name": "relay304Group",
+                            "displayName": "Relay 3.4 group",
+                            "type": "int",
+                            "defaultValue": 32
+                        },
+                        {
+                            "id": "e438f949-4b5a-4f3a-9c91-171740d6e108",
+                            "name": "relay305Function",
+                            "displayName": "Relay 3.5 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "14e5059c-3c36-4139-9004-95b91a3a8660",
+                            "name": "relay305Group",
+                            "displayName": "Relay 3.5 group",
+                            "type": "int",
+                            "defaultValue": 33
+                        },
+                        {
+                            "id": "3d5e65f0-d698-4e50-b5cc-1724e2b9efe4",
+                            "name": "relay306Function",
+                            "displayName": "Relay 3.6 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "9c8320e9-e4c8-45a6-87d3-803a9e8ce32c",
+                            "name": "relay306Group",
+                            "displayName": "Relay 3.6 group",
+                            "type": "int",
+                            "defaultValue": 34
+                        },
+                        {
+                            "id": "5b2afb79-0e29-4dca-b1cf-7def5b988352",
+                            "name": "relay307Function",
+                            "displayName": "Relay 3.7 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "fa30c1fd-d1d2-498b-877c-f4621d58a1d5",
+                            "name": "relay307Group",
+                            "displayName": "Relay 3.7 group",
+                            "type": "int",
+                            "defaultValue": 35
+                        },
+                        {
+                            "id": "fc7cce90-b400-4f5c-98fb-a947a328d298",
+                            "name": "relay308Function",
+                            "displayName": "Relay 3.8 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "7157b718-331e-4845-942b-37263081e3bb",
+                            "name": "relay308Group",
+                            "displayName": "Relay 3.8 group",
+                            "type": "int",
+                            "defaultValue": 36
+                        },
+                        {
+                            "id": "cd46eb1d-0e29-4a2e-83df-54e93b816b6b",
+                            "name": "relay309Function",
+                            "displayName": "Relay 3.9 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "597504c6-a6a1-4dcc-b5bb-fb450595d821",
+                            "name": "relay309Group",
+                            "displayName": "Relay 3.9 group",
+                            "type": "int",
+                            "defaultValue": 37
+                        },
+                        {
+                            "id": "b2792a1d-0b41-4cd7-9612-51b27ff49ac7",
+                            "name": "relay310Function",
+                            "displayName": "Relay 3.10 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "1c9662bb-5c92-423e-9010-15afeb1c26af",
+                            "name": "relay310Group",
+                            "displayName": "Relay 3.10 group",
+                            "type": "int",
+                            "defaultValue": 38
+                        },
+                        {
+                            "id": "a46aeb41-527e-45d3-9fd2-a5ed63b417ba",
+                            "name": "relay311Function",
+                            "displayName": "Relay 3.11 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "efee8266-b1d9-4295-bda5-250a73f9aafb",
+                            "name": "relay311Group",
+                            "displayName": "Relay 3.11 group",
+                            "type": "int",
+                            "defaultValue": 39
+                        },
+                        {
+                            "id": "ccd44af7-3b3e-4157-b0f7-076f7d588da3",
+                            "name": "relay312Function",
+                            "displayName": "Relay 3.12 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "03903177-285c-4cb1-9cda-146e6487c612",
+                            "name": "relay312Group",
+                            "displayName": "Relay 3.12 group",
+                            "type": "int",
+                            "defaultValue": 40
+                        },
+                        {
+                            "id": "90418258-029f-4348-9dee-0436a72ab85f",
+                            "name": "relay313Function",
+                            "displayName": "Relay 3.13 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "ba1ccafd-f017-4c6b-9c3d-0ae719b86486",
+                            "name": "relay313Group",
+                            "displayName": "Relay 3.13 group",
+                            "type": "int",
+                            "defaultValue": 41
+                        },
+                        {
+                            "id": "3640e4f6-c005-486c-a56c-dc281f324b5d",
+                            "name": "relay314Function",
+                            "displayName": "Relay 3.14 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "04681069-2d3e-4835-bc0d-74b46ffd1446",
+                            "name": "relay314Group",
+                            "displayName": "Relay 3.14 group",
+                            "type": "int",
+                            "defaultValue": 42
+                        },
+                        {
+                            "id": "ab46764c-e5e0-4392-8c82-5382023ddc10",
+                            "name": "relay315Function",
+                            "displayName": "Relay 3.15 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "b817c96c-f786-4f10-8741-5d645d958ba1",
+                            "name": "relay315Group",
+                            "displayName": "Relay 3.15 group",
+                            "type": "int",
+                            "defaultValue": 43
+                        },
+                        {
+                            "id": "dab0777e-225a-4e1d-8f0f-b9da21730308",
+                            "name": "relay316Function",
+                            "displayName": "Relay 3.16 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "b95cc251-fc7b-41b9-99cf-a5bcf02790bc",
+                            "name": "relay316Group",
+                            "displayName": "Relay 3.16 group",
+                            "type": "int",
+                            "defaultValue": 44
+                        },
+                        {
+                            "id": "6daa6b7e-089c-44fc-aa5c-a65460a526c9",
+                            "name": "relay317Function",
+                            "displayName": "Relay 3.17 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "4a8a5598-9483-4ea1-bdf0-ca5ef52f3bfb",
+                            "name": "relay317Group",
+                            "displayName": "Relay 3.17 group",
+                            "type": "int",
+                            "defaultValue": 45
+                        },
+                        {
+                            "id": "2599524f-6cc9-4774-9261-6a5444b1164a",
+                            "name": "relay318Function",
+                            "displayName": "Relay 3.18 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "50b60e57-0590-4cbc-9841-0d98389692a0",
+                            "name": "relay318Group",
+                            "displayName": "Relay 3.18 group",
+                            "type": "int",
+                            "defaultValue": 46
+                        },
+                        {
+                            "id": "fa04ddc6-1f90-4945-9f73-ccb7050e7e1c",
+                            "name": "relay319Function",
+                            "displayName": "Relay 3.19 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "7d6ecea0-0681-4cfd-b006-bd608e70fc40",
+                            "name": "relay319Group",
+                            "displayName": "Relay 3.19 group",
+                            "type": "int",
+                            "defaultValue": 47
+                        },
+                        {
+                            "id": "912559b3-2cec-458f-a1bc-6624b8ec83a6",
+                            "name": "relay320Function",
+                            "displayName": "Relay 3.20 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "69cf3c7c-f5d8-450e-992f-a3385fb79afd",
+                            "name": "relay320Group",
+                            "displayName": "Relay 3.20 group",
+                            "type": "int",
+                            "defaultValue": 48
+                        },
+                        {
+                            "id": "737bb68d-f104-4a5d-97d2-a841e68ff26b",
+                            "name": "relay321Function",
+                            "displayName": "Relay 3.21 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "647ce39a-60be-4641-b743-5306685e39b6",
+                            "name": "relay321Group",
+                            "displayName": "Relay 3.21 group",
+                            "type": "int",
+                            "defaultValue": 49
+                        },
+                        {
+                            "id": "94b0ffcf-44a8-4f7f-bb9f-cc5364cac4d3",
+                            "name": "relay322Function",
+                            "displayName": "Relay 3.22 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "a73afaf2-8488-4a99-adb4-469327b2cef9",
+                            "name": "relay322Group",
+                            "displayName": "Relay 3.22 group",
+                            "type": "int",
+                            "defaultValue": 50
+                        },
+                        {
+                            "id": "1413e666-c6ec-43cb-86d2-cb0e57574121",
+                            "name": "relay323Function",
+                            "displayName": "Relay 3.23 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "1a72961f-8816-40e4-9018-8ddf39b8d21e",
+                            "name": "relay323Group",
+                            "displayName": "Relay 3.23 group",
+                            "type": "int",
+                            "defaultValue": 51
+                        },
+                        {
+                            "id": "1c30d505-af44-499e-b1db-10654a5d1536",
+                            "name": "relay324Function",
+                            "displayName": "Relay 3.24 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "63a45bc9-df01-447d-9089-d5ebd7e9d711",
+                            "name": "relay324Group",
+                            "displayName": "Relay 3.24 group",
+                            "type": "int",
+                            "defaultValue": 52
+                        },
+                        {
+                            "id": "a21d61c2-5b55-41f0-961b-4a971b973434",
+                            "name": "relay325Function",
+                            "displayName": "Relay 3.25 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "5abe2aa2-356d-487e-82c3-506240cdc779",
+                            "name": "relay325Group",
+                            "displayName": "Relay 3.25 group",
+                            "type": "int",
+                            "defaultValue": 53
+                        },
+                        {
+                            "id": "c5ad55ed-c4d1-4fd6-9147-9a0aa585e755",
+                            "name": "relay326Function",
+                            "displayName": "Relay 3.26 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "9ebce881-875f-4c95-ad28-521de1d6e09f",
+                            "name": "relay326Group",
+                            "displayName": "Relay 3.26 group",
+                            "type": "int",
+                            "defaultValue": 54
+                        },
+                        {
+                            "id": "6f4f4e28-bce4-44e8-9b7b-9b41e9285f7c",
+                            "name": "relay327Function",
+                            "displayName": "Relay 3.27 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "edf622bd-bfd3-46b3-86a1-ed71bc5d4a47",
+                            "name": "relay327Group",
+                            "displayName": "Relay 3.27 group",
+                            "type": "int",
+                            "defaultValue": 55
+                        },
+                        {
+                            "id": "ad942ab7-f494-4e86-bc74-b7f939db7f43",
+                            "name": "relay328Function",
+                            "displayName": "Relay 3.28 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Output",
+                                "Light",
+                                "Power socket",
+                                "Heating",
+                                "Lock",
+                                "Blind open",
+                                "Blind close"
+                            ]
+                        },
+                        {
+                            "id": "716956ae-6d8a-4b57-b323-5b884bf7289a",
+                            "name": "relay328Group",
+                            "displayName": "Relay 3.28 group",
+                            "type": "int",
+                            "defaultValue": 56
                         }
                     ],
                     "stateTypes": [
