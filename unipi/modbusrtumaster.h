@@ -1,7 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *  Copyright (C) 2018 Simon Stürz <simon.stuerz@nymea.io>                 *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -21,58 +20,37 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINUNIPI_H
-#define DEVICEPLUGINUNIPI_H
+#ifndef MODBUSRTUMASTER_H
+#define MODBUSRTUMASTER_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
-#include "plugintimer.h"
-#include "dimmerswitch.h"
-#include "modbusrtumaster.h"
-#include "modbustcpmaster.h"
+#include <QObject>
+#include <modbus/modbus.h>
 
-#include <QtWebSockets/QtWebSockets>
-
-class DevicePluginUniPi : public DevicePlugin
+class ModbusRTUMaster : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginunipi.json")
-    Q_INTERFACES(DevicePlugin)
-
 public:
+    explicit ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent = nullptr);
+    ~ModbusRTUMaster();
 
-    explicit DevicePluginUniPi();
+    bool createInterface();
+    bool isConnected();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-    void deviceRemoved(Device *device) override;
+    bool getCoil(int slaveAddress, int coilAddress, bool *result);
+    bool getRegister(int slaveAddress, int registerAddress, int *result);
+    bool setCoil(int slaveAddress, int coilAddress, bool status);
+    bool setRegister(int slaveAddress, int registerAddress, int data);
+
+    QString serialPort();
 
 private:
+    modbus_t *m_mb;
 
-    enum GpioType {
-        Relay,
-        DigitalInput,
-        DigitalOutput,
-        AnalogInput,
-        AnalogOutput
-    };
-
-    QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
-    PluginTimer *m_refreshTimer = nullptr;
-    ModbusTCPMaster *m_modbusTCPMaster = nullptr;
-    QString m_neuronModel;
-
-    void setDigitalOutput(const QString &circuit, bool value);
-    bool getDigitalOutput(const QString &circuit);
-
-private slots:
-    void onRefreshTimer();
-
-    void onDimmerSwitchPressed();
-    void onDimmerSwitchLongPressed();
-    void onDimmerSwitchDoublePressed();
-    void onDimmerSwitchDimValueChanged(int dimValue);
+    QString m_serialPort;
+    int m_baudrate;
+    QString m_parity;
+    int m_dataBits;
+    int m_stopBits;
 };
 
-#endif // DEVICEPLUGINUNIPI_H
+#endif // MODBUSRTUMASTER_H

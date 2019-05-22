@@ -1,0 +1,51 @@
+Via Unit 0,Via Unit 2,Register Count,R/W,Data Type,Content,Start Bit Nr.,Category
+100,0,1,R,MixedBits,LIGHT status register,,Advanced
+101,1,1,R,Word,LIGHT RX counter 2.1,,Basic
+102,2,1,R,Word,LIGHT RX option field 2.1,,Basic
+103,3,1,R,Word,LIGHT RX data 2.1,,Basic
+104,4,1,R,Word,LIGHT RX counter 2.2,,Basic
+105,5,1,R,Word,LIGHT RX option field 2.2,,Basic
+106,6,1,R,Word,LIGHT RX data 2.2,,Basic
+107,7,1,R,Word,LIGHT RX counter 2.3,,Basic
+108,8,1,R,Word,LIGHT RX option field 2.3,,Basic
+109,9,1,R,Word,LIGHT RX data 2.3,,Basic
+110,10,1,R,Word,LIGHT RX counter 2.4,,Basic
+111,11,1,R,Word,LIGHT RX option field 2.4,,Basic
+112,12,1,R,Word,LIGHT RX data 2.4,,Basic
+113,13,1,RW,Word,LIGHT TX option field 2.5,,Basic
+114,14,1,RW,Word,LIGHT TX data 2.1,,Basic
+115,15,1,RW,Word,LIGHT TX option field 2.6,,Basic
+116,16,1,RW,Word,LIGHT TX data 2.2,,Basic
+117,17,1,RW,Word,LIGHT TX option field 2.7,,Basic
+118,18,1,RW,Word,LIGHT TX data 2.3,,Basic
+119,19,1,RW,Word,LIGHT TX option field 2.8,,Basic
+120,20,1,RW,Word,LIGHT TX data 2.4,,Basic
+121,21,1,RW,MixedBits,Group MasterWatchDog (MWD) Status,,Advanced
+,100,2,RW,DWord,(Internal) RS485 Full Mode Configuration 2.1,,Obsolete
+600,500,1,W,Word,Reserved - Do Not Use,,Reserved
+601,501,1,W,Word,Reserved - Do Not Use,,Reserved
+602,502,1,W,Word,Reserved - Do Not Use,,Reserved
+603,503,1,W,Word,Reserved - Do Not Use,,Reserved
+604,504,1,W,Word,Reserved - Do Not Use,,Reserved
+605,505,1,W,Word,Reserved - Do Not Use,,Reserved
+606,506,1,W,Word,Reserved - Do Not Use,,Reserved
+607,507,1,W,Word,Reserved - Do Not Use,,Reserved
+608,508,1,W,Word,Reserved - Do Not Use,,Reserved
+609,509,1,W,Word,Reserved - Do Not Use,,Reserved
+,510,1,RW,Word,(Internal) Stored Firmware Version,,Expert
+,511,1,RW,Word,(Internal) Stored Firmware Revision,,Expert
+,512,1,RW,Word,(Internal) Stored Base Firmware Revision,,Expert
+,513,1,RW,Word,(Internal) Stored Expanded Flash Magic Value,,Expert
+,514,1,RW,Word,(Internal) Stored PCB Revision,,Expert
+,515,1,RW,Word,(Internal) Stored PCB Serial Number,,Expert
+,516,1,RW,Word,(Internal) Stored HW Revision Number,,Expert
+1100,1000,1,R,Word,Firmware Version,,Expert
+1101,1001,1,R,Word,Number of I/Os,,Advanced
+1102,1002,1,R,Word,Number of peripherals,,Advanced
+1103,1003,1,R,Word,Firmware ID,,Expert
+1104,1004,1,R,Word,Hardware ID,,Expert
+1105,1005,2,R,DWord,PCB Serial Number,,Expert
+1107,1007,1,RW,Word,Interrupt Mask,,Expert
+1108,1008,1,RW,Word,Group MasterWatchDog (MWD) Timeout (in 100us),,Advanced
+1109,1009,1,R,Word,VRef of MCU,,Expert
+,2000,220,W,Word,Reserved - Do Not Use,,Reserved

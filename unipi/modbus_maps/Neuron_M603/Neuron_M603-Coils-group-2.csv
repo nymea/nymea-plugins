@@ -1,0 +1,7 @@
+Via Unit 0,Via Unit 2,R/W,Content,Category
+1100,1000,RW,MWD reset indication,Advanced
+1102,1002,R,Reset group MCU,Advanced
+1103,1003,RW,Save current configuration and use on startup,Advanced
+1104,1004,RW,(Internal) Firmware programming toggle,Expert
+1105,1005,RW,(Internal) Firmware reprogramming toggle,Expert
+1106,1006,RW,(Internal) Firmware calibration programming toggle,Expert

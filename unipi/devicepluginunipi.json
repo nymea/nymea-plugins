@@ -8,7 +8,14 @@
             "name": "port",
             "displayName": "Port",
             "type": "int",
-            "defaultValue": "8080"
+            "defaultValue": "502"
+        },
+        {
+            "id": "fa9d0407-72fd-4f61-ae8d-c95241ddb610",
+            "name": "address",
+            "displayName": "Address",
+            "type": "QString",
+            "defaultValue": "127.0.0.1"
         }
     ],
     "vendors": [
@@ -26,8 +33,8 @@
                     "paramTypes": [
                         {
                             "id": "7a09e3ad-452c-4bf4-a00c-f8114ed9a7a1",
-                            "name": "relay1Function",
-                            "displayName": "Relay 1 function",
+                            "name": "relay201Function",
+                            "displayName": "Relay 2.1 function",
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
@@ -35,21 +42,22 @@
                                 "Light",
                                 "Power socket",
                                 "Heating",
+                                "Lock",
                                 "Blind open",
                                 "Blind close"
                             ]
                         },
                         {
                             "id": "261d3976-7328-43ce-8705-abae72035beb",
-                            "name": "relay1Group",
-                            "displayName": "Relay 1 group",
+                            "name": "relay201Group",
+                            "displayName": "Relay 2.1 group",
                             "type": "int",
                             "defaultValue": 1
                         },
                         {
                             "id": "ce97c571-f853-4156-9967-3498f0855dca",
-                            "name": "relay2Function",
-                            "displayName": "Relay 2 function",
+                            "name": "relay202Function",
+                            "displayName": "Relay 2.2 function",
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
@@ -57,21 +65,22 @@
                                 "Light",
                                 "Power socket",
                                 "Heating",
+                                "Lock",
                                 "Blind open",
                                 "Blind close"
                             ]
                         },
                         {
                             "id": "fe22ec23-0a77-4359-8718-56a30a94fbf8",
-                            "name": "relay3Group",
-                            "displayName": "Relay 2 group",
+                            "name": "relay202Group",
+                            "displayName": "Relay 2.2 group",
                             "type": "int",
                             "defaultValue": 2
                         },
                         {
                             "id": "762563a8-0d43-4a32-9a4a-f4fa78f67555",
-                            "name": "relay3Function",
-                            "displayName": "Relay 3 function",
+                            "name": "relay203Function",
+                            "displayName": "Relay 2..3 function",
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
@@ -79,21 +88,22 @@
                                 "Light",
                                 "Power socket",
                                 "Heating",
+                                "Lock",
                                 "Blind open",
                                 "Blind close"
                             ]
                         },
                         {
                             "id": "fc04ecb7-4ac5-4707-bb54-81b008d32f94",
-                            "name": "relay3Group",
-                            "displayName": "Relay 3 group",
+                            "name": "relay203Group",
+                            "displayName": "Relay 2.3 group",
                             "type": "int",
                             "defaultValue": 3
                         },
                         {
                             "id": "49a17d56-c23d-40f4-a321-40b86186b822",
-                            "name": "relay4Function",
-                            "displayName": "Relay 4 function",
+                            "name": "relay204Function",
+                            "displayName": "Relay 2.4 function",
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
@@ -101,14 +111,15 @@
                                 "Light",
                                 "Power socket",
                                 "Heating",
+                                "Lock",
                                 "Blind open",
                                 "Blind close"
                             ]
                         },
                         {
                             "id": "29c2cf14-94cd-431c-ad16-4c0a519d2554",
-                            "name": "relay4Group",
-                            "displayName": "Relay 4 group",
+                            "name": "relay204Group",
+                            "displayName": "Relay 2.4 group",
                             "type": "int",
                             "defaultValue": 4
                         }

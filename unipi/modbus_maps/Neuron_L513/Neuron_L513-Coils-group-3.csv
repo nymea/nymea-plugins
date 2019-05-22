@@ -1,0 +1,33 @@
+Via Unit 0,Via Unit 3,R/W,Content,Category
+200,0,RW,Digital Output 3.1,Basic
+201,1,RW,Digital Output 3.2,Basic
+202,2,RW,Digital Output 3.3,Basic
+203,3,RW,Digital Output 3.4,Basic
+204,4,RW,Digital Output 3.5,Basic
+205,5,R,Digital Input 3.1,Basic
+206,6,R,Digital Input 3.2,Basic
+207,7,R,Digital Input 3.3,Basic
+208,8,R,Digital Input 3.4,Basic
+209,9,R,Digital Input 3.5,Basic
+210,10,R,Digital Input 3.6,Basic
+1200,1000,RW,MWD reset indication,Advanced
+1202,1002,R,Reset group MCU,Advanced
+1203,1003,RW,Save current configuration and use on startup,Advanced
+1204,1004,RW,(Internal) Firmware programming toggle,Expert
+1205,1005,RW,(Internal) Firmware reprogramming toggle,Expert
+1206,1006,RW,(Internal) Firmware calibration programming toggle,Expert
+1207,1007,RW,Enable DirectSwitch on DI 3.1,Advanced
+1208,1008,RW,Enable DirectSwitch on DI 3.2,Advanced
+1209,1009,RW,Enable DirectSwitch on DI 3.3,Advanced
+1210,1010,RW,Enable DirectSwitch on DI 3.4,Advanced
+1211,1011,RW,Enable DirectSwitch on DI 3.5,Advanced
+1212,1012,RW,Invert DirectSwitch Polarity on DI 3.1,Advanced
+1213,1013,RW,Invert DirectSwitch Polarity on DI 3.2,Advanced
+1214,1014,RW,Invert DirectSwitch Polarity on DI 3.3,Advanced
+1215,1015,RW,Invert DirectSwitch Polarity on DI 3.4,Advanced
+1216,1016,RW,Invert DirectSwitch Polarity on DI 3.5,Advanced
+1217,1017,RW,Enable DirectSwitch Toggle Mode on DI 3.1,Advanced
+1218,1018,RW,Enable DirectSwitch Toggle Mode on DI 3.2,Advanced
+1219,1019,RW,Enable DirectSwitch Toggle Mode on DI 3.3,Advanced
+1220,1020,RW,Enable DirectSwitch Toggle Mode on DI 3.4,Advanced
+1221,1021,RW,Enable DirectSwitch Toggle Mode on DI 3.5,Advanced

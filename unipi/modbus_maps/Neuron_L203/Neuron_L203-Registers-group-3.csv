@@ -1,0 +1,168 @@
+Via Unit 0,Via Unit 3,Register Count,R/W,Data Type,Content,Start Bit Nr.,Category
+200,0,1,R,MixedBits,Digital Input 3.1,0,Basic
+200,0,1,R,MixedBits,Digital Input 3.2,1,Basic
+200,0,1,R,MixedBits,Digital Input 3.3,2,Basic
+200,0,1,R,MixedBits,Digital Input 3.4,3,Basic
+200,0,1,R,MixedBits,Digital Input 3.5,4,Basic
+200,0,1,R,MixedBits,Digital Input 3.6,5,Basic
+200,0,1,R,MixedBits,Digital Input 3.7,6,Basic
+200,0,1,R,MixedBits,Digital Input 3.8,7,Basic
+200,0,1,R,MixedBits,Digital Input 3.9,8,Basic
+200,0,1,R,MixedBits,Digital Input 3.10,9,Basic
+200,0,1,R,MixedBits,Digital Input 3.11,10,Basic
+200,0,1,R,MixedBits,Digital Input 3.12,11,Basic
+200,0,1,R,MixedBits,Digital Input 3.13,12,Basic
+200,0,1,R,MixedBits,Digital Input 3.14,13,Basic
+200,0,1,R,MixedBits,Digital Input 3.15,14,Basic
+200,0,1,R,MixedBits,Digital Input 3.16,15,Basic
+201,1,1,RW,MixedBits,Relay Output 3.1,0,Basic
+201,1,1,RW,MixedBits,Relay Output 3.2,1,Basic
+201,1,1,RW,MixedBits,Relay Output 3.3,2,Basic
+201,1,1,RW,MixedBits,Relay Output 3.4,3,Basic
+201,1,1,RW,MixedBits,Relay Output 3.5,4,Basic
+201,1,1,RW,MixedBits,Relay Output 3.6,5,Basic
+201,1,1,RW,MixedBits,Relay Output 3.7,6,Basic
+201,1,1,RW,MixedBits,Relay Output 3.8,7,Basic
+201,1,1,RW,MixedBits,Relay Output 3.9,8,Basic
+201,1,1,RW,MixedBits,Relay Output 3.10,9,Basic
+201,1,1,RW,MixedBits,Relay Output 3.11,10,Basic
+201,1,1,RW,MixedBits,Relay Output 3.12,11,Basic
+201,1,1,RW,MixedBits,Relay Output 3.13,12,Basic
+201,1,1,RW,MixedBits,Relay Output 3.14,13,Basic
+202,2,1,RW,MixedBits,Group MasterWatchDog (MWD) Status,,Advanced
+203,3,2,RW,DWord,Counter of Digital Input 3.1,,Basic
+205,5,2,RW,DWord,Counter of Digital Input 3.2,,Basic
+207,7,2,RW,DWord,Counter of Digital Input 3.3,,Basic
+209,9,2,RW,DWord,Counter of Digital Input 3.4,,Basic
+211,11,2,RW,DWord,Counter of Digital Input 3.5,,Basic
+213,13,2,RW,DWord,Counter of Digital Input 3.6,,Basic
+215,15,2,RW,DWord,Counter of Digital Input 3.7,,Basic
+217,17,2,RW,DWord,Counter of Digital Input 3.8,,Basic
+219,19,2,RW,DWord,Counter of Digital Input 3.9,,Basic
+221,21,2,RW,DWord,Counter of Digital Input 3.10,,Basic
+223,23,2,RW,DWord,Counter of Digital Input 3.11,,Basic
+225,25,2,RW,DWord,Counter of Digital Input 3.12,,Basic
+227,27,2,RW,DWord,Counter of Digital Input 3.13,,Basic
+229,29,2,RW,DWord,Counter of Digital Input 3.14,,Basic
+231,31,2,RW,DWord,Counter of Digital Input 3.15,,Basic
+233,33,2,RW,DWord,Counter of Digital Input 3.16,,Basic
+235,35,1,W,Word,Reserved - Do Not Use,,Reserved
+236,36,1,W,Word,Reserved - Do Not Use,,Reserved
+237,37,1,W,Word,Reserved - Do Not Use,,Reserved
+238,38,1,W,Word,Reserved - Do Not Use,,Reserved
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.1,0,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.2,1,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.3,2,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.4,3,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.5,4,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.6,5,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.7,6,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.8,7,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.9,8,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.10,9,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.11,10,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.12,11,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.13,12,Advanced
+239,39,1,RW,MixedBits,Synchronised DO/RO 3.14,13,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.1,0,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.2,1,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.3,2,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.4,3,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.5,4,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.6,5,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.7,6,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.8,7,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.9,8,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.10,9,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.11,10,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.12,11,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.13,12,Advanced
+240,40,1,RW,MixedBits,Synchronised DO/RO Lock 3.14,13,Advanced
+,100,2,RW,DWord,(Internal) RS485 Full Mode Configuration 3.1,,Obsolete
+700,500,1,W,Word,Reserved - Do Not Use,,Reserved
+701,501,1,W,Word,Reserved - Do Not Use,,Reserved
+702,502,1,W,Word,Reserved - Do Not Use,,Reserved
+703,503,1,W,Word,Reserved - Do Not Use,,Reserved
+704,504,1,W,Word,Reserved - Do Not Use,,Reserved
+705,505,1,W,Word,Reserved - Do Not Use,,Reserved
+706,506,1,W,Word,Reserved - Do Not Use,,Reserved
+707,507,1,W,Word,Reserved - Do Not Use,,Reserved
+708,508,1,W,Word,Reserved - Do Not Use,,Reserved
+709,509,1,W,Word,Reserved - Do Not Use,,Reserved
+,510,1,RW,Word,(Internal) Stored Firmware Version,,Expert
+,511,1,RW,Word,(Internal) Stored Firmware Revision,,Expert
+,512,1,RW,Word,(Internal) Stored Base Firmware Revision,,Expert
+,513,1,RW,Word,(Internal) Stored Expanded Flash Magic Value,,Expert
+,514,1,RW,Word,(Internal) Stored PCB Revision,,Expert
+,515,1,RW,Word,(Internal) Stored PCB Serial Number,,Expert
+,516,1,RW,Word,(Internal) Stored HW Revision Number,,Expert
+1200,1000,1,R,Word,Firmware Version,,Expert
+1201,1001,1,R,Word,Number of I/Os,,Advanced
+1202,1002,1,R,Word,Number of peripherals,,Advanced
+1203,1003,1,R,Word,Firmware ID,,Expert
+1204,1004,1,R,Word,Hardware ID,,Expert
+1205,1005,2,R,DWord,PCB Serial Number,,Expert
+1207,1007,1,RW,Word,Interrupt Mask,,Expert
+1208,1008,1,RW,Word,Group MasterWatchDog (MWD) Timeout (in 100us),,Advanced
+1209,1009,1,R,Word,VRef of MCU,,Expert
+1210,1010,1,RW,Word,Debounce time (in 100us) for DI 3.1,,Advanced
+1211,1011,1,RW,Word,Debounce time (in 100us) for DI 3.2,,Advanced
+1212,1012,1,RW,Word,Debounce time (in 100us) for DI 3.3,,Advanced
+1213,1013,1,RW,Word,Debounce time (in 100us) for DI 3.4,,Advanced
+1214,1014,1,RW,Word,Debounce time (in 100us) for DI 3.5,,Advanced
+1215,1015,1,RW,Word,Debounce time (in 100us) for DI 3.6,,Advanced
+1216,1016,1,RW,Word,Debounce time (in 100us) for DI 3.7,,Advanced
+1217,1017,1,RW,Word,Debounce time (in 100us) for DI 3.8,,Advanced
+1218,1018,1,RW,Word,Debounce time (in 100us) for DI 3.9,,Advanced
+1219,1019,1,RW,Word,Debounce time (in 100us) for DI 3.10,,Advanced
+1220,1020,1,RW,Word,Debounce time (in 100us) for DI 3.11,,Advanced
+1221,1021,1,RW,Word,Debounce time (in 100us) for DI 3.12,,Advanced
+1222,1022,1,RW,Word,Debounce time (in 100us) for DI 3.13,,Advanced
+1223,1023,1,RW,Word,Debounce time (in 100us) for DI 3.14,,Advanced
+1224,1024,1,RW,Word,Debounce time (in 100us) for DI 3.15,,Advanced
+1225,1025,1,RW,Word,Debounce time (in 100us) for DI 3.16,,Advanced
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.1,0,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.2,1,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.3,2,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.4,3,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.5,4,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.6,5,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.7,6,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.8,7,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.9,8,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.10,9,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.11,10,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.12,11,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.13,12,Basic
+1226,1026,1,RW,MixedBits,Enable DirectSwitch on DI 3.14,13,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.1,0,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.2,1,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.3,2,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.4,3,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.5,4,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.6,5,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.7,6,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.8,7,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.9,8,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.10,9,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.11,10,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.12,11,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.13,12,Basic
+1227,1027,1,RW,MixedBits,Invert DirectSwitch Polarity on DI 3.14,13,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.1,0,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.2,1,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.3,2,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.4,3,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.5,4,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.6,5,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.7,6,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.8,7,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.9,8,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.10,9,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.11,10,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.12,11,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.13,12,Basic
+1228,1028,1,RW,MixedBits,Enable DirectSwitch Toggle on DI 3.14,13,Basic
+1229,1029,1,W,Word,Reserved - Do Not Use,,Reserved
+1230,1030,1,W,Word,Reserved - Do Not Use,,Reserved
+,2000,220,W,Word,Reserved - Do Not Use,,Reserved
