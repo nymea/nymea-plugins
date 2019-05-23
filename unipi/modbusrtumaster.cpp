@@ -58,6 +58,24 @@ QString ModbusRTUMaster::serialPort()
     return m_serialPort;
 }
 
+bool ModbusRTUMaster::setSerialPort(const QString &serialPort)
+{
+    m_serialPort = serialPort;
+    if (!createInterface()) {
+        return false;
+    }
+    return true;
+}
+
+bool ModbusRTUMaster::setBaudrate(int baudrate)
+{
+    m_baudrate = baudrate;
+    if (!createInterface()) {
+        return false;
+    }
+    return true;
+}
+
 bool ModbusRTUMaster::createInterface()
 {
     //Setting up a RTU interface
