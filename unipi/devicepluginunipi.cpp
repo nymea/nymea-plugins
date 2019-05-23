@@ -41,8 +41,8 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
     if(!m_refreshTimer) {
         QTimer *m_refreshTimer = new QTimer(this);
-        m_refreshTimer->setInterval(100);
         m_refreshTimer->setTimerType(Qt::TimerType::PreciseTimer);
+        m_refreshTimer->start(100);
         connect(m_refreshTimer, &QTimer::timeout, this, &DevicePluginUniPi::onRefreshTimer);
     }
 
@@ -361,7 +361,10 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             }
 
             QTimer *unlatchTimer = m_unlatchTimer.value(device);
-            unlatchTimer->start(device->paramValue(lockDeviceUnlatchTimeParamTypeId).toInt()*1000);
+            int time = device->paramValue(lockDeviceUnlatchTimeParamTypeId).toInt()*1000;
+            unlatchTimer->start(time);
+            qCDebug(dcUniPi()) << "Starting unlatch timer, time in sec:" << time;
+
             connect(unlatchTimer, &QTimer::timeout, this, [this]() {
                   QTimer *timer= static_cast<QTimer*>(sender());
                   Device *device = m_unlatchTimer.key(timer);
