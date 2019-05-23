@@ -66,11 +66,12 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     if(device->deviceClassId() == neuronXS30DeviceClassId) {
 
         QString serialPort = configValue(uniPiPluginSerialPortParamTypeId).toString();
+        int baudrate = configValue(uniPiPluginBaudrateParamTypeId).toInt();
         int slaveAddress = device->paramValue(neuronXS30DeviceSlaveAddressParamTypeId).toInt();
 
         if(!m_modbusRTUMaster) {
             // Seems to be the first Modbus extension
-            m_modbusRTUMaster = new ModbusRTUMaster(serialPort, 19600, "E", 8, 1, this);
+            m_modbusRTUMaster = new ModbusRTUMaster(serialPort, baudrate, "N", 8, 1, this);
             if(!m_modbusRTUMaster->createInterface()) {
                 qCWarning(dcUniPi()) << "Could not create interface";
                 m_modbusRTUMaster->deleteLater();
@@ -246,7 +247,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 blindDescriptors.append(deviceDescriptor);
             }
 
-            if (param.value().toString() == "Genergic Input") {
+            if (param.value().toString() == "Genergic input") {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
                 QString circuit = displayName.split(" ").at(1);
@@ -283,7 +284,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
 
         QList<DeviceDescriptor> digitalInputDescriptors;
         foreach (Param param, device->params()) {
-            if (param.value().toString() == "Generic") {
+            if (param.value().toString() == "Generic input") {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronXS30DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
                 QString circuit = displayName.split(" ").at(1);
