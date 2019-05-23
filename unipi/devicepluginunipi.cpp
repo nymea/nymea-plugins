@@ -516,7 +516,7 @@ void DevicePluginUniPi::onRefreshTimer()
             bool closeValue = false;
 
             if (m_neurons.contains(device->parentId())) {
-                Neuron *neuron = m_neurons.value(device->parentId()); /
+                Neuron *neuron = m_neurons.value(device->parentId());
                 openValue = neuron->getDigitalOutput(openOutputNumber);
                 closeValue = neuron->getDigitalOutput(closeOutputNumber);
             } else if (m_neuronExtensions.contains(device->parentId())) {
