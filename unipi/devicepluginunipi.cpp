@@ -65,13 +65,15 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
                 QString outputNumber = displayName.split(" ").at(1);
 
                 if(!myDevices().filterByParam(relayOutputDeviceNumberParamTypeId, outputNumber).isEmpty()) {
+                    qDebug(dcUniPi()) << "Skipping device because already added" << outputNumber;
                     continue;
                 }
 
-                DeviceDescriptor deviceDescriptor(relayOutputDeviceClassId, QString("Relais %1").arg(outputNumber), "");
+                DeviceDescriptor deviceDescriptor(relayOutputDeviceClassId, QString("Relais %1").arg(outputNumber), "", device->id());
                 ParamList params;
                 params.append(Param(relayOutputDeviceNumberParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
+                deviceDescriptor.setParentDeviceId(device->id());
                 lightDescriptors.append(deviceDescriptor);
             }
 
@@ -81,10 +83,11 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
                 QString outputNumber = displayName.split(" ").at(1);
 
                 if(!myDevices().filterByParam(lightDeviceOutputParamTypeId, outputNumber).isEmpty()) {
+                    qDebug(dcUniPi()) << "Skipping device because already added" << outputNumber;
                     continue;
                 }
 
-                DeviceDescriptor deviceDescriptor(lightDeviceClassId, QString("Light %1").arg(outputNumber), "");
+                DeviceDescriptor deviceDescriptor(lightDeviceClassId, QString("Light %1").arg(outputNumber), "", device->id());
                 ParamList params;
                 params.append(Param(lightDeviceOutputParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
@@ -97,6 +100,7 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
                 QString outputOpenNumber = displayName.split(" ").at(1);
 
                 if(!myDevices().filterByParam(blindDeviceOutputOpenParamTypeId, outputOpenNumber).isEmpty()) {
+                    qDebug(dcUniPi()) << "Skipping device because already added" << outputOpenNumber;
                     continue;
                 }
 
@@ -107,7 +111,7 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
                 // TODO check if the other relais with the same id have function "blind down"
 
-                DeviceDescriptor deviceDescriptor(lightDeviceClassId, QString("Blind %1").arg(outputOpenNumber), "");
+                DeviceDescriptor deviceDescriptor(lightDeviceClassId, QString("Blind %1").arg(outputOpenNumber), "", device->id());
                 ParamList params;
                 params.append(Param(blindDeviceOutputOpenParamTypeId, outputOpenNumber));
                 params.append(Param(blindDeviceOutputCloseParamTypeId, outputCloseNumber));
@@ -129,7 +133,6 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
     if(device->deviceClassId() == neuronXS30DeviceClassId) {
 
-        QList<DeviceDescriptor> digitalInputDescriptors;
         QString serialPort = configValue(uniPiPluginSerialPortParamTypeId).toString();
         int slaveAddress = device->paramValue(neuronXS30DeviceSlaveAddressParamTypeId).toInt();
 
@@ -145,22 +148,23 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS30, m_modbusRTUMaster, slaveAddress, this);
         m_neuronExtensions.insert(device->id(), neuronExtension);
 
-        QList<DeviceDescriptor> lightDescriptors;
+        QList<DeviceDescriptor> digitalInputDescriptors;
         foreach (Param param, device->params()) {
             if (param.value().toString() == "Generic") {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronXS30DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
-                QString inputNumber = displayName.split(" ").at(1);
+                QString circuit = displayName.split(" ").at(1);
 
-                if(!myDevices().filterByParam(digitalInputDeviceNumberParamTypeId, inputNumber).isEmpty()) {
+                if(!myDevices().filterByParam(digitalInputDeviceNumberParamTypeId, circuit).isEmpty()) {
+                    qDebug(dcUniPi()) << "Skipping device because already added" << circuit;
                     continue;
                 }
 
-                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(inputNumber), "");
+                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), "", device->id());
                 ParamList params;
-                params.append(Param(digitalInputDeviceNumberParamTypeId, inputNumber));
+                params.append(Param(digitalInputDeviceNumberParamTypeId, circuit));
                 deviceDescriptor.setParams(params);
-                lightDescriptors.append(deviceDescriptor);
+                digitalInputDescriptors.append(deviceDescriptor);
             }
         }
 
@@ -319,10 +323,11 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         if (m_neurons.contains(device->parentId())) {
             Neuron *neuron = m_neurons.value(device->parentId()); //TODO what if parent is an extension
             neuron->setDigitalOutput(circuit, stateValue);
-        }
-        if (m_neuronExtensions.contains(device->parentId())) {
+        }else if (m_neuronExtensions.contains(device->parentId())) {
             NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId()); //TODO what if parent is an extension
             neuronExtension->setDigitalOutput(circuit, stateValue);
+        } else {
+            qCWarning(dcUniPi()) << "No valid parent ID";
         }
         return DeviceManager::DeviceErrorNoError;
     }
@@ -343,10 +348,11 @@ void DevicePluginUniPi::onRefreshTimer()
             if (m_neurons.contains(device->parentId())) {
                 Neuron *neuron = m_neurons.value(device->parentId());
                 value = neuron->getDigitalOutput(circuit);
-            }
-            if (m_neuronExtensions.contains(device->parentId())) {
+            } else if (m_neuronExtensions.contains(device->parentId())) {
                 NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
                 value =  neuronExtension->getDigitalOutput(circuit);
+            } else {
+                qCWarning(dcUniPi()) << "No valid parent ID";
             }
             device->setStateValue(relayOutputPowerStateTypeId, value);
         }
@@ -358,10 +364,11 @@ void DevicePluginUniPi::onRefreshTimer()
             if (m_neurons.contains(device->parentId())) {
                 Neuron *neuron = m_neurons.value(device->parentId());
                 value = neuron->getDigitalOutput(circuit);
-            }
-            if (m_neuronExtensions.contains(device->parentId())) {
+            } else if (m_neuronExtensions.contains(device->parentId())) {
                 NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
                 value =  neuronExtension->getDigitalOutput(circuit);
+            } else {
+                qCWarning(dcUniPi()) << "No valid parent ID";
             }
             device->setStateValue(lightPowerStateTypeId, value);
         }
@@ -377,11 +384,12 @@ void DevicePluginUniPi::onRefreshTimer()
                 Neuron *neuron = m_neurons.value(device->parentId()); //TODO what if parent is an extension
                 openValue = neuron->getDigitalOutput(openOutputNumber);
                 closeValue = neuron->getDigitalOutput(closeOutputNumber);
-            }
-            if (m_neuronExtensions.contains(device->parentId())) {
+            } else if (m_neuronExtensions.contains(device->parentId())) {
                 NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId()); //TODO what if parent is an extension
                 openValue = neuronExtension->getDigitalOutput(openOutputNumber);
                 closeValue = neuronExtension->getDigitalOutput(closeOutputNumber);
+            } else {
+                qCWarning(dcUniPi()) << "No valid parent ID";
             }
 
             if (!openValue && !closeValue) {

@@ -43,13 +43,16 @@ bool Neuron::loadModbusMap()
             QString line = textStream->readLine();
             QStringList list = line.split(',');
             if (list[4] == "Basic") {
-                    QString circuit = list[3].split(" ").last();
+                QString circuit = list[3].split(" ").last();
                 if (list[3].contains("Digital Input", Qt::CaseSensitivity::CaseInsensitive)) {
                     m_modbusDigitalInputRegisters.insert(circuit, list[0].toInt());
+                    qDebug(dcUniPi()) << "Found input register" << circuit << list[0].toInt();
                 } else if (list[3].contains("Digital Output", Qt::CaseSensitivity::CaseInsensitive)) {
                     m_modbusDigitalOutputRegisters.insert(circuit, list[0].toInt());
+                    qDebug(dcUniPi()) << "Found output register" << circuit << list[0].toInt();
                 } else if (list[3].contains("Relay Output", Qt::CaseSensitivity::CaseInsensitive)) {
                     m_modbusDigitalOutputRegisters.insert(circuit, list[0].toInt());
+                    qDebug(dcUniPi()) << "Found relay register" << circuit << list[0].toInt();
                 }
             }
         }
@@ -83,11 +86,13 @@ bool Neuron::loadModbusMap()
             QString line = textStream->readLine();
             QStringList list = line.split(',');
             if (list[4] == "Basic") {
-                    QString circuit = list[3].split(" ").at(3);
+                QString circuit = list[3].split(" ").at(3);
                 if (list[3].contains("Analog Input Value", Qt::CaseSensitivity::CaseInsensitive)) {
-                    m_modbusDigitalInputRegisters.insert(circuit, list[0].toInt());
+                    m_modbusAnalogInputRegisters.insert(circuit, list[0].toInt());
+                    qDebug(dcUniPi()) << "Found analog input register" << circuit << list[0].toInt();
                 } else if (list[3].contains("Analog Output Value", Qt::CaseSensitivity::CaseInsensitive)) {
-                    m_modbusDigitalOutputRegisters.insert(circuit, list[0].toInt());
+                    m_modbusAnalogOutputRegisters.insert(circuit, list[0].toInt());
+                    qDebug(dcUniPi()) << "Found analog output register" << circuit << list[0].toInt();
                 }
             }
         }
@@ -100,10 +105,12 @@ bool Neuron::loadModbusMap()
 bool Neuron::getDigitalInput(const QString &circuit)
 {
     bool value;
+
     int modbusAddress = m_modbusDigitalInputRegisters.value(circuit);
     if (!m_modbusInterface->getCoil(0, modbusAddress, &value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
+    qDebug(dcUniPi()) << "Reading digital Input" << circuit << modbusAddress << value;
     return value;
 }
 
@@ -114,6 +121,7 @@ void Neuron::setDigitalOutput(const QString &circuit, bool value)
     if (!m_modbusInterface->setCoil(0, modbusAddress, value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
+    qDebug(dcUniPi()) << "Setting digital ouput" << circuit << modbusAddress << value;
     return;
 }
 
@@ -124,20 +132,21 @@ bool Neuron::getDigitalOutput(const QString &circuit)
     if (!m_modbusInterface->getCoil(0, modbusAddress, &value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
+    qDebug(dcUniPi()) << "Reading digital Output" << circuit << modbusAddress << value;
     return value;
 }
 
 
 void Neuron::setAnalogOutput(const QString &circuit, double value)
 {
-     Q_UNUSED(circuit);
-     Q_UNUSED(value);
+    Q_UNUSED(circuit);
+    Q_UNUSED(value);
     //int modbusAddress = m_modbusAnalogOutputRegisters.value(circuit);
 }
 
 
 double Neuron::getAnalogInput(const QString &circuit)
 {
-     Q_UNUSED(circuit);
+    Q_UNUSED(circuit);
     return 0.00;
 }
