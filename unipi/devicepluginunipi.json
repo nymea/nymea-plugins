@@ -1325,6 +1325,50 @@
                             "displayName": "Relay 3.28 group",
                             "type": "int",
                             "defaultValue": 56
+                        },
+                        {
+                            "id": "122e7108-578e-467e-95d8-158fd720c83d",
+                            "name": "digitalInput101Function",
+                            "displayName": "Digital input 1.01 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "7d213545-2b50-47ae-be23-603809d9f592",
+                            "name": "digitalInput102Function",
+                            "displayName": "Digital input 1.02 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "778228aa-c707-49a5-803f-cc35a32c8e5b",
+                            "name": "digitalInput103Function",
+                            "displayName": "Digital input 1.03 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
+                        },
+                        {
+                            "id": "9240b126-42ad-4ef8-8128-d16954c2fe80",
+                            "name": "digitalInput104Function",
+                            "displayName": "Digital input 1.04 function",
+                            "type": "QString",
+                            "allowedValues": [
+                                "Unconfigured",
+                                "Genergic Input",
+                                "Light switch"
+                            ]
                         }
                     ],
                     "stateTypes": [
@@ -1645,6 +1689,64 @@
                     ]
                 },
                 {
+                    "id": "db669ee6-63a7-4108-8742-8af026c4ada9",
+                    "name": "lock",
+                    "displayName": "Lock",
+                    "createMethods": ["auto"],
+                    "interfaces": ["smartlock"],
+                    "paramTypes": [
+                        {
+                            "id": "7a09e3ad-452c-4bf4-a00c-f8114ed9a7a1",
+                            "name": "number",
+                            "displayName": "Output number",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "22d9dbd2-e803-4e2c-98dd-ef904f20c795",
+                            "name": "unlatchTime",
+                            "displayName": "Unlatch time",
+                            "type": "int",
+                            "unit": "Seconds",
+                            "defaultValue": 60
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a51c7ed2-7483-4e76-b2ff-8ae2e48e39ad",
+                            "name": "unlatch",
+                            "displayName": "Unlatch"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "62b81d59-c23a-404b-90fc-3407614ee997",
+                            "name": "state",
+                            "displayName": "State",
+                            "displayNameEvent": "State changed",
+                            "allowedValues": [
+                                "locked",
+                                "locking",
+                                "unlocked",
+                                "unlocking",
+                                "unlatched",
+                                "unlatching"
+                            ],
+                            "type": "QString",
+                            "defaultValue": "locked"
+                        },
+                        {
+                            "id": "b99318ec-7df8-4b44-a36c-35a1b19895b8",
+                            "name": "permanentlyUnlatched",
+                            "displayName": "Permanentyl unlatched",
+                            "displayNameEvent": "Permanently unlatched changed",
+                            "displayNameAction": "Permanently unlatched",
+                            "type": "bool",
+                            "defaulValue" : false,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
                     "id": "0bec278a-98f1-416b-b496-6d00740f178a",
                     "name": "digitalInput",
                     "displayName": "Digital input",
@@ -1821,20 +1923,6 @@
                             "name": "outputClose",
                             "displayName": "Output close",
                             "type": "QString"
-                        },
-                        {
-                            "id": "a030f030-4f26-4f33-aadf-ec3c3a5141a7",
-                            "name": "outputTypeOpen",
-                            "displayName": "Output type open",
-                            "type": "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "fde509c5-8db1-411b-9e71-36997c39ee6b",
-                            "name": "outputTypeClose",
-                            "displayName": "Output type close",
-                            "type": "QString",
-                            "readOnly": true
                         }
                     ],
                     "stateTypes":[

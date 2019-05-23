@@ -33,6 +33,7 @@
 #include "modbusrtumaster.h"
 #include "modbustcpmaster.h"
 
+#include <QTimer>
 
 class DevicePluginUniPi : public DevicePlugin
 {
@@ -58,6 +59,8 @@ private:
     QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
     ModbusTCPMaster *m_modbusTCPMaster = nullptr;
     ModbusRTUMaster *m_modbusRTUMaster = nullptr;
+
+    QHash<Device *, QTimer *> m_unlatchTimer;
 
 private slots:
     void onRefreshTimer();

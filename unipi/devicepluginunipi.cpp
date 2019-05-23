@@ -25,6 +25,7 @@
 #include "plugininfo.h"
 
 #include <QJsonDocument>
+#include <QTimer>
 
 DevicePluginUniPi::DevicePluginUniPi()
 {
@@ -33,7 +34,7 @@ DevicePluginUniPi::DevicePluginUniPi()
 
 Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
-    if(myDevices().empty()) {
+    if(!m_refreshTimer) {
         m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1); //needs to be faster for the input polling
         connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginUniPi::onRefreshTimer);
     }
@@ -144,6 +145,8 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
         QList<DeviceDescriptor> relayOutputDescriptors;
         QList<DeviceDescriptor> lightDescriptors;
         QList<DeviceDescriptor> blindDescriptors;
+        QList<DeviceDescriptor> lockDescriptors;
+        QList<DeviceDescriptor> digitalInputDescriptors;
 
         foreach (Param param, device->params()) {
             if (param.value().toString() == "Generic") {
@@ -161,7 +164,25 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 params.append(Param(relayOutputDeviceNumberParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
                 deviceDescriptor.setParentDeviceId(device->id());
-                lightDescriptors.append(deviceDescriptor);
+                relayOutputDescriptors.append(deviceDescriptor);
+            }
+
+            if (param.value().toString() == "Lock") {
+                DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
+                QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
+                QString outputNumber = displayName.split(" ").at(1);
+
+                if(!myDevices().filterByParam(lockDeviceNumberParamTypeId, outputNumber).isEmpty()) {
+                    qDebug(dcUniPi()) << "Skipping device because already added" << outputNumber;
+                    continue;
+                }
+
+                DeviceDescriptor deviceDescriptor(lockDeviceClassId, QString("Lock %1").arg(outputNumber), "", device->id());
+                ParamList params;
+                params.append(Param(lockDeviceNumberParamTypeId, outputNumber));
+                deviceDescriptor.setParams(params);
+                deviceDescriptor.setParentDeviceId(device->id());
+                lockDescriptors.append(deviceDescriptor);
             }
 
             if (param.value().toString() == "Light") {
@@ -209,17 +230,34 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                     }
                 }
 
-               if(!myDevices().filterByParam(blindDeviceOutputCloseParamTypeId, outputCloseNumber).isEmpty()) {
+                if(!myDevices().filterByParam(blindDeviceOutputCloseParamTypeId, outputCloseNumber).isEmpty()) {
                     qDebug(dcUniPi()) << "Skipping device because close output already used" << outputCloseNumber;
                     continue;
                 }
 
-                DeviceDescriptor deviceDescriptor(lightDeviceClassId, QString("Blind %1").arg(outputOpenNumber), "", device->id());
+                DeviceDescriptor deviceDescriptor(blindDeviceClassId, QString("Blind %1").arg(outputOpenNumber), "", device->id());
                 ParamList params;
                 params.append(Param(blindDeviceOutputOpenParamTypeId, outputOpenNumber));
                 params.append(Param(blindDeviceOutputCloseParamTypeId, outputCloseNumber));
                 deviceDescriptor.setParams(params);
-                lightDescriptors.append(deviceDescriptor);
+                blindDescriptors.append(deviceDescriptor);
+            }
+
+            if (param.value().toString() == "Generic") {
+                DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
+                QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
+                QString circuit = displayName.split(" ").at(1);
+
+                if(!myDevices().filterByParam(digitalInputDeviceNumberParamTypeId, circuit).isEmpty()) {
+                    qDebug(dcUniPi()) << "Skipping device because already added" << circuit;
+                    continue;
+                }
+
+                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), "", device->id());
+                ParamList params;
+                params.append(Param(digitalInputDeviceNumberParamTypeId, circuit));
+                deviceDescriptor.setParams(params);
+                digitalInputDescriptors.append(deviceDescriptor);
             }
         }
         if (!relayOutputDescriptors.isEmpty())
@@ -230,6 +268,12 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
 
         if (!blindDescriptors.isEmpty())
             emit autoDevicesAppeared(blindDeviceClassId, blindDescriptors);
+
+        if (!digitalInputDescriptors.isEmpty())
+            emit autoDevicesAppeared(digitalInputDeviceClassId, digitalInputDescriptors);
+
+        if (!lockDescriptors.isEmpty())
+            emit autoDevicesAppeared(lockDeviceClassId, lockDescriptors);
     }
 
     if(device->deviceClassId() == neuronXS30DeviceClassId) {
@@ -256,6 +300,12 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
 
         if (!digitalInputDescriptors.isEmpty())
             emit autoDevicesAppeared(digitalInputDeviceClassId, digitalInputDescriptors);
+    }
+    if (device->deviceClassId() == lockDeviceClassId) {
+        QTimer *unlatchTimer = new QTimer(this);
+        unlatchTimer->setSingleShot(true);
+        unlatchTimer->setInterval(device->paramValue(lockDeviceUnlatchTimeParamTypeId).toInt() * 1000);
+        m_unlatchTimer.insert(device, unlatchTimer);
     }
 }
 
@@ -284,10 +334,52 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
     if (!m_modbusTCPMaster)
         return DeviceManager::DeviceErrorHardwareNotAvailable;
 
+    if (device->deviceClassId() == lockDeviceClassId) {
+        if (action.actionTypeId() == lockUnlatchActionTypeId) {
+            QString digitalOutputNumber = device->paramValue(lockDeviceNumberParamTypeId).toString();
+            if (m_neurons.contains(device->parentId())) {
+                Neuron *neuron = m_neurons.value(device->parentId());
+                neuron->setDigitalOutput(digitalOutputNumber, true);
+            }
+            if (m_neuronExtensions.contains(device->parentId())) {
+                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
+                neuronExtension->setDigitalOutput(digitalOutputNumber, true);
+            }
+
+            QTimer *unlatchTimer = m_unlatchTimer.value(device);
+            unlatchTimer->start();
+            connect(unlatchTimer, &QTimer::timeout, this, [this]() {
+                  QTimer *timer= static_cast<QTimer*>(sender());
+                  Device *device = m_unlatchTimer.key(timer);
+                  QString digitalOutputNumber = device->paramValue(lockDeviceNumberParamTypeId).toString();
+                  if (m_neurons.contains(device->parentId())) {
+                      Neuron *neuron = m_neurons.value(device->parentId());
+                      neuron->setDigitalOutput(digitalOutputNumber, false);
+                  }
+                  if (m_neuronExtensions.contains(device->parentId())) {
+                      NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
+                      neuronExtension->setDigitalOutput(digitalOutputNumber, false);
+                  }
+            });
+        }
+
+        if (action.actionTypeId() == lockPermanentlyUnlatchedActionTypeId) {
+            QString digitalOutputNumber = device->paramValue(lockDeviceNumberParamTypeId).toString();
+            bool stateValue = action.param(lockPermanentlyUnlatchedActionPermanentlyUnlatchedParamTypeId).value().toBool();
+            if (m_neurons.contains(device->parentId())) {
+                Neuron *neuron = m_neurons.value(device->parentId());
+                neuron->setDigitalOutput(digitalOutputNumber, stateValue);
+            }
+            if (m_neuronExtensions.contains(device->parentId())) {
+                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
+                neuronExtension->setDigitalOutput(digitalOutputNumber, stateValue);
+            }
+        }
+    }
 
     if ((device->deviceClassId() == digitalOutputDeviceClassId) ||
             (device->deviceClassId() == relayOutputDeviceClassId))  {
-
+        //TODO unpredictable behaviour
         if (action.actionTypeId() == digitalOutputPowerActionTypeId) {
             QString digitalOutputNumber = device->paramValue(digitalOutputDeviceNumberParamTypeId).toString();
             bool stateValue = action.param(digitalOutputPowerActionPowerParamTypeId).value().toBool();
