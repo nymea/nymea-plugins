@@ -126,7 +126,7 @@ DeviceManager::DeviceSetupStatus DevicePluginHoneywellScanner::setupDevice(Devic
         connect(scanner, &HoneywellScanner::codeScanned, this, [device, this](const QString &code) {
             qCDebug(dcHoneywellScanner()) << "Scanner" << device << "code scanned" << code;
             device->setStateValue(scannerScannedCodeStateTypeId, code);
-            emit emitEvent(Event(scannerTriggerEventTypeId, device->id()));
+            emit emitEvent(Event(scannerTriggeredEventTypeId, device->id()));
         });
 
         m_scanners.insert(device, scanner);

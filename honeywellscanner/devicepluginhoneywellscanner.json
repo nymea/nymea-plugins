@@ -111,7 +111,7 @@
                     "eventTypes": [
                         {
                             "id": "874fc3f5-6894-467a-b75f-633d51f25e29",
-                            "name": "trigger",
+                            "name": "triggered",
                             "displayName": "Code scanned"
                         }
                     ]
