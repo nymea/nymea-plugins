@@ -312,17 +312,18 @@ void SmtpClient::sendEmailInternally(const Message &message)
     m_messageData.clear();
 
     // Create plain message content
-    m_messageData = "To: " + m_rcpt + "\n";
-    m_messageData.append("From: " + m_sender + "\n");
-    m_messageData.append("Subject: " + message.subject + "\n");
-    m_messageData.append("Date: " + createDateString() + "\n");
-    m_messageData.append("Content-Type: text/plain; charset=\"UTF-8\"\n");
-    m_messageData.append("Content-Transfer-Encoding: quoted-printable\n");
-    m_messageData.append("MIME-Version: 1.0\n");
-    m_messageData.append("X-Mailer: nymea;\n");
+    m_messageData = "To: " + m_rcpt + "\r\n";
+    m_messageData.append("From: " + m_sender + "\r\n");
+    m_messageData.append("Subject: " + message.subject + "\r\n");
+    m_messageData.append("Date: " + createDateString() + "\r\n");
+    m_messageData.append("Content-Type: text/plain; charset=\"UTF-8\"\r\n");
+    m_messageData.append("Content-Transfer-Encoding: quoted-printable\r\n");
+    m_messageData.append("MIME-Version: 1.0\r\n");
+    m_messageData.append("X-Mailer: nymea;\r\n");
+    m_messageData.append("\r\n");
     m_messageData.append(message.body);
-    m_messageData.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) );
-    m_messageData.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) );
+    //m_messageData.replace(QString::fromLatin1("\n"), QString::fromLatin1("\r\n"));
+    //m_messageData.replace(QString::fromLatin1("\r\n.\r\n"), QString::fromLatin1("\r\n..\r\n"));
     m_messageData.append("\r\n.\r\n");
 
     setState(StateInitialize);
