@@ -22,7 +22,14 @@
             "name": "serialPort",
             "displayName": "Serial port",
             "type": "QString",
-            "defaultValue": "/dev/ttyAMA0"
+            "defaultValue": "/dev/extcomm/0/0"
+        },
+        {
+            "id": "a05aaedf-5345-4ab4-b471-8c7d106b473e",
+            "name": "baudrate",
+            "displayName": "Baudrate",
+            "type": "int",
+            "defaultValue": 19200
         }
     ],
     "vendors": [
@@ -1344,7 +1351,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Genergic input",
                                 "Light switch"
                             ]
                         },
@@ -1414,7 +1421,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Genergic input",
                                 "Light switch"
                             ]
                         },
