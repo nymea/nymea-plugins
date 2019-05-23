@@ -52,7 +52,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -75,7 +75,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -98,7 +98,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -121,7 +121,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -144,7 +144,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -167,7 +167,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -190,7 +190,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -213,7 +213,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -236,7 +236,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -259,7 +259,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -282,7 +282,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -305,7 +305,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -328,7 +328,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -351,7 +351,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -374,7 +374,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -397,7 +397,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -420,7 +420,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -443,7 +443,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -466,7 +466,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -489,7 +489,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -512,7 +512,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -535,7 +535,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -558,7 +558,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -581,7 +581,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -604,7 +604,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -627,7 +627,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -650,7 +650,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -673,7 +673,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -696,7 +696,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -719,7 +719,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -742,7 +742,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -765,7 +765,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -788,7 +788,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -811,7 +811,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -834,7 +834,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -857,7 +857,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -880,7 +880,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -903,7 +903,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -926,7 +926,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -949,7 +949,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -972,7 +972,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -995,7 +995,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1018,7 +1018,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1041,7 +1041,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1064,7 +1064,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1087,7 +1087,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1110,7 +1110,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1133,7 +1133,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1156,7 +1156,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1179,7 +1179,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1202,7 +1202,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1225,7 +1225,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1248,7 +1248,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1271,7 +1271,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1294,7 +1294,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1317,7 +1317,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Output",
+                                "Generic Output",
                                 "Light",
                                 "Power socket",
                                 "Heating",
@@ -1340,7 +1340,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1351,7 +1351,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic input",
+                                "Generic input",
                                 "Light switch"
                             ]
                         },
@@ -1362,7 +1362,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1373,7 +1373,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         }
@@ -1410,7 +1410,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1421,7 +1421,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic input",
+                                "Generic input",
                                 "Light switch"
                             ]
                         },
@@ -1432,7 +1432,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1443,7 +1443,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1454,7 +1454,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1465,7 +1465,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1476,7 +1476,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1487,7 +1487,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1498,7 +1498,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1509,7 +1509,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1520,7 +1520,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1531,7 +1531,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1542,7 +1542,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1553,7 +1553,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1564,7 +1564,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1575,7 +1575,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1586,7 +1586,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1597,7 +1597,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1608,7 +1608,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1619,7 +1619,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1630,7 +1630,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1641,7 +1641,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         },
@@ -1652,7 +1652,7 @@
                             "type": "QString",
                             "allowedValues": [
                                 "Unconfigured",
-                                "Genergic Input",
+                                "Generic Input",
                                 "Light switch"
                             ]
                         }

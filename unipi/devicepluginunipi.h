@@ -53,7 +53,7 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
-    PluginTimer *m_refreshTimer = nullptr;
+    QTimer *m_refreshTimer = nullptr;
 
     QHash<DeviceId, Neuron *> m_neurons;
     QHash<DeviceId, NeuronExtension *> m_neuronExtensions;

@@ -110,7 +110,7 @@ bool Neuron::getDigitalInput(const QString &circuit)
     if (!m_modbusInterface->getCoil(0, modbusAddress, &value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
-    qDebug(dcUniPi()) << "Reading digital Input" << circuit << modbusAddress << value;
+    //qDebug(dcUniPi()) << "Reading digital Input" << circuit << modbusAddress << value;
     return value;
 }
 
@@ -121,7 +121,7 @@ void Neuron::setDigitalOutput(const QString &circuit, bool value)
     if (!m_modbusInterface->setCoil(0, modbusAddress, value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
-    qDebug(dcUniPi()) << "Setting digital ouput" << circuit << modbusAddress << value;
+    //qDebug(dcUniPi()) << "Setting digital ouput" << circuit << modbusAddress << value;
     return;
 }
 
@@ -132,7 +132,7 @@ bool Neuron::getDigitalOutput(const QString &circuit)
     if (!m_modbusInterface->getCoil(0, modbusAddress, &value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
-    qDebug(dcUniPi()) << "Reading digital Output" << circuit << modbusAddress << value;
+    //qDebug(dcUniPi()) << "Reading digital Output" << circuit << modbusAddress << value;
     return value;
 }
 
