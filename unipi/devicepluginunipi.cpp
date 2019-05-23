@@ -105,6 +105,11 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         return DeviceManager::DeviceSetupStatusSuccess;
     }
 
+    if (device->deviceClassId() == lockDeviceClassId) {
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
     if (device->deviceClassId() == analogInputDeviceClassId) {
 
         return DeviceManager::DeviceSetupStatusSuccess;
@@ -126,14 +131,14 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
-        /*
+
         DimmerSwitch* dimmerSwitch = new DimmerSwitch(this);
 
         connect(dimmerSwitch, &DimmerSwitch::pressed, this, &DevicePluginUniPi::onDimmerSwitchPressed);
         connect(dimmerSwitch, &DimmerSwitch::longPressed, this, &DevicePluginUniPi::onDimmerSwitchLongPressed);
         connect(dimmerSwitch, &DimmerSwitch::doublePressed, this, &DevicePluginUniPi::onDimmerSwitchDoublePressed);
         connect(dimmerSwitch, &DimmerSwitch::dimValueChanged, this, &DevicePluginUniPi::onDimmerSwitchDimValueChanged);
-        m_dimmerSwitches.insert(dimmerSwitch, device);*/
+        m_dimmerSwitches.insert(dimmerSwitch, device);
         return DeviceManager::DeviceSetupStatusSuccess;
     }
     return DeviceManager::DeviceSetupStatusFailure;
@@ -163,7 +168,6 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 ParamList params;
                 params.append(Param(relayOutputDeviceNumberParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
-                deviceDescriptor.setParentDeviceId(device->id());
                 relayOutputDescriptors.append(deviceDescriptor);
             }
 
@@ -181,7 +185,6 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 ParamList params;
                 params.append(Param(lockDeviceNumberParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
-                deviceDescriptor.setParentDeviceId(device->id());
                 lockDescriptors.append(deviceDescriptor);
             }
 
@@ -243,7 +246,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 blindDescriptors.append(deviceDescriptor);
             }
 
-            if (param.value().toString() == "Generic") {
+            if (param.value().toString() == "Genergic Input") {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
                 QString circuit = displayName.split(" ").at(1);

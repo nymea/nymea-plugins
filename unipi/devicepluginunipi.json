@@ -1719,11 +1719,11 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "62b81d59-c23a-404b-90fc-3407614ee997",
+                            "id": "6dd1124b-43cb-4535-baa9-3c1661776bf3",
                             "name": "state",
                             "displayName": "State",
                             "displayNameEvent": "State changed",
-                            "allowedValues": [
+                            "possibleValues": [
                                 "locked",
                                 "locking",
                                 "unlocked",
@@ -1737,11 +1737,11 @@
                         {
                             "id": "b99318ec-7df8-4b44-a36c-35a1b19895b8",
                             "name": "permanentlyUnlatched",
-                            "displayName": "Permanentyl unlatched",
+                            "displayName": "Permanently unlatched",
                             "displayNameEvent": "Permanently unlatched changed",
                             "displayNameAction": "Permanently unlatched",
                             "type": "bool",
-                            "defaulValue" : false,
+                            "defaultValue" : false,
                             "writable": true
                         }
                     ]
