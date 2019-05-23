@@ -122,7 +122,7 @@ bool NeuronExtension::getDigitalInput(const QString &circuit)
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
 
-    qDebug(dcUniPi()) << "Reading digital input" << circuit << modbusAddress << value;
+    //qDebug(dcUniPi()) << "Reading digital input" << circuit << modbusAddress << value;
     return value;
 }
 
@@ -134,7 +134,7 @@ void NeuronExtension::setDigitalOutput(const QString &circuit, bool value)
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
 
-    qDebug(dcUniPi()) << "Setting digital ouput" << circuit << modbusAddress << value;
+    //qDebug(dcUniPi()) << "Setting digital ouput" << circuit << modbusAddress << value;
     return;
 }
 
@@ -146,7 +146,7 @@ bool NeuronExtension::getDigitalOutput(const QString &circuit)
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
 
-    qDebug(dcUniPi()) << "Reading digital output" << circuit << modbusAddress << value;
+    //qDebug(dcUniPi()) << "Reading digital output" << circuit << modbusAddress << value;
     return value;
 }
 

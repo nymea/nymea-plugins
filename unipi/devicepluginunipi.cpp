@@ -40,8 +40,10 @@ void DevicePluginUniPi::init()
 DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
     if(!m_refreshTimer) {
-        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1); //needs to be faster for the input polling
-        connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginUniPi::onRefreshTimer);
+        QTimer *m_refreshTimer = new QTimer(this);
+        m_refreshTimer->setInterval(100);
+        m_refreshTimer->setTimerType(Qt::TimerType::PreciseTimer);
+        connect(m_refreshTimer, &QTimer::timeout, this, &DevicePluginUniPi::onRefreshTimer);
     }
 
     if(device->deviceClassId() == neuronL403DeviceClassId) {
@@ -160,7 +162,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
         QList<DeviceDescriptor> digitalInputDescriptors;
 
         foreach (Param param, device->params()) {
-            if (param.value().toString() == "Generic") {
+            if (param.value().toString().contains("Generic ouput", Qt::CaseSensitivity::CaseInsensitive)) {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
                 QString outputNumber = displayName.split(" ").at(1);
@@ -175,6 +177,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 params.append(Param(relayOutputDeviceNumberParamTypeId, outputNumber));
                 deviceDescriptor.setParams(params);
                 relayOutputDescriptors.append(deviceDescriptor);
+                qCDebug(dcUniPi()) << "Adding generic output:" << outputNumber;
             }
 
             if (param.value().toString() == "Lock") {
@@ -253,7 +256,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 blindDescriptors.append(deviceDescriptor);
             }
 
-            if (param.value().toString() == "Genergic input") {
+            if (param.value().toString().contains("Generic input", Qt::CaseSensitivity::CaseInsensitive)) {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
                 QString circuit = displayName.split(" ").at(1);
@@ -268,6 +271,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 params.append(Param(digitalInputDeviceNumberParamTypeId, circuit));
                 deviceDescriptor.setParams(params);
                 digitalInputDescriptors.append(deviceDescriptor);
+                qCDebug(dcUniPi()) << "Adding digital input:" << circuit;
             }
         }
         if (!relayOutputDescriptors.isEmpty())
@@ -290,7 +294,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
 
         QList<DeviceDescriptor> digitalInputDescriptors;
         foreach (Param param, device->params()) {
-            if (param.value().toString() == "Generic input") {
+            if (param.value().toString().contains("Generic input", Qt::CaseSensitivity::CaseInsensitive)) {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronXS30DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
                 QString circuit = displayName.split(" ").at(1);
@@ -305,6 +309,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 params.append(Param(digitalInputDeviceNumberParamTypeId, circuit));
                 deviceDescriptor.setParams(params);
                 digitalInputDescriptors.append(deviceDescriptor);
+                qCDebug(dcUniPi()) << "Adding digital input:" << circuit;
             }
         }
 
@@ -314,7 +319,6 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
     if (device->deviceClassId() == lockDeviceClassId) {
         QTimer *unlatchTimer = new QTimer(this);
         unlatchTimer->setSingleShot(true);
-        unlatchTimer->setInterval((device->paramValue(lockDeviceUnlatchTimeParamTypeId).toInt()*1000));
         m_unlatchTimer.insert(device, unlatchTimer);
     }
 }
@@ -334,7 +338,7 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
 
     if (myDevices().isEmpty()) {
         m_refreshTimer->stop();
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
+        m_refreshTimer->deleteLater();
     }
 }
 
@@ -357,7 +361,7 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             }
 
             QTimer *unlatchTimer = m_unlatchTimer.value(device);
-            unlatchTimer->start();
+            unlatchTimer->start(device->paramValue(lockDeviceUnlatchTimeParamTypeId).toInt()*1000);
             connect(unlatchTimer, &QTimer::timeout, this, [this]() {
                   QTimer *timer= static_cast<QTimer*>(sender());
                   Device *device = m_unlatchTimer.key(timer);
