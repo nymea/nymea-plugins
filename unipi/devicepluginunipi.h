@@ -51,11 +51,11 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
+    PluginTimer *m_refreshTimer = nullptr;
 
     QHash<DeviceId, Neuron *> m_neurons;
     QHash<DeviceId, NeuronExtension *> m_neuronExtensions;
     QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
-    PluginTimer *m_refreshTimer = nullptr;
     ModbusTCPMaster *m_modbusTCPMaster = nullptr;
     ModbusRTUMaster *m_modbusRTUMaster = nullptr;
 
