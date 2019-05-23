@@ -79,7 +79,7 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
     if(device->deviceClassId() == customMailDeviceClassId) {
         SmtpClient *smtpClient = new SmtpClient(this);
         smtpClient->setHost(device->paramValue(customMailDeviceSmtpParamTypeId).toString());
-        smtpClient->setPort(device->paramValue(customMailDevicePortParamTypeId).toInt());
+        smtpClient->setPort(static_cast<quint16>(device->paramValue(customMailDevicePortParamTypeId).toUInt()));
         smtpClient->setUser(device->paramValue(customMailDeviceCustomUserParamTypeId).toString());
 
         // TODO: use cryptography to save password not as plain text
@@ -103,7 +103,10 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
             return DeviceManager::DeviceSetupStatusFailure;
         }
 
-        smtpClient->setRecipient(device->paramValue(customMailDeviceCustomRecipientParamTypeId).toString());
+        QString recipientsString = device->paramValue(customMailDeviceCustomRecipientParamTypeId).toString();
+        QStringList recipients = recipientsString.split(",");
+
+        smtpClient->setRecipients(recipients);
         smtpClient->setSender(device->paramValue(customMailDeviceCustomSenderParamTypeId).toString());
 
         connect(smtpClient, &SmtpClient::testLoginFinished, this, &DevicePluginMailNotification::testLoginFinished);

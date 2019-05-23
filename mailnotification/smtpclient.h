@@ -23,12 +23,13 @@
 #ifndef SMTPCLIENT_H
 #define SMTPCLIENT_H
 
-#include <QObject>
+#include <QQueue>
 #include <QDebug>
+#include <QObject>
 #include <QTcpSocket>
 #include <QSslSocket>
+#include <QStringList>
 #include <QLoggingCategory>
-#include <QQueue>
 
 #include "plugin/deviceplugin.h"
 
@@ -90,7 +91,7 @@ public:
     void setUser(const QString &user);
     void setPassword(const QString &password);
     void setSender(const QString &sender);
-    void setRecipient(const QString &rcpt);
+    void setRecipients(const QStringList &recipients);
 
 private:
     QSslSocket *m_socket = nullptr;
@@ -103,7 +104,8 @@ private:
     QString m_sender;
     AuthenticationMethod m_authenticationMethod;
     EncryptionType m_encryptionType;
-    QString m_rcpt;
+    QStringList m_recipients;
+    QQueue<QString> m_recipientsQueue;
 
     // Created for each message
     Message m_message;
@@ -115,16 +117,21 @@ private:
 
     QString createDateString();
     void setState(State state);
-    bool verifyResponseCode(int responseCode);
+
+    void processServerResponse(int responseCode, const QString &response);
 
     void sendNextMail();
     void sendEmailInternally(const Message &message);
+
+    void handleSmtpFailure();
+    void handleUnexpectedSmtpCode(int responseCode, const QString &serverMessage);
 
 signals:
     void sendMailFinished(const bool &success, const ActionId &actionId);
     void testLoginFinished(const bool &success);
 
 private slots:
+
     void onSocketError(QAbstractSocket::SocketError error);
     void connected();
     void disconnected();
