@@ -31,13 +31,14 @@ public:
     double getAnalogInput(const QString &circuit);
 
 private:
-    QHash<QString, int> m_modbusMap;
+    QHash<QString, int> m_modbusDigitalOutputRegisters;
+    QHash<QString, int> m_modbusDigitalInputRegisters;
+    QHash<QString, int> m_modbusAnalogInputRegisters;
+    QHash<QString, int> m_modbusAnalogOutputRegisters;
+
     ModbusRTUMaster *m_modbusInterface = nullptr;
     int m_slaveAddress = 0;
     ExtensionTypes m_extensionType = ExtensionTypes::xS10;
-
-
-    int getModbusAddress(const QString &circuit);
 
 signals:
 
