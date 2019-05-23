@@ -25,7 +25,7 @@
 #define DEVICEPLUGINAVAHIMONITOR_H
 
 #include "plugin/deviceplugin.h"
-#include "network/avahi/avahiserviceentry.h"
+#include "network/zeroconf/zeroconfserviceentry.h"
 
 #include <QProcess>
 
@@ -45,8 +45,8 @@ public:
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
 
 private slots:
-    void onServiceEntryAdded(const AvahiServiceEntry &serviceEntry);
-    void onServiceEntryRemoved(const AvahiServiceEntry &serviceEntry);
+    void onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
+    void onServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry);
 };
 
 #endif // DEVICEPLUGINAVAHIMONITOR_H
