@@ -15,32 +15,28 @@ NeuronExtension::NeuronExtension(ExtensionTypes extensionType, ModbusRTUMaster *
 
 bool NeuronExtension::loadModbusMap()
 {
-    QStringList fileList;
+    QStringList fileCoilList;
+    QStringList fileRegisterList;
 
     switch(m_extensionType) {
     case ExtensionTypes::xS10:
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS10/Neuron_xS10-Coils-group-1.csv"));
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS10/Neuron_xS10-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS10/Neuron_xS10-Coils-group-1.csv"));
         break;
     case ExtensionTypes::xS20:
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS20/Neuron_xS20-Coils-group-1.csv"));
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS20/Neuron_xS20-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS20/Neuron_xS20-Coils-group-1.csv"));
         break;
     case ExtensionTypes::xS30:
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS30/Neuron_xS30-Coils-group-1.csv"));
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS30/Neuron_xS30-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS30/Neuron_xS30-Coils-group-1.csv"));
         break;
     case ExtensionTypes::xS40:
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS40/Neuron_xS40-Coils-group-1.csv"));
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS40/Neuron_xS40-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS40/Neuron_xS40-Coils-group-1.csv"));
         break;
     case ExtensionTypes::xS50:
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS50/Neuron_xS50-Coils-group-1.csv"));
-        fileList.append(QString("/usr/share/nymea/modbus/Neuron_xS50/Neuron_xS50-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS50/Neuron_xS50-Coils-group-1.csv"));
         break;
     }
 
-    foreach (QString csvFilePath, fileList) {
+    foreach (QString csvFilePath, fileCoilList) {
         qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
         QFile *csvFile = new QFile(csvFilePath);
         if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -52,7 +48,60 @@ bool NeuronExtension::loadModbusMap()
         while (!textStream->atEnd()) {
             QString line = textStream->readLine();
             QStringList list = line.split(',');
-            m_modbusMap.insert(list[3], list[0].toInt());
+            if (list[4] == "Basic") {
+                    QString circuit = list[3].split(" ").last();
+                if (list[3].contains("Digital Input", Qt::CaseSensitivity::CaseInsensitive)) {
+                    m_modbusDigitalInputRegisters.insert(circuit, list[0].toInt());
+                } else if (list[3].contains("Digital Output", Qt::CaseSensitivity::CaseInsensitive)) {
+                    m_modbusDigitalOutputRegisters.insert(circuit, list[0].toInt());
+                } else if (list[3].contains("Relay Output", Qt::CaseSensitivity::CaseInsensitive)) {
+                    m_modbusDigitalOutputRegisters.insert(circuit, list[0].toInt());
+                }
+            }
+        }
+        csvFile->close();
+        csvFile->deleteLater();
+    }
+
+
+    switch(m_extensionType) {
+    case ExtensionTypes::xS10:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS10/Neuron_xS10-Registers-group-1.csv"));
+        break;
+    case ExtensionTypes::xS20:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS20/Neuron_xS20-Registers-group-1.csv"));
+        break;
+    case ExtensionTypes::xS30:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS30/Neuron_xS30-Registers-group-1.csv"));
+        break;
+    case ExtensionTypes::xS40:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS40/Neuron_xS40-Registers-group-1.csv"));
+        break;
+    case ExtensionTypes::xS50:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS50/Neuron_xS50-Registers-group-1.csv"));
+        break;
+    }
+
+    foreach (QString csvFilePath, fileRegisterList) {
+        qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
+        QFile *csvFile = new QFile(csvFilePath);
+        if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
+            qCDebug(dcUniPi()) << csvFile->errorString();
+            csvFile->deleteLater();
+            return false;
+        }
+        QTextStream *textStream = new QTextStream(csvFile);
+        while (!textStream->atEnd()) {
+            QString line = textStream->readLine();
+            QStringList list = line.split(',');
+            if (list[4] == "Basic") {
+                    QString circuit = list[3].split(" ").at(3);
+                if (list[3].contains("Analog Input Value", Qt::CaseSensitivity::CaseInsensitive)) {
+                    m_modbusDigitalInputRegisters.insert(circuit, list[0].toInt());
+                } else if (list[3].contains("Analog Output Value", Qt::CaseSensitivity::CaseInsensitive)) {
+                    m_modbusDigitalOutputRegisters.insert(circuit, list[0].toInt());
+                }
+            }
         }
         csvFile->close();
         csvFile->deleteLater();
@@ -64,7 +113,7 @@ bool NeuronExtension::loadModbusMap()
 bool NeuronExtension::getDigitalInput(const QString &circuit)
 {
     bool value;
-    int modbusAddress = getModbusAddress(circuit); //TODO add prefix to circuit
+    int modbusAddress = m_modbusDigitalInputRegisters.value(circuit);
     if (!m_modbusInterface->getCoil(m_slaveAddress, modbusAddress, &value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
@@ -74,7 +123,7 @@ bool NeuronExtension::getDigitalInput(const QString &circuit)
 
 void NeuronExtension::setDigitalOutput(const QString &circuit, bool value)
 {
-    int modbusAddress = getModbusAddress(circuit); //TODO add prefix to circuit
+    int modbusAddress = m_modbusDigitalOutputRegisters.value(circuit);
     if (!m_modbusInterface->setCoil(m_slaveAddress, modbusAddress, value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
@@ -84,7 +133,7 @@ void NeuronExtension::setDigitalOutput(const QString &circuit, bool value)
 bool NeuronExtension::getDigitalOutput(const QString &circuit)
 {
     bool value;
-    int modbusAddress = getModbusAddress(circuit); //TODO add prefix to circuit
+    int modbusAddress = m_modbusDigitalOutputRegisters.value(circuit);
     if (!m_modbusInterface->getCoil(m_slaveAddress, modbusAddress, &value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
     }
@@ -94,7 +143,7 @@ bool NeuronExtension::getDigitalOutput(const QString &circuit)
 
 void NeuronExtension::setAnalogOutput(const QString &circuit, double value)
 {
-    int modbusAddress = getModbusAddress(circuit); //TODO add prefix to circuit
+    int modbusAddress = m_modbusAnalogOutputRegisters.value(circuit);
     int rawValue = static_cast<int>(value);
     if (!m_modbusInterface->setRegister(m_slaveAddress, modbusAddress, rawValue)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;

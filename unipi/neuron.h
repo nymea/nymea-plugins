@@ -39,10 +39,13 @@ public:
 private:
 
     ModbusTCPMaster *m_modbusInterface = nullptr;
-    QHash<QString, int> m_modbusMap;
-    NeuronTypes m_neuronType = NeuronTypes::S103;
 
-    int getModbusAddress(const QString &circuit);
+    QHash<QString, int> m_modbusDigitalOutputRegisters;
+    QHash<QString, int> m_modbusDigitalInputRegisters;
+    QHash<QString, int> m_modbusAnalogInputRegisters;
+    QHash<QString, int> m_modbusAnalogOutputRegisters;
+
+    NeuronTypes m_neuronType = NeuronTypes::S103;
 
 signals:
 
