@@ -183,20 +183,36 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
 
             if (param.value().toString() == "Blind open") {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
-                QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
-                QString outputOpenNumber = displayName.split(" ").at(1);
+                QString openFunctionParamDisplayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
+                QString outputOpenNumber = openFunctionParamDisplayName.split(" ").at(1);
 
                 if(!myDevices().filterByParam(blindDeviceOutputOpenParamTypeId, outputOpenNumber).isEmpty()) {
-                    qDebug(dcUniPi()) << "Skipping device because already added" << outputOpenNumber;
+                    qDebug(dcUniPi()) << "Skipping device because open output already used" << outputOpenNumber;
                     continue;
                 }
 
-                // TODO get open relais group id
-                QString outputCloseNumber = "1.01";
+                QString openFunctionParamName = deviceClass.paramTypes().findById(param.paramTypeId()).name();
+                ParamType openGroupParamType = deviceClass.paramTypes().findByName(openFunctionParamName.replace("Function", "Group", Qt::CaseSensitivity::CaseInsensitive));
+                int groupNumber = device->paramValue(openGroupParamType.id()).toInt();
 
-                // TODO find second relais with the same group od
+                QString outputCloseNumber;
+                foreach (Param closeParam, device->params()) {
+                    if (closeParam.paramTypeId() != openGroupParamType.id()) {
+                        if (closeParam.value().toInt() == groupNumber) {
+                            QString closeGroupParamName = deviceClass.paramTypes().findById(closeParam.paramTypeId()).name();
+                            ParamType closeFunctionParamType = deviceClass.paramTypes().findByName(closeGroupParamName.replace("Group", "Function", Qt::CaseSensitivity::CaseInsensitive));
+                            if (device->paramValue(closeFunctionParamType.id()).toString() == "Blind close") {
+                                QString closeFunctionParamDisplayName = deviceClass.paramTypes().findById(closeParam.paramTypeId()).displayName();
+                                outputCloseNumber = closeFunctionParamDisplayName.split(" ").at(1);
+                            }
+                        }
+                    }
+                }
 
-                // TODO check if the other relais with the same id have function "blind down"
+               if(!myDevices().filterByParam(blindDeviceOutputCloseParamTypeId, outputCloseNumber).isEmpty()) {
+                    qDebug(dcUniPi()) << "Skipping device because close output already used" << outputCloseNumber;
+                    continue;
+                }
 
                 DeviceDescriptor deviceDescriptor(lightDeviceClassId, QString("Blind %1").arg(outputOpenNumber), "", device->id());
                 ParamList params;
@@ -357,9 +373,7 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 void DevicePluginUniPi::onRefreshTimer()
 {
     foreach(Device *device, myDevices()) {
-        if (device->deviceClassId() == neuronL403DeviceClassId) {
 
-        }
         if (device->deviceClassId() == relayOutputDeviceClassId) {
             QString circuit = device->paramValue(relayOutputDeviceNumberParamTypeId).toString();
             bool value = false;
