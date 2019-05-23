@@ -28,10 +28,11 @@
 #include "devicemanager.h"
 #include "plugintimer.h"
 #include "dimmerswitch.h"
+#include "neuron.h"
+#include "neuronextension.h"
 #include "modbusrtumaster.h"
 #include "modbustcpmaster.h"
 
-#include <QtWebSockets/QtWebSockets>
 
 class DevicePluginUniPi : public DevicePlugin
 {
@@ -50,48 +51,12 @@ public:
 
 private:
 
-    enum NeuronTypes {
-        S103,
-        M103,
-        M203,
-        M303,
-        M403,
-        M503,
-        L203,
-        L303,
-        L403,
-        L503,
-        L513
-    };
-
-    enum ExtensionTypes {
-        xS10,
-        xS20,
-        xS30,
-        xS40,
-        xS50
-    };
-
+    QHash<DeviceId, Neuron *> m_neurons;
+    QHash<DeviceId, NeuronExtension *> m_neuronExtensions;
     QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
     PluginTimer *m_refreshTimer = nullptr;
     ModbusTCPMaster *m_modbusTCPMaster = nullptr;
     ModbusRTUMaster *m_modbusRTUMaster = nullptr;
-
-    void setDigitalOutput(NeuronTypes neuronType, const QString &circuit, bool value);
-    bool getDigitalOutput(NeuronTypes neuronType, const QString &circuit);
-    bool getDigitalInput(NeuronTypes neuronType, const QString &circuit);
-
-    void setAnalogOutput(NeuronTypes neuronType, const QString &circuit, double value);
-    double getAnalogOutput(NeuronTypes neuronType, const QString &circuit);
-    double getAnalogInput(NeuronTypes neuronType, const QString &circuit);
-
-    void setExtensionDigitalOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit, bool value);
-    bool getExtensionDigitalOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
-    bool getExtensionDigitalInput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
-
-    void setExtensionAnalogOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit, double value);
-    double getExtensionAnalogOutput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
-    double getExtensionAnalogInput(ExtensionTypes extensionType, int slaveAddress, const QString &circuit);
 
 private slots:
     void onRefreshTimer();
