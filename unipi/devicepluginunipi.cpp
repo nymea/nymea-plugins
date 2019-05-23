@@ -190,6 +190,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 DeviceDescriptor deviceDescriptor(lockDeviceClassId, QString("Lock %1").arg(outputNumber), "", device->id());
                 ParamList params;
                 params.append(Param(lockDeviceNumberParamTypeId, outputNumber));
+                params.append(Param(lockDeviceUnlatchTimeParamTypeId, 60));
                 deviceDescriptor.setParams(params);
                 lockDescriptors.append(deviceDescriptor);
             }
@@ -313,7 +314,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
     if (device->deviceClassId() == lockDeviceClassId) {
         QTimer *unlatchTimer = new QTimer(this);
         unlatchTimer->setSingleShot(true);
-        unlatchTimer->setInterval(device->paramValue(lockDeviceUnlatchTimeParamTypeId).toInt() * 1000);
+        unlatchTimer->setInterval((device->paramValue(lockDeviceUnlatchTimeParamTypeId).toInt()*1000));
         m_unlatchTimer.insert(device, unlatchTimer);
     }
 }
@@ -457,10 +458,10 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         bool stateValue = action.param(lightPowerActionPowerParamTypeId).value().toBool();
 
         if (m_neurons.contains(device->parentId())) {
-            Neuron *neuron = m_neurons.value(device->parentId()); //TODO what if parent is an extension
+            Neuron *neuron = m_neurons.value(device->parentId());
             neuron->setDigitalOutput(circuit, stateValue);
         }else if (m_neuronExtensions.contains(device->parentId())) {
-            NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId()); //TODO what if parent is an extension
+            NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
             neuronExtension->setDigitalOutput(circuit, stateValue);
         } else {
             qCWarning(dcUniPi()) << "No valid parent ID";
@@ -515,11 +516,11 @@ void DevicePluginUniPi::onRefreshTimer()
             bool closeValue = false;
 
             if (m_neurons.contains(device->parentId())) {
-                Neuron *neuron = m_neurons.value(device->parentId()); //TODO what if parent is an extension
+                Neuron *neuron = m_neurons.value(device->parentId()); /
                 openValue = neuron->getDigitalOutput(openOutputNumber);
                 closeValue = neuron->getDigitalOutput(closeOutputNumber);
             } else if (m_neuronExtensions.contains(device->parentId())) {
-                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId()); //TODO what if parent is an extension
+                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
                 openValue = neuronExtension->getDigitalOutput(openOutputNumber);
                 closeValue = neuronExtension->getDigitalOutput(closeOutputNumber);
             } else {
