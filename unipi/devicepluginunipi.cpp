@@ -50,6 +50,11 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         }
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::L403, m_modbusTCPMaster, this);
+        if (!neuron->loadModbusMap()) {
+            qCWarning(dcUniPi()) << "Could not load the modbus map";
+            neuron->deleteLater();
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
         m_neurons.insert(device->id(), neuron);
 
         device->setStateValue(neuronL403ConnectedStateTypeId, true);
@@ -72,6 +77,11 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             }
         }
         NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS30, m_modbusRTUMaster, slaveAddress, this);
+        if (!neuronExtension->loadModbusMap()) {
+            qCWarning(dcUniPi()) << "Could not load the modbus map";
+            neuronExtension->deleteLater();
+            return DeviceManager::DeviceSetupStatusFailure;
+        }
         m_neuronExtensions.insert(device->id(), neuronExtension);
 
         device->setStateValue(neuronXS30ConnectedStateTypeId, true);
