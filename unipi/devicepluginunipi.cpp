@@ -166,6 +166,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
                 QString outputNumber = displayName.split(" ").at(1);
+                //TODO improve
 
                 if(!myDevices().filterByParam(relayOutputDeviceNumberParamTypeId, outputNumber).isEmpty()) {
                     qDebug(dcUniPi()) << "Skipping device because already added" << outputNumber;
@@ -259,7 +260,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
             if (param.value().toString().contains("Generic input", Qt::CaseSensitivity::CaseInsensitive)) {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
-                QString circuit = displayName.split(" ").at(1);
+                QString circuit = displayName.split(" ").at(2);
 
                 if(!myDevices().filterByParam(digitalInputDeviceNumberParamTypeId, circuit).isEmpty()) {
                     qDebug(dcUniPi()) << "Skipping device because already added" << circuit;
@@ -297,7 +298,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
             if (param.value().toString().contains("Generic input", Qt::CaseSensitivity::CaseInsensitive)) {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronXS30DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
-                QString circuit = displayName.split(" ").at(1);
+                QString circuit = displayName.split(" ").at(2);
 
                 if(!myDevices().filterByParam(digitalInputDeviceNumberParamTypeId, circuit).isEmpty()) {
                     qDebug(dcUniPi()) << "Skipping device because already added" << circuit;
