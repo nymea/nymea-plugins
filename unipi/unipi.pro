@@ -13,12 +13,16 @@ SOURCES += \
     dimmerswitch.cpp \
     modbustcpmaster.cpp \
     modbusrtumaster.cpp \
+    neuron.cpp \
+    neuronextension.cpp
 
 HEADERS += \
     devicepluginunipi.h \
     dimmerswitch.h \
     modbustcpmaster.h \
     modbusrtumaster.h \
+    neuron.h \
+    neuronextension.h
 
 MAP_FILES.files = modbus_maps/
 MAP_FILES.path = /usr/share/nymea/modbus/
