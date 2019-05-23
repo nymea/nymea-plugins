@@ -81,9 +81,6 @@ bool ModbusRTUMaster::createInterface()
     //Setting up a RTU interface
     qDebug(dcUniPi()) << "Setting up a RTU interface" << m_serialPort << "baud:" << m_baudrate << "parity:" << m_parity << "stop bits:" << m_stopBits << "data bits:" << m_dataBits ;
 
-    if (!isConnected())
-        return false;
-
     char parity;
     if (m_parity.size() == 1) {
         parity = m_parity.toUtf8().at(0);
@@ -119,6 +116,7 @@ bool ModbusRTUMaster::isConnected()
             return true;
         }
     }
+    qCWarning(dcUniPi()) << "Error could not find serial interface: " << m_serialPort;
     return false;
 }
 
