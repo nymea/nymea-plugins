@@ -32,7 +32,12 @@ DevicePluginUniPi::DevicePluginUniPi()
 }
 
 
-Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
+void DevicePluginUniPi::init()
+{
+    connect(this, &DevicePluginUniPi::configValueChanged, this, &DevicePluginUniPi::onPluginConfigurationChanged);
+}
+
+DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
     if(!m_refreshTimer) {
         m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(1); //needs to be faster for the input polling
@@ -562,4 +567,32 @@ void DevicePluginUniPi::onDimmerSwitchDimValueChanged(int dimValue)
     DimmerSwitch *dimmerSwitch = static_cast<DimmerSwitch *>(sender());
     Device *device = m_dimmerSwitches.value(dimmerSwitch);
     device->setStateValue(dimmerSwitchDimValueStateTypeId, dimValue);
+}
+
+void DevicePluginUniPi::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    qCDebug(dcUniPi()) << "Plugin configuration changed";
+    if (paramTypeId == uniPiPluginPortParamTypeId) {
+        if (!m_modbusTCPMaster) {
+            m_modbusTCPMaster->setIPv4Address(QHostAddress(value.toString()));
+        }
+    }
+
+    if (paramTypeId == uniPiPluginAddressParamTypeId) {
+        if (!m_modbusTCPMaster) {
+            m_modbusTCPMaster->setPort(value.toInt());
+        }
+    }
+
+    if (paramTypeId == uniPiPluginSerialPortParamTypeId) {
+        if (!m_modbusRTUMaster) {
+            m_modbusRTUMaster->setSerialPort(value.toString());
+        }
+    }
+
+    if (paramTypeId == uniPiPluginBaudrateParamTypeId) {
+        if (!m_modbusRTUMaster) {
+            m_modbusRTUMaster->setBaudrate(value.toInt());
+        }
+    }
 }

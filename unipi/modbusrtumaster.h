@@ -43,6 +43,9 @@ public:
 
     QString serialPort();
 
+    bool setSerialPort(const QString &serialPort);
+    bool setBaudrate(int baudrate);
+
 private:
     modbus_t *m_mb;
 

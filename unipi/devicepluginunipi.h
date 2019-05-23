@@ -45,6 +45,7 @@ class DevicePluginUniPi : public DevicePlugin
 public:
 
     explicit DevicePluginUniPi();
+    void init() override;
 
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void postSetupDevice(Device *device) override;
@@ -69,6 +70,7 @@ private slots:
     void onDimmerSwitchLongPressed();
     void onDimmerSwitchDoublePressed();
     void onDimmerSwitchDimValueChanged(int dimValue);
+    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 };
 
 #endif // DEVICEPLUGINUNIPI_H
