@@ -54,6 +54,83 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
         device->setStateValue(neuronL403ConnectedStateTypeId, true);
 
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if(device->deviceClassId() == neuronXS30DeviceClassId) {
+
+        QString serialPort = configValue(uniPiPluginSerialPortParamTypeId).toString();
+        int slaveAddress = device->paramValue(neuronXS30DeviceSlaveAddressParamTypeId).toInt();
+
+        if(!m_modbusRTUMaster) {
+            // Seems to be the first Modbus extension
+            m_modbusRTUMaster = new ModbusRTUMaster(serialPort, 19600, "E", 8, 1, this);
+            if(!m_modbusRTUMaster->createInterface()) {
+                qCWarning(dcUniPi()) << "Could not create interface";
+                m_modbusRTUMaster->deleteLater();
+                return DeviceManager::DeviceSetupStatusFailure;
+            }
+        }
+        NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS30, m_modbusRTUMaster, slaveAddress, this);
+        m_neuronExtensions.insert(device->id(), neuronExtension);
+
+        device->setStateValue(neuronXS30ConnectedStateTypeId, true);
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == relayOutputDeviceClassId) {
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == digitalOutputDeviceClassId) {
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == digitalInputDeviceClassId) {
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == analogInputDeviceClassId) {
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == analogOutputDeviceClassId) {
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == blindDeviceClassId) {
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == lightDeviceClassId) {
+
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+
+    if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
+        /*
+        DimmerSwitch* dimmerSwitch = new DimmerSwitch(this);
+
+        connect(dimmerSwitch, &DimmerSwitch::pressed, this, &DevicePluginUniPi::onDimmerSwitchPressed);
+        connect(dimmerSwitch, &DimmerSwitch::longPressed, this, &DevicePluginUniPi::onDimmerSwitchLongPressed);
+        connect(dimmerSwitch, &DimmerSwitch::doublePressed, this, &DevicePluginUniPi::onDimmerSwitchDoublePressed);
+        connect(dimmerSwitch, &DimmerSwitch::dimValueChanged, this, &DevicePluginUniPi::onDimmerSwitchDimValueChanged);
+        m_dimmerSwitches.insert(dimmerSwitch, device);*/
+        return DeviceManager::DeviceSetupStatusSuccess;
+    }
+    return DeviceManager::DeviceSetupStatusFailure;
+}
+
+void DevicePluginUniPi::postSetupDevice(Device *device)
+{
+    if(device->deviceClassId() == neuronL403DeviceClassId) {
         QList<DeviceDescriptor> relayOutputDescriptors;
         QList<DeviceDescriptor> lightDescriptors;
         QList<DeviceDescriptor> blindDescriptors;
@@ -127,26 +204,9 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
         if (!blindDescriptors.isEmpty())
             emit autoDevicesAppeared(blindDeviceClassId, blindDescriptors);
-
-        return DeviceManager::DeviceSetupStatusSuccess;
     }
 
     if(device->deviceClassId() == neuronXS30DeviceClassId) {
-
-        QString serialPort = configValue(uniPiPluginSerialPortParamTypeId).toString();
-        int slaveAddress = device->paramValue(neuronXS30DeviceSlaveAddressParamTypeId).toInt();
-
-        if(!m_modbusRTUMaster) {
-            // Seems to be the first Modbus extension
-            m_modbusRTUMaster = new ModbusRTUMaster(serialPort, 19600, "E", 8, 1, this);
-            if(!m_modbusRTUMaster->createInterface()) {
-                qCWarning(dcUniPi()) << "Could not create interface";
-                m_modbusRTUMaster->deleteLater();
-                return DeviceManager::DeviceSetupStatusFailure;
-            }
-        }
-        NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS30, m_modbusRTUMaster, slaveAddress, this);
-        m_neuronExtensions.insert(device->id(), neuronExtension);
 
         QList<DeviceDescriptor> digitalInputDescriptors;
         foreach (Param param, device->params()) {
@@ -170,59 +230,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
         if (!digitalInputDescriptors.isEmpty())
             emit autoDevicesAppeared(digitalInputDeviceClassId, digitalInputDescriptors);
-
-        return DeviceManager::DeviceSetupStatusSuccess;
     }
-
-    if (device->deviceClassId() == relayOutputDeviceClassId) {
-
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == digitalOutputDeviceClassId) {
-
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == digitalInputDeviceClassId) {
-
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == analogInputDeviceClassId) {
-
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == analogOutputDeviceClassId) {
-
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == blindDeviceClassId) {
-
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == lightDeviceClassId) {
-
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-
-    if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
-        /*
-        DimmerSwitch* dimmerSwitch = new DimmerSwitch(this);
-
-        connect(dimmerSwitch, &DimmerSwitch::pressed, this, &DevicePluginUniPi::onDimmerSwitchPressed);
-        connect(dimmerSwitch, &DimmerSwitch::longPressed, this, &DevicePluginUniPi::onDimmerSwitchLongPressed);
-        connect(dimmerSwitch, &DimmerSwitch::doublePressed, this, &DevicePluginUniPi::onDimmerSwitchDoublePressed);
-        connect(dimmerSwitch, &DimmerSwitch::dimValueChanged, this, &DevicePluginUniPi::onDimmerSwitchDimValueChanged);
-        m_dimmerSwitches.insert(dimmerSwitch, device);*/
-        return DeviceManager::DeviceSetupStatusSuccess;
-    }
-    return DeviceManager::DeviceSetupStatusFailure;
 }
-
 
 void DevicePluginUniPi::deviceRemoved(Device *device)
 {
