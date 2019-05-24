@@ -217,23 +217,23 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                     foreach(Device *existingDevice, deviceManager()->findChildDevices(device->id())) {
                         qCDebug(dcUniPi()) << "Removing device" << outputNumber;
                         if(existingDevice->deviceClassId() == relayOutputDeviceClassId) {
-                            if (device->paramValue(relayOutputDeviceNumberParamTypeId).String == outputNumber) {
+                            if (device->paramValue(relayOutputDeviceNumberParamTypeId).toString() == outputNumber) {
                                 deviceManager()->removeConfiguredDevice(existingDevice->id());
                             }
                         }
                         if(existingDevice->deviceClassId() == lightDeviceClassId) {
-                            if (device->paramValue(lightDeviceOutputParamTypeId).String == outputNumber) {
+                            if (device->paramValue(lightDeviceOutputParamTypeId).toString() == outputNumber) {
                                 deviceManager()->removeConfiguredDevice(existingDevice->id());
                             }
                         }
                         if(existingDevice->deviceClassId() == lockDeviceClassId) {
-                            if (device->paramValue(lockDeviceNumberParamTypeId).String == outputNumber) {
+                            if (device->paramValue(lockDeviceNumberParamTypeId).toString() == outputNumber) {
                                 deviceManager()->removeConfiguredDevice(existingDevice->id());
                             }
                         }
                         if(existingDevice->deviceClassId() ==  blindDeviceClassId) {
-                            if ((device->paramValue(blindDeviceOutputOpenParamTypeId).String == outputNumber) ||
-                                    (device->paramValue(blindDeviceOutputCloseParamTypeId).String == outputNumber)) {
+                            if ((device->paramValue(blindDeviceOutputOpenParamTypeId).toString() == outputNumber) ||
+                                    (device->paramValue(blindDeviceOutputCloseParamTypeId).toString() == outputNumber)) {
                                 deviceManager()->removeConfiguredDevice(existingDevice->id());
                             }
                         }
@@ -246,12 +246,12 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
                     foreach(Device *existingDevice, deviceManager()->findChildDevices(device->id())) {
                         qCDebug(dcUniPi()) << "Removing device" << outputNumber;
                         if(existingDevice->deviceClassId() == digitalInputDeviceClassId) {
-                            if (device->paramValue(digitalInputDeviceNumberParamTypeId).String == outputNumber) {
+                            if (device->paramValue(digitalInputDeviceNumberParamTypeId).toString() == outputNumber) {
                                 deviceManager()->removeConfiguredDevice(existingDevice->id());
                             }
                         }
                         if(existingDevice->deviceClassId() == dimmerSwitchDeviceClassId) {
-                            if (device->paramValue(dimmerSwitchDeviceInputNumberParamTypeId).String == outputNumber) {
+                            if (device->paramValue(dimmerSwitchDeviceInputNumberParamTypeId).toString() == outputNumber) {
                                 deviceManager()->removeConfiguredDevice(existingDevice->id());
                             }
                         }
