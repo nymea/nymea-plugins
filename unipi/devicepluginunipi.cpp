@@ -86,11 +86,14 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
         int port = configValue(uniPiPluginPortParamTypeId).toInt();;
         QHostAddress ipAddress = QHostAddress(configValue(uniPiPluginAddressParamTypeId).toString());
-        m_modbusTCPMaster = new ModbusTCPMaster(ipAddress, port, this);
-        if(!m_modbusTCPMaster->createInterface()) {
-            qCWarning(dcUniPi()) << "Could not create interface";
-            m_modbusTCPMaster->deleteLater();
-            return DeviceManager::DeviceSetupStatusFailure;
+
+        if(!m_modbusTCPMaster) {
+            m_modbusTCPMaster = new ModbusTCPMaster(ipAddress, port, this);
+            if(!m_modbusTCPMaster->createInterface()) {
+                qCWarning(dcUniPi()) << "Could not create interface";
+                m_modbusTCPMaster->deleteLater();
+                return DeviceManager::DeviceSetupStatusFailure;
+            }
         }
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::L403, m_modbusTCPMaster, this);
