@@ -63,9 +63,6 @@ public slots:
 
     void onDigitalInputPollingFinished(QHash<QString, bool> digitalInputValues);
     void onDigitalOutputPollingFinished(QHash<QString, bool> digitalOutputValues);
-
-    void getDigitalInputStates(QHash<QString, int> digitalInputRegisters);
-    void getDigitalOutputStates(QHash<QString, int> digitalOutputRegisters);
 };
 
 #endif // NEURONEXTENSION_H

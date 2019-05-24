@@ -62,16 +62,16 @@ private:
 
     QHash<Device *, QTimer *> m_unlatchTimer;
 
-    void getDeviceStates();
-
 private slots:
-    void onRefreshTimer();
-
     void onDimmerSwitchPressed();
     void onDimmerSwitchLongPressed();
     void onDimmerSwitchDoublePressed();
     void onDimmerSwitchDimValueChanged(int dimValue);
+
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
+
+    void onDigitalInputStatusChanged(QString &circuit, bool value);
+    void onDigitalOutputStatusChanged(QString &circuit, bool value);
 };
 
 #endif // DEVICEPLUGINUNIPI_H

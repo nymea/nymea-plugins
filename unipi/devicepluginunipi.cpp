@@ -57,6 +57,8 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             return DeviceManager::DeviceSetupStatusFailure;
         }
         m_neurons.insert(device->id(), neuron);
+        connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onDigitalInputStatusChanged);
+        connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onDigitalOutputStatusChanged);
 
         device->setStateValue(neuronL403ConnectedStateTypeId, true);
 
@@ -341,17 +343,17 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             qCDebug(dcUniPi()) << "Starting unlatch timer, time in sec:" << time;
 
             connect(unlatchTimer, &QTimer::timeout, this, [this]() {
-                  QTimer *timer= static_cast<QTimer*>(sender());
-                  Device *device = m_unlatchTimer.key(timer);
-                  QString digitalOutputNumber = device->paramValue(lockDeviceNumberParamTypeId).toString();
-                  if (m_neurons.contains(device->parentId())) {
-                      Neuron *neuron = m_neurons.value(device->parentId());
-                      neuron->setDigitalOutput(digitalOutputNumber, false);
-                  }
-                  if (m_neuronExtensions.contains(device->parentId())) {
-                      NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
-                      neuronExtension->setDigitalOutput(digitalOutputNumber, false);
-                  }
+                QTimer *timer= static_cast<QTimer*>(sender());
+                Device *device = m_unlatchTimer.key(timer);
+                QString digitalOutputNumber = device->paramValue(lockDeviceNumberParamTypeId).toString();
+                if (m_neurons.contains(device->parentId())) {
+                    Neuron *neuron = m_neurons.value(device->parentId());
+                    neuron->setDigitalOutput(digitalOutputNumber, false);
+                }
+                if (m_neuronExtensions.contains(device->parentId())) {
+                    NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
+                    neuronExtension->setDigitalOutput(digitalOutputNumber, false);
+                }
             });
         }
 
@@ -469,77 +471,6 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
     }
 }
 
-
-void DevicePluginUniPi::onRefreshTimer()
-{
-    foreach(Device *device, myDevices()) {
-
-        if (device->deviceClassId() == relayOutputDeviceClassId) {
-            QString circuit = device->paramValue(relayOutputDeviceNumberParamTypeId).toString();
-            bool value = false;
-
-            if (m_neurons.contains(device->parentId())) {
-                Neuron *neuron = m_neurons.value(device->parentId());
-                value = neuron->getDigitalOutput(circuit);
-            } else if (m_neuronExtensions.contains(device->parentId())) {
-                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
-                value =  neuronExtension->getDigitalOutput(circuit);
-            } else {
-                qCWarning(dcUniPi()) << "No valid parent ID";
-            }
-            device->setStateValue(relayOutputPowerStateTypeId, value);
-        }
-
-        if (device->deviceClassId() == lightDeviceClassId) {
-            QString circuit = device->paramValue(lightDeviceOutputParamTypeId).toString();
-            bool value = false;
-
-            if (m_neurons.contains(device->parentId())) {
-                Neuron *neuron = m_neurons.value(device->parentId());
-                value = neuron->getDigitalOutput(circuit);
-            } else if (m_neuronExtensions.contains(device->parentId())) {
-                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
-                value =  neuronExtension->getDigitalOutput(circuit);
-            } else {
-                qCWarning(dcUniPi()) << "No valid parent ID";
-            }
-            device->setStateValue(lightPowerStateTypeId, value);
-        }
-
-        if (device->deviceClassId() == blindDeviceClassId) {
-            QString openOutputNumber = device->paramValue(blindDeviceOutputOpenParamTypeId).toString();
-            QString closeOutputNumber = device->paramValue(blindDeviceOutputOpenParamTypeId).toString();
-
-            bool openValue = false;
-            bool closeValue = false;
-
-            if (m_neurons.contains(device->parentId())) {
-                Neuron *neuron = m_neurons.value(device->parentId());
-                openValue = neuron->getDigitalOutput(openOutputNumber);
-                closeValue = neuron->getDigitalOutput(closeOutputNumber);
-            } else if (m_neuronExtensions.contains(device->parentId())) {
-                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
-                openValue = neuronExtension->getDigitalOutput(openOutputNumber);
-                closeValue = neuronExtension->getDigitalOutput(closeOutputNumber);
-            } else {
-                qCWarning(dcUniPi()) << "No valid parent ID";
-            }
-
-            if (!openValue && !closeValue) {
-                device->setStateValue(blindStatusStateTypeId, "stopped");
-            } else if (openValue && !closeValue) {
-                device->setStateValue(blindStatusStateTypeId, "opening");
-            } else if (!openValue && closeValue) {
-                device->setStateValue(blindStatusStateTypeId, "closing");
-            } else {
-                qCDebug(dcUniPi()) << "Warning illegal blind status";
-                device->setStateValue(blindStatusStateTypeId, "stopped");
-            }
-        }
-    }
-}
-
-
 void DevicePluginUniPi::onDimmerSwitchPressed()
 {
     DimmerSwitch *dimmerSwitch = static_cast<DimmerSwitch *>(sender());
@@ -592,6 +523,84 @@ void DevicePluginUniPi::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     if (paramTypeId == uniPiPluginBaudrateParamTypeId) {
         if (!m_modbusRTUMaster) {
             m_modbusRTUMaster->setBaudrate(value.toInt());
+        }
+    }
+}
+
+void DevicePluginUniPi::onDigitalInputStatusChanged(QString &circuit, bool value)
+{
+    foreach(Device *device, myDevices()) {
+        if (device->deviceClassId() == digitalInputDeviceClassId) {
+            if (device->paramValue(digitalInputDeviceNumberParamTypeId).toString() == circuit) {
+
+                device->setStateValue(digitalInputInputStatusStateTypeId, value);
+                return;
+            }
+        }
+        if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
+            if (device->paramValue(dimmerSwitchDeviceInputNumberParamTypeId).toString() == circuit) {
+
+                device->setStateValue(dimmerSwitchStatusStateTypeId, value);
+                DimmerSwitch *dimmerSwitch = m_dimmerSwitches.key(device);
+                dimmerSwitch->setPower(value);
+                return;
+            }
+        }
+    }
+}
+
+void DevicePluginUniPi::onDigitalOutputStatusChanged(QString &circuit, bool value)
+{
+    foreach(Device *device, myDevices()) {
+        if (device->deviceClassId() == relayOutputDeviceClassId) {
+            if (device->paramValue(relayOutputDeviceNumberParamTypeId).toString() == circuit) {
+
+                device->setStateValue(relayOutputPowerStateTypeId, value);
+                return;
+            }
+        }
+
+        if (device->deviceClassId() == lightDeviceClassId) {
+            if(device->paramValue(lightDeviceOutputParamTypeId).toString() == circuit) {
+
+                device->setStateValue(lightPowerStateTypeId, value);
+                return;
+            }
+        }
+
+        if (device->deviceClassId() == lockDeviceClassId) {
+            if(device->paramValue(lockDeviceNumberParamTypeId).toString() == circuit) {
+
+                device->setStateValue(lockStateStateTypeId, value);
+                return;
+            }
+        }
+
+        if (device->deviceClassId() == blindDeviceClassId) {
+            if (device->paramValue(blindDeviceOutputCloseParamTypeId).toString() == circuit){
+                QString state = device->stateValue(blindStatusStateTypeId).toString();
+                if (!value && (state == "closing")) {
+                    device->setStateValue(blindStatusStateTypeId, "stopped");
+                } else if (value && (state == "stopped")) {
+                    device->setStateValue(blindStatusStateTypeId, "closing");
+                } else {
+                    qCDebug(dcUniPi()) << "Warning illegal blind status";
+                    device->setStateValue(blindStatusStateTypeId, "stopped");
+                }
+                return;
+            }
+            if (device->paramValue(blindDeviceOutputOpenParamTypeId).toString() == circuit) {
+                QString state = device->stateValue(blindStatusStateTypeId).toString();
+                if (!value && (state == "opening")) {
+                    device->setStateValue(blindStatusStateTypeId, "stopped");
+                } else if (value && (state == "stopped")) {
+                    device->setStateValue(blindStatusStateTypeId, "opening");
+                } else {
+                    qCDebug(dcUniPi()) << "Warning illegal blind status";
+                    device->setStateValue(blindStatusStateTypeId, "stopped");
+                }
+                return;
+            }
         }
     }
 }
