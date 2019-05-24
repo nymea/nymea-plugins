@@ -3,13 +3,33 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QtConcurrent>
+#include <QFuture>
 
 Neuron::Neuron(NeuronTypes neuronType, ModbusTCPMaster *modbusInterface, QObject *parent) :
     QObject(parent),
     m_modbusInterface(modbusInterface),
     m_neuronType(neuronType)
 {
+    QTimer *m_inputPollingTimer = new QTimer(this);
+    m_inputPollingTimer->setTimerType(Qt::TimerType::PreciseTimer);
+    m_inputPollingTimer->start(100);
+    connect(m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onInputPollingTimer);
 
+    QTimer *m_outputPollingTimer = new QTimer(this);
+    m_outputPollingTimer->setTimerType(Qt::TimerType::PreciseTimer);
+    m_outputPollingTimer->start(1000);
+    connect(m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
+
+    connect(this, &Neuron::finishedDigitalInputPolling, this, &Neuron::onDigitalInputPollingFinished, Qt::QueuedConnection);
+    connect(this, &Neuron::finishedDigitalOutputPolling, this, &Neuron::onDigitalOutputPollingFinished, Qt::QueuedConnection);
+}
+
+Neuron::~Neuron(){
+    m_inputPollingTimer->stop();
+    m_inputPollingTimer->deleteLater();
+    m_outputPollingTimer->stop();
+    m_outputPollingTimer->deleteLater();
 }
 
 bool Neuron::loadModbusMap()
@@ -102,6 +122,7 @@ bool Neuron::loadModbusMap()
     return true;
 }
 
+
 bool Neuron::getDigitalInput(const QString &circuit)
 {
     bool value;
@@ -125,6 +146,7 @@ void Neuron::setDigitalOutput(const QString &circuit, bool value)
     return;
 }
 
+
 bool Neuron::getDigitalOutput(const QString &circuit)
 {
     bool value;
@@ -142,11 +164,57 @@ void Neuron::setAnalogOutput(const QString &circuit, double value)
     Q_UNUSED(circuit);
     Q_UNUSED(value);
     //int modbusAddress = m_modbusAnalogOutputRegisters.value(circuit);
+    //TODO
 }
 
 
 double Neuron::getAnalogInput(const QString &circuit)
 {
     Q_UNUSED(circuit);
+    //TODO
     return 0.00;
+}
+
+void Neuron::onOutputPollingTimer()
+{
+    QFuture<void> future = QtConcurrent::run([this](QHash<QString, int> modbusDigitalOutputRegisters)
+    {
+        QHash<QString, bool> digitalOutputValues;
+        foreach(QString circuit, modbusDigitalOutputRegisters.keys()){
+            digitalOutputValues.insert(circuit, getDigitalOutput(circuit));
+        }
+        emit finishedDigitalOutputPolling(digitalOutputValues);
+   }, m_modbusDigitalOutputRegisters);
+}
+
+void Neuron::onInputPollingTimer()
+{
+    QFuture<void> future = QtConcurrent::run([this](QHash<QString, int> modbusDigitalInputRegisters)
+    {
+        QHash<QString, bool> digitalInputValues;
+        foreach(QString circuit, modbusDigitalInputRegisters.keys()){
+            digitalInputValues.insert(circuit, getDigitalInput(circuit));
+        }
+        emit finishedDigitalInputPolling(digitalInputValues);
+   }, m_modbusDigitalInputRegisters);
+}
+
+void Neuron::onDigitalInputPollingFinished(QHash<QString, bool> digitalInputValues)
+{
+    foreach(QString circuit, digitalInputValues.keys()) {
+        if (m_digitalInputValueBuffer.value(circuit) != digitalInputValues.value(circuit)) {
+            m_digitalInputValueBuffer.insert(circuit, digitalInputValues.value(circuit));
+            emit digitalInputStatusChanged(circuit, digitalInputValues.value(circuit));
+        }
+    }
+}
+
+void Neuron::onDigitalOutputPollingFinished(QHash<QString, bool> digitalOutputValues)
+{
+    foreach(QString circuit, digitalOutputValues.keys()) {
+        if (m_digitalOutputValueBuffer.value(circuit) != digitalOutputValues.value(circuit)) {
+            m_digitalOutputValueBuffer.insert(circuit, digitalOutputValues.value(circuit));
+            emit digitalOutputStatusChanged(circuit, digitalOutputValues.value(circuit));
+        }
+    }
 }

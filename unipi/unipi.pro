@@ -5,6 +5,8 @@ TARGET = $$qtLibraryTarget(nymea_devicepluginunipi)
 QT += \
     network \
     serialport \
+    concurrent \
+    core \
 
 LIBS += -lmodbus
 
