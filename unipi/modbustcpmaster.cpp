@@ -53,6 +53,12 @@ bool ModbusTCPMaster::createInterface() {
         return false;
     }
 
+
+    if(modbus_set_slave(m_mb, 0) == -1){
+        qCWarning(dcUniPi()) << "Error setting slave ID" << "Reason:" << modbus_strerror(errno) ;
+        return false;
+    }
+
     if(modbus_connect(m_mb) == -1){
         qCWarning(dcUniPi()) << "Error connecting modbus:" << modbus_strerror(errno) ;
         return false;
@@ -102,16 +108,11 @@ QHostAddress ModbusTCPMaster::ipv4Address()
     return m_IPv4Address;
 }
 
-bool ModbusTCPMaster::setCoil(int slaveAddress, int coilAddress, bool status)
+bool ModbusTCPMaster::setCoil(int coilAddress, bool status)
 {
     if (m_mb == nullptr) {
         if (!createInterface())
             return false;
-    }
-
-    if(modbus_set_slave(m_mb, slaveAddress) == -1){
-        qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return false;
     }
 
     if (modbus_write_bit(m_mb, coilAddress, status) == -1) {
@@ -121,15 +122,11 @@ bool ModbusTCPMaster::setCoil(int slaveAddress, int coilAddress, bool status)
     return true;
 }
 
-bool ModbusTCPMaster::setRegister(int slaveAddress, int registerAddress, int data)
+bool ModbusTCPMaster::setRegister(int registerAddress, int data)
 {
     if (m_mb == nullptr) {
         if (!createInterface())
             return false;
-    }
-    if(modbus_set_slave(m_mb, slaveAddress) == -1){
-        qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return false;
     }
 
     if (modbus_write_register(m_mb, registerAddress, data) == -1) {
@@ -139,33 +136,26 @@ bool ModbusTCPMaster::setRegister(int slaveAddress, int registerAddress, int dat
     return true;
 }
 
-bool ModbusTCPMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
+bool ModbusTCPMaster::getCoil(int coilAddress, bool *result)
 {
     if (m_mb == nullptr) {
         if (!createInterface())
             return false;
     }
 
-    if(modbus_set_slave(m_mb, slaveAddress) == -1){
-        qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return false;
-    }
-
     uint8_t status;
-    if (modbus_read_bits(m_mb, coilAddress, 1, &status) == -1){
+    if (modbus_read_input_bits(m_mb, coilAddress, 1, &status) == -1){
         qCWarning(dcUniPi()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
         return false;
     }
+
     if (status&0x01) {
         *result = true;
-    } else {
-        *result = false;
     }
-
-    return true;
+    return false;
 }
 
-bool ModbusTCPMaster::getRegister(int slaveAddress, int registerAddress, int *result)
+bool ModbusTCPMaster::getRegister(int registerAddress, int *result)
 {
     uint16_t data;
 
@@ -174,8 +164,8 @@ bool ModbusTCPMaster::getRegister(int slaveAddress, int registerAddress, int *re
             return false;
     }
 
-    if(modbus_set_slave(m_mb, slaveAddress) == -1){
-        qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
+    if(modbus_set_slave(m_mb, 0) == -1){
+        qCWarning(dcUniPi()) << "Error setting slave ID" << 0 << "Reason:" << modbus_strerror(errno) ;
         return false;
     }
 

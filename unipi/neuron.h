@@ -41,8 +41,8 @@ public:
 
 private:
 
-    QTimer *m_inputPollingTimer = nullptr;
-    QTimer *m_outputPollingTimer = nullptr;
+    QTimer m_inputPollingTimer;
+    QTimer m_outputPollingTimer;
 
     ModbusTCPMaster *m_modbusInterface = nullptr;
 

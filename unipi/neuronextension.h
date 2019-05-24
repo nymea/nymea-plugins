@@ -35,8 +35,8 @@ public:
 
 private:
 
-    QTimer *m_inputPollingTimer = nullptr;
-    QTimer *m_outputPollingTimer = nullptr;
+    QTimer m_inputPollingTimer;
+    QTimer m_outputPollingTimer;
 
     QHash<QString, int> m_modbusDigitalOutputRegisters;
     QHash<QString, int> m_modbusDigitalInputRegisters;
