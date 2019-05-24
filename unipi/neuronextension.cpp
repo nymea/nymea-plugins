@@ -22,8 +22,8 @@ NeuronExtension::NeuronExtension(ExtensionTypes extensionType, ModbusRTUMaster *
     QTimer *m_outputPollingTimer = new QTimer(this);
     m_outputPollingTimer->setTimerType(Qt::TimerType::PreciseTimer);
     m_outputPollingTimer->setSingleShot(true);
-    m_outputPollingTimer->start(1000);
-    connect(m_inputPollingTimer, &QTimer::timeout, this, &NeuronExtension::onOutputPollingTimer);
+    //m_outputPollingTimer->start(1000);
+    connect(m_outputPollingTimer, &QTimer::timeout, this, &NeuronExtension::onOutputPollingTimer);
 
     connect(this, &NeuronExtension::finishedDigitalInputPolling, this, &NeuronExtension::onDigitalInputPollingFinished, Qt::QueuedConnection);
     connect(this, &NeuronExtension::finishedDigitalOutputPolling, this, &NeuronExtension::onDigitalOutputPollingFinished, Qt::QueuedConnection);
