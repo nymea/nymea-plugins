@@ -39,13 +39,6 @@ void DevicePluginUniPi::init()
 
 DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
-    if(!m_refreshTimer) {
-        QTimer *m_refreshTimer = new QTimer(this);
-        m_refreshTimer->setTimerType(Qt::TimerType::PreciseTimer);
-        m_refreshTimer->start(100);
-        connect(m_refreshTimer, &QTimer::timeout, this, &DevicePluginUniPi::onRefreshTimer);
-    }
-
     if(device->deviceClassId() == neuronL403DeviceClassId) {
 
         int port = configValue(uniPiPluginPortParamTypeId).toInt();;
@@ -324,25 +317,6 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
     }
 }
 
-void DevicePluginUniPi::deviceRemoved(Device *device)
-{
-    if(device->deviceClassId() == neuronL403DeviceClassId) {
-        m_modbusTCPMaster->deleteLater();
-        m_neurons.remove(device->id());
-
-    } else if(device->deviceClassId() == neuronXS30DeviceClassId) {
-        m_neuronExtensions.remove(device->id());
-        if (m_neuronExtensions.isEmpty()) {
-            m_modbusRTUMaster->deleteLater();
-        }
-    }
-
-    if (myDevices().isEmpty()) {
-        m_refreshTimer->stop();
-        m_refreshTimer->deleteLater();
-    }
-}
-
 
 DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
 {
@@ -479,6 +453,22 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 
     return Device::DeviceErrorDeviceClassNotFound;
 }
+
+
+void DevicePluginUniPi::deviceRemoved(Device *device)
+{
+    if(device->deviceClassId() == neuronL403DeviceClassId) {
+        m_modbusTCPMaster->deleteLater();
+        m_neurons.remove(device->id());
+
+    } else if(device->deviceClassId() == neuronXS30DeviceClassId) {
+        m_neuronExtensions.remove(device->id());
+        if (m_neuronExtensions.isEmpty()) {
+            m_modbusRTUMaster->deleteLater();
+        }
+    }
+}
+
 
 void DevicePluginUniPi::onRefreshTimer()
 {

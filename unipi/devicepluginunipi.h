@@ -53,7 +53,6 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
-    QTimer *m_refreshTimer = nullptr;
 
     QHash<DeviceId, Neuron *> m_neurons;
     QHash<DeviceId, NeuronExtension *> m_neuronExtensions;
@@ -62,6 +61,8 @@ private:
     ModbusRTUMaster *m_modbusRTUMaster = nullptr;
 
     QHash<Device *, QTimer *> m_unlatchTimer;
+
+    void getDeviceStates();
 
 private slots:
     void onRefreshTimer();

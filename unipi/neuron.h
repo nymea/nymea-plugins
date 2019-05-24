@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QHash>
+#include <QTimer>
 
 class Neuron : public QObject
 {
@@ -26,6 +27,8 @@ public:
     };
 
     explicit Neuron(NeuronTypes neuronType, ModbusTCPMaster *modbusInterface, QObject *parent = nullptr);
+    ~Neuron();
+
     bool loadModbusMap();
 
     void setDigitalOutput(const QString &circuit, bool value);
@@ -38,6 +41,9 @@ public:
 
 private:
 
+    QTimer *m_inputPollingTimer = nullptr;
+    QTimer *m_outputPollingTimer = nullptr;
+
     ModbusTCPMaster *m_modbusInterface = nullptr;
 
     QHash<QString, int> m_modbusDigitalOutputRegisters;
@@ -47,9 +53,25 @@ private:
 
     NeuronTypes m_neuronType = NeuronTypes::S103;
 
+    QHash<QString, bool> m_digitalInputValueBuffer;
+    QHash<QString, bool> m_digitalOutputValueBuffer;
+
 signals:
+    void digitalInputStatusChanged(QString &circuit, bool value);
+    void digitalOutputStatusChanged(QString &circuit, bool value);
+
+    void finishedDigitalInputPolling(QHash<QString, bool> digitalOutputValues);
+    void finishedDigitalOutputPolling(QHash<QString, bool> digitalOutputValues);
 
 public slots:
+    void onOutputPollingTimer();
+    void onInputPollingTimer();
+
+    void onDigitalInputPollingFinished(QHash<QString, bool> digitalInputValues);
+    void onDigitalOutputPollingFinished(QHash<QString, bool> digitalOutputValues);
+
+    void getDigitalInputStates(QHash<QString, int> digitalInputRegisters);
+    void getDigitalOutputStates(QHash<QString, int> digitalOutputRegisters);
 };
 
 #endif // NEURON_H
