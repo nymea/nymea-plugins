@@ -315,6 +315,7 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
     if (device->deviceClassId() == lockDeviceClassId) {
         QTimer *unlatchTimer = new QTimer(this);
         unlatchTimer->setSingleShot(true);
+        connect(unlatchTimer, &QTimer::timeout, this, &DevicePluginUniPi::onUnlatchTimer);
         m_unlatchTimer.insert(device, unlatchTimer);
     }
 }
@@ -341,20 +342,6 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             int time = device->paramValue(lockDeviceUnlatchTimeParamTypeId).toInt()*1000;
             unlatchTimer->start(time);
             qCDebug(dcUniPi()) << "Starting unlatch timer, time in sec:" << time;
-
-            connect(unlatchTimer, &QTimer::timeout, this, [this]() {
-                QTimer *timer= static_cast<QTimer*>(sender());
-                Device *device = m_unlatchTimer.key(timer);
-                QString digitalOutputNumber = device->paramValue(lockDeviceNumberParamTypeId).toString();
-                if (m_neurons.contains(device->parentId())) {
-                    Neuron *neuron = m_neurons.value(device->parentId());
-                    neuron->setDigitalOutput(digitalOutputNumber, false);
-                }
-                if (m_neuronExtensions.contains(device->parentId())) {
-                    NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
-                    neuronExtension->setDigitalOutput(digitalOutputNumber, false);
-                }
-            });
         }
 
         if (action.actionTypeId() == lockPermanentlyUnlatchedActionTypeId) {
@@ -602,5 +589,20 @@ void DevicePluginUniPi::onDigitalOutputStatusChanged(QString &circuit, bool valu
                 return;
             }
         }
+    }
+}
+
+void DevicePluginUniPi::onUnlatchTimer()
+{
+    QTimer *timer= static_cast<QTimer*>(sender());
+    Device *device = m_unlatchTimer.key(timer);
+    QString digitalOutputNumber = device->paramValue(lockDeviceNumberParamTypeId).toString();
+    if (m_neurons.contains(device->parentId())) {
+        Neuron *neuron = m_neurons.value(device->parentId());
+        neuron->setDigitalOutput(digitalOutputNumber, false);
+    }
+    if (m_neuronExtensions.contains(device->parentId())) {
+        NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
+        neuronExtension->setDigitalOutput(digitalOutputNumber, false);
     }
 }

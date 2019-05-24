@@ -13,27 +13,27 @@ NeuronExtension::NeuronExtension(ExtensionTypes extensionType, ModbusRTUMaster *
     m_slaveAddress(slaveAddress),
     m_extensionType(extensionType)
 {
-    QTimer *m_inputPollingTimer = new QTimer(this);
-    m_inputPollingTimer->setTimerType(Qt::TimerType::PreciseTimer);
-    m_inputPollingTimer->setSingleShot(true);
-    m_inputPollingTimer->start(100);
-    connect(m_inputPollingTimer, &QTimer::timeout, this, &NeuronExtension::onInputPollingTimer);
+    QTimer m_inputPollingTimer;
+    m_inputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
+    m_inputPollingTimer.setSingleShot(true);
+    m_inputPollingTimer.start(100);
+    connect(&m_inputPollingTimer, &QTimer::timeout, this, &NeuronExtension::onInputPollingTimer);
 
-    QTimer *m_outputPollingTimer = new QTimer(this);
-    m_outputPollingTimer->setTimerType(Qt::TimerType::PreciseTimer);
-    m_outputPollingTimer->setSingleShot(true);
-    //m_outputPollingTimer->start(1000);
-    connect(m_outputPollingTimer, &QTimer::timeout, this, &NeuronExtension::onOutputPollingTimer);
+    QTimer m_outputPollingTimer;
+    m_outputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
+    m_outputPollingTimer.setSingleShot(true);
+    m_outputPollingTimer->start(1000);
+    connect(&m_outputPollingTimer, &QTimer::timeout, this, &NeuronExtension::onOutputPollingTimer);
 
     connect(this, &NeuronExtension::finishedDigitalInputPolling, this, &NeuronExtension::onDigitalInputPollingFinished, Qt::QueuedConnection);
     connect(this, &NeuronExtension::finishedDigitalOutputPolling, this, &NeuronExtension::onDigitalOutputPollingFinished, Qt::QueuedConnection);
 }
 
 NeuronExtension::~NeuronExtension(){
-    m_inputPollingTimer->stop();
-    m_inputPollingTimer->deleteLater();
-    m_outputPollingTimer->stop();
-    m_outputPollingTimer->deleteLater();
+    m_inputPollingTimer.stop();
+    m_inputPollingTimer.deleteLater();
+    m_outputPollingTimer.stop();
+    m_outputPollingTimer.deleteLater();
 }
 
 bool NeuronExtension::loadModbusMap()
@@ -240,7 +240,7 @@ void NeuronExtension::onDigitalInputPollingFinished(QHash<QString, bool> digital
             emit digitalInputStatusChanged(circuit, digitalInputValues.value(circuit));
         }
     }
-    m_inputPollingTimer->start(100);
+    m_inputPollingTimer.start(100);
 }
 
 void NeuronExtension::onDigitalOutputPollingFinished(QHash<QString, bool> digitalOutputValues)
@@ -251,5 +251,5 @@ void NeuronExtension::onDigitalOutputPollingFinished(QHash<QString, bool> digita
             emit digitalOutputStatusChanged(circuit, digitalOutputValues.value(circuit));
         }
     }
-    m_outputPollingTimer->start(1000);
+    m_outputPollingTimer.start(1000);
 }

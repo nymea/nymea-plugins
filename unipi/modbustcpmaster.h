@@ -38,10 +38,10 @@ public:
     bool createInterface();
     bool isConnected();
 
-    bool getCoil(int slaveAddress, int coilAddress, bool *result);
-    bool getRegister(int slaveAddress, int registerAddress, int *result);
-    bool setCoil(int slaveAddress, int coilAddress, bool status);
-    bool setRegister(int slaveAddress, int registerAddress, int data);
+    bool getCoil(int coilAddress, bool *result);
+    bool getRegister(int registerAddress, int *result);
+    bool setCoil(int coilAddress, bool status);
+    bool setRegister(int registerAddress, int data);
     QHostAddress ipv4Address();
     int port();
     bool setIPv4Address(QHostAddress IPv4Address);

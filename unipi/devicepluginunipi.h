@@ -72,6 +72,7 @@ private slots:
 
     void onDigitalInputStatusChanged(QString &circuit, bool value);
     void onDigitalOutputStatusChanged(QString &circuit, bool value);
+    void onUnlatchTimer();
 };
 
 #endif // DEVICEPLUGINUNIPI_H
