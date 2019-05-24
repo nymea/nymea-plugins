@@ -175,7 +175,7 @@ bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
     }
 
     uint8_t data;
-    if (modbus_read_bits(m_mb, coilAddress, 1, &data) == -1){
+    if (modbus_read_input_bits(m_mb, coilAddress, 1, &data) == -1){
         qCWarning(dcUniPi()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
         return false;
     }

@@ -11,20 +11,18 @@ Neuron::Neuron(NeuronTypes neuronType, ModbusTCPMaster *modbusInterface, QObject
     m_modbusInterface(modbusInterface),
     m_neuronType(neuronType)
 {
-    QTimer m_inputPollingTimer;
+    connect(this, &Neuron::finishedDigitalInputPolling, this, &Neuron::onDigitalInputPollingFinished, Qt::QueuedConnection);
+    connect(this, &Neuron::finishedDigitalOutputPolling, this, &Neuron::onDigitalOutputPollingFinished, Qt::QueuedConnection);
+
+    connect(&m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onInputPollingTimer);
     m_inputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
     m_inputPollingTimer.setSingleShot(true);
     m_inputPollingTimer.start(100);
-    connect(&m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onInputPollingTimer);
 
-    QTimer m_outputPollingTimer;
+    connect(&m_outputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
     m_outputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
     m_outputPollingTimer.setSingleShot(true);
     m_outputPollingTimer.start(1000);
-    connect(&m_outputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
-
-    connect(this, &Neuron::finishedDigitalInputPolling, this, &Neuron::onDigitalInputPollingFinished, Qt::QueuedConnection);
-    connect(this, &Neuron::finishedDigitalOutputPolling, this, &Neuron::onDigitalOutputPollingFinished, Qt::QueuedConnection);
 }
 
 Neuron::~Neuron(){
