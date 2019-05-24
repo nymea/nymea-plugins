@@ -155,7 +155,7 @@ bool Neuron::getDigitalOutput(const QString &circuit, bool *value)
         return false;
     }
     //qDebug(dcUniPi()) << "Reading digital Output" << circuit << modbusAddress << value;
-    return false;
+    return true;
 }
 
 
