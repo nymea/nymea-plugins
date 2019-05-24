@@ -37,6 +37,52 @@ void DevicePluginUniPi::init()
     connect(this, &DevicePluginUniPi::configValueChanged, this, &DevicePluginUniPi::onPluginConfigurationChanged);
 }
 
+DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+{
+    Q_UNUSED(params);
+
+    if (deviceClassId == neuronL403DeviceClassId) {
+        QList<DeviceDescriptor> deviceDescriptors;
+        foreach (Device *device, myDevices()) {
+            if (device->deviceClassId() == neuronL403DeviceClassId) {
+                DeviceDescriptor deviceDescriptor(device->deviceClassId(), device->name(), "existing device");
+                ParamList params;
+                deviceDescriptor.setParams(device->params());
+                deviceDescriptor.setDeviceId(device->id());
+                deviceDescriptor.setTitle(device->name());
+                deviceDescriptors.append(deviceDescriptor);
+            }
+        }
+
+        if (deviceDescriptors.isEmpty()) {
+            DeviceDescriptor deviceDescriptor(neuronL403DeviceClassId, "Neuron L402", "new device");
+            deviceDescriptors.append(deviceDescriptor);
+        }
+
+        emit devicesDiscovered(neuronL403DeviceClassId, deviceDescriptors);
+    }
+
+    if (deviceClassId == neuronXS30DeviceClassId) {
+        QList<DeviceDescriptor> deviceDescriptors;
+        foreach (Device *device, myDevices()) {
+            if (device->deviceClassId() == neuronXS30DeviceClassId) {
+                DeviceDescriptor deviceDescriptor(device->deviceClassId(), device->name(), "existing device");
+                ParamList params;
+                deviceDescriptor.setParams(device->params());
+                deviceDescriptor.setDeviceId(device->id());
+                deviceDescriptor.setTitle(device->name());
+                deviceDescriptors.append(deviceDescriptor);
+            }
+        }
+
+        DeviceDescriptor deviceDescriptor(neuronXS30DeviceClassId, "Neuron Extension xS30", "new device");
+        deviceDescriptors.append(deviceDescriptor);
+
+        emit devicesDiscovered(neuronXS30DeviceClassId, deviceDescriptors);
+    }
+    return DeviceManager::DeviceError::DeviceErrorNoError;
+}
+
 DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
     if(device->deviceClassId() == neuronL403DeviceClassId) {
