@@ -41,14 +41,7 @@ ModbusRTUMaster::~ModbusRTUMaster()
         qCWarning(dcUniPi()) << "Error m_mb was nullpointer";
         return;
     }
-    if(!isConnected()){
-        qCWarning(dcUniPi()) << "Error serial interface not available";
-        // probably the serial port was disconnected,
-        /* NOTE: freeing the modbus instance would lead to a segfault
-         * this way of handling the modbus instance leaks memory, but only if the device was disconnected before.
-         * */
-        return;
-    }
+
     modbus_close(m_mb);
     modbus_free(m_mb);
 }
@@ -106,18 +99,10 @@ bool ModbusRTUMaster::createInterface()
 
 bool ModbusRTUMaster::isConnected()
 {
-    Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
-
-        if (m_serialPort == port.systemLocation()) {
-
-            if(modbus_connect(m_mb) == -1){
-                return false;
-            }
-            return true;
-        }
+    if(modbus_connect(m_mb) == -1){
+        return false;
     }
-    qCWarning(dcUniPi()) << "Error could not find serial interface: " << m_serialPort;
-    return false;
+    return true;
 }
 
 bool ModbusRTUMaster::setCoil(int slaveAddress, int coilAddress, bool status)
