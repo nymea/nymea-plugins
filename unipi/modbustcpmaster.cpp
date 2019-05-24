@@ -28,7 +28,6 @@ ModbusTCPMaster::ModbusTCPMaster(QHostAddress IPv4Address, int port, QObject *pa
     m_IPv4Address(IPv4Address),
     m_port(port)
 {
-    createInterface();
 }
 
 ModbusTCPMaster::~ModbusTCPMaster()

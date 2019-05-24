@@ -25,13 +25,13 @@ public:
 
     bool loadModbusMap();
 
-    void setDigitalOutput(const QString &circuit, bool value);
-    bool getDigitalOutput(const QString &circuit);
-    bool getDigitalInput(const QString &circuit);
+    bool setDigitalOutput(const QString &circuit, bool value);
+    bool getDigitalOutput(const QString &circuit, bool *value);
+    bool getDigitalInput(const QString &circuit, bool *value);
 
-    void setAnalogOutput(const QString &circuit, double value);
-    double getAnalogOutput(const QString &circuit);
-    double getAnalogInput(const QString &circuit);
+    bool setAnalogOutput(const QString &circuit, double value);
+    bool getAnalogOutput(const QString &circuit, double *value);
+    bool getAnalogInput(const QString &circuit, double *value);
 
 private:
 
