@@ -46,10 +46,8 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
         foreach (Device *device, myDevices()) {
             if (device->deviceClassId() == neuronL403DeviceClassId) {
                 DeviceDescriptor deviceDescriptor(device->deviceClassId(), device->name(), "existing device");
-                ParamList params;
                 deviceDescriptor.setParams(device->params());
                 deviceDescriptor.setDeviceId(device->id());
-                deviceDescriptor.setTitle(device->name());
                 deviceDescriptors.append(deviceDescriptor);
             }
         }
@@ -70,7 +68,6 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 ParamList params;
                 deviceDescriptor.setParams(device->params());
                 deviceDescriptor.setDeviceId(device->id());
-                deviceDescriptor.setTitle(device->name());
                 deviceDescriptors.append(deviceDescriptor);
             }
         }
