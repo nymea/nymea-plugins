@@ -137,75 +137,81 @@ bool NeuronExtension::loadModbusMap()
 }
 
 
-bool NeuronExtension::getDigitalInput(const QString &circuit)
+bool NeuronExtension::getDigitalInput(const QString &circuit, bool *value)
 {
-    bool value;
     int modbusAddress = m_modbusDigitalInputRegisters.value(circuit);
-    if (!m_modbusInterface->getCoil(m_slaveAddress, modbusAddress, &value)) {
+    if (!m_modbusInterface->getCoil(m_slaveAddress, modbusAddress, value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+        return false;
     }
 
     //qDebug(dcUniPi()) << "Reading digital input" << circuit << modbusAddress << value;
-    return value;
+    return true;
 }
 
 
-void NeuronExtension::setDigitalOutput(const QString &circuit, bool value)
+bool NeuronExtension::setDigitalOutput(const QString &circuit, bool value)
 {
     int modbusAddress = m_modbusDigitalOutputRegisters.value(circuit);
     if (!m_modbusInterface->setCoil(m_slaveAddress, modbusAddress, value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+        return false;
     }
 
     //qDebug(dcUniPi()) << "Setting digital ouput" << circuit << modbusAddress << value;
-    return;
+    return true;
 }
 
-bool NeuronExtension::getDigitalOutput(const QString &circuit)
+bool NeuronExtension::getDigitalOutput(const QString &circuit, bool *value)
 {
-    bool value;
     int modbusAddress = m_modbusDigitalOutputRegisters.value(circuit);
-    if (!m_modbusInterface->getCoil(m_slaveAddress, modbusAddress, &value)) {
+    if (!m_modbusInterface->getCoil(m_slaveAddress, modbusAddress, value)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+        return false;
     }
 
     //qDebug(dcUniPi()) << "Reading digital output" << circuit << modbusAddress << value;
-    return value;
+    return true;
 }
 
 
-void NeuronExtension::setAnalogOutput(const QString &circuit, double value)
+bool NeuronExtension::setAnalogOutput(const QString &circuit, double value)
 {
     int modbusAddress = m_modbusAnalogOutputRegisters.value(circuit);
     int rawValue = static_cast<int>(value);
     if (!m_modbusInterface->setRegister(m_slaveAddress, modbusAddress, rawValue)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+        return false;
     }
-    return;
+    return true;
 }
 
-/*
-double NeuronExtension::getAnalogOutput(const QString &circuit)
+
+bool NeuronExtension::getAnalogOutput(const QString &circuit, double *value)
 {
-    double value;
-    int modbusAddress = getModbusAddress(circuit); //TODO add prefix to circuit
-    if (!m_modbusInterface->getRegister(m_slaveAddress, modbusAddress, &value)) {
+    int modbusAddress = m_modbusAnalogOutputRegisters.value(circuit);
+    int rawValue = 0;
+    if (!m_modbusInterface->getRegister(m_slaveAddress, modbusAddress, &rawValue)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+        return false;
     }
-    return value;
+    *value = static_cast<double>(rawValue);
+    return true;
 }
 
 
-double NeuronExtension::getAnalogInput(const QString &circuit)
+bool NeuronExtension::getAnalogInput(const QString &circuit, double *value)
 {
-    double value;
-    int modbusAddress = getModbusAddress(circuit); //TODO add prefix to circuit
-    if (!m_modbusInterface->getRegister(m_slaveAddress, modbusAddress, &value)) {
+    int modbusAddress =  m_modbusAnalogInputRegisters.value(circuit);
+    int rawValue = 0;
+    if (!m_modbusInterface->getRegister(m_slaveAddress, modbusAddress, &rawValue)) {
         qCWarning(dcUniPi()) << "Error reading coil:" << modbusAddress;
+        return false;
     }
-    return value;
+
+    *value = static_cast<double>(rawValue);
+    return true;
 }
-*/
 
 void NeuronExtension::onOutputPollingTimer()
 {
@@ -213,7 +219,10 @@ void NeuronExtension::onOutputPollingTimer()
     {
         QHash<QString, bool> digitalOutputValues;
         foreach(QString circuit, modbusDigitalOutputRegisters.keys()){
-            digitalOutputValues.insert(circuit, getDigitalOutput(circuit));
+            bool value = 0;
+            if(getDigitalOutput(circuit, &value)) {
+                digitalOutputValues.insert(circuit, value);
+            }
         }
         emit finishedDigitalOutputPolling(digitalOutputValues);
     }, m_modbusDigitalOutputRegisters);
@@ -225,7 +234,10 @@ void NeuronExtension::onInputPollingTimer()
     {
         QHash<QString, bool> digitalInputValues;
         foreach(QString circuit, modbusDigitalInputRegisters.keys()){
-            digitalInputValues.insert(circuit, getDigitalInput(circuit));
+            bool value = 0;
+            if(getDigitalInput(circuit, &value)) {
+                digitalInputValues.insert(circuit, value);
+            }
         }
         emit finishedDigitalInputPolling(digitalInputValues);
     }, m_modbusDigitalInputRegisters);
