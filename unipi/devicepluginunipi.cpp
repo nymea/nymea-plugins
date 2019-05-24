@@ -77,7 +77,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
 
         emit devicesDiscovered(neuronXS30DeviceClassId, deviceDescriptors);
     }
-    return DeviceManager::DeviceError::DeviceErrorNoError;
+    return DeviceManager::DeviceErrorAsync;
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
@@ -206,6 +206,59 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
         QList<DeviceDescriptor> digitalInputDescriptors;
 
         foreach (Param param, device->params()) {
+            if (param.value().toString().contains("Unconfigured", Qt::CaseSensitivity::CaseInsensitive)) {
+                DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
+                QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();
+
+                if(deviceClass.paramTypes().findById(param.paramTypeId()).name().contains("relay", Qt::CaseSensitivity::CaseInsensitive)) {
+
+                    QString outputNumber = displayName.split(" ").at(1);
+
+                    foreach(Device *existingDevice, deviceManager()->findChildDevices(device->id())) {
+                        qCDebug(dcUniPi()) << "Removing device" << outputNumber;
+                        if(existingDevice->deviceClassId() == relayOutputDeviceClassId) {
+                            if (device->paramValue(relayOutputDeviceNumberParamTypeId).String == outputNumber) {
+                                deviceManager()->removeConfiguredDevice(existingDevice->id());
+                            }
+                        }
+                        if(existingDevice->deviceClassId() == lightDeviceClassId) {
+                            if (device->paramValue(lightDeviceOutputParamTypeId).String == outputNumber) {
+                                deviceManager()->removeConfiguredDevice(existingDevice->id());
+                            }
+                        }
+                        if(existingDevice->deviceClassId() == lockDeviceClassId) {
+                            if (device->paramValue(lockDeviceNumberParamTypeId).String == outputNumber) {
+                                deviceManager()->removeConfiguredDevice(existingDevice->id());
+                            }
+                        }
+                        if(existingDevice->deviceClassId() ==  blindDeviceClassId) {
+                            if ((device->paramValue(blindDeviceOutputOpenParamTypeId).String == outputNumber) ||
+                                    (device->paramValue(blindDeviceOutputCloseParamTypeId).String == outputNumber)) {
+                                deviceManager()->removeConfiguredDevice(existingDevice->id());
+                            }
+                        }
+                        break;
+                    }
+                }
+                if(deviceClass.paramTypes().findById(param.paramTypeId()).name().contains("Input", Qt::CaseSensitivity::CaseInsensitive)) {
+                    QString outputNumber = displayName.split(" ").at(1);
+
+                    foreach(Device *existingDevice, deviceManager()->findChildDevices(device->id())) {
+                        qCDebug(dcUniPi()) << "Removing device" << outputNumber;
+                        if(existingDevice->deviceClassId() == digitalInputDeviceClassId) {
+                            if (device->paramValue(digitalInputDeviceNumberParamTypeId).String == outputNumber) {
+                                deviceManager()->removeConfiguredDevice(existingDevice->id());
+                            }
+                        }
+                        if(existingDevice->deviceClassId() == dimmerSwitchDeviceClassId) {
+                            if (device->paramValue(dimmerSwitchDeviceInputNumberParamTypeId).String == outputNumber) {
+                                deviceManager()->removeConfiguredDevice(existingDevice->id());
+                            }
+                        }
+                    }
+                }
+            }
+
             if (param.value().toString().contains("Generic ouput", Qt::CaseSensitivity::CaseInsensitive)) {
                 DeviceClass deviceClass = deviceManager()->findDeviceClass(neuronL403DeviceClassId);
                 QString displayName = deviceClass.paramTypes().findById(param.paramTypeId()).displayName();

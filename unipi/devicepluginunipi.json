@@ -1396,7 +1396,7 @@
                         {
                             "id": "e8d275fa-f647-4557-936b-eb6b4da5d80b",
                             "name": "relay101Group",
-                            "displayName": "Relay 1.1 group",
+                            "displayName": "Output 1.1 group",
                             "type": "int",
                             "defaultValue": 101
                         },
@@ -1419,7 +1419,7 @@
                         {
                             "id": "53eb7e17-a1fd-4c19-89ee-5d3491f508fb",
                             "name": "relay102Group",
-                            "displayName": "Relay 1.2 group",
+                            "displayName": "Output 1.2 group",
                             "type": "int",
                             "defaultValue": 102
                         },
@@ -1442,7 +1442,7 @@
                         {
                             "id": "43cca672-b8d7-40c4-8bb3-afda168ab6b6",
                             "name": "relay103Group",
-                            "displayName": "Relay 1.3 group",
+                            "displayName": "Output 1.3 group",
                             "type": "int",
                             "defaultValue": 103
                         },
@@ -1465,7 +1465,7 @@
                         {
                             "id": "ce3692f7-ce49-4114-8f67-0bc6a3a89d3c",
                             "name": "relay104Group",
-                            "displayName": "Relay 1.4 group",
+                            "displayName": "Output 1.4 group",
                             "type": "int",
                             "defaultValue": 104
                         }
