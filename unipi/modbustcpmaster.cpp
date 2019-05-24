@@ -151,8 +151,10 @@ bool ModbusTCPMaster::getCoil(int coilAddress, bool *result)
 
     if (status&0x01) {
         *result = true;
+    } else {
+        *result = false;
     }
-    return false;
+    return true;
 }
 
 bool ModbusTCPMaster::getRegister(int registerAddress, int *result)

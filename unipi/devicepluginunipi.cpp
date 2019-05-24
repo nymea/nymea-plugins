@@ -314,8 +314,8 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
     }
     if (device->deviceClassId() == lockDeviceClassId) {
         QTimer *unlatchTimer = new QTimer(this);
-        unlatchTimer->setSingleShot(true);
         connect(unlatchTimer, &QTimer::timeout, this, &DevicePluginUniPi::onUnlatchTimer);
+        unlatchTimer->setSingleShot(true);
         m_unlatchTimer.insert(device, unlatchTimer);
     }
 }
