@@ -42,7 +42,7 @@
                     "id": "72637166-6730-4b2c-9b5d-4d2066c2fea8",
                     "name": "neuronL403",
                     "displayName": "Neuron L403",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["user", "discovery"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
@@ -1485,7 +1485,7 @@
                     "id": "a1ec57b1-fcf9-4540-80c9-40f78cddc85f",
                     "name": "neuronXS30",
                     "displayName": "Neuron xS30",
-                    "createMethods": ["discovery"],
+                    "createMethods": ["user", "discovery"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
