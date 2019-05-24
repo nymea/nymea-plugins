@@ -86,6 +86,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             neuronExtension->deleteLater();
             return DeviceManager::DeviceSetupStatusFailure;
         }
+
+        connect(neuronExtension, &NeuronExtension::digitalInputStatusChanged, this, &DevicePluginUniPi::onDigitalInputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::digitalOutputStatusChanged, this, &DevicePluginUniPi::onDigitalOutputStatusChanged);
         m_neuronExtensions.insert(device->id(), neuronExtension);
 
         device->setStateValue(neuronXS30ConnectedStateTypeId, true);
