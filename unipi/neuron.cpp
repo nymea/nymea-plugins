@@ -20,8 +20,8 @@ Neuron::Neuron(NeuronTypes neuronType, ModbusTCPMaster *modbusInterface, QObject
     QTimer *m_outputPollingTimer = new QTimer(this);
     m_outputPollingTimer->setTimerType(Qt::TimerType::PreciseTimer);
     m_outputPollingTimer->setSingleShot(true);
-    m_outputPollingTimer->start(1000);
-    connect(m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
+    //m_outputPollingTimer->start(1000);
+    connect(m_outputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
 
     connect(this, &Neuron::finishedDigitalInputPolling, this, &Neuron::onDigitalInputPollingFinished, Qt::QueuedConnection);
     connect(this, &Neuron::finishedDigitalOutputPolling, this, &Neuron::onDigitalOutputPollingFinished, Qt::QueuedConnection);
@@ -209,7 +209,7 @@ void Neuron::onDigitalInputPollingFinished(QHash<QString, bool> digitalInputValu
             emit digitalInputStatusChanged(circuit, digitalInputValues.value(circuit));
         }
     }
-    m_outputPollingTimer->start(1000);
+    m_inputPollingTimer->start(1000);
 }
 
 void Neuron::onDigitalOutputPollingFinished(QHash<QString, bool> digitalOutputValues)
@@ -220,5 +220,5 @@ void Neuron::onDigitalOutputPollingFinished(QHash<QString, bool> digitalOutputVa
             emit digitalOutputStatusChanged(circuit, digitalOutputValues.value(circuit));
         }
     }
-    m_inputPollingTimer->start(100);
+    m_outputPollingTimer->start(100);
 }
