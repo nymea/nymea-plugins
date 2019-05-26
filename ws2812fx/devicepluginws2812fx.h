@@ -87,6 +87,8 @@
 
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
+
+#include <QTimer>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 
@@ -108,9 +110,13 @@ public:
 private:
     QHash<Device *, QSerialPort *> m_serialPorts;
     QList<QString> m_usedInterfaces;
+    QHash<QString, ActionId> m_pendingActions;
+
+    QTimer *m_reconnectTimer = nullptr;
 
 private slots:
     void onReadyRead();
+     void onReconnectTimer();
     void onSerialError(QSerialPort::SerialPortError error);
 
 signals:

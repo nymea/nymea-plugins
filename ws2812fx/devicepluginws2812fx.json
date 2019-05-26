@@ -21,7 +21,7 @@
                             "displayName": "Serial port",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue": "ttyAMA0"
+                            "defaultValue": "ttyAMC0"
                         }
                     ],
                     "stateTypes": [
@@ -157,10 +157,10 @@
                                 "Bicolor Chase",
                                 "Tricolor Chase",
                                 "ICU",
+                                "Custom 0",
                                 "Custom 1",
                                 "Custom 2",
-                                "Custom 3",
-                                "Custom 4"
+                                "Custom 3"
                             ],
                             "writable": true
                         }
