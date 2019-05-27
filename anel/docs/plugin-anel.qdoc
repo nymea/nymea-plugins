@@ -1,0 +1,18 @@
+/*!
+    \page anel.html
+    \title ANEL Elektronik devices
+    \brief Plugin for ANEL Elektronik NET-PwrCtrl network controlled power sockets.
+
+    \ingroup plugins
+    \ingroup nymea-plugins-maker
+
+    This plugin allows to make use of ANEL Elektronik NET-PwrCtrl controlled powet sockets.
+
+    See https://anel-elektronik.de/ for a detailed description of the devices.
+
+    \chapter Plugin properties
+    When adding a device it will detect the type of the panel and create a gateway device and a powersocket
+    device for each of the available sockets on the panel.
+
+    \quotefile ../devicepluginanel.json
+*/
