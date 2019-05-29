@@ -2,7 +2,7 @@
 
 
 
-This plugin allows to receive the current energy market price from the \l{https://www.awattar.com/}{aWATTar GmbH}.
+This plugin allows to receive the current energy market price from the [aWATTar GmbH](https://www.awattar.com/).
 In order to use this plugin you need to enter the access token from your energy provider. You can find more
 information about you accesstoken [here](https://www.awattar.com/api-unser-datenfeed).
 
@@ -17,7 +17,7 @@ price is above the average, if the deviation is negative, the current price is b
 * 0 %    current price equals average price in the interval  [-12h < now < + 12h]
 * +100 % current price equals highest price in the interval [-12h < now < + 12h]
 
-![alt text](awattar-graph.png "aWATTar graph")
+![aWATTar graph](https://raw.githubusercontent.com/guh/nymea-plugins/master/awattar/docs/images/awattar-graph.png "aWATTar graph")
  
 # Heat pump
 
