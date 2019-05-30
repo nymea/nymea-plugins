@@ -20,32 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page gpioplugin.html
-    \title GPIO Plugin
-    \brief Plugin to control gpios on different boards.
-
-    \ingroup plugins
-    \ingroup nymea-plugins-maker
-
-    \chapter Raspberry Pi 2
-
-    \image Raspberry-Pi-2-GPIO.png "Raspberry Pi 2 GPIOs"
-
-    \chapter Beaglebone Black
-
-    \image Beaglebone-Black-GPIO.png "Beaglebone Black GPIOs"
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/gpio/deviceplugingpio.json
-*/
-
-
 #include "deviceplugingpio.h"
 #include "types/param.h"
 #include "plugin/device.h"
