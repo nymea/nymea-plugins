@@ -20,26 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page intertechno.html
-    \title Intertechno
-    \brief Plugin for InterTechno 433 MHz devices.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to control RF 433 MHz actors an receive remote signals from
-    \l{http://www.intertechno.at}{Intertechno} devices.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/intertechno/devicepluginintertechno.json
-*/
-
 #include "devicepluginintertechno.h"
 
 #include "plugin/device.h"
