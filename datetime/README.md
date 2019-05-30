@@ -10,16 +10,16 @@ The weekday integer value stands for:
 
 | Weekday       | Int           |
 | ------------- |:-------------:|
-| Monday        | 1
-| Tuesday       | 2
-| Wednesday     | 3
-| Thursday      | 4
-| Friday        | 5
-| Saturday      | 6
-| Sunday        | 7
+| Monday        | 1             |
+| Tuesday       | 2             |
+| Wednesday     | 3             |
+| Thursday      | 4             |
+| Friday        | 5             |
+| Saturday      | 6             |
+| Sunday        | 7             |
 
 
-The "weekend" \l{State} will be true, if the current weekday is Saturday or Sunday, otherwise it will be false.
+The *weekend* state will be true, if the current weekday is Saturday or Sunday, otherwise it will be false.
 
 ## Today
 
