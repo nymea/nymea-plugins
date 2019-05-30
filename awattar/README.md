@@ -1,7 +1,5 @@
 # aWATTar
 
-
-
 This plugin allows to receive the current energy market price from the [aWATTar GmbH](https://www.awattar.com/).
 In order to use this plugin you need to enter the access token from your energy provider. You can find more
 information about you accesstoken [here](https://www.awattar.com/api-unser-datenfeed).

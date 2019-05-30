@@ -1,5 +1,4 @@
 # ANEL Elektronik devices
-------------------
     
 This plugin allows to make use of ANEL Elektronik NET-PwrCtrl controlled powet sockets.
 
