@@ -25,6 +25,7 @@
 
 #include "tvdevice.h"
 #include "plugintimer.h"
+#include "webosconnection.h"
 #include "plugin/deviceplugin.h"
 #include "network/upnp/upnpdevicedescriptor.h"
 
@@ -37,7 +38,7 @@ class DevicePluginLgSmartTv : public DevicePlugin
 
 public:
     explicit DevicePluginLgSmartTv();
-    ~DevicePluginLgSmartTv();
+    ~DevicePluginLgSmartTv() override;
 
     void init() override;
     DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
@@ -53,6 +54,8 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<TvDevice *, Device *> m_tvList;
     QHash<QString, QString> m_tvKeys;
+
+    QHash<WebosConnection *, Device *> m_webosTvs;
 
     // first pairing setup
     QHash<QNetworkReply *, PairingTransactionId> m_setupPairingTv;
@@ -77,6 +80,7 @@ private:
 private slots:
     void onPluginTimer();
     void onUpnpDiscoveryFinished();
+    void onWebosUpnpDiscoveryFinished();
     void onNetworkManagerReplyFinished();
     void stateChanged();
 };
