@@ -65,6 +65,7 @@
 #include "plugin/device.h"
 #include "plugininfo.h"
 #include "network/upnp/upnpdiscovery.h"
+#include "platform/platformzeroconfcontroller.h"
 #include "network/zeroconf/zeroconfservicebrowser.h"
 #include "network/zeroconf/zeroconfserviceentry.h"
 #include "network/networkaccessmanager.h"
@@ -183,9 +184,10 @@ DeviceManager::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId
     Q_UNUSED(params)
     Q_UNUSED(deviceClassId)
 
-    QList<DeviceDescriptor> descriptors;
-    foreach (const ZeroConfServiceEntry &avahiEntry, hardwareManager()->zeroConfServiceBrowser()->serviceEntries()) {
-        if (avahiEntry.serviceType() == "_xbmc-jsonrpc._tcp") {
+    ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_xbmc-jsonrpc._tcp");
+    QTimer::singleShot(5000, this, [this, serviceBrowser](){
+        QList<DeviceDescriptor> descriptors;
+        foreach (const ZeroConfServiceEntry avahiEntry, serviceBrowser->serviceEntries()) {
             qCDebug(dcKodi) << "Zeroconf entry:" << avahiEntry;
             DeviceDescriptor descriptor(kodiDeviceClassId, avahiEntry.name(), avahiEntry.hostName() + " (" + avahiEntry.hostAddress().toString() + ")");
             ParamList params;
@@ -194,10 +196,9 @@ DeviceManager::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId
             descriptor.setParams(params);
             descriptors << descriptor;
         }
-    }
-    if (!descriptors.isEmpty()) {
         emit devicesDiscovered(kodiDeviceClassId, descriptors);
-    }
+        serviceBrowser->deleteLater();
+    });
 
     return DeviceManager::DeviceErrorAsync;
 }
