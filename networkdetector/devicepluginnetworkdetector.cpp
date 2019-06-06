@@ -84,7 +84,18 @@ DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device
     connect(monitor, &DeviceMonitor::reachableChanged, this, &DevicePluginNetworkDetector::deviceReachableChanged);
     connect(monitor, &DeviceMonitor::addressChanged, this, &DevicePluginNetworkDetector::deviceAddressChanged);
     connect(monitor, &DeviceMonitor::seen, this, &DevicePluginNetworkDetector::deviceSeen);
+    monitor->setGracePeriod(device->setting(networkDeviceSettingsGracePeriodParamTypeId).toInt());
     m_monitors.insert(monitor, device);
+
+    connect(device, &Device::settingChanged, this, [this, device](const ParamTypeId &paramTypeId, const QVariant &value){
+        if (paramTypeId != networkDeviceSettingsGracePeriodParamTypeId) {
+            return;
+        }
+        DeviceMonitor *monitor = m_monitors.key(device);
+        if (monitor) {
+            monitor->setGracePeriod(value.toInt());
+        }
+    });
 
     if (!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);

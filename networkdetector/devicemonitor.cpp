@@ -29,6 +29,7 @@ DeviceMonitor::~DeviceMonitor()
 
 void DeviceMonitor::setGracePeriod(int minutes)
 {
+    log("Setting grace period to " + QString::number(minutes) + " minutes.");
     m_gracePeriod = minutes;
 }
 
@@ -193,7 +194,7 @@ void DeviceMonitor::pingFinished(int exitCode)
         emit seen();
         m_lastSeenTime = QDateTime::currentDateTime();
     } else {
-        log("ICMP Ping failed.");
+        log("ICMP Ping failed. Last seen: " + m_lastSeenTime.toString() + ", grace period: " + QString::number(m_gracePeriod) + " (until " + m_lastSeenTime.addSecs(60 * m_gracePeriod).toString() + ")");
         if (m_reachable && m_lastSeenTime.addSecs(m_gracePeriod * 60) < QDateTime::currentDateTime()) {
             log("Exceeded grace period of " + QString::number(m_gracePeriod) + " minutes. Marking device as offline.");
             m_reachable = false;
