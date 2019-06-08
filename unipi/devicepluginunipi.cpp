@@ -649,22 +649,23 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 void DevicePluginUniPi::deviceRemoved(Device *device)
 {
     if(m_neurons.contains(device->id())) {
-        m_modbusTCPMaster->deleteLater();
-        m_neurons.remove(device->id());
-        if (m_neurons.isEmpty()) {
-            m_modbusTCPMaster->deleteLater();
-        }
+        Neuron *neuron = m_neurons.take(device->id());
+        neuron->deleteLater();
     }
     if(m_neuronExtensions.contains(device->id())) {
-        m_neuronExtensions.remove(device->id());
-        if (m_neuronExtensions.isEmpty()) {
-            m_modbusRTUMaster->deleteLater();
-        }
+        NeuronExtension *neuronExtension = m_neuronExtensions.take(device->id());
+        neuronExtension->deleteLater();
     }
 
     if (myDevices().isEmpty()) {
         m_reconnectTimer->stop();
         m_reconnectTimer->deleteLater();
+
+        m_modbusTCPMaster->disconnectDevice();
+        m_modbusTCPMaster->deleteLater();
+
+        m_modbusRTUMaster->disconnectDevice();
+        m_modbusRTUMaster->deleteLater();
     }
 }
 
