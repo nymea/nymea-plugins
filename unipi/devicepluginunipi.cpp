@@ -53,6 +53,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), QString("Neuron extension %1, Slave address %2").arg(neuronExtension->type().arg(neuronExtension->slaveAddress())), parentDeviceId);
                 ParamList params;
                 params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(digitalInputDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -67,6 +68,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), QString("Neuron %1").arg(neuron->type()), parentDeviceId);
                 ParamList params;
                 params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(digitalInputDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
