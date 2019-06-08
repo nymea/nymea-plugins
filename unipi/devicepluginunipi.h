@@ -27,7 +27,6 @@
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
 #include "plugintimer.h"
-#include "dimmerswitch.h"
 #include "neuron.h"
 #include "neuronextension.h"
 
@@ -58,7 +57,6 @@ private:
 
     QHash<DeviceId, Neuron *> m_neurons;
     QHash<DeviceId, NeuronExtension *> m_neuronExtensions;
-    QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
     QModbusTcpClient *m_modbusTCPMaster = nullptr;
     QModbusRtuSerialMaster *m_modbusRTUMaster = nullptr;
 

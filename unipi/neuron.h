@@ -29,6 +29,13 @@ public:
     ~Neuron();
 
     bool init();
+    QString type();
+
+    QList<QString> digitalInputs();
+    QList<QString> digitalOutputs();
+    QList<QString> analogInputs();
+    QList<QString> analogOutputs();
+    QList<QString> userLEDs();
 
     bool setDigitalOutput(const QString &circuit, bool value);
     bool getDigitalOutput(const QString &circuit);
@@ -52,11 +59,9 @@ private:
     QHash<QString, int> m_modbusDigitalInputRegisters;
     QHash<QString, int> m_modbusAnalogInputRegisters;
     QHash<QString, int> m_modbusAnalogOutputRegisters;
+    QHash<QString, int> m_modbusUserLEDRegisters;
 
     NeuronTypes m_neuronType = NeuronTypes::S103;
-
-    QHash<QString, bool> m_digitalInputValueBuffer;
-    QHash<QString, bool> m_digitalOutputValueBuffer;
 
     bool loadModbusMap();
 

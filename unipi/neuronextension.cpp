@@ -43,6 +43,33 @@ bool NeuronExtension::init() {
     return true;
 }
 
+QString NeuronExtension::type()
+{
+    switch(m_extensionType) {
+    case ExtensionTypes::xS10:
+        return "xS10";
+    case ExtensionTypes::xS20:
+        return "sX20";
+    case ExtensionTypes::xS30:
+        return "sX30";
+    case ExtensionTypes::xS40:
+        return "sX40";
+    case ExtensionTypes::xS50:
+        return "sX50";
+    }
+    return "Unknown";
+}
+
+int NeuronExtension::slaveAddress()
+{
+    return m_slaveAddress;
+}
+
+void NeuronExtension::setSlaveAddress(int slaveAddress)
+{
+    m_slaveAddress = slaveAddress;
+}
+
 bool NeuronExtension::loadModbusMap()
 {
     QStringList fileCoilList;
