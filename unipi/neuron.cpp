@@ -11,12 +11,12 @@ Neuron::Neuron(NeuronTypes neuronType, QModbusTcpClient *modbusInterface,  QObje
 {
     connect(&m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onInputPollingTimer);
     m_inputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
-    m_inputPollingTimer.start(100); //TODO
+    m_inputPollingTimer.start(200); //TODO
 
     connect(&m_outputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
     m_outputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
     m_outputPollingTimer.setSingleShot(true);
-    m_outputPollingTimer.start(1000); //TODO
+    m_outputPollingTimer.start(5000); //TODO
 }
 
 Neuron::~Neuron(){
@@ -228,7 +228,7 @@ bool Neuron::getAllDigitalOutputs()
 bool Neuron::getDigitalInput(const QString &circuit)
 {
     int modbusAddress = m_modbusDigitalInputRegisters.value(circuit);
-    qDebug(dcUniPi()) << "Reading digital Input" << circuit << modbusAddress;
+    //qDebug(dcUniPi()) << "Reading digital Input" << circuit << modbusAddress;
 
     if (!m_modbusInterface)
         return false;
@@ -250,7 +250,7 @@ bool Neuron::getDigitalInput(const QString &circuit)
 bool Neuron::setDigitalOutput(const QString &circuit, bool value)
 {
     int modbusAddress = m_modbusDigitalOutputRegisters.value(circuit);
-    qDebug(dcUniPi()) << "Setting digital ouput" << circuit << modbusAddress << value;
+    //qDebug(dcUniPi()) << "Setting digital ouput" << circuit << modbusAddress << value;
 
     if (!m_modbusInterface)
         return false;
@@ -273,7 +273,7 @@ bool Neuron::setDigitalOutput(const QString &circuit, bool value)
 bool Neuron::getDigitalOutput(const QString &circuit)
 {
     int modbusAddress = m_modbusDigitalOutputRegisters.value(circuit);
-    qDebug(dcUniPi()) << "Reading digital Output" << circuit << modbusAddress;
+    //qDebug(dcUniPi()) << "Reading digital Output" << circuit << modbusAddress;
 
     if (!m_modbusInterface)
         return false;
@@ -350,7 +350,7 @@ void Neuron::onFinished()
         const QModbusDataUnit unit = reply->result();
 
         for (uint i = 0; i < unit.valueCount(); i++) {
-            qCDebug(dcUniPi()) << "Start Address:" << unit.startAddress() << "Register Type:" << unit.registerType() << "Value:" << unit.value(i);
+            //qCDebug(dcUniPi()) << "Start Address:" << unit.startAddress() << "Register Type:" << unit.registerType() << "Value:" << unit.value(i);
             modbusAddress = unit.startAddress() + i;
             QString circuit;
             switch (unit.registerType()) {

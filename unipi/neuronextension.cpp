@@ -13,13 +13,11 @@ NeuronExtension::NeuronExtension(ExtensionTypes extensionType, QModbusRtuSerialM
 {
     connect(&m_inputPollingTimer, &QTimer::timeout, this, &NeuronExtension::onInputPollingTimer);
     m_inputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
-    m_inputPollingTimer.setSingleShot(true);
-    m_inputPollingTimer.start(100);
+    m_inputPollingTimer.start(200);
 
     connect(&m_outputPollingTimer, &QTimer::timeout, this, &NeuronExtension::onOutputPollingTimer);
     m_outputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
-    m_outputPollingTimer.setSingleShot(true);
-    m_outputPollingTimer.start(1000);
+    m_outputPollingTimer.start(5000);
 }
 
 NeuronExtension::~NeuronExtension(){
