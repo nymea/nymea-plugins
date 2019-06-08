@@ -96,8 +96,8 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onStateChanged);
             connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onErrorOccurred);
 
-            if (!m_modbusRTUMaster->connectDevice()) {
-                qCWarning(dcUniPi()) << "Connect failed:" << m_modbusRTUMaster->errorString();
+            if (!m_modbusTCPMaster->connectDevice()) {
+                qCWarning(dcUniPi()) << "Connect failed:" << m_modbusTCPMaster->errorString();
                  return DeviceManager::DeviceSetupStatusFailure;
             }
         }
@@ -134,8 +134,8 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             m_modbusRTUMaster->setTimeout(50);
             m_modbusRTUMaster->setNumberOfRetries(1);
 
-            connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onStateChanged);
-            connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onErrorOccurred);
+            connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::stateChanged, this, &DevicePluginUniPi::onStateChanged);
+            connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::errorOccurred, this, &DevicePluginUniPi::onErrorOccurred);
 
             if (!m_modbusRTUMaster->connectDevice()) {
                 qCWarning(dcUniPi()) << "Connect failed:" << m_modbusRTUMaster->errorString();
