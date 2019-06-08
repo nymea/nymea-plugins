@@ -1,3 +1,4 @@
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io         *
@@ -84,12 +85,18 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 {
     if (device->deviceClassId() == awningDeviceClassId) {
         if (action.actionTypeId() == awningOpenActionTypeId) {
+            device->setStateValue(awningClosingOutputStateTypeId, false);
+            device->setStateValue(awningOpeningOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == awningStopActionTypeId) {
+            device->setStateValue(awningOpeningOutputStateTypeId, false);
+            device->setStateValue(awningClosingOutputStateTypeId, false);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == awningCloseActionTypeId) {
+            device->setStateValue(awningOpeningOutputStateTypeId, false);
+            device->setStateValue(awningClosingOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -97,12 +104,18 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 
     if (device->deviceClassId() == blindDeviceClassId ) {
         if (action.actionTypeId() == blindOpenActionTypeId) {
+            device->setStateValue(blindClosingOutputStateTypeId, false);
+            device->setStateValue(blindOpeningOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindStopActionTypeId) {
+            device->setStateValue(blindOpeningOutputStateTypeId, false);
+            device->setStateValue(blindClosingOutputStateTypeId, false);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindCloseActionTypeId) {
+            device->setStateValue(blindOpeningOutputStateTypeId, false);
+            device->setStateValue(blindClosingOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -110,25 +123,18 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 
     if (device->deviceClassId() == shutterDeviceClassId) {
         if (action.actionTypeId() == shutterOpenActionTypeId) {
+            device->setStateValue(shutterClosingOutputStateTypeId, false);
+            device->setStateValue(shutterOpeningOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == shutterStopActionTypeId) {
+            device->setStateValue(shutterOpeningOutputStateTypeId, false);
+            device->setStateValue(shutterClosingOutputStateTypeId, false);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == shutterCloseActionTypeId) {
-            return DeviceManager::DeviceErrorNoError;
-        }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
-    }
-
-    if (device->deviceClassId() == awningDeviceClassId) {
-        if (action.actionTypeId() == awningOpenActionTypeId) {
-            return DeviceManager::DeviceErrorNoError;
-        }
-        if (action.actionTypeId() == awningStopActionTypeId) {
-            return DeviceManager::DeviceErrorNoError;
-        }
-        if (action.actionTypeId() == awningCloseActionTypeId) {
+            device->setStateValue(shutterOpeningOutputStateTypeId, false);
+            device->setStateValue(shutterClosingOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;

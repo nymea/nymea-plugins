@@ -14,6 +14,24 @@
                     "displayName": "Awning",
                     "createMethods": ["user"],
                     "interfaces": ["awning"],
+                    "stateTypes": [
+                        {
+                            "id": "7cda95f1-beb8-464e-aa75-ef415ed6744c",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "9b673430-572d-4a9c-85d3-dafadbe541cd",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
                     "actionTypes": [
                         {
                             "id": "979e9c51-5a93-4635-85e3-01874306b229",
@@ -38,6 +56,24 @@
                     "displayName": "Blind",
                     "createMethods": ["user"],
                     "interfaces": ["blind"],
+                    "stateTypes": [
+                        {
+                            "id": "7cda95f1-beb8-464e-aa75-ef415ed6744c",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "9b673430-572d-4a9c-85d3-dafadbe541cd",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
                     "actionTypes": [
                         {
                             "id": "120dc265-dbbb-4f19-9d31-c372c23479c0",
@@ -62,6 +98,24 @@
                     "displayName": "Shutter",
                     "createMethods": ["user"],
                     "interfaces": ["shutter"],
+                    "stateTypes": [
+                        {
+                            "id": "7cda95f1-beb8-464e-aa75-ef415ed6744c",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "9b673430-572d-4a9c-85d3-dafadbe541cd",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
                     "actionTypes": [
                         {
                             "id": "9deb662d-2378-4345-a898-8742d41e43c1",
