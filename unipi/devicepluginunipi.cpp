@@ -97,7 +97,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             m_modbusTCPMaster = new QModbusTcpClient(this);
             m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkPortParameter, port);
             m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkAddressParameter, ipAddress.toString());
-            //m_modbusTCPMaster->setTimeout(50);
+            m_modbusTCPMaster->setTimeout(100);
             m_modbusTCPMaster->setNumberOfRetries(1);
 
             connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onStateChanged);
@@ -138,7 +138,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baudrate);
             m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, 8);
             m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, 1);
-            //m_modbusRTUMaster->setTimeout(50);
+            m_modbusRTUMaster->setTimeout(100);
             m_modbusRTUMaster->setNumberOfRetries(1);
 
             connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::stateChanged, this, &DevicePluginUniPi::onStateChanged);
