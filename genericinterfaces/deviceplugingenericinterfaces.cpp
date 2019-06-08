@@ -142,6 +142,7 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 
     if (device->deviceClassId() == socketDeviceClassId) {
         if (action.actionTypeId() == socketPowerActionTypeId) {
+            device->setStateValue(socketPowerStateTypeId, action.param(socketPowerActionPowerParamTypeId).value());
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -149,6 +150,7 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 
     if (device->deviceClassId() == lightDeviceClassId) {
         if (action.actionTypeId() == lightPowerActionTypeId) {
+            device->setStateValue(lightPowerStateTypeId, action.param(lightPowerActionPowerParamTypeId).value());
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
@@ -156,6 +158,7 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 
     if (device->deviceClassId() == heatingDeviceClassId) {
         if (action.actionTypeId() == heatingPowerActionTypeId) {
+            device->setStateValue(heatingPowerStateTypeId, action.param(heatingPowerActionPowerParamTypeId).value());
             return DeviceManager::DeviceErrorNoError;
         }
         return DeviceManager::DeviceErrorActionTypeNotFound;
