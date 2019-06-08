@@ -64,16 +64,11 @@ private:
     QTimer *m_reconnectTimer = nullptr;
 
 private slots:
-    void onDimmerSwitchPressed();
-    void onDimmerSwitchLongPressed();
-    void onDimmerSwitchDoublePressed();
-    void onDimmerSwitchDimValueChanged(int dimValue);
-
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 
     void onDigitalInputStatusChanged(QString &circuit, bool value);
     void onDigitalOutputStatusChanged(QString &circuit, bool value);
-    void onUnlatchTimer();
+
     void onReconnectTimer();
 
     void onErrorOccurred(QModbusDevice::Error error);

@@ -91,6 +91,12 @@ QList<QString> Neuron::analogOutputs()
     return m_modbusAnalogOutputRegisters.keys();
 }
 
+QList<QString> Neuron::userLEDs()
+{
+    return m_modbusUserLEDRegisters.keys();
+}
+
+
 bool Neuron::loadModbusMap()
 {
     QStringList fileCoilList;
@@ -171,6 +177,9 @@ bool Neuron::loadModbusMap()
                 } else if (list[3].contains("Relay Output", Qt::CaseSensitivity::CaseInsensitive)) {
                     m_modbusDigitalOutputRegisters.insert(circuit, list[0].toInt());
                     qDebug(dcUniPi()) << "Found relay register" << circuit << list[0].toInt();
+                } else if (list[3].contains("User Programmable LED", Qt::CaseSensitivity::CaseInsensitive)) {
+                    m_modbusUserLEDRegisters.insert(circuit, list[0].toInt());
+                    qDebug(dcUniPi()) << "Found user programmable led" << circuit << list[0].toInt();
                 }
             }
         }
