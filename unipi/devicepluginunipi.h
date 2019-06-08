@@ -69,10 +69,17 @@ private slots:
     void onDigitalInputStatusChanged(QString &circuit, bool value);
     void onDigitalOutputStatusChanged(QString &circuit, bool value);
 
+    void onAnalogInputStatusChanged(QString &circuit, double value);
+    void onAnalogOutputStatusChanged(QString &circuit,double value);
+
+    void onUserLEDStatusChanged(QString &circuit, bool value);
+
     void onReconnectTimer();
 
-    void onErrorOccurred(QModbusDevice::Error error);
-    void onStateChanged(QModbusDevice::State state);
+    void onModbusTCPErrorOccurred(QModbusDevice::Error error);
+    void onModbusRTUErrorOccurred(QModbusDevice::Error error);
+    void onModbusTCPStateChanged(QModbusDevice::State state);
+    void onModbusRTUStateChanged(QModbusDevice::State state);
 };
 
 #endif // DEVICEPLUGINUNIPI_H
