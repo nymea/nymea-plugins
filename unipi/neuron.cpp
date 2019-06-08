@@ -42,6 +42,55 @@ bool Neuron::init()
     return true;
 }
 
+QString Neuron::type()
+{
+    switch (m_neuronType) {
+    case NeuronTypes::S103:
+        return  "S103";
+    case NeuronTypes::M103:
+        return  "M103";
+    case NeuronTypes::M203:
+        return  "M203";
+    case NeuronTypes::M303:
+        return  "M303";
+    case NeuronTypes::M403:
+        return  "M403";
+    case NeuronTypes::M503:
+        return  "M503";
+    case NeuronTypes::L203:
+        return  "L203";
+    case NeuronTypes::L303:
+        return  "L303";
+    case NeuronTypes::L403:
+        return  "L403";
+    case NeuronTypes::L503:
+        return  "L503";
+    case NeuronTypes::L513:
+        return  "L513";
+    }
+    return "Unknown";
+}
+
+QList<QString> Neuron::digitalInputs()
+{
+    return m_modbusDigitalInputRegisters.keys();
+}
+
+QList<QString> Neuron::digitalOutputs()
+{
+    return m_modbusDigitalOutputRegisters.keys();
+}
+
+QList<QString> Neuron::analogInputs()
+{
+    return m_modbusAnalogInputRegisters.keys();
+}
+
+QList<QString> Neuron::analogOutputs()
+{
+    return m_modbusAnalogOutputRegisters.keys();
+}
+
 bool Neuron::loadModbusMap()
 {
     QStringList fileCoilList;
@@ -51,13 +100,52 @@ bool Neuron::loadModbusMap()
     case NeuronTypes::S103:
         fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Coils-group-1.csv"));
         break;
+    case NeuronTypes::M103:
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M103/Neuron_L103-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M103/Neuron_L103-Coils-group-2.csv"));
+        break;
+    case NeuronTypes::M203:
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M203/Neuron_M203-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M203/Neuron_M203-Coils-group-2.csv"));
+        break;
+    case NeuronTypes::M303:
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M303/Neuron_M303-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M303/Neuron_M303-Coils-group-2.csv"));
+        break;
+    case NeuronTypes::M403:
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M403/Neuron_M403-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M403/Neuron_M403-Coils-group-2.csv"));
+        break;
+    case NeuronTypes::M503:
+
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M503/Neuron_M503-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_M503/Neuron_M503-Coils-group-2.csv"));
+        break;
+    case NeuronTypes::L203:
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L203/Neuron_L203-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L203/Neuron_L203-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L203/Neuron_L203-Coils-group-3.csv"));
+        break;
+    case NeuronTypes::L303:
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L303/Neuron_L303-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L303/Neuron_L303-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L303/Neuron_L303-Coils-group-3.csv"));
+        break;
     case NeuronTypes::L403:
         fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Coils-group-1.csv"));
         fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Coils-group-2.csv"));
-        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Coils-group-3.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L503-Coils-group-3.csv"));
         break;
-    default:
-        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Coils-group-1.csv"));
+    case NeuronTypes::L503:
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L503/Neuron_L503-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L503/Neuron_L503-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L503/Neuron_L503-Coils-group-3.csv"));
+        break;
+    case NeuronTypes::L513:
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L513/Neuron_L513-Coils-group-1.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L513/Neuron_L513-Coils-group-2.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L513/Neuron_L513-Coils-group-3.csv"));
+        break;
     }
 
     foreach(QString csvFilePath, fileCoilList) {
@@ -94,13 +182,51 @@ bool Neuron::loadModbusMap()
     case NeuronTypes::S103:
         fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Registers-group-1.csv"));
         break;
+    case NeuronTypes::M103:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M103/Neuron_M103-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M103/Neuron_M103-Registers-group-2.csv"));
+        break;
+    case NeuronTypes::M203:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M203/Neuron_M203-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M203/Neuron_M203-Registers-group-2.csv"));
+        break;
+    case NeuronTypes::M303:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M303/Neuron_M303-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M303/Neuron_M303-Registers-group-2.csv"));
+        break;
+    case NeuronTypes::M403:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M403/Neuron_M403-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M403/Neuron_M403-Registers-group-2.csv"));
+        break;
+    case NeuronTypes::M503:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M503/Neuron_M503-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_M503/Neuron_M503-Registers-group-2.csv"));
+        break;
+    case NeuronTypes::L203:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L203/Neuron_L203-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L203/Neuron_L203-Registers-group-2.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L203/Neuron_L203-Registers-group-3.csv"));
+        break;
+    case NeuronTypes::L303:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L303/Neuron_L303-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L303/Neuron_L303-Registers-group-2.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L303/Neuron_L303-Registers-group-3.csv"));
+        break;
     case NeuronTypes::L403:
         fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Registers-group-1.csv"));
         fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Registers-group-2.csv"));
         fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Registers-group-3.csv"));
         break;
-    default:
-        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Registers-group-1.csv"));
+    case NeuronTypes::L503:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L503/Neuron_L503-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L503/Neuron_L503-Registers-group-2.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L503/Neuron_L503-Registers-group-3.csv"));
+        break;
+    case NeuronTypes::L513:
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L513/Neuron_L513-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L513/Neuron_L513-Registers-group-2.csv"));
+        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_L513/Neuron_L513-Registers-group-3.csv"));
+        break;
     }
     foreach (QString csvFilePath, fileRegisterList) {
         qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;

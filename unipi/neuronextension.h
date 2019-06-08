@@ -23,6 +23,15 @@ public:
     ~NeuronExtension();
 
     bool init();
+    QString type();
+    int slaveAddress();
+    void setSlaveAddress(int slaveAddress);
+
+    QList<QString> digitalInputs();
+    QList<QString> digitalOutputs();
+    QList<QString> analogInputs();
+    QList<QString> analogOutputs();
+    QList<QString> userLEDs();
 
     bool setDigitalOutput(const QString &circuit, bool value);
     bool getDigitalOutput(const QString &circuit);
@@ -43,13 +52,11 @@ private:
     QHash<QString, int> m_modbusDigitalInputRegisters;
     QHash<QString, int> m_modbusAnalogInputRegisters;
     QHash<QString, int> m_modbusAnalogOutputRegisters;
+    QHash<QString, int> m_modbusUserLEDRegisters;
 
     QModbusRtuSerialMaster *m_modbusInterface = nullptr;
     int m_slaveAddress = 0;
     ExtensionTypes m_extensionType = ExtensionTypes::xS10;
-
-    QHash<QString, bool> m_digitalInputValueBuffer;
-    QHash<QString, bool> m_digitalOutputValueBuffer;
 
     bool loadModbusMap();
 

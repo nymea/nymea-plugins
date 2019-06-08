@@ -10,13 +10,11 @@ QT += \
 
 SOURCES += \
     devicepluginunipi.cpp \
-    dimmerswitch.cpp \
     neuron.cpp \
     neuronextension.cpp
 
 HEADERS += \
     devicepluginunipi.h \
-    dimmerswitch.h \
     neuron.h \
     neuronextension.h
 
