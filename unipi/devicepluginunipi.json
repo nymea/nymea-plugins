@@ -449,7 +449,7 @@
                     "paramTypes": [
                         {
                             "id": "46e606cc-67ee-4891-bc39-8fb0565c87da",
-                            "name": "cicuit",
+                            "name": "circuit",
                             "displayName": "Circuit",
                             "type": "QString"
                         }
