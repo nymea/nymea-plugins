@@ -63,6 +63,7 @@ private:
     QModbusRtuSerialMaster *m_modbusRTUMaster = nullptr;
 
     QHash<Device *, QTimer *> m_unlatchTimer;
+    QTimer *m_reconnectTimer = nullptr;
 
 private slots:
     void onDimmerSwitchPressed();
@@ -75,6 +76,7 @@ private slots:
     void onDigitalInputStatusChanged(QString &circuit, bool value);
     void onDigitalOutputStatusChanged(QString &circuit, bool value);
     void onUnlatchTimer();
+    void onReconnectTimer();
 
     void onErrorOccurred(QModbusDevice::Error error);
     void onStateChanged(QModbusDevice::State state);

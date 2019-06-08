@@ -83,6 +83,11 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
 
 DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
+    if (!m_reconnectTimer) {
+        m_reconnectTimer = new QTimer(this);
+        m_reconnectTimer->setSingleShot(true);
+        connect(m_reconnectTimer, &QTimer::timeout, this, &DevicePluginUniPi::onReconnectTimer);
+    }
     if(device->deviceClassId() == neuronL403DeviceClassId) {
 
         int port = configValue(uniPiPluginPortParamTypeId).toInt();;
@@ -92,13 +97,15 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             m_modbusTCPMaster = new QModbusTcpClient(this);
             m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkPortParameter, port);
             m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkAddressParameter, ipAddress.toString());
+            //m_modbusTCPMaster->setTimeout(50);
+            m_modbusTCPMaster->setNumberOfRetries(1);
 
             connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onStateChanged);
             connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onErrorOccurred);
 
             if (!m_modbusTCPMaster->connectDevice()) {
                 qCWarning(dcUniPi()) << "Connect failed:" << m_modbusTCPMaster->errorString();
-                 return DeviceManager::DeviceSetupStatusFailure;
+                return DeviceManager::DeviceSetupStatusFailure;
             }
         }
 
@@ -131,7 +138,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baudrate);
             m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, 8);
             m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, 1);
-            m_modbusRTUMaster->setTimeout(50);
+            //m_modbusRTUMaster->setTimeout(50);
             m_modbusRTUMaster->setNumberOfRetries(1);
 
             connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::stateChanged, this, &DevicePluginUniPi::onStateChanged);
@@ -441,9 +448,6 @@ void DevicePluginUniPi::postSetupDevice(Device *device)
 
 DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
 {
-    if (!m_modbusTCPMaster)
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
-
     if (device->deviceClassId() == lockDeviceClassId) {
         if (action.actionTypeId() == lockUnlatchActionTypeId) {
             QString digitalOutputNumber = device->paramValue(lockDeviceNumberParamTypeId).toString();
@@ -724,6 +728,20 @@ void DevicePluginUniPi::onUnlatchTimer()
     }
 }
 
+void DevicePluginUniPi::onReconnectTimer()
+{
+    if(!m_modbusRTUMaster) {
+        if (!m_modbusRTUMaster->connectDevice()) {
+            m_reconnectTimer->start(10000);
+        }
+    }
+    if(!m_modbusTCPMaster) {
+        if (!m_modbusTCPMaster->connectDevice()) {
+            m_reconnectTimer->start(10000);
+        }
+    }
+}
+
 void DevicePluginUniPi::onErrorOccurred(QModbusDevice::Error error)
 {
     qCWarning(dcUniPi()) << "An error occured" << error;
@@ -732,5 +750,9 @@ void DevicePluginUniPi::onErrorOccurred(QModbusDevice::Error error)
 void DevicePluginUniPi::onStateChanged(QModbusDevice::State state)
 {
     bool connected = (state != QModbusDevice::UnconnectedState);
+    if (!connected) {
+        //try to reconnect in 10 seconds
+        m_reconnectTimer->start(10000);
+    }
     qCDebug(dcUniPi()) << "Connection status changed:" << connected;
 }
