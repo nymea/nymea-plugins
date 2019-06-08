@@ -54,12 +54,12 @@
                         {
                             "id": "555cafe4-bd12-42c6-bab1-8cd59af6468e",
                             "name": "stop",
-                            "displayName": "stop"
+                            "displayName": "Stop"
                         },
                         {
                             "id": "53b5ba77-9a34-4cd6-ad24-fb01fc465f98",
                             "name": "close",
-                            "displayName": "close"
+                            "displayName": "Close"
                         }
                     ]
                 },
@@ -109,12 +109,12 @@
                         {
                             "id": "1a924c9a-5dcb-4b1c-8fd6-ab101098e007",
                             "name": "stop",
-                            "displayName": "stop"
+                            "displayName": "Stop"
                         },
                         {
                             "id": "86e9cf21-7487-47c4-b4be-4a940d7235fb",
                             "name": "close",
-                            "displayName": "close"
+                            "displayName": "Close"
                         }
                     ]
                 },
@@ -164,12 +164,12 @@
                         {
                             "id": "db5f3332-1f4e-4f9e-84d2-93c5d7de315c",
                             "name": "stop",
-                            "displayName": "stop"
+                            "displayName": "Stop"
                         },
                         {
                             "id": "cf5303f1-67c7-4cef-b11c-eb9de6fc8a87",
                             "name": "close",
-                            "displayName": "close"
+                            "displayName": "Close"
                         }
                     ]
                 },
