@@ -65,8 +65,6 @@ public slots:
     void onOutputPollingTimer();
     void onInputPollingTimer();
 
-    void onErrorOccurred(QModbusDevice::Error error);
-    void onStateChanged(QModbusDevice::State state);
     void onFinished();
 };
 

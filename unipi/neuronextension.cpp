@@ -367,15 +367,3 @@ void NeuronExtension::onFinished()
     }
     reply->deleteLater();
 }
-
-void NeuronExtension::onErrorOccurred(QModbusDevice::Error error)
-{
-    qCWarning(dcUniPi()) << "An error occured" << error;
-}
-
-void NeuronExtension::onStateChanged(QModbusDevice::State state)
-{
-    bool connected = (state != QModbusDevice::UnconnectedState);
-    qCDebug(dcUniPi()) << "Connection status changed:" << connected;
-    emit connectionStateChanged(connected);
-}
