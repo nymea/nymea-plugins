@@ -43,6 +43,9 @@ public:
 
     bool getAllDigitalOutputs();
     bool getAllDigitalInputs();
+
+    bool setUserLED(const QString &circuit, bool value);
+    bool getUserLED(const QString &circuit);
 private:
 
     QTimer m_inputPollingTimer;
@@ -66,6 +69,8 @@ signals:
 
     void analogInputStatusChanged(QString &circuit, double value);
     void analogOutputStatusChanged(QString &circuit, double value);
+
+    void userLEDStatusChanged(QString &circuit, bool value);
 
     void connectionStateChanged(bool state);
 

@@ -50,7 +50,6 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 if (!myDevices().filterByParam(digitalInputDeviceCircuitParamTypeId, circuit).isEmpty()) {
                     continue;
                 }
-
                 DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), QString("Neuron extension %1, Slave address %2").arg(neuronExtension->type().arg(neuronExtension->slaveAddress())), parentDeviceId);
                 ParamList params;
                 params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
@@ -65,7 +64,6 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 if (!myDevices().filterByParam(digitalInputDeviceCircuitParamTypeId, circuit).isEmpty()) {
                     continue;
                 }
-
                 DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), QString("Neuron %1").arg(neuron->type()), parentDeviceId);
                 ParamList params;
                 params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
@@ -252,8 +250,8 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_modbusTCPMaster->setTimeout(100);
         m_modbusTCPMaster->setNumberOfRetries(1);
 
-        connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onStateChanged);
-        connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onErrorOccurred);
+        connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onModbusTCPStateChanged);
+        connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onModbusTCPErrorOccurred);
 
         if (!m_modbusTCPMaster->connectDevice()) {
             qCWarning(dcUniPi()) << "Connect failed:" << m_modbusTCPMaster->errorString();
@@ -274,8 +272,8 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_modbusRTUMaster->setTimeout(100);
         m_modbusRTUMaster->setNumberOfRetries(1);
 
-        connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::stateChanged, this, &DevicePluginUniPi::onStateChanged);
-        connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::errorOccurred, this, &DevicePluginUniPi::onErrorOccurred);
+        connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::stateChanged, this, &DevicePluginUniPi::onModbusRTUStateChanged);
+        connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::errorOccurred, this, &DevicePluginUniPi::onModbusRTUErrorOccurred);
 
         if (!m_modbusRTUMaster->connectDevice()) {
             qCWarning(dcUniPi()) << "Connect failed:" << m_modbusRTUMaster->errorString();
@@ -632,11 +630,11 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             bool stateValue = action.param(userLEDPowerActionPowerParamTypeId).value().toBool();
             if (m_neurons.contains(device->parentId())) {
                 Neuron *neuron = m_neurons.value(device->parentId());
-                neuron->setDigitalOutput(userLED, stateValue);
+                neuron->setUserLED(userLED, stateValue);
             }
             if (m_neuronExtensions.contains(device->parentId())) {
                 NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
-                neuronExtension->setDigitalOutput(userLED, stateValue);
+                neuronExtension->setUserLED(userLED, stateValue);
             }
             return DeviceManager::DeviceErrorNoError;
         }
@@ -733,6 +731,45 @@ void DevicePluginUniPi::onDigitalOutputStatusChanged(QString &circuit, bool valu
     }
 }
 
+void DevicePluginUniPi::onAnalogInputStatusChanged(QString &circuit, double value)
+{
+    foreach(Device *device, myDevices()) {
+        if (device->deviceClassId() == analogInputDeviceClassId) {
+            if (device->paramValue(analogInputDeviceCircuitParamTypeId).toString() == circuit) {
+
+                device->setStateValue(analogInputInputValueStateTypeId, value);
+                return;
+            }
+        }
+    }
+}
+
+void DevicePluginUniPi::onAnalogOutputStatusChanged(QString &circuit, double value)
+{
+    foreach(Device *device, myDevices()) {
+        if (device->deviceClassId() == analogOutputDeviceClassId) {
+            if (device->paramValue(analogOutputDeviceCircuitParamTypeId).toString() == circuit) {
+
+                device->setStateValue(analogOutputOutputValueStateTypeId, value);
+                return;
+            }
+        }
+    }
+}
+
+void DevicePluginUniPi::onUserLEDStatusChanged(QString &circuit, bool value)
+{
+    foreach(Device *device, myDevices()) {
+        if (device->deviceClassId() == userLEDDeviceClassId) {
+            if (device->paramValue(userLEDDeviceCircuitParamTypeId).toString() == circuit) {
+
+                device->setStateValue(userLEDPowerStateTypeId, value);
+                return;
+            }
+        }
+    }
+}
+
 
 void DevicePluginUniPi::onReconnectTimer()
 {
@@ -749,15 +786,69 @@ void DevicePluginUniPi::onReconnectTimer()
 }
 
 
-void DevicePluginUniPi::onErrorOccurred(QModbusDevice::Error error)
+void DevicePluginUniPi::onModbusTCPErrorOccurred(QModbusDevice::Error error)
 {
     qCWarning(dcUniPi()) << "An error occured" << error;
 }
 
+void DevicePluginUniPi::onModbusRTUErrorOccurred(QModbusDevice::Error error)
+{
+    qCWarning(dcUniPi()) << "An error occured" << error;
+}
 
-void DevicePluginUniPi::onStateChanged(QModbusDevice::State state)
+void DevicePluginUniPi::onModbusTCPStateChanged(QModbusDevice::State state)
 {
     bool connected = (state != QModbusDevice::UnconnectedState);
+
+    foreach (DeviceId deviceId, m_neurons.keys()) {
+        Device *device = myDevices().findById(deviceId);
+        if (device->deviceClassId() == neuronS103DeviceClassId)
+            device->setStateValue(neuronM103ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronM103DeviceClassId)
+            device->setStateValue(neuronM103ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronM203DeviceClassId)
+            device->setStateValue(neuronM203ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronM303DeviceClassId)
+            device->setStateValue(neuronM303ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronM403DeviceClassId)
+            device->setStateValue(neuronM403ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronM503DeviceClassId)
+            device->setStateValue(neuronM503ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronL203DeviceClassId)
+            device->setStateValue(neuronL203ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronL303DeviceClassId)
+            device->setStateValue(neuronL303ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronL403DeviceClassId)
+            device->setStateValue(neuronL403ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronL503DeviceClassId)
+            device->setStateValue(neuronL503ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronL513DeviceClassId)
+            device->setStateValue(neuronL513ConnectedStateTypeId, connected);
+    }
+
+    if (!connected) {
+        //try to reconnect in 10 seconds
+        m_reconnectTimer->start(10000);
+    }
+    qCDebug(dcUniPi()) << "Connection status changed:" << connected;
+}
+
+void DevicePluginUniPi::onModbusRTUStateChanged(QModbusDevice::State state)
+{
+    bool connected = (state != QModbusDevice::UnconnectedState);
+
+    foreach (DeviceId deviceId, m_neurons.keys()) {
+        Device *device = myDevices().findById(deviceId);
+        if (device->deviceClassId() == neuronXS10DeviceClassId)
+            device->setStateValue(neuronXS10ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronXS20DeviceClassId)
+            device->setStateValue(neuronXS20ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronXS30DeviceClassId)
+            device->setStateValue(neuronXS30ConnectedStateTypeId, connected);
+        if (device->deviceClassId() == neuronXS40DeviceClassId)
+            device->setStateValue(neuronXS40ConnectedStateTypeId, connected);
+    }
+
     if (!connected) {
         //try to reconnect in 10 seconds
         m_reconnectTimer->start(10000);
