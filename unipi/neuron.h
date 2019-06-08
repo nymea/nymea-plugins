@@ -38,6 +38,8 @@ public:
     bool getAnalogOutput(const QString &circuit);
     bool getAnalogInput(const QString &circuit);
 
+    bool getAllDigitalOutputs();
+    bool getAllDigitalInputs();
 private:
     int m_slaveAddress = 0;
 

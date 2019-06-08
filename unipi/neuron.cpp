@@ -11,12 +11,12 @@ Neuron::Neuron(NeuronTypes neuronType, QModbusTcpClient *modbusInterface,  QObje
 {
     connect(&m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onInputPollingTimer);
     m_inputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
-    m_inputPollingTimer.start(1000); //TODO
+    m_inputPollingTimer.start(100); //TODO
 
     connect(&m_outputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
     m_outputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
     m_outputPollingTimer.setSingleShot(true);
-    m_outputPollingTimer.start(10000); //TODO
+    m_outputPollingTimer.start(1000); //TODO
 }
 
 Neuron::~Neuron(){
@@ -28,7 +28,18 @@ Neuron::~Neuron(){
 
 bool Neuron::init()
 {
-    return loadModbusMap();
+    if (!loadModbusMap()) {
+        return false;
+    }
+
+    if (!m_modbusInterface) {
+        qWarning(dcUniPi()) << "Modbus RTU interface not available";
+    }
+
+    if (m_modbusInterface->connectDevice()) {
+        qWarning(dcUniPi()) << "Could not connect to RTU device";
+    }
+    return true;
 }
 
 bool Neuron::loadModbusMap()
@@ -79,7 +90,6 @@ bool Neuron::loadModbusMap()
         csvFile->deleteLater();
     }
 
-
     switch (m_neuronType) {
     case NeuronTypes::S103:
         fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Registers-group-1.csv"));
@@ -122,6 +132,99 @@ bool Neuron::loadModbusMap()
 }
 
 
+bool Neuron::getAllDigitalInputs()
+{
+    if (!m_modbusInterface)
+        return false;
+
+    QList<QModbusDataUnit> requests;
+    QList<int> registerList = m_modbusDigitalInputRegisters.values();
+
+    if (registerList.isEmpty()) {
+        return true; //device has no inputs
+    }
+
+    qSort(registerList);
+    int previousReg = 0;
+    int count = 0;
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
+    request.setStartAddress(registerList.first());
+    requests.append(request);
+
+    foreach (int reg, registerList) {
+
+        if (reg == (previousReg + 1)) {
+            count++;
+        } else {
+            requests.last().setValueCount(count);
+            count = 0;
+            QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
+            request.setStartAddress(reg);
+            requests.last().setValueCount(1);
+            requests.append(request);
+        }
+    }
+
+    foreach (QModbusDataUnit request, requests) {
+        if (QModbusReply *reply = m_modbusInterface->sendReadRequest(request, m_slaveAddress)) {
+            if (!reply->isFinished())
+                connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
+            else
+                delete reply; // broadcast replies return immediately
+        } else {
+            qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
+        }
+    }
+    return true;
+}
+
+bool Neuron::getAllDigitalOutputs()
+{
+    if (!m_modbusInterface)
+        return false;
+
+    QList<QModbusDataUnit> requests;
+    QList<int> registerList = m_modbusDigitalOutputRegisters.values();
+
+    if (registerList.isEmpty()) {
+        return true; //device has no digital outputs
+    }
+
+    qSort(registerList);
+    int previousReg = 0;
+    int count = 0;
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
+    request.setStartAddress(registerList.first());
+    requests.append(request);
+
+    foreach (int reg, registerList) {
+
+        if (reg == (previousReg + 1)) {
+            count++;
+        } else {
+            requests.last().setValueCount(count);
+            count = 0;
+            QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
+            request.setStartAddress(reg);
+            requests.last().setValueCount(1);
+            requests.append(request);
+        }
+    }
+
+    foreach (QModbusDataUnit request, requests) {
+        if (QModbusReply *reply = m_modbusInterface->sendReadRequest(request, m_slaveAddress)) {
+            if (!reply->isFinished())
+                connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
+            else
+                delete reply; // broadcast replies return immediately
+        } else {
+            qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
+        }
+    }
+    return true;
+}
+
+
 bool Neuron::getDigitalInput(const QString &circuit)
 {
     int modbusAddress = m_modbusDigitalInputRegisters.value(circuit);
@@ -140,7 +243,6 @@ bool Neuron::getDigitalInput(const QString &circuit)
     } else {
         qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
     }
-
     return true;
 }
 
@@ -154,7 +256,7 @@ bool Neuron::setDigitalOutput(const QString &circuit, bool value)
         return false;
 
     QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils, modbusAddress, 1);
-    request.setValue(modbusAddress, value);
+    request.setValue(0, static_cast<uint16_t>(value));
 
     if (QModbusReply *reply = m_modbusInterface->sendWriteRequest(request, m_slaveAddress)) {
         if (!reply->isFinished())
@@ -164,7 +266,6 @@ bool Neuron::setDigitalOutput(const QString &circuit, bool value)
     } else {
         qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
     }
-
     return true;
 }
 
@@ -201,6 +302,18 @@ bool Neuron::setAnalogOutput(const QString &circuit, double value)
     if (!m_modbusInterface)
         return false;
 
+
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::HoldingRegisters, modbusAddress, 1);
+    request.setValue(0, static_cast<uint16_t>(value));
+
+    if (QModbusReply *reply = m_modbusInterface->sendWriteRequest(request, m_slaveAddress)) {
+        if (!reply->isFinished())
+            connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
+        else
+            delete reply; // broadcast replies return immediately
+    } else {
+        qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
+    }
     return true;
 }
 
@@ -218,20 +331,12 @@ bool Neuron::getAnalogInput(const QString &circuit)
 
 void Neuron::onOutputPollingTimer()
 {
-    QHash<QString, bool> digitalOutputValues;
-    foreach(QString circuit, m_modbusDigitalOutputRegisters.keys()){
-        getDigitalOutput(circuit);
-        break; //TODO this is a test
-    }
+    getAllDigitalOutputs();
 }
 
 void Neuron::onInputPollingTimer()
 {
-    QHash<QString, bool> digitalInputValues;
-    foreach(QString circuit, m_modbusDigitalInputRegisters.keys()){
-        getDigitalInput(circuit);
-        break; //TODO this is a test
-    }
+    getAllDigitalInputs();
 }
 
 void Neuron::onFinished()

@@ -32,6 +32,8 @@ public:
     bool getAnalogOutput(const QString &circuit);
     bool getAnalogInput(const QString &circuit);
 
+    bool getAllDigitalOutputs();
+    bool getAllDigitalInputs();
 private:
 
     QTimer m_inputPollingTimer;
