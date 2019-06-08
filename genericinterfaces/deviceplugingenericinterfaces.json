@@ -1,0 +1,143 @@
+{
+    "name": "GenericInterfaces",
+    "displayName": "Generic Interfaces",
+    "id": "b3188696-2585-4806-bf98-30ab576ce5c8",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "deviceClasses": [
+                {
+                    "id": "",
+                    "name": "awning",
+                    "displayName": "Awning",
+                    "createMethods": ["user"],
+                    "interfaces": ["awning"],
+                    "actionTypes": [
+                        {
+                            "id": "979e9c51-5a93-4635-85e3-01874306b229",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "555cafe4-bd12-42c6-bab1-8cd59af6468e",
+                            "name": "stop",
+                            "displayName": "stop"
+                        },
+                        {
+                            "id": "53b5ba77-9a34-4cd6-ad24-fb01fc465f98",
+                            "name": "close",
+                            "displayName": "close"
+                        }
+                    ]
+                },
+                {
+                    "id": "17ee3657-6ad8-4ae2-8959-3cf66cec8d13",
+                    "name": "blind",
+                    "displayName": "Blind",
+                    "createMethods": ["user"],
+                    "interfaces": ["blind"],
+                    "actionTypes": [
+                        {
+                            "id": "120dc265-dbbb-4f19-9d31-c372c23479c0",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "1a924c9a-5dcb-4b1c-8fd6-ab101098e007",
+                            "name": "stop",
+                            "displayName": "stop"
+                        },
+                        {
+                            "id": "86e9cf21-7487-47c4-b4be-4a940d7235fb",
+                            "name": "close",
+                            "displayName": "close"
+                        }
+                    ]
+                },
+                {
+                    "id": "7917c2e7-d7d2-4c47-a38d-41f7dd7693d9",
+                    "name": "shutter",
+                    "displayName": "Shutter",
+                    "createMethods": ["user"],
+                    "interfaces": ["shutter"],
+                    "actionTypes": [
+                        {
+                            "id": "9deb662d-2378-4345-a898-8742d41e43c1",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "db5f3332-1f4e-4f9e-84d2-93c5d7de315c",
+                            "name": "stop",
+                            "displayName": "stop"
+                        },
+                        {
+                            "id": "cf5303f1-67c7-4cef-b11c-eb9de6fc8a87",
+                            "name": "close",
+                            "displayName": "close"
+                        }
+                    ]
+                },
+                {
+                    "id": "4e7261af-a27b-4446-8346-914ea59f7547",
+                    "name": "socket",
+                    "displayName": "Socket",
+                    "createMethods": ["user"],
+                    "interfaces": ["powersocket"],
+                    "stateTypes": [
+                        {
+                            "id": "018038d7-1d02-4b17-8fe3-babca044b087",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "c50d3216-f307-4f9f-8190-4391510c385c",
+                    "name": "light",
+                    "displayName": "Light",
+                    "createMethods": ["user"],
+                    "interfaces": ["light"],
+                    "stateTypes": [
+                        {
+                            "id": "8b6e4a67-6522-408b-b676-8d2f09ed2d54",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "392854c4-3d14-4cf8-96cd-d933526bd197",
+                    "name": "heating",
+                    "displayName": "Heating",
+                    "createMethods": ["user"],
+                    "interfaces": ["heating"],
+                    "stateTypes": [
+                        {
+                            "id": "409b635e-a754-4b5c-b3f0-d1c5a0fb3f03",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
