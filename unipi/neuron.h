@@ -66,12 +66,10 @@ signals:
     void analogOutputStatusChanged(QString &circuit, double value);
 
     void connectionStateChanged(bool state);
+
 public slots:
     void onOutputPollingTimer();
     void onInputPollingTimer();
-
-    void onDigitalInputPollingFinished(QHash<QString, bool> digitalInputValues);
-    void onDigitalOutputPollingFinished(QHash<QString, bool> digitalOutputValues);
 
     void onFinished();
 };

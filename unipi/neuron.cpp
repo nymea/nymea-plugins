@@ -180,31 +180,47 @@ bool Neuron::getDigitalOutput(const QString &circuit)
 
 bool Neuron::setAnalogOutput(const QString &circuit, double value)
 {
-    Q_UNUSED(circuit);
     Q_UNUSED(value);
-    //int modbusAddress = m_modbusAnalogOutputRegisters.value(circuit);
-    //TODO
-    return false;
+
+    int modbusAddress = m_modbusAnalogOutputRegisters.value(circuit);
+    qDebug(dcUniPi()) << "Reading analog Output" << circuit << modbusAddress;
+
+    if (!m_modbusInterface)
+        return false;
+
+    return true;
 }
 
 
 bool Neuron::getAnalogInput(const QString &circuit)
 {
-    Q_UNUSED(circuit);
-    //TODO
+    int modbusAddress = m_modbusAnalogInputRegisters.value(circuit);
+    qDebug(dcUniPi()) << "Reading analog Input" << circuit << modbusAddress;
+
+    if (!m_modbusInterface)
+        return false;
+
     return false;
 }
 
 void Neuron::onOutputPollingTimer()
 {
-
+    QHash<QString, bool> digitalOutputValues;
+    foreach(QString circuit, m_modbusDigitalOutputRegisters.keys()){
+        getDigitalOutput(circuit);
+    }
 }
 
 void Neuron::onInputPollingTimer()
 {
 
+    QHash<QString, bool> digitalInputValues;
+    foreach(QString circuit, m_modbusDigitalInputRegisters.keys()){
+        getDigitalInput(circuit);
+    }
 }
 
+/*
 void Neuron::onDigitalInputPollingFinished(QHash<QString, bool> digitalInputValues)
 {
     foreach(QString circuit, digitalInputValues.keys()) {
@@ -225,7 +241,7 @@ void Neuron::onDigitalOutputPollingFinished(QHash<QString, bool> digitalOutputVa
         }
     }
     m_outputPollingTimer.start(1000);
-}
+}*/
 
 void Neuron::onFinished()
 {

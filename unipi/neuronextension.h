@@ -49,7 +49,6 @@ private:
     QHash<QString, bool> m_digitalInputValueBuffer;
     QHash<QString, bool> m_digitalOutputValueBuffer;
 
-    bool createModbusDevice();
     bool loadModbusMap();
 
 signals:
