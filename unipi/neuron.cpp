@@ -140,7 +140,7 @@ bool Neuron::loadModbusMap()
     case NeuronTypes::L403:
         fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Coils-group-1.csv"));
         fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Coils-group-2.csv"));
-        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L503-Coils-group-3.csv"));
+        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L403/Neuron_L403-Coils-group-3.csv"));
         break;
     case NeuronTypes::L503:
         fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_L503/Neuron_L503-Coils-group-1.csv"));
