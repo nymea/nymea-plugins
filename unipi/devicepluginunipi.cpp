@@ -90,6 +90,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(digitalOutputDeviceClassId, QString("Digital output %1").arg(circuit), QString("Neuron extension %1, Slave address %2").arg(neuronExtension->type().arg(neuronExtension->slaveAddress())), parentDeviceId);
                 ParamList params;
                 params.append(Param(digitalOutputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(digitalOutputDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -105,6 +106,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(digitalOutputDeviceClassId, QString("Digital output %1").arg(circuit), QString("Neuron %1").arg(neuron->type()), parentDeviceId);
                 ParamList params;
                 params.append(Param(digitalOutputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(digitalOutputDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -128,6 +130,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(analogInputDeviceClassId, QString("Analog input %1").arg(circuit), QString("Neuron extension %1, Slave address %2").arg(neuronExtension->type().arg(neuronExtension->slaveAddress())), parentDeviceId);
                 ParamList params;
                 params.append(Param(analogInputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(analogInputDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -143,6 +146,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(analogInputDeviceClassId, QString("Analog input %1").arg(circuit), QString("Neuron %1").arg(neuron->type()), parentDeviceId);
                 ParamList params;
                 params.append(Param(analogInputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(analogInputDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -166,6 +170,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(analogOutputDeviceClassId, QString("Analog output %1").arg(circuit), QString("Neuron extension %1, Slave address %2").arg(neuronExtension->type().arg(neuronExtension->slaveAddress())), parentDeviceId);
                 ParamList params;
                 params.append(Param(analogOutputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(analogOutputDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -181,6 +186,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(analogOutputDeviceClassId, QString("Analog output %1").arg(circuit), QString("Neuron %1").arg(neuron->type()), parentDeviceId);
                 ParamList params;
                 params.append(Param(analogOutputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(analogOutputDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -203,7 +209,8 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
 
                 DeviceDescriptor deviceDescriptor(userLEDDeviceClassId, QString("User programmable LED %1").arg(circuit), QString("Neuron extension %1, Slave address %2").arg(neuronExtension->type().arg(neuronExtension->slaveAddress())), parentDeviceId);
                 ParamList params;
-                params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
+                params.append(Param(userLEDDeviceCircuitParamTypeId, circuit));
+                params.append(Param(userLEDDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -219,6 +226,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 DeviceDescriptor deviceDescriptor(userLEDDeviceClassId, QString("User programmable LED %1").arg(circuit), QString("Neuron %1").arg(neuron->type()), parentDeviceId);
                 ParamList params;
                 params.append(Param(userLEDDeviceCircuitParamTypeId, circuit));
+                params.append(Param(userLEDDeviceParentIdParamTypeId, parentDeviceId));
                 deviceDescriptor.setParams(params);
                 deviceDescriptors.append(deviceDescriptor);
             }
@@ -593,12 +601,12 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         if (action.actionTypeId() == digitalOutputPowerActionTypeId) {
             QString digitalOutputNumber = device->paramValue(digitalOutputDeviceCircuitParamTypeId).toString();
             bool stateValue = action.param(digitalOutputPowerActionPowerParamTypeId).value().toBool();
-            if (m_neurons.contains(device->parentId())) {
-                Neuron *neuron = m_neurons.value(device->parentId());
+            if (m_neurons.contains(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString())) {
+                Neuron *neuron = m_neurons.value(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString());
                 neuron->setDigitalOutput(digitalOutputNumber, stateValue);
             }
-            if (m_neuronExtensions.contains(device->parentId())) {
-                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
+            if (m_neuronExtensions.contains(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString())) {
+                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString());
                 neuronExtension->setDigitalOutput(digitalOutputNumber, stateValue);
             }
             return DeviceManager::DeviceErrorNoError;
@@ -611,12 +619,12 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         if (action.actionTypeId() == analogOutputOutputValueActionTypeId) {
             QString analogOutputNumber = device->paramValue(analogOutputDeviceCircuitParamTypeId).toString();
             double analogValue = action.param(analogOutputOutputValueActionOutputValueParamTypeId).value().toDouble();
-            if (m_neurons.contains(device->parentId())) {
-                Neuron *neuron = m_neurons.value(device->parentId());
+            if (m_neurons.contains(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString())) {
+                Neuron *neuron = m_neurons.value(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString());
                 neuron->setAnalogOutput(analogOutputNumber, analogValue);
             }
-            if (m_neuronExtensions.contains(device->parentId())) {
-                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
+            if (m_neuronExtensions.contains(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString())) {
+                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString());
                 neuronExtension->setAnalogOutput(analogOutputNumber, analogValue);
             }
             return DeviceManager::DeviceErrorNoError;
@@ -628,12 +636,12 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         if (action.actionTypeId() == digitalOutputPowerActionTypeId) {
             QString userLED = device->paramValue(userLEDDeviceCircuitParamTypeId).toString();
             bool stateValue = action.param(userLEDPowerActionPowerParamTypeId).value().toBool();
-            if (m_neurons.contains(device->parentId())) {
-                Neuron *neuron = m_neurons.value(device->parentId());
+            if (m_neurons.contains(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString())) {
+                Neuron *neuron = m_neurons.value(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString());
                 neuron->setUserLED(userLED, stateValue);
             }
-            if (m_neuronExtensions.contains(device->parentId())) {
-                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
+            if (m_neuronExtensions.contains(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString())) {
+                NeuronExtension *neuronExtension = m_neuronExtensions.value(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString());
                 neuronExtension->setUserLED(userLED, stateValue);
             }
             return DeviceManager::DeviceErrorNoError;
@@ -649,10 +657,43 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
     if(m_neurons.contains(device->id())) {
         Neuron *neuron = m_neurons.take(device->id());
         neuron->deleteLater();
+
+        foreach(Device *child, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+        foreach(Device *child, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+        foreach(Device *child, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+        foreach(Device *child, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+        foreach(Device *child, myDevices().filterByParam(userLEDDeviceParentIdParamTypeId,device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+
     }
     if(m_neuronExtensions.contains(device->id())) {
         NeuronExtension *neuronExtension = m_neuronExtensions.take(device->id());
         neuronExtension->deleteLater();
+
+        foreach(Device *child, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+        foreach(Device *child, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+        foreach(Device *child, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+        foreach(Device *child, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
+        foreach(Device *child, myDevices().filterByParam(userLEDDeviceParentIdParamTypeId,device->id())) {
+            deviceManager()->removeConfiguredDevice(child->id());
+        }
     }
 
     if (myDevices().isEmpty()) {
