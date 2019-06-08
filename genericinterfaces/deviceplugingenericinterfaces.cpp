@@ -85,16 +85,19 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 {
     if (device->deviceClassId() == awningDeviceClassId) {
         if (action.actionTypeId() == awningOpenActionTypeId) {
+            device->setStateValue(awningStatusStateTypeId, "Opening");
             device->setStateValue(awningClosingOutputStateTypeId, false);
             device->setStateValue(awningOpeningOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == awningStopActionTypeId) {
+            device->setStateValue(awningStatusStateTypeId, "Stopped");
             device->setStateValue(awningOpeningOutputStateTypeId, false);
             device->setStateValue(awningClosingOutputStateTypeId, false);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == awningCloseActionTypeId) {
+            device->setStateValue(awningStatusStateTypeId, "Closing");
             device->setStateValue(awningOpeningOutputStateTypeId, false);
             device->setStateValue(awningClosingOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
@@ -104,16 +107,19 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 
     if (device->deviceClassId() == blindDeviceClassId ) {
         if (action.actionTypeId() == blindOpenActionTypeId) {
+            device->setStateValue(blindStatusStateTypeId, "Opening");
             device->setStateValue(blindClosingOutputStateTypeId, false);
             device->setStateValue(blindOpeningOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindStopActionTypeId) {
+            device->setStateValue(blindStatusStateTypeId, "Stopped");
             device->setStateValue(blindOpeningOutputStateTypeId, false);
             device->setStateValue(blindClosingOutputStateTypeId, false);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindCloseActionTypeId) {
+            device->setStateValue(blindStatusStateTypeId, "Closing");
             device->setStateValue(blindOpeningOutputStateTypeId, false);
             device->setStateValue(blindClosingOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
@@ -123,16 +129,19 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
 
     if (device->deviceClassId() == shutterDeviceClassId) {
         if (action.actionTypeId() == shutterOpenActionTypeId) {
+            device->setStateValue(shutterStatusStateTypeId, "Opening");
             device->setStateValue(shutterClosingOutputStateTypeId, false);
             device->setStateValue(shutterOpeningOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == shutterStopActionTypeId) {
+            device->setStateValue(shutterStatusStateTypeId, "Stopped");
             device->setStateValue(shutterOpeningOutputStateTypeId, false);
             device->setStateValue(shutterClosingOutputStateTypeId, false);
             return DeviceManager::DeviceErrorNoError;
         }
         if (action.actionTypeId() == shutterCloseActionTypeId) {
+            device->setStateValue(shutterStatusStateTypeId, "Closing");
             device->setStateValue(shutterOpeningOutputStateTypeId, false);
             device->setStateValue(shutterClosingOutputStateTypeId, true);
             return DeviceManager::DeviceErrorNoError;

@@ -30,6 +30,19 @@
                             "displayNameEvent": "Closing output changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "13c6dd56-368e-41be-873e-1c1706fe78a9",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Opening",
+                                "Stopped",
+                                "Closing"
+                            ],
+                            "defaultValue": "Stopped"
                         }
                     ],
                     "actionTypes": [
@@ -72,6 +85,19 @@
                             "displayNameEvent": "Closing output changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "13c6dd56-368e-41be-873e-1c1706fe78a9",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Opening",
+                                "Stopped",
+                                "Closing"
+                            ],
+                            "defaultValue": "Stopped"
                         }
                     ],
                     "actionTypes": [
@@ -114,6 +140,19 @@
                             "displayNameEvent": "Closing output changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "13c6dd56-368e-41be-873e-1c1706fe78a9",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Opening",
+                                "Stopped",
+                                "Closing"
+                            ],
+                            "defaultValue": "Stopped"
                         }
                     ],
                     "actionTypes": [
