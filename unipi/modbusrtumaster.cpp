@@ -24,6 +24,7 @@
 #include "extern-plugininfo.h"
 
 #include <QSerialPortInfo>
+#include <QBitArray>
 
 ModbusRTUMaster::ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent) :
     QObject(parent),
@@ -107,6 +108,10 @@ bool ModbusRTUMaster::isConnected()
 
 bool ModbusRTUMaster::setCoil(int slaveAddress, int coilAddress, bool status)
 {
+    if (!m_mb) {
+        return false;
+    }
+
     if (!isConnected())
         return false;
 
@@ -125,8 +130,7 @@ bool ModbusRTUMaster::setCoil(int slaveAddress, int coilAddress, bool status)
 bool ModbusRTUMaster::setRegister(int slaveAddress, int registerAddress, int data)
 {
     if (!m_mb) {
-        if (!createInterface())
-            return false;
+        return false;
     }
 
     if (!isConnected())
@@ -147,8 +151,7 @@ bool ModbusRTUMaster::setRegister(int slaveAddress, int registerAddress, int dat
 bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
 {
     if (!m_mb) {
-        if (!createInterface())
-            return false;
+        return false;
     }
 
     if (!isConnected())
@@ -168,12 +171,41 @@ bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
     return true;
 }
 
+bool ModbusRTUMaster::getCoils(int slaveAddress, int coilAddress, int number, QBitArray *result)
+{
+    if (!m_mb) {
+        return false;
+    }
+    if (number > 32)
+        return false;
+
+    if (!isConnected())
+        return false;
+
+    if(modbus_set_slave(m_mb, slaveAddress) == -1){
+        qCWarning(dcUniPi()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
+        return false;
+    }
+
+    uint8_t data[32];
+    if (modbus_read_input_bits(m_mb, coilAddress, number, data) == -1){
+        qCWarning(dcUniPi()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
+        return false;
+    }
+    for (int i=0; i<number; i++) {
+        if (data[i] == 0x01) {
+            result->setBit(i);
+        }
+    }
+
+    return true;
+}
+
 bool ModbusRTUMaster::getRegister(int slaveAddress, int registerAddress, int *result)
 {
     uint16_t data;
 
     if (!m_mb) {
-        if (!createInterface())
             return false;
     }
 
