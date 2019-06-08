@@ -730,12 +730,12 @@ void DevicePluginUniPi::onUnlatchTimer()
 
 void DevicePluginUniPi::onReconnectTimer()
 {
-    if(!m_modbusRTUMaster) {
+    if(m_modbusRTUMaster) {
         if (!m_modbusRTUMaster->connectDevice()) {
             m_reconnectTimer->start(10000);
         }
     }
-    if(!m_modbusTCPMaster) {
+    if(m_modbusTCPMaster) {
         if (!m_modbusTCPMaster->connectDevice()) {
             m_reconnectTimer->start(10000);
         }
