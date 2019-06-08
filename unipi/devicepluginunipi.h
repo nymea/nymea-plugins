@@ -30,10 +30,10 @@
 #include "dimmerswitch.h"
 #include "neuron.h"
 #include "neuronextension.h"
-#include "modbustcpmaster.h"
 
 #include <QTimer>
 #include <QtSerialBus>
+#include <QHostAddress>
 
 class DevicePluginUniPi : public DevicePlugin
 {
@@ -59,7 +59,7 @@ private:
     QHash<DeviceId, Neuron *> m_neurons;
     QHash<DeviceId, NeuronExtension *> m_neuronExtensions;
     QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
-    ModbusTCPMaster *m_modbusTCPMaster = nullptr;
+    QModbusTcpClient *m_modbusTCPMaster = nullptr;
     QModbusRtuSerialMaster *m_modbusRTUMaster = nullptr;
 
     QHash<Device *, QTimer *> m_unlatchTimer;
@@ -75,6 +75,9 @@ private slots:
     void onDigitalInputStatusChanged(QString &circuit, bool value);
     void onDigitalOutputStatusChanged(QString &circuit, bool value);
     void onUnlatchTimer();
+
+    void onErrorOccurred(QModbusDevice::Error error);
+    void onStateChanged(QModbusDevice::State state);
 };
 
 #endif // DEVICEPLUGINUNIPI_H

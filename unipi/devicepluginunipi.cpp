@@ -26,6 +26,7 @@
 
 #include <QJsonDocument>
 #include <QTimer>
+#include <QSerialPort>
 
 DevicePluginUniPi::DevicePluginUniPi()
 {
@@ -88,16 +89,21 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         QHostAddress ipAddress = QHostAddress(configValue(uniPiPluginAddressParamTypeId).toString());
 
         if(!m_modbusTCPMaster) {
-            m_modbusTCPMaster = new ModbusTCPMaster(ipAddress, port, this);
-            if(!m_modbusTCPMaster->createInterface()) {
-                qCWarning(dcUniPi()) << "Could not create interface";
-                m_modbusTCPMaster->deleteLater();
-                return DeviceManager::DeviceSetupStatusFailure;
+            m_modbusTCPMaster = new QModbusTcpClient(this);
+            m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkPortParameter, port);
+            m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkAddressParameter, ipAddress.toString());
+
+            connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onStateChanged);
+            connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onErrorOccurred);
+
+            if (!m_modbusRTUMaster->connectDevice()) {
+                qCWarning(dcUniPi()) << "Connect failed:" << m_modbusRTUMaster->errorString();
+                 return DeviceManager::DeviceSetupStatusFailure;
             }
         }
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::L403, m_modbusTCPMaster, this);
-        if (!neuron->loadModbusMap()) {
+        if (!neuron->init()) {
             qCWarning(dcUniPi()) << "Could not load the modbus map";
             neuron->deleteLater();
             return DeviceManager::DeviceSetupStatusFailure;
@@ -119,15 +125,25 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 
         if(!m_modbusRTUMaster) {
             // Seems to be the first Modbus extension
-            m_modbusRTUMaster = new ModbusRTUMaster(serialPort, baudrate, "N", 8, 1, this);
-            if(!m_modbusRTUMaster->createInterface()) {
-                qCWarning(dcUniPi()) << "Could not create interface";
-                m_modbusRTUMaster->deleteLater();
+            m_modbusRTUMaster = new QModbusRtuSerialMaster(this);
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialPortNameParameter, serialPort);
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialParityParameter, QSerialPort::Parity::NoParity);
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baudrate);
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, 8);
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, 1);
+            m_modbusRTUMaster->setTimeout(50);
+            m_modbusRTUMaster->setNumberOfRetries(1);
+
+            connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onStateChanged);
+            connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onErrorOccurred);
+
+            if (!m_modbusRTUMaster->connectDevice()) {
+                qCWarning(dcUniPi()) << "Connect failed:" << m_modbusRTUMaster->errorString();
                 return DeviceManager::DeviceSetupStatusFailure;
             }
         }
         NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS30, m_modbusRTUMaster, slaveAddress, this);
-        if (!neuronExtension->loadModbusMap()) {
+        if (!neuronExtension->init()) {
             qCWarning(dcUniPi()) << "Could not load the modbus map";
             neuronExtension->deleteLater();
             return DeviceManager::DeviceSetupStatusFailure;
@@ -474,8 +490,7 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
                 NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
                 neuronExtension->setDigitalOutput(digitalOutputNumber, stateValue);
             }
-
-            return Device::DeviceErrorNoError;
+            return DeviceManager::DeviceErrorNoError;
         }
         return Device::DeviceErrorActionTypeNotFound;
     }
@@ -593,25 +608,25 @@ void DevicePluginUniPi::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     qCDebug(dcUniPi()) << "Plugin configuration changed";
     if (paramTypeId == uniPiPluginPortParamTypeId) {
         if (!m_modbusTCPMaster) {
-            m_modbusTCPMaster->setIPv4Address(QHostAddress(value.toString()));
+            m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkAddressParameter, value.toString());
         }
     }
 
     if (paramTypeId == uniPiPluginAddressParamTypeId) {
         if (!m_modbusTCPMaster) {
-            m_modbusTCPMaster->setPort(value.toInt());
+            m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkPortParameter, value.toInt());
         }
     }
 
     if (paramTypeId == uniPiPluginSerialPortParamTypeId) {
         if (!m_modbusRTUMaster) {
-            m_modbusRTUMaster->setSerialPort(value.toString());
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialPortNameParameter, value.toString());
         }
     }
 
     if (paramTypeId == uniPiPluginBaudrateParamTypeId) {
         if (!m_modbusRTUMaster) {
-            m_modbusRTUMaster->setBaudrate(value.toInt());
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, value.toInt());
         }
     }
 }
@@ -707,4 +722,15 @@ void DevicePluginUniPi::onUnlatchTimer()
         NeuronExtension *neuronExtension = m_neuronExtensions.value(device->parentId());
         neuronExtension->setDigitalOutput(digitalOutputNumber, false);
     }
+}
+
+void DevicePluginUniPi::onErrorOccurred(QModbusDevice::Error error)
+{
+    qCWarning(dcUniPi()) << "An error occured" << error;
+}
+
+void DevicePluginUniPi::onStateChanged(QModbusDevice::State state)
+{
+    bool connected = (state != QModbusDevice::UnconnectedState);
+    qCDebug(dcUniPi()) << "Connection status changed:" << connected;
 }
