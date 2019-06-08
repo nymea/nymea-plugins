@@ -7,6 +7,7 @@ QT += \
     serialport \
     concurrent \
     core \
+    serialbus \
 
 LIBS += -lmodbus
 
@@ -14,7 +15,6 @@ SOURCES += \
     devicepluginunipi.cpp \
     dimmerswitch.cpp \
     modbustcpmaster.cpp \
-    modbusrtumaster.cpp \
     neuron.cpp \
     neuronextension.cpp
 
@@ -22,7 +22,6 @@ HEADERS += \
     devicepluginunipi.h \
     dimmerswitch.h \
     modbustcpmaster.h \
-    modbusrtumaster.h \
     neuron.h \
     neuronextension.h
 

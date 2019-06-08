@@ -46,6 +46,7 @@ public:
     bool setSerialPort(const QString &serialPort);
     bool setBaudrate(int baudrate);
 
+    bool getCoils(int slaveAddress, int coilAddress, int number, QBitArray *result);
 private:
     modbus_t *m_mb;
 

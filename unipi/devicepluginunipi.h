@@ -30,10 +30,10 @@
 #include "dimmerswitch.h"
 #include "neuron.h"
 #include "neuronextension.h"
-#include "modbusrtumaster.h"
 #include "modbustcpmaster.h"
 
 #include <QTimer>
+#include <QtSerialBus>
 
 class DevicePluginUniPi : public DevicePlugin
 {
@@ -60,7 +60,7 @@ private:
     QHash<DeviceId, NeuronExtension *> m_neuronExtensions;
     QHash<DimmerSwitch *, Device*> m_dimmerSwitches;
     ModbusTCPMaster *m_modbusTCPMaster = nullptr;
-    ModbusRTUMaster *m_modbusRTUMaster = nullptr;
+    QModbusRtuSerialMaster *m_modbusRTUMaster = nullptr;
 
     QHash<Device *, QTimer *> m_unlatchTimer;
 
