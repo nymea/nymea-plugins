@@ -67,6 +67,7 @@ public slots:
     void onInputPollingTimer();
 
     void onFinished();
+    void onErrorOccured(QModbusDevice::Error error);
 };
 
 #endif // NEURONEXTENSION_H
