@@ -70,6 +70,31 @@ void NeuronExtension::setSlaveAddress(int slaveAddress)
     m_slaveAddress = slaveAddress;
 }
 
+QList<QString> NeuronExtension::digitalInputs()
+{
+    return m_modbusDigitalInputRegisters.keys();
+}
+
+QList<QString> NeuronExtension::digitalOutputs()
+{
+    return m_modbusDigitalOutputRegisters.keys();
+}
+
+QList<QString> NeuronExtension::analogInputs()
+{
+    return m_modbusAnalogInputRegisters.keys();
+}
+
+QList<QString> NeuronExtension::analogOutputs()
+{
+    return m_modbusAnalogOutputRegisters.keys();
+}
+
+QList<QString> NeuronExtension::userLEDs()
+{
+    return m_modbusUserLEDRegisters.keys();
+}
+
 bool NeuronExtension::loadModbusMap()
 {
     QStringList fileCoilList;
@@ -116,6 +141,9 @@ bool NeuronExtension::loadModbusMap()
                 } else if (list[3].contains("Relay Output", Qt::CaseSensitivity::CaseInsensitive)) {
                     m_modbusDigitalOutputRegisters.insert(circuit, list[0].toInt());
                     qDebug(dcUniPi()) << "Found relay register" << circuit << list[0].toInt();
+                }  else if (list[3].contains("User Programmable LED", Qt::CaseSensitivity::CaseInsensitive)) {
+                    m_modbusUserLEDRegisters.insert(circuit, list[0].toInt());
+                    qDebug(dcUniPi()) << "Found user programmable led" << circuit << list[0].toInt();
                 }
             }
         }
