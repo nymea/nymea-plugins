@@ -22,7 +22,7 @@
             "name": "serialPort",
             "displayName": "Serial port",
             "type": "QString",
-            "defaultValue": "ttyS0"
+            "defaultValue": "/dev/extcomm/0/0"
         },
         {
             "id": "a05aaedf-5345-4ab4-b471-8c7d106b473e",

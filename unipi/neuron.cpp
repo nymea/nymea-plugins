@@ -141,19 +141,20 @@ bool Neuron::getAllDigitalInputs()
     QList<int> registerList = m_modbusDigitalInputRegisters.values();
 
     if (registerList.isEmpty()) {
-        return true; //device has no inputs
+        return true; //device has no digital inputs
     }
 
     qSort(registerList);
-    int previousReg = 0;
+    int previousReg = registerList.first(); //first register to read and starting point to get the following registers
     int count = 0;
     QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
-    request.setStartAddress(registerList.first());
+    request.setStartAddress(previousReg);
     requests.append(request);
 
     foreach (int reg, registerList) {
 
         if (reg == (previousReg + 1)) {
+            previousReg = reg;
             count++;
         } else {
             requests.last().setValueCount(count);
@@ -167,10 +168,12 @@ bool Neuron::getAllDigitalInputs()
 
     foreach (QModbusDataUnit request, requests) {
         if (QModbusReply *reply = m_modbusInterface->sendReadRequest(request, m_slaveAddress)) {
-            if (!reply->isFinished())
+            if (!reply->isFinished()) {
                 connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
-            else
+                connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+            } else {
                 delete reply; // broadcast replies return immediately
+            }
         } else {
             qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
         }
@@ -191,15 +194,16 @@ bool Neuron::getAllDigitalOutputs()
     }
 
     qSort(registerList);
-    int previousReg = 0;
+    int previousReg = registerList.first(); //first register to read and starting point to get the following registers
     int count = 0;
     QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
-    request.setStartAddress(registerList.first());
+    request.setStartAddress(previousReg);
     requests.append(request);
 
     foreach (int reg, registerList) {
 
         if (reg == (previousReg + 1)) {
+            previousReg = reg;
             count++;
         } else {
             requests.last().setValueCount(count);
@@ -213,10 +217,12 @@ bool Neuron::getAllDigitalOutputs()
 
     foreach (QModbusDataUnit request, requests) {
         if (QModbusReply *reply = m_modbusInterface->sendReadRequest(request, m_slaveAddress)) {
-            if (!reply->isFinished())
+            if (!reply->isFinished()) {
                 connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
-            else
+                connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+            } else {
                 delete reply; // broadcast replies return immediately
+            }
         } else {
             qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
         }
@@ -236,10 +242,12 @@ bool Neuron::getDigitalInput(const QString &circuit)
     QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils, modbusAddress, 1);
 
     if (QModbusReply *reply = m_modbusInterface->sendReadRequest(request, m_slaveAddress)) {
-        if (!reply->isFinished())
+        if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
-        else
+            connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+        } else {
             delete reply; // broadcast replies return immediately
+        }
     } else {
         qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
     }
@@ -259,10 +267,12 @@ bool Neuron::setDigitalOutput(const QString &circuit, bool value)
     request.setValue(0, static_cast<uint16_t>(value));
 
     if (QModbusReply *reply = m_modbusInterface->sendWriteRequest(request, m_slaveAddress)) {
-        if (!reply->isFinished())
+        if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
-        else
+            connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+        } else {
             delete reply; // broadcast replies return immediately
+        }
     } else {
         qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
     }
@@ -281,10 +291,12 @@ bool Neuron::getDigitalOutput(const QString &circuit)
     QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils, modbusAddress, 1);
 
     if (QModbusReply *reply = m_modbusInterface->sendReadRequest(request, m_slaveAddress)) {
-        if (!reply->isFinished())
+        if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
-        else
+            connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+        } else {
             delete reply; // broadcast replies return immediately
+        }
     } else {
         qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
     }
@@ -302,15 +314,16 @@ bool Neuron::setAnalogOutput(const QString &circuit, double value)
     if (!m_modbusInterface)
         return false;
 
-
     QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::HoldingRegisters, modbusAddress, 1);
     request.setValue(0, static_cast<uint16_t>(value));
 
     if (QModbusReply *reply = m_modbusInterface->sendWriteRequest(request, m_slaveAddress)) {
-        if (!reply->isFinished())
+        if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
-        else
+            connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+        } else {
             delete reply; // broadcast replies return immediately
+        }
     } else {
         qCWarning(dcUniPi()) << "Read error: " << m_modbusInterface->errorString();
     }
@@ -393,4 +406,13 @@ void Neuron::onFinished()
         qCWarning(dcUniPi()) << "Read response error:" << reply->error();
     }
     reply->deleteLater();
+}
+
+void Neuron::onErrorOccured(QModbusDevice::Error error)
+{
+    qCWarning(dcUniPi()) << "Modbus replay error:" << error;
+    QModbusReply *reply = qobject_cast<QModbusReply *>(sender());
+    if (!reply)
+        return;
+    reply->finished(); //to make sure it will be deleted
 }
