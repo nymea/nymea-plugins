@@ -340,6 +340,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronS103ConnectedStateTypeId, true);
 
@@ -357,6 +360,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronM103ConnectedStateTypeId, true);
 
@@ -374,6 +380,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronM203ConnectedStateTypeId, true);
 
@@ -391,6 +400,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronM303ConnectedStateTypeId, true);
 
@@ -408,6 +420,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronM403ConnectedStateTypeId, true);
 
@@ -425,6 +440,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronM503ConnectedStateTypeId, true);
 
@@ -442,6 +460,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronL203ConnectedStateTypeId, true);
 
@@ -459,6 +480,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronL303ConnectedStateTypeId, true);
 
@@ -476,6 +500,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronL403ConnectedStateTypeId, true);
 
@@ -493,6 +520,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronL503ConnectedStateTypeId, true);
 
@@ -510,6 +540,9 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         m_neurons.insert(device->id(), neuron);
         connect(neuron, &Neuron::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalInputStatusChanged);
         connect(neuron, &Neuron::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronDigitalOutputStatusChanged);
+        connect(neuron, &Neuron::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogInputStatusChanged);
+        connect(neuron, &Neuron::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronAnalogOutputStatusChanged);
+        connect(neuron, &Neuron::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronUserLEDStatusChanged);
 
         device->setStateValue(neuronL513ConnectedStateTypeId, true);
 
@@ -527,6 +560,10 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         }
         connect(neuronExtension, &NeuronExtension::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalInputStatusChanged);
         connect(neuronExtension, &NeuronExtension::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogInputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionUserLEDStatusChanged);
+
         m_neuronExtensions.insert(device->id(), neuronExtension);
         device->setStateValue(neuronXS10ConnectedStateTypeId, true);
 
@@ -544,6 +581,10 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         }
         connect(neuronExtension, &NeuronExtension::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalInputStatusChanged);
         connect(neuronExtension, &NeuronExtension::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogInputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionUserLEDStatusChanged);
+
         m_neuronExtensions.insert(device->id(), neuronExtension);
         device->setStateValue(neuronXS20ConnectedStateTypeId, true);
 
@@ -561,6 +602,10 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         }
         connect(neuronExtension, &NeuronExtension::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalInputStatusChanged);
         connect(neuronExtension, &NeuronExtension::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogInputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionUserLEDStatusChanged);
+
         m_neuronExtensions.insert(device->id(), neuronExtension);
         device->setStateValue(neuronXS30ConnectedStateTypeId, true);
 
@@ -578,6 +623,10 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         }
         connect(neuronExtension, &NeuronExtension::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalInputStatusChanged);
         connect(neuronExtension, &NeuronExtension::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogInputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionUserLEDStatusChanged);
+
         m_neuronExtensions.insert(device->id(), neuronExtension);
         device->setStateValue(neuronXS40ConnectedStateTypeId, true);
 
@@ -595,6 +644,10 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         }
         connect(neuronExtension, &NeuronExtension::digitalInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalInputStatusChanged);
         connect(neuronExtension, &NeuronExtension::digitalOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionDigitalOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogInputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogInputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::analogOutputStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionAnalogOutputStatusChanged);
+        connect(neuronExtension, &NeuronExtension::userLEDStatusChanged, this, &DevicePluginUniPi::onNeuronExtensionUserLEDStatusChanged);
+
         m_neuronExtensions.insert(device->id(), neuronExtension);
         device->setStateValue(neuronXS50ConnectedStateTypeId, true);
 
@@ -807,6 +860,8 @@ void DevicePluginUniPi::onNeuronExtensionDigitalInputStatusChanged(QString &circ
     NeuronExtension *neuronExtension = static_cast<NeuronExtension *>(sender());
 
     foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, m_neuronExtensions.key(neuronExtension))) {
+
+        qCDebug(dcUniPi()) << "Digital input changed:" << circuit << value;
         if (device->deviceClassId() == digitalInputDeviceClassId) {
             if (device->paramValue(digitalInputDeviceCircuitParamTypeId).toString() == circuit) {
 
