@@ -11,12 +11,12 @@ Neuron::Neuron(NeuronTypes neuronType, QModbusTcpClient *modbusInterface,  QObje
 {
     connect(&m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onInputPollingTimer);
     m_inputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
-    m_inputPollingTimer.start(200); //TODO
+    m_inputPollingTimer.start(200);
 
     connect(&m_outputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
     m_outputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
     m_outputPollingTimer.setSingleShot(true);
-    m_outputPollingTimer.start(5000); //TODO
+    m_outputPollingTimer.start(5000);
 }
 
 Neuron::~Neuron(){
