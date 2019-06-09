@@ -681,11 +681,6 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     return DeviceManager::DeviceSetupStatusFailure;
 }
 
-void DevicePluginUniPi::postSetupDevice(Device *device)
-{
-    Q_UNUSED(device);
-}
-
 
 DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
 {
@@ -766,7 +761,6 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
         foreach(Device *child, myDevices().filterByParam(userLEDDeviceParentIdParamTypeId,device->id())) {
             deviceManager()->removeConfiguredDevice(child->id());
         }
-
     }
     if(m_neuronExtensions.contains(device->id())) {
         NeuronExtension *neuronExtension = m_neuronExtensions.take(device->id());
@@ -854,14 +848,11 @@ void DevicePluginUniPi::onNeuronDigitalInputStatusChanged(QString &circuit, bool
     }
 }
 
-
 void DevicePluginUniPi::onNeuronExtensionDigitalInputStatusChanged(QString &circuit, bool value)
 {
     NeuronExtension *neuronExtension = static_cast<NeuronExtension *>(sender());
 
     foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, m_neuronExtensions.key(neuronExtension))) {
-
-        qCDebug(dcUniPi()) << "Digital input changed:" << circuit << value;
         if (device->deviceClassId() == digitalInputDeviceClassId) {
             if (device->paramValue(digitalInputDeviceCircuitParamTypeId).toString() == circuit) {
 
@@ -871,7 +862,6 @@ void DevicePluginUniPi::onNeuronExtensionDigitalInputStatusChanged(QString &circ
         }
     }
 }
-
 
 void DevicePluginUniPi::onNeuronDigitalOutputStatusChanged(QString &circuit, bool value)
 {
