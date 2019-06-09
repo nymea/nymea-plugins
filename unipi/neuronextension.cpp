@@ -49,13 +49,13 @@ QString NeuronExtension::type()
     case ExtensionTypes::xS10:
         return "xS10";
     case ExtensionTypes::xS20:
-        return "sX20";
+        return "xS20";
     case ExtensionTypes::xS30:
-        return "sX30";
+        return "xS30";
     case ExtensionTypes::xS40:
-        return "sX40";
+        return "xS40";
     case ExtensionTypes::xS50:
-        return "sX50";
+        return "xS50";
     }
     return "Unknown";
 }

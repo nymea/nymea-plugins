@@ -66,13 +66,17 @@ private:
 private slots:
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 
-    void onDigitalInputStatusChanged(QString &circuit, bool value);
-    void onDigitalOutputStatusChanged(QString &circuit, bool value);
+    void onNeuronDigitalInputStatusChanged(QString &circuit, bool value);
+    void onNeuronDigitalOutputStatusChanged(QString &circuit, bool value);
+    void onNeuronAnalogInputStatusChanged(QString &circuit, double value);
+    void onNeuronAnalogOutputStatusChanged(QString &circuit,double value);
+    void onNeuronUserLEDStatusChanged(QString &circuit, bool value);
 
-    void onAnalogInputStatusChanged(QString &circuit, double value);
-    void onAnalogOutputStatusChanged(QString &circuit,double value);
-
-    void onUserLEDStatusChanged(QString &circuit, bool value);
+    void onNeuronExtensionDigitalInputStatusChanged(QString &circuit, bool value);
+    void onNeuronExtensionDigitalOutputStatusChanged(QString &circuit, bool value);
+    void onNeuronExtensionAnalogInputStatusChanged(QString &circuit, double value);
+    void onNeuronExtensionAnalogOutputStatusChanged(QString &circuit,double value);
+    void onNeuronExtensionUserLEDStatusChanged(QString &circuit, bool value);
 
     void onReconnectTimer();
 
