@@ -287,7 +287,6 @@ bool Neuron::getAllDigitalInputs()
     requests.append(request);
 
     foreach (int reg, registerList) {
-
         if (reg == (previousReg + 1)) {
             previousReg = reg;
             count++;
@@ -529,12 +528,18 @@ bool Neuron::getUserLED(const QString &circuit)
 
 void Neuron::onOutputPollingTimer()
 {
-    getAllDigitalOutputs();
+    //getAllDigitalOutputs();
+    foreach (QString circuit, m_modbusDigitalOutputRegisters.keys()) {
+        getDigitalOutput(circuit);
+    }
 }
 
 void Neuron::onInputPollingTimer()
 {
-    getAllDigitalInputs();
+    //getAllDigitalInputs();
+    foreach (QString circuit, m_modbusDigitalInputRegisters.keys()) {
+        getDigitalInput(circuit);
+    }
 }
 
 void Neuron::onFinished()
@@ -547,23 +552,34 @@ void Neuron::onFinished()
     if (reply->error() == QModbusDevice::NoError) {
         const QModbusDataUnit unit = reply->result();
 
-        for (uint i = 0; i < unit.valueCount(); i++) {
+        for (int i = 0; i < static_cast<int>(unit.valueCount()); i++) {
             //qCDebug(dcUniPi()) << "Start Address:" << unit.startAddress() << "Register Type:" << unit.registerType() << "Value:" << unit.value(i);
             modbusAddress = unit.startAddress() + i;
+
+            if (m_previousModbusRegisterValue.contains(modbusAddress)) {
+                if (m_previousModbusRegisterValue.value(modbusAddress) == unit.value(i)) {
+                    continue;
+                } else  {
+                    m_previousModbusRegisterValue.insert(modbusAddress, unit.value(i)); //update existing value
+                }
+            } else {
+                m_previousModbusRegisterValue.insert(modbusAddress, unit.value(i));
+            }
+
             QString circuit;
             switch (unit.registerType()) {
             case QModbusDataUnit::RegisterType::Coils:
-                if(m_modbusDigitalInputRegisters.values().contains(unit.startAddress())){
+                if(m_modbusDigitalInputRegisters.values().contains(modbusAddress)){
                     circuit = m_modbusDigitalInputRegisters.key(modbusAddress);
                     emit digitalInputStatusChanged(circuit, unit.value(i));
                 }
 
-                if(m_modbusDigitalOutputRegisters.values().contains(unit.startAddress())){
+                if(m_modbusDigitalOutputRegisters.values().contains(modbusAddress)){
                     circuit = m_modbusDigitalOutputRegisters.key(modbusAddress);
                     emit digitalOutputStatusChanged(circuit, unit.value(i));
                 }
 
-                if(m_modbusUserLEDRegisters.values().contains(unit.startAddress())){
+                if(m_modbusUserLEDRegisters.values().contains(modbusAddress)){
                     circuit = m_modbusUserLEDRegisters.key(modbusAddress);
                     emit userLEDStatusChanged(circuit, unit.value(i));
                 }
@@ -572,12 +588,12 @@ void Neuron::onFinished()
             case QModbusDataUnit::RegisterType::DiscreteInputs:
                 break;
             case QModbusDataUnit::RegisterType::InputRegisters:
-                if(m_modbusAnalogInputRegisters.values().contains(unit.startAddress())){
+                if(m_modbusAnalogInputRegisters.values().contains(modbusAddress)){
                     circuit = m_modbusAnalogInputRegisters.key(modbusAddress);
                     emit analogInputStatusChanged(circuit, unit.value(i));
                 }
 
-                if(m_modbusAnalogOutputRegisters.values().contains(unit.startAddress())){
+                if(m_modbusAnalogOutputRegisters.values().contains(modbusAddress)){
                     circuit = m_modbusAnalogOutputRegisters.key(modbusAddress);
                     emit analogOutputStatusChanged(circuit, unit.value(i));
                 }

@@ -66,6 +66,8 @@ private:
 
     NeuronTypes m_neuronType = NeuronTypes::S103;
 
+    QHash<int, uint16_t> m_previousModbusRegisterValue;
+
     bool loadModbusMap();
 
 signals:
