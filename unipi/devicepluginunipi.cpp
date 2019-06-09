@@ -36,6 +36,7 @@ DevicePluginUniPi::DevicePluginUniPi()
 void DevicePluginUniPi::init()
 {
     connect(this, &DevicePluginUniPi::configValueChanged, this, &DevicePluginUniPi::onPluginConfigurationChanged);
+    QLoggingCategory::setFilterRules(QStringLiteral("qt.modbus* = false"));
 }
 
 DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -47,10 +48,14 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
         foreach (NeuronExtension *neuronExtension, m_neuronExtensions) {
             DeviceId parentDeviceId = m_neuronExtensions.key(neuronExtension);
             foreach (QString circuit, neuronExtension->digitalInputs()) {
-                /*if (!myDevices().filterByParam(digitalInputDeviceCircuitParamTypeId, circuit).isEmpty()) {
-                    continue;
-                }*/
-                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), QString("Neuron extension %1, Slave address %2").arg(neuronExtension->type().arg(QString::number(neuronExtension->slaveAddress()))), parentDeviceId);
+                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), QString("Neuron extension %1, slave address %2").arg(neuronExtension->type().arg(QString::number(neuronExtension->slaveAddress()))), parentDeviceId);
+                foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, m_neuronExtensions.key(neuronExtension))) {
+                    if (device->paramValue(digitalInputDeviceCircuitParamTypeId) == circuit) {
+                        qCDebug(dcUniPi()) << "Found already added Circuit:" << circuit << parentDeviceId;
+                        deviceDescriptor.setDeviceId(parentDeviceId);
+                        break;
+                    }
+                }
                 ParamList params;
                 params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
                 params.append(Param(digitalInputDeviceParentIdParamTypeId, parentDeviceId));
@@ -62,11 +67,14 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
         foreach (Neuron *neuron, m_neurons) {
             DeviceId parentDeviceId = m_neurons.key(neuron);
             foreach (QString circuit, neuron->digitalInputs()) {
-                /*foreach (Device *existingDevice, myDevices().filterByParam(digitalInputDeviceCircuitParamTypeId, circuit)) {
-                    if (existingDevice->paramValue(input))
-                    break;
-                }*/
                 DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), QString("Neuron %1").arg(neuron->type()), parentDeviceId);
+                foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, m_neurons.key(neuron))) {
+                    if (device->paramValue(digitalInputDeviceCircuitParamTypeId) == circuit) {
+                        qCDebug(dcUniPi()) << "Found already added Circuit:" << circuit << parentDeviceId;
+                        deviceDescriptor.setDeviceId(parentDeviceId);
+                        break;
+                    }
+                }
                 ParamList params;
                 params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
                 params.append(Param(digitalInputDeviceParentIdParamTypeId, parentDeviceId));
