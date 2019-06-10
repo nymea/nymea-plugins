@@ -11,12 +11,12 @@ Neuron::Neuron(NeuronTypes neuronType, QModbusTcpClient *modbusInterface,  QObje
 {
     connect(&m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onInputPollingTimer);
     m_inputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
-    m_inputPollingTimer.start(200);
+    m_inputPollingTimer.start(100);
 
     connect(&m_outputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
     m_outputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
     m_outputPollingTimer.setSingleShot(true);
-    m_outputPollingTimer.start(5000);
+    m_outputPollingTimer.start(1000);
 }
 
 Neuron::~Neuron(){
@@ -305,6 +305,7 @@ bool Neuron::getAllDigitalInputs()
             if (!reply->isFinished()) {
                 connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
                 connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+                QTimer::singleShot(200, reply, SLOT(deleteLater));
             } else {
                 delete reply; // broadcast replies return immediately
             }
@@ -354,6 +355,7 @@ bool Neuron::getAllDigitalOutputs()
             if (!reply->isFinished()) {
                 connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
                 connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+                QTimer::singleShot(200, reply, SLOT(deleteLater));
             } else {
                 delete reply; // broadcast replies return immediately
             }
@@ -379,6 +381,7 @@ bool Neuron::getDigitalInput(const QString &circuit)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -404,6 +407,7 @@ bool Neuron::setDigitalOutput(const QString &circuit, bool value)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -428,6 +432,7 @@ bool Neuron::getDigitalOutput(const QString &circuit)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -455,6 +460,7 @@ bool Neuron::setAnalogOutput(const QString &circuit, double value)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -491,6 +497,7 @@ bool Neuron::setUserLED(const QString &circuit, bool value)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -515,6 +522,7 @@ bool Neuron::getUserLED(const QString &circuit)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -528,18 +536,18 @@ bool Neuron::getUserLED(const QString &circuit)
 
 void Neuron::onOutputPollingTimer()
 {
-    //getAllDigitalOutputs();
-    foreach (QString circuit, m_modbusDigitalOutputRegisters.keys()) {
+    getAllDigitalOutputs();
+    /*foreach (QString circuit, m_modbusDigitalOutputRegisters.keys()) {
         getDigitalOutput(circuit);
-    }
+    }*/
 }
 
 void Neuron::onInputPollingTimer()
 {
-    //getAllDigitalInputs();
-    foreach (QString circuit, m_modbusDigitalInputRegisters.keys()) {
+    getAllDigitalInputs();
+    /*foreach (QString circuit, m_modbusDigitalInputRegisters.keys()) {
         getDigitalInput(circuit);
-    }
+    }*/
 }
 
 void Neuron::onFinished()
