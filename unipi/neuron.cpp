@@ -281,31 +281,32 @@ bool Neuron::getAllDigitalInputs()
 
     qSort(registerList);
     int previousReg = registerList.first(); //first register to read and starting point to get the following registers
-    int count = 0;
-    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
-    request.setStartAddress(previousReg);
-    requests.append(request);
+    int startAddress;
+
+    QHash<int, int> registerGroups;
 
     foreach (int reg, registerList) {
-        if (reg == (previousReg + 1)) {
+        qDebug(dcUniPi()) << "Register" << reg << "previous Register" << previousReg;
+        if (reg == previousReg) { //first register
+            startAddress = reg;
+            registerGroups.insert(startAddress, 1);
+        } else if (reg == (previousReg + 1)) { //next register in block
             previousReg = reg;
-            count++;
-        } else {
-            requests.last().setValueCount(count);
-            count = 0;
-            QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
-            request.setStartAddress(reg);
-            requests.last().setValueCount(1);
-            requests.append(request);
+            registerGroups.insert(startAddress, (registerGroups.value(startAddress) + 1)); //update block length
+        } else {    // new block
+            startAddress = reg;
+            previousReg = reg;
+            registerGroups.insert(startAddress, 1);
         }
     }
 
-    foreach (QModbusDataUnit request, requests) {
+    foreach (int startAddress, registerGroups.keys()) {
+        QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils, startAddress, registerGroups.value(startAddress));
         if (QModbusReply *reply = m_modbusInterface->sendReadRequest(request, m_slaveAddress)) {
             if (!reply->isFinished()) {
                 connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
                 connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
-                QTimer::singleShot(200, reply, SLOT(deleteLater));
+                QTimer::singleShot(200, reply, SLOT(deleteLater()));
             } else {
                 delete reply; // broadcast replies return immediately
             }
@@ -330,32 +331,32 @@ bool Neuron::getAllDigitalOutputs()
 
     qSort(registerList);
     int previousReg = registerList.first(); //first register to read and starting point to get the following registers
-    int count = 0;
-    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
-    request.setStartAddress(previousReg);
-    requests.append(request);
+    int startAddress;
+
+    QHash<int, int> registerGroups;
 
     foreach (int reg, registerList) {
-
-        if (reg == (previousReg + 1)) {
+        qDebug(dcUniPi()) << "Register" << reg << "previous Register" << previousReg;
+        if (reg == previousReg) { //first register
+            startAddress = reg;
+            registerGroups.insert(startAddress, 1);
+        } else if (reg == (previousReg + 1)) { //next register in block
             previousReg = reg;
-            count++;
-        } else {
-            requests.last().setValueCount(count);
-            count = 0;
-            QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils);
-            request.setStartAddress(reg);
-            requests.last().setValueCount(1);
-            requests.append(request);
+            registerGroups.insert(startAddress, (registerGroups.value(startAddress) + 1)); //update block length
+        } else {    // new block
+            startAddress = reg;
+            previousReg = reg;
+            registerGroups.insert(startAddress, 1);
         }
     }
 
-    foreach (QModbusDataUnit request, requests) {
+    foreach (int startAddress, registerGroups.keys()) {
+        QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils, startAddress, registerGroups.value(startAddress));
         if (QModbusReply *reply = m_modbusInterface->sendReadRequest(request, m_slaveAddress)) {
             if (!reply->isFinished()) {
                 connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
                 connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
-                QTimer::singleShot(200, reply, SLOT(deleteLater));
+                QTimer::singleShot(200, reply, SLOT(deleteLater()));
             } else {
                 delete reply; // broadcast replies return immediately
             }
@@ -381,7 +382,7 @@ bool Neuron::getDigitalInput(const QString &circuit)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
-            QTimer::singleShot(200, reply, SLOT(deleteLater));
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -407,7 +408,7 @@ bool Neuron::setDigitalOutput(const QString &circuit, bool value)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
-            QTimer::singleShot(200, reply, SLOT(deleteLater));
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -432,7 +433,7 @@ bool Neuron::getDigitalOutput(const QString &circuit)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
-            QTimer::singleShot(200, reply, SLOT(deleteLater));
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -460,7 +461,7 @@ bool Neuron::setAnalogOutput(const QString &circuit, double value)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
-            QTimer::singleShot(200, reply, SLOT(deleteLater));
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -497,7 +498,7 @@ bool Neuron::setUserLED(const QString &circuit, bool value)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
-            QTimer::singleShot(200, reply, SLOT(deleteLater));
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
         } else {
             delete reply; // broadcast replies return immediately
         }
@@ -522,7 +523,7 @@ bool Neuron::getUserLED(const QString &circuit)
         if (!reply->isFinished()) {
             connect(reply, &QModbusReply::finished, this, &Neuron::onFinished);
             connect(reply, &QModbusReply::errorOccurred, this, &Neuron::onErrorOccured);
-            QTimer::singleShot(200, reply, SLOT(deleteLater));
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
         } else {
             delete reply; // broadcast replies return immediately
         }
