@@ -293,7 +293,7 @@ bool NeuronExtension::getAllDigitalInputs()
     QHash<int, int> registerGroups;
 
     foreach (int reg, registerList) {
-        qDebug(dcUniPi()) << "Register" << reg << "previous Register" << previousReg;
+        //qDebug(dcUniPi()) << "Register" << reg << "previous Register" << previousReg;
         if (reg == previousReg) { //first register
             startAddress = reg;
             registerGroups.insert(startAddress, 1);
@@ -343,7 +343,7 @@ bool NeuronExtension::getAllDigitalOutputs()
     QHash<int, int> registerGroups;
 
     foreach (int reg, registerList) {
-        qDebug(dcUniPi()) << "Register" << reg << "previous Register" << previousReg;
+        //qDebug(dcUniPi()) << "Register" << reg << "previous Register" << previousReg;
         if (reg == previousReg) { //first register
             startAddress = reg;
             registerGroups.insert(startAddress, 1);
