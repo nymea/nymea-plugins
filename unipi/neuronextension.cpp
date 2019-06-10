@@ -499,18 +499,18 @@ bool NeuronExtension::getUserLED(const QString &circuit)
 
 void NeuronExtension::onOutputPollingTimer()
 {
-    //getAllDigitalOutputs();
-    foreach (QString circuit, m_modbusDigitalOutputRegisters.keys()) {
+    getAllDigitalOutputs();
+    /*foreach (QString circuit, m_modbusDigitalOutputRegisters.keys()) {
         getDigitalOutput(circuit);
-    }
+    }*/
 }
 
 void NeuronExtension::onInputPollingTimer()
 {
-    //getAllDigitalInputs();
-    foreach (QString circuit, m_modbusDigitalInputRegisters.keys()) {
+    getAllDigitalInputs();
+    /*foreach (QString circuit, m_modbusDigitalInputRegisters.keys()) {
         getDigitalInput(circuit);
-    }
+    }*/
 }
 
 
