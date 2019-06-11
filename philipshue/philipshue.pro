@@ -10,10 +10,10 @@ SOURCES += \
     #light.cpp \
     huebridge.cpp \
     huelight.cpp \
+    huemotionsensor.cpp \
     pairinginfo.cpp \
     hueremote.cpp \
-    huedevice.cpp \
-    hueoutdoorsensor.cpp
+    huedevice.cpp
 
 HEADERS += \
     devicepluginphilipshue.h \
@@ -22,10 +22,10 @@ HEADERS += \
     #lightinterface.h \
     huebridge.h \
     huelight.h \
+    huemotionsensor.h \
     pairinginfo.h \
     hueremote.h \
-    huedevice.h \
-    hueoutdoorsensor.h
+    huedevice.h
 
 
 

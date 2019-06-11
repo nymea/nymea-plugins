@@ -33,7 +33,7 @@ class HueDevice : public QObject
 {
     Q_OBJECT
 public:
-    explicit HueDevice(QObject *parent = 0);
+    explicit HueDevice(QObject *parent = nullptr);
 
     int id() const;
     void setId(const int &id);

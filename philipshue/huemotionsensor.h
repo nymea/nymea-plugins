@@ -20,21 +20,23 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef HUEOUTDOORSENSOR_H
-#define HUEOUTDOORSENSOR_H
+#ifndef HUEMOTIONSENSOR_H
+#define HUEMOTIONSENSOR_H
 
 #include <QObject>
+#include <QTimer>
 
+#include "extern-plugininfo.h"
 #include "huedevice.h"
 
-class HueOutdoorSensor : public HueDevice
+class HueMotionSensor : public HueDevice
 {
     Q_OBJECT
 public:
-    explicit HueOutdoorSensor(QObject *parent = nullptr);
+    explicit HueMotionSensor(QObject *parent = nullptr);
+    virtual ~HueMotionSensor() = default;
 
-    QString uuid() const;
-    void setUuid(const QString &uuid);
+    void setTimeout(int timeout);
 
     int temperatureSensorId() const;
     void setTemperatureSensorId(int sensorId);
@@ -65,10 +67,16 @@ public:
     bool hasSensor(int sensorId);
     bool hasSensor(const QString &sensorUuid);
 
+    virtual StateTypeId connectedStateTypeId() const = 0;
+    virtual StateTypeId temperatureStateTypeId() const = 0;
+    virtual StateTypeId lightIntensityStateTypeId() const = 0;
+    virtual StateTypeId isPresentStateTypeId() const = 0;
+    virtual StateTypeId lastSeenTimeStateTypeId() const = 0;
+    virtual StateTypeId batteryLevelStateTypeId() const = 0;
+    virtual StateTypeId batteryCriticalStateTypeId() const = 0;
+
 private:
     // Params
-    QString m_uuid;
-
     int m_temperatureSensorId;
     QString m_temperatureSensorUuid;
 
@@ -77,6 +85,8 @@ private:
 
     int m_lightSensorId;
     QString m_lightSensorUuid;
+
+    QTimer m_timeout;
 
     // States
     QString m_lastUpdate;
@@ -93,4 +103,36 @@ signals:
 
 };
 
-#endif // HUEOUTDOORSENSOR_H
+class HueIndoorSensor: public HueMotionSensor
+{
+    Q_OBJECT
+public:
+    HueIndoorSensor(QObject *parent = nullptr): HueMotionSensor(parent) {}
+
+    StateTypeId connectedStateTypeId() const override { return motionSensorConnectedStateTypeId; }
+    StateTypeId temperatureStateTypeId() const override { return motionSensorTemperatureStateTypeId; }
+    StateTypeId lightIntensityStateTypeId() const override { return motionSensorLightIntensityStateTypeId; }
+    StateTypeId isPresentStateTypeId() const override { return motionSensorIsPresentStateTypeId; }
+    StateTypeId lastSeenTimeStateTypeId() const override { return motionSensorLastSeenTimeStateTypeId; }
+    StateTypeId batteryLevelStateTypeId() const override { return motionSensorBatteryLevelStateTypeId; }
+    StateTypeId batteryCriticalStateTypeId() const override { return motionSensorBatteryCriticalStateTypeId; }
+
+};
+
+class HueOutdoorSensor: public HueMotionSensor
+{
+    Q_OBJECT
+public:
+    HueOutdoorSensor(QObject *parent = nullptr): HueMotionSensor(parent) {}
+
+    StateTypeId connectedStateTypeId() const override { return outdoorSensorTemperatureStateTypeId; }
+    StateTypeId temperatureStateTypeId() const override { return outdoorSensorTemperatureStateTypeId; }
+    StateTypeId lightIntensityStateTypeId() const override { return outdoorSensorLightIntensityStateTypeId; }
+    StateTypeId isPresentStateTypeId() const override { return outdoorSensorIsPresentStateTypeId; }
+    StateTypeId lastSeenTimeStateTypeId() const override { return outdoorSensorLastSeenTimeStateTypeId; }
+    StateTypeId batteryLevelStateTypeId() const override { return outdoorSensorBatteryLevelStateTypeId; }
+    StateTypeId batteryCriticalStateTypeId() const override { return outdoorSensorBatteryCriticalStateTypeId; }
+
+};
+
+#endif // HUEMOTIONSENSOR_H

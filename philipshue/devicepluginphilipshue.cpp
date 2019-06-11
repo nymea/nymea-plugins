@@ -322,11 +322,44 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
         return Device::DeviceSetupStatusSuccess;
     }
 
+    // Hue Motion sensor
+    if (device->deviceClassId() == motionSensorDeviceClassId) {
+        qCDebug(dcPhilipsHue) << "Setup Hue motion sensor" << device->params();
+
+        HueIndoorSensor *motionSensor = new HueIndoorSensor(this);
+        motionSensor->setTimeout(device->setting(motionSensorSettingsTimeoutParamTypeId).toUInt());
+        motionSensor->setUuid(device->paramValue(motionSensorDeviceUuidParamTypeId).toString());
+        motionSensor->setModelId(device->paramValue(motionSensorDeviceModelIdParamTypeId).toString());
+        motionSensor->setTemperatureSensorId(device->paramValue(motionSensorDeviceSensorIdTemperatureParamTypeId).toInt());
+        motionSensor->setTemperatureSensorUuid(device->paramValue(motionSensorDeviceSensorUuidTemperatureParamTypeId).toString());
+        motionSensor->setPresenceSensorId(device->paramValue(motionSensorDeviceSensorIdPresenceParamTypeId).toInt());
+        motionSensor->setPresenceSensorUuid(device->paramValue(motionSensorDeviceSensorUuidPresenceParamTypeId).toString());
+        motionSensor->setLightSensorId(device->paramValue(motionSensorDeviceSensorIdLightParamTypeId).toInt());
+        motionSensor->setLightSensorUuid(device->paramValue(motionSensorDeviceSensorUuidLightParamTypeId).toString());
+
+        connect(motionSensor, &HueMotionSensor::reachableChanged, this, &DevicePluginPhilipsHue::onMotionSensorReachableChanged);
+        connect(motionSensor, &HueMotionSensor::batteryLevelChanged, this, &DevicePluginPhilipsHue::onMotionSensorBatteryLevelChanged);
+        connect(motionSensor, &HueMotionSensor::temperatureChanged, this, &DevicePluginPhilipsHue::onMotionSensorTemperatureChanged);
+        connect(motionSensor, &HueMotionSensor::presenceChanged, this, &DevicePluginPhilipsHue::onMotionSensorPresenceChanged);
+        connect(motionSensor, &HueMotionSensor::lightIntensityChanged, this, &DevicePluginPhilipsHue::onMotionSensorLightIntensityChanged);
+
+        connect(device, &Device::settingChanged, motionSensor, [motionSensor](const ParamTypeId &paramTypeId, const QVariant &value){
+            if (paramTypeId == motionSensorSettingsTimeoutParamTypeId) {
+                motionSensor->setTimeout(value.toUInt());
+            }
+        });
+
+        m_motionSensors.insert(motionSensor, device);
+
+        return Device::DeviceSetupStatusSuccess;
+    }
+
     // Hue Outdoor sensor
     if (device->deviceClassId() == outdoorSensorDeviceClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue Outdoor sensor" << device->params();
 
-        HueOutdoorSensor *outdoorSensor = new HueOutdoorSensor(this);
+        HueMotionSensor *outdoorSensor = new HueOutdoorSensor(this);
+        outdoorSensor->setTimeout(device->setting(outdoorSensorSettingsTimeoutParamTypeId).toUInt());
         outdoorSensor->setUuid(device->paramValue(outdoorSensorDeviceUuidParamTypeId).toString());
         outdoorSensor->setModelId(device->paramValue(outdoorSensorDeviceModelIdParamTypeId).toString());
         outdoorSensor->setTemperatureSensorId(device->paramValue(outdoorSensorDeviceSensorIdTemperatureParamTypeId).toInt());
@@ -336,13 +369,19 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
         outdoorSensor->setLightSensorId(device->paramValue(outdoorSensorDeviceSensorIdLightParamTypeId).toInt());
         outdoorSensor->setLightSensorUuid(device->paramValue(outdoorSensorDeviceSensorUuidLightParamTypeId).toString());
 
-        connect(outdoorSensor, &HueOutdoorSensor::reachableChanged, this, &DevicePluginPhilipsHue::onOutdoorSensorReachableChanged);
-        connect(outdoorSensor, &HueOutdoorSensor::batteryLevelChanged, this, &DevicePluginPhilipsHue::onOutdoorSensorBatteryLevelChanged);
-        connect(outdoorSensor, &HueOutdoorSensor::temperatureChanged, this, &DevicePluginPhilipsHue::onOutdoorSensorTemperatureChanged);
-        connect(outdoorSensor, &HueOutdoorSensor::presenceChanged, this, &DevicePluginPhilipsHue::onOutdoorSensorPresenceChanged);
-        connect(outdoorSensor, &HueOutdoorSensor::lightIntensityChanged, this, &DevicePluginPhilipsHue::onOutdoorSensorLightIntensityChanged);
+        connect(outdoorSensor, &HueMotionSensor::reachableChanged, this, &DevicePluginPhilipsHue::onMotionSensorReachableChanged);
+        connect(outdoorSensor, &HueMotionSensor::batteryLevelChanged, this, &DevicePluginPhilipsHue::onMotionSensorBatteryLevelChanged);
+        connect(outdoorSensor, &HueMotionSensor::temperatureChanged, this, &DevicePluginPhilipsHue::onMotionSensorTemperatureChanged);
+        connect(outdoorSensor, &HueMotionSensor::presenceChanged, this, &DevicePluginPhilipsHue::onMotionSensorPresenceChanged);
+        connect(outdoorSensor, &HueMotionSensor::lightIntensityChanged, this, &DevicePluginPhilipsHue::onMotionSensorLightIntensityChanged);
 
-        m_outdoorSensors.insert(outdoorSensor, device);
+        connect(device, &Device::settingChanged, outdoorSensor, [outdoorSensor](const ParamTypeId &paramTypeId, const QVariant &value){
+            if (paramTypeId == outdoorSensorSettingsTimeoutParamTypeId) {
+                outdoorSensor->setTimeout(value.toUInt());
+            }
+        });
+
+        m_motionSensors.insert(outdoorSensor, device);
 
         return Device::DeviceSetupStatusSuccess;
     }
@@ -384,8 +423,8 @@ void DevicePluginPhilipsHue::deviceRemoved(Device *device)
     }
 
     if (device->deviceClassId() == outdoorSensorDeviceClassId) {
-        HueOutdoorSensor *outdoorSensor = m_outdoorSensors.key(device);
-        m_outdoorSensors.remove(outdoorSensor);
+        HueMotionSensor *outdoorSensor = m_motionSensors.key(device);
+        m_motionSensors.remove(outdoorSensor);
         outdoorSensor->deleteLater();
     }
 }
@@ -856,41 +895,41 @@ void DevicePluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
     emitEvent(Event(id, m_remotes.value(remote)->id(), ParamList() << param));
 }
 
-void DevicePluginPhilipsHue::onOutdoorSensorReachableChanged(bool reachable)
+void DevicePluginPhilipsHue::onMotionSensorReachableChanged(bool reachable)
 {
-    HueOutdoorSensor *sensor = static_cast<HueOutdoorSensor *>(sender());
-    Device *sensorDevice = m_outdoorSensors.value(sensor);
-    sensorDevice->setStateValue(outdoorSensorConnectedStateTypeId, reachable);
+    HueMotionSensor *sensor = static_cast<HueMotionSensor *>(sender());
+    Device *sensorDevice = m_motionSensors.value(sensor);
+    sensorDevice->setStateValue(sensor->connectedStateTypeId(), reachable);
 }
 
-void DevicePluginPhilipsHue::onOutdoorSensorBatteryLevelChanged(int batteryLevel)
+void DevicePluginPhilipsHue::onMotionSensorBatteryLevelChanged(int batteryLevel)
 {
-    HueOutdoorSensor *sensor = static_cast<HueOutdoorSensor *>(sender());
-    Device *sensorDevice = m_outdoorSensors.value(sensor);
-    sensorDevice->setStateValue(outdoorSensorBatteryLevelStateTypeId, batteryLevel);
-    sensorDevice->setStateValue(outdoorSensorBatteryCriticalStateTypeId, (batteryLevel < 5));
+    HueMotionSensor *sensor = static_cast<HueMotionSensor *>(sender());
+    Device *sensorDevice = m_motionSensors.value(sensor);
+    sensorDevice->setStateValue(sensor->batteryLevelStateTypeId(), batteryLevel);
+    sensorDevice->setStateValue(sensor->batteryCriticalStateTypeId(), (batteryLevel < 5));
 }
 
-void DevicePluginPhilipsHue::onOutdoorSensorTemperatureChanged(double temperature)
+void DevicePluginPhilipsHue::onMotionSensorTemperatureChanged(double temperature)
 {
-    HueOutdoorSensor *sensor = static_cast<HueOutdoorSensor *>(sender());
-    Device *sensorDevice = m_outdoorSensors.value(sensor);
-    sensorDevice->setStateValue(outdoorSensorTemperatureStateTypeId, temperature);
+    HueMotionSensor *sensor = static_cast<HueMotionSensor *>(sender());
+    Device *sensorDevice = m_motionSensors.value(sensor);
+    sensorDevice->setStateValue(sensor->temperatureStateTypeId(), temperature);
 }
 
-void DevicePluginPhilipsHue::onOutdoorSensorPresenceChanged(bool presence)
+void DevicePluginPhilipsHue::onMotionSensorPresenceChanged(bool presence)
 {
-    HueOutdoorSensor *sensor = static_cast<HueOutdoorSensor *>(sender());
-    Device *sensorDevice = m_outdoorSensors.value(sensor);
-    sensorDevice->setStateValue(outdoorSensorIsPresentStateTypeId, presence);
-    if (presence) sensorDevice->setStateValue(outdoorSensorLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
+    HueMotionSensor *sensor = static_cast<HueMotionSensor *>(sender());
+    Device *sensorDevice = m_motionSensors.value(sensor);
+    sensorDevice->setStateValue(sensor->isPresentStateTypeId(), presence);
+    if (presence) sensorDevice->setStateValue(sensor->lastSeenTimeStateTypeId(), QDateTime::currentDateTime().toTime_t());
 }
 
-void DevicePluginPhilipsHue::onOutdoorSensorLightIntensityChanged(double lightIntensity)
+void DevicePluginPhilipsHue::onMotionSensorLightIntensityChanged(double lightIntensity)
 {
-    HueOutdoorSensor *sensor = static_cast<HueOutdoorSensor *>(sender());
-    Device *sensorDevice = m_outdoorSensors.value(sensor);
-    sensorDevice->setStateValue(outdoorSensorLightIntensityStateTypeId, lightIntensity);
+    HueMotionSensor *sensor = static_cast<HueMotionSensor *>(sender());
+    Device *sensorDevice = m_motionSensors.value(sensor);
+    sensorDevice->setStateValue(sensor->lightIntensityStateTypeId(), lightIntensity);
 }
 
 void DevicePluginPhilipsHue::refreshLight(Device *device)
@@ -1103,7 +1142,7 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
 
     // Create sensors if not already added
     QVariantMap sensorsMap = jsonDoc.toVariant().toMap();
-    QHash<QString, HueOutdoorSensor *> outdoorSensors;
+    QHash<QString, HueMotionSensor *> motionSensors;
     foreach (const QString &sensorId, sensorsMap.keys()) {
 
         QVariantMap sensorMap = sensorsMap.value(sensorId).toMap();
@@ -1132,7 +1171,8 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
             descriptor.setParams(params);
             emit autoDevicesAppeared(tapDeviceClassId, {descriptor});
             qCDebug(dcPhilipsHue()) << "Found hue tap:" << sensorMap << tapDeviceClassId;
-        } else if (model == "SML002") {
+
+        } else if (model == "SML001" || model == "SML002") {
             // Get the base uuid from this sensor
             QString baseUuid = HueDevice::getBaseUuid(uuid);
 
@@ -1140,52 +1180,69 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
             if (sensorMap.value("type").toString() == "ZLLTemperature") {
                 qCDebug(dcPhilipsHue()) << "Found temperature sensor from OurdoorSensor:" << baseUuid << sensorMap;
                 // Check if we haven outdoor sensor for this temperature sensor
-                if (outdoorSensors.keys().contains(baseUuid)) {
-                    HueOutdoorSensor *outdoorSensor = outdoorSensors.value(baseUuid);
-                    outdoorSensor->setTemperatureSensorUuid(uuid);
-                    outdoorSensor->setTemperatureSensorId(sensorId.toInt());
+                if (motionSensors.contains(baseUuid)) {
+                    HueMotionSensor *motionSensor = motionSensors.value(baseUuid);
+                    motionSensor->setTemperatureSensorUuid(uuid);
+                    motionSensor->setTemperatureSensorId(sensorId.toInt());
                 } else {
                     // Create an outdoor sensor
-                    HueOutdoorSensor *outdoorSensor = new HueOutdoorSensor(this);
-                    outdoorSensor->setModelId(model);
-                    outdoorSensor->setUuid(baseUuid);
-                    outdoorSensor->setTemperatureSensorUuid(uuid);
-                    outdoorSensor->setTemperatureSensorId(sensorId.toInt());
-                    outdoorSensors.insert(baseUuid, outdoorSensor);
+                    HueMotionSensor *motionSensor = nullptr;
+                    if (model == "SML001") {
+                        motionSensor = new HueIndoorSensor(this);
+                    } else {
+                        motionSensor = new HueOutdoorSensor(this);
+                    }
+                    motionSensor->setModelId(model);
+                    motionSensor->setUuid(baseUuid);
+                    motionSensor->setTemperatureSensorUuid(uuid);
+                    motionSensor->setTemperatureSensorId(sensorId.toInt());
+                    motionSensors.insert(baseUuid, motionSensor);
                 }
             }
 
             if (sensorMap.value("type").toString() == "ZLLPresence") {
                 qCDebug(dcPhilipsHue()) << "Found presence sensor from OurdoorSensor:" << baseUuid << sensorMap;
                 // Check if we haven outdoor sensor for this presence sensor
-                if (outdoorSensors.keys().contains(baseUuid)) {
-                    HueOutdoorSensor *outdoorSensor = outdoorSensors.value(baseUuid);
-                    outdoorSensor->setPresenceSensorUuid(uuid);
-                    outdoorSensor->setPresenceSensorId(sensorId.toInt());
+                if (motionSensors.contains(baseUuid)) {
+                    HueMotionSensor *motionSensor = motionSensors.value(baseUuid);
+                    motionSensor->setPresenceSensorUuid(uuid);
+                    motionSensor->setPresenceSensorId(sensorId.toInt());
                 } else {
                     // Create an outdoor sensor
-                    HueOutdoorSensor *outdoorSensor = new HueOutdoorSensor(this);
-                    outdoorSensor->setUuid(baseUuid);
-                    outdoorSensor->setPresenceSensorUuid(uuid);
-                    outdoorSensor->setPresenceSensorId(sensorId.toInt());
-                    outdoorSensors.insert(baseUuid, outdoorSensor);
+                    HueMotionSensor *motionSensor = nullptr;
+                    if (model == "SML001") {
+                        motionSensor = new HueIndoorSensor(this);
+                    } else {
+                        motionSensor = new HueOutdoorSensor(this);
+                    }
+                    motionSensor->setModelId(model);
+                    motionSensor->setUuid(baseUuid);
+                    motionSensor->setPresenceSensorUuid(uuid);
+                    motionSensor->setPresenceSensorId(sensorId.toInt());
+                    motionSensors.insert(baseUuid, motionSensor);
                 }
             }
 
             if (sensorMap.value("type").toString() == "ZLLLightLevel") {
                 qCDebug(dcPhilipsHue()) << "Found light sensor from OurdoorSensor:" << sensorMap;
                 // Check if we haven outdoor sensor for this light sensor
-                if (outdoorSensors.keys().contains(baseUuid)) {
-                    HueOutdoorSensor *outdoorSensor = outdoorSensors.value(baseUuid);
-                    outdoorSensor->setLightSensorUuid(uuid);
-                    outdoorSensor->setLightSensorId(sensorId.toInt());
+                if (motionSensors.contains(baseUuid)) {
+                    HueMotionSensor *motionSensor = motionSensors.value(baseUuid);
+                    motionSensor->setLightSensorUuid(uuid);
+                    motionSensor->setLightSensorId(sensorId.toInt());
                 } else {
                     // Create an outdoor sensor
-                    HueOutdoorSensor *outdoorSensor = new HueOutdoorSensor(this);
-                    outdoorSensor->setUuid(baseUuid);
-                    outdoorSensor->setLightSensorUuid(uuid);
-                    outdoorSensor->setLightSensorId(sensorId.toInt());
-                    outdoorSensors.insert(baseUuid, outdoorSensor);
+                    HueMotionSensor *motionSensor = nullptr;
+                    if (model == "SML001") {
+                        motionSensor = new HueIndoorSensor(this);
+                    } else {
+                        motionSensor = new HueOutdoorSensor(this);
+                    }
+                    motionSensor->setModelId(model);
+                    motionSensor->setUuid(baseUuid);
+                    motionSensor->setLightSensorUuid(uuid);
+                    motionSensor->setLightSensorId(sensorId.toInt());
+                    motionSensors.insert(baseUuid, motionSensor);
                 }
             }
         } else {
@@ -1194,28 +1251,43 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
     }
 
     // Create outdoor sensors if there are any new sensors found
-    foreach (HueOutdoorSensor *outdoorSensor, outdoorSensors.values()) {
-        QString baseUuid = outdoorSensors.key(outdoorSensor);
-        if (outdoorSensor->isValid()) {
-            DeviceDescriptor descriptor(outdoorSensorDeviceClassId, "Philips Hue Outdoor sensor", baseUuid, device->id());
-            ParamList params;
-            params.append(Param(outdoorSensorDeviceUuidParamTypeId, outdoorSensor->uuid()));
-            params.append(Param(outdoorSensorDeviceModelIdParamTypeId, outdoorSensor->modelId()));
-            params.append(Param(outdoorSensorDeviceSensorUuidTemperatureParamTypeId, outdoorSensor->temperatureSensorUuid()));
-            params.append(Param(outdoorSensorDeviceSensorIdTemperatureParamTypeId, outdoorSensor->temperatureSensorId()));
-            params.append(Param(outdoorSensorDeviceSensorUuidPresenceParamTypeId, outdoorSensor->presenceSensorUuid()));
-            params.append(Param(outdoorSensorDeviceSensorIdPresenceParamTypeId, outdoorSensor->presenceSensorId()));
-            params.append(Param(outdoorSensorDeviceSensorUuidLightParamTypeId, outdoorSensor->lightSensorUuid()));
-            params.append(Param(outdoorSensorDeviceSensorIdLightParamTypeId, outdoorSensor->lightSensorId()));
-            descriptor.setParams(params);
-
-            qCDebug(dcPhilipsHue()) << "Found new Outdoor sensor" << baseUuid << outdoorSensorDeviceClassId;
-            emit autoDevicesAppeared(outdoorSensorDeviceClassId, {descriptor});
+    foreach (HueMotionSensor *motionSensor, motionSensors.values()) {
+        QString baseUuid = motionSensors.key(motionSensor);
+        if (motionSensor->isValid()) {
+            if (motionSensor->modelId() == "SML001") {
+                DeviceDescriptor descriptor(motionSensorDeviceClassId, tr("Philips Hue Motion sensor"), baseUuid, device->id());
+                ParamList params;
+                params.append(Param(motionSensorDeviceUuidParamTypeId, motionSensor->uuid()));
+                params.append(Param(motionSensorDeviceModelIdParamTypeId, motionSensor->modelId()));
+                params.append(Param(motionSensorDeviceSensorUuidTemperatureParamTypeId, motionSensor->temperatureSensorUuid()));
+                params.append(Param(motionSensorDeviceSensorIdTemperatureParamTypeId, motionSensor->temperatureSensorId()));
+                params.append(Param(motionSensorDeviceSensorUuidPresenceParamTypeId, motionSensor->presenceSensorUuid()));
+                params.append(Param(motionSensorDeviceSensorIdPresenceParamTypeId, motionSensor->presenceSensorId()));
+                params.append(Param(motionSensorDeviceSensorUuidLightParamTypeId, motionSensor->lightSensorUuid()));
+                params.append(Param(motionSensorDeviceSensorIdLightParamTypeId, motionSensor->lightSensorId()));
+                descriptor.setParams(params);
+                qCDebug(dcPhilipsHue()) << "Found new motion sensor" << baseUuid << outdoorSensorDeviceClassId;
+                emit autoDevicesAppeared(motionSensorDeviceClassId, {descriptor});
+            } else if (motionSensor->modelId() == "SML002") {
+                DeviceDescriptor descriptor(outdoorSensorDeviceClassId, tr("Philips Hue Outdoor sensor"), baseUuid, device->id());
+                ParamList params;
+                params.append(Param(outdoorSensorDeviceUuidParamTypeId, motionSensor->uuid()));
+                params.append(Param(outdoorSensorDeviceModelIdParamTypeId, motionSensor->modelId()));
+                params.append(Param(outdoorSensorDeviceSensorUuidTemperatureParamTypeId, motionSensor->temperatureSensorUuid()));
+                params.append(Param(outdoorSensorDeviceSensorIdTemperatureParamTypeId, motionSensor->temperatureSensorId()));
+                params.append(Param(outdoorSensorDeviceSensorUuidPresenceParamTypeId, motionSensor->presenceSensorUuid()));
+                params.append(Param(outdoorSensorDeviceSensorIdPresenceParamTypeId, motionSensor->presenceSensorId()));
+                params.append(Param(outdoorSensorDeviceSensorUuidLightParamTypeId, motionSensor->lightSensorUuid()));
+                params.append(Param(outdoorSensorDeviceSensorIdLightParamTypeId, motionSensor->lightSensorId()));
+                descriptor.setParams(params);
+                qCDebug(dcPhilipsHue()) << "Found new outdoor sensor" << baseUuid << outdoorSensorDeviceClassId;
+                emit autoDevicesAppeared(outdoorSensorDeviceClassId, {descriptor});
+            }
         }
 
         // Clean up
-        outdoorSensors.remove(baseUuid);
-        outdoorSensor->deleteLater();
+        motionSensors.remove(baseUuid);
+        motionSensor->deleteLater();
     }
 }
 
@@ -1353,9 +1425,9 @@ void DevicePluginPhilipsHue::processSensorsRefreshResponse(Device *device, const
         }
 
         // Outdoor sensors
-        foreach (HueOutdoorSensor *outdoorSensor, m_outdoorSensors.keys()) {
-            if (outdoorSensor->hasSensor(sensorId.toInt()) && m_outdoorSensors.value(outdoorSensor)->parentId() == device->id()) {
-                outdoorSensor->updateStates(sensorMap);
+        foreach (HueMotionSensor *motionSensor, m_motionSensors.keys()) {
+            if (motionSensor->hasSensor(sensorId.toInt()) && m_motionSensors.value(motionSensor)->parentId() == device->id()) {
+                motionSensor->updateStates(sensorMap);
             }
         }
     }
@@ -1535,12 +1607,10 @@ void DevicePluginPhilipsHue::bridgeReachableChanged(Device *device, const bool &
                 }
             }
 
-            foreach (HueOutdoorSensor *outdoorSensor, m_outdoorSensors.keys()) {
-                if (m_outdoorSensors.value(outdoorSensor)->parentId() == device->id()) {
-                    outdoorSensor->setReachable(false);
-                    if (m_outdoorSensors.value(outdoorSensor)->deviceClassId() == outdoorSensorDeviceClassId) {
-                        m_outdoorSensors.value(outdoorSensor)->setStateValue(outdoorSensorConnectedStateTypeId, false);
-                    }
+            foreach (HueMotionSensor *motionSensor, m_motionSensors.keys()) {
+                if (m_motionSensors.value(motionSensor)->parentId() == device->id()) {
+                    motionSensor->setReachable(false);
+                    m_motionSensors.value(motionSensor)->setStateValue(motionSensor->connectedStateTypeId(), false);
                 }
             }
         }
@@ -1604,6 +1674,16 @@ bool DevicePluginPhilipsHue::sensorAlreadyAdded(const QString &uuid)
             } else if (device->paramValue(outdoorSensorDeviceSensorUuidPresenceParamTypeId).toString() == uuid) {
                 return true;
             } else if (device->paramValue(outdoorSensorDeviceSensorUuidTemperatureParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+        // Motion sensor consits out of 3 sensors
+        if (device->deviceClassId() == motionSensorDeviceClassId) {
+            if (device->paramValue(motionSensorDeviceSensorUuidLightParamTypeId).toString() == uuid) {
+                return true;
+            } else if (device->paramValue(motionSensorDeviceSensorUuidPresenceParamTypeId).toString() == uuid) {
+                return true;
+            } else if (device->paramValue(motionSensorDeviceSensorUuidTemperatureParamTypeId).toString() == uuid) {
                 return true;
             }
         }
