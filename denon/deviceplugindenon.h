@@ -67,6 +67,7 @@ private:
 
 private slots:
     void onPluginTimer();
+
     void onAVRConnectionChanged();
     void onAVRDataReceived(const QByteArray &data);
     void onAVRSocketError();

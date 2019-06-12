@@ -43,13 +43,17 @@
 
 #include "deviceplugindenon.h"
 #include "plugininfo.h"
+#include "plugin/device.h"
+#include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
 #include "network/upnp/upnpdiscoveryreply.h"
-#include "network/avahi/qtavahiservicebrowser.h"
+#include "platform/platformzeroconfcontroller.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
 
 #include <QDebug>
 #include <QStringList>
 #include <QJsonDocument>
+#include <QTimer>
 
 DevicePluginDenon::DevicePluginDenon()
 {
@@ -61,24 +65,8 @@ DeviceManager::DeviceError DevicePluginDenon::discoverDevices(const DeviceClassI
 
     if (deviceClassId == AVRX1000DeviceClassId) {
 
-        QList<DeviceDescriptor> deviceDescriptors;
-        foreach (const AvahiServiceEntry &service, hardwareManager()->avahiBrowser()->serviceEntries()) {
-            if (service.name().contains("AVR-X1000")) {
-                DeviceDescriptor deviceDescriptor(AVRX1000DeviceClassId, service.hostName().remove(".local"), service.hostAddress().toString());
-                ParamList params;
-                qCDebug(dcDenon) << "Avahi discovered device: " << service.name() << service.hostName() << service.serviceType();
-                params.append(Param(AVRX1000DeviceIpParamTypeId, service.hostAddress().toString()));
-                deviceDescriptor.setParams(params);
-                foreach (Device *existingDevice, myDevices()) {
-                    if (existingDevice->paramValue(AVRX1000DeviceIpParamTypeId).toString() == service.hostAddress().toString()) {
-                        deviceDescriptor.setDeviceId(existingDevice->id());
-                        break;
-                    }
-                }
-                deviceDescriptors.append(deviceDescriptor);
-            }
-        }
-        emit devicesDiscovered(AVRX1000DeviceClassId, deviceDescriptors);
+        UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices("urn:schemas-upnp-org:device:MediaRenderer:1", "nymea", 7000);
+        connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginDenon::onUpnpDiscoveryFinished);
         return DeviceManager::DeviceErrorAsync;
     }
 
@@ -497,7 +485,8 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
         return;
     }
 
-    QList<DeviceDescriptor> deviceDescriptors;
+    QList<DeviceDescriptor> heosDescriptors;
+    QList<DeviceDescriptor> avrDescriptors;
     foreach (const UpnpDeviceDescriptor &upnpDevice, reply->deviceDescriptors()) {
 
         if (upnpDevice.modelName().contains("HEOS")) {
@@ -517,11 +506,19 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
                 params.append(Param(heosDeviceIpParamTypeId, upnpDevice.hostAddress().toString()));
                 params.append(Param(heosDeviceSerialNumberParamTypeId, serialNumber));
                 descriptor.setParams(params);
-                deviceDescriptors.append(descriptor);
+                heosDescriptors.append(descriptor);
             }
         }
+        //if (upnpDevice.modelName().contains("")) {
+            qCDebug(dcDenon) << "UPnP device found:" << upnpDevice.modelDescription() << upnpDevice.friendlyName() << upnpDevice.hostAddress().toString() << upnpDevice.modelName() << upnpDevice.manufacturer() << upnpDevice.serialNumber();
+        //}
     }
-    emit devicesDiscovered(heosDeviceClassId, deviceDescriptors);
+    if (!heosDescriptors.isEmpty()) {
+        emit devicesDiscovered(heosDeviceClassId, heosDescriptors);
+    }
+    if (!avrDescriptors.isEmpty()) {
+        emit devicesDiscovered(AVRX1000DeviceClassId, avrDescriptors);
+    }
 }
 
 void DevicePluginDenon::onHeosConnectionChanged()
