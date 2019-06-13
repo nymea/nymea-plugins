@@ -4,12 +4,11 @@ CONFIG += plugin
 QMAKE_CXXFLAGS += -Werror -std=c++11 -g
 QMAKE_LFLAGS += -std=c++11
 
-INCLUDEPATH += /usr/include/nymea
-LIBS += -lnymea
+CONFIG += link_pkgconfig
+PKGCONFIG += nymea
+
 HEADERS += $${OUT_PWD}/plugininfo.h \
            $${OUT_PWD}/extern-plugininfo.h
-
-PLUGIN_PATH=/usr/lib/$$system('dpkg-architecture -q DEB_HOST_MULTIARCH')/nymea/plugins/
 
 # Check if this is a snap build
 snappy{
@@ -55,6 +54,6 @@ translations.files = $$[QT_SOURCE_TREE]/translations/*.qm
 TRANSLATIONS += $$files($$[QT_SOURCE_TREE]/translations/*.ts, true)
 
 # Install plugin
-target.path = $$PLUGIN_PATH
+target.path = $$[QT_INSTALL_LIBS]/nymea/plugins/
 INSTALLS += target translations
 

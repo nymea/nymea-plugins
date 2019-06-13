@@ -14,9 +14,9 @@ The name of the DeviceClass (31b00639-8904-4522-84ed-54c46a54c63c)</extracomment
     </message>
     <message>
         <location filename="../plugininfo.h" line="38"/>
-        <source>guh GmbH</source>
+        <source>nymea</source>
         <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
-        <translation>guh GmbH</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugininfo.h" line="41"/>
