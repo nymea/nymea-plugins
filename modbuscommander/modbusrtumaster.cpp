@@ -33,24 +33,18 @@ ModbusRTUMaster::ModbusRTUMaster(QString serialPort, int baudrate, QString parit
     m_dataBits(dataBits),
     m_stopBits(stopBits)
 {
+    QModbusRtuSerialMaster *modbusRTUMaster = new QModbusRtuSerialMaster(this);
+    modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialPortNameParameter, serialPort);
+    modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baudrate);
+    modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, 8);
+    modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, 1);
+    //modbusRTUMaster->setTimeout(100);
+    //modbusRTUMaster->setNumberOfRetries(1);
 }
 
 ModbusRTUMaster::~ModbusRTUMaster()
 {
-    if (m_mb == nullptr) {
-        qCWarning(dcModbusCommander()) << "Error m_mb was nullpointer";
-        return;
-    }
-    if(!isConnected()){
-        qCWarning(dcModbusCommander()) << "Error serial interface not available";
-        // probably the serial port was disconnected,
-        /* NOTE: freeing the modbus instance would lead to a segfault
-         * this way of handling the modbus instance leaks memory, but only if the device was disconnected before.
-         * */
-        return;
-    }
-    modbus_close(m_mb);
-    modbus_free(m_mb);
+
 }
 
 QString ModbusRTUMaster::serialPort()
@@ -143,27 +137,13 @@ bool ModbusRTUMaster::setRegister(int slaveAddress, int registerAddress, int dat
     return true;
 }
 
-bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress, bool *result)
+bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress)
 {
     if (!m_mb) {
         if (!createInterface())
             return false;
     }
 
-    if (!isConnected())
-        return false;
-
-    if(modbus_set_slave(m_mb, slaveAddress) == -1){
-        qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return false;
-    }
-
-    uint8_t data;
-    if (modbus_read_bits(m_mb, coilAddress, 1, &data) == -1){
-        qCWarning(dcModbusCommander()) << "Could not read bits" << coilAddress << "Reason:"<< modbus_strerror(errno);
-        return false;
-    }
-    *result = static_cast<bool>(data);
     return true;
 }
 

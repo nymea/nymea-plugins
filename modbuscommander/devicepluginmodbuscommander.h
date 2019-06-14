@@ -51,6 +51,7 @@ public:
 private:
     PluginTimer *m_refreshTimer = nullptr;
     QList<QString> m_usedSerialPorts;
+
     QHash<Device *, ModbusRTUMaster *> m_modbusRTUMasters;
     QHash<Device *, ModbusTCPMaster *> m_modbusTCPMasters;
 
@@ -59,8 +60,15 @@ private:
 
 private slots:
     void onRefreshTimer();
+    void onReconnectTimer();
+
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 
+    void onConnectionStateChanged(bool status);
+    void onReceivedCoil(int slaveAddress, int modbusRegister, bool value);
+    void onReceivedDiscreteInput(int slaveAddress, int modbusRegister, bool value);
+    void onReceivedHoldingRegister(int slaveAddress, int modbusRegister, int value);
+    void onReceivedInputRegister(int slaveAddress, int modbusRegister, int value);
 };
 
 #endif // DEVICEPLUGINMODBUSCOMMANDER_H

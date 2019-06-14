@@ -2,10 +2,11 @@ include(../plugins.pri)
 
 TARGET = $$qtLibraryTarget(nymea_devicepluginmodbuscommander)
 
-QT += serialport
-QT += network
+QT += \
+    serialport \
+    network \
+    serialbus \
 
-LIBS += -lmodbus
 
 SOURCES += \
     devicepluginmodbuscommander.cpp \  

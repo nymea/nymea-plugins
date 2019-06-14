@@ -20,8 +20,8 @@
             "deviceClasses": [
                 {
                     "id": "35d3e7dc-1f33-4b8c-baa3-eb10b4f157a7",
-                    "name": "modbusTCPInterface",
-                    "displayName": "Modbus TCP Interface",
+                    "name": "modbusTCPClient",
+                    "displayName": "Modbus TCP client",
                     "createMethods": ["user"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
@@ -53,129 +53,9 @@
                     ]
                 },
                 {
-                    "id": "f53524ea-1d06-40a9-b7a4-041297b21e84",
-                    "name": "modbusTCPWrite",
-                    "displayName": "Modbus TCP Write",
-                    "createMethods": ["discovery"],
-                    "interfaces": ["connectable"],
-                    "paramTypes": [
-                        {
-                            "id": "556f13e6-3fc3-462d-9ce1-6f8b9594d3fd",
-                            "name": "parentId",
-                            "displayName": "Parent Id",
-                            "type": "QString",
-                            "defaultValue": ""
-                        },
-                        {
-                            "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
-                            "name": "slaveAddress",
-                            "displayName": "slave address",
-                            "type": "int",
-                            "defaultValue": 180
-                        },
-                        {
-                            "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
-                            "name": "registerAddress",
-                            "displayName": "register address",
-                            "type": "int",
-                            "defaultValue": 100
-                        },
-                        {
-                            "id": "4825b103-edaa-460b-8183-820008c4d73c",
-                            "name": "registerType",
-                            "displayName": "Register Type",
-                            "type": "QString",
-                            "allowedValues": [
-                                "coil",
-                                "register"
-                            ],
-                            "defaultValue": "coil"
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f012",
-                            "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connection status changed",
-                            "type": "bool",
-                            "defaultValue": false
-                        },
-                        {
-                            "id": "1cd4cd53-3043-4ed9-9ba8-62985000c599",
-                            "name": "data",
-                            "displayName": "data",
-                            "displayNameAction": "write data",
-                            "displayNameEvent": "data received",
-                            "type": "int",
-                            "writable": true,
-                            "defaultValue": 0
-                        }
-                    ]
-                },
-                {
-                    "id": "d7a15b39-48d3-4591-bdad-ec5e799aa6e5",
-                    "name": "modbusTCPRead",
-                    "displayName": "Modbus TCP Read",
-                    "createMethods": ["discovery"],
-                    "interfaces": ["connectable"],
-                    "paramTypes": [
-                        {
-                            "id": "556f13e6-3fc3-462d-9ce1-6f8b9594d3fd",
-                            "name": "parentId",
-                            "displayName": "Parent Id",
-                            "type": "QString",
-                            "defaultValue": ""
-                        },
-                        {
-                            "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
-                            "name": "slaveAddress",
-                            "displayName": "slave address",
-                            "type": "int",
-                            "defaultValue": 180
-                        },
-                        {
-                            "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
-                            "name": "registerAddress",
-                            "displayName": "register address",
-                            "type": "int",
-                            "defaultValue": 100
-                        },
-                        {
-                            "id": "4825b103-edaa-460b-8183-820008c4d73c",
-                            "name": "registerType",
-                            "displayName": "register type",
-                            "type": "QString",
-                            "allowedValues": [
-                                "coil",
-                                "register"
-                            ],
-                            "defaultValue": "coil"
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f012",
-                            "name": "connected",
-                            "displayName": "connected",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "displayNameEvent": "connection status changed"
-                        },
-                        {
-                            "id": "c772bd7f-6e51-4b28-b182-3b979c1298ce",
-                            "name": "readData",
-                            "displayName": "data",
-                            "type": "int",
-                            "defaultValue": 0,
-                            "displayNameEvent": "data received"
-                        }
-                    ]
-                },
-                {
                     "id": "776df314-6186-4eb5-b824-f0d916f6d9c3",
                     "name": "modbusRTUInterface",
-                    "displayName": "Modbus RTU Interface",
+                    "displayName": "Modbus RTU client",
                     "createMethods": ["discovery", "user"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
@@ -234,10 +114,10 @@
                     ]
                 },
                 {
-                    "id": "ae7e5eeb-fd81-49ed-83e1-dbfefed70dea",
-                    "name": "modbusRTURead",
-                    "displayName": "Modbus RTU Read",
-                    "createMethods": ["discovery", "user"],
+                    "id": "f53524ea-1d06-40a9-b7a4-041297b21e84",
+                    "name": "discreteInput",
+                    "displayName": "Discrete input",
+                    "createMethods": ["discovery"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
@@ -248,22 +128,54 @@
                             "defaultValue": ""
                         },
                         {
+                            "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
+                            "name": "slaveAddress",
+                            "displayName": "slave address",
+                            "type": "int",
+                            "defaultValue": 180
+                        },
+                        {
                             "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
                             "name": "registerAddress",
                             "displayName": "register address",
                             "type": "int",
                             "defaultValue": 100
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f012",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connection status changed",
+                            "type": "bool",
+                            "defaultValue": false
                         },
                         {
-                            "id": "4825b103-edaa-460b-8183-820008c4d73c",
-                            "name": "registerType",
-                            "displayName": "register type",
+                            "id": "1cd4cd53-3043-4ed9-9ba8-62985000c599",
+                            "name": "value",
+                            "displayName": "value",
+                            "displayNameAction": "write value",
+                            "displayNameEvent": "value changed",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "d7a15b39-48d3-4591-bdad-ec5e799aa6e5",
+                    "name": "coil",
+                    "displayName": "Coil",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "556f13e6-3fc3-462d-9ce1-6f8b9594d3fd",
+                            "name": "parentId",
+                            "displayName": "Parent Id",
                             "type": "QString",
-                            "allowedValues": [
-                                "coil",
-                                "register"
-                            ],
-                            "defaultValue": "coil"
+                            "defaultValue": ""
                         },
                         {
                             "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
@@ -271,6 +183,13 @@
                             "displayName": "slave address",
                             "type": "int",
                             "defaultValue": 180
+                        },
+                        {
+                            "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
+                            "name": "registerAddress",
+                            "displayName": "register address",
+                            "type": "int",
+                            "defaultValue": 100
                         }
                     ],
                     "stateTypes": [
@@ -284,19 +203,19 @@
                         },
                         {
                             "id": "c772bd7f-6e51-4b28-b182-3b979c1298ce",
-                            "name": "readData",
-                            "displayName": "data",
-                            "type": "int",
-                            "defaultValue": 0,
-                            "displayNameEvent": "data received"
+                            "name": "value",
+                            "displayName": "value",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "value changed"
                         }
                     ]
                 },
                 {
-                    "id": "258ffd84-c67a-4d8d-bca9-2286425860ca",
-                    "name": "modbusRTUWrite",
-                    "displayName": "Modbus RTU Write",
-                    "createMethods": ["discovery", "user"],
+                    "id": "e4c34050-d115-440f-b332-63d36e3e12b8",
+                    "name": "holdingRegister",
+                    "displayName": "Holding register",
+                    "createMethods": ["discovery"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
@@ -307,29 +226,18 @@
                             "defaultValue": ""
                         },
                         {
-                            "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
-                            "name": "registerAddress",
-                            "displayName": "register address",
-                            "type": "int",
-                            "defaultValue": 100
-                        },
-                        {
-                            "id": "4825b103-edaa-460b-8183-820008c4d73c",
-                            "name": "registerType",
-                            "displayName": "Register Type",
-                            "type": "QString",
-                            "allowedValues": [
-                                "coil",
-                                "register"
-                            ],
-                            "defaultValue": "coil"
-                        },
-                        {
                             "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
                             "name": "slaveAddress",
                             "displayName": "slave address",
                             "type": "int",
                             "defaultValue": 180
+                        },
+                        {
+                            "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
+                            "name": "registerAddress",
+                            "displayName": "register address",
+                            "type": "int",
+                            "defaultValue": 100
                         }
                     ],
                     "stateTypes": [
@@ -342,14 +250,62 @@
                             "displayNameEvent": "connection status changed"
                         },
                         {
-                            "id": "1cd4cd53-3043-4ed9-9ba8-62985000c599",
+                            "id": "eabe2d1b-abe5-4063-adab-3cdd8500b286",
                             "name": "data",
                             "displayName": "data",
-                            "displayNameAction": "write data",
-                            "displayNameEvent": "data received",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "displayNameEvent": "data received"
+                        }
+                    ]
+                },
+                {
+                    "id": "61a2382c-3d9f-41a1-a2fd-27b2af203c56",
+                    "name": "holdingRegister",
+                    "displayName": "Holding register",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "556f13e6-3fc3-462d-9ce1-6f8b9594d3fd",
+                            "name": "parentId",
+                            "displayName": "Parent Id",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "2bd0910c-07b3-46bf-b66c-7c513d9ef954",
+                            "name": "slaveAddress",
+                            "displayName": "slave address",
+                            "type": "int",
+                            "defaultValue": 180
+                        },
+                        {
+                            "id": "9d40c4ce-d251-43bb-a55e-a8780567bbac",
+                            "name": "registerAddress",
+                            "displayName": "register address",
+                            "type": "int",
+                            "defaultValue": 100
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f012",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connection status changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "585cc4fc-07da-415f-a176-12f3baeef025",
+                            "name": "value",
+                            "displayName": "value",
+                            "displayNameAction": "write value",
+                            "displayNameEvent": "value changed",
                             "type": "int",
                             "writable": true,
-                            "defaultValue": 0
+                            "defaultValue": false
                         }
                     ]
                 }

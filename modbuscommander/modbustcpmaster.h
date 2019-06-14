@@ -25,32 +25,53 @@
 
 #include <QObject>
 #include <QHostAddress>
-#include <modbus/modbus.h>
+#include <QtSerialBus>
+#include <QTimer>
 
 class ModbusTCPMaster : public QObject
 {
     Q_OBJECT
 public:
-    explicit ModbusTCPMaster(QHostAddress IPv4Address, int port, QObject *parent = nullptr);
+    explicit ModbusTCPMaster(QString ipAddress, int port, QObject *parent = nullptr);
     ~ModbusTCPMaster();
 
-    bool createInterface();
-    bool isConnected();
+    bool connectDevice();
 
-    bool getCoil(int slaveAddress, int coilAddress, bool *result);
-    bool getRegister(int slaveAddress, int registerAddress, int *result);
-    bool setCoil(int slaveAddress, int coilAddress, bool status);
-    bool setRegister(int slaveAddress, int registerAddress, int data);
-    QHostAddress ipv4Address();
+    bool getCoil(int slaveAddress, int registerAddress);
+    bool getDiscreteInput(int slaveAddress, int registerAddress);
+    bool getInputRegister(int slaveAddress, int registerAddress);
+    bool getHoldingRegister(int slaveAddress, int registerAddress);
+
+    bool setCoil(int slaveAddress, int registerAddress, bool status);
+    bool setHoldingRegister(int slaveAddress, int registerAddress, int data);
+
+    QString ipv4Address();
     int port();
-    bool setIPv4Address(QHostAddress IPv4Address);
+    bool setIPv4Address(QString ipAddress);
     bool setPort(int port);
 
-private:
-    modbus_t *m_mb;
 
-    QHostAddress m_IPv4Address;
+private:
+    QTimer *m_reconnectTimer = nullptr;
+    QModbusTcpClient *m_modbusTcpClient;
+
+    QString m_IPv4Address;
     int m_port;
+
+private slots:
+    void onReplyFinished();
+    void onReplyErrorOccured(QModbusDevice::Error error);
+    void onReconnectTimer();
+
+    void onModbusErrorOccurred(QModbusDevice::Error error);
+    void onModbusStateChanged(QModbusDevice::State state);
+
+signals:
+    void connectionStateChanged(bool status);
+    void receivedCoil(int slaveAddress, int modbusRegister, bool value);
+    void receivedDiscreteInput(int slaveAddress, int modbusRegister, bool value);
+    void receivedHoldingRegister(int slaveAddress, int modbusRegister, int value);
+    void receivedInputRegister(int slaveAddress, int modbusRegister, int value);
 };
 
 #endif // MODBUSTCPMASTER_H

@@ -24,7 +24,7 @@
 #define MODBUSRTUMASTER_H
 
 #include <QObject>
-#include <modbus/modbus.h>
+#include <QtSerialBus>
 
 class ModbusRTUMaster : public QObject
 {
@@ -44,7 +44,7 @@ public:
     QString serialPort();
 
 private:
-    modbus_t *m_mb;
+    QModbusRtuSerialMaster *m_modbusRtuSerialMaster;
 
     QString m_serialPort;
     int m_baudrate;
