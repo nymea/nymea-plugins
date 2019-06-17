@@ -74,8 +74,7 @@ DeviceManager::DeviceSetupStatus DevicePluginFlowercare::setupDevice(Device *dev
 
     if (device->deviceClassId() == flowerCareDeviceClassId) {
         QBluetoothAddress address = QBluetoothAddress(device->paramValue(flowerCareDeviceMacParamTypeId).toString());
-        QString name = device->paramValue(flowerCareDeviceNameParamTypeId).toString();
-        QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
+        QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, device->name(), 0);
 
         BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
         FlowerCare *flowerCare = new FlowerCare(bluetoothDevice, this);
@@ -167,9 +166,8 @@ void DevicePluginFlowercare::onBluetoothDiscoveryFinished()
         qCDebug(dcFlowerCare()) << "Discovered device" << deviceInfo.name();
         if (deviceInfo.name().contains("Flower care")) {
             if (!verifyExistingDevices(deviceInfo)) {
-                DeviceDescriptor descriptor(flowerCareDeviceClassId, "Flower Care", deviceInfo.address().toString());
+                DeviceDescriptor descriptor(flowerCareDeviceClassId, deviceInfo.name(), deviceInfo.address().toString());
                 ParamList params;
-                params.append(Param(flowerCareDeviceNameParamTypeId, deviceInfo.name()));
                 params.append(Param(flowerCareDeviceMacParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 foreach (Device *existingDevice, myDevices()) {
