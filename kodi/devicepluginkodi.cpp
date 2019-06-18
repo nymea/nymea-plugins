@@ -20,47 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page kodi.html
-    \title Kodi - Media Center
-    \brief Plugin for the Kodi media center.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows you to controll the media center \l{http://kodi.tv/}{Kodi}. If you want to discover
-    and control Kodi with nymea, you need to activate the remote access and the UPnP service.
-
-    \chapter "Activate UPnP"
-    In order to discover Kodi in the network, you need to activate the UPnP serive in the Kodi settings:
-
-    \section2 Settings
-    \image kodi_settings.png
-
-    \section2 Settings \unicode{0x2192} Services
-    \image kodi_services.png
-
-    \section2 Settings \unicode{0x2192} Services  \unicode{0x2192} UPnP
-    Activate all options.
-    \image kodi_upnp.png
-
-
-    \chapter Activate "Remote Control"
-    In order to control Kodi over the network with nymea, you need to activate the remote control permissions:
-
-    \section2 Settings \unicode{0x2192} Services  \unicode{0x2192} Remote Control
-    Activate all options.
-    \image kodi_remote.png
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/kodi/devicepluginkodi.json
-*/
-
 #include "devicepluginkodi.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
