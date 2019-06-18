@@ -24,7 +24,7 @@
 #ifndef DEVICEPLUGINPHILIPSHUE_H
 #define DEVICEPLUGINPHILIPSHUE_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "huebridge.h"
 #include "huelight.h"
 #include "hueremote.h"
@@ -48,13 +48,13 @@ public:
     ~DevicePluginPhilipsHue();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
+    Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action);
+    Device::DeviceError executeAction(Device *device, const Action &action);
 
 private slots:
     void lightStateChanged();

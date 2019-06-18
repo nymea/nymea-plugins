@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGININTERTECHNO_H
 #define DEVICEPLUGININTERTECHNO_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 class DevicePluginIntertechno : public DevicePlugin
 {
@@ -38,7 +38,7 @@ public:
     void radioData(const QList<int> &rawData);
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 };
 

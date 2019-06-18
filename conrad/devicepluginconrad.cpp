@@ -43,8 +43,7 @@
 
 #include "devicepluginconrad.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "hardware/radio433/radio433.h"
 
@@ -57,19 +56,19 @@ DevicePluginConrad::DevicePluginConrad()
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginConrad::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginConrad::setupDevice(Device *device)
 {
     if (device->deviceClassId() == conradShutterDeviceClassId)
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
 
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
-DeviceManager::DeviceError DevicePluginConrad::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginConrad::executeAction(Device *device, const Action &action)
 {
 
     if (!hardwareManager()->radio433()->available()) {
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
 
     QList<int> rawData;
@@ -85,7 +84,7 @@ DeviceManager::DeviceError DevicePluginConrad::executeAction(Device *device, con
         binCode = "10100000";
         repetitions = 20;
     } else {
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     // append ID
@@ -124,9 +123,9 @@ DeviceManager::DeviceError DevicePluginConrad::executeAction(Device *device, con
         qCDebug(dcConrad) << "Transmitted successfully" << device->name() << action.actionTypeId();
     }else{
         qCWarning(dcConrad) << "Could not transmitt" << pluginName() << device->name() << action.actionTypeId();
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }
 
 void DevicePluginConrad::radioData(const QList<int> &rawData)

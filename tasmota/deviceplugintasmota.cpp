@@ -105,7 +105,7 @@ void DevicePluginTasmota::init()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device)
 {
     if (m_ipAddressParamTypeMap.contains(device->deviceClassId())) {
         ParamTypeId ipAddressParamTypeId = m_ipAddressParamTypeMap.value(device->deviceClassId());
@@ -113,12 +113,12 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
         QHostAddress deviceAddress = QHostAddress(device->paramValue(ipAddressParamTypeId).toString());
         if (deviceAddress.isNull()) {
             qCWarning(dcTasmota) << "Not a valid IP address given for IP address parameter";
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
         MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(device->id(), deviceAddress);
         if (!channel) {
             qCWarning(dcTasmota) << "Failed to create MQTT channel.";
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         QUrl url(QString("http://%1/cm").arg(deviceAddress.toString()));
@@ -149,7 +149,7 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
             if (reply->error() != QNetworkReply::NoError) {
                 qCDebug(dcTasmota) << "Sonoff device setup call failed:" << reply->error() << reply->errorString() << reply->readAll();
                 hardwareManager()->mqttProvider()->releaseChannel(channel);
-                emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+                emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
                 return;
             }
             m_mqttChannels.insert(device, channel);
@@ -158,7 +158,7 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
             connect(channel, &MqttChannel::publishReceived, this, &DevicePluginTasmota::onPublishReceived);
 
             qCDebug(dcTasmota) << "Sonoff setup complete";
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
 
             foreach (Device *child, myDevices()) {
                 if (child->parentId() == device->id()) {
@@ -218,18 +218,18 @@ DeviceManager::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device
                 emit autoDevicesAppeared(tasmotaShutterDeviceClassId, deviceDescriptors);
             }
         });
-        return DeviceManager::DeviceSetupStatusAsync;
+        return Device::DeviceSetupStatusAsync;
     }
 
     if (m_connectedStateTypeMap.contains(device->deviceClassId())) {
         Device* parentDevice = myDevices().findById(device->parentId());
         StateTypeId connectedStateTypeId = m_connectedStateTypeMap.value(device->deviceClassId());
         device->setStateValue(m_connectedStateTypeMap.value(device->deviceClassId()), parentDevice->stateValue(connectedStateTypeId));
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     qCWarning(dcTasmota) << "Unhandled DeviceClass in setupDevice" << device->deviceClassId();
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginTasmota::deviceRemoved(Device *device)
@@ -242,7 +242,7 @@ void DevicePluginTasmota::deviceRemoved(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginTasmota::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginTasmota::executeAction(Device *device, const Action &action)
 {
     if (m_powerStateTypeMap.contains(device->deviceClassId())) {
         Device *parentDev = myDevices().findById(device->parentId());
@@ -252,7 +252,7 @@ DeviceManager::DeviceError DevicePluginTasmota::executeAction(Device *device, co
         qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString() << (action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
         channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString().toLower(), action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
         device->setStateValue(m_powerStateTypeMap.value(device->deviceClassId()), action.param(powerActionParamTypeId).value().toBool());
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     }
     if (device->deviceClassId() == tasmotaShutterDeviceClassId) {
         Device *parentDev = myDevices().findById(device->parentId());
@@ -275,10 +275,10 @@ DeviceManager::DeviceError DevicePluginTasmota::executeAction(Device *device, co
             qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "OFF";
             channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "OFF");
         }
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     }
     qCWarning(dcTasmota) << "Unhandled execute action call for device" << device;
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginTasmota::onClientConnected(MqttChannel *channel)

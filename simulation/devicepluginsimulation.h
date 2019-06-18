@@ -22,8 +22,7 @@
 #ifndef DEVICEPLUGINSIMMULATION_H
 #define DEVICEPLUGINSIMMULATION_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
 #include "plugintimer.h"
 
 #include <QDateTime>
@@ -41,9 +40,9 @@ public:
     ~DevicePluginSimulation();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     PluginTimer *m_pluginTimer20Seconds = nullptr;

@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINEQ3_H
 #define DEVICEPLUGINEQ3_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "maxcubediscovery.h"
 #include "plugintimer.h"
 #include "eqivabluetooth.h"
@@ -44,11 +44,11 @@ public:
     ~DevicePluginEQ3();
 
     void init() override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
 
     void startMonitoringAutoDevices() override;
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
 private:
@@ -65,7 +65,7 @@ private:
     QHash<int, ActionId> m_commandMap;
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action);
+    Device::DeviceError executeAction(Device *device, const Action &action);
 
 private slots:
     void onPluginTimer();

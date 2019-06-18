@@ -25,7 +25,7 @@
 
 #include "tvdevice.h"
 #include "plugintimer.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "network/upnp/upnpdevicedescriptor.h"
 
 class DevicePluginLgSmartTv : public DevicePlugin
@@ -40,14 +40,14 @@ public:
     ~DevicePluginLgSmartTv();
 
     void init() override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
     void postSetupDevice(Device *device) override;
 
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
-    DeviceManager::DeviceError displayPin(const PairingTransactionId &pairingTransactionId, const DeviceDescriptor &deviceDescriptor) override;
-    DeviceManager::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError displayPin(const PairingTransactionId &pairingTransactionId, const DeviceDescriptor &deviceDescriptor) override;
+    Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;

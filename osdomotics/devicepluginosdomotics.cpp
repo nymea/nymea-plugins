@@ -44,7 +44,7 @@
 */
 
 #include "devicepluginosdomotics.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "network/networkaccessmanager.h"
 
@@ -67,7 +67,7 @@ void DevicePluginOsdomotics::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginOsdomotics::onPluginTimer);
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginOsdomotics::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginOsdomotics::setupDevice(Device *device)
 {
     if (device->deviceClassId() == rplRouterDeviceClassId) {
         qCDebug(dcOsdomotics) << "Setup RPL router" << device->paramValue(rplRouterDeviceRplHostParamTypeId).toString();
@@ -75,7 +75,7 @@ DeviceManager::DeviceSetupStatus DevicePluginOsdomotics::setupDevice(Device *dev
 
         if (address.isNull()) {
             qCWarning(dcOsdomotics) << "Got invalid address" << device->paramValue(rplRouterDeviceRplHostParamTypeId).toString();
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         QUrl url;
@@ -86,13 +86,13 @@ DeviceManager::DeviceSetupStatus DevicePluginOsdomotics::setupDevice(Device *dev
         connect(reply, &QNetworkReply::finished, this, &DevicePluginOsdomotics::onNetworkReplyFinished);
         m_asyncSetup.insert(reply, device);
 
-        return DeviceManager::DeviceSetupStatusAsync;
+        return Device::DeviceSetupStatusAsync;
     } else if (device->deviceClassId() == merkurNodeDeviceClassId) {
         qCDebug(dcOsdomotics) << "Setup Merkur node" << device->paramValue(merkurNodeDeviceHostParamTypeId).toString();
         device->setParentId(DeviceId(device->paramValue(merkurNodeDeviceRouterParamTypeId).toString()));
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginOsdomotics::deviceRemoved(Device *device)
@@ -105,7 +105,7 @@ void DevicePluginOsdomotics::postSetupDevice(Device *device)
     updateNode(device);
 }
 
-DeviceManager::DeviceError DevicePluginOsdomotics::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginOsdomotics::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == merkurNodeDeviceClassId) {
         if (action.actionTypeId() == merkurNodeToggleLedActionTypeId) {
@@ -122,17 +122,17 @@ DeviceManager::DeviceError DevicePluginOsdomotics::executeAction(Device *device,
                 if (reply->error() != CoapReply::NoError) {
                     qCWarning(dcOsdomotics) << "CoAP reply finished with error" << reply->errorString();
                     reply->deleteLater();
-                    return DeviceManager::DeviceErrorHardwareNotAvailable;
+                    return Device::DeviceErrorHardwareNotAvailable;
                 }
             }
 
             m_toggleLightRequests.insert(reply, action);
 
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginOsdomotics::scanNodes(Device *device)
@@ -243,7 +243,7 @@ void DevicePluginOsdomotics::onNetworkReplyFinished()
         // check HTTP status code
         if (status != 200) {
             qCWarning(dcOsdomotics) << "Setup reply HTTP error:" << reply->errorString();
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             reply->deleteLater();
             return;
         }
@@ -251,14 +251,14 @@ void DevicePluginOsdomotics::onNetworkReplyFinished()
         QByteArray data = reply->readAll();
         parseNodes(device, data);
 
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
     } else if (m_asyncNodeRescans.contains(reply)) {
         Device *device = m_asyncSetup.take(reply);
 
         // check HTTP status code
         if (status != 200) {
             qCWarning(dcOsdomotics) << "Setup reply HTTP error:" << reply->errorString();
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             reply->deleteLater();
             return;
         }
@@ -296,11 +296,11 @@ void DevicePluginOsdomotics::coapReplyFinished(CoapReply *reply)
         if (reply->error() != CoapReply::NoError) {
             qCWarning(dcOsdomotics) << "CoAP toggle reply finished with error" << reply->errorString();
             reply->deleteLater();
-            emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
+            emit actionExecutionFinished(action.id(), Device::DeviceErrorHardwareFailure);
             return;
         }
 
-        emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
+        emit actionExecutionFinished(action.id(), Device::DeviceErrorNoError);
     } else if (m_updateRequests.contains(reply)) {
         Device *device = m_updateRequests.take(reply);
         if (reply->error() != CoapReply::NoError) {

@@ -24,7 +24,7 @@
 #ifndef DEVICEPLUGINNETWORKDETECTOR_H
 #define DEVICEPLUGINNETWORKDETECTOR_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "host.h"
 #include "discovery.h"
 #include "plugintimer.h"
@@ -48,8 +48,8 @@ public:
 
     void init() override;
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     void deviceRemoved(Device *device) override;
 
 

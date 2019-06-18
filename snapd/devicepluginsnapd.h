@@ -23,8 +23,7 @@
 #ifndef DEVICEPLUGINSNAPD_H
 #define DEVICEPLUGINSNAPD_H
 
-#include "devicemanager.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "plugintimer.h"
 
 #include <QDebug>
@@ -49,8 +48,8 @@ public:
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
-	DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;    
-	DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+	Device::DeviceSetupStatus setupDevice(Device *device) override;    
+	Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     SnapdControl *m_snapdControl = nullptr;

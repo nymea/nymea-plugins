@@ -188,7 +188,7 @@ void DevicePluginAnel::init()
 {
 }
 
-DeviceManager::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(deviceClassId)
     Q_UNUSED(params)
@@ -203,7 +203,7 @@ DeviceManager::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId
     if (len != discoveryString.length()) {
         searchSocket->deleteLater();
         qCWarning(dcAnelElektronik()) << "Error sending discovery";
-        return DeviceManager::DeviceErrorHardwareFailure;
+        return Device::DeviceErrorHardwareFailure;
     }
 
     QTimer::singleShot(2000, this, [this, searchSocket, deviceClassId](){
@@ -252,10 +252,10 @@ DeviceManager::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId
         emit devicesDiscovered(deviceClassId, descriptorList);
         searchSocket->deleteLater();
     });
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginAnel::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginAnel::setupDevice(Device *device)
 {
     if (device->deviceClassId() == netPwrCtlHomeDeviceClassId
             || device->deviceClassId() == netPwrCtlProDeviceClassId) {
@@ -272,11 +272,11 @@ DeviceManager::DeviceSetupStatus DevicePluginAnel::setupDevice(Device *device)
             m_pollTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
             connect(m_pollTimer, &PluginTimer::timeout, this, &DevicePluginAnel::refreshStates);
         }
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     qCWarning(dcAnelElektronik) << "Unhandled DeviceClass in setupDevice" << device->deviceClassId();
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginAnel::deviceRemoved(Device *device)
@@ -288,7 +288,7 @@ void DevicePluginAnel::deviceRemoved(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginAnel::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginAnel::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == socketDeviceClassId) {
         if (action.actionTypeId() == socketPowerActionTypeId) {
@@ -310,15 +310,15 @@ DeviceManager::DeviceError DevicePluginAnel::executeAction(Device *device, const
             connect(reply, &QNetworkReply::finished, device, [this, reply, action](){
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcAnelElektronik()) << "Execute action failed:" << reply->error() << reply->errorString();
-                    emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareNotAvailable);
+                    emit actionExecutionFinished(action.id(), Device::DeviceErrorHardwareNotAvailable);
                 }
                 qCDebug(dcAnelElektronik()) << "Execute action done.";
-                emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
+                emit actionExecutionFinished(action.id(), Device::DeviceErrorNoError);
             });
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginAnel::refreshStates()
@@ -345,7 +345,7 @@ void DevicePluginAnel::setConnectedState(Device *device, bool connected)
     }
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *device)
 {
     QString ipAddress = device->paramValue(m_ipAddressParamTypeIdMap.value(device->deviceClassId())).toString();
     int port = device->paramValue(m_portParamTypeIdMap.value(device->deviceClassId())).toInt();
@@ -363,7 +363,7 @@ DeviceManager::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *de
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcAnelElektronik()) << "Error fetching state for" << device->name() << reply->error() << reply->errorString();
             device->setStateValue(connectedStateTypeId, false);
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
         device->setStateValue(connectedStateTypeId, true);
@@ -375,12 +375,12 @@ DeviceManager::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *de
         int startIndex = parts.indexOf("end") - 58;
         if (startIndex < 0 || !parts.at(startIndex).startsWith("NET-PWRCTRL") || parts.length() < 60) {
             qCWarning(dcAnelElektronik()) << "Bad data from panel:" << data << "Length:" << parts.length();
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
 
         // At this point we're done with gathering information about the panel. Setup defintely succeeded for the gateway device
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
 
         // If we haven't set up childs for this gateway yet, let's do it now
         foreach (Device *child, myDevices()) {
@@ -409,10 +409,10 @@ DeviceManager::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *de
         emit autoDevicesAppeared(socketDeviceClassId, descriptorList);
     });
 
-    return DeviceManager::DeviceSetupStatusAsync;
+    return Device::DeviceSetupStatusAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device)
 {
     QString ipAddress = device->paramValue(m_ipAddressParamTypeIdMap.value(device->deviceClassId())).toString();
     int port = device->paramValue(m_portParamTypeIdMap.value(device->deviceClassId())).toInt();
@@ -430,7 +430,7 @@ DeviceManager::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcAnelElektronik()) << "Error fetching state for" << device->name() << reply->error() << reply->errorString();
             device->setStateValue(connectedStateTypeId, false);
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
         device->setStateValue(connectedStateTypeId, true);
@@ -442,12 +442,12 @@ DeviceManager::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device
         int startIndex = parts.indexOf("end") - 40;
         if (startIndex < 0 || parts.length() < 58) {
             qCWarning(dcAnelElektronik()) << "Bad data from panel:" << data << "Length:" << parts.length();
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
 
         // At this point we're done with gathering information about the panel. Setup defintely succeeded for the gateway device
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
 
         // If we haven't set up childs for this gateway yet, let's do it now
         foreach (Device *child, myDevices()) {
@@ -467,7 +467,7 @@ DeviceManager::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device
         emit autoDevicesAppeared(socketDeviceClassId, descriptorList);
     });
 
-    return DeviceManager::DeviceSetupStatusAsync;
+    return Device::DeviceSetupStatusAsync;
 }
 
 void DevicePluginAnel::refreshHomePro(Device *device)

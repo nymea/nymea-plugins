@@ -28,7 +28,7 @@
 #include <QColor>
 
 #include "typeutils.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 static QBluetoothUuid colorServiceUuid  = QBluetoothUuid(QUuid("f815e810-456c-6761-746f-4d756e696368"));

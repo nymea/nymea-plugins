@@ -27,7 +27,7 @@
 #include "hardware/gpiomonitor.h"
 #include "gpiodescriptor.h"
 #include "hardware/gpiomonitor.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 class DevicePluginGpio : public DevicePlugin
 {
@@ -39,10 +39,10 @@ class DevicePluginGpio : public DevicePlugin
 public:
     explicit DevicePluginGpio();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
     void postSetupDevice(Device *device);
 

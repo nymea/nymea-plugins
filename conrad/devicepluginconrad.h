@@ -24,7 +24,7 @@
 #ifndef DEVICEPLUGINCONRAD_H
 #define DEVICEPLUGINCONRAD_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 class DevicePluginConrad : public DevicePlugin
 {
@@ -36,12 +36,12 @@ class DevicePluginConrad : public DevicePlugin
 public:
     explicit DevicePluginConrad();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void radioData(const QList<int> &rawData);
 
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 };
 

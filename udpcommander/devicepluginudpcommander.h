@@ -24,7 +24,7 @@
 #ifndef DEVICEPLUGINUDPCOMMANDER_H
 #define DEVICEPLUGINUDPCOMMANDER_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 #include <QHash>
 #include <QDebug>
@@ -39,10 +39,10 @@ class DevicePluginUdpCommander : public DevicePlugin
 public:
     explicit DevicePluginUdpCommander();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     QHash<QUdpSocket *, Device *> m_receiverList;

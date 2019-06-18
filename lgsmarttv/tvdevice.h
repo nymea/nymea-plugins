@@ -35,7 +35,7 @@
 #include <QXmlStreamWriter>
 #include <QXmlStreamAttributes>
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "tveventhandler.h"
 
 class TvDevice : public QObject

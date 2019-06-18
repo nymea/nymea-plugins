@@ -46,8 +46,7 @@
 
 #include "devicepluginnetworkdetector.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -73,7 +72,7 @@ void DevicePluginNetworkDetector::init()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *device)
 {
     qCDebug(dcNetworkDetector()) << "Setup" << device->name() << device->params();
     DeviceMonitor *monitor = new DeviceMonitor(device->name(),
@@ -104,25 +103,25 @@ DeviceManager::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device
         m_broadcastPing->run();
     }
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::DeviceError DevicePluginNetworkDetector::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginNetworkDetector::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
 
 
     if (deviceClassId != networkDeviceDeviceClassId)
-        return DeviceManager::DeviceErrorDeviceClassNotFound;
+        return Device::DeviceErrorDeviceClassNotFound;
 
     if (m_discovery->isRunning()) {
         qCWarning(dcNetworkDetector()) << "Network discovery already running";
-        return DeviceManager::DeviceErrorDeviceInUse;
+        return Device::DeviceErrorDeviceInUse;
     }
 
     m_discovery->discoverHosts(25);
 
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
 void DevicePluginNetworkDetector::deviceRemoved(Device *device)

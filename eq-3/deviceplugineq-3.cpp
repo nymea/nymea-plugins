@@ -64,8 +64,7 @@
 
 #include "deviceplugineq-3.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "types/param.h"
 #include "plugininfo.h"
 
@@ -96,22 +95,22 @@ void DevicePluginEQ3::init()
     connect(m_eqivaBluetoothDiscovery, &EqivaBluetoothDiscovery::finished, this, &DevicePluginEQ3::bluetoothDiscoveryDone);
 }
 
-DeviceManager::DeviceError DevicePluginEQ3::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginEQ3::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     qCDebug(dcEQ3()) << "Discover devices called";
     if(deviceClassId == cubeDeviceClassId){
         m_cubeDiscovery->detectCubes();
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
     if (deviceClassId == eqivaBluetoothDeviceClassId) {
         bool ret = m_eqivaBluetoothDiscovery->startDiscovery();
         if (!ret) {
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginEQ3::startMonitoringAutoDevices()
@@ -119,7 +118,7 @@ void DevicePluginEQ3::startMonitoringAutoDevices()
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginEQ3::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginEQ3::setupDevice(Device *device)
 {
     qCDebug(dcEQ3) << "Setup device" << device->params();
 
@@ -127,7 +126,7 @@ DeviceManager::DeviceSetupStatus DevicePluginEQ3::setupDevice(Device *device)
         foreach (MaxCube *cube, m_cubes.keys()) {
             if(cube->serialNumber() == device->paramValue(cubeDeviceSerialParamTypeId).toString()){
                 qCDebug(dcEQ3) << cube->serialNumber() << " already exists...";
-                return DeviceManager::DeviceSetupStatusFailure;
+                return Device::DeviceSetupStatusFailure;
             }
         }
 
@@ -144,7 +143,7 @@ DeviceManager::DeviceSetupStatus DevicePluginEQ3::setupDevice(Device *device)
 
         cube->connectToCube();
 
-        return DeviceManager::DeviceSetupStatusAsync;
+        return Device::DeviceSetupStatusAsync;
     }
     if(device->deviceClassId() == wallThermostateDeviceClassId){
         device->setName("Max! Wall Thermostat (" + device->paramValue(wallThermostateDeviceSerialParamTypeId).toString() + ")");
@@ -202,12 +201,12 @@ DeviceManager::DeviceSetupStatus DevicePluginEQ3::setupDevice(Device *device)
         // Command handler
         connect(eqivaDevice, &EqivaBluetooth::commandResult, this, [this](int commandId, bool success){
             if (m_commandMap.contains(commandId)) {
-                emit actionExecutionFinished(m_commandMap.take(commandId), success ? DeviceManager::DeviceErrorNoError : DeviceManager::DeviceErrorHardwareFailure);
+                emit actionExecutionFinished(m_commandMap.take(commandId), success ? Device::DeviceErrorNoError : Device::DeviceErrorHardwareFailure);
             }
         });
     }
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginEQ3::deviceRemoved(Device *device)
@@ -256,7 +255,7 @@ EqivaBluetooth::Mode DevicePluginEQ3::stringToMode(const QString &string)
     return  EqivaBluetooth::ModeAuto;
 }
 
-DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginEQ3::executeAction(Device *device, const Action &action)
 {    
     if(device->deviceClassId() == wallThermostateDeviceClassId){
         foreach (MaxCube *cube, m_cubes.keys()){
@@ -276,7 +275,7 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
                 } else if (action.actionTypeId() == wallThermostateDisplayCurrentTempActionTypeId){
                     cube->displayCurrentTemperature(rfAddress, roomId, action.param(wallThermostateDisplayCurrentTempActionDisplayParamTypeId).value().toBool(), action.id());
                 }
-                return DeviceManager::DeviceErrorAsync;
+                return Device::DeviceErrorAsync;
             }
         }
     } else if (device->deviceClassId() == radiatorThermostateDeviceClassId){
@@ -295,7 +294,7 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
                 } else if (action.actionTypeId() == radiatorThermostateSetEcoModeActionTypeId){
                     cube->setDeviceEcoMode(rfAddress, roomId, action.id());
                 }
-                return DeviceManager::DeviceErrorAsync;
+                return Device::DeviceErrorAsync;
             }
         }
     } else if (device->deviceClassId() == eqivaBluetoothDeviceClassId) {
@@ -315,10 +314,10 @@ DeviceManager::DeviceError DevicePluginEQ3::executeAction(Device *device, const 
             qCWarning(dcEQ3()) << "An action type has not been handled!";
         }
         m_commandMap.insert(commandId, action.id());
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
 
-    return DeviceManager::DeviceErrorActionTypeNotFound;
+    return Device::DeviceErrorActionTypeNotFound;
 }
 
 void DevicePluginEQ3::onPluginTimer()
@@ -339,7 +338,7 @@ void DevicePluginEQ3::cubeConnectionStatusChanged(const bool &connected)
             device = m_cubes.value(cube);
             device->setName("Max! Cube " + cube->serialNumber());
             device->setStateValue(cubeConnectedStateTypeId,true);
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
         }
     }else{
         MaxCube *cube = static_cast<MaxCube*>(sender());
@@ -347,7 +346,7 @@ void DevicePluginEQ3::cubeConnectionStatusChanged(const bool &connected)
         if (m_cubes.contains(cube)){
             device = m_cubes.value(cube);
             device->setStateValue(cubeConnectedStateTypeId,false);
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
         }
     }
 }
@@ -405,9 +404,9 @@ void DevicePluginEQ3::bluetoothDiscoveryDone(const QStringList results)
 void DevicePluginEQ3::commandActionFinished(const bool &succeeded, const ActionId &actionId)
 {
     if(succeeded){
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
+        emit actionExecutionFinished(actionId, Device::DeviceErrorNoError);
     }else{
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorSetupFailed);
+        emit actionExecutionFinished(actionId, Device::DeviceErrorSetupFailed);
     }
 }
 
@@ -419,7 +418,7 @@ void DevicePluginEQ3::wallThermostatFound()
 
     foreach (WallThermostat *wallThermostat, cube->wallThermostatList()) {
         bool allreadyAdded = false;
-        foreach (Device *device, deviceManager()->findConfiguredDevices(wallThermostateDeviceClassId)){
+        foreach (Device *device, myDevices().filterByDeviceClassId(wallThermostateDeviceClassId)){
             if(wallThermostat->serialNumber() == device->paramValue(wallThermostateDeviceSerialParamTypeId).toString()){
                 allreadyAdded = true;
                 break;
@@ -453,7 +452,7 @@ void DevicePluginEQ3::radiatorThermostatFound()
 
     foreach (RadiatorThermostat *radiatorThermostat, cube->radiatorThermostatList()) {
         bool allreadyAdded = false;
-        foreach (Device *device, deviceManager()->findConfiguredDevices(radiatorThermostateDeviceClassId)){
+        foreach (Device *device, myDevices().filterByDeviceClassId(radiatorThermostateDeviceClassId)){
             if(radiatorThermostat->serialNumber() == device->paramValue(radiatorThermostateDeviceSerialParamTypeId).toString()){
                 allreadyAdded = true;
                 break;
@@ -494,7 +493,7 @@ void DevicePluginEQ3::wallThermostatDataUpdated()
     MaxCube *cube = static_cast<MaxCube*>(sender());
 
     foreach (WallThermostat *wallThermostat, cube->wallThermostatList()) {
-        foreach (Device *device, deviceManager()->findConfiguredDevices(wallThermostateDeviceClassId)){
+        foreach (Device *device, myDevices().filterByDeviceClassId(wallThermostateDeviceClassId)){
             if(device->paramValue(wallThermostateDeviceSerialParamTypeId).toString() == wallThermostat->serialNumber()){
                 device->setStateValue(wallThermostateComfortTemperatureStateTypeId, wallThermostat->comfortTemp());
                 device->setStateValue(wallThermostateEcoTempStateTypeId, wallThermostat->ecoTemp());
@@ -521,7 +520,7 @@ void DevicePluginEQ3::radiatorThermostatDataUpdated()
     MaxCube *cube = static_cast<MaxCube*>(sender());
 
     foreach (RadiatorThermostat *radiatorThermostat, cube->radiatorThermostatList()) {
-        foreach (Device *device, deviceManager()->findConfiguredDevices(radiatorThermostateDeviceClassId)){
+        foreach (Device *device, myDevices().filterByDeviceClassId(radiatorThermostateDeviceClassId)){
             if(device->paramValue(radiatorThermostateDeviceSerialParamTypeId).toString() == radiatorThermostat->serialNumber()){
                 device->setStateValue(radiatorThermostateComfortTempStateTypeId, radiatorThermostat->comfortTemp());
                 device->setStateValue(radiatorThermostateMaxSetpointTempStateTypeId, radiatorThermostat->maxSetPointTemp());

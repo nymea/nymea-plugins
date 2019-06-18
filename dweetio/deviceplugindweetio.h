@@ -23,8 +23,7 @@
 #ifndef DEVICEPLUGINDWEETIO_H
 #define DEVICEPLUGINDWEETIO_H
 
-#include "devicemanager.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 #include <QHash>
 #include <QObject>
@@ -46,9 +45,9 @@ public:
     ~DevicePluginDweetio();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
     void postSetupDevice(Device *device) override;
 
 private:

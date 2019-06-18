@@ -400,8 +400,7 @@
 
 #include "devicepluginelgato.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
 
@@ -421,25 +420,25 @@ void DevicePluginElgato::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginElgato::onPluginTimer);
 }
 
-DeviceManager::DeviceError DevicePluginElgato::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginElgato::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
 
     if (deviceClassId != aveaDeviceClassId)
-        return DeviceManager::DeviceErrorDeviceClassNotFound;
+        return Device::DeviceErrorDeviceClassNotFound;
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->available())
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->enabled())
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     BluetoothDiscoveryReply *reply = hardwareManager()->bluetoothLowEnergyManager()->discoverDevices();
     connect(reply, &BluetoothDiscoveryReply::finished, this, &DevicePluginElgato::onBluetoothDiscoveryFinished);
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
 {
     qCDebug(dcElgato()) << "Setup device" << device->name() << device->params();
 
@@ -453,9 +452,9 @@ DeviceManager::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
         AveaBulb *bulb = new AveaBulb(device, bluetoothDevice, this);
         m_bulbs.insert(device, bulb);
 
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginElgato::postSetupDevice(Device *device)
@@ -472,7 +471,7 @@ void DevicePluginElgato::postSetupDevice(Device *device)
     bulb->bluetoothDevice()->connectDevice();
 }
 
-DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginElgato::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == aveaDeviceClassId) {
         AveaBulb *bulb = m_bulbs.value(device);
@@ -481,22 +480,22 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             bool power = action.param(aveaPowerActionPowerParamTypeId).value().toBool();
             device->setStateValue(aveaPowerStateTypeId, power);
             if (!bulb->setPower(power))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaBrightnessActionTypeId) {
             int percentage = action.param(aveaBrightnessActionBrightnessParamTypeId).value().toInt();
             if (!bulb->setBrightness(percentage))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorActionTypeId) {
             QColor color = action.param(aveaColorActionColorParamTypeId).value().value<QColor>();
             color.setAlpha(0); // Alpha is white
             if (!bulb->setColor(color))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaColorTemperatureActionTypeId) {
             int ctValue = action.param(aveaColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
             // normalize from 0 to 347 instead of 153 to 500
@@ -514,45 +513,45 @@ DeviceManager::DeviceError DevicePluginElgato::executeAction(Device *device, con
             color.setBlue(blue);
             color.setAlpha(255); // Alpha is white
             if (!bulb->setColor(color)) {
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
             }
             device->setStateValue(aveaColorTemperatureStateTypeId, ctValue);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaWhiteActionTypeId) {
             int whiteValue = action.param(aveaWhiteActionWhiteParamTypeId).value().toInt();
             if (!bulb->setWhite(whiteValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaGreenActionTypeId) {
             int greenValue = action.param(aveaGreenActionGreenParamTypeId).value().toInt();
             if (!bulb->setGreen(greenValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaRedActionTypeId) {
             int redValue = action.param(aveaRedActionRedParamTypeId).value().toInt();
             if (!bulb->setRed(redValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaBlueActionTypeId) {
             int blueValue = action.param(aveaBlueActionBlueParamTypeId).value().toInt();
             if (!bulb->setBlue(blueValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == aveaFadeActionTypeId) {
             int fadeValue = action.param(aveaFadeActionFadeParamTypeId).value().toInt();
             if (!bulb->setFade(fadeValue))
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginElgato::deviceRemoved(Device *device)

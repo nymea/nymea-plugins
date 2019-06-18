@@ -48,8 +48,7 @@
 
 #include "devicepluginboblight.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 
 #include "bobclient.h"
 #include "plugininfo.h"
@@ -191,7 +190,7 @@ QColor DevicePluginBoblight::tempToRgb(int temp)
     return QColor(red, green, blue);
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginBoblight::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginBoblight::setupDevice(Device *device)
 {
     if (device->deviceClassId() == boblightServerDeviceClassId) {
 
@@ -216,7 +215,7 @@ DeviceManager::DeviceSetupStatus DevicePluginBoblight::setupDevice(Device *devic
         m_bobClients.insert(device->id(), bobClient);
     }
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginBoblight::postSetupDevice(Device *device)
@@ -241,53 +240,53 @@ void DevicePluginBoblight::postSetupDevice(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginBoblight::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginBoblight::executeAction(Device *device, const Action &action)
 {
     if (!device->setupComplete()) {
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
     qCDebug(dcBoblight()) << "Execute action for boblight" << action.params();
     if (device->deviceClassId() == boblightServerDeviceClassId) {
         BobClient *bobClient = m_bobClients.value(device->id());
         if (!bobClient || !bobClient->connected()) {
             qCWarning(dcBoblight()) << "Boblight on" << device->paramValue(boblightServerDeviceHostAddressParamTypeId).toString() << "not connected";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (action.actionTypeId() == boblightServerPriorityActionTypeId) {
             bobClient->setPriority(action.param(boblightServerPriorityActionPriorityParamTypeId).value().toInt());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         qCWarning(dcBoblight()) << "Unhandled action" << action.actionTypeId() << "for BoblightServer device" << device;
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == boblightDeviceClassId) {
         BobClient *bobClient = m_bobClients.value(device->parentId());
         if (!bobClient || !bobClient->connected()) {
             qCWarning(dcBoblight()) << "Boblight not connected";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (action.actionTypeId() == boblightPowerActionTypeId) {
             bobClient->setPower(device->paramValue(boblightDeviceChannelParamTypeId).toInt(), action.param(boblightPowerActionPowerParamTypeId).value().toBool());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == boblightColorActionTypeId) {
             bobClient->setColor(device->paramValue(boblightDeviceChannelParamTypeId).toInt(), action.param(boblightColorActionColorParamTypeId).value().value<QColor>());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == boblightBrightnessActionTypeId) {
             bobClient->setBrightness(device->paramValue(boblightDeviceChannelParamTypeId).toInt(), action.param(boblightBrightnessActionBrightnessParamTypeId).value().toInt());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == boblightColorTemperatureActionTypeId) {
             bobClient->setColor(device->paramValue(boblightDeviceChannelParamTypeId).toInt(), tempToRgb(action.param(boblightColorTemperatureActionColorTemperatureParamTypeId).value().toInt()));
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginBoblight::onConnectionChanged()

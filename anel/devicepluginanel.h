@@ -21,8 +21,7 @@
 #ifndef DEVICEPLUGINANEL_H
 #define DEVICEPLUGINANEL_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
 
 #include <QUdpSocket>
 
@@ -42,10 +41,10 @@ public:
     ~DevicePluginAnel();
 
     void init() override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private slots:
     void refreshStates();
@@ -53,8 +52,8 @@ private slots:
 private:
     void setConnectedState(Device *device, bool connected);
 
-    DeviceManager::DeviceSetupStatus setupHomeProDevice(Device *device);
-    DeviceManager::DeviceSetupStatus setupAdvDevice(Device *device);
+    Device::DeviceSetupStatus setupHomeProDevice(Device *device);
+    Device::DeviceSetupStatus setupAdvDevice(Device *device);
 
     void refreshHomePro(Device *device);
     void refreshAdv(Device *device);

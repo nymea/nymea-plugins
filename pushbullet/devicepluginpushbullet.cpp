@@ -55,7 +55,7 @@ DevicePluginPushbullet::~DevicePluginPushbullet()
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *device)
 {
     qCDebug(dcPushbullet()) << "Setting up Pushbullet device" << device->name() << device->id().toString();
 
@@ -66,7 +66,7 @@ DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *dev
     connect(reply, &QNetworkReply::finished, device, [this, reply, device]() {
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPushbullet()) << "Error fetching user profile:" << reply->errorString() << reply->error();
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
 
@@ -77,25 +77,25 @@ DeviceManager::DeviceSetupStatus DevicePluginPushbullet::setupDevice(Device *dev
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcPushbullet()) << "Error parsing reply from Pushbullet:" << error.errorString();
             qCWarning(dcPushbullet()) << qUtf8Printable(data);
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
 
         QVariantMap replyMap = jsonDoc.toVariant().toMap();
         if (!replyMap.value("active").toBool()) {
             qCWarning(dcPushbullet()) << "Pushbullet account seems to be deactivated.";
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
 
         qCDebug(dcPushbullet()) << "Pushbullet device" << device->name() << device->id().toString() << "setup complete";
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
     });
 
-    return DeviceManager::DeviceSetupStatusAsync;
+    return Device::DeviceSetupStatusAsync;
 }
 
-DeviceManager::DeviceError DevicePluginPushbullet::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginPushbullet::executeAction(Device *device, const Action &action)
 {
     qCDebug(dcPushbullet()) << "Executing action" << action.actionTypeId() << "for device" << device->name() << device->id().toString();
 
@@ -112,7 +112,7 @@ DeviceManager::DeviceError DevicePluginPushbullet::executeAction(Device *device,
     connect(reply, &QNetworkReply::finished, device, [this, reply, device, action]{
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPushbullet()) << "Push message sending failed for" << device->name() << device->id() << reply->errorString() << reply->error();
-            emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareNotAvailable);
+            emit actionExecutionFinished(action.id(), Device::DeviceErrorHardwareNotAvailable);
             return;
         }
 
@@ -123,27 +123,27 @@ DeviceManager::DeviceError DevicePluginPushbullet::executeAction(Device *device,
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcPushbullet()) << "Error reading reply from Pushbullet for" << device->name() << device->id().toString() << error.errorString();
             qCWarning(dcPushbullet()) << qUtf8Printable(data);
-            emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
+            emit actionExecutionFinished(action.id(), Device::DeviceErrorHardwareFailure);
             return;
         }
 
         QVariantMap replyMap = jsonDoc.toVariant().toMap();
         if (!replyMap.value("active").toBool()) {
             qCWarning(dcPushbullet()) << "Error sending message. The account seems to be deactivated" << device->name() << device->id().toString();
-            emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
+            emit actionExecutionFinished(action.id(), Device::DeviceErrorHardwareFailure);
             return;
         }
 
         if (replyMap.value("dismissed", true).toBool()) {
             qCWarning(dcPushbullet()) << "Error sending message. The message has been dismissed by the server" << device->name() << device->id().toString();
-            emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
+            emit actionExecutionFinished(action.id(), Device::DeviceErrorHardwareFailure);
             return;
         }
 
         qCDebug(dcPushbullet()) << "Message sent successfully";
-        emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
+        emit actionExecutionFinished(action.id(), Device::DeviceErrorNoError);
     });
 
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 

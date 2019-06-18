@@ -26,7 +26,7 @@
 #include <QObject>
 #include <QLocalSocket>
 
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "snapdconnection.h"
 
 class SnapdControl : public QObject

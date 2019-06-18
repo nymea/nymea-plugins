@@ -27,7 +27,7 @@
 #include <QBluetoothUuid>
 
 #include "typeutils.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 class Nuimo : public QObject

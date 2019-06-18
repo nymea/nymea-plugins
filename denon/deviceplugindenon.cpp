@@ -62,20 +62,20 @@ void DevicePluginDenon::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginDenon::onPluginTimer);
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
 {
     qCDebug(dcDenon) << "Setup Denon device" << device->paramValue(AVRX1000DeviceIpParamTypeId).toString();
 
     // Check if we already have a denon device
     if (!myDevices().isEmpty()) {
         qCWarning(dcDenon) << "Could not add denon device. Only one denon device allowed.";
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
     }
 
     QHostAddress address(device->paramValue(AVRX1000DeviceIpParamTypeId).toString());
     if (address.isNull()) {
         qCWarning(dcDenon) << "Could not parse ip address" << device->paramValue(AVRX1000DeviceIpParamTypeId).toString();
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
     }
 
     m_device = device;
@@ -87,7 +87,7 @@ DeviceManager::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
     m_asyncSetups.append(m_denonConnection);
     m_denonConnection->connectDenon();
 
-    return DeviceManager::DeviceSetupStatusAsync;
+    return Device::DeviceSetupStatusAsync;
 }
 
 void DevicePluginDenon::deviceRemoved(Device *device)
@@ -102,14 +102,14 @@ void DevicePluginDenon::deviceRemoved(Device *device)
     m_denonConnection->deleteLater();
 }
 
-DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Action &action)
 {
     qCDebug(dcDenon) << "Execute action" << device->id() << action.id() << action.params();
     if (device->deviceClassId() == AVRX1000DeviceClassId) {
 
         // check connection state
         if (m_denonConnection.isNull() || !m_denonConnection->connected())
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
 
         // check if the requested action is our "update" action ...
         if (action.actionTypeId() == AVRX1000PowerActionTypeId) {
@@ -128,7 +128,7 @@ DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, cons
                 m_denonConnection->sendData(cmd);
             }
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == AVRX1000VolumeActionTypeId) {
 
@@ -138,7 +138,7 @@ DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, cons
             qCDebug(dcDenon) << "Execute volume" << action.id() << cmd;
             m_denonConnection->sendData(cmd);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == AVRX1000ChannelActionTypeId) {
 
@@ -149,11 +149,11 @@ DeviceManager::DeviceError DevicePluginDenon::executeAction(Device *device, cons
             qCDebug(dcDenon) << "Change to channel:" << cmd;
             m_denonConnection->sendData(cmd);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginDenon::onPluginTimer()
@@ -179,7 +179,7 @@ void DevicePluginDenon::onConnectionChanged()
         if (m_asyncSetups.contains(m_denonConnection)) {
             m_asyncSetups.removeAll(m_denonConnection);
             m_denonConnection->sendData("PW?\rSI?\rMV?\r");
-            emit deviceSetupFinished(m_device, DeviceManager::DeviceSetupStatusSuccess);
+            emit deviceSetupFinished(m_device, Device::DeviceSetupStatusSuccess);
         }
     }
 
@@ -269,7 +269,7 @@ void DevicePluginDenon::onSocketError()
     // Check if setup running for this device
     if (m_asyncSetups.contains(m_denonConnection)) {
         qCWarning(dcDenon()) << "Could not add device. The setup failed.";
-        emit deviceSetupFinished(m_device, DeviceManager::DeviceSetupStatusFailure);
+        emit deviceSetupFinished(m_device, Device::DeviceSetupStatusFailure);
         // Delete the connection, the device will not be added and
         // the connection will be created in the next setup
         m_denonConnection->deleteLater();

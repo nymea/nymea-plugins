@@ -22,8 +22,7 @@
 #ifndef DEVICEPLUGINKEBA_H
 #define DEVICEPLUGINKEBA_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
 #include "plugintimer.h"
 
 #include <QHash>
@@ -42,12 +41,12 @@ public:
     ~DevicePluginKeba();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
 
     void postSetupDevice(Device* device) override;
     void deviceRemoved(Device* device) override;
 
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
     void updateData();
 
 private:

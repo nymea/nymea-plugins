@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINUNITEC_H
 #define DEVICEPLUGINUNITEC_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 class DevicePluginUnitec : public DevicePlugin
 {
@@ -35,10 +35,10 @@ class DevicePluginUnitec : public DevicePlugin
 public:
     explicit DevicePluginUnitec();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 };
 

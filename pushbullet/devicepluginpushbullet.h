@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINPUSHBULLET_H
 #define DEVICEPLUGINPUSHBULLET_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 class DevicePluginPushbullet: public DevicePlugin
 {
@@ -36,8 +36,8 @@ public:
     explicit DevicePluginPushbullet(QObject *parent = nullptr);
     ~DevicePluginPushbullet() override;
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 };
 

@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINAWATTAR_H
 #define DEVICEPLUGINAWATTAR_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "plugintimer.h"
 
 #include "heatpump.h"
@@ -44,7 +44,7 @@ public:
     explicit DevicePluginAwattar();
     ~DevicePluginAwattar();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
 private:

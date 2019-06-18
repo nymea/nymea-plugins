@@ -62,7 +62,7 @@
 */
 
 #include "devicepluginkodi.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "network/upnp/upnpdiscovery.h"
 #include "platform/platformzeroconfcontroller.h"
@@ -101,7 +101,7 @@ void DevicePluginKodi::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginKodi::onPluginTimer);
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
 {
     qCDebug(dcKodi) << "Setup Kodi device" << device->paramValue(kodiDeviceIpParamTypeId).toString();
     Kodi *kodi= new Kodi(QHostAddress(device->paramValue(kodiDeviceIpParamTypeId).toString()), 9090, this);
@@ -168,7 +168,7 @@ DeviceManager::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
 
     kodi->connectKodi();
 
-    return DeviceManager::DeviceSetupStatusAsync;
+    return Device::DeviceSetupStatusAsync;
 }
 
 void DevicePluginKodi::deviceRemoved(Device *device)
@@ -179,7 +179,7 @@ void DevicePluginKodi::deviceRemoved(Device *device)
     kodi->deleteLater();
 }
 
-DeviceManager::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     Q_UNUSED(deviceClassId)
@@ -200,17 +200,17 @@ DeviceManager::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId
         serviceBrowser->deleteLater();
     });
 
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginKodi::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == kodiDeviceClassId) {
         Kodi *kodi = m_kodis.key(device);
 
         // check connection state
         if (!kodi->connected()) {
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         int commandId = -1;
@@ -255,12 +255,12 @@ DeviceManager::DeviceError DevicePluginKodi::executeAction(Device *device, const
             }
         } else {
             qWarning(dcKodi()) << "Unhandled action type" << action.actionTypeId();
-            return DeviceManager::DeviceErrorActionTypeNotFound;
+            return Device::DeviceErrorActionTypeNotFound;
         }
         m_pendingActions.insert(commandId, action.id());
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginKodi::onPluginTimer()
@@ -304,7 +304,7 @@ void DevicePluginKodi::onActionExecuted(int actionId, bool success)
     if (!m_pendingActions.contains(actionId)) {
         return;
     }
-    emit actionExecutionFinished(m_pendingActions.value(actionId), success ? DeviceManager::DeviceErrorNoError : DeviceManager::DeviceErrorInvalidParameter);
+    emit actionExecutionFinished(m_pendingActions.value(actionId), success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
 }
 
 void DevicePluginKodi::versionDataReceived(const QVariantMap &data)
@@ -318,7 +318,7 @@ void DevicePluginKodi::versionDataReceived(const QVariantMap &data)
 
     if (version.value("major").toInt() < 6) {
         qCWarning(dcKodi) << "incompatible api version:" << apiVersion;
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
         return;
     }
     kodi->update();
@@ -333,7 +333,7 @@ void DevicePluginKodi::onSetupFinished(const QVariantMap &data)
     QString kodiVersion = QString("%1.%2 (%3)").arg(version.value("major").toString()).arg(version.value("minor").toString()).arg(version.value("tag").toString());
     qCDebug(dcKodi) << "Version:" << kodiVersion;
 
-    emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+    emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
 
     kodi->showNotification("Connected", 2000, "info");
 }

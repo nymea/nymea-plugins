@@ -40,7 +40,7 @@
 */
 
 #include "devicepluginnetatmo.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "network/networkaccessmanager.h"
 
@@ -63,7 +63,7 @@ void DevicePluginNetatmo::init()
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
 {
     if (device->deviceClassId() == netatmoConnectionDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo connection" << device->name() << device->params();
@@ -84,7 +84,7 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
         connect(authentication, &OAuth2::authenticationChanged, this, &DevicePluginNetatmo::onAuthenticationChanged);
 
         authentication->startAuthentication();
-        return DeviceManager::DeviceSetupStatusAsync;
+        return Device::DeviceSetupStatusAsync;
 
     } else if (device->deviceClassId() == indoorDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo indoor base station" << device->params();
@@ -95,7 +95,7 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
         m_indoorDevices.insert(indoor, device);
         connect(indoor, SIGNAL(statesChanged()), this, SLOT(onIndoorStatesChanged()));
 
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     } else if (device->deviceClassId() == outdoorDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo outdoor module" << device->params();
         NetatmoOutdoorModule *outdoor = new NetatmoOutdoorModule(device->paramValue(outdoorDeviceNameParamTypeId).toString(),
@@ -106,9 +106,9 @@ DeviceManager::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device
         m_outdoorDevices.insert(outdoor, device);
         connect(outdoor, SIGNAL(statesChanged()), this, SLOT(onOutdoorStatesChanged()));
 
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginNetatmo::deviceRemoved(Device *device)
@@ -148,12 +148,12 @@ void DevicePluginNetatmo::postSetupDevice(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginNetatmo::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginNetatmo::executeAction(Device *device, const Action &action)
 {
     Q_UNUSED(device)
     Q_UNUSED(action)
 
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }
 
 void DevicePluginNetatmo::refreshData(Device *device, const QString &token)
@@ -310,11 +310,11 @@ void DevicePluginNetatmo::onAuthenticationChanged()
     if (m_asyncSetups.contains(device)) {
         m_asyncSetups.removeAll(device);
         if (authentication->authenticated()) {
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
             refreshData(device, authentication->token());
         } else {
             authentication->deleteLater();
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
         }
     }
 }

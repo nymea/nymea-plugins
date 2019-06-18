@@ -98,8 +98,7 @@
 
 #include "deviceplugincommandlauncher.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -109,11 +108,11 @@ DevicePluginCommandLauncher::DevicePluginCommandLauncher()
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginCommandLauncher::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginCommandLauncher::setupDevice(Device *device)
 {
     // Application
     if(device->deviceClassId() == applicationDeviceClassId)
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
 
     // Script
     if(device->deviceClassId() == scriptDeviceClassId){
@@ -122,23 +121,23 @@ DeviceManager::DeviceSetupStatus DevicePluginCommandLauncher::setupDevice(Device
         QFileInfo fileInfo(scriptArguments.first());
         if (!fileInfo.exists()) {
             qCWarning(dcCommandLauncher) << "script " << scriptArguments.first() << "does not exist.";
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
         if (!fileInfo.isExecutable()) {
             qCWarning(dcCommandLauncher) << "script " << scriptArguments.first() << "is not executable. Please check the permissions.";
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
         if (!fileInfo.isReadable()) {
             qCWarning(dcCommandLauncher) << "script " << scriptArguments.first() << "is not readable. Please check the permissions.";
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
-DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginCommandLauncher::executeAction(Device *device, const Action &action)
 {
     // Application
     if (device->deviceClassId() == applicationDeviceClassId ) {
@@ -147,7 +146,7 @@ DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *de
             // check if we already have started the application
             if (m_applications.values().contains(device)) {
                 if (m_applications.key(device)->state() == QProcess::Running) {
-                    return DeviceManager::DeviceErrorDeviceInUse;
+                    return Device::DeviceErrorDeviceInUse;
                 }
             }
             QProcess *process = new QProcess(this);
@@ -158,21 +157,21 @@ DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *de
             m_startingApplications.insert(process, action.id());
             process->start("/bin/bash", QStringList() << "-c" << device->paramValue(applicationDeviceCommandParamTypeId).toString());
 
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
         // kill application...
         if (action.actionTypeId() == applicationKillActionTypeId) {
             // check if the application is running...
             if (!m_applications.values().contains(device)) {
-                return DeviceManager::DeviceErrorNoError;
+                return Device::DeviceErrorNoError;
             }
             QProcess *process = m_applications.key(device);
             m_killingApplications.insert(process,action.id());
             process->kill();
 
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     // Script
@@ -182,7 +181,7 @@ DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *de
             // check if we already have started the script
             if (m_scripts.values().contains(device)) {
                 if (m_scripts.key(device)->state() == QProcess::Running) {
-                    return DeviceManager::DeviceErrorDeviceInUse;
+                    return Device::DeviceErrorDeviceInUse;
                 }
             }
             QProcess *process = new QProcess(this);
@@ -193,23 +192,23 @@ DeviceManager::DeviceError DevicePluginCommandLauncher::executeAction(Device *de
             m_startingScripts.insert(process, action.id());
             process->start("/bin/bash", QStringList() << device->paramValue(scriptDeviceScriptParamTypeId).toString());
 
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
         // kill script...
         if (action.actionTypeId() == scriptKillActionTypeId) {
             // check if the script is running...
             if (!m_scripts.values().contains(device)) {
-                return DeviceManager::DeviceErrorNoError;
+                return Device::DeviceErrorNoError;
             }
             QProcess *process = m_scripts.key(device);
             m_killingScripts.insert(process,action.id());
             process->kill();
 
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginCommandLauncher::deviceRemoved(Device *device)
@@ -254,13 +253,13 @@ void DevicePluginCommandLauncher::scriptStateChanged(QProcess::ProcessState stat
     switch (state) {
     case QProcess::Running:
         device->setStateValue(scriptRunningStateTypeId, true);
-        emit actionExecutionFinished(m_startingScripts.value(process), DeviceManager::DeviceErrorNoError);
+        emit actionExecutionFinished(m_startingScripts.value(process), Device::DeviceErrorNoError);
         m_startingScripts.remove(process);
         break;
     case QProcess::NotRunning:
         device->setStateValue(scriptRunningStateTypeId, false);
         if (m_killingScripts.contains(process)) {
-            emit actionExecutionFinished(m_killingScripts.value(process), DeviceManager::DeviceErrorNoError);
+            emit actionExecutionFinished(m_killingScripts.value(process), Device::DeviceErrorNoError);
             m_killingScripts.remove(process);
         }
         break;
@@ -291,13 +290,13 @@ void DevicePluginCommandLauncher::applicationStateChanged(QProcess::ProcessState
     switch (state) {
     case QProcess::Running:
         device->setStateValue(applicationRunningStateTypeId, true);
-        emit actionExecutionFinished(m_startingApplications.value(process), DeviceManager::DeviceErrorNoError);
+        emit actionExecutionFinished(m_startingApplications.value(process), Device::DeviceErrorNoError);
         m_startingApplications.remove(process);
         break;
     case QProcess::NotRunning:
         device->setStateValue(applicationRunningStateTypeId, false);
         if (m_killingApplications.contains(process)) {
-            emit actionExecutionFinished(m_killingApplications.value(process), DeviceManager::DeviceErrorNoError);
+            emit actionExecutionFinished(m_killingApplications.value(process), Device::DeviceErrorNoError);
             m_killingApplications.remove(process);
         }
         break;

@@ -24,8 +24,7 @@
 #ifndef DEVICEPLUGINDENON_H
 #define DEVICEPLUGINDENON_H
 
-#include "devicemanager.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 
 #include <QHash>
@@ -49,9 +48,9 @@ public:
     ~DevicePluginDenon();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
