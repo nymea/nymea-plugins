@@ -20,40 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page texasinstruments.html
-    \title Texas Instruments
-    \brief Plugin for Texas Instruments Devices.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin supports devices from Texas Instruments.
-
-    Currently supported devices:
-        * TI SensorTag (CC2650).
-
-    \chapter TI SensorTag (CC2650)
-
-    Using Bluetooth-LE, the TI SensorTag device class allows nymea to interact with those sensors. All supported
-    sensors of the device are supported:
-        * Temperature
-        * IR Temperature
-        * Humidity
-        * Pressure
-        * Light intensity
-        * Motion
-        * Magnetic Objects
-    Besides reading the sensor values, the buttons, buzzer and LEDs can be read and/or controlled.
-
-    \chapter Plugin defintion
-
-    \quotefile plugins/deviceplugins/multisensor/deviceplugintexasinstruments.json
-
-    \sa {The plugin JSON File}
-
-*/
-
 #include "deviceplugintexasinstruments.h"
 #include "plugininfo.h"
 #include "sensortag.h"
