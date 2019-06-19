@@ -20,24 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page pushbullet.html
-    \title Pushbullet
-    \brief Plugin to send notifications via Pushbullet.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to send notifications via Pushbullet.
-
-    \chapter Usage
-
-    When setting up a device for the pushbullet service, an API token from Pushbullet is required. Please visit
-    https://www.pushbullet.com and create an account if you haven't done so already. After logging in successfully,
-    open the "Settings" tab and in "Account Settings", create a new access token. Use that token as the device
-    parameter when setting up the device.
-*/
-
 #include "devicepluginpushbullet.h"
 #include "plugininfo.h"
 
