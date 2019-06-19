@@ -20,25 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page netatmo.html
-    \title Netatmo
-    \brief Plugin for the Netatmo weather stations.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to receive data from you netatmo weather station.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/netatmo/devicepluginnetatmo.json
-*/
-
 #include "devicepluginnetatmo.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
