@@ -8,16 +8,13 @@ time you need [ntp](https://en.wikipedia.org/wiki/Network_Time_Protocol).
 
 The weekday integer value stands for:
 
-| Weekday       | Int           |
-| ------------- |:-------------:|
-| Monday        | 1             |
-| Tuesday       | 2             |
-| Wednesday     | 3             |
-| Thursday      | 4             |
-| Friday        | 5             |
-| Saturday      | 6             |
-| Sunday        | 7             |
-
+* Monday: `1`
+* Tuesday: `2`
+* Wednesday: `3`
+* Thursday: `4`
+* Friday: `5`
+* Saturday: `6`
+* Sunday: `7`
 
 The *weekend* state will be true, if the current weekday is Saturday or Sunday, otherwise it will be false.
 
@@ -25,7 +22,7 @@ The *weekend* state will be true, if the current weekday is Saturday or Sunday, 
 
 The today plugin gives you information about the current day and some special times of the day like
 dawn, sunrise, noon, sunset and dawn. In order to get the correct times of the current day for your location, the plugin needs to know where
-you are. The plugin will autodetect your location according to you WAN IP  [http://ip-api.com/json](http://ip-api.com/json))
+you are. The plugin will autodetect your location according to you WAN IP  [http://ip-api.com/json](http://ip-api.com/json).
 and will download the sunset / sunrise times from the online database [http://sunrise-sunset.org/](http://sunrise-sunset.org/).
 If the configured timezone does not match with the autodetected timezone from the ip the specialdates will be set to 0 (01.01.1970 - 00:00.00).
 
