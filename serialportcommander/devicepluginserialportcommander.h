@@ -25,6 +25,8 @@
 
 #include "plugin/deviceplugin.h"
 #include "devicemanager.h"
+
+#include <QTimer>
 #include <QSerialPort>
 #include <QSerialPortInfo>
 
@@ -40,24 +42,22 @@ public:
 
     DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params);
+    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    QTimer *m_reconnectTimer = nullptr;
     QHash<Device *, QSerialPort *> m_serialPorts;
-    QList<QString> m_usedInterfaces;
 
 private slots:
     void onReadyRead();
     void onSerialError(QSerialPort::SerialPortError error);
-    void onBaudRateChanged(qint32 baudRate, QSerialPort::Direction direction);
+    void onBaudRateChanged(qint32 baudRate, QSerialPort::Directions direction);
     void onParityChanged(QSerialPort::Parity parity);
     void onDataBitsChanged(QSerialPort::DataBits dataBits);
     void onStopBitsChanged(QSerialPort::StopBits stopBits);
     void onFlowControlChanged(QSerialPort::FlowControl flowControl);
-
-signals:
-
+    void onReconnectTimer();
 };
 
 #endif // DEVICEPLUGINSERIALPORTCOMMANDER_H
