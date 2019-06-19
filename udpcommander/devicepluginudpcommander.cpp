@@ -21,44 +21,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page udpcommander.html
-    \title UDP Commander
-    \brief Plugin for catching UDP commands from the network.
-
-    \ingroup plugins
-    \ingroup nymea-plugins-maker
-
-    This plugin allows to receive UDP packages over a certain UDP port and generates an \l{Event} if the message content matches
-    the \l{Param} command.
-
-    \note This plugin is ment to be combined with a \l{nymeaserver::Rule}.
-
-    \section3 Example
-
-    If you create an UDP Commander on port 2323 and with the command \c{"Light 1 ON"}, following command will trigger an \l{Event} in nymea
-    and allows you to connect this \l{Event} with a \l{nymeaserver::Rule}.
-
-    \note In this example nymea is running on \c localhost
-
-    \code
-    $ echo "Light 1 ON" | nc -u localhost 2323
-    OK
-    \endcode
-
-    This allows you to execute \l{Action}{Actions} in your home automation system when a certain UDP message will be sent to nymea.
-
-    If the command will be recognized from nymea, the sender will receive as answere a \c{"OK"} string.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/udpcommander/devicepluginudpcommander.json
-*/
-
 #include "devicepluginudpcommander.h"
 #include "plugin/device.h"
 #include "plugininfo.h"
