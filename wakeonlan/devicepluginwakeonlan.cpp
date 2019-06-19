@@ -20,30 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page wakeonlan.html
-    \title Wake On Lan
-    \brief Plugin for wake up devices in the LAN (wol).
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    Wake-on-LAN (WOL) is an Ethernet computer networking standard that allows a computer
-    to be turned on or awakened by a network message. This plugin allows you to send a
-    a "magic packet" to a certain mac address in the local network.
-
-    \underline{NOTE}: The WOL service has to be enabled on the host computer.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/wakeonlan/devicepluginwakeonlan.json
-*/
-
-
 #include "devicepluginwakeonlan.h"
 
 #include "plugin/device.h"
