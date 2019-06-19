@@ -44,7 +44,8 @@
 #include "plugin/device.h"
 #include "devicemanager.h"
 #include "plugininfo.h"
-#include "network/avahi/qtavahiservicebrowser.h"
+#include "platform/platformzeroconfcontroller.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
 
 #include <QDebug>
 #include <QStringList>
@@ -54,12 +55,6 @@
 DevicePluginAvahiMonitor::DevicePluginAvahiMonitor()
 {
 
-}
-
-void DevicePluginAvahiMonitor::init()
-{
-    connect(hardwareManager()->avahiBrowser(), &QtAvahiServiceBrowser::serviceEntryAdded, this, &DevicePluginAvahiMonitor::onServiceEntryAdded);
-    connect(hardwareManager()->avahiBrowser(), &QtAvahiServiceBrowser::serviceEntryRemoved, this, &DevicePluginAvahiMonitor::onServiceEntryRemoved);
 }
 
 DeviceManager::DeviceSetupStatus DevicePluginAvahiMonitor::setupDevice(Device *device)
@@ -76,8 +71,14 @@ DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const Devic
     if (deviceClassId != avahiDeviceClassId)
         return DeviceManager::DeviceErrorDeviceClassNotFound;
 
+    if (!m_serviceBrowser) {
+        m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
+        connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &DevicePluginAvahiMonitor::onServiceEntryAdded);
+        connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryRemoved, this, &DevicePluginAvahiMonitor::onServiceEntryRemoved);
+    }
+
     QList<DeviceDescriptor> deviceDescriptors;
-    foreach (const AvahiServiceEntry &service, hardwareManager()->avahiBrowser()->serviceEntries()) {
+    foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
         DeviceDescriptor deviceDescriptor(avahiDeviceClassId, service.name(), service.hostAddress().toString());
         ParamList params;
         params.append(Param(avahiDeviceServiceParamTypeId, service.name()));
@@ -97,8 +98,9 @@ DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const Devic
     return DeviceManager::DeviceErrorAsync;
 }
 
-void DevicePluginAvahiMonitor::onServiceEntryAdded(const AvahiServiceEntry &serviceEntry)
+void DevicePluginAvahiMonitor::onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
 {
+    qCDebug(dcAvahiMonitor()) << "Service entry added:" << serviceEntry;
     foreach (Device *device, myDevices()) {
         if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name()) {
             device->setStateValue(avahiIsPresentStateTypeId, true);
@@ -107,7 +109,7 @@ void DevicePluginAvahiMonitor::onServiceEntryAdded(const AvahiServiceEntry &serv
     }
 }
 
-void DevicePluginAvahiMonitor::onServiceEntryRemoved(const AvahiServiceEntry &serviceEntry)
+void DevicePluginAvahiMonitor::onServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry)
 {
     foreach (Device *device, myDevices()) {
         if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name()) {
