@@ -23,222 +23,94 @@
 #include "smtpclient.h"
 #include "extern-plugininfo.h"
 
+#include <QDateTime>
+
+Q_LOGGING_CATEGORY(dcSmtpClient, "SmtpClient")
+
 SmtpClient::SmtpClient(QObject *parent):
     QObject(parent)
 {
     m_socket = new QSslSocket(this);
-    m_state = InitState;
-    m_testLogin = false;
 
-    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
-    // error because QSslSocket has also a method called error...also QAbstractSocket or QTcpSocket don't work...
-    //connect(m_socket, &QSslSocket::error, this, &SmtpClient::socketError);
     connect(m_socket, &QSslSocket::connected, this, &SmtpClient::connected);
     connect(m_socket, &QSslSocket::readyRead, this, &SmtpClient::readData);
     connect(m_socket, &QSslSocket::disconnected, this, &SmtpClient::disconnected);
-
+    connect(m_socket, &QSslSocket::encrypted, this, &SmtpClient::onEncrypted);
+    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
 }
 
 void SmtpClient::connectToHost()
 {
     switch (m_encryptionType) {
     case EncryptionTypeNone:
+    case EncryptionTypeTLS:
+        // Note: the handshake will be done later, not from the beginning
         m_socket->connectToHost(m_host, m_port);
         break;
     case EncryptionTypeSSL:
         m_socket->connectToHostEncrypted(m_host, m_port);
-        break;
-    case EncryptionTypeTLS:
-        m_socket->connectToHost(m_host,m_port);
-        break;
-    default:
         break;
     }
 }
 
 void SmtpClient::testLogin()
 {
-    m_socket->close();
     m_testLogin = true;
+    setState(StateInitialize);
+    m_socket->close();
     connectToHost();
 }
 
 void SmtpClient::connected()
 {
+    qCDebug(dcSmtpClient()) << "Connected";
 }
 
 void SmtpClient::disconnected()
 {
+    qCDebug(dcSmtpClient()) << "Disconnected";
+    setState(StateIdle);
+    sendNextMail();
+}
+
+void SmtpClient::onEncrypted()
+{
+    qCDebug(dcSmtpClient()) << "Socket encrypted";
+    send("EHLO localhost");
+    setState(StateAuthentification);
 }
 
 void SmtpClient::readData()
 {
-    QString response;
-    QString responseLine;
-
-    while(m_socket->canReadLine() && responseLine[3] != ' ') {
+    while(m_socket->canReadLine()) {
+        QString responseLine;
         responseLine = m_socket->readLine();
-        response.append(responseLine);
-    }
-    responseLine.truncate( 3 );
 
-    switch (m_state) {
-    case InitState:
-        if(responseLine == "220") {
-            send("EHLO localhost");
-            if(m_encryptionType == EncryptionTypeNone) {
-                m_state = AuthentificationState;
-                break;
+        qCDebug(dcSmtpClient()) << "<--" << responseLine;
+
+        bool responseCodeParseSuccess = false;
+        int responseCode = responseLine.left(3).toInt(&responseCodeParseSuccess);
+        if (!responseCodeParseSuccess) {
+            qCWarning(dcSmtpClient()) << "Could not convert status code to a valid integer" << responseLine;
+            if (m_state != StateIdle) {
+                handleSmtpFailure();
+                continue;
             }
-            if(m_encryptionType == EncryptionTypeSSL) {
-                m_state = HandShakeState;
-                break;
-            }
-            if(m_encryptionType == EncryptionTypeTLS) {
-                m_state = StartTlsState;
-                break;
-            }
-        }
-        break;
-    case HandShakeState:
-        if(responseLine == "250") {
-            if(!m_socket->isEncrypted() && m_encryptionType != EncryptionTypeNone) {
-                m_socket->startClientEncryption();
-            }
-            send("EHLO localhost");
-            m_state = AuthentificationState;
-        }
-        if(responseLine == "220") {
-            if(!m_socket->isEncrypted() && m_encryptionType != EncryptionTypeNone) {
-                m_socket->startClientEncryption();
-            }
-            send("EHLO localhost");
-            m_state = AuthentificationState;
-        }
-        break;
-    case StartTlsState:
-        if(responseLine == "250") {
-            send("STARTTLS");
-            m_state = HandShakeState;
-        }
-        break;
-    case AuthentificationState:
-        if(responseLine == "250") {
-            if(m_authMethod == AuthMethodLogin) {
-                send("AUTH LOGIN");
-                m_state = UserState;
-                break;
-            }
-            if(m_authMethod == AuthMethodPlain) {
-                send("AUTH PLAIN " + QByteArray().append((char) 0).append(m_user).append((char) 0).append(m_password).toBase64());
-                // if we just want to test the Login, we are almost done here
-                if(!m_testLogin) {
-                    m_state = MailState;
-                } else {
-                    m_state = TestLoginFinishedState;
-                }
-                break;
-            }
-        }
-        break;
-    case UserState:
-        if(responseLine == "334") {
-            send(QByteArray().append(m_user).toBase64());
-            m_state = PasswordState;
-        }
-        break;
-    case PasswordState:
-        if(responseLine == "334") {
-            send(QByteArray().append(m_password).toBase64());
-            // if we just want to test the Login, we are almost done here
-            if(!m_testLogin) {
-                m_state = MailState;
-            } else {
-                m_state = TestLoginFinishedState;
-            }
-            break;
-        }
-        break;
-    case TestLoginFinishedState:
-        if(responseLine == "235") {
-            emit testLoginFinished(true);
         } else {
-            emit testLoginFinished(false);
+            processServerResponse(responseCode, responseLine);
         }
-        m_socket->close();
-        m_testLogin = false;
-        break;
-    case MailState:
-        if(responseLine == "235") {
-            send("MAIL FROM:<" + m_sender + ">");
-            m_state = RcptState;
-        }
-        break;
-    case RcptState:
-        if(responseLine == "250") {
-            send("RCPT TO:<" + m_rcpt + ">");
-            m_state = DataState;
-        }
-        break;
-    case DataState:
-        if(responseLine == "250") {
-            send("DATA");
-            m_state = BodyState;
-        }
-        break;
-    case BodyState:
-        if(responseLine == "354") {
-            send(m_message + "\r\n.\r\n");
-            m_state = QuitState;
-        }
-        break;
-    case QuitState:
-        if(responseLine == "250") {
-            emit sendMailFinished(true, m_actionId);
-            send("QUIT");
-            m_state = CloseState;
-        }
-        break;
-    case CloseState:
-        if(responseLine == "221") {
-            m_socket->close();
-        }
-        // some mail server does not recognize the QUIT command...so close the connection either way
-        m_socket->close();
-        break;
-    default:
-        // unexpecterd response code received...
-        if(m_testLogin) {
-            emit testLoginFinished(false);
-            m_testLogin = false;
-            m_socket->close();
-            break;
-        }
-        emit sendMailFinished(false, m_actionId);
-        m_socket->close();
-        break;
     }
 }
 
-bool SmtpClient::sendMail(const QString &subject, const QString &body, const ActionId &actionId)
+void SmtpClient::sendMail(const QString &subject, const QString &body, const ActionId &actionId)
 {
-    m_actionId = actionId;
+    Message message;
+    message.subject = subject;
+    message.body = body;
+    message.actionId = actionId;
 
-    // create mail content
-    m_state = InitState;
-    m_message.clear();
-
-    m_message = "To: " + m_rcpt + "\n";
-    m_message.append("From: " + m_sender + "\n");
-    m_message.append("Subject: [nymea notification] | " + subject + "\n");
-    m_message.append(body);
-    m_message.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) );
-    m_message.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) );
-    m_message.append("\r\n.\r\n");
-    m_socket->close();
-    connectToHost();
-
-    return true;
+    m_messageQueue.enqueue(message);
+    sendNextMail();
 }
 
 void SmtpClient::setHost(const QString &host)
@@ -246,7 +118,7 @@ void SmtpClient::setHost(const QString &host)
     m_host = host;
 }
 
-void SmtpClient::setPort(const int &port)
+void SmtpClient::setPort(const quint16 &port)
 {
     m_port = port;
 }
@@ -256,9 +128,9 @@ void SmtpClient::setEncryptionType(const SmtpClient::EncryptionType &encryptionT
     m_encryptionType = encryptionType;
 }
 
-void SmtpClient::setAuthMethod(const SmtpClient::AuthMethod &authMethod)
+void SmtpClient::setAuthenticationMethod(const SmtpClient::AuthenticationMethod &authenticationMethod)
 {
-    m_authMethod = authMethod;
+    m_authenticationMethod = authenticationMethod;
 }
 
 void SmtpClient::setUser(const QString &user)
@@ -276,18 +148,297 @@ void SmtpClient::setSender(const QString &sender)
     m_sender = sender;
 }
 
-void SmtpClient::setRecipient(const QString &rcpt)
+void SmtpClient::setRecipients(const QStringList &recipients)
 {
-    m_rcpt = rcpt;
+    m_recipients = recipients;
 }
 
-void SmtpClient::socketError(QAbstractSocket::SocketError error)
+QString SmtpClient::createDateString()
 {
-    qCWarning(dcMailNotification) << "Mail socket -> " << error << m_socket->errorString();
+    return QDateTime::currentDateTime().toString(Qt::RFC2822Date);
+}
+
+void SmtpClient::setState(SmtpClient::State state)
+{
+    if (m_state == state)
+        return;
+
+    qCDebug(dcSmtpClient()) << state;
+    m_state = state;
+}
+
+void SmtpClient::processServerResponse(int responseCode, const QString &response)
+{
+    switch (m_state) {
+    case StateIdle:
+        // Check if we have to send an other email, otherwise we are done and remain in idle
+        sendNextMail();
+        break;
+    case StateInitialize:
+        if (responseCode == 220) {
+            send("EHLO localhost");
+
+            if (m_encryptionType == EncryptionTypeNone) {
+                setState(StateAuthentification);
+                break;
+            }
+
+            if (m_encryptionType == EncryptionTypeSSL) {
+                setState(StateHandShake);
+                break;
+            }
+
+            if (m_encryptionType == EncryptionTypeTLS) {
+                setState(StateStartTls);
+                break;
+            }
+        }
+        break;
+    case StateHandShake:
+        // Ignore server information messages
+        if (responseCode == 250) {
+            break;
+        }
+
+        // We need a 220 befor continue
+        if (responseCode == 220) {
+            if (!m_socket->isEncrypted() && m_encryptionType != EncryptionTypeNone) {
+                qCDebug(dcSmtpClient()) << "Start client encryption...";
+                m_socket->startClientEncryption();
+            }
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateStartTls:
+        // Ignore server information messages until we get a '250 ...' instead of '250-....'
+        if (responseCode == 250 && response.at(3) != ' ') {
+            break;
+        }
+        if (responseCode == 250) {
+            send("STARTTLS");
+            setState(StateHandShake);
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateAuthentification:
+        // Ignore server information messages until we get a '250 ...' instead of '250-....'
+        if (responseCode == 250 && response.at(3) != ' ') {
+            break;
+        }
+
+        if (responseCode == 250) {
+            if (m_authenticationMethod == AuthenticationMethodLogin) {
+                send("AUTH LOGIN");
+                setState(StateUser);
+                break;
+            }
+
+            if (m_authenticationMethod == AuthenticationMethodPlain) {
+                send("AUTH PLAIN " + QByteArray().append(static_cast<char>(0))
+                     .append(m_user)
+                     .append(static_cast<char>(0))
+                     .append(m_password)
+                     .toBase64());
+
+                // If we just want to test the Login, we are almost done here
+                if (!m_testLogin) {
+                    setState(StateMail);
+                } else {
+                    setState(StateTestLoginFinished);
+                }
+                break;
+            }
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateUser:
+        if (responseCode == 334) {
+            send(QByteArray().append(m_user).toBase64());
+            setState(StatePassword);
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StatePassword:
+        if (responseCode == 334) {
+            send(QByteArray().append(m_password).toBase64());
+            // if we just want to test the Login, we are almost done here
+            if (!m_testLogin) {
+                setState(StateMail);
+            } else {
+                setState(StateTestLoginFinished);
+            }
+            break;
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateTestLoginFinished:
+        if (responseCode == 235) {
+            emit testLoginFinished(true);
+        } else {
+            emit testLoginFinished(false);
+        }
+        m_socket->close();
+        m_testLogin = false;
+        break;
+    case StateMail:
+        if (responseCode == 235) {
+            send("MAIL FROM:<" + m_sender + ">");
+
+            // Prepare queue for recipients
+            m_recipientsQueue.clear();
+            qCDebug(dcSmtpClient()) << "Prepare recipients list" << m_recipients;
+            foreach (const QString &recipient, m_recipients) {
+                m_recipientsQueue.enqueue(recipient.trimmed());
+            }
+            setState(StateRcpt);
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateRcpt:
+        // Ignore server information messages until we get a '250 ...' instead of '250-....'
+        if (responseCode == 250 && response.at(3) != ' ') {
+            break;
+        }
+
+        if (responseCode == 250) {
+            send("RCPT TO:<" + m_recipientsQueue.dequeue() + ">");
+
+            if (m_recipientsQueue.isEmpty()) {
+                setState(StateData);
+            }
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateData:
+        // Ignore server information messages until we get a '250 ...' instead of '250-....'
+        if (responseCode == 250 && response.at(3) != ' ') {
+            break;
+        }
+
+        if (responseCode == 250) {
+            send("DATA");
+            setState(StateBody);
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateBody:
+        if (responseCode == 354) {
+            send(m_messageData + "\r\n.\r\n");
+            setState(StateQuit);
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateQuit:
+        // Ignore server information messages until we get a '250 ...' instead of '250-....'
+        if (responseCode == 250 && response.at(3) != ' ') {
+            break;
+        }
+
+        if (responseCode == 250) {
+            emit sendMailFinished(true, m_message.actionId);
+            send("QUIT");
+            setState(StateClose);
+        } else {
+            handleUnexpectedSmtpCode(responseCode, response);
+        }
+        break;
+    case StateClose:
+        if (responseCode == 221) {
+            m_socket->close();
+        } else {
+            qCDebug(dcSmtpClient()) << "The server does not handle the QUIT command. This is ok, we close the socket either way.";
+        }
+
+        // some mail server does not recognize the QUIT command...so close the connection either way
+        m_socket->close();
+        break;
+    }
+}
+
+void SmtpClient::sendNextMail()
+{
+    // Check if there is a mail left to send
+    if (m_messageQueue.isEmpty())
+        return;
+
+    // Check if busy
+    if (m_state != StateIdle)
+        return;
+
+    sendEmailInternally(m_messageQueue.dequeue());
+}
+
+void SmtpClient::sendEmailInternally(const Message &message)
+{
+    qCDebug(dcMailNotification()) << "Start sending message" << message.subject << message.body;
+
+    // Initialize data for sending
+    m_message = message;
+    m_messageData.clear();
+
+    // Create plain message content
+    m_messageData = "To: " + m_recipients.join(",") + "\r\n";
+    m_messageData.append("From: " + m_sender + "\r\n");
+    m_messageData.append("Subject: " + message.subject + "\r\n");
+    m_messageData.append("Date: " + createDateString() + "\r\n");
+    m_messageData.append("Content-Type: text/plain; charset=\"UTF-8\"\r\n");
+    m_messageData.append("Content-Transfer-Encoding: quoted-printable\r\n");
+    m_messageData.append("MIME-Version: 1.0\r\n");
+    m_messageData.append("X-Mailer: nymea;\r\n");
+    m_messageData.append("\r\n");
+    m_messageData.append(message.body);
+    m_messageData.append("\r\n.\r\n");
+
+    setState(StateInitialize);
+
+    // Make sure the connection starts from the beginning
+    m_socket->close();
+    connectToHost();
+}
+
+void SmtpClient::handleSmtpFailure()
+{
+    if (m_testLogin) {
+        emit testLoginFinished(false);
+    } else {
+        emit sendMailFinished(false, m_message.actionId);
+    }
+
+    // Clean up
+    m_socket->close();
+    m_messageData.clear();
+    m_testLogin = false;
+
+    // Set idle state (handles the queue)
+    setState(StateIdle);
+}
+
+void SmtpClient::handleUnexpectedSmtpCode(int responseCode, const QString &serverMessage)
+{
+    qCWarning(dcMailNotification()) << "Received unexpected error code from smtp server" << responseCode << serverMessage;
+    handleSmtpFailure();
+}
+
+void SmtpClient::onSocketError(QAbstractSocket::SocketError error)
+{
+    qCWarning(dcMailNotification()) << "Mail socket error" << error << m_socket->errorString();
+    if (m_state != StateIdle) {
+        handleSmtpFailure();
+    }
 }
 
 void SmtpClient::send(const QString &data)
 {
+    qCDebug(dcSmtpClient()) << "-->" << data;
     m_socket->write(data.toUtf8() + "\r\n");
     m_socket->flush();
 }

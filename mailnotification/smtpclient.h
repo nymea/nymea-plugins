@@ -23,87 +23,119 @@
 #ifndef SMTPCLIENT_H
 #define SMTPCLIENT_H
 
-#include <QObject>
+#include <QQueue>
 #include <QDebug>
+#include <QObject>
 #include <QTcpSocket>
 #include <QSslSocket>
+#include <QStringList>
+#include <QLoggingCategory>
 
 #include "plugin/deviceplugin.h"
+
+Q_DECLARE_LOGGING_CATEGORY(dcSmtpClient)
+
+struct Message {
+    QString subject;
+    QString body;
+    ActionId actionId;
+};
+
 
 class SmtpClient : public QObject
 {
     Q_OBJECT
 public:
 
-    enum AuthMethod{
-        AuthMethodPlain,
-        AuthMethodLogin
+    enum AuthenticationMethod{
+        AuthenticationMethodPlain,
+        AuthenticationMethodLogin
     };
+    Q_ENUM(AuthenticationMethod)
 
-    enum SendState{
-        InitState,
-        HandShakeState,
-        AuthentificationState,
-        StartTlsState,
-        UserState,
-        PasswordState,
-        TestLoginFinishedState,
-        MailState,
-        RcptState,
-        DataState,
-        BodyState,
-        QuitState,
-        CloseState
+    enum State{
+        StateIdle,
+        StateInitialize,
+        StateHandShake,
+        StateAuthentification,
+        StateStartTls,
+        StateUser,
+        StatePassword,
+        StateTestLoginFinished,
+        StateMail,
+        StateRcpt,
+        StateData,
+        StateBody,
+        StateQuit,
+        StateClose
     };
+    Q_ENUM(State)
 
     enum EncryptionType{
         EncryptionTypeNone,
         EncryptionTypeSSL,
         EncryptionTypeTLS
     };
+    Q_ENUM(EncryptionType)
 
-    explicit SmtpClient(QObject *parent = 0);
+    explicit SmtpClient(QObject *parent = nullptr);
 
     void connectToHost();
     void testLogin();
-    bool sendMail(const QString &subject, const QString &body, const ActionId &actionId);
+    void sendMail(const QString &subject, const QString &body, const ActionId &actionId);
 
     void setHost(const QString &host);
-    void setPort(const int &port);
+    void setPort(const quint16 &port);
     void setEncryptionType(const EncryptionType &encryptionType);
-    void setAuthMethod(const AuthMethod &authMethod);
+    void setAuthenticationMethod(const AuthenticationMethod &authenticationMethod);
     void setUser(const QString &user);
     void setPassword(const QString &password);
     void setSender(const QString &sender);
-    void setRecipient(const QString &rcpt);
-
+    void setRecipients(const QStringList &recipients);
 
 private:
-    QSslSocket *m_socket;
-    SendState m_state;
-    QString m_host;
-    int m_port;
+    QSslSocket *m_socket = nullptr;
+    State m_state = StateIdle;
+    QString m_host = "127.0.0.1";
+    quint16 m_port = 25;
+
     QString m_user;
     QString m_password;
     QString m_sender;
-    AuthMethod m_authMethod;
+    AuthenticationMethod m_authenticationMethod;
     EncryptionType m_encryptionType;
-    QString m_rcpt;
-    QString m_subject;
-    QString m_boy;
-    QString m_message;
-    ActionId m_actionId;
+    QStringList m_recipients;
+    QQueue<QString> m_recipientsQueue;
 
-    bool m_testLogin;
+    // Created for each message
+    Message m_message;
+    QString m_messageData;
+
+    QQueue<Message> m_messageQueue;
+
+    bool m_testLogin = false;
+
+    QString createDateString();
+    void setState(State state);
+
+    void processServerResponse(int responseCode, const QString &response);
+
+    void sendNextMail();
+    void sendEmailInternally(const Message &message);
+
+    void handleSmtpFailure();
+    void handleUnexpectedSmtpCode(int responseCode, const QString &serverMessage);
 
 signals:
     void sendMailFinished(const bool &success, const ActionId &actionId);
     void testLoginFinished(const bool &success);
 
 private slots:
-    void socketError(QAbstractSocket::SocketError error);
+
+    void onSocketError(QAbstractSocket::SocketError error);
     void connected();
     void disconnected();
+    void onEncrypted();
     void readData();
     void send(const QString &data);
 };
