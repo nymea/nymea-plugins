@@ -11,8 +11,7 @@ software is recomanded (min/max setpoint temperature, weekly program...).
 
 ### Max! Cube LAN Gateway
 
-This [cube](http://www.eq-3.de/max-heizungssteuerung-produktdetail/
-items/bc-lgw-o-tw.html) can be discovered in the network. Every device, which is connected with the cube, will be appear automatically, once the cube is configrued and
+This [cube](http://www.eq-3.de/max-heizungssteuerung-produktdetail/items/bc-lgw-o-tw.html) can be discovered in the network. Every device, which is connected with the cube, will be appear automatically, once the cube is configrued and
 added to nymea.
 
 ### Max! Wall Thermostat
