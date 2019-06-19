@@ -4,7 +4,7 @@ This plugin allows to make use of Sonoff-Tasmota devices via the nymea internal 
 
 Note that Sonoff devices must be flashed with the Tasmota sofware and connected to the WiFi network in order to work with this plugin.
 
-See [https://github.com/arendst/Sonoff-Tasmota/wiki](https://github.com/arendst/Sonoff-Tasmota/wiki) for a list of all supported devices and instructions on how to
+See [Sonoff-Tasmota wiki](https://github.com/arendst/Sonoff-Tasmota/wiki) for a list of all supported devices and instructions on how to
 install Tasmota on those.
 
 After flashing Tasmota to a Sonoff device and connecting it to WiFi, it can be added to nymea. The only required
