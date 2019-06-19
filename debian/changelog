@@ -1,3 +1,22 @@
+nymea-plugins (0.12.2) xenial; urgency=medium
+
+  [ Bernhard Trinnes ]
+  * Removed plugins: Orderbutton, Plantcare and ws2812
+  * renamed HTTP commander vendor, fixed segfault on device removed
+  * Fix serialportcommander
+
+  [ Michael Zanetti ]
+  * OpenWeatherMap: Add daylightsensor and allow loading custom API keys
+
+  [ Simon Stürz ]
+  * Update mail notifications plugin
+
+  [ Michael Zanetti ]
+  * Depend on pkg-config
+  * Kodi, AvahiMonitor: Update to new ZeroConf API
+
+ -- Jenkins <jenkins@nymea.io>  Wed, 19 Jun 2019 23:52:37 +0200
+
 nymea-plugins (0.12.1) xenial; urgency=medium
 
   [ Michael Zanetti ]
