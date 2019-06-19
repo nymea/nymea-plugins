@@ -22,26 +22,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page philipshue.html
-    \title Philips hue
-    \brief Plugin for the Philips Hue lighting system.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to interact with the \l{http://www2.meethue.com/}{Philips hue} bridge. Each light bulp connected to the bridge
-    will appear automatically in the system, once the bridge is added to nymea.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/philipshue/devicepluginphilipshue.json
-*/
-
 #include "devicepluginphilipshue.h"
 
 #include "devicemanager.h"
