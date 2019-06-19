@@ -58,6 +58,9 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QDateTime>
+#include <QTimeZone>
+#include <QSettings>
+#include "nymeasettings.h"
 
 DevicePluginOpenweathermap::DevicePluginOpenweathermap()
 {
@@ -65,6 +68,14 @@ DevicePluginOpenweathermap::DevicePluginOpenweathermap()
     // max 50000 calls/day
     m_apiKey = "c1b9d5584bb740804871583f6c62744f";
 
+    QSettings settings(NymeaSettings::settingsPath() + "/nymead.conf", QSettings::IniFormat);
+    settings.beginGroup("OpenWeatherMap");
+    if (settings.contains("apiKey")) {
+        m_apiKey = settings.value("apiKey").toString();
+        qCDebug(dcOpenWeatherMap()) << "Using custom API key:" << m_apiKey.replace(m_apiKey.length() - 10, 10, "**********");
+    }
+
+    settings.endGroup();
 }
 
 DevicePluginOpenweathermap::~DevicePluginOpenweathermap()
@@ -372,11 +383,16 @@ void DevicePluginOpenweathermap::processWeatherData(const QByteArray &data, Devi
     }
 
     if (dataMap.contains("sys")) {
-        uint sunrise = dataMap.value("sys").toMap().value("sunrise").toUInt();
-        uint sunset = dataMap.value("sys").toMap().value("sunset").toUInt();
+        qint64 sunrise = dataMap.value("sys").toMap().value("sunrise").toLongLong();
+        qint64 sunset = dataMap.value("sys").toMap().value("sunset").toLongLong();
 
-        device->setStateValue(openweathermapSunriseStateTypeId, sunrise);
-        device->setStateValue(openweathermapSunsetStateTypeId, sunset);
+        device->setStateValue(openweathermapSunriseTimeStateTypeId, sunrise);
+        device->setStateValue(openweathermapSunsetTimeStateTypeId, sunset);
+        QTimeZone tz = QTimeZone(QTimeZone::systemTimeZoneId());
+        QDateTime up = QDateTime::fromMSecsSinceEpoch(sunrise * 1000);
+        QDateTime down = QDateTime::fromMSecsSinceEpoch(sunset * 1000);
+        QDateTime now = QDateTime::currentDateTime().toTimeZone(tz);
+        device->setStateValue(openweathermapDaylightStateTypeId, up < now && down > now);
     }
 
     if (dataMap.contains("visibility")) {
@@ -388,15 +404,15 @@ void DevicePluginOpenweathermap::processWeatherData(const QByteArray &data, Devi
     if (dataMap.contains("weather") && dataMap.value("weather").toList().count() > 0) {
         int conditionId = dataMap.value("weather").toList().first().toMap().value("id").toInt();
         if (conditionId == 800) {
-            if (device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > device->stateValue(openweathermapSunriseStateTypeId).toInt() &&
-                device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < device->stateValue(openweathermapSunsetStateTypeId).toInt()) {
+            if (device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > device->stateValue(openweathermapSunriseTimeStateTypeId).toInt() &&
+                device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < device->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
                 device->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-day");
             } else {
                 device->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-night");
             }
         } else if (conditionId == 801) {
-            if (device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > device->stateValue(openweathermapSunriseStateTypeId).toInt() &&
-                device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < device->stateValue(openweathermapSunsetStateTypeId).toInt()) {
+            if (device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > device->stateValue(openweathermapSunriseTimeStateTypeId).toInt() &&
+                device->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < device->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
                 device->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-day");
             } else {
                 device->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-night");
