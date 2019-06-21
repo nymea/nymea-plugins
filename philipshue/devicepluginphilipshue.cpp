@@ -103,8 +103,87 @@ DeviceManager::DeviceError DevicePluginPhilipsHue::discoverDevices(const DeviceC
     Q_UNUSED(params)
     Q_UNUSED(deviceClassId)
 
-    UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices("libhue:idl");
-    connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginPhilipsHue::onUpnpDiscoveryFinished);
+    DiscoveryJob *discovery = new DiscoveryJob();
+
+    qCDebug(dcPhilipsHue()) << "Starting UPnP discovery...";
+    UpnpDiscoveryReply *upnpReply = hardwareManager()->upnpDiscovery()->discoverDevices("libhue:idl");
+    discovery->upnpReply = upnpReply;
+    connect(upnpReply, &UpnpDiscoveryReply::finished, this, [this, upnpReply, discovery](){
+        upnpReply->deleteLater();
+        discovery->upnpReply = nullptr;
+
+        if (upnpReply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
+            qCWarning(dcPhilipsHue()) << "Upnp discovery error" << upnpReply->error();
+        }
+
+        foreach (const UpnpDeviceDescriptor &upnpDevice, upnpReply->deviceDescriptors()) {
+            if (upnpDevice.modelDescription().contains("Philips")) {
+                DeviceDescriptor descriptor(bridgeDeviceClassId, "Philips Hue Bridge", upnpDevice.hostAddress().toString());
+                ParamList params;
+                QString bridgeId = upnpDevice.serialNumber().toLower();
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(bridgeDeviceIdParamTypeId).toString() == bridgeId) {
+                        descriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
+                params.append(Param(bridgeDeviceHostParamTypeId, upnpDevice.hostAddress().toString()));
+                params.append(Param(bridgeDeviceIdParamTypeId, bridgeId));
+                // Not known yet...
+                params.append(Param(bridgeDeviceApiKeyParamTypeId, QString()));
+                params.append(Param(bridgeDeviceMacParamTypeId, QString()));
+                params.append(Param(bridgeDeviceZigbeeChannelParamTypeId, -1));
+                descriptor.setParams(params);
+                qCDebug(dcPhilipsHue()) << "UPnP: Found Hue bridge:" << bridgeId;
+                discovery->results.append(descriptor);
+            }
+        }
+
+        finishDiscovery(discovery);
+    });
+
+
+    qCDebug(dcPhilipsHue) << "Starting N-UPNP discovery...";
+    QNetworkRequest request(QUrl("https://www.meethue.com/api/nupnp"));
+    QNetworkReply *nUpnpReply = hardwareManager()->networkManager()->get(request);
+    discovery->nUpnpReply = nUpnpReply;
+    connect(nUpnpReply, &QNetworkReply::finished, this, [this, nUpnpReply, discovery](){
+        nUpnpReply->deleteLater();
+        discovery->nUpnpReply = nullptr;
+
+        if (nUpnpReply->error() != QNetworkReply::NoError) {
+            qCWarning(dcPhilipsHue()) << "N-UPnP discovery failed:" << nUpnpReply->error() << nUpnpReply->errorString();
+            finishDiscovery(discovery);
+            return;
+        }
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(nUpnpReply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcPhilipsHue) << "N-UPNP discovery JSON error in response" << error.errorString();
+            return;
+        }
+
+        foreach (const QVariant &bridgeVariant, jsonDoc.toVariant().toList()) {
+            QVariantMap bridgeMap = bridgeVariant.toMap();
+            DeviceDescriptor descriptor(bridgeDeviceClassId, "Philips Hue Bridge", bridgeMap.value("internalipaddress").toString());
+            ParamList params;
+            QString bridgeId = bridgeMap.value("id").toString().toLower();
+            // For some reason the N-UPnP api returns serial numbers with a "fffe" in the middle...
+            if (bridgeId.indexOf("fffe") == 6) {
+                bridgeId.remove(6, 4);
+            }
+            params.append(Param(bridgeDeviceHostParamTypeId, bridgeMap.value("internalipaddress").toString()));
+            params.append(Param(bridgeDeviceIdParamTypeId, bridgeId));
+            params.append(Param(bridgeDeviceApiKeyParamTypeId, QString()));
+            params.append(Param(bridgeDeviceMacParamTypeId, QString()));
+            params.append(Param(bridgeDeviceZigbeeChannelParamTypeId, -1));
+            descriptor.setParams(params);
+            qCDebug(dcPhilipsHue()) << "N-UPnP: Found Hue bridge:" << bridgeId;
+            discovery->results.append(descriptor);
+        }
+
+        finishDiscovery(discovery);
+    });
 
     return DeviceManager::DeviceErrorAsync;
 }
@@ -371,15 +450,6 @@ void DevicePluginPhilipsHue::networkManagerReplyReady()
         }
         processInformationResponse(pairingInfo, reply->readAll());
 
-    } else if (m_discoveryRequests.contains(reply)) {
-        m_discoveryRequests.removeAll(reply);
-        // check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcPhilipsHue) << "N-UPNP discovery error:" << status << reply->errorString();
-            return;
-        }
-        processNUpnpResponse(reply->readAll());
-
     } else if (m_bridgeLightsDiscoveryRequests.contains(reply)) {
         Device *device = m_bridgeLightsDiscoveryRequests.take(reply);
 
@@ -500,6 +570,32 @@ void DevicePluginPhilipsHue::onDeviceNameChanged()
     if (m_remotes.values().contains(device)) {
         setRemoteName(device);
     }
+}
+
+void DevicePluginPhilipsHue::finishDiscovery(DevicePluginPhilipsHue::DiscoveryJob *job)
+{
+    if (job->upnpReply || job->nUpnpReply) {
+        // still pending...
+        return;
+    }
+    QHash<QString, DeviceDescriptor> results;
+    foreach (DeviceDescriptor result, job->results) {
+        // dedupe
+        QString bridgeId = result.params().paramValue(bridgeDeviceIdParamTypeId).toString();
+        if (results.contains(bridgeId)) {
+            qCDebug(dcPhilipsHue()) << "Discarding duplicate search result" << bridgeId;
+            continue;
+        }
+        Device *dev = bridgeForBridgeId(bridgeId);
+        if (dev) {
+            qCDebug(dcPhilipsHue()) << "Bridge already added in system:" << bridgeId;
+            result.setDeviceId(dev->id());
+        }
+        results.insert(bridgeId, result);
+
+    }
+    emit devicesDiscovered(bridgeDeviceClassId, results.values());
+    delete job;
 }
 
 DeviceManager::DeviceError DevicePluginPhilipsHue::executeAction(Device *device, const Action &action)
@@ -806,58 +902,6 @@ void DevicePluginPhilipsHue::onOutdoorSensorLightIntensityChanged(double lightIn
     sensorDevice->setStateValue(outdoorSensorLightIntensityStateTypeId, lightIntensity);
 }
 
-void DevicePluginPhilipsHue::onUpnpDiscoveryFinished()
-{
-    qCDebug(dcPhilipsHue()) << "Upnp discovery finished";
-    UpnpDiscoveryReply *reply = static_cast<UpnpDiscoveryReply *>(sender());
-    if (reply->error() != UpnpDiscoveryReply::UpnpDiscoveryReplyErrorNoError) {
-        qCWarning(dcPhilipsHue()) << "Upnp discovery error" << reply->error();
-    }
-    reply->deleteLater();
-
-    if (reply->deviceDescriptors().isEmpty()) {
-        qCDebug(dcPhilipsHue) << "No UPnP device found. Try N-UPNP discovery.";
-        QNetworkRequest request(QUrl("https://www.meethue.com/api/nupnp"));
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-        connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
-        m_discoveryRequests.append(reply);
-        return;
-    }
-
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (const UpnpDeviceDescriptor &upnpDevice, reply->deviceDescriptors()) {
-        if (upnpDevice.modelDescription().contains("Philips")) {
-            DeviceDescriptor descriptor(bridgeDeviceClassId, "Philips Hue Bridge", upnpDevice.hostAddress().toString());
-            ParamList params;
-            QString bridgeId = upnpDevice.serialNumber().toLower();
-            foreach (Device *existingDevice, myDevices()) {
-                if (existingDevice->paramValue(bridgeDeviceIdParamTypeId).toString() == bridgeId) {
-                    descriptor.setDeviceId(existingDevice->id());
-                    break;
-                }
-            }
-            params.append(Param(bridgeDeviceHostParamTypeId, upnpDevice.hostAddress().toString()));
-            params.append(Param(bridgeDeviceIdParamTypeId, upnpDevice.serialNumber().toLower()));
-            // Not known yet...
-            params.append(Param(bridgeDeviceApiKeyParamTypeId, QString()));
-            params.append(Param(bridgeDeviceMacParamTypeId, QString()));
-            params.append(Param(bridgeDeviceZigbeeChannelParamTypeId, -1));
-            descriptor.setParams(params);
-
-            Device *dev = bridgeForBridgeId(upnpDevice.serialNumber().toLower());
-            if (dev) {
-                qCDebug(dcPhilipsHue()) << "Found already added Hue bridge:" << upnpDevice.serialNumber().toLower();
-                descriptor.setDeviceId(dev->id());
-            } else {
-                qCDebug(dcPhilipsHue()) << "Found new Hue bridge:" << upnpDevice.serialNumber().toLower();
-            }
-            deviceDescriptors.append(descriptor);
-        }
-    }
-
-    emit devicesDiscovered(bridgeDeviceClassId, deviceDescriptors);
-}
-
 void DevicePluginPhilipsHue::refreshLight(Device *device)
 {
     HueLight *light = m_lights.key(device);
@@ -964,36 +1008,6 @@ void DevicePluginPhilipsHue::setRemoteName(Device *device)
     QNetworkReply *reply = hardwareManager()->networkManager()->put(request,jsonDoc.toJson());
     connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
     m_setNameRequests.insert(reply, device);
-}
-
-void DevicePluginPhilipsHue::processNUpnpResponse(const QByteArray &data)
-{
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-
-    // Check JSON error
-    if (error.error != QJsonParseError::NoError) {
-        qCWarning(dcPhilipsHue) << "N-UPNP discovery JSON error in response" << error.errorString();
-        return;
-    }
-
-    QVariantList bridgeList = jsonDoc.toVariant().toList();
-
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (const QVariant &bridgeVariant, bridgeList) {
-        QVariantMap bridgeMap = bridgeVariant.toMap();
-        DeviceDescriptor descriptor(bridgeDeviceClassId, "Philips Hue Bridge", bridgeMap.value("internalipaddress").toString());
-        ParamList params;
-        params.append(Param(bridgeDeviceHostParamTypeId, bridgeMap.value("internalipaddress").toString()));
-        params.append(Param(bridgeDeviceApiKeyParamTypeId, QString()));
-        params.append(Param(bridgeDeviceMacParamTypeId, QString()));
-        params.append(Param(bridgeDeviceIdParamTypeId, bridgeMap.value("internalipaddress").toString().toLower()));
-        params.append(Param(bridgeDeviceZigbeeChannelParamTypeId, -1));
-        descriptor.setParams(params);
-        deviceDescriptors.append(descriptor);
-    }
-    qCDebug(dcPhilipsHue) << "N-UPNP discover finished. Found" << deviceDescriptors.count() << "devices.";
-    emit devicesDiscovered(bridgeDeviceClassId, deviceDescriptors);
 }
 
 void DevicePluginPhilipsHue::processBridgeLightDiscoveryResponse(Device *device, const QByteArray &data)
@@ -1546,7 +1560,6 @@ Device* DevicePluginPhilipsHue::bridgeForBridgeId(const QString &id)
 {
     foreach (Device *device, myDevices()) {
         if (device->deviceClassId() == bridgeDeviceClassId) {
-            qCDebug(dcPhilipsHue()) << "Have bridge" << device->name() << device->paramValue(bridgeDeviceIdParamTypeId).toString().toLower() << id;
             if (device->paramValue(bridgeDeviceIdParamTypeId).toString().toLower() == id) {
                 return device;
             }

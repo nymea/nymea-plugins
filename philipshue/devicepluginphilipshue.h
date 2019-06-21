@@ -69,11 +69,18 @@ private slots:
     void onOutdoorSensorLightIntensityChanged(double lightIntensity);
 
 private slots:
-    void onUpnpDiscoveryFinished();
     void networkManagerReplyReady();
     void onDeviceNameChanged();
 
 private:
+    class DiscoveryJob {
+    public:
+        UpnpDiscoveryReply* upnpReply;
+        QNetworkReply* nUpnpReply;
+        QList<DeviceDescriptor> results;
+    };
+    void finishDiscovery(DiscoveryJob* job);
+
     PluginTimer *m_pluginTimer1Sec = nullptr;
     PluginTimer *m_pluginTimer5Sec = nullptr;
     PluginTimer *m_pluginTimer15Sec = nullptr;
@@ -83,7 +90,6 @@ private:
 
     QList<HueBridge *> m_unconfiguredBridges;
     QList<HueLight *> m_unconfiguredLights;
-    QList<QNetworkReply *> m_discoveryRequests;
 
     QHash<QNetworkReply *, Device *> m_lightRefreshRequests;
     QHash<QNetworkReply *, Device *> m_setNameRequests;
