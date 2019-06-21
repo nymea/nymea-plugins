@@ -515,46 +515,6 @@
                     ],
                     "eventTypes": [
                         {
-                            "id": "de769db0-4c31-46cf-9760-dbc6f9209c26",
-                            "name": "onPressed",
-                            "displayName": "on pressed"
-                        },
-                        {
-                            "id": "6c5e596b-7c15-40bb-af9d-c778a6b0f30e",
-                            "name": "onLongPressed",
-                            "displayName": "on long pressed"
-                        },
-                        {
-                            "id": "8e3d6a62-6a19-4e9a-a25b-e1da2e56ede9",
-                            "name": "dimUpPressed",
-                            "displayName": "dim up pressed"
-                        },
-                        {
-                            "id": "53d3c9af-3e25-4116-b22b-38d897bc20aa",
-                            "name": "dimUpLongPressed",
-                            "displayName": "dim up long pressed"
-                        },
-                        {
-                            "id": "efd8b972-9a37-43f2-b9bc-f9dfe144a96d",
-                            "name": "dimDownPressed",
-                            "displayName": "dim down pressed"
-                        },
-                        {
-                            "id": "1986d4c6-4c9f-4e43-ba70-0ff06c6f177b",
-                            "name": "dimDownLongPressed",
-                            "displayName": "dim down long pressed"
-                        },
-                        {
-                            "id": "7c2a58f1-137c-4bf3-8f9e-453dff020487",
-                            "name": "offPressed",
-                            "displayName": "off pressed"
-                        },
-                        {
-                            "id": "d69306eb-ea52-4841-9e26-89c69e9cf6fc",
-                            "name": "offLongPressed",
-                            "displayName": "off long pressed"
-                        },
-                        {
                             "id": "8da28cf1-2457-451e-953e-2685f8daeda8",
                             "name": "pressed",
                             "displayName": "Button pressed",
