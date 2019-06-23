@@ -37,13 +37,13 @@ public:
 
     bool connectDevice();
 
-    bool getCoil(int slaveAddress, int registerAddress);
-    bool getDiscreteInput(int slaveAddress, int registerAddress);
-    bool getInputRegister(int slaveAddress, int registerAddress);
-    bool getHoldingRegister(int slaveAddress, int registerAddress);
+    bool readCoil(int slaveAddress, int registerAddress);
+    bool readDiscreteInput(int slaveAddress, int registerAddress);
+    bool readInputRegister(int slaveAddress, int registerAddress);
+    bool readHoldingRegister(int slaveAddress, int registerAddress);
 
-    bool setCoil(int slaveAddress, int registerAddress, bool status);
-    bool setHoldingRegister(int slaveAddress, int registerAddress, int data);
+    bool writeCoil(int slaveAddress, int registerAddress, bool status);
+    bool writeHoldingRegister(int slaveAddress, int registerAddress, int data);
 
     QString ipv4Address();
     int port();
@@ -54,9 +54,6 @@ public:
 private:
     QTimer *m_reconnectTimer = nullptr;
     QModbusTcpClient *m_modbusTcpClient;
-
-    QString m_IPv4Address;
-    int m_port;
 
 private slots:
     void onReplyFinished();

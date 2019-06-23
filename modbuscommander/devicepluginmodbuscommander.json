@@ -54,7 +54,7 @@
                 },
                 {
                     "id": "776df314-6186-4eb5-b824-f0d916f6d9c3",
-                    "name": "modbusRTUInterface",
+                    "name": "modbusRTUClient",
                     "displayName": "Modbus RTU client",
                     "createMethods": ["discovery", "user"],
                     "interfaces": ["connectable"],
@@ -115,8 +115,8 @@
                 },
                 {
                     "id": "f53524ea-1d06-40a9-b7a4-041297b21e84",
-                    "name": "discreteInput",
-                    "displayName": "Discrete input",
+                    "name": "coil",
+                    "displayName": "Coil",
                     "createMethods": ["discovery"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
@@ -165,8 +165,8 @@
                 },
                 {
                     "id": "d7a15b39-48d3-4591-bdad-ec5e799aa6e5",
-                    "name": "coil",
-                    "displayName": "Coil",
+                    "name": "discreteInput",
+                    "displayName": "Discrete input",
                     "createMethods": ["discovery"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
@@ -213,8 +213,8 @@
                 },
                 {
                     "id": "e4c34050-d115-440f-b332-63d36e3e12b8",
-                    "name": "holdingRegister",
-                    "displayName": "Holding register",
+                    "name": "inputRegister",
+                    "displayName": "Input register",
                     "createMethods": ["discovery"],
                     "interfaces": ["connectable"],
                     "paramTypes": [
@@ -251,11 +251,11 @@
                         },
                         {
                             "id": "eabe2d1b-abe5-4063-adab-3cdd8500b286",
-                            "name": "data",
-                            "displayName": "data",
+                            "name": "Value",
+                            "displayName": "Value",
                             "type": "int",
                             "defaultValue": 0,
-                            "displayNameEvent": "data received"
+                            "displayNameEvent": "Value received"
                         }
                     ]
                 },

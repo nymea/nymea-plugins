@@ -25,149 +25,250 @@
 
 #include <QSerialPortInfo>
 
-ModbusRTUMaster::ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent) :
-    QObject(parent),
-    m_serialPort(serialPort),
-    m_baudrate(baudrate),
-    m_parity(parity),
-    m_dataBits(dataBits),
-    m_stopBits(stopBits)
+ModbusRTUMaster::ModbusRTUMaster(QString serialPort, int baudrate, QSerialPort::Parity parity, int dataBits, int stopBits, QObject *parent) :
+    QObject(parent)
 {
-    QModbusRtuSerialMaster *modbusRTUMaster = new QModbusRtuSerialMaster(this);
-    modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialPortNameParameter, serialPort);
-    modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baudrate);
-    modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, 8);
-    modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, 1);
-    //modbusRTUMaster->setTimeout(100);
-    //modbusRTUMaster->setNumberOfRetries(1);
+    m_modbusRtuSerialMaster = new QModbusRtuSerialMaster(this);
+    m_modbusRtuSerialMaster->setConnectionParameter(QModbusDevice::SerialPortNameParameter, serialPort);
+    m_modbusRtuSerialMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baudrate);
+    m_modbusRtuSerialMaster->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, dataBits);
+    m_modbusRtuSerialMaster->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, stopBits);
+    m_modbusRtuSerialMaster->setConnectionParameter(QModbusDevice::SerialParityParameter, parity);
+    //m_modbusRtuSerialMaster->setTimeout(100);
+    //m_modbusRtuSerialMaster->setNumberOfRetries(1);
+    connect(m_modbusRtuSerialMaster, &QModbusTcpClient::stateChanged, this, &ModbusRTUMaster::onModbusStateChanged);
+    connect(m_modbusRtuSerialMaster, &QModbusRtuSerialMaster::errorOccurred, this, &ModbusRTUMaster::onModbusErrorOccurred);
+
+    m_reconnectTimer = new QTimer(this);
+    m_reconnectTimer->setSingleShot(true);
+    connect(m_reconnectTimer, &QTimer::timeout, this, &ModbusRTUMaster::onReconnectTimer);
 }
+
 
 ModbusRTUMaster::~ModbusRTUMaster()
 {
+    if (!m_modbusRtuSerialMaster) {
+        m_modbusRtuSerialMaster->disconnectDevice();
+        m_modbusRtuSerialMaster->deleteLater();
+    }
+    if (!m_reconnectTimer) {
+        m_reconnectTimer->stop();
+        m_reconnectTimer->deleteLater();
+    }
+}
 
+bool ModbusRTUMaster::connectDevice()
+{
+    qDebug(dcModbusCommander()) << "Setting up TCP connecion";
+
+    if (!m_modbusRtuSerialMaster)
+        return false;
+
+    return m_modbusRtuSerialMaster->connectDevice();
 }
 
 QString ModbusRTUMaster::serialPort()
 {
-    return m_serialPort;
+    return m_modbusRtuSerialMaster->connectionParameter(QModbusDevice::SerialPortNameParameter).toString();
 }
 
-bool ModbusRTUMaster::createInterface()
+void ModbusRTUMaster::onReplyFinished()
 {
-    //Setting up a RTU interface
-    qDebug(dcModbusCommander()) << "Setting up a RTU interface" << m_serialPort << "baud:" << m_baudrate << "parity:" << m_parity << "stop bits:" << m_stopBits << "data bits:" << m_dataBits ;
+    QModbusReply *reply = qobject_cast<QModbusReply *>(sender());
+    if (!reply)
+        return;
+    int modbusAddress = 0;
 
-    if (!isConnected())
-        return false;
+    if (reply->error() == QModbusDevice::NoError) {
+        const QModbusDataUnit unit = reply->result();
 
-    char parity;
-    if (m_parity.size() == 1) {
-        parity = m_parity.toUtf8().at(0);
-    } else {
-        qCWarning(dcModbusCommander()) << "Error parity wrong: " << m_parity;
-        return false;
-    }
+        for (int i = 0; i < static_cast<int>(unit.valueCount()); i++) {
+            //qCDebug(dcUniPi()) << "Start Address:" << unit.startAddress() << "Register Type:" << unit.registerType() << "Value:" << unit.value(i);
+            modbusAddress = unit.startAddress() + i;
 
-    char *port = m_serialPort.toLatin1().data();
-    m_mb = modbus_new_rtu(port, m_baudrate, parity, m_dataBits, m_stopBits);
-
-    if(m_mb == nullptr){
-        qCWarning(dcModbusCommander()) << "Error modbus RTU: " << modbus_strerror(errno);
-        return false;
-    }
-
-    if(modbus_connect(m_mb) == -1){
-        qCWarning(dcModbusCommander()) << "Error connecting modbus:" << modbus_strerror(errno) << port;
-        return false;
-    }
-    return true;
-}
-
-bool ModbusRTUMaster::isConnected()
-{
-    Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
-
-        if (m_serialPort == port.systemLocation()) {
-
-            if(modbus_connect(m_mb) == -1){
-                return false;
+            switch (unit.registerType()) {
+            case QModbusDataUnit::RegisterType::Coils:
+                emit receivedCoil(reply->serverAddress(), modbusAddress, unit.value(i));
+                break;
+            case QModbusDataUnit::RegisterType::DiscreteInputs:
+                emit receivedDiscreteInput(reply->serverAddress(), modbusAddress, unit.value(i));
+                break;
+            case QModbusDataUnit::RegisterType::InputRegisters:
+                emit receivedInputRegister(reply->serverAddress(), modbusAddress, unit.value(i));
+                break;
+            case QModbusDataUnit::RegisterType::HoldingRegisters:
+                emit receivedHoldingRegister(reply->serverAddress(), modbusAddress, unit.value(i));
+                break;
+            case QModbusDataUnit::RegisterType::Invalid:
+                break;
             }
-            return true;
         }
+
+    } else if (reply->error() == QModbusDevice::ProtocolError) {
+        qCWarning(dcModbusCommander()) << "Read response error:" << reply->errorString() << reply->rawResult().exceptionCode();
+    } else {
+        qCWarning(dcModbusCommander()) << "Read response error:" << reply->error();
     }
-    return false;
+    reply->deleteLater();
 }
 
-bool ModbusRTUMaster::setCoil(int slaveAddress, int coilAddress, bool status)
+void ModbusRTUMaster::onReplyErrorOccured(QModbusDevice::Error error)
 {
-    if (!isConnected())
-        return false;
+    qCWarning(dcModbusCommander()) << "Modbus replay error:" << error;
+    QModbusReply *reply = qobject_cast<QModbusReply *>(sender());
+    if (!reply)
+        return;
+    reply->finished(); //to make sure it will be deleted
+}
 
-    if(modbus_set_slave(m_mb, slaveAddress) == -1){
-        qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return false;
+void ModbusRTUMaster::onReconnectTimer()
+{
+    if(!m_modbusRtuSerialMaster->connectDevice()) {
+        m_reconnectTimer->start(10000);
     }
+}
 
-    if (modbus_write_bit(m_mb, coilAddress, status) == -1) {
-        qCWarning(dcModbusCommander()) << "Could not write Coil" << coilAddress << "Reason:" << modbus_strerror(errno);
+bool ModbusRTUMaster::readCoil(int slaveAddress, int registerAddress)
+{
+    if (!m_modbusRtuSerialMaster)
         return false;
+
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils, registerAddress, 1);
+
+    if (QModbusReply *reply = m_modbusRtuSerialMaster->sendReadRequest(request, slaveAddress)) {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, this, &ModbusRTUMaster::onReplyFinished);
+            connect(reply, &QModbusReply::errorOccurred, this, &ModbusRTUMaster::onReplyErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
+        } else {
+            delete reply; // broadcast replies return immediately
+        }
+    } else {
+        qCWarning(dcModbusCommander()) << "Read error: " << m_modbusRtuSerialMaster->errorString();
     }
     return true;
 }
 
-bool ModbusRTUMaster::setRegister(int slaveAddress, int registerAddress, int data)
+bool ModbusRTUMaster::writeCoil(int slaveAddress, int registerAddress, bool value)
 {
-    if (!m_mb) {
-        if (!createInterface())
-            return false;
-    }
-
-    if (!isConnected())
+    if (!m_modbusRtuSerialMaster)
         return false;
 
-    if(modbus_set_slave(m_mb, slaveAddress) == -1){
-        qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return false;
-    }
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::Coils, registerAddress, 1);
+    request.setValue(0, static_cast<uint16_t>(value));
 
-    if (modbus_write_register(m_mb, registerAddress, data) == -1) {
-        qCWarning(dcModbusCommander()) << "Could not write Register" << registerAddress << "Reason:" << modbus_strerror(errno);
-        return false;
+    if (QModbusReply *reply = m_modbusRtuSerialMaster->sendWriteRequest(request, slaveAddress)) {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, this, &ModbusRTUMaster::onReplyFinished);
+            connect(reply, &QModbusReply::errorOccurred, this, &ModbusRTUMaster::onReplyErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
+        } else {
+            delete reply; // broadcast replies return immediately
+        }
+    } else {
+        qCWarning(dcModbusCommander()) << "Read error: " << m_modbusRtuSerialMaster->errorString();
     }
     return true;
 }
 
-bool ModbusRTUMaster::getCoil(int slaveAddress, int coilAddress)
+bool ModbusRTUMaster::writeHoldingRegister(int slaveAddress, int registerAddress, int value)
 {
-    if (!m_mb) {
-        if (!createInterface())
-            return false;
-    }
+    if (!m_modbusRtuSerialMaster)
+        return false;
 
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::HoldingRegisters, registerAddress, 1);
+    request.setValue(0, static_cast<uint16_t>(value));
+
+    if (QModbusReply *reply = m_modbusRtuSerialMaster->sendWriteRequest(request, slaveAddress)) {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, this, &ModbusRTUMaster::onReplyFinished);
+            connect(reply, &QModbusReply::errorOccurred, this, &ModbusRTUMaster::onReplyErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
+        } else {
+            delete reply; // broadcast replies return immediately
+        }
+    } else {
+        qCWarning(dcModbusCommander()) << "Read error: " << m_modbusRtuSerialMaster->errorString();
+    }
     return true;
 }
 
-bool ModbusRTUMaster::getRegister(int slaveAddress, int registerAddress, int *result)
+bool ModbusRTUMaster::readDiscreteInput(int slaveAddress, int registerAddress)
 {
-    uint16_t data;
-
-    if (!m_mb) {
-        if (!createInterface())
-            return false;
-    }
-
-    if (!isConnected())
+    if (!m_modbusRtuSerialMaster)
         return false;
 
-    if(modbus_set_slave(m_mb, slaveAddress) == -1){
-        qCWarning(dcModbusCommander()) << "Error setting slave ID" << slaveAddress << "Reason:" << modbus_strerror(errno) ;
-        return false;
-    }
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::DiscreteInputs, registerAddress, 1);
 
-    if (modbus_read_registers(m_mb, registerAddress, 1, &data) == -1){
-        qCWarning(dcModbusCommander()) << "Could not read register" << registerAddress << "Reason:" << modbus_strerror(errno);
-        return false;
+    if (QModbusReply *reply = m_modbusRtuSerialMaster->sendReadRequest(request, slaveAddress)) {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, this, &ModbusRTUMaster::onReplyFinished);
+            connect(reply, &QModbusReply::errorOccurred, this, &ModbusRTUMaster::onReplyErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
+        } else {
+            delete reply; // broadcast replies return immediately
+        }
+    } else {
+        qCWarning(dcModbusCommander()) << "Read error: " << m_modbusRtuSerialMaster->errorString();
     }
-    *result = data;
     return true;
+}
+
+bool ModbusRTUMaster::readInputRegister(int slaveAddress, int registerAddress)
+{
+    if (!m_modbusRtuSerialMaster)
+        return false;
+
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::InputRegisters, registerAddress, 1);
+
+    if (QModbusReply *reply = m_modbusRtuSerialMaster->sendReadRequest(request, slaveAddress)) {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, this, &ModbusRTUMaster::onReplyFinished);
+            connect(reply, &QModbusReply::errorOccurred, this, &ModbusRTUMaster::onReplyErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
+        } else {
+            delete reply; // broadcast replies return immediately
+        }
+    } else {
+        qCWarning(dcModbusCommander()) << "Read error: " << m_modbusRtuSerialMaster->errorString();
+    }
+    return true;
+}
+
+bool ModbusRTUMaster::readHoldingRegister(int slaveAddress, int registerAddress)
+{
+    if (!m_modbusRtuSerialMaster)
+        return false;
+
+    QModbusDataUnit request = QModbusDataUnit(QModbusDataUnit::RegisterType::HoldingRegisters, registerAddress, 1);
+
+    if (QModbusReply *reply = m_modbusRtuSerialMaster->sendReadRequest(request, slaveAddress)) {
+        if (!reply->isFinished()) {
+            connect(reply, &QModbusReply::finished, this, &ModbusRTUMaster::onReplyFinished);
+            connect(reply, &QModbusReply::errorOccurred, this, &ModbusRTUMaster::onReplyErrorOccured);
+            QTimer::singleShot(200, reply, SLOT(deleteLater()));
+        } else {
+            delete reply; // broadcast replies return immediately
+        }
+    } else {
+        qCWarning(dcModbusCommander()) << "Read error: " << m_modbusRtuSerialMaster->errorString();
+    }
+    return true;
+}
+
+
+void ModbusRTUMaster::onModbusErrorOccurred(QModbusDevice::Error error)
+{
+    qCWarning(dcModbusCommander()) << "An error occured" << error;
+}
+
+
+void ModbusRTUMaster::onModbusStateChanged(QModbusDevice::State state)
+{
+    bool connected = (state != QModbusDevice::UnconnectedState);
+    if (!connected) {
+        //try to reconnect in 10 seconds
+        m_reconnectTimer->start(10000);
+    }
+    emit connectionStateChanged(connected);
 }

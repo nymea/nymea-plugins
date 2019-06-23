@@ -11,9 +11,9 @@ QT += \
 SOURCES += \
     devicepluginmodbuscommander.cpp \  
     modbustcpmaster.cpp \
-    modbusrtumaster.cpp
+    modbusrtumaster.cpp \
 
 HEADERS += \
     devicepluginmodbuscommander.h \
     modbustcpmaster.h \
-    modbusrtumaster.h
+    modbusrtumaster.h \

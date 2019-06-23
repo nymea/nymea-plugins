@@ -25,32 +25,46 @@
 
 #include <QObject>
 #include <QtSerialBus>
+#include <QSerialPort>
+#include <QTimer>
 
 class ModbusRTUMaster : public QObject
 {
     Q_OBJECT
 public:
-    explicit ModbusRTUMaster(QString serialPort, int baudrate, QString parity, int dataBits, int stopBits, QObject *parent = nullptr);
+    explicit ModbusRTUMaster(QString serialPort, int baudrate, QSerialPort::Parity parity, int dataBits, int stopBits, QObject *parent = nullptr);
     ~ModbusRTUMaster();
 
-    bool createInterface();
-    bool isConnected();
+    bool connectDevice();
 
-    bool getCoil(int slaveAddress, int coilAddress, bool *result);
-    bool getRegister(int slaveAddress, int registerAddress, int *result);
-    bool setCoil(int slaveAddress, int coilAddress, bool status);
-    bool setRegister(int slaveAddress, int registerAddress, int data);
+    bool readCoil(int slaveAddress, int registerAddress);
+    bool readDiscreteInput(int slaveAddress, int registerAddress);
+    bool readInputRegister(int slaveAddress, int registerAddress);
+    bool readHoldingRegister(int slaveAddress, int registerAddress);
+
+    bool writeCoil(int slaveAddress, int registerAddress, bool status);
+    bool writeHoldingRegister(int slaveAddress, int registerAddress, int data);
 
     QString serialPort();
 
 private:
     QModbusRtuSerialMaster *m_modbusRtuSerialMaster;
+    QTimer *m_reconnectTimer = nullptr;
 
-    QString m_serialPort;
-    int m_baudrate;
-    QString m_parity;
-    int m_dataBits;
-    int m_stopBits;
+private slots:
+    void onReplyFinished();
+    void onReplyErrorOccured(QModbusDevice::Error error);
+    void onReconnectTimer();
+
+    void onModbusErrorOccurred(QModbusDevice::Error error);
+    void onModbusStateChanged(QModbusDevice::State state);
+
+signals:
+    void connectionStateChanged(bool status);
+    void receivedCoil(int slaveAddress, int modbusRegister, bool value);
+    void receivedDiscreteInput(int slaveAddress, int modbusRegister, bool value);
+    void receivedHoldingRegister(int slaveAddress, int modbusRegister, int value);
+    void receivedInputRegister(int slaveAddress, int modbusRegister, int value);
 };
 
 #endif // MODBUSRTUMASTER_H

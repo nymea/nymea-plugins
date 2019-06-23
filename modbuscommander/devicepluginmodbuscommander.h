@@ -50,17 +50,15 @@ public:
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
-    QList<QString> m_usedSerialPorts;
 
     QHash<Device *, ModbusRTUMaster *> m_modbusRTUMasters;
     QHash<Device *, ModbusTCPMaster *> m_modbusTCPMasters;
 
-    void readData(Device *device);
-    void writeData(Device *device, Action action);
+    void readRegister(Device *device);
+    void writeRegister(Device *device, Action action);
 
 private slots:
     void onRefreshTimer();
-    void onReconnectTimer();
 
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 
