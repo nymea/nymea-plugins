@@ -16,13 +16,6 @@
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
-                            "id": "50d2236d-b73a-4d7b-ac8a-34c6566e6543",
-                            "name": "name",
-                            "displayName": "name",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
                             "id": "84ed399c-edb0-40da-8e2f-86eefc5790eb",
                             "name": "host",
                             "displayName": "host address",

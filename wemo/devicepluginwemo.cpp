@@ -246,10 +246,9 @@ void DevicePluginWemo::onUpnpDiscoveryFinished()
 
     QList<DeviceDescriptor> deviceDescriptors;
     foreach (const UpnpDeviceDescriptor &upnpDeviceDescriptor, reply->deviceDescriptors()) {
-        if (upnpDeviceDescriptor.friendlyName() == "WeMo Switch") {
-            DeviceDescriptor descriptor(wemoSwitchDeviceClassId, "WeMo Switch", upnpDeviceDescriptor.serialNumber());
+        if (upnpDeviceDescriptor.deviceType() == "urn:Belkin:device:controllee:1") {
+            DeviceDescriptor descriptor(wemoSwitchDeviceClassId, upnpDeviceDescriptor.friendlyName(), upnpDeviceDescriptor.serialNumber());
             ParamList params;
-            params.append(Param(wemoSwitchDeviceNameParamTypeId, upnpDeviceDescriptor.friendlyName()));
             params.append(Param(wemoSwitchDeviceHostParamTypeId, upnpDeviceDescriptor.hostAddress().toString()));
             params.append(Param(wemoSwitchDevicePortParamTypeId, upnpDeviceDescriptor.port()));
             params.append(Param(wemoSwitchDeviceSerialParamTypeId, upnpDeviceDescriptor.serialNumber()));
