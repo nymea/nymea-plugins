@@ -44,7 +44,7 @@ DevicePluginWs2812fx ::DevicePluginWs2812fx ()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginWs2812fx::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginWs2812fx::setupDevice(Device *device)
 {
     if(!m_reconnectTimer) {
         m_reconnectTimer = new QTimer(this);
@@ -61,7 +61,7 @@ DeviceManager::DeviceSetupStatus DevicePluginWs2812fx::setupDevice(Device *devic
 
             QSerialPort *serialPort = new QSerialPort(interface, this);
             if(!serialPort)
-                return DeviceManager::DeviceSetupStatusFailure;
+                return Device::DeviceSetupStatusFailure;
 
             serialPort->setBaudRate(115200);
             serialPort->setDataBits(QSerialPort::DataBits::Data8);
@@ -71,7 +71,8 @@ DeviceManager::DeviceSetupStatus DevicePluginWs2812fx::setupDevice(Device *devic
 
             if (!serialPort->open(QIODevice::ReadWrite)) {
                 qCWarning(dcWs2812fx()) << "Could not open serial port" << interface << serialPort->errorString();
-                return DeviceManager::DeviceSetupStatusFailure;
+                serialPort->deleteLater();
+                return Device::DeviceSetupStatusFailure;
             }
 
             connect(serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
@@ -82,15 +83,15 @@ DeviceManager::DeviceSetupStatus DevicePluginWs2812fx::setupDevice(Device *devic
             m_usedInterfaces.append(interface);
             m_serialPorts.insert(device, serialPort);
         } else {
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 
-DeviceManager::DeviceError DevicePluginWs2812fx::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginWs2812fx::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     // Create the list of available serial interfaces
@@ -101,25 +102,23 @@ DeviceManager::DeviceError DevicePluginWs2812fx::discoverDevices(const DeviceCla
         qCDebug(dcWs2812fx()) << "Found serial port:" << port.portName();
         QString description = port.manufacturer() + " " + port.description();
         DeviceDescriptor descriptor(deviceClassId, port.portName(), description);
+        foreach (Device *existingDevice, myDevices().filterByParam(ws2812fxDeviceSerialPortParamTypeId, port.portName())) {
+            descriptor.setDeviceId(existingDevice->id());
+        }
         ParamList parameters;
         parameters.append(Param(ws2812fxDeviceSerialPortParamTypeId, port.portName()));
         descriptor.setParams(parameters);
         deviceDescriptors.append(descriptor);
     }
     emit devicesDiscovered(deviceClassId, deviceDescriptors);
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
 
-DeviceManager::DeviceError DevicePluginWs2812fx::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginWs2812fx::executeAction(Device *device, const Action &action)
 {
-    qCDebug(dcWs2812fx) << "Execute action" << action.actionTypeId() << action.params();
-
     if (device->deviceClassId() == ws2812fxDeviceClassId ) {
 
-        QSerialPort *serialPort = m_serialPorts.value(device);
-        if (!serialPort)
-            return DeviceManager::DeviceErrorDeviceNotFound;
         QByteArray command;
         if (action.actionTypeId() == ws2812fxPowerActionTypeId) {
             command.append("b ");
@@ -129,10 +128,7 @@ DeviceManager::DeviceError DevicePluginWs2812fx::executeAction(Device *device, c
                 command.append("0");
             }
             command.append("\r\n");
-            qDebug(dcWs2812fx()) << "Sending command" << command;
-            serialPort->write(command);
-            m_pendingActions.insert("brightness", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            return sendCommand(device, action.id(), command, CommandType::Brightness);
         }
 
         if (action.actionTypeId() == ws2812fxBrightnessActionTypeId) {
@@ -140,10 +136,7 @@ DeviceManager::DeviceError DevicePluginWs2812fx::executeAction(Device *device, c
             command.append("b ");
             command.append(action.param(ws2812fxBrightnessActionBrightnessParamTypeId).value().toString());
             command.append("\r\n");
-            qDebug(dcWs2812fx()) << "Sending command" << command;
-            serialPort->write(command);
-            m_pendingActions.insert("brightness", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            return sendCommand(device, action.id(), command, CommandType::Brightness);
         }
 
         if (action.actionTypeId() == ws2812fxSpeedActionTypeId) {
@@ -151,10 +144,7 @@ DeviceManager::DeviceError DevicePluginWs2812fx::executeAction(Device *device, c
             command.append("s ");
             command.append(action.param(ws2812fxSpeedActionSpeedParamTypeId).value().toString());
             command.append("\r\n");
-            qDebug(dcWs2812fx()) << "Sending command" << command;
-            serialPort->write(command);
-            m_pendingActions.insert("speed", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            return sendCommand(device, action.id(), command, CommandType::Speed);
         }
 
         if (action.actionTypeId() == ws2812fxColorActionTypeId) {
@@ -164,11 +154,7 @@ DeviceManager::DeviceError DevicePluginWs2812fx::executeAction(Device *device, c
             command.append("c ");
             command.append(QString(color.name()).remove("#"));
             command.append("\r\n");
-            qDebug(dcWs2812fx()) << "Sending command" << command;
-            serialPort->write(command);
-
-            m_pendingActions.insert("color", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            return sendCommand(device, action.id(), command, CommandType::Color);
         }
 
         if (action.actionTypeId() == ws2812fxColorTemperatureActionTypeId) {
@@ -180,10 +166,7 @@ DeviceManager::DeviceError DevicePluginWs2812fx::executeAction(Device *device, c
             command.append("c ");
             command.append(QString(color.name()).remove("#"));
             command.append("\r\n");
-            qDebug(dcWs2812fx()) << "Sending command" << command;
-            serialPort->write(command);
-            m_pendingActions.insert("color", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            return sendCommand(device, action.id(), command, CommandType::Color);
         }
 
         if (action.actionTypeId() == ws2812fxEffectModeActionTypeId) {
@@ -308,14 +291,11 @@ DeviceManager::DeviceError DevicePluginWs2812fx::executeAction(Device *device, c
                 command.append(QString::number(FX_MODE_CUSTOM_3));
             }
             command.append("\r\n");
-            qDebug(dcWs2812fx()) << "Sending command" << command;
-            serialPort->write(command);
-            m_pendingActions.insert("mode", action.id());
-            return DeviceManager::DeviceErrorAsync;
+            return sendCommand(device, action.id(), command, CommandType::Mode);
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 
@@ -347,8 +327,8 @@ void DevicePluginWs2812fx::onReadyRead()
         qDebug(dcWs2812fx()) << "Message received" << data;
 
         if (data.contains("mode")) {
-            if (m_pendingActions.contains("mode")) {
-                emit actionExecutionFinished(m_pendingActions.value("mode"), DeviceManager::DeviceErrorNoError);
+            if (m_pendingActions.contains(CommandType::Mode)) {
+                emit actionExecutionFinished(m_pendingActions.value(CommandType::Mode), Device::DeviceErrorNoError);
             }
             QString mode = data.split('-').at(1);
             mode.remove(0, 1);
@@ -357,8 +337,8 @@ void DevicePluginWs2812fx::onReadyRead()
             device->setStateValue(ws2812fxEffectModeStateTypeId, mode);
         }
         if (data.contains("brightness")) {
-            if (m_pendingActions.contains("brightness")) {
-                emit actionExecutionFinished(m_pendingActions.value("brightness"), DeviceManager::DeviceErrorNoError);
+            if (m_pendingActions.contains(CommandType::Brightness)) {
+                emit actionExecutionFinished(m_pendingActions.value(CommandType::Brightness), Device::DeviceErrorNoError);
             }
             QString rawBrightness = data.split(':').at(1);
             rawBrightness.remove(" ");
@@ -374,8 +354,8 @@ void DevicePluginWs2812fx::onReadyRead()
             }
         }
         if (data.contains("speed")) {
-            if (m_pendingActions.contains("speed")) {
-                emit actionExecutionFinished(m_pendingActions.value("speed"), DeviceManager::DeviceErrorNoError);
+            if (m_pendingActions.contains(CommandType::Speed)) {
+                emit actionExecutionFinished(m_pendingActions.value(CommandType::Speed), Device::DeviceErrorNoError);
             }
             QString rawSpeed = data.split(':').at(1);
             rawSpeed.remove(" ");
@@ -386,8 +366,8 @@ void DevicePluginWs2812fx::onReadyRead()
             device->setStateValue(ws2812fxSpeedStateTypeId, speed);
         }
         if (data.contains("color")) {
-            if (m_pendingActions.contains("color")) {
-                emit actionExecutionFinished(m_pendingActions.value("color"), DeviceManager::DeviceErrorNoError);
+            if (m_pendingActions.contains(CommandType::Color)) {
+                emit actionExecutionFinished(m_pendingActions.value(CommandType::Color), Device::DeviceErrorNoError);
             }
             QString rawColor = data.split(':').at(1);
             rawColor.remove(" ");
@@ -429,4 +409,18 @@ void DevicePluginWs2812fx::onSerialError(QSerialPort::SerialPortError error)
         serialPort->close();
         device->setStateValue(ws2812fxConnectedStateTypeId, false);
     }
+}
+
+Device::DeviceError DevicePluginWs2812fx::sendCommand(Device* device, ActionId actionId, const QByteArray &command, CommandType commandType)
+{
+    qDebug(dcWs2812fx()) << "Sending command" << command;
+    QSerialPort *serialPort = m_serialPorts.value(device);
+    if (!serialPort)
+        return Device::DeviceErrorDeviceNotFound;
+    if (serialPort->write(command) != command.length()) {
+        qCWarning(dcWs2812fx) << "Error writing to serial port";
+        return Device::DeviceErrorHardwareFailure;
+    }
+    m_pendingActions.insert(commandType, actionId);
+    return Device::DeviceErrorAsync;
 }

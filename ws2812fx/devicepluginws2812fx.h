@@ -85,8 +85,7 @@
 #define FX_MODE_CUSTOM_2                58
 #define FX_MODE_CUSTOM_3                59
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
 
 #include <QTimer>
 #include <QSerialPort>
@@ -102,21 +101,29 @@ class DevicePluginWs2812fx : public DevicePlugin
 public:
     explicit DevicePluginWs2812fx();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
+    enum CommandType {
+        Color,
+        Speed,
+        Brightness,
+        Mode
+    };
+
     QHash<Device *, QSerialPort *> m_serialPorts;
     QList<QString> m_usedInterfaces;
-    QHash<QString, ActionId> m_pendingActions;
+    QHash<CommandType, ActionId> m_pendingActions;
 
     QTimer *m_reconnectTimer = nullptr;
+    Device::DeviceError sendCommand(Device *device, ActionId actionId, const QByteArray &command, CommandType commandType);
 
 private slots:
     void onReadyRead();
-     void onReconnectTimer();
+    void onReconnectTimer();
     void onSerialError(QSerialPort::SerialPortError error);
 
 signals:
