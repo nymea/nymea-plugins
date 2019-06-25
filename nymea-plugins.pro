@@ -44,7 +44,6 @@ PLUGIN_DIRS = \
     unitec              \
     wakeonlan           \
     wemo                \
-    ws2812              \
     ws2812fx            \
 
 
