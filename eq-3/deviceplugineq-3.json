@@ -341,7 +341,7 @@
                         },
                         {
                             "id": "24dfd20d-bc8d-48e4-8162-b20ae0465c41",
-                            "name": "comfortTemp",
+                            "name": "ecoTemp",
                             "displayName": "eco temperature",
                             "displayNameEvent": "eco temperature changed",
                             "unit": "DegreeCelsius",

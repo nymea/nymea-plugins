@@ -499,9 +499,9 @@ void DevicePluginDateTime::updateTimes()
         return;
 
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(todayDuskStateTypeId, m_dusk.toTime_t());
+        m_todayDevice->setStateValue(todayDuskTimeStateTypeId, m_dusk.toTime_t());
     } else {
-        m_todayDevice->setStateValue(todayDuskStateTypeId, 0);
+        m_todayDevice->setStateValue(todayDuskTimeStateTypeId, 0);
     }
     if (m_sunrise.isValid() && m_sunset.isValid()) {
         m_todayDevice->setStateValue(todaySunriseTimeStateTypeId, m_sunrise.toTime_t());
@@ -513,14 +513,14 @@ void DevicePluginDateTime::updateTimes()
         m_todayDevice->setStateValue(todayDaylightStateTypeId, false);
     }
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(todayNoonStateTypeId, m_noon.toTime_t());
+        m_todayDevice->setStateValue(todayNoonTimeStateTypeId, m_noon.toTime_t());
     } else {
-        m_todayDevice->setStateValue(todayNoonStateTypeId, 0);
+        m_todayDevice->setStateValue(todayNoonTimeStateTypeId, 0);
     }
     if (m_dusk.isValid()) {
-        m_todayDevice->setStateValue(todayDawnStateTypeId, m_dawn.toTime_t());
+        m_todayDevice->setStateValue(todayDawnTimeStateTypeId, m_dawn.toTime_t());
     } else {
-        m_todayDevice->setStateValue(todayDawnStateTypeId, 0);
+        m_todayDevice->setStateValue(todayDawnTimeStateTypeId, 0);
     }
 }
 
