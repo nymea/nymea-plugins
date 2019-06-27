@@ -83,7 +83,7 @@ Device::DeviceError DevicePluginGenericElements::executeAction(Device *device, c
     // Toggle Button
     if (device->deviceClassId() == toggleButtonDeviceClassId ) {
         if (action.actionTypeId() == toggleButtonStateActionTypeId) {
-            device->setStateValue(toggleButtonStateStateTypeId, !device->stateValue(toggleButtonStateStateTypeId).toBool());
+            device->setStateValue(toggleButtonStateStateTypeId, action.params().paramValue(toggleButtonStateActionStateParamTypeId).toBool());
             return Device::DeviceErrorNoError;
         }
         return Device::DeviceErrorActionTypeNotFound;
