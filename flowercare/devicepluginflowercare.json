@@ -16,13 +16,6 @@
                     "interfaces": ["temperaturesensor", "lightsensor", "moisturesensor", "conductivitysensor", "connectable", "batterylevel"],
                     "paramTypes": [
                         {
-                            "id": "65f95e3c-59fe-47d6-ba4a-2469e5f554e2",
-                            "name": "name",
-                            "displayName": "Name",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
                             "id": "fe2dba0f-2a47-463e-a645-bcd55cf09750",
                             "name": "mac",
                             "displayName": "MAC address",
