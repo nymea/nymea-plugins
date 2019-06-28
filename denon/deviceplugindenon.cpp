@@ -43,7 +43,7 @@
 
 #include "deviceplugindenon.h"
 #include "plugininfo.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
 #include "network/upnp/upnpdiscoveryreply.h"
@@ -59,7 +59,7 @@ DevicePluginDenon::DevicePluginDenon()
 {
 }
 
-DeviceManager::DeviceError DevicePluginDenon::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginDenon::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
 
@@ -67,7 +67,7 @@ DeviceManager::DeviceError DevicePluginDenon::discoverDevices(const DeviceClassI
 
         UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices("urn:schemas-upnp-org:device:MediaRenderer:1", "nymea", 7000);
         connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginDenon::onUpnpDiscoveryFinished);
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
 
     if (deviceClassId == heosDeviceClassId) {
@@ -80,9 +80,9 @@ DeviceManager::DeviceError DevicePluginDenon::discoverDevices(const DeviceClassI
         */
         UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices();
         connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginDenon::onUpnpDiscoveryFinished);
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
@@ -98,18 +98,22 @@ Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
         QHostAddress address(device->paramValue(AVRX1000DeviceIpParamTypeId).toString());
         if (address.isNull()) {
             qCWarning(dcDenon) << "Could not parse ip address" << device->paramValue(AVRX1000DeviceIpParamTypeId).toString();
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
-        DenonConnection *denonConnection = new DenonConnection(address, 23, this);
-        connect(denonConnection, &DenonConnection::connectionStatusChanged, this, &DevicePluginDenon::onAVRConnectionChanged);
-        connect(denonConnection, &DenonConnection::socketErrorOccured, this, &DevicePluginDenon::onAVRSocketError);
-        connect(denonConnection, &DenonConnection::dataReady, this, &DevicePluginDenon::onAVRDataReceived);
+        AvrConnection *denonConnection = new AvrConnection(address, 23, this);
+        connect(denonConnection, &AvrConnection::connectionStatusChanged, this, &DevicePluginDenon::onAvrConnectionChanged);
+        connect(denonConnection, &AvrConnection::socketErrorOccured, this, &DevicePluginDenon::onAvrSocketError);
+        connect(denonConnection, &AvrConnection::channelChanged, this, &DevicePluginDenon::onAvrChannelChanged);
+        connect(denonConnection, &AvrConnection::powerChanged, this, &DevicePluginDenon::onAvrPowerChanged);
+        connect(denonConnection, &AvrConnection::volumeChanged, this, &DevicePluginDenon::onAvrVolumeChanged);
+        connect(denonConnection, &AvrConnection::surroundModeChanged, this, &DevicePluginDenon::onAvrSurroundModeChanged);
+        connect(denonConnection, &AvrConnection::muteChanged, this, &DevicePluginDenon::onAvrMuteChanged);
 
         m_asyncSetups.append(denonConnection);
-        denonConnection->connectDenon();
-        m_denonConnections.insert(device, denonConnection);
-        return DeviceManager::DeviceSetupStatusAsync;
+        denonConnection->connect();
+        m_avrConnections.insert(device, denonConnection);
+        return Device::DeviceSetupStatusAsync;
     }
 
     if (device->deviceClassId() == heosDeviceClassId) {
@@ -128,13 +132,13 @@ Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
 
         heos->connectHeos();
         m_heos.insert(device, heos);
-        return DeviceManager::DeviceSetupStatusAsync;
+        return Device::DeviceSetupStatusAsync;
     }
 
     if (device->deviceClassId() == heosPlayerDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginDenon::deviceRemoved(Device *device)
@@ -142,17 +146,17 @@ void DevicePluginDenon::deviceRemoved(Device *device)
     qCDebug(dcDenon) << "Delete " << device->name();
 
     if (device->deviceClassId() == AVRX1000DeviceClassId) {
-        DenonConnection *denonConnection = m_denonConnections.value(device);
-        m_denonConnections.remove(device);
-        denonConnection->disconnectDenon();
+        AvrConnection *denonConnection = m_avrConnections.value(device);
+        m_avrConnections.remove(device);
+        denonConnection->disconnect();
         denonConnection->deleteLater();
     }
 
     if (device->deviceClassId() == heosDeviceClassId) {
-        if (m_denonConnections.contains(device)) {
-            DenonConnection *denonConnection = m_denonConnections.value(device);
-            m_denonConnections.remove(device);
-            denonConnection->disconnectDenon();
+        if (m_avrConnections.contains(device)) {
+            AvrConnection *denonConnection = m_avrConnections.value(device);
+            m_avrConnections.remove(device);
+            denonConnection->disconnect();
             denonConnection->deleteLater();
         }
     }
@@ -166,57 +170,44 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
 {
     qCDebug(dcDenon) << "Execute action" << device->id() << action.id() << action.params();
     if (device->deviceClassId() == AVRX1000DeviceClassId) {
-        DenonConnection *denonConnection = m_denonConnections.value(device);
+        AvrConnection *avrConnection = m_avrConnections.value(device);
 
         if (action.actionTypeId() == AVRX1000PowerActionTypeId) {
 
-            qCDebug(dcDenon) << "set power action" << action.id();
-            qCDebug(dcDenon) << "power: " << action.param(AVRX1000PowerActionPowerParamTypeId).value().Bool;
-
-            if (action.param(AVRX1000PowerActionPowerParamTypeId).value().toBool() == true) {
-                QByteArray cmd = "PWON\r";
-                qCDebug(dcDenon) << "Execute power: " << action.id() << cmd;
-                denonConnection->sendData(cmd);
-            } else {
-                QByteArray cmd = "PWSTANDBY\r";
-                qCDebug(dcDenon) << "Execute power: " << action.id() << cmd;
-                denonConnection->sendData(cmd);
-            }
-
+            bool power = action.param(AVRX1000PowerActionPowerParamTypeId).value().toBool();
+            avrConnection->setPower(power);
             return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == AVRX1000VolumeActionTypeId) {
 
-            QByteArray vol = action.param(AVRX1000VolumeActionVolumeParamTypeId).value().toByteArray();
-            QByteArray cmd = "MV" + vol + "\r";
-
-            qCDebug(dcDenon) << "Execute volume" << action.id() << cmd;
-            denonConnection->sendData(cmd);
-            return DeviceManager::DeviceErrorNoError;
+            int vol = action.param(AVRX1000VolumeActionVolumeParamTypeId).value().toInt();
+            avrConnection->setVolume(vol);
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == AVRX1000ChannelActionTypeId) {
 
             qCDebug(dcDenon) << "Execute update action" << action.id();
             QByteArray channel = action.param(AVRX1000ChannelActionChannelParamTypeId).value().toByteArray();
-            QByteArray cmd = "SI" + channel + "\r";
-
-            qCDebug(dcDenon) << "Change to channel:" << cmd;
-            denonConnection->sendData(cmd);
-            return DeviceManager::DeviceErrorNoError;
+            avrConnection->setChannel(channel);
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == AVRX1000IncreaseVolumeActionTypeId) {
-            QByteArray cmd = "MVUP\r";
-            qCDebug(dcDenon) << "Execute volume increase" << action.id() << cmd;
-            denonConnection->sendData(cmd);
-            return DeviceManager::DeviceErrorNoError;
+
+            avrConnection->increaseVolume();
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == AVRX1000DecreaseVolumeActionTypeId) {
-            QByteArray cmd = "MVDOWN\r";
-            qCDebug(dcDenon) << "Execute volume decrease" << action.id() << cmd;
-            denonConnection->sendData(cmd);
-            return DeviceManager::DeviceErrorNoError;
+
+            avrConnection->decreaseVolume();
+            return Device::DeviceErrorNoError;
+
+        } else if (action.actionTypeId() == AVRX1000SurroundModeActionTypeId) {
+
+            QByteArray surroundMode = action.param(AVRX1000SurroundModeActionSurroundModeParamTypeId).value().toByteArray();
+            avrConnection->setSurroundMode(surroundMode);
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == heosPlayerDeviceClassId) {
@@ -228,13 +219,13 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
         if (action.actionTypeId() == heosPlayerVolumeActionTypeId) {
             int volume = action.param(heosPlayerVolumeActionVolumeParamTypeId).value().toInt();
             heos->setVolume(playerId, volume);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerMuteActionTypeId) {
             bool mute = action.param(heosPlayerMuteActionMuteParamTypeId).value().toBool();
             heos->setMute(playerId, mute);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerPlaybackStatusActionTypeId) {
@@ -246,7 +237,7 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
             } else if (playbackStatus == "pausing") {
                 heos->setPlayerState(playerId, Heos::HeosPlayerState::Pause);
             }
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerShuffleActionTypeId) {
@@ -255,45 +246,45 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
             repeatMode = Heos::HeosRepeatMode::Off;
             heos->setPlayMode(playerId, repeatMode, shuffle);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerSkipBackActionTypeId) {
             heos->playPrevious(playerId);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerFastRewindActionTypeId) {
 
-            return DeviceManager::DeviceErrorActionTypeNotFound;
+            return Device::DeviceErrorActionTypeNotFound;
         }
 
         if (action.actionTypeId() == heosPlayerStopActionTypeId) {
             heos->setPlayerState(playerId, Heos::HeosPlayerState::Stop);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerPlayActionTypeId) {
             heos->setPlayerState(playerId, Heos::HeosPlayerState::Play);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerPauseActionTypeId) {
 
             heos->setPlayerState(playerId, Heos::HeosPlayerState::Pause);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerFastForwardActionTypeId) {
 
-            return DeviceManager::DeviceErrorActionTypeNotFound;
+            return Device::DeviceErrorActionTypeNotFound;
         }
 
         if (action.actionTypeId() == heosPlayerSkipNextActionTypeId) {
             heos->playNext(playerId);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
     return Device::DeviceErrorDeviceClassNotFound;
 }
@@ -324,13 +315,13 @@ void DevicePluginDenon::postSetupDevice(Device *device)
 
 void DevicePluginDenon::onPluginTimer()
 {
-    foreach(DenonConnection *denonConnection, m_denonConnections.values()) {
+    foreach(AvrConnection *denonConnection, m_avrConnections.values()) {
         if (!denonConnection->connected()) {
-            denonConnection->connectDenon();
+            denonConnection->connect();
         }
-        Device *device = m_denonConnections.key(denonConnection);
+        Device *device = m_avrConnections.key(denonConnection);
         if (device->deviceClassId() == AVRX1000DeviceClassId) {
-            denonConnection->sendData("PW?\rSI?\rMV?\r");
+            denonConnection->getAllStatus();
         }
     }
 
@@ -360,113 +351,94 @@ void DevicePluginDenon::onPluginTimer()
     }
 }
 
-void DevicePluginDenon::onAVRConnectionChanged()
+void DevicePluginDenon::onAvrConnectionChanged(bool status)
 {
-    DenonConnection *denonConnection = static_cast<DenonConnection *>(sender());
-    Device *device = m_denonConnections.key(denonConnection);
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Device *device = m_avrConnections.key(denonConnection);
+    if (!device)
+        return;
 
     if (device->deviceClassId() == AVRX1000DeviceClassId) {
         // if the device is connected
-        if (denonConnection->connected()) {
+        if (status) {
             // and from the first setup
             if (m_asyncSetups.contains(denonConnection)) {
                 m_asyncSetups.removeAll(denonConnection);
-                denonConnection->sendData("PW?\rSI?\rMV?\r");
-                emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+
+                emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
             }
         }
         device->setStateValue(AVRX1000ConnectedStateTypeId, denonConnection->connected());
     }
 }
 
-void DevicePluginDenon::onAVRDataReceived(const QByteArray &data)
+void DevicePluginDenon::onAvrVolumeChanged(int volume)
 {
-    DenonConnection *denonConnection = static_cast<DenonConnection *>(sender());
-    Device *device = m_denonConnections.key(denonConnection);
-    qCDebug(dcDenon) << "Data received" << data;
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Device *device = m_avrConnections.key(denonConnection);
+    if (!device)
+        return;
 
     if (device->deviceClassId() == AVRX1000DeviceClassId) {
-        if (data.contains("MV") && !data.contains("MAX")){
-            int index = data.indexOf("MV");
-            int vol = data.mid(index+2, 2).toInt();
+        device->setStateValue(AVRX1000VolumeStateTypeId, volume);
+    }
+}
 
-            qCDebug(dcDenon) << "Update volume:" << vol;
-            device->setStateValue(AVRX1000VolumeStateTypeId, vol);
-        }
+void DevicePluginDenon::onAvrMuteChanged(bool mute)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Device *device = m_avrConnections.key(denonConnection);
+    if (!device)
+        return;
 
-        if (data.contains("SI")) {
-            QString cmd;
-            if (data.contains("TUNER")) {
-                cmd = "TUNER";
-            } else if (data.contains("DVD")) {
-                cmd = "DVD";
-            } else if (data.contains("BD")) {
-                cmd = "BD";
-            } else if (data.contains("TV")) {
-                cmd = "TV";
-            } else if (data.contains("SAT/CBL")) {
-                cmd = "SAT/CBL";
-            } else if (data.contains("MPLAY")) {
-                cmd = "MPLAY";
-            } else if (data.contains("GAME")) {
-                cmd = "GAME";
-            } else if (data.contains("AUX1")) {
-                cmd = "AUX1";
-            } else if (data.contains("NET")) {
-                cmd = "NET";
-            } else if (data.contains("PANDORA")) {
-                cmd = "PANDORA";
-            } else if (data.contains("SIRIUSXM")) {
-                cmd = "SIRIUSXM";
-            } else if (data.contains("SPOTIFY")) {
-                cmd = "SPOTIFY";
-            } else if (data.contains("FLICKR")) {
-                cmd = "FLICKR";
-            } else if (data.contains("FAVORITES")) {
-                cmd = "FAVORITES";
-            } else if (data.contains("IRADIO")) {
-                cmd = "IRADIO";
-            } else if (data.contains("SERVER")) {
-                cmd = "SERVER";
-            } else if (data.contains("USB/IPOD")) {
-                cmd = "USB/IPOD";
-            } else if (data.contains("IPD")) {
-                cmd = "IPD";
-            } else if (data.contains("IRP")) {
-                cmd = "IRP";
-            } else if (data.contains("FVP")) {
-                cmd = "FVP";
-            }
-            qCDebug(dcDenon) << "Update channel:" << cmd;
-            device->setStateValue(AVRX1000ChannelStateTypeId, cmd);
-        }
+    if (device->deviceClassId() == AVRX1000DeviceClassId) {
+        device->setStateValue(AVRX1000MuteStateTypeId, mute);
+    }
+}
 
-        if (data.contains("PWON")) {
-            qCDebug(dcDenon) << "Update power on";
-            device->setStateValue(AVRX1000PowerStateTypeId, true);
-        } else if (data.contains("PWSTANDBY")) {
-            qCDebug(dcDenon) << "Update power off";
-            device->setStateValue(AVRX1000PowerStateTypeId, false);
-        }
+void DevicePluginDenon::onAvrPowerChanged(bool power)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Device *device = m_avrConnections.key(denonConnection);
+    if (!device)
+        return;
+
+    if (device->deviceClassId() == AVRX1000DeviceClassId) {
+        device->setStateValue(AVRX1000PowerStateTypeId, power);
+    }
+}
+
+void DevicePluginDenon::onAvrSurroundModeChanged(const QByteArray &surroundMode)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Device *device = m_avrConnections.key(denonConnection);
+    if (!device)
+        return;
+
+    if (device->deviceClassId() == AVRX1000DeviceClassId) {
+        device->setStateValue(AVRX1000SurroundModeStateTypeId, surroundMode);
     }
 }
 
 
-void DevicePluginDenon::onAVRSocketError()
+void DevicePluginDenon::onAvrSocketError()
 {
-    DenonConnection *denonConnection = static_cast<DenonConnection *>(sender());
-    Device *device = m_denonConnections.key(denonConnection);
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Device *device = m_avrConnections.key(denonConnection);
+    if (!device)
+        return;
+
     if (device->deviceClassId() == AVRX1000DeviceClassId) {
 
         // Check if setup running for this device
         if (m_asyncSetups.contains(denonConnection)) {
             m_asyncSetups.removeAll(denonConnection);
             qCWarning(dcDenon()) << "Could not add device. The setup failed.";
-            emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             // Delete the connection, the device will not be added and
             // the connection will be created in the next setup
             denonConnection->deleteLater();
-            m_denonConnections.remove(device);
+            m_avrConnections.remove(device);
         }
     }
 }
@@ -510,7 +482,7 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
             }
         }
         //if (upnpDevice.modelName().contains("")) {
-            qCDebug(dcDenon) << "UPnP device found:" << upnpDevice.modelDescription() << upnpDevice.friendlyName() << upnpDevice.hostAddress().toString() << upnpDevice.modelName() << upnpDevice.manufacturer() << upnpDevice.serialNumber();
+        qCDebug(dcDenon) << "UPnP device found:" << upnpDevice.modelDescription() << upnpDevice.friendlyName() << upnpDevice.hostAddress().toString() << upnpDevice.modelName() << upnpDevice.manufacturer() << upnpDevice.serialNumber();
         //}
     }
     if (!heosDescriptors.isEmpty()) {
@@ -527,7 +499,7 @@ void DevicePluginDenon::onHeosConnectionChanged()
     heos->registerForChangeEvents(true);
     Device *device = m_heos.key(heos);
     if (!device->setupComplete() && heos->connected()) {
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
     }
 }
 
@@ -623,3 +595,4 @@ void DevicePluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, QStrin
         break;
     }
 }
+

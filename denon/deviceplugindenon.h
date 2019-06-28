@@ -24,10 +24,9 @@
 #ifndef DEVICEPLUGINDENON_H
 #define DEVICEPLUGINDENON_H
 
-#include "devicemanager.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "plugintimer.h"
-#include "denonconnection.h"
+#include "avrconnection.h"
 #include "heos.h"
 
 #include <QPair>
@@ -47,18 +46,18 @@ class DevicePluginDenon : public DevicePlugin
 public:
     explicit DevicePluginDenon();
 
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void postSetupDevice(Device * device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
     void deviceRemoved(Device *device) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QHash<Device *, DenonConnection*> m_denonConnections;
+    QHash<Device *, AvrConnection*> m_avrConnections;
     QHash<Device *, Heos*> m_heos;
 
-    QList<DenonConnection *> m_asyncSetups;
+    QList<AvrConnection *> m_asyncSetups;
 
     QHash<int, Device *> m_playerIds;
     QHash<int, Device *> m_discoveredPlayerIds;
@@ -67,11 +66,6 @@ private:
 
 private slots:
     void onPluginTimer();
-
-    void onAVRConnectionChanged();
-    void onAVRDataReceived(const QByteArray &data);
-    void onAVRSocketError();
-
     void onUpnpDiscoveryFinished();
 
     void onHeosConnectionChanged();
@@ -82,6 +76,14 @@ private slots:
     void onHeosMuteStatusReceived(int playerId, bool mute);
     void onHeosVolumeStatusReceived(int playerId, int volume);
     void onHeosNowPlayingMediaStatusReceived(int playerId, QString source, QString artist, QString album, QString Song, QString artwork);
+
+    void onAvrConnectionChanged(bool status);
+    void onAvrSocketError();
+    void onAvrVolumeChanged(int volume);
+    void onAvrChannelChanged(const QByteArray &channel);
+    void onAvrMuteChanged(bool mute);
+    void onAvrPowerChanged(bool power);
+    void onAvrSurroundModeChanged(const QByteArray &surroundMode);
 };
 
 #endif // DEVICEPLUGINDENON_H

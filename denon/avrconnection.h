@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
- *  Copyright (C) 2016 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
+ *  Copyright (C) 2015 Simon Stürz <simon.stuerz@nymea.io>                 *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -21,36 +21,48 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DENONCONNECTION_H
-#define DENONCONNECTION_H
+#ifndef AVRCONNECTION_H
+#define AVRCONNECTION_H
 
 #include <QObject>
 #include <QTcpSocket>
 #include <QHostAddress>
 
-class DenonConnection : public QObject
+class AvrConnection : public QObject
 {
     Q_OBJECT
 public:
-    explicit DenonConnection(const QHostAddress &hostAddress, const int &port = 23, QObject *parent = 0);
-    ~DenonConnection();
+    explicit AvrConnection(const QHostAddress &hostAddress, const int &port = 23, QObject *parent = nullptr);
+    ~AvrConnection();
 
-    void connectDenon();
-    void disconnectDenon();
+    void connect();
+    void disconnect();
 
     QHostAddress hostAddress() const;
     int port() const;
-
     bool connected();
 
-    void sendData(const QByteArray &message);
+    void getAllStatus();
+    void getChannel();
+    void getVolume();
+    void getMute();
+    void getPower();
+    void getSurroundMode();
 
+    void setChannel(const QByteArray &channel);
+    void setVolume(int volume);
+    void setMute(bool mute);
+    void setPower(bool power);
+    void setSurroundMode(const QByteArray &surroundMode);
+
+    void increaseVolume();
+    void decreaseVolume();
 private:
-    QTcpSocket *m_socket;
-
+    QTcpSocket *m_socket = nullptr;
     QHostAddress m_hostAddress;
     int m_port;
-    bool m_connected;
+
+    void sendCommand(const QByteArray &message);
 
 private slots:
     void onConnected();
@@ -58,13 +70,14 @@ private slots:
     void onError(QAbstractSocket::SocketError socketError);
     void readData();
 
-    void setConnected(const bool &connected);
-
 signals:
     void socketErrorOccured(QAbstractSocket::SocketError socketError);
-    void connectionStatusChanged();
-    void dataReady(const QByteArray &data);
-
+    void connectionStatusChanged(bool status);
+    void volumeChanged(int volume);
+    void muteChanged(bool mute);
+    void channelChanged(const QByteArray &channel);
+    void powerChanged(bool power);
+    void surroundModeChanged(const QByteArray &surroundMode);
 };
 
-#endif // DENONCONNECTION_H
+#endif // AVRCONNECTION_H

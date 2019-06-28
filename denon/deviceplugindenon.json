@@ -94,6 +94,32 @@
                                 "FVP"
                             ],
                             "defaultValue": "TUNER"
+                        },
+                        {
+                            "displayName": "Surround mode",
+                            "id": "4f203bdd-691c-4384-a934-2d49a5448f0a",
+                            "name": "surroundMode",
+                            "displayNameEvent": "Surround mode changed",
+                            "displayNameAction": "Set surround mode",
+                            "type": "QString",
+                            "writable": true,
+                            "possibleValues": [
+                                "MOVIE",
+                                "MUSIC",
+                                "GAME",
+                                "PURE DIRECT",
+                                "DIRECT",
+                                "STEREO",
+                                "STANDARD",
+                                "DOLBY DIGITAL",
+                                "DTS SUROUND",
+                                "MCH STEREO",
+                                "ROCK ARENA",
+                                "JAZZ CLUB",
+                                "MONO MOVIE",
+                                "MATRIX"
+                            ],
+                            "defaultValue": "MOVIE"
                         }
                     ],
                     "actionTypes": [
@@ -156,8 +182,8 @@
                         {
                             "id": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         }
@@ -200,7 +226,7 @@
                             "id": "9a4e527e-057c-4b19-8a02-605cc8349f5e",
                             "name": "connected",
                             "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
@@ -208,9 +234,9 @@
                         {
                             "id": "fcc89c7c-b793-4b6f-a3dc-0e0e3a86748f",
                             "name": "mute",
-                            "displayName": "mute",
-                            "displayNameEvent": "mute changed",
-                            "displayNameAction": "set mute",
+                            "displayName": "Mute",
+                            "displayNameEvent": "Mute changed",
+                            "displayNameAction": "Set mute",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false,
@@ -219,7 +245,7 @@
                         {
                             "id": "6d4886a1-fa5d-4889-96c5-7a1c206f59be",
                             "name": "volume",
-                            "displayName": "volume",
+                            "displayName": "Volume",
                             "displayNameEvent": "volume changed",
                             "displayNameAction": "set volume",
                             "type": "int",
