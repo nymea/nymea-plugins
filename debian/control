@@ -471,6 +471,8 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
+Replaces: guh-plugin-multisensor,
+          nymea-plugins-multisensor,
 Description: nymea.io plugin for Texas Instruments devices
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
@@ -728,7 +730,7 @@ Depends: nymea-plugin-awattar,
          nymea-plugin-kodi,
          nymea-plugin-lgsmarttv,
          nymea-plugin-mailnotification,
-         nymea-plugin-multisensor,
+         nymea-plugin-texasinstruments,
          nymea-plugin-netatmo,
          nymea-plugin-networkdetector,
          nymea-plugin-openweathermap,
