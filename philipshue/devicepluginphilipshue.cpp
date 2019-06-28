@@ -802,44 +802,36 @@ void DevicePluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
     EventTypeId id;
     Param param;
 
-    // TODO: Legacy events should be removed eventually
     switch (buttonCode) {
     case HueRemote::OnPressed:
         param = Param(remotePressedEventButtonNameParamTypeId, "ON");
         id = remotePressedEventTypeId;
         break;
     case HueRemote::OnLongPressed:
-        emitEvent(Event(remoteOnLongPressedEventTypeId, m_remotes.value(remote)->id()));
         param = Param(remoteLongPressedEventButtonNameParamTypeId, "ON");
         id = remoteLongPressedEventTypeId;
         break;
     case HueRemote::DimUpPressed:
-        emitEvent(Event(remoteDimUpPressedEventTypeId, m_remotes.value(remote)->id()));
         param = Param(remotePressedEventButtonNameParamTypeId, "DIM UP");
         id = remotePressedEventTypeId;
         break;
     case HueRemote::DimUpLongPressed:
-        emitEvent(Event(remoteDimUpLongPressedEventTypeId, m_remotes.value(remote)->id()));
         param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM UP");
         id = remoteLongPressedEventTypeId;
         break;
     case HueRemote::DimDownPressed:
-        emitEvent(Event(remoteDimDownPressedEventTypeId, m_remotes.value(remote)->id()));
         param = Param(remotePressedEventButtonNameParamTypeId, "DIM DOWN");
         id = remotePressedEventTypeId;
         break;
     case HueRemote::DimDownLongPressed:
-        emitEvent(Event(remoteDimDownLongPressedEventTypeId, m_remotes.value(remote)->id()));
         param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM DOWN");
         id = remoteLongPressedEventTypeId;
         break;
     case HueRemote::OffPressed:
-        emitEvent(Event(remoteOffPressedEventTypeId, m_remotes.value(remote)->id()));
         param = Param(remotePressedEventButtonNameParamTypeId, "OFF");
         id = remotePressedEventTypeId;
         break;
     case HueRemote::OffLongPressed:
-        emitEvent(Event(remoteOffLongPressedEventTypeId, m_remotes.value(remote)->id()));
         param = Param(remoteLongPressedEventButtonNameParamTypeId, "OFF");
         id = remoteLongPressedEventTypeId;
         break;
