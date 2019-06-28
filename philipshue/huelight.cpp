@@ -142,7 +142,13 @@ void HueLight::updateStates(const QVariantMap &statesMap)
         setEffect("color loop");
     }
 
-    setReachable(statesMap.value("reachable").toBool());
+    // FIXME: This is a workaround for a bug in the hue bridge:
+    // "LIGHTIFY Indoor Flex RGBW" are erroneously reporting "reachable: false" all the time.
+    if (modelId() == "LIGHTIFY Indoor Flex RGBW") {
+        setReachable(true);
+    } else {
+        setReachable(statesMap.value("reachable").toBool());
+    }
 
     // alert (none, select, lselect)
     setAlert(statesMap.value("alert").toString());
