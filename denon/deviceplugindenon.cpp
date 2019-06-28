@@ -384,6 +384,18 @@ void DevicePluginDenon::onAvrVolumeChanged(int volume)
     }
 }
 
+void DevicePluginDenon::onAvrChannelChanged(const QByteArray &channel)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Device *device = m_avrConnections.key(denonConnection);
+    if (!device)
+        return;
+
+    if (device->deviceClassId() == AVRX1000DeviceClassId) {
+        device->setStateValue(AVRX1000ChannelStateTypeId, channel);
+    }
+}
+
 void DevicePluginDenon::onAvrMuteChanged(bool mute)
 {
     AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
