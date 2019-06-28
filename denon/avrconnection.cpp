@@ -43,7 +43,7 @@ AvrConnection::~AvrConnection()
     m_socket->close();
 }
 
-void AvrConnection::connect()
+void AvrConnection::connectDevice()
 {
     if (m_socket->state() == QAbstractSocket::ConnectingState) {
         return;
@@ -51,7 +51,7 @@ void AvrConnection::connect()
     m_socket->connectToHost(m_hostAddress, m_port);
 }
 
-void AvrConnection::disconnect()
+void AvrConnection::disconnectDevice()
 {
     m_socket->close();
 }

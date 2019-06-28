@@ -111,7 +111,7 @@ Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
         connect(denonConnection, &AvrConnection::muteChanged, this, &DevicePluginDenon::onAvrMuteChanged);
 
         m_asyncSetups.append(denonConnection);
-        denonConnection->connect();
+        denonConnection->connectDevice();
         m_avrConnections.insert(device, denonConnection);
         return Device::DeviceSetupStatusAsync;
     }
@@ -148,7 +148,7 @@ void DevicePluginDenon::deviceRemoved(Device *device)
     if (device->deviceClassId() == AVRX1000DeviceClassId) {
         AvrConnection *denonConnection = m_avrConnections.value(device);
         m_avrConnections.remove(device);
-        denonConnection->disconnect();
+        denonConnection->disconnectDevice();
         denonConnection->deleteLater();
     }
 
@@ -156,7 +156,7 @@ void DevicePluginDenon::deviceRemoved(Device *device)
         if (m_avrConnections.contains(device)) {
             AvrConnection *denonConnection = m_avrConnections.value(device);
             m_avrConnections.remove(device);
-            denonConnection->disconnect();
+            denonConnection->disconnectDevice();
             denonConnection->deleteLater();
         }
     }
@@ -317,7 +317,7 @@ void DevicePluginDenon::onPluginTimer()
 {
     foreach(AvrConnection *denonConnection, m_avrConnections.values()) {
         if (!denonConnection->connected()) {
-            denonConnection->connect();
+            denonConnection->connectDevice();
         }
         Device *device = m_avrConnections.key(denonConnection);
         if (device->deviceClassId() == AVRX1000DeviceClassId) {

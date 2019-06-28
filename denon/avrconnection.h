@@ -35,8 +35,8 @@ public:
     explicit AvrConnection(const QHostAddress &hostAddress, const int &port = 23, QObject *parent = nullptr);
     ~AvrConnection();
 
-    void connect();
-    void disconnect();
+    void connectDevice();
+    void disconnectDevice();
 
     QHostAddress hostAddress() const;
     int port() const;
