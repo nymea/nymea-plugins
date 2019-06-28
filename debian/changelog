@@ -1,3 +1,15 @@
+nymea-plugins (0.12.3) xenial; urgency=medium
+
+  [ Michael Zanetti ]
+  * FlowerCare: Drop unneeded name parameter
+  * PhilipsHue: Improve discovery and fix reconfigure
+  * PhilipsHue: Drop deprecated old-style Hue Remote button events
+  * WeMo: Fix discovery if device has been renamed
+  * TexasInstruments: Fix Package dependencies
+  * PhilipsHue: Work around a bug in Osram LIGHTIFY RGBW LED stripes
+
+ -- Jenkins <jenkins@nymea.io>  Fri, 28 Jun 2019 12:45:50 +0200
+
 nymea-plugins (0.12.2) xenial; urgency=medium
 
   [ Bernhard Trinnes ]
