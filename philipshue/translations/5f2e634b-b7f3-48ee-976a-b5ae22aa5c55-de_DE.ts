@@ -4,50 +4,50 @@
 <context>
     <name>PhilipsHue</name>
     <message>
-        <location filename="../plugininfo.h" line="198"/>
+        <location filename="../plugininfo.h" line="190"/>
         <source>Philips</source>
         <extracomment>The name of the vendor (0ae1e001-2aa6-47ed-b8c0-334c3728a68f)</extracomment>
         <translation>Philips</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="201"/>
+        <location filename="../plugininfo.h" line="193"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
         <extracomment>The pairing info of deviceClass bridge</extracomment>
         <translation>Bitte drücke den Knopf auf der Hue Bridge innerhalb von 30 Sekunden bevor du fortfährst</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="204"/>
+        <location filename="../plugininfo.h" line="196"/>
         <source>Hue gateway</source>
         <extracomment>The name of the DeviceClass (642aa4c7-19aa-45ed-ba06-aa1ae6c9edf7)</extracomment>
         <translation>Hue Gateway</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="207"/>
+        <location filename="../plugininfo.h" line="199"/>
         <source>api key</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, Type: device, ID: 8bf5776a-d5a6-4600-8b27-481f0d803a8f)</extracomment>
         <translation>API Schlüssel</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="210"/>
+        <location filename="../plugininfo.h" line="202"/>
         <source>host address</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, Type: device, ID: 1845975b-1184-4440-bc0d-73d53a9f683c)</extracomment>
         <translation>Adresse</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="213"/>
+        <location filename="../plugininfo.h" line="205"/>
         <source>mac address</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, Type: device, ID: 2c67203d-a308-45ec-9a08-fc4183c06ff8)</extracomment>
         <translation>MAC Adresse</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="216"/>
+        <location filename="../plugininfo.h" line="208"/>
         <source>id</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, Type: device, ID: a496feb0-3b7b-46cb-a63a-e063447d6b1d)</extracomment>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="219"/>
-        <location filename="../plugininfo.h" line="240"/>
+        <location filename="../plugininfo.h" line="211"/>
+        <location filename="../plugininfo.h" line="232"/>
         <source>software version</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, Type: device, ID: ea228c4d-975c-4b43-9445-7c9a907c29d6)
 ----------
@@ -55,18 +55,18 @@ The name of the ParamType for the autocreated EventType (DeviceClass: bridge, St
         <translation>Software-Version</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="222"/>
+        <location filename="../plugininfo.h" line="214"/>
         <source>zigbee channel</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, Type: device, ID: 53170394-956c-4511-b3a8-2c8a502ef1ed)</extracomment>
         <translation>Zigbee Kanal</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="225"/>
-        <location filename="../plugininfo.h" line="276"/>
-        <location filename="../plugininfo.h" line="363"/>
-        <location filename="../plugininfo.h" line="426"/>
-        <location filename="../plugininfo.h" line="477"/>
-        <location filename="../plugininfo.h" line="546"/>
+        <location filename="../plugininfo.h" line="217"/>
+        <location filename="../plugininfo.h" line="268"/>
+        <location filename="../plugininfo.h" line="355"/>
+        <location filename="../plugininfo.h" line="418"/>
+        <location filename="../plugininfo.h" line="469"/>
+        <location filename="../plugininfo.h" line="514"/>
         <source>reachable changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: bridge, StateType: connected, ID: 15794d26-fde8-4a61-8f83-d7830534975f)
 ----------
@@ -82,53 +82,53 @@ The name of the autocreated EventType (DeviceClass: tap, StateType: connected, I
         <translation>Erreichbarkeit geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="231"/>
+        <location filename="../plugininfo.h" line="223"/>
         <source>api version changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: bridge, StateType: apiVersion, ID: 7a230e89-c4ce-4276-90e0-6a9ddb890603)</extracomment>
         <translation>API Version geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="237"/>
+        <location filename="../plugininfo.h" line="229"/>
         <source>software version changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: bridge, StateType: softwareVersion, ID: 4c707b18-6604-4e6d-b6bc-4e27769c2adc)</extracomment>
         <translation>Software-Version geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="243"/>
+        <location filename="../plugininfo.h" line="235"/>
         <source>update status changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: bridge, StateType: updateStatus, ID: 16a126f3-0cef-4931-bb2b-9e1b49bec7fc)</extracomment>
         <translation>Update Status geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="249"/>
+        <location filename="../plugininfo.h" line="241"/>
         <source>search devices</source>
         <extracomment>The name of the ActionType cca3f171-6318-44e7-a2ac-d841857c1c24 of deviceClass bridge</extracomment>
         <translation>Suche Geräte</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="252"/>
+        <location filename="../plugininfo.h" line="244"/>
         <source>Serial Number (optional)</source>
         <extracomment>The name of the ParamType (DeviceClass: bridge, ActionType: searchNewDevices, ID: 1924bdb5-f8f1-4dcd-bc09-21ad7c5ce377)</extracomment>
         <translation>Seriennummer (Optional)</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="255"/>
+        <location filename="../plugininfo.h" line="247"/>
         <source>check updates</source>
         <extracomment>The name of the ActionType 07a85e91-d064-4bce-b017-13fd0c320c0b of deviceClass bridge</extracomment>
         <translation>Suche Updates</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="258"/>
+        <location filename="../plugininfo.h" line="250"/>
         <source>Upgrade bridge</source>
         <extracomment>The name of the ActionType 6dfbc7c0-7372-42f6-82ba-e777cb32dc4c of deviceClass bridge</extracomment>
         <translation>Bridge updaten</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="264"/>
-        <location filename="../plugininfo.h" line="351"/>
-        <location filename="../plugininfo.h" line="414"/>
-        <location filename="../plugininfo.h" line="465"/>
-        <location filename="../plugininfo.h" line="534"/>
+        <location filename="../plugininfo.h" line="256"/>
+        <location filename="../plugininfo.h" line="343"/>
+        <location filename="../plugininfo.h" line="406"/>
+        <location filename="../plugininfo.h" line="457"/>
+        <location filename="../plugininfo.h" line="502"/>
         <source>model id</source>
         <extracomment>The name of the ParamType (DeviceClass: colorLight, Type: device, ID: 095a463b-f59e-46b1-989a-a71f9cbe3e30)
 ----------
@@ -142,11 +142,11 @@ The name of the ParamType (DeviceClass: tap, Type: device, ID: 62d92175-db3a-4da
         <translation>Model ID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="267"/>
-        <location filename="../plugininfo.h" line="354"/>
-        <location filename="../plugininfo.h" line="417"/>
-        <location filename="../plugininfo.h" line="468"/>
-        <location filename="../plugininfo.h" line="537"/>
+        <location filename="../plugininfo.h" line="259"/>
+        <location filename="../plugininfo.h" line="346"/>
+        <location filename="../plugininfo.h" line="409"/>
+        <location filename="../plugininfo.h" line="460"/>
+        <location filename="../plugininfo.h" line="505"/>
         <source>type</source>
         <extracomment>The name of the ParamType (DeviceClass: colorLight, Type: device, ID: 3f3467ef-4483-4eb9-bcae-84e628322f84)
 ----------
@@ -160,11 +160,11 @@ The name of the ParamType (DeviceClass: tap, Type: device, ID: eace85b9-5369-466
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="270"/>
-        <location filename="../plugininfo.h" line="357"/>
-        <location filename="../plugininfo.h" line="420"/>
-        <location filename="../plugininfo.h" line="471"/>
-        <location filename="../plugininfo.h" line="540"/>
+        <location filename="../plugininfo.h" line="262"/>
+        <location filename="../plugininfo.h" line="349"/>
+        <location filename="../plugininfo.h" line="412"/>
+        <location filename="../plugininfo.h" line="463"/>
+        <location filename="../plugininfo.h" line="508"/>
         <source>uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: colorLight, Type: device, ID: 1a5129ca-006c-446c-9f2e-79b065de715f)
 ----------
@@ -178,9 +178,9 @@ The name of the ParamType (DeviceClass: tap, Type: device, ID: 25cf4167-6c28-449
         <translation>UUID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="273"/>
-        <location filename="../plugininfo.h" line="360"/>
-        <location filename="../plugininfo.h" line="423"/>
+        <location filename="../plugininfo.h" line="265"/>
+        <location filename="../plugininfo.h" line="352"/>
+        <location filename="../plugininfo.h" line="415"/>
         <source>light id</source>
         <extracomment>The name of the ParamType (DeviceClass: colorLight, Type: device, ID: 491dc012-ccf2-4d3a-9f18-add98f7374af)
 ----------
@@ -190,9 +190,9 @@ The name of the ParamType (DeviceClass: dimmableLight, Type: device, ID: 491dc01
         <translation>Licht ID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="282"/>
-        <location filename="../plugininfo.h" line="369"/>
-        <location filename="../plugininfo.h" line="432"/>
+        <location filename="../plugininfo.h" line="274"/>
+        <location filename="../plugininfo.h" line="361"/>
+        <location filename="../plugininfo.h" line="424"/>
         <source>power changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: colorLight, StateType: power, ID: 90aaffe5-6a76-47d2-a14a-550f60390245)
 ----------
@@ -202,12 +202,12 @@ The name of the autocreated EventType (DeviceClass: dimmableLight, StateType: po
         <translation>Eingeschaltet geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="285"/>
-        <location filename="../plugininfo.h" line="291"/>
-        <location filename="../plugininfo.h" line="372"/>
-        <location filename="../plugininfo.h" line="378"/>
-        <location filename="../plugininfo.h" line="435"/>
-        <location filename="../plugininfo.h" line="441"/>
+        <location filename="../plugininfo.h" line="277"/>
+        <location filename="../plugininfo.h" line="283"/>
+        <location filename="../plugininfo.h" line="364"/>
+        <location filename="../plugininfo.h" line="370"/>
+        <location filename="../plugininfo.h" line="427"/>
+        <location filename="../plugininfo.h" line="433"/>
         <source>power</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: colorLight, StateType: power, ID: 90aaffe5-6a76-47d2-a14a-550f60390245
 ----------
@@ -223,9 +223,9 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: dimmableL
         <translation>Eingeschaltet</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="288"/>
-        <location filename="../plugininfo.h" line="375"/>
-        <location filename="../plugininfo.h" line="438"/>
+        <location filename="../plugininfo.h" line="280"/>
+        <location filename="../plugininfo.h" line="367"/>
+        <location filename="../plugininfo.h" line="430"/>
         <source>Set power</source>
         <extracomment>The name of the autocreated ActionType (DeviceClass: colorLight, StateType: power, ID: 90aaffe5-6a76-47d2-a14a-550f60390245)
 ----------
@@ -235,8 +235,8 @@ The name of the autocreated ActionType (DeviceClass: dimmableLight, StateType: p
         <translation>Einschalten</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="294"/>
-        <location filename="../plugininfo.h" line="381"/>
+        <location filename="../plugininfo.h" line="286"/>
+        <location filename="../plugininfo.h" line="373"/>
         <source>color temperature changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: colorLight, StateType: colorTemperature, ID: c0f4206f-f219-4f06-93c4-4ca515a56f79)
 ----------
@@ -244,8 +244,8 @@ The name of the autocreated EventType (DeviceClass: colorTemperatureLight, State
         <translation>Farbtemperatur geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="300"/>
-        <location filename="../plugininfo.h" line="387"/>
+        <location filename="../plugininfo.h" line="292"/>
+        <location filename="../plugininfo.h" line="379"/>
         <source>Set color temperature</source>
         <extracomment>The name of the autocreated ActionType (DeviceClass: colorLight, StateType: colorTemperature, ID: c0f4206f-f219-4f06-93c4-4ca515a56f79)
 ----------
@@ -253,14 +253,14 @@ The name of the autocreated ActionType (DeviceClass: colorTemperatureLight, Stat
         <translation>Setze Farbtemperatur</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="306"/>
+        <location filename="../plugininfo.h" line="298"/>
         <source>color changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: colorLight, StateType: color, ID: d25423e7-b924-4b20-80b6-77eecc65d089)</extracomment>
         <translation>Farbe geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="309"/>
-        <location filename="../plugininfo.h" line="315"/>
+        <location filename="../plugininfo.h" line="301"/>
+        <location filename="../plugininfo.h" line="307"/>
         <source>color</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: colorLight, StateType: color, ID: d25423e7-b924-4b20-80b6-77eecc65d089
 ----------
@@ -268,15 +268,15 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: colorLigh
         <translation>Farbe</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="312"/>
+        <location filename="../plugininfo.h" line="304"/>
         <source>Set color</source>
         <extracomment>The name of the autocreated ActionType (DeviceClass: colorLight, StateType: color, ID: d25423e7-b924-4b20-80b6-77eecc65d089)</extracomment>
         <translation>Setze Farbe</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="318"/>
-        <location filename="../plugininfo.h" line="393"/>
-        <location filename="../plugininfo.h" line="444"/>
+        <location filename="../plugininfo.h" line="310"/>
+        <location filename="../plugininfo.h" line="385"/>
+        <location filename="../plugininfo.h" line="436"/>
         <source>brightness changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: colorLight, StateType: brightness, ID: 90e91f64-a208-468c-a5a2-7f47e08859e2)
 ----------
@@ -286,12 +286,12 @@ The name of the autocreated EventType (DeviceClass: dimmableLight, StateType: br
         <translation>Helligkeit geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="321"/>
-        <location filename="../plugininfo.h" line="327"/>
-        <location filename="../plugininfo.h" line="396"/>
-        <location filename="../plugininfo.h" line="402"/>
-        <location filename="../plugininfo.h" line="447"/>
-        <location filename="../plugininfo.h" line="453"/>
+        <location filename="../plugininfo.h" line="313"/>
+        <location filename="../plugininfo.h" line="319"/>
+        <location filename="../plugininfo.h" line="388"/>
+        <location filename="../plugininfo.h" line="394"/>
+        <location filename="../plugininfo.h" line="439"/>
+        <location filename="../plugininfo.h" line="445"/>
         <source>brightness</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: colorLight, StateType: brightness, ID: 90e91f64-a208-468c-a5a2-7f47e08859e2
 ----------
@@ -307,8 +307,8 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: dimmableL
         <translation>Helligkeit</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="324"/>
-        <location filename="../plugininfo.h" line="399"/>
+        <location filename="../plugininfo.h" line="316"/>
+        <location filename="../plugininfo.h" line="391"/>
         <source>Set brigtness</source>
         <extracomment>The name of the autocreated ActionType (DeviceClass: colorLight, StateType: brightness, ID: 90e91f64-a208-468c-a5a2-7f47e08859e2)
 ----------
@@ -316,32 +316,32 @@ The name of the autocreated ActionType (DeviceClass: colorTemperatureLight, Stat
         <translation>Setze Helligkeit</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="330"/>
+        <location filename="../plugininfo.h" line="322"/>
         <source>effect changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: colorLight, StateType: effect, ID: 0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc)</extracomment>
         <translation>Licht Effekt geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="348"/>
+        <location filename="../plugininfo.h" line="340"/>
         <source>Hue color temperature light</source>
         <extracomment>The name of the DeviceClass (35f749f7-b60a-4922-bd25-1bdd2eddcbe3)</extracomment>
         <translation>Hue Farbtemperatur-Licht</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="411"/>
+        <location filename="../plugininfo.h" line="403"/>
         <source>Hue dimmable light</source>
         <extracomment>The name of the DeviceClass (4fa568ef-7a3a-422b-b0c0-206d37cb4eed)</extracomment>
         <translation>Hue dimmbares Licht</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="489"/>
+        <location filename="../plugininfo.h" line="481"/>
         <source>battery critical changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: remote, StateType: batteryCritical, ID: f8516899-6312-4110-bb97-70ffa81dc530)</extracomment>
         <translation>Batterie Ladestatus kritisch geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="519"/>
-        <location filename="../plugininfo.h" line="552"/>
+        <location filename="../plugininfo.h" line="487"/>
+        <location filename="../plugininfo.h" line="520"/>
         <source>Button pressed</source>
         <extracomment>The name of the EventType 8da28cf1-2457-451e-953e-2685f8daeda8 of deviceClass remote
 ----------
@@ -349,9 +349,9 @@ The name of the EventType c45dd703-7cbd-48f7-88dc-31045cc3d39c of deviceClass ta
         <translation>Taste gedrückt</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="522"/>
-        <location filename="../plugininfo.h" line="528"/>
-        <location filename="../plugininfo.h" line="555"/>
+        <location filename="../plugininfo.h" line="490"/>
+        <location filename="../plugininfo.h" line="496"/>
+        <location filename="../plugininfo.h" line="523"/>
         <source>Button name</source>
         <extracomment>The name of the ParamType (DeviceClass: remote, EventType: pressed, ID: e4e3eb3a-a7c4-49e3-9344-0b3f213e0b42)
 ----------
@@ -361,168 +361,168 @@ The name of the ParamType (DeviceClass: tap, EventType: pressed, ID: 8ed643c0-1b
         <translation>Taste Name</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="525"/>
+        <location filename="../plugininfo.h" line="493"/>
         <source>Button longpressed</source>
         <extracomment>The name of the EventType 2c64561b-2381-4769-8e21-0e206c84bbcc of deviceClass remote</extracomment>
         <translation>Taste lange gedrückt</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="531"/>
+        <location filename="../plugininfo.h" line="499"/>
         <source>Hue Tap</source>
         <extracomment>The name of the DeviceClass (2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e)</extracomment>
         <translation>Hue Tap</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="558"/>
+        <location filename="../plugininfo.h" line="526"/>
         <source>Hue Outdoor Sensor</source>
         <extracomment>The name of the DeviceClass (32dc6390-600f-4eb4-b349-cc2d6796a82a)</extracomment>
         <translation>Hue Aussen-Sensor</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="561"/>
+        <location filename="../plugininfo.h" line="529"/>
         <source>Model id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 3ca8632d-7bd1-45a9-86af-c856e006c334)</extracomment>
         <translation>Geräte ID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="564"/>
+        <location filename="../plugininfo.h" line="532"/>
         <source>Uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 4a15f861-cad6-464a-b250-08793c68ae30)</extracomment>
         <translation>UUID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="567"/>
+        <location filename="../plugininfo.h" line="535"/>
         <source>Temperature sensor id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: c732fefd-ca6b-4e27-a6d2-11595c4aab3e)</extracomment>
         <translation>Temperaturesensor ID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="570"/>
+        <location filename="../plugininfo.h" line="538"/>
         <source>Temperature sensor uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 2fdb34e8-25ca-4c5d-85c9-9a12bd48dbed)</extracomment>
         <translation>Temperatursensor UUID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="573"/>
+        <location filename="../plugininfo.h" line="541"/>
         <source>Presence sensor id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 3ca82a24-5eca-4285-83c2-f862d387c3bc)</extracomment>
         <translation>Anwesenheitssensor ID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="576"/>
+        <location filename="../plugininfo.h" line="544"/>
         <source>Presence sensor uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 7d55ed97-3a32-41e9-9112-8cc5b44aab23)</extracomment>
         <translation>Anwesenheitssensor UUID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="579"/>
+        <location filename="../plugininfo.h" line="547"/>
         <source>Light sensor id</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: 22a164fc-fa6e-427a-9a60-7a1872901fd6)</extracomment>
         <translation>Lichtsensor ID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="582"/>
+        <location filename="../plugininfo.h" line="550"/>
         <source>Light sensor uuid</source>
         <extracomment>The name of the ParamType (DeviceClass: outdoorSensor, Type: device, ID: db678144-de2b-4767-a2f6-9ada8377b96c)</extracomment>
         <translation>Lichtsensor UUID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="585"/>
+        <location filename="../plugininfo.h" line="553"/>
         <source>Reachable changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: connected, ID: 9fe43e6b-3c29-43a9-bb96-3b80eacc10db)</extracomment>
         <translation>Erreichbar geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="588"/>
+        <location filename="../plugininfo.h" line="556"/>
         <source>Reachable</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: connected, ID: 9fe43e6b-3c29-43a9-bb96-3b80eacc10db</extracomment>
         <translation>Erreichbar</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="591"/>
+        <location filename="../plugininfo.h" line="559"/>
         <source>Battery changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: batteryLevel, ID: 19b18531-61e5-4998-89d1-765d740e24eb)</extracomment>
         <translation>Batterieladung geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="594"/>
+        <location filename="../plugininfo.h" line="562"/>
         <source>Battery</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: batteryLevel, ID: 19b18531-61e5-4998-89d1-765d740e24eb</extracomment>
         <translation>Batterie</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="597"/>
+        <location filename="../plugininfo.h" line="565"/>
         <source>Battery critical changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: batteryCritical, ID: 617aa352-789c-46e7-bf55-7455b1e5018e)</extracomment>
         <translation>Batterieladung kritisch geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="600"/>
+        <location filename="../plugininfo.h" line="568"/>
         <source>Battery critical</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: batteryCritical, ID: 617aa352-789c-46e7-bf55-7455b1e5018e</extracomment>
         <translation>Batterieladung kritisch</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="603"/>
+        <location filename="../plugininfo.h" line="571"/>
         <source>Temperature changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: temperature, ID: 88f5b708-65bb-41a7-885f-01be46074713)</extracomment>
         <translation>Temperatur geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="606"/>
+        <location filename="../plugininfo.h" line="574"/>
         <source>Temperature</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: temperature, ID: 88f5b708-65bb-41a7-885f-01be46074713</extracomment>
         <translation>Temperatur</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="609"/>
+        <location filename="../plugininfo.h" line="577"/>
         <source>Ambient light changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: lightIntensity, ID: 4fb12c06-981c-4c42-b55c-46bdfe68681a)</extracomment>
         <translation>Ungebungslicht geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="612"/>
+        <location filename="../plugininfo.h" line="580"/>
         <source>Ambient light</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: lightIntensity, ID: 4fb12c06-981c-4c42-b55c-46bdfe68681a</extracomment>
         <translation>Umgebungslicht</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="615"/>
+        <location filename="../plugininfo.h" line="583"/>
         <source>Person is present changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: isPresent, ID: 680f79cf-c17c-4ffd-96fa-a5b286e2c117)</extracomment>
         <translation>Person anwesend geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="618"/>
+        <location filename="../plugininfo.h" line="586"/>
         <source>Person is present</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: isPresent, ID: 680f79cf-c17c-4ffd-96fa-a5b286e2c117</extracomment>
         <translation>Person ist anwesend</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="621"/>
+        <location filename="../plugininfo.h" line="589"/>
         <source>Last seen time changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: outdoorSensor, StateType: lastSeenTime, ID: 6fa16fb2-053c-4c3c-a39b-9548c1b15089)</extracomment>
         <translation>Zuletzt gesehen geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="624"/>
+        <location filename="../plugininfo.h" line="592"/>
         <source>Last seen time</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoorSensor, StateType: lastSeenTime, ID: 6fa16fb2-053c-4c3c-a39b-9548c1b15089</extracomment>
         <translation>Zuletzt gesehen</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="195"/>
+        <location filename="../plugininfo.h" line="187"/>
         <source>Philips Hue</source>
         <extracomment>The name of the plugin PhilipsHue (5f2e634b-b7f3-48ee-976a-b5ae22aa5c55)</extracomment>
         <translation>Philips Hue</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="228"/>
-        <location filename="../plugininfo.h" line="279"/>
-        <location filename="../plugininfo.h" line="366"/>
-        <location filename="../plugininfo.h" line="429"/>
-        <location filename="../plugininfo.h" line="480"/>
-        <location filename="../plugininfo.h" line="549"/>
+        <location filename="../plugininfo.h" line="220"/>
+        <location filename="../plugininfo.h" line="271"/>
+        <location filename="../plugininfo.h" line="358"/>
+        <location filename="../plugininfo.h" line="421"/>
+        <location filename="../plugininfo.h" line="472"/>
+        <location filename="../plugininfo.h" line="517"/>
         <source>reachable</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: bridge, StateType: connected, ID: 15794d26-fde8-4a61-8f83-d7830534975f
 ----------
@@ -538,28 +538,28 @@ The name of the ParamType for the autocreated EventType (DeviceClass: tap, State
         <translation>Erreichbar</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="234"/>
+        <location filename="../plugininfo.h" line="226"/>
         <source>api version</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: bridge, StateType: apiVersion, ID: 7a230e89-c4ce-4276-90e0-6a9ddb890603</extracomment>
         <translation>API Version</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="246"/>
+        <location filename="../plugininfo.h" line="238"/>
         <source>update status</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: bridge, StateType: updateStatus, ID: 16a126f3-0cef-4931-bb2b-9e1b49bec7fc</extracomment>
         <translation>Update Status</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="261"/>
+        <location filename="../plugininfo.h" line="253"/>
         <source>Hue color light</source>
         <extracomment>The name of the DeviceClass (0edba26c-96ab-44fb-a6a2-c0574d19630e)</extracomment>
         <translation>Hue Farblicht</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="297"/>
-        <location filename="../plugininfo.h" line="303"/>
-        <location filename="../plugininfo.h" line="384"/>
-        <location filename="../plugininfo.h" line="390"/>
+        <location filename="../plugininfo.h" line="289"/>
+        <location filename="../plugininfo.h" line="295"/>
+        <location filename="../plugininfo.h" line="376"/>
+        <location filename="../plugininfo.h" line="382"/>
         <source>color temperature</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: colorLight, StateType: colorTemperature, ID: c0f4206f-f219-4f06-93c4-4ca515a56f79
 ----------
@@ -571,8 +571,8 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: colorTemp
         <translation>Farbtemperatur</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="333"/>
-        <location filename="../plugininfo.h" line="339"/>
+        <location filename="../plugininfo.h" line="325"/>
+        <location filename="../plugininfo.h" line="331"/>
         <source>effect</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: colorLight, StateType: effect, ID: 0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc
 ----------
@@ -580,15 +580,15 @@ The name of the ParamType for the autocreated ActionType (DeviceClass: colorLigh
         <translation>Effekt</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="336"/>
+        <location filename="../plugininfo.h" line="328"/>
         <source>Set effect</source>
         <extracomment>The name of the autocreated ActionType (DeviceClass: colorLight, StateType: effect, ID: 0b7cdd8d-4db8-4183-abe2-f3c01d1c9afc)</extracomment>
         <translation>Setze Licht Effekt</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="342"/>
-        <location filename="../plugininfo.h" line="405"/>
-        <location filename="../plugininfo.h" line="456"/>
+        <location filename="../plugininfo.h" line="334"/>
+        <location filename="../plugininfo.h" line="397"/>
+        <location filename="../plugininfo.h" line="448"/>
         <source>flash</source>
         <extracomment>The name of the ActionType d25dcfbc-d28c-4905-80e3-300ffb1248f5 of deviceClass colorLight
 ----------
@@ -598,9 +598,9 @@ The name of the ActionType d25dcfbc-d28c-4905-80e3-300ffb1248f5 of deviceClass d
         <translation>Aufleuchten</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="345"/>
-        <location filename="../plugininfo.h" line="408"/>
-        <location filename="../plugininfo.h" line="459"/>
+        <location filename="../plugininfo.h" line="337"/>
+        <location filename="../plugininfo.h" line="400"/>
+        <location filename="../plugininfo.h" line="451"/>
         <source>alert</source>
         <extracomment>The name of the ParamType (DeviceClass: colorLight, ActionType: alert, ID: 8ace6f8c-b2c7-4d0d-a407-52a54ad0ab05)
 ----------
@@ -610,20 +610,20 @@ The name of the ParamType (DeviceClass: dimmableLight, ActionType: alert, ID: 8a
         <translation>Alarm</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="450"/>
+        <location filename="../plugininfo.h" line="442"/>
         <source>Set brightness</source>
         <extracomment>The name of the autocreated ActionType (DeviceClass: dimmableLight, StateType: brightness, ID: 90e91f64-a208-468c-a5a2-7f47e08859e2)</extracomment>
         <translation>Setze Helligkeit</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="462"/>
+        <location filename="../plugininfo.h" line="454"/>
         <source>Hue Remote</source>
         <extracomment>The name of the DeviceClass (bb482d39-67ef-46dc-88e9-7b181d642b28)</extracomment>
         <translation>Hue Fernbedienung</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="474"/>
-        <location filename="../plugininfo.h" line="543"/>
+        <location filename="../plugininfo.h" line="466"/>
+        <location filename="../plugininfo.h" line="511"/>
         <source>sensor id</source>
         <extracomment>The name of the ParamType (DeviceClass: remote, Type: device, ID: 2ddb571b-149f-4f08-a76a-78b7d3aa27e0)
 ----------
@@ -631,70 +631,22 @@ The name of the ParamType (DeviceClass: tap, Type: device, ID: 5eca2b24-8986-448
         <translation>Sensor ID</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="483"/>
+        <location filename="../plugininfo.h" line="475"/>
         <source>battery changed</source>
         <extracomment>The name of the autocreated EventType (DeviceClass: remote, StateType: batteryLevel, ID: 683e493a-9796-4d5e-b0e3-61cb178d5819)</extracomment>
         <translation>Batterie geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="486"/>
+        <location filename="../plugininfo.h" line="478"/>
         <source>battery</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: remote, StateType: batteryLevel, ID: 683e493a-9796-4d5e-b0e3-61cb178d5819</extracomment>
         <translation>Batterie</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="492"/>
+        <location filename="../plugininfo.h" line="484"/>
         <source>battery critical</source>
         <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: remote, StateType: batteryCritical, ID: f8516899-6312-4110-bb97-70ffa81dc530</extracomment>
         <translation>Batterie Ladestatus kritisch</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="495"/>
-        <source>on pressed</source>
-        <extracomment>The name of the EventType de769db0-4c31-46cf-9760-dbc6f9209c26 of deviceClass remote</extracomment>
-        <translation>Wenn gedrückt</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="498"/>
-        <source>on long pressed</source>
-        <extracomment>The name of the EventType 6c5e596b-7c15-40bb-af9d-c778a6b0f30e of deviceClass remote</extracomment>
-        <translation>Wenn lange gedrückt</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="501"/>
-        <source>dim up pressed</source>
-        <extracomment>The name of the EventType 8e3d6a62-6a19-4e9a-a25b-e1da2e56ede9 of deviceClass remote</extracomment>
-        <translation>Hochdimmen gedrückt</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="504"/>
-        <source>dim up long pressed</source>
-        <extracomment>The name of the EventType 53d3c9af-3e25-4116-b22b-38d897bc20aa of deviceClass remote</extracomment>
-        <translation>Hochdimmen lange gedrückt</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="507"/>
-        <source>dim down pressed</source>
-        <extracomment>The name of the EventType efd8b972-9a37-43f2-b9bc-f9dfe144a96d of deviceClass remote</extracomment>
-        <translation>Herunterdimmen gedrückt</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="510"/>
-        <source>dim down long pressed</source>
-        <extracomment>The name of the EventType 1986d4c6-4c9f-4e43-ba70-0ff06c6f177b of deviceClass remote</extracomment>
-        <translation>Herunterdimmen lange gedrückt</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="513"/>
-        <source>off pressed</source>
-        <extracomment>The name of the EventType 7c2a58f1-137c-4bf3-8f9e-453dff020487 of deviceClass remote</extracomment>
-        <translation>Aus gedrückt</translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="516"/>
-        <source>off long pressed</source>
-        <extracomment>The name of the EventType d69306eb-ea52-4841-9e26-89c69e9cf6fc of deviceClass remote</extracomment>
-        <translation>Aus lange gedrückt</translation>
     </message>
 </context>
 </TS>

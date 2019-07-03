@@ -16,11 +16,6 @@ The name of the DeviceClass (297e2efa-168c-4eb8-bf3f-f8694dc0a2b9)</extracomment
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name</source>
-        <extracomment>The name of the ParamType (DeviceClass: flowerCare, Type: device, ID: 65f95e3c-59fe-47d6-ba4a-2469e5f554e2)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>MAC address</source>
         <extracomment>The name of the ParamType (DeviceClass: flowerCare, Type: device, ID: fe2dba0f-2a47-463e-a645-bcd55cf09750)</extracomment>
         <translation type="unfinished"></translation>
