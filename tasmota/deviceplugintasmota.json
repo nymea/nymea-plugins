@@ -5,7 +5,7 @@
     "vendors": [
         {
             "name": "tasmota",
-            "displayName": "Sonoff-Tasmota",
+            "displayName": "Tasmota",
             "id": "789e6173-3de3-44ef-8664-9492c9d15d44",
             "deviceClasses": [
                 {
@@ -147,7 +147,7 @@
                     "name": "tasmotaSwitch",
                     "displayName": "Tasmota power switch",
                     "createMethods": ["auto"],
-                    "interfaces": ["power", "connectable"],
+                    "interfaces": ["powerswitch", "connectable"],
                     "paramTypes": [
                         {
                             "id": "564cf6c6-86eb-41a5-9b87-fb32f1b6fcd6",
