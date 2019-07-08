@@ -13,14 +13,20 @@
                     "name": "AVRX1000",
                     "displayName": "AVR X1000",
                     "createMethods": ["discovery"],
-                    "interfaces": ["connectable", "power", "extendedvolumecontroller"],
+                    "interfaces": ["extendedvolumecontroller", "connectable", "power"],
                     "paramTypes": [
                         {
                             "id": "a54b98b4-b78f-41dd-a257-14425c6cf9ab",
                             "name": "ip",
-                            "displayName": "ip",
+                            "displayName": "Ip",
                             "type" : "QString",
                             "inputType": "IPv4Address"
+                        },
+                        {
+                            "id": "2e8806cb-f6f3-4e9a-b6ea-0b35f75e61c5",
+                            "name": "id",
+                            "displayName": "Id",
+                            "type" : "QString"
                         }
                     ],
                     "stateTypes": [
@@ -194,7 +200,7 @@
                     "name": "heosPlayer",
                     "displayName": "Heos player",
                     "createMethods": ["auto"],
-                    "interfaces": ["connectable", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat" ],
+                    "interfaces": ["extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
                     "paramTypes":[
                         {
                             "id": "89629008-6ad8-4e92-863d-b86e0e012d0b",

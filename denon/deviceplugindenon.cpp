@@ -64,9 +64,41 @@ Device::DeviceError DevicePluginDenon::discoverDevices(const DeviceClassId &devi
     Q_UNUSED(params)
 
     if (deviceClassId == AVRX1000DeviceClassId) {
+        if (!m_serviceBrowser) {
+            m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
+            connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &DevicePluginDenon::onAvahiServiceEntryAdded);
+            connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryRemoved, this, &DevicePluginDenon::onAvahiServiceEntryRemoved);
+        }
+        QStringList discoveredIds;
 
-        UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices("urn:schemas-upnp-org:device:MediaRenderer:1", "nymea", 7000);
-        connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginDenon::onUpnpDiscoveryFinished);
+        QList<DeviceDescriptor> deviceDescriptors;
+        foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
+            if (service.txt().contains("am=AVRX1000")) {
+
+                QString id = service.name().split("@").first();
+                QString name = service.name().split("@").last();
+                QString address = service.hostAddress().toString();
+                qCDebug(dcDenon) << "service discovered" << name << "ID:" << id;
+                if (discoveredIds.contains(id))
+                    break;
+
+                discoveredIds.append(id);
+                DeviceDescriptor deviceDescriptor(AVRX1000DeviceClassId, name, address);
+                ParamList params;
+                params.append(Param(AVRX1000DeviceIpParamTypeId, address));
+                params.append(Param(AVRX1000DeviceIdParamTypeId, id));
+                deviceDescriptor.setParams(params);
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(AVRX1000DeviceIdParamTypeId).toString() == id) {
+                        deviceDescriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
+                deviceDescriptors.append(deviceDescriptor);
+            }
+        }
+
+        emit devicesDiscovered(AVRX1000DeviceClassId, deviceDescriptors);
         return Device::DeviceErrorAsync;
     }
 
@@ -500,9 +532,6 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
     if (!heosDescriptors.isEmpty()) {
         emit devicesDiscovered(heosDeviceClassId, heosDescriptors);
     }
-    if (!avrDescriptors.isEmpty()) {
-        emit devicesDiscovered(AVRX1000DeviceClassId, avrDescriptors);
-    }
 }
 
 void DevicePluginDenon::onHeosConnectionChanged()
@@ -608,3 +637,12 @@ void DevicePluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, QStrin
     }
 }
 
+void DevicePluginDenon::onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
+{
+    qCDebug(dcDenon()) << "Avahi service entry added:" << serviceEntry;
+}
+
+void DevicePluginDenon::onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry)
+{
+    qCDebug(dcDenon()) << "Avahi service entry removed:" << serviceEntry;
+}

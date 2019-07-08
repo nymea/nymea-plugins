@@ -24,11 +24,14 @@
 #ifndef DEVICEPLUGINDENON_H
 #define DEVICEPLUGINDENON_H
 
-#include "devices/deviceplugin.h"
-#include "plugintimer.h"
-#include "avrconnection.h"
 #include "heos.h"
+#include "avrconnection.h"
+#include "plugintimer.h"
+#include "devices/deviceplugin.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
+#include "network/zeroconf/zeroconfserviceentry.h"
 
+#include <QProcess>
 #include <QPair>
 #include <QHash>
 #include <QObject>
@@ -54,6 +57,8 @@ public:
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
+
     QHash<Device *, AvrConnection*> m_avrConnections;
     QHash<Device *, Heos*> m_heos;
 
@@ -77,6 +82,8 @@ private slots:
     void onHeosVolumeStatusReceived(int playerId, int volume);
     void onHeosNowPlayingMediaStatusReceived(int playerId, QString source, QString artist, QString album, QString Song, QString artwork);
 
+    void onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
+    void onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry);
     void onAvrConnectionChanged(bool status);
     void onAvrSocketError();
     void onAvrVolumeChanged(int volume);
