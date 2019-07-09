@@ -366,28 +366,28 @@
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
-                            "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
+                            "id": "6fe78769-abef-4738-b968-2ff4c3b2a152",
                             "name": "modelId",
                             "displayName": "model id",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
-                            "id": "3f3467ef-4483-4eb9-bcae-84e628322f84",
+                            "id": "0381053b-7ad6-4e67-baac-2b61248f08e3",
                             "name": "type",
                             "displayName": "type",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
-                            "id": "1a5129ca-006c-446c-9f2e-79b065de715f",
+                            "id": "90748a51-df5f-4e46-9841-d5782a9e7d58",
                             "name": "uuid",
                             "displayName": "uuid",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
-                            "id": "491dc012-ccf2-4d3a-9f18-add98f7374af",
+                            "id": "49df749a-9e67-4dc8-81d2-c521e7e8066e",
                             "name": "lightId",
                             "displayName": "light id",
                             "type" : "int",
@@ -396,7 +396,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "19bb8d10-1b28-4ba3-99b7-a634138dcfde",
+                            "id": "57f80677-745e-4cb1-b894-87d8542a7e8c",
                             "name": "connected",
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
@@ -404,7 +404,7 @@
                             "type": "bool"
                         },
                         {
-                            "id": "90aaffe5-6a76-47d2-a14a-550f60390245",
+                            "id": "5995ecb7-b5e5-4f6a-b4d6-33c93497e5fb",
                             "name": "power",
                             "displayName": "power",
                             "displayNameEvent": "power changed",
@@ -414,7 +414,7 @@
                             "writable": true
                         },
                         {
-                            "id": "90e91f64-a208-468c-a5a2-7f47e08859e2",
+                            "id": "2f062912-1159-423b-8143-48a8e69b9348",
                             "name": "brightness",
                             "displayName": "brightness",
                             "displayNameEvent": "brightness changed",
@@ -430,12 +430,12 @@
                     ],
                     "actionTypes": [
                         {
-                            "id": "d25dcfbc-d28c-4905-80e3-300ffb1248f5",
+                            "id": "ab30a83a-539e-4b3a-860a-434e87ca165f",
                             "name": "alert",
                             "displayName": "flash",
                             "paramTypes": [
                                 {
-                                    "id": "8ace6f8c-b2c7-4d0d-a407-52a54ad0ab05",
+                                    "id": "a546f129-e0e5-497b-9536-2f7a132434df",
                                     "name": "alert",
                                     "displayName": "alert",
                                     "type": "QString",
@@ -456,21 +456,21 @@
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
-                            "id": "095a463b-f59e-46b1-989a-a71f9cbe3e30",
+                            "id": "5910da25-c1ad-417c-9130-8f04e8ef1e6e",
                             "name": "modelId",
                             "displayName": "model id",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
-                            "id": "3f3467ef-4483-4eb9-bcae-84e628322f84",
+                            "id": "a12c0dbf-29e3-4580-96b0-728f8277514d",
                             "name": "type",
                             "displayName": "type",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
-                            "id": "1a5129ca-006c-446c-9f2e-79b065de715f",
+                            "id": "3cdf9de1-ae23-47dc-a8bd-056a6707060c",
                             "name": "uuid",
                             "displayName": "uuid",
                             "type" : "QString",
@@ -486,7 +486,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "19bb8d10-1b28-4ba3-99b7-a634138dcfde",
+                            "id": "9f9fac89-2dcd-4db6-b214-0065662af62a",
                             "name": "connected",
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
@@ -534,7 +534,7 @@
                             "displayName": "Button longpressed",
                             "paramTypes": [
                                 {
-                                    "id": "e4e3eb3a-a7c4-49e3-9344-0b3f213e0b42",
+                                    "id": "42a9df25-cadb-494f-b20c-fa874e214f4c",
                                     "name": "buttonName",
                                     "displayName": "Button name",
                                     "type": "QString",

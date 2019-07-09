@@ -91,7 +91,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
+                            "id": "4959c589-4550-479f-ae11-c4d1097ce3d5",
                             "name": "status",
                             "displayName": "Status code",
                             "displayNameEvent": "Status code changed",
@@ -99,7 +99,7 @@
                             "defaultValue": 200
                         },
                         {
-                            "id": "69f32ec8-114d-43f4-9241-1f6a57261f32",
+                            "id": "22f8be58-be2b-4dba-b1ca-6c2a16dec533",
                             "name": "response",
                             "displayName": "Response",
                             "displayNameEvent": "Response received",
@@ -149,7 +149,7 @@
                     ],
                     "stateTypes":[
                         {
-                            "id": "8daac0e7-4c2f-4cdf-b528-02cfe04c6b39",
+                            "id": "8a60ffe0-e39a-43ec-be8c-c1ed1886aa41",
                             "name": "status",
                             "displayName": "Status code",
                             "displayNameEvent": "Status code changed",

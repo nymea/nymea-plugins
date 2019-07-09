@@ -73,14 +73,14 @@
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
-                            "id": "b50b3682-fb2e-4185-b7aa-31741648d9bb",
+                            "id": "b5dd0e68-5af4-41f5-bf78-64af77f752cb",
                             "name": "thing",
                             "displayName": "Thing",
                             "type" : "QString",
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "892b7323-ee85-4520-9160-f206f11b344e",
+                            "id": "701fa3d5-d858-46cc-838d-2536c0c00612",
                             "name": "key",
                             "displayName": "Key",
                             "type" : "QString",
@@ -88,7 +88,7 @@
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "f2b2c3ae-a915-4dd9-a9dd-9545d9dd3d4e",
+                            "id": "5359f463-5d41-4a85-b96c-29fb2a9ecc3a",
                             "name": "contentName",
                             "displayName": "Content name",
                             "type": "QString",
@@ -97,7 +97,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "4d1790bf-28c6-4c1f-8892-ba1a0ef140f5",
+                            "id": "1e34d724-2be9-4866-abe1-93715cc1d73f",
                             "name": "connected",
                             "displayName": "connected",
                             "displayNameEvent": "connected changed",

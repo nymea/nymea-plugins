@@ -56,21 +56,21 @@
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
-                            "id": "9eda783f-6d9f-4d39-986d-d2cbfff5a7dd",
+                            "id": "b45ca4a8-c67a-411c-957c-0e78e1f12c0b",
                             "name": "gpio",
                             "displayName": "GPIO",
                             "type": "int",
                             "defaultValue": -1
                         },
                         {
-                            "id": "2204d278-7bc7-407f-ac82-ce3ae1d5779c",
+                            "id": "efd3df4a-d2b6-44f3-9095-7bba07891735",
                             "name": "pin",
                             "displayName": "Pin number",
                             "type": "int",
                             "defaultValue": -1
                         },
                         {
-                            "id": "504798eb-1faa-4703-a57a-2778e4bf9a67",
+                            "id": "720bb37e-56e6-419e-878e-8c80aaf7ce32",
                             "name": "description",
                             "displayName": "Description",
                             "type": "QString",
@@ -102,21 +102,21 @@
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
-                            "id": "9eda783f-6d9f-4d39-986d-d2cbfff5a7dd",
+                            "id": "62a9596d-fc7d-4554-9f45-9803635da619",
                             "name": "gpio",
                             "displayName": "GPIO",
                             "type": "int",
                             "defaultValue": -1
                         },
                         {
-                            "id": "2204d278-7bc7-407f-ac82-ce3ae1d5779c",
+                            "id": "14f65be0-ee84-42e4-8fcb-d98a9926a247",
                             "name": "pin",
                             "displayName": "Pin number",
                             "type": "int",
                             "defaultValue": -1
                         },
                         {
-                            "id": "504798eb-1faa-4703-a57a-2778e4bf9a67",
+                            "id": "760aa4ed-d933-4188-aec8-16285d763aa5",
                             "name": "description",
                             "displayName": "Description",
                             "type": "QString",
@@ -125,7 +125,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "06843766-358e-44b0-8d52-2b46ef98459a",
+                            "id": "82b567c6-a33c-484e-b5e7-e04795498d00",
                             "name": "powerValue",
                             "displayName": "Power",
                             "type": "bool",
@@ -143,21 +143,21 @@
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
-                            "id": "9eda783f-6d9f-4d39-986d-d2cbfff5a7dd",
+                            "id": "20773255-4576-4c8e-8c8b-051902919761",
                             "name": "gpio",
                             "displayName": "GPIO",
                             "type": "int",
                             "defaultValue": -1
                         },
                         {
-                            "id": "2204d278-7bc7-407f-ac82-ce3ae1d5779c",
+                            "id": "f383bf1d-3ac0-4808-a82c-18748baf085d",
                             "name": "pin",
                             "displayName": "Pin number",
                             "type": "int",
                             "defaultValue": -1
                         },
                         {
-                            "id": "504798eb-1faa-4703-a57a-2778e4bf9a67",
+                            "id": "da746cde-2380-4ee5-bf2c-017249fcdeef",
                             "name": "description",
                             "displayName": "Description",
                             "type": "QString",
@@ -166,7 +166,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "57f1b7cc-26c8-434b-ba04-d3077dc886c8",
+                            "id": "22440876-417a-4d57-8e01-efe26ef9f235",
                             "name": "pressed",
                             "displayName": "Pressed",
                             "type": "bool",

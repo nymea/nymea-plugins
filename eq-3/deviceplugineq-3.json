@@ -69,7 +69,7 @@
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
-                            "id": "67dc1a45-7369-422a-b677-881271f29d6c",
+                            "id": "20f0c135-6f7a-46e5-b766-d0f41af08041",
                             "name": "serial",
                             "displayName": "serial number",
                             "type": "QString",
@@ -275,38 +275,38 @@
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
-                            "id": "67dc1a45-7369-422a-b677-881271f29d6c",
+                            "id": "846b06c2-44b9-4507-93db-1a34c9343078",
                             "name": "serial",
                             "displayName": "serial number",
                             "type": "QString",
                             "inputType": "TextLine"
                         },
                         {
-                            "id": "8d32b228-8618-483f-bcc3-2d62868d6912",
+                            "id": "e098f95d-cbf8-4d41-bb03-0691a932f8c2",
                             "name": "name",
                             "displayName": "name",
                             "type": "QString"
                         },
                         {
-                            "id": "801be701-ea53-4cb2-a933-823f330e7837",
+                            "id": "809730b8-06fe-42f0-9775-7d8ae1a1620b",
                             "name": "parent",
                             "displayName": "parent cube",
                             "type": "QString"
                         },
                         {
-                            "id": "6ba358c1-0c31-4ea4-93fd-544f030582a7",
+                            "id": "d74e8fb8-71cc-4bb5-ac0a-04a100458bdb",
                             "name": "rf",
                             "displayName": "rf address",
                             "type": "QString"
                         },
                         {
-                            "id": "e3bb28dc-5311-4325-805a-e1e3a1495016",
+                            "id": "c503088e-0ec4-45d2-974e-136a70ff7e97",
                             "name": "room",
                             "displayName": "room id",
                             "type": "int"
                         },
                         {
-                            "id": "14ea2e10-4545-47ff-8955-8172913f1039",
+                            "id": "1a96b197-347b-48be-b997-4a9c8b731a51",
                             "name": "roomName",
                             "displayName": "room name",
                             "type": "QString"
@@ -314,24 +314,24 @@
                     ],
                     "actionTypes": [
                         {
-                            "id": "162b4b3d-9923-4f2c-a755-b50c8a06a6f0",
+                            "id": "8f93e550-df94-46f4-81fc-aea595fc5cad",
                             "name": "setAutoMode",
                             "displayName": "set auto mode"
                         },
                         {
-                            "id": "8e604437-9f5b-4c17-b5b0-e2db6007af5b",
+                            "id": "739bab00-69ed-49a2-876c-940cd917b6fe",
                             "name": "setManualMode",
                             "displayName": "set manual mode"
                         },
                         {
-                            "id": "27a981e8-ec23-4ba8-921e-33b911a7dd89",
+                            "id": "9d9e8936-ff08-4e7c-85a4-ecadbf324146",
                             "name": "setEcoMode",
                             "displayName": "set eco mode"
                         }
                     ],
                     "stateTypes": [
                         {
-                            "id": "850380ee-a787-43e7-adb8-768a21a6e64d",
+                            "id": "7144cc38-bee5-443e-b56c-cb3c7742adf2",
                             "name": "comfortTemp",
                             "displayName": "comfort temperature",
                             "displayNameEvent": "comfort temperature changed",
@@ -340,7 +340,7 @@
                             "defaultValue": 0
                         },
                         {
-                            "id": "24dfd20d-bc8d-48e4-8162-b20ae0465c41",
+                            "id": "9e0cf843-39e8-4657-a803-794a6c01a357",
                             "name": "ecoTemp",
                             "displayName": "eco temperature",
                             "displayNameEvent": "eco temperature changed",
@@ -349,7 +349,7 @@
                             "defaultValue": 0
                         },
                         {
-                            "id": "a8536ddf-a6e4-41c2-89c1-e7102608f5f6",
+                            "id": "b427a875-aa4b-4aa8-9beb-4fe6af73788b",
                             "name": "maxSetpointTemp",
                             "displayName": "max setpoint",
                             "displayNameEvent": "max setpoint changed",
@@ -358,7 +358,7 @@
                             "defaultValue": 0
                         },
                         {
-                            "id": "ceb0ad05-37ad-4b79-a4d9-540c34a7e3e4",
+                            "id": "d935ff02-09a7-47b0-adf0-ae1ba11fbd1d",
                             "name": "minSetpointTemp",
                             "displayName": "min setpoint",
                             "displayNameEvent": "min setpoint changed",
@@ -367,7 +367,7 @@
                             "defaultValue": 0
                         },
                         {
-                            "id": "9880247b-cf9a-453c-b0c3-d910eba8a253",
+                            "id": "ea83c3a4-d874-4c15-8749-fd210773e3c8",
                             "name": "errorOccurred",
                             "displayName": "error occured",
                             "displayNameEvent": "error occured changed",
@@ -375,7 +375,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "a9e29f03-063e-4686-8aac-2f6d8f8a4937",
+                            "id": "48ab1d1e-f5c9-4c32-8898-0e4f1bee6a13",
                             "name": "initialized",
                             "displayName": "initialized",
                             "displayNameEvent": "initialized changed",
@@ -383,7 +383,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "53b89f32-8894-4290-92a0-6a470c6b69ab",
+                            "id": "2b1beca3-5053-41f5-a826-2a7c1d59da20",
                             "name": "batteryLow",
                             "displayName": "battery low",
                             "displayNameEvent": "battery low changed",
@@ -391,7 +391,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "aff38be8-7ea6-4fd8-b0fa-e987ab05c719",
+                            "id": "bbc03a0b-f4dc-48dc-8924-79028f0357a2",
                             "name": "linkStatusOk",
                             "displayName": "link status ok",
                             "displayNameEvent": "link status changed",
@@ -399,7 +399,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "979df197-09a1-46f9-9217-9d323b1062bd",
+                            "id": "a4a94f4e-28b5-4b60-90d2-1476f0084326",
                             "name": "panelLocked",
                             "displayName": "panel locked",
                             "displayNameEvent": "pannel locked changed",
@@ -407,7 +407,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "1d6bd962-5c31-47ad-80a4-dda87bff98f5",
+                            "id": "85c34911-e16c-488d-b6cc-08b80b12b5d2",
                             "name": "gatewayKnown",
                             "displayName": "gateway known",
                             "displayNameEvent": "gateway known changed",
@@ -415,7 +415,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "1b402ba6-a8ae-45b1-8acf-2b0a89f71889",
+                            "id": "342a95f0-3fde-4987-8d0b-1c6859d39d24",
                             "name": "dtsActive",
                             "displayName": "dts active",
                             "displayNameEvent": "dts active changed",
@@ -423,7 +423,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "639360f0-bb65-43e6-b227-50ae0ac39d6c",
+                            "id": "fa0f73f8-52ce-4bb5-9a48-1fb38b2a72f0",
                             "name": "deviceMode",
                             "displayName": "device mode",
                             "displayNameEvent": "device mode changed",
@@ -431,7 +431,7 @@
                             "defaultValue": -1
                         },
                         {
-                            "id": "ff5194e3-5641-4ac2-92c7-48c431b4a2eb",
+                            "id": "37494abf-6fac-4294-b70a-86a48c3bd092",
                             "name": "deviceModeString",
                             "displayName": "device mode string",
                             "displayNameEvent": "device mode string changed",
@@ -439,7 +439,7 @@
                             "defaultValue": "-"
                         },
                         {
-                            "id": "579aa8c6-8814-491b-9e7c-b98108c323d1",
+                            "id": "19d3ce6e-a1bc-4727-8827-62545c82fe13",
                             "name": "desiredTemperature",
                             "displayName": "desired temperature",
                             "displayNameEvent": "desired temperature changed",

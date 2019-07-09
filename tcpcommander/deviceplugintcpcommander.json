@@ -66,7 +66,7 @@
                     "interfaces": ["inputtrigger", "connectable"],
                     "paramTypes": [
                         {
-                            "id": "bee8b151-815a-4159-9d8a-42b76e99b42c",
+                            "id": "88eb227d-13f7-451c-babf-1b141c219fd4",
                             "name": "port",
                             "displayName": "Port",
                             "type": "int",
@@ -97,7 +97,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "725b541a-9e0c-4634-81eb-e415c0b8f025",
+                            "id": "a2eb1619-261c-45ee-9587-6b5994633ad0",
                             "name": "connected",
                             "displayName": "connected",
                             "type": "bool",

@@ -567,7 +567,7 @@
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
-                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "id": "2e51cb1b-9f6a-4a45-b23e-ab44e8ab28e9",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
@@ -677,7 +677,7 @@
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
-                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "id": "be0291ff-6041-433b-9121-a30ca4426b22",
                             "name": "connected",
                             "displayName": "Reachable",
                             "displayNameEvent": "Reachable changed",
@@ -750,7 +750,7 @@
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
-                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "id": "0f108052-4a5a-49d2-ab02-d404b1f2e17a",
                             "name": "connected",
                             "displayName": "Reachable",
                             "displayNameEvent": "Reachable changed",
@@ -809,7 +809,7 @@
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
-                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "id": "5fa28715-f5ea-4db5-99fe-5eceb8721c4a",
                             "name": "connected",
                             "displayName": "Reachable",
                             "displayNameEvent": "Reachable changed",
@@ -817,7 +817,7 @@
                             "defaultValue": true
                         },
                         {
-                            "id": "e1910c53-a6bc-434b-9caa-0d08e214c122",
+                            "id": "1a47ba44-bbd8-4766-a648-5df49394b812",
                             "name": "power",
                             "displayName": "Power",
                             "displayNameEvent": "Power changed",
@@ -953,7 +953,7 @@
                             "defaultValue": 0
                         },
                         {
-                            "id": "169d7a2a-d1c9-4578-bb30-fc7d25690e59",
+                            "id": "e75207e8-10a9-4bdc-974e-1e44e119ee23",
                             "name": "temperature",
                             "displayName": "Temperature",
                             "displayNameEvent": "Temperature changed",
@@ -971,7 +971,7 @@
                             "defaultValue": 20
                         },
                         {
-                            "id": "45c0de32-b519-47d7-9f82-e5f09d1542d4",
+                            "id": "6a7ecb09-135c-4be2-8c36-f2a71711ea05",
                             "name": "batteryLevel",
                             "displayName": "Battery",
                             "displayNameEvent": "Battery level changed",
@@ -982,7 +982,7 @@
                             "defaultValue": 0
                         },
                         {
-                            "id": "295b9a17-a4b1-4cc9-8ebb-2309b72c75f6",
+                            "id": "68d818fd-ad8a-411d-95b1-811991535fe2",
                             "name": "batteryCritical",
                             "displayName": "Battery critical",
                             "displayNameEvent": "Battery critical changed",
@@ -990,7 +990,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "e66aba37-2647-4b6b-8740-d59eb98d846c",
+                            "id": "b5e8ace1-983c-4bff-90ef-3af30257b158",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
@@ -1007,7 +1007,7 @@
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
-                            "id": "b7ff029d-f3a6-4b47-978a-ac1a581aac0f",
+                            "id": "194f05a9-2c54-466c-a2a9-3d278fb41a2a",
                             "name": "power",
                             "displayName": "Power",
                             "displayNameEvent": "Power changed",
