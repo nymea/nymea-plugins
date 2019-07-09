@@ -40,6 +40,7 @@ PLUGIN_DIRS = \
     serialportcommander \
     simulation          \
     snapd               \
+    sonos               \
     tasmota             \
     tcpcommander        \
     texasinstruments    \
