@@ -89,6 +89,7 @@ void DevicePluginSonos::postSetupDevice(Device *device)
                 device->setStateValue(sonosMuteStateTypeId, mute);
             }
         }
+        m_sonosSystem->GetPlayer()->MakeFilePictureUrl();
 
         while(m_sonosSystem->GetPlayer()->TransportPropertyEmpty());
 

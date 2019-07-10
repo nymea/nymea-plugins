@@ -52,8 +52,9 @@ public:
 private:
     SONOS::System *m_sonosSystem = nullptr;
     PluginTimer *m_pluginTimer;
+    void updateZoneInfo();
 
-    static void handleEventCB(void *handle);
+    void handleEventCB(void *handle);
 
 private slots:
     void onPluginTimer();
