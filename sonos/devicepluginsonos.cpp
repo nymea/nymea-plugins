@@ -89,7 +89,6 @@ void DevicePluginSonos::postSetupDevice(Device *device)
                 device->setStateValue(sonosMuteStateTypeId, mute);
             }
         }
-        m_sonosSystem->GetPlayer()->MakeFilePictureUrl();
 
         while(m_sonosSystem->GetPlayer()->TransportPropertyEmpty());
 
@@ -97,11 +96,11 @@ void DevicePluginSonos::postSetupDevice(Device *device)
 
         qDebug(dcSonos()) << "Transport Status" << properties.TransportStatus.c_str();
         qDebug(dcSonos()) << "Transport State" << properties.TransportState.c_str();
-        if (properties.TransportState.c_str() == "PLAYING") {
+        if (QString(properties.TransportState.c_str()) == "PLAYING") {
             device->setStateValue(sonosPlaybackStatusStateTypeId, "Playing");
-        } else if (properties.TransportState.c_str() == "PAUSED") {
+        } else if (QString(properties.TransportState.c_str()) == "PAUSED") {
             device->setStateValue(sonosPlaybackStatusStateTypeId, "Paused");
-        } else if (properties.TransportState.c_str() == "STOPPED") {
+        } else if (QString(properties.TransportState.c_str()) == "STOPPED") {
             device->setStateValue(sonosPlaybackStatusStateTypeId, "Stopped");
         }
 
