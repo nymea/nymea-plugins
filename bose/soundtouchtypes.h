@@ -1,3 +1,25 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io         *
+ *                                                                         *
+ *  This file is part of nymea.                                            *
+ *                                                                         *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
+ *                                                                         *
+ *  This library is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
+ *                                                                         *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #ifndef SOUNDTOUCHTYPES_H
 #define SOUNDTOUCHTYPES_H
 
@@ -157,7 +179,7 @@ struct SourceItemObject {
 
 struct SourcesObject {
     QString deviceId;
-    SourceItemObject sourceItem;
+    QList<SourceItemObject> sourceItems;
 };
 
 struct VolumeObject {
@@ -216,5 +238,13 @@ struct GroupObject {
     PLAY_STATUS  status;            //Element. The state of the stereo pair group.
 };
 
+struct PlayInfoObject {
+    QString appKey;     //Element. An authorization key used to identify the client application. Apply for an app key by creating an app here.
+    QString url;        //Element. A fully qualified, web hosted stream URL. The URL should include the 'http://' prefix as well as a stream suffix ('mp3', ...) for proper playback.
+    QString services;   //Element. This indicates the service providing the notification. This text will appear on the device display (when available) and the SoundTouch application screen.
+    QString reason;     //Element. This indicates the reason for the notification. This text will appear on the device display (when available) and the SoundTouch application screen. If a reason string is not provided, the field with be blank.
+    QString message;    //Element. This indicates further details about the notification. This text will appear on the device display (when available) and the SoundTouch application screen. If a message string is not provided, the field with be blank.
+    int volume;         //Element. This indicates the desired volume level while playing the notification. The value represents a percentage (0 to 100) of the full audible range of the speaker device. A value less than 10 or greater than 70 will result in an error and not play the notification. Upon completion of the notification, the speaker volume will return to its original value. If not present, the notification will play at the existing volume level.
+};
 #endif // SOUNDTOUCHTYPES_H
 
