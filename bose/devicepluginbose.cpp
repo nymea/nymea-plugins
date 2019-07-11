@@ -61,11 +61,17 @@ Device::DeviceSetupStatus DevicePluginBose::setupDevice(Device *device)
         connect(soundTouch, &SoundTouch::nowPlayingReceived, this, &DevicePluginBose::onNowPlayingObjectReceived);
         connect(soundTouch, &SoundTouch::volumeReceived, this, &DevicePluginBose::onVolumeObjectReceived);
         connect(soundTouch, &SoundTouch::sourcesReceived, this, &DevicePluginBose::onSourcesObjectReceived);
+        connect(soundTouch, &SoundTouch::bassReceived, this, &DevicePluginBose::onBassObjectReceived);
+        connect(soundTouch, &SoundTouch::bassCapabilitiesReceived, this, &DevicePluginBose::onBassCapabilitiesObjectReceived);
 
         soundTouch->getInfo();
         soundTouch->getNowPlaying();
         soundTouch->getVolume();
         soundTouch->getSources();
+        soundTouch->getBass();
+        soundTouch->getBassCapabilities();
+        soundTouch->getGroup();
+        soundTouch->getZone();
 
         m_soundTouch.insert(device, soundTouch);
 
@@ -77,7 +83,7 @@ Device::DeviceSetupStatus DevicePluginBose::setupDevice(Device *device)
 void DevicePluginBose::deviceRemoved(Device *device)
 {
     if (device->deviceClassId() == soundtouchDeviceClassId) {
-        SoundTouch *soundTouch = m_soundTouch.value(device);
+        SoundTouch *soundTouch = m_soundTouch.take(device);
         soundTouch->deleteLater();
     }
 
@@ -100,6 +106,13 @@ Device::DeviceError DevicePluginBose::discoverDevices(const DeviceClassId &devic
             QString playerId = avahiEntry.hostName().split(".").first();
             DeviceDescriptor descriptor(soundtouchDeviceClassId, avahiEntry.name(), avahiEntry.hostAddress().toString());
             ParamList params;
+
+            foreach (Device *existingDevice, myDevices().filterByDeviceClassId(soundtouchDeviceClassId)) {
+                if (existingDevice->paramValue(soundtouchDevicePlayerIdParamTypeId).toString() == playerId) {
+                    descriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
+            }
             params << Param(soundtouchDeviceIpParamTypeId, avahiEntry.hostAddress().toString());
             params << Param(soundtouchDevicePlayerIdParamTypeId, playerId);
             descriptor.setParams(params);
@@ -177,6 +190,12 @@ Device::DeviceError DevicePluginBose::executeAction(Device *device, const Action
             return Device::DeviceErrorNoError;
         }
 
+        if (action.actionTypeId() == soundtouchBassActionTypeId) {
+            int bass = action.param(soundtouchBassActionBassParamTypeId).value().toInt();
+            soundTouch->setBass(bass);
+            return Device::DeviceErrorNoError;
+        }
+
         if (action.actionTypeId() == soundtouchPlaybackStatusActionTypeId) {
             QString status =  action.param(soundtouchPlaybackStatusActionPlaybackStatusParamTypeId).value().toString();
             if (status == "Playing") {
@@ -200,6 +219,7 @@ void DevicePluginBose::onPluginTimer()
         soundTouch->getInfo();
         soundTouch->getNowPlaying();
         soundTouch->getVolume();
+        soundTouch->getBass();
     }
 }
 
@@ -229,6 +249,8 @@ void DevicePluginBose::onNowPlayingObjectReceived(NowPlayingObject nowPlaying)
     SoundTouch *soundtouch = static_cast<SoundTouch *>(sender());
     Device *device = m_soundTouch.key(soundtouch);
 
+    device->setStateValue(soundtouchPowerStateTypeId, !(nowPlaying.source.toUpper() == "STANDBY"));
+    device->setStateValue(soundtouchSourceStateTypeId, nowPlaying.source);
     device->setStateValue(soundtouchTitleStateTypeId, nowPlaying.track);
     device->setStateValue(soundtouchArtistStateTypeId, nowPlaying.artist);
     device->setStateValue(soundtouchCollectionStateTypeId, nowPlaying.album);
@@ -274,4 +296,16 @@ void DevicePluginBose::onSourcesObjectReceived(SourcesObject sources)
     foreach (SourceItemObject sourceItem, sources.sourceItems) {
         qDebug(dcBose()) << "Source:" << sources.deviceId << sourceItem.source << sourceItem.displayName;
     }
+}
+
+void DevicePluginBose::onBassObjectReceived(BassObject bass)
+{
+    SoundTouch *soundtouch = static_cast<SoundTouch *>(sender());
+    Device *device = m_soundTouch.key(soundtouch);
+    device->setStateValue(soundtouchBassStateTypeId, bass.actualBass);
+}
+
+void DevicePluginBose::onBassCapabilitiesObjectReceived(BassCapabilitiesObject bassCapabilities)
+{
+     qDebug(dcBose()) << "Bass capabilities (max, min, default):" << bassCapabilities.bassMax << bassCapabilities.bassMin << bassCapabilities.bassDefault;
 }

@@ -62,6 +62,8 @@ private slots:
    void onNowPlayingObjectReceived(NowPlayingObject nowPlaying);
    void onVolumeObjectReceived(VolumeObject volume);
    void onSourcesObjectReceived(SourcesObject sources);
+   void onBassObjectReceived(BassObject bass);
+   void onBassCapabilitiesObjectReceived(BassCapabilitiesObject bassCapabilities);
 };
 
 #endif // DEVICEPLUGINBOSE_H

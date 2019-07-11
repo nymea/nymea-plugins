@@ -123,7 +123,7 @@ void SoundTouch::getZone()
     url.setScheme("http");
     url.setPort(m_port);
     url.setPath("/getZone");
-    qDebug(dcBose) << "Sending request" << url;
+    //qDebug(dcBose) << "Sending request" << url;
     QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
 }
@@ -135,6 +135,18 @@ void SoundTouch::getPresets()
     url.setScheme("http");
     url.setPort(m_port);
     url.setPath("/presets");
+    qDebug(dcBose) << "Sending request" << url;
+    QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+}
+
+void SoundTouch::getBassCapabilities()
+{
+    QUrl url;
+    url.setHost(m_ipAddress);
+    url.setScheme("http");
+    url.setPort(m_port);
+    url.setPath("/bassCapabilities");
     qDebug(dcBose) << "Sending request" << url;
     QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
@@ -398,7 +410,6 @@ void SoundTouch::onWebsocketDisconnected()
     });
 }
 
-
 void SoundTouch::onRestRequestFinished() {
 
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
@@ -627,6 +638,64 @@ void SoundTouch::onRestRequestFinished() {
                 }
             }
             emit sourcesReceived(sourcesObject);
+        } else if (xml.name() == "bass") {
+            BassObject bassObject;
+            if(xml.attributes().hasAttribute("deviceID")) {
+                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
+                bassObject.deviceID = xml.attributes().value("deviceID").toString();
+            }
+            while(xml.readNextStartElement()){
+                if(xml.name() == "targetbass"){
+                    //qDebug(dcBose) << "Target bas" << xml.readElementText();
+                    bassObject.targetBass = xml.readElementText().toInt();
+                } else if(xml.name() == "actualbass"){
+                    //qDebug(dcBose) << "Actual bass" << xml.readElementText();
+                    bassObject.actualBass = xml.readElementText().toInt();
+                }else {
+                    xml.skipCurrentElement();
+                }
+            }
+            emit bassReceived(bassObject);
+        } else if (xml.name() == "bassCapabilities") {
+            BassCapabilitiesObject bassCapabilities;
+
+            emit bassCapabilitiesReceived(bassCapabilities);
+        } else if (xml.name() == "presets") {
+            PresetObject preset;
+            if(xml.attributes().hasAttribute("id")) {
+                preset.presetId = xml.attributes().value("id").toInt();
+            }
+            if(xml.attributes().hasAttribute("createdOn")) {
+                preset.createdOn= xml.attributes().value("createdOn").toULong();
+            }
+            if(xml.attributes().hasAttribute("updatedOn")) {
+                preset.updatedOn = xml.attributes().value("updatedOn").toULong();
+            }
+            while(xml.readNextStartElement()){
+                if(xml.name() == "ContentItem"){
+                    if(xml.attributes().hasAttribute("source")) {
+                        preset.ContentItem.source = xml.attributes().value("source").toString();
+                    }
+                    if(xml.attributes().hasAttribute("location")) {
+                        preset.ContentItem.location = xml.attributes().value("location").toString();
+                    }
+                    if(xml.attributes().hasAttribute("sourceAccount")) {
+                        preset.ContentItem.sourceAccount = xml.attributes().value("sourceAccount").toString();
+                    }
+                }else {
+                    xml.skipCurrentElement();
+                }
+            }
+            emit presetsReceived(preset);
+
+        } else if (xml.name() == "group") {
+            GroupObject group;
+            if(xml.attributes().hasAttribute("deviceID")) {
+                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
+                group.id = xml.attributes().value("id").toString();
+            }
+
+            emit groupReceived(group);
         } else {
             xml.skipCurrentElement();
         }

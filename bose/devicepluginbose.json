@@ -51,7 +51,7 @@
                         {
                             "id": "bc98cdb0-4d0e-48ca-afc7-922e49bb7813",
                             "name": "mute",
-                            "displayName": "mute",
+                            "displayName": "Mute",
                             "displayNameEvent": "Mute changed",
                             "displayNameAction": "Set mute",
                             "type": "bool",
@@ -61,8 +61,8 @@
                         {
                             "id": "9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9",
                             "name": "volume",
-                            "displayName": "volume",
-                            "displayNameEvent": "volume changed",
+                            "displayName": "Volume",
+                            "displayNameEvent": "Volume changed",
                             "displayNameAction": "Set volume",
                             "unit": "Percentage",
                             "type": "int",
@@ -74,7 +74,7 @@
                         {
                             "id": "2dd512b7-40c2-488e-8d4f-6519edaa6f74",
                             "name": "playbackStatus",
-                            "displayName": "playback status",
+                            "displayName": "Playback status",
                             "type": "QString",
                             "possibleValues": ["Playing", "Paused", "Stopped"],
                             "defaultValue": "Stopped",
@@ -134,50 +134,70 @@
                             "possibleValues": ["None", "One", "All"],
                             "defaultValue": "None",
                             "writable": true
+                        },
+                        {
+                            "id": "f4684de8-ff5f-41f3-a5c3-f5e5754519d2",
+                            "type": "QString",
+                            "name": "source",
+                            "displayName": "Source",
+                            "displayNameEvent": "Source changed",
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "91bc53ec-4f3b-438d-8e32-129b7c27aae4",
+                            "name": "bass",
+                            "displayName": "Bass",
+                            "displayNameEvent": "Bass changed",
+                            "displayNameAction": "Set bass",
+                            "type": "int",
+                            "minValue": -9,
+                            "maxValue": 0,
+                            "defaultValue": 0,
+                            "writable": true
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "2535a1eb-7643-4874-98f6-b027fdff6311",
                             "name": "onPlayerPlay",
-                            "displayName": "player play"
+                            "displayName": "Player play"
                         },
                         {
                             "id": "99498b1c-e9c0-480a-9e91-662ee79ba976",
                             "name": "onPlayerPause",
-                            "displayName": "player pause"
+                            "displayName": "Player pause"
                         },
                         {
                             "id": "a02ce255-3abb-435d-a92e-7f99c952ecb2",
                             "name": "onPlayerStop",
-                            "displayName": "player stop"
+                            "displayName": "Player stop"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "a180807d-1265-4831-9d86-a421767418dd",
                             "name": "skipBack",
-                            "displayName": "skip back"
+                            "displayName": "Skip back"
                         },
                         {
                             "id": "ae3cbe03-ee3e-410e-abbd-efabc2402198",
                             "name": "stop",
-                            "displayName": "stop"
+                            "displayName": "Stop"
                         },
                         {
                             "id": "4d2ee668-a2e3-4795-8b96-0c800b703b46",
                             "name": "play",
-                            "displayName": "play"
+                            "displayName": "Play"
                         },
                         {
                             "id": "3cf341cb-fe63-40bc-a450-9678d18e91e3",
                             "name": "pause",
-                            "displayName": "pause"
+                            "displayName": "Pause"
                         },
                         {
                             "id": "85d7126a-b123-4a28-aeb4-d84bcfb4d14f",
                             "name": "skipNext",
-                            "displayName": "skipNext"
+                            "displayName": "Skip Next"
                         }
                     ]
                 }
