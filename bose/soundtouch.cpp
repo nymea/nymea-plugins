@@ -419,9 +419,8 @@ void SoundTouch::onRestRequestFinished() {
     if (xml.readNextStartElement()) {
         if (xml.name() == "info") {
             InfoObject info;
-            qDebug(dcBose) << "Info Request";
             if(xml.attributes().hasAttribute("deviceID")) {
-                qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
+                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
                 info.deviceID = xml.attributes().value("deviceID").toString();
             }
             while(xml.readNextStartElement()){
@@ -453,12 +452,11 @@ void SoundTouch::onRestRequestFinished() {
                         }
                     }
                 } else if(xml.name() == "networkInfo"){
-                    qDebug(dcBose) << "network Info";
                     while (xml.readNextStartElement()) {
                         if (xml.name() == "macAddress") {
-                            qDebug(dcBose) << "macAddress" << xml.readElementText();
+                            info.networkInfo.macAddress = xml.readElementText();
                         } else if(xml.name() == "ipAddress") {
-                            qDebug(dcBose) << "ipAddress" << xml.readElementText();
+                            info.networkInfo.ipAddress = xml.readElementText();
                         } else {
                             xml.skipCurrentElement();
                         }
