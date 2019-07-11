@@ -64,6 +64,8 @@ private slots:
    void onSourcesObjectReceived(SourcesObject sources);
    void onBassObjectReceived(BassObject bass);
    void onBassCapabilitiesObjectReceived(BassCapabilitiesObject bassCapabilities);
+   void onGroupObjectReceived(GroupObject group);
+   void onZoneObjectReceived(ZoneObject zone);
 };
 
 #endif // DEVICEPLUGINBOSE_H

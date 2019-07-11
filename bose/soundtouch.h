@@ -86,6 +86,7 @@ private slots:
     void onWebsocketDisconnected();
     void onWebsocketMessageReceived(QString message);
     void onRestRequestFinished();
+    void onRestRequestError(QNetworkReply::NetworkError error);
 };
 
 #endif // SOUNDTOUCH_H

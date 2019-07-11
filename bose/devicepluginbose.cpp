@@ -63,6 +63,8 @@ Device::DeviceSetupStatus DevicePluginBose::setupDevice(Device *device)
         connect(soundTouch, &SoundTouch::sourcesReceived, this, &DevicePluginBose::onSourcesObjectReceived);
         connect(soundTouch, &SoundTouch::bassReceived, this, &DevicePluginBose::onBassObjectReceived);
         connect(soundTouch, &SoundTouch::bassCapabilitiesReceived, this, &DevicePluginBose::onBassCapabilitiesObjectReceived);
+        connect(soundTouch, &SoundTouch::groupReceived, this, &DevicePluginBose::onGroupObjectReceived);
+        connect(soundTouch, &SoundTouch::zoneReceived, this, &DevicePluginBose::onZoneObjectReceived);
 
         soundTouch->getInfo();
         soundTouch->getNowPlaying();
@@ -220,6 +222,8 @@ void DevicePluginBose::onPluginTimer()
         soundTouch->getNowPlaying();
         soundTouch->getVolume();
         soundTouch->getBass();
+        soundTouch->getGroup();
+        soundTouch->getZone();
     }
 }
 
@@ -307,5 +311,21 @@ void DevicePluginBose::onBassObjectReceived(BassObject bass)
 
 void DevicePluginBose::onBassCapabilitiesObjectReceived(BassCapabilitiesObject bassCapabilities)
 {
-     qDebug(dcBose()) << "Bass capabilities (max, min, default):" << bassCapabilities.bassMax << bassCapabilities.bassMin << bassCapabilities.bassDefault;
+    qDebug(dcBose()) << "Bass capabilities (max, min, default):" << bassCapabilities.bassMax << bassCapabilities.bassMin << bassCapabilities.bassDefault;
+}
+
+void DevicePluginBose::onGroupObjectReceived(GroupObject group)
+{
+    qDebug(dcBose())  << "Group" << group.name << group.status;
+    foreach (RolesObject role, group.roles) {
+        qDebug(dcBose()) << "-> member:" << role.groupRole.deviceID;
+    }
+}
+
+void DevicePluginBose::onZoneObjectReceived(ZoneObject zone)
+{
+    qDebug(dcBose())  << "Zone master" << zone.deviceID;
+    foreach (MemberObject member, zone.members) {
+        qDebug(dcBose()) << "-> member:" << member.deviceID;
+    }
 }

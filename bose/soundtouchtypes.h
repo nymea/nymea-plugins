@@ -195,8 +195,8 @@ struct MemberObject {
 };
 
 struct ZoneObject {
-    QString deviceID;       //Attribute. The deviceID unique identifier of the master product.
-    MemberObject member;    //Element. This object describes products in the zone There is an object for each product.
+    QString deviceID;               //Attribute. The deviceID unique identifier of the master product.
+    QList<MemberObject> members;    //Element. This object describes products in the zone There is an object for each product.
 };
 
 struct BassCapabilitiesObject {
@@ -234,7 +234,7 @@ struct GroupObject {
     QString id;                     //Attribute. A unique ID for the group.
     QString name;                   //Element. A user-set name for the group.
     QString masterDeviceId;         //Element. The unique identifier of the master product in the group.
-    RolesObject roles;              //Element. This object describes the products in the group and their location (left/right).
+    QList<RolesObject> roles;              //Element. This object describes the products in the group and their location (left/right).
     PLAY_STATUS  status;            //Element. The state of the stereo pair group.
 };
 

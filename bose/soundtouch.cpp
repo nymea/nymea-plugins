@@ -22,6 +22,7 @@
 
 #include "soundtouch.h"
 #include "hardwaremanager.h"
+#include "soundtouch.h"
 #include "devices/device.h"
 #include "network/networkaccessmanager.h"
 
@@ -54,6 +55,7 @@ void SoundTouch::getInfo()
     //qDebug(dcBose) << "Sending request" << url;
     QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRestRequestError(QNetworkReply::NetworkError)));
 }
 
 void SoundTouch::getVolume()
@@ -98,8 +100,8 @@ void SoundTouch::getGroup()
     url.setHost(m_ipAddress);
     url.setScheme("http");
     url.setPort(m_port);
-    url.setPath("/group");
-    qDebug(dcBose) << "Sending request" << url;
+    url.setPath("/getGroup");
+    //qDebug(dcBose) << "Sending request" << url;
     QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
 }
@@ -135,7 +137,7 @@ void SoundTouch::getPresets()
     url.setScheme("http");
     url.setPort(m_port);
     url.setPath("/presets");
-    qDebug(dcBose) << "Sending request" << url;
+    //qDebug(dcBose) << "Sending request" << url;
     QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
 }
@@ -147,7 +149,7 @@ void SoundTouch::getBassCapabilities()
     url.setScheme("http");
     url.setPort(m_port);
     url.setPath("/bassCapabilities");
-    qDebug(dcBose) << "Sending request" << url;
+    //qDebug(dcBose) << "Sending request" << url;
     QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
 }
@@ -284,8 +286,10 @@ void SoundTouch::setZone(ZoneObject zone)
     xml.writeStartDocument();
     xml.writeStartElement("zone");
     xml.writeAttribute("master", zone.deviceID);
-    xml.writeTextElement("member", zone.member.deviceID);
-    xml.writeAttribute("ipaddress", zone.member.ipAddress);
+    foreach (MemberObject member, zone.members){
+        xml.writeTextElement("member", member.deviceID);
+        xml.writeAttribute("ipaddress", member.ipAddress);
+    }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
     qDebug(dcBose) << "Sending request" << url << content;
@@ -305,8 +309,10 @@ void SoundTouch::addZoneSlave(ZoneObject zone)
     xml.writeStartDocument();
     xml.writeStartElement("zone");
     xml.writeAttribute("master", zone.deviceID);
-    xml.writeTextElement("member", zone.member.deviceID);
-    xml.writeAttribute("ipaddress", zone.member.ipAddress);
+    foreach (MemberObject member, zone.members){
+        xml.writeTextElement("member", member.deviceID);
+        xml.writeAttribute("ipaddress", member.ipAddress);
+    }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
     qDebug(dcBose) << "Sending request" << url << content;
@@ -326,8 +332,10 @@ void SoundTouch::removeZoneSlave(ZoneObject zone)
     xml.writeStartDocument();
     xml.writeStartElement("zone");
     xml.writeAttribute("master", zone.deviceID);
-    xml.writeTextElement("member", zone.member.deviceID);
-    xml.writeAttribute("ipaddress", zone.member.ipAddress);
+    foreach (MemberObject member, zone.members){
+        xml.writeTextElement("member", member.deviceID);
+        xml.writeAttribute("ipaddress", member.ipAddress);
+    }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
     qDebug(dcBose) << "Sending request" << url << content;
@@ -651,7 +659,7 @@ void SoundTouch::onRestRequestFinished() {
                 } else if(xml.name() == "actualbass"){
                     //qDebug(dcBose) << "Actual bass" << xml.readElementText();
                     bassObject.actualBass = xml.readElementText().toInt();
-                }else {
+                } else {
                     xml.skipCurrentElement();
                 }
             }
@@ -659,6 +667,27 @@ void SoundTouch::onRestRequestFinished() {
         } else if (xml.name() == "bassCapabilities") {
             BassCapabilitiesObject bassCapabilities;
 
+            if(xml.attributes().hasAttribute("deviceID")) {
+                bassCapabilities.deviceID = xml.attributes().value("deviceID").toString();
+            }
+
+            while(xml.readNextStartElement()){
+                if(xml.name() == "bassAvailable"){
+                    //qDebug(dcBose) << "BassAvailable" << xml.readElementText();
+                    bassCapabilities.bassAvailable = ( xml.readElementText().toUpper() == "TRUE" );
+                } else if(xml.name() == "bassMin"){
+                    //qDebug(dcBose) << "bass Min" << xml.readElementText();
+                    bassCapabilities.bassMin = xml.readElementText().toInt();
+                } else if(xml.name() == "bassMax"){
+                    //qDebug(dcBose) << "bass Max" << xml.readElementText();
+                    bassCapabilities.bassMax = xml.readElementText().toInt();
+                } else if(xml.name() == "bassDefault"){
+                    //qDebug(dcBose) << "bass default" << xml.readElementText();
+                    bassCapabilities.bassDefault = xml.readElementText().toInt();
+                }else {
+                    xml.skipCurrentElement();
+                }
+            }
             emit bassCapabilitiesReceived(bassCapabilities);
         } else if (xml.name() == "presets") {
             PresetObject preset;
@@ -691,19 +720,62 @@ void SoundTouch::onRestRequestFinished() {
         } else if (xml.name() == "group") {
             GroupObject group;
             if(xml.attributes().hasAttribute("deviceID")) {
-                //qDebug(dcBose) << "Device ID" << xml.attributes().value("deviceID").toString();
                 group.id = xml.attributes().value("id").toString();
             }
-
+            while(xml.readNextStartElement()){
+                if(xml.name() == "name") {
+                    group.name = xml.readElementText();
+                } else if(xml.name() == "masterDeviceId") {
+                    group.masterDeviceId = xml.readElementText();
+                } else if(xml.name() == "roles") {
+                    //group.roles = xml.readElementText().toInt();
+                } else if(xml.name() == "status"){
+                    QString groupStatus = xml.readElementText();
+                    //qDebug(dcBose) << "Group role" << groupStatus;
+                    //group.status = xml.readElementText();
+                }else {
+                    xml.skipCurrentElement();
+                }
+            }
             emit groupReceived(group);
-        } else {
+        } else if (xml.name() == "zone") {
+            ZoneObject zone;
+            if(xml.attributes().hasAttribute("master")) {
+                zone.deviceID = xml.attributes().value("master").toString();
+            }
+            while(xml.readNextStartElement()){
+                MemberObject member;
+                if(xml.name() == "member") {
+                    if(xml.attributes().hasAttribute("ipaddress")) {
+                        member.ipAddress = xml.attributes().value("ipaddress").toString();
+                    }
+                    member.deviceID = xml.readElementText();
+                } else {
+                    xml.skipCurrentElement();
+                }
+                zone.members.append(member);
+            }
+            emit zoneReceived(zone);
+        }
+        else {
             xml.skipCurrentElement();
         }
     }
+}
+
+void SoundTouch::onRestRequestError(QNetworkReply::NetworkError error)
+{
+    Q_UNUSED(error)
+
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+
+    qWarning(dcBose) << "Rest Error" << reply->errorString();
 }
 
 
 void SoundTouch::onWebsocketMessageReceived(QString message)
 {
     qDebug(dcBose) << "Websocket message received:" << message;
+
 }
