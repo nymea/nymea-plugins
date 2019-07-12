@@ -26,6 +26,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QUrlQuery>
+#include <QTimer>
 
 Heos::Heos(const QHostAddress &hostAddress, QObject *parent) :
     QObject(parent),
@@ -39,13 +40,22 @@ Heos::Heos(const QHostAddress &hostAddress, QObject *parent) :
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
 }
 
-
-void Heos::getPlayers()
+Heos::~Heos()
 {
-    QByteArray cmd = "heos://player/get_players\r\n";
-    m_socket->write(cmd);
+    m_socket->close();
 }
 
+void Heos::connectHeos()
+{
+    if (m_socket->state() == QAbstractSocket::ConnectingState) {
+        return;
+    }
+    m_socket->connectToHost(m_hostAddress, 1255);
+}
+
+/*
+ *  SYSTEM COMMANDS
+ */
 void Heos::registerForChangeEvents(bool state)
 {
     QByteArray query;
@@ -63,6 +73,63 @@ void Heos::registerForChangeEvents(bool state)
 void Heos::sendHeartbeat()
 {
     QByteArray cmd = "heos://system/heart_beat\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::getUserAccount()
+{
+    QByteArray cmd = "heos://system/check_account\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::setUserAccount(QString userName, QString password)
+{
+    QByteArray cmd = "heos://system/sign_in?un=" + userName.toLocal8Bit() + "&pw=" + password.toLocal8Bit() + "\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::logoutUserAccount()
+{
+    QByteArray cmd = "heos://system/sign_out\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::rebootSpeaker()
+{
+    QByteArray cmd = "heos://system/reboot\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::prettifyJsonResponse(bool enable)
+{
+    QByteArray cmd = "heos://system/prettify_json_response?enable=";
+    if (enable) {
+        cmd.append("on=\r\n");
+    } else {
+        cmd.append("off=\r\n");
+    }
+    m_socket->write(cmd);
+}
+
+
+/*
+ *  PLAYER COMMANDS
+ */
+
+void Heos::getNowPlayingMedia(int playerId)
+{
+    QByteArray cmd = "heos://player/get_now_playing_media?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    m_socket->write(cmd);
+}
+
+HeosPlayer *Heos::getPlayer(int playerId)
+{
+    return m_heosPlayers.value(playerId);
+}
+
+void Heos::getPlayers()
+{
+    QByteArray cmd = "heos://player/get_players\r\n";
     m_socket->write(cmd);
 }
 
@@ -98,15 +165,15 @@ void Heos::setMute(int playerId, bool state)
     m_socket->write(cmd);
 }
 
-void Heos::setPlayerState(int playerId, HeosPlayerState state)
+void Heos::setPlayerState(int playerId, PLAYER_STATE state)
 {
     QByteArray playerStateQuery;
 
-    if (state == HeosPlayerState::Play){
+    if (state == PLAYER_STATE_PLAY){
         playerStateQuery = "&state=play";
-    } else if (state == HeosPlayerState::Pause){
+    } else if (state == PLAYER_STATE_PAUSE){
         playerStateQuery = "&state=pause";
-    } else if (state == HeosPlayerState::Stop){
+    } else if (state == PLAYER_STATE_STOP){
         playerStateQuery = "&state=stop";
     }
 
@@ -122,15 +189,15 @@ void Heos::getPlayerState(int playerId)
 }
 
 
-void Heos::setPlayMode(int playerId, HeosRepeatMode repeatMode, bool shuffle)
+void Heos::setPlayMode(int playerId, REPEAT_MODE repeatMode, bool shuffle)
 {
     QByteArray repeatModeQuery;
 
-    if (repeatMode == HeosRepeatMode::Off) {
+    if (repeatMode == REPEAT_MODE_OFF) {
         repeatModeQuery = "&repeat=off";
-    } else if (repeatMode == HeosRepeatMode::One) {
+    } else if (repeatMode == REPEAT_MODE_ONE) {
         repeatModeQuery = "&repeat=on_one";
-    } else if (repeatMode == HeosRepeatMode::All) {
+    } else if (repeatMode == REPEAT_MODE_ALL) {
         repeatModeQuery = "&repeat=on_all";
     }
 
@@ -152,6 +219,39 @@ void Heos::getPlayMode(int playerId)
     m_socket->write(cmd);
 }
 
+void Heos::getQueue(int playerId)
+{
+    QByteArray cmd = "heos://player/get_queue?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    m_socket->write(cmd);
+}
+
+/*
+ *  GROUP COMMANDS
+ */
+void Heos::getGroups()
+{
+    QByteArray cmd = "heos://group/get_groups\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::getGroupInfo(int groupId)
+{
+    QByteArray cmd = "heos://group/get_group_info?gid=" + QVariant(groupId).toByteArray() + "\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::getGroupVolume(int groupId)
+{
+    QByteArray cmd = "heos://group/get_volume?gid=" + QVariant(groupId).toByteArray() + "\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::getGroupMute(int groupId)
+{
+    QByteArray cmd = "heos://group/get_mute?gid=" + QVariant(groupId).toByteArray() + "\r\n";
+    m_socket->write(cmd);
+}
+
 void Heos::playNext(int playerId)
 {
     QByteArray cmd = "heos://player/play_next?pid=" + QVariant(playerId).toByteArray() + "\r\n";
@@ -166,45 +266,137 @@ void Heos::playPrevious(int playerId)
     m_socket->write(cmd);
 }
 
-void Heos::getNowPlayingMedia(int playerId)
+void Heos::volumeUp(int playerId, int step)
 {
-    QByteArray cmd = "heos://player/get_now_playing_media?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    QByteArray cmd = "heos://player/volume_up?pid=" + QVariant(playerId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Volume up:" << cmd;
     m_socket->write(cmd);
 }
 
-Heos::~Heos()
+void Heos::volumeDown(int playerId, int step)
 {
-    m_socket->close();
+    QByteArray cmd = "heos://player/volume_down?pid=" + QVariant(playerId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Volume down:" << cmd;
+    m_socket->write(cmd);
 }
 
-bool Heos::connected()
+void Heos::clearQueue(int playerId)
 {
-    return m_connected;
+    QByteArray cmd = "heos://player/clear_queue?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "clear queue:" << cmd;
+    m_socket->write(cmd);
 }
 
-void Heos::connectHeos()
+void Heos::moveQueue(int playerId, int sourcQueueId, int destinationQueueId)
 {
-    if (m_socket->state() == QAbstractSocket::ConnectingState) {
-        return;
+    QUrl url("player");
+    url.setScheme("heos");
+    url.setPath("move_queue_item");
+    url.setQuery(QString("pid=%1").arg(playerId));
+    url.setQuery(QString("sqid=%1").arg(sourcQueueId));
+    url.setQuery(QString("dqid=%1").arg(destinationQueueId));
+    qCDebug(dcDenon) << "moving queue:" << url;
+    m_socket->write(url.toEncoded());
+}
+
+void Heos::checkForFirmwareUpdate(int playerId)
+{
+    QByteArray cmd = "heos://player/check_update?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Check firmware update:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::setGroupVolume(int groupId, bool volume)
+{
+    QByteArray cmd = "heos://group/set_volume?gid=" + QVariant(groupId).toByteArray() + "&level=" + QVariant(volume).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Volume up:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::setGroupMute(int groupId, bool mute)
+{
+    QByteArray cmd = "heos://group/set_mute?gid=" + QVariant(groupId).toByteArray() + "&state=";
+    if (mute) {
+        cmd.append("on\r\n");
+    } else {
+        cmd.append("off\r\n");
     }
-    m_socket->connectToHost(m_hostAddress, 1255);
+    m_socket->write(cmd);
 }
 
-HeosPlayer *Heos::getPlayer(int playerId)
+void Heos::toggleGroupMute(int groupId)
 {
-    return m_heosPlayers.value(playerId);
+    QByteArray cmd = "heos://group/toggle_mute?gid=" + QVariant(groupId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Volume up:" << cmd;
+    m_socket->write(cmd);
 }
+
+void Heos::groupVolumeUp(int groupId, int step)
+{
+    QByteArray cmd = "heos://group/volume_up?pid=" + QVariant(groupId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::groupVolumeDown(int groupId, int step)
+{
+    QByteArray cmd = "heos://group/volume_down?pid=" + QVariant(groupId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::getMusicSources()
+{
+    QByteArray cmd = "heos://browse/get_music_sources\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::getSourceInfo(SOURCE_ID sourceId)
+{
+    QByteArray cmd = " heos://browse/get_source_info?sid=" + QVariant(sourceId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::getSearchCriteria(SOURCE_ID sourceId)
+{
+    QByteArray cmd = "heos://browse/get_search_criteria?sid=" + QVariant(sourceId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::browseSource(SOURCE_ID sourceId)
+{
+    QByteArray cmd = "heos://browse/browse?sid=" + QVariant(sourceId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    m_socket->write(cmd);
+}
+
+/* This command is used to perform the following actions:
+ * Create new group: Creates new group. First player id in the list is group leader.
+ * Adds or delete players from the group. First player id should be the group leader id.
+ * Ungroup all players in the group
+ * Ungroup players. Player id (pid) should be the group leader id.
+ */
+//void Heos::setGroup()
+//{
+//}
+
+
 
 void Heos::onConnected()
 {
     qCDebug(dcDenon()) << "connected successfully to" << m_hostAddress.toString();
-    setConnected(true);
+    emit connectionStatusChanged(true);
 }
 
 void Heos::onDisconnected()
 {
-    qCDebug(dcDenon()) << "disconnected from" << m_hostAddress.toString();
-    setConnected(false);
+    qCDebug(dcDenon()) << "Disconnected from" << m_hostAddress.toString() << "try reconnecting in 5 seconds";
+    QTimer::singleShot(5000, this, [this](){
+        connectHeos();
+    });
+    emit connectionStatusChanged(false);
 }
 
 void Heos::onError(QAbstractSocket::SocketError socketError)
@@ -214,7 +406,7 @@ void Heos::onError(QAbstractSocket::SocketError socketError)
 
 void Heos::readData()
 {
-    int playerId;
+    int playerId = 0;
     QByteArray data;
     QJsonParseError error;
 
@@ -270,92 +462,19 @@ void Heos::readData()
                     QString song = dataMap.value("payload").toMap().value("song").toString();
                     QString artwork = dataMap.value("payload").toMap().value("image_url").toString();
                     QString album = dataMap.value("payload").toMap().value("album").toString();
-                    QString source;
-                    switch (dataMap.value("payload").toMap().value("sid").toInt()) {
-                    case 1:
-                        source = "Pandora";
-                        break;
-                    case 2:
-                        source = "Rhapsody";
-                        break;
-                    case 3:
-                        source = "TuneIn";
-                        break;
-                    case 4:
-                        source = "Spotify";
-                        break;
-                    case 5:
-                        source = "Deezer";
-                        break;
-                    case 6:
-                        source = "Napster";
-                        break;
-                    case 7:
-                        source = "iHeartRadio";
-                        break;
-                    case 8:
-                        source = "Sirius XM";
-                        break;
-                    case 9:
-                        source = "Soundcloud";
-                        break;
-                    case 10:
-                        source = "Tidal";
-                        break;
-                    case 11:
-                        source = "Unknown";
-                        break;
-                    case 12:
-                        source = "Rdio";
-                        break;
-                    case 13:
-                        source = "Amazon Music";
-                        break;
-                    case 14:
-                        source = "Unknown";
-                        break;
-                    case 15:
-                        source = "Moodmix";
-                        break;
-                    case 16:
-                        source = "Juke";
-                        break;
-                    case 17:
-                        source = "Unkown";
-                        break;
-                    case 18:
-                        source = "QQMusic";
-                        break;
-                    case 1024:
-                        source = "USB Media/DLNA Servers";
-                        break;
-                    case 1025:
-                        source = "HEOS Playlists";
-                        break;
-                    case 1026:
-                        source = "HEOS History";
-                        break;
-                    case 1027:
-                        source = "HEOS aux inputs";
-                        break;
-                    case 1028:
-                        source = "HEOS aux inputs";
-                        break;
-                    default:
-                        source = "Unknown";
-                    };
-                    emit nowPlayingMediaStatusReceived(playerId, source, artist, album, song, artwork);
+                    SOURCE_ID sourceId = SOURCE_ID(dataMap.value("payload").toMap().value("sid").toInt());
+                    emit nowPlayingMediaStatusReceived(playerId, sourceId, artist, album, song, artwork);
                 }
 
                 if (command.contains("get_play_state") || command.contains("set_play_state")) {
                     if (message.hasQueryItem("state")) {
-                        HeosPlayerState playState = HeosPlayerState::Stop;
+                        PLAYER_STATE playState =  PLAYER_STATE_STOP;
                         if (message.queryItemValue("state").contains("play")) {
-                            playState = HeosPlayerState::Play;
+                            playState =  PLAYER_STATE_PLAY;
                         } else if (message.queryItemValue("state").contains("pause")) {
-                            playState = HeosPlayerState::Pause;
+                            playState = PLAYER_STATE_PAUSE;
                         } else if (message.queryItemValue("state").contains("stop")) {
-                            playState = HeosPlayerState::Stop;
+                            playState =  PLAYER_STATE_STOP;
                         }
                         emit playStateReceived(playerId, playState);
                     }
@@ -389,13 +508,13 @@ void Heos::readData()
                         }
                         emit shuffleModeReceived(playerId, shuffle);
 
-                        HeosRepeatMode repeatMode = HeosRepeatMode::Off;
+                        REPEAT_MODE repeatMode = REPEAT_MODE_OFF;
                         if (message.queryItemValue("repeat").contains("on_all")){
-                            repeatMode = HeosRepeatMode::All;
+                            repeatMode = REPEAT_MODE_ALL;
                         } else if (message.queryItemValue("repeat").contains("on_one")){
-                            repeatMode = HeosRepeatMode::One;
+                            repeatMode = REPEAT_MODE_ONE;
                         } else  if (message.queryItemValue("repeat").contains("off")){
-                            repeatMode = HeosRepeatMode::Off;
+                            repeatMode = REPEAT_MODE_OFF;
                         }
                         emit repeatModeReceived(playerId, repeatMode);
                     }
@@ -403,13 +522,13 @@ void Heos::readData()
 
                 if (command.contains("player_state_changed")) {
                     if (message.hasQueryItem("state")) {
-                        HeosPlayerState playState = HeosPlayerState::Stop;
+                        PLAYER_STATE playState = PLAYER_STATE_STOP;
                         if (message.queryItemValue("state").contains("play")) {
-                            playState = HeosPlayerState::Play;
+                            playState = PLAYER_STATE_PLAY;
                         } else if (message.queryItemValue("state").contains("pause")) {
-                            playState = HeosPlayerState::Pause;
+                            playState = PLAYER_STATE_PAUSE;
                         } else if (message.queryItemValue("state").contains("stop")) {
-                            playState = HeosPlayerState::Stop;
+                            playState = PLAYER_STATE_STOP;
                         }
                         emit playStateReceived(playerId, playState);
                     }
@@ -435,13 +554,13 @@ void Heos::readData()
                 if (command.contains("repeat_mode_changed")) {
 
                     if (message.hasQueryItem("repeat")) {
-                        HeosRepeatMode repeatMode = HeosRepeatMode::Off;
+                        REPEAT_MODE repeatMode = REPEAT_MODE_OFF;
                         if (message.queryItemValue("repeat").contains("on_all")){
-                            repeatMode = HeosRepeatMode::All;
+                            repeatMode = REPEAT_MODE_ALL;
                         } else if (message.queryItemValue("repeat").contains("on_one")){
-                            repeatMode = HeosRepeatMode::One;
+                            repeatMode = REPEAT_MODE_ONE;
                         } else  if (message.queryItemValue("repeat").contains("off")){
-                            repeatMode = HeosRepeatMode::Off;
+                            repeatMode = REPEAT_MODE_OFF;
                         }
                         emit repeatModeReceived(playerId, repeatMode);
                     }
@@ -466,10 +585,4 @@ void Heos::readData()
             }
         }
     }
-}
-
-void Heos::setConnected(const bool &connected)
-{
-    m_connected = connected;
-    emit connectionStatusChanged();
 }

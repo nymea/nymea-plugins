@@ -81,7 +81,6 @@ Device::DeviceError DevicePluginDenon::discoverDevices(const DeviceClassId &devi
                 qCDebug(dcDenon) << "service discovered" << name << "ID:" << id;
                 if (discoveredIds.contains(id))
                     break;
-
                 discoveredIds.append(id);
                 DeviceDescriptor deviceDescriptor(AVRX1000DeviceClassId, name, address);
                 ParamList params;
@@ -142,7 +141,7 @@ Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
         connect(denonConnection, &AvrConnection::surroundModeChanged, this, &DevicePluginDenon::onAvrSurroundModeChanged);
         connect(denonConnection, &AvrConnection::muteChanged, this, &DevicePluginDenon::onAvrMuteChanged);
 
-        m_asyncSetups.append(denonConnection);
+        m_asyncAvrSetups.append(denonConnection);
         denonConnection->connectDevice();
         m_avrConnections.insert(device, denonConnection);
         return Device::DeviceSetupStatusAsync;
@@ -162,6 +161,7 @@ Device::DeviceSetupStatus DevicePluginDenon::setupDevice(Device *device)
         connect(heos, &Heos::volumeStatusReceived, this, &DevicePluginDenon::onHeosVolumeStatusReceived);
         connect(heos, &Heos::nowPlayingMediaStatusReceived, this, &DevicePluginDenon::onHeosNowPlayingMediaStatusReceived);
 
+        m_asyncHeosSetups.append(heos);
         heos->connectHeos();
         m_heos.insert(device, heos);
         return Device::DeviceSetupStatusAsync;
@@ -263,21 +263,24 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
         if (action.actionTypeId() == heosPlayerPlaybackStatusActionTypeId) {
             QString playbackStatus = action.param(heosPlayerPlaybackStatusActionPlaybackStatusParamTypeId).value().toString();
             if (playbackStatus == "playing") {
-                heos->setPlayerState(playerId, Heos::HeosPlayerState::Play);
+                heos->setPlayerState(playerId, PLAYER_STATE_PLAY);
             } else if (playbackStatus == "stopping") {
-                heos->setPlayerState(playerId, Heos::HeosPlayerState::Stop);
+                heos->setPlayerState(playerId, PLAYER_STATE_STOP);
             } else if (playbackStatus == "pausing") {
-                heos->setPlayerState(playerId, Heos::HeosPlayerState::Pause);
+                heos->setPlayerState(playerId, PLAYER_STATE_PAUSE);
             }
             return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerShuffleActionTypeId) {
             bool shuffle = action.param(heosPlayerShuffleActionShuffleParamTypeId).value().toBool();
-            Heos::HeosRepeatMode repeatMode;
-            repeatMode = Heos::HeosRepeatMode::Off;
+            REPEAT_MODE repeatMode = REPEAT_MODE_OFF;
+            if ( device->stateValue(heosPlayerRepeatStateTypeId) == "One") {
+                repeatMode = REPEAT_MODE_ONE;
+            } else if ( device->stateValue(heosPlayerRepeatStateTypeId) == "All") {
+                repeatMode = REPEAT_MODE_ALL;
+            }
             heos->setPlayMode(playerId, repeatMode, shuffle);
-
             return Device::DeviceErrorNoError;
         }
 
@@ -292,18 +295,17 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
         }
 
         if (action.actionTypeId() == heosPlayerStopActionTypeId) {
-            heos->setPlayerState(playerId, Heos::HeosPlayerState::Stop);
+            heos->setPlayerState(playerId, PLAYER_STATE_STOP);
             return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerPlayActionTypeId) {
-            heos->setPlayerState(playerId, Heos::HeosPlayerState::Play);
+            heos->setPlayerState(playerId, PLAYER_STATE_PLAY);
             return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == heosPlayerPauseActionTypeId) {
-
-            heos->setPlayerState(playerId, Heos::HeosPlayerState::Pause);
+            heos->setPlayerState(playerId, PLAYER_STATE_PAUSE);
             return Device::DeviceErrorNoError;
         }
 
@@ -327,11 +329,10 @@ void DevicePluginDenon::postSetupDevice(Device *device)
 
         Heos *heos = m_heos.value(device);
         heos->getPlayers();
-        device->setStateValue(heosConnectedStateTypeId, heos->connected());
     }
 
     if (device->deviceClassId() == heosPlayerDeviceClassId) {
-
+        device->setStateValue(heosPlayerConnectedStateTypeId, true);
         Device *heosDevice = myDevices().findById(device->parentId());
         Heos *heos = m_heos.value(heosDevice);
         int playerId = device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt();
@@ -340,7 +341,6 @@ void DevicePluginDenon::postSetupDevice(Device *device)
         heos->getVolume(playerId);
         heos->getMute(playerId);
         heos->getNowPlayingMedia(playerId);
-        device->setStateValue(heosPlayerConnectedStateTypeId, heos->connected());
     }
 }
 
@@ -361,10 +361,6 @@ void DevicePluginDenon::onPluginTimer()
 
         if (device->deviceClassId() == heosDeviceClassId) {
             Heos *heos = m_heos.value(device);
-            if (!heos->connected()) {
-                heos->connectHeos();
-            }
-            device->setStateValue(heosConnectedStateTypeId, heos->connected());
             heos->getPlayers();
             heos->registerForChangeEvents(true);
         }
@@ -394,8 +390,8 @@ void DevicePluginDenon::onAvrConnectionChanged(bool status)
         // if the device is connected
         if (status) {
             // and from the first setup
-            if (m_asyncSetups.contains(denonConnection)) {
-                m_asyncSetups.removeAll(denonConnection);
+            if (m_asyncAvrSetups.contains(denonConnection)) {
+                m_asyncAvrSetups.removeAll(denonConnection);
 
                 emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
             }
@@ -475,8 +471,8 @@ void DevicePluginDenon::onAvrSocketError()
     if (device->deviceClassId() == AVRX1000DeviceClassId) {
 
         // Check if setup running for this device
-        if (m_asyncSetups.contains(denonConnection)) {
-            m_asyncSetups.removeAll(denonConnection);
+        if (m_asyncAvrSetups.contains(denonConnection)) {
+            m_asyncAvrSetups.removeAll(denonConnection);
             qCWarning(dcDenon()) << "Could not add device. The setup failed.";
             emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             // Delete the connection, the device will not be added and
@@ -502,7 +498,6 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
     }
 
     QList<DeviceDescriptor> heosDescriptors;
-    QList<DeviceDescriptor> avrDescriptors;
     foreach (const UpnpDeviceDescriptor &upnpDevice, reply->deviceDescriptors()) {
 
         if (upnpDevice.modelName().contains("HEOS")) {
@@ -513,7 +508,7 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
                 DeviceDescriptor descriptor(heosDeviceClassId, upnpDevice.modelName(), serialNumber);
                 ParamList params;
                 foreach (Device *existingDevice, myDevices()) {
-                    if (existingDevice->paramValue(heosDeviceSerialNumberParamTypeId).toString() == serialNumber) {
+                    if (existingDevice->paramValue(heosDeviceSerialNumberParamTypeId).toString().contains(serialNumber, Qt::CaseSensitivity::CaseInsensitive)) {
                         descriptor.setDeviceId(existingDevice->id());
                         break;
                     }
@@ -525,22 +520,40 @@ void DevicePluginDenon::onUpnpDiscoveryFinished()
                 heosDescriptors.append(descriptor);
             }
         }
-        //if (upnpDevice.modelName().contains("")) {
         qCDebug(dcDenon) << "UPnP device found:" << upnpDevice.modelDescription() << upnpDevice.friendlyName() << upnpDevice.hostAddress().toString() << upnpDevice.modelName() << upnpDevice.manufacturer() << upnpDevice.serialNumber();
-        //}
     }
     if (!heosDescriptors.isEmpty()) {
         emit devicesDiscovered(heosDeviceClassId, heosDescriptors);
     }
 }
 
-void DevicePluginDenon::onHeosConnectionChanged()
+void DevicePluginDenon::onHeosConnectionChanged(bool status)
 {
     Heos *heos = static_cast<Heos *>(sender());
     heos->registerForChangeEvents(true);
     Device *device = m_heos.key(heos);
-    if (!device->setupComplete() && heos->connected()) {
-        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+    if (!device)
+        return;
+
+    if (device->deviceClassId() == heosDeviceClassId) {
+        // if the device is connected
+        if (status) {
+            // and from the first setup
+            if (m_asyncHeosSetups.contains(heos)) {
+                m_asyncHeosSetups.removeAll(heos);
+                heos->getPlayers();
+                emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+            }
+        }
+        device->setStateValue(heosConnectedStateTypeId, status);
+        // update connection status for all child devices
+        foreach (Device *playerDevice, myDevices()) {
+            if (playerDevice->deviceClassId() == heosPlayerDeviceClassId) {
+                if (playerDevice->parentId() == device->id()) {
+                    playerDevice->setStateValue(heosPlayerConnectedStateTypeId, status);
+                }
+            }
+        }
     }
 }
 
@@ -568,14 +581,14 @@ void DevicePluginDenon::onHeosPlayerDiscovered(HeosPlayer *heosPlayer) {
     autoDevicesAppeared(heosPlayerDeviceClassId,  heosPlayerDescriptors);
 }
 
-void DevicePluginDenon::onHeosPlayStateReceived(int playerId, Heos::HeosPlayerState state)
+void DevicePluginDenon::onHeosPlayStateReceived(int playerId, PLAYER_STATE state)
 {
     foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
-        if (state == Heos::HeosPlayerState::Pause) {
+        if (state == PLAYER_STATE_PAUSE) {
             device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Paused");
-        } else if (state == Heos::HeosPlayerState::Play) {
+        } else if (state == PLAYER_STATE_PLAY) {
             device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Playing");
-        } else if (state == Heos::HeosPlayerState::Stop) {
+        } else if (state == PLAYER_STATE_STOP) {
             device->setStateValue(heosPlayerPlaybackStatusStateTypeId, "Stopped");
         }
         break;
@@ -583,14 +596,14 @@ void DevicePluginDenon::onHeosPlayStateReceived(int playerId, Heos::HeosPlayerSt
 }
 
 
-void DevicePluginDenon::onHeosRepeatModeReceived(int playerId, Heos::HeosRepeatMode repeatMode)
+void DevicePluginDenon::onHeosRepeatModeReceived(int playerId, REPEAT_MODE repeatMode)
 {
     foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
-        if (repeatMode == Heos::HeosRepeatMode::All) {
+        if (repeatMode == REPEAT_MODE_ALL) {
             device->setStateValue(heosPlayerRepeatStateTypeId, "All");
-        } else  if (repeatMode == Heos::HeosRepeatMode::One) {
+        } else  if (repeatMode == REPEAT_MODE_ONE) {
             device->setStateValue(heosPlayerRepeatStateTypeId, "One");
-        } else  if (repeatMode == Heos::HeosRepeatMode::Off) {
+        } else  if (repeatMode == REPEAT_MODE_OFF) {
             device->setStateValue(heosPlayerRepeatStateTypeId, "None");
         }
         break;
@@ -600,11 +613,7 @@ void DevicePluginDenon::onHeosRepeatModeReceived(int playerId, Heos::HeosRepeatM
 void DevicePluginDenon::onHeosShuffleModeReceived(int playerId, bool shuffle)
 {
     foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
-        if (shuffle) {
-            device->setStateValue(heosPlayerMuteStateTypeId, true);
-        } else {
-            device->setStateValue(heosPlayerMuteStateTypeId, false);
-        }
+        device->setStateValue(heosPlayerMuteStateTypeId, shuffle);
         break;
     }
 }
@@ -625,13 +634,85 @@ void DevicePluginDenon::onHeosVolumeStatusReceived(int playerId, int volume)
     }
 }
 
-void DevicePluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, QString source, QString artist, QString album, QString song, QString artwork)
+void DevicePluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, SOURCE_ID sourceId, QString artist, QString album, QString song, QString artwork)
 {
     foreach(Device *device, myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId)) {
         device->setStateValue(heosPlayerArtistStateTypeId, artist);
         device->setStateValue(heosPlayerTitleStateTypeId, song);
         device->setStateValue(heosPlayerArtworkStateTypeId, artwork);
         device->setStateValue(heosPlayerCollectionStateTypeId, album);
+        QString source;
+        switch (sourceId) {
+        case SOURCE_ID_PANDORA:
+            source = "Pandora";
+            break;
+        case SOURCE_ID_RHAPSODY:
+            source = "Rhapsody";
+            break;
+        case SOURCE_ID_TUNEIN:
+            source = "TuneIn";
+            break;
+        case SOURCE_ID_SPOTIFY:
+            source = "Spotify";
+            break;
+        case SOURCE_ID_DEEZER:
+            source = "Deezer";
+            break;
+        case SOURCE_ID_NAPSTER:
+            source = "Napster";
+            break;
+        case SOURCE_ID_IHEARTRADIO:
+            source = "iHeartRadio";
+            break;
+        case SOURCE_ID_SIRIUS_XM:
+            source = "Sirius XM";
+            break;
+        case SOURCE_ID_SOUNDCLOUD:
+            source = "Soundcloud";
+            break;
+        case SOURCE_ID_TIDAL:
+            source = "Tidal";
+            break;
+        case SOURCE_ID_FUTURE_SERVICE_1:
+            source = "Unknown";
+            break;
+        case SOURCE_ID_RDIO:
+            source = "Rdio";
+            break;
+        case SOURCE_ID_AMAZON_MUSIC:
+            source = "Amazon Music";
+            break;
+        case SOURCE_ID_FUTURE_SERVICE_2:
+            source = "Unknown";
+            break;
+        case SOURCE_ID_MOODMIX:
+            source = "Moodmix";
+            break;
+        case SOURCE_ID_JUKE:
+            source = "Juke";
+            break;
+        case SOURCE_ID_FUTURE_SERVICE_3:
+            source = "Unkown";
+            break;
+        case SOURCE_ID_QQMUSIC:
+            source = "QQMusic";
+            break;
+        case SOURCE_ID_LOCAL_MEDIA:
+            source = "USB Media/DLNA Servers";
+            break;
+        case SOURCE_ID_HEOS_PLAYLIST:
+            source = "HEOS Playlists";
+            break;
+        case SOURCE_ID_HEOS_HISTORY:
+            source = "HEOS History";
+            break;
+        case SOURCE_ID_HEOS_FAVORITES:
+            source = "HEOS Favorites";
+            break;
+        case SOURCE_ID_HEOS_AUX:
+            source = "HEOS aux input";
+            break;
+        };
         device->setStateValue(heosPlayerSourceStateTypeId, source);
         break;
     }

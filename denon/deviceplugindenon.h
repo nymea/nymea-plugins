@@ -62,7 +62,8 @@ private:
     QHash<Device *, AvrConnection*> m_avrConnections;
     QHash<Device *, Heos*> m_heos;
 
-    QList<AvrConnection *> m_asyncSetups;
+    QList<AvrConnection *> m_asyncAvrSetups;
+    QList<Heos *> m_asyncHeosSetups;
 
     QHash<int, Device *> m_playerIds;
     QHash<int, Device *> m_discoveredPlayerIds;
@@ -73,14 +74,14 @@ private slots:
     void onPluginTimer();
     void onUpnpDiscoveryFinished();
 
-    void onHeosConnectionChanged();
+    void onHeosConnectionChanged(bool status);
     void onHeosPlayerDiscovered(HeosPlayer *heosPlayer);
-    void onHeosPlayStateReceived(int playerId, Heos::HeosPlayerState state);
+    void onHeosPlayStateReceived(int playerId, PLAYER_STATE state);
     void onHeosShuffleModeReceived(int playerId, bool shuffle);
-    void onHeosRepeatModeReceived(int playerId, Heos::HeosRepeatMode repeatMode);
+    void onHeosRepeatModeReceived(int playerId, REPEAT_MODE repeatMode);
     void onHeosMuteStatusReceived(int playerId, bool mute);
     void onHeosVolumeStatusReceived(int playerId, int volume);
-    void onHeosNowPlayingMediaStatusReceived(int playerId, QString source, QString artist, QString album, QString Song, QString artwork);
+    void onHeosNowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
 
     void onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
     void onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry);

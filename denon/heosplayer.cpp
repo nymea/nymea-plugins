@@ -35,7 +35,6 @@ HeosPlayer::HeosPlayer(int playerId, QString name, QString serialNumber, QObject
     m_serialNumber(serialNumber),
     m_name(name)
 {
-
 }
 
 QString HeosPlayer::name()

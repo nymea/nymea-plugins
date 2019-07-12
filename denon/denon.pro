@@ -14,4 +14,5 @@ HEADERS += \
     deviceplugindenon.h \
     heos.h \
     heosplayer.h \
-    avrconnection.h
+    avrconnection.h \
+    heostypes.h

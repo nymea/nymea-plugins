@@ -28,49 +28,74 @@
 #include <QTcpSocket>
 
 #include "heosplayer.h"
+#include "heostypes.h"
 
 class Heos : public QObject
 {
     Q_OBJECT
 public:
-    enum HeosPlayerState {
-        Play = 0,
-        Pause = 1,
-        Stop = 2
-    };
-
-    enum HeosRepeatMode {
-        Off = 0,
-        One = 1,
-        All = 2
-    };
 
     explicit Heos(const QHostAddress &hostAddress, QObject *parent = nullptr);
     ~Heos();
 
+    void connectHeos();
     void setAddress(QHostAddress address);
     QHostAddress getAddress();
-    bool connected();
-    void connectHeos();
-
-    void getPlayers();
     HeosPlayer *getPlayer(int playerId);
+
+    // Heos system commands
+    void registerForChangeEvents(bool state);   //By default HEOS speaker does not send Change events. Controller needs to send this command with enable=on when it is ready to receive unsolicit responses from CLI. Please refer to "Driver Initialization" section regarding when to register for change events.
+    void sendHeartbeat();
+    void getUserAccount();                      //returns current user name in its message field if the user is currently singed in.
+    void setUserAccount(QString userName, QString password);
+    void logoutUserAccount();
+    void rebootSpeaker();                       //Using this command controllers can reboot HEOS device. This command can only be used to reboot the HEOS device to which the controller is connected through CLI port.
+    void prettifyJsonResponse(bool enable);     //Helper command to prettify JSON response when user is running CLI controller through telnet.
+
+    //Player Get Calls
+    void getPlayers();                          //get a list of players associated with this heos master
     void getPlayerState(int playerId);
-    void setPlayerState(int playerId, HeosPlayerState state);
     void getVolume(int playerId);
-    void setVolume(int playerId, int volume);
+    void getNowPlayingMedia(int playerId);
     void getMute(int playerId);
-    void setMute(int playerId, bool state);
-    void setPlayMode(int playerId, HeosRepeatMode repeatMode, bool shuffle); //shuffle and repead mode
     void getPlayMode(int playerId);
+    void getQueue(int playerId);
+
+    //Group Get Calls
+    void getGroups();
+    void getGroupInfo(int groupId);
+    void getGroupVolume(int groupId);
+    void getGroupMute(int groupId);
+
+    //Player Set Calls
+    void setPlayerState(int playerId, PLAYER_STATE state);
+    void setVolume(int playerId, int volume); //Player volume level 0 to 100
+    void setMute(int playerId, bool mute);
+    void setPlayMode(int playerId, REPEAT_MODE repeatMode, bool shuffle); //shuffle and repead mode
     void playNext(int playerId);
     void playPrevious(int playerId);
-    void getNowPlayingMedia(int playerId);
-    void registerForChangeEvents(bool state);
-    void sendHeartbeat();
+    void volumeUp(int playerId, int step = 5); //steps 0-10
+    void volumeDown(int playerId, int step = 5); //steps 0-10
+    void clearQueue(int playerId);
+    void moveQueue(int playerId, int sourcQueueId, int destinationQueueId);
+    void checkForFirmwareUpdate(int playerId);
+
+    //Group Set Calls
+    void setGroupVolume(int groupId, bool volume);
+    void setGroupMute(int groupId, bool mute);
+    void toggleGroupMute(int groupId);
+    void groupVolumeUp(int groupId, int step = 5);
+    void groupVolumeDown(int groupId, int step = 5);
+
+    //Browse Get Commands
+    void getMusicSources();
+    void getSourceInfo(SOURCE_ID sourceId);
+    void getSearchCriteria(SOURCE_ID sourceId);
+    void browseSource(SOURCE_ID sourceId);
+    //void search();
+
 
 private:
-    bool m_connected = false;
     bool m_eventRegistered = false;
     QHostAddress m_hostAddress;
     QTcpSocket *m_socket = nullptr;
@@ -79,14 +104,14 @@ private:
 
 signals:
     void playerDiscovered(HeosPlayer *heosPlayer);
-    void connectionStatusChanged();
+    void connectionStatusChanged(bool status);
 
-    void playStateReceived(int playerId, HeosPlayerState state);
+    void playStateReceived(int playerId, PLAYER_STATE state);
     void shuffleModeReceived(int playerId, bool shuffle);
-    void repeatModeReceived(int playerId, HeosRepeatMode repeatMode);
+    void repeatModeReceived(int playerId, REPEAT_MODE repeatMode);
     void muteStatusReceived(int playerId, bool mute);
     void volumeStatusReceived(int playerId, int volume);
-    void nowPlayingMediaStatusReceived(int playerId, QString source, QString artist, QString album, QString Song, QString artwork);
+    void nowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
 
 private slots:
     void onConnected();
