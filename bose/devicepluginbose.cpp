@@ -63,7 +63,6 @@ Device::DeviceSetupStatus DevicePluginBose::setupDevice(Device *device)
         connect(soundTouch, &SoundTouch::sourcesReceived, this, &DevicePluginBose::onSourcesObjectReceived);
         connect(soundTouch, &SoundTouch::bassReceived, this, &DevicePluginBose::onBassObjectReceived);
         connect(soundTouch, &SoundTouch::bassCapabilitiesReceived, this, &DevicePluginBose::onBassCapabilitiesObjectReceived);
-        connect(soundTouch, &SoundTouch::groupReceived, this, &DevicePluginBose::onGroupObjectReceived);
         connect(soundTouch, &SoundTouch::zoneReceived, this, &DevicePluginBose::onZoneObjectReceived);
 
         soundTouch->getInfo();
@@ -72,7 +71,6 @@ Device::DeviceSetupStatus DevicePluginBose::setupDevice(Device *device)
         soundTouch->getSources();
         soundTouch->getBass();
         soundTouch->getBassCapabilities();
-        soundTouch->getGroup();
         soundTouch->getZone();
 
         m_soundTouch.insert(device, soundTouch);
@@ -222,7 +220,6 @@ void DevicePluginBose::onPluginTimer()
         soundTouch->getNowPlaying();
         soundTouch->getVolume();
         soundTouch->getBass();
-        soundTouch->getGroup();
         soundTouch->getZone();
     }
 }

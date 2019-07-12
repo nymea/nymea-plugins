@@ -62,6 +62,18 @@ public:
 
 
 private:
+    enum RequestType {
+        Get,
+        Post
+    };
+
+    void sendGetRequest(QString path);
+    //get calls are getting queued to don't overstrain the device
+    //post calls must get sent immediately
+    //if an get call of the same URL is already in the queu the new one will be ignored
+    QList<QString> m_getRequestQueue;
+    bool m_getRepliesPending = false;
+
     NetworkAccessManager *m_networkAccessManager = nullptr;
     QString m_ipAddress;
     int m_port = 8090;
