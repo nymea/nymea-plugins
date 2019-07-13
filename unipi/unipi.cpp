@@ -29,6 +29,16 @@ UniPi::UniPi(UniPiType unipiType, QObject *parent) :
     m_unipiType(unipiType)
 {
     m_mcp23008 = new MCP23008("i2c-1", 0x20, this);
+}
+
+UniPi::~UniPi()
+{
+    m_mcp23008->disable();
+    m_mcp23008->deleteLater();
+}
+
+bool UniPi::init()
+{
     m_mcp23008->enable();
     m_mcp23008->writeRegister(MCP23008::RegisterAddress::IODIR, 0x00); //set all pins as outputs
     m_mcp23008->writeRegister(MCP23008::RegisterAddress::IPOL, 0x00);  //set all pins to non inverted mode 1 = high
@@ -36,10 +46,90 @@ UniPi::UniPi(UniPiType unipiType, QObject *parent) :
     m_mcp23008->writeRegister(MCP23008::RegisterAddress::OLAT, 0x00);  //Set all outputs to low
 }
 
-UniPi::~UniPi()
+QString UniPi::type()
 {
-    m_mcp23008->disable();
-    m_mcp23008->deleteLater();
+    QString type;
+    switch (m_unipiType) {
+    case UniPiType::UniPi1:
+        type = "UniPi 1";
+        break;
+    case UniPiType::UniPi1Lite:
+        type = "UniPi 1 Lite";
+        break;
+    }
+    return type;
+}
+
+QList<QString> UniPi::digitalInputs()
+{
+    QList<QString> inputs;
+    switch (m_unipiType) {
+    case UniPiType::UniPi1:
+        for (int i = 0; i < 13; ++i) {
+            inputs.append(QString("DI%1").arg(i));
+        }
+        break;
+    case UniPiType::UniPi1Lite:
+        for (int i = 0; i < 7; ++i) {
+            inputs.append(QString("DI%1").arg(i));
+        }
+        break;
+    }
+    return inputs;
+}
+
+QList<QString> UniPi::digitalOutputs()
+{
+    QList<QString> outputs;
+    switch (m_unipiType) {
+    case UniPiType::UniPi1:
+        for (int i = 0; i < 6; ++i) {
+            outputs.append(QString("DO%1").arg(i));
+        }
+        break;
+    case UniPiType::UniPi1Lite:
+        for (int i = 0; i < 6; ++i) {
+            outputs.append(QString("DO%1").arg(i));
+        }
+        break;
+    }
+    return outputs;
+}
+
+QList<QString> UniPi::analogInputs()
+{
+    QList<QString> inputs;
+    switch (m_unipiType) {
+    case UniPiType::UniPi1:
+        for (int i = 0; i < 2; ++i) {
+            inputs.append(QString("AI%1").arg(i));
+        }
+        break;
+    case UniPiType::UniPi1Lite:
+        for (int i = 0; i < 2; ++i) {
+            inputs.append(QString("AI%1").arg(i));
+        }
+        break;
+    }
+    return inputs;
+}
+
+QList<QString> UniPi::analogOutputs()
+{
+    QList<QString> outputs;
+    switch (m_unipiType) {
+    case UniPiType::UniPi1:
+        for (int i = 0; i < 1; ++i) {
+            outputs.append(QString("AO%1").arg(i));
+        }
+        break;
+    case UniPiType::UniPi1Lite:
+        for (int i = 0; i < 1; ++i) {
+            outputs.append(QString("AO%1").arg(i));
+        }
+        break;
+    }
+    return outputs;
 }
 
 

@@ -47,6 +47,11 @@ public:
     explicit UniPi(UniPiType unipiType, QObject *parent = nullptr);
     ~UniPi();
 
+    QList<QString> digitalInputs();
+    QList<QString> digitalOutputs();
+    QList<QString> analogInputs();
+    QList<QString> analogOutputs();
+
 private:
     UniPiType m_unipiType = UniPiType::UniPi1;
     MCP23008 *m_mcp23008 = nullptr;
