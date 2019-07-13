@@ -16,7 +16,7 @@
                     "interfaces": ["awning"],
                     "stateTypes": [
                         {
-                            "id": "7cda95f1-beb8-464e-aa75-ef415ed6744c",
+                            "id": "4bb951a4-ea23-4cf0-9269-41d2c4eaf5a4",
                             "name": "openingOutput",
                             "displayName": "Opening output",
                             "displayNameEvent": "Opening output changed",
@@ -24,7 +24,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "9b673430-572d-4a9c-85d3-dafadbe541cd",
+                            "id": "59bfd575-709f-4e43-9726-de26e6d4ca8b",
                             "name": "closingOutput",
                             "displayName": "Closing output",
                             "displayNameEvent": "Closing output changed",
@@ -32,7 +32,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "13c6dd56-368e-41be-873e-1c1706fe78a9",
+                            "id": "ff6f2565-2a2e-4d34-b10f-d3f73b676399",
                             "name": "status",
                             "displayName": "Status",
                             "displayNameEvent": "Status changed",
@@ -71,7 +71,7 @@
                     "interfaces": ["blind"],
                     "stateTypes": [
                         {
-                            "id": "7cda95f1-beb8-464e-aa75-ef415ed6744c",
+                            "id": "b2dbf25c-27e5-4f7e-a57d-2ef6d087fa2b",
                             "name": "openingOutput",
                             "displayName": "Opening output",
                             "displayNameEvent": "Opening output changed",
@@ -87,7 +87,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "13c6dd56-368e-41be-873e-1c1706fe78a9",
+                            "id": "5fdec1e0-51f6-48b9-b743-ba572504b2c1",
                             "name": "status",
                             "displayName": "Status",
                             "displayNameEvent": "Status changed",
@@ -126,7 +126,7 @@
                     "interfaces": ["shutter"],
                     "stateTypes": [
                         {
-                            "id": "7cda95f1-beb8-464e-aa75-ef415ed6744c",
+                            "id": "cc547728-b309-4695-b355-49748ef2521c",
                             "name": "openingOutput",
                             "displayName": "Opening output",
                             "displayNameEvent": "Opening output changed",
@@ -134,7 +134,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "9b673430-572d-4a9c-85d3-dafadbe541cd",
+                            "id": "1c35df0e-4c41-455f-893a-0145377952a0",
                             "name": "closingOutput",
                             "displayName": "Closing output",
                             "displayNameEvent": "Closing output changed",
@@ -142,7 +142,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "13c6dd56-368e-41be-873e-1c1706fe78a9",
+                            "id": "6d6e72dc-4d2b-4ec1-82c2-54405a682711",
                             "name": "status",
                             "displayName": "Status",
                             "displayNameEvent": "Status changed",
