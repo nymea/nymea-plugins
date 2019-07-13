@@ -59,7 +59,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "6f4914c1-fce8-4b7a-a73b-ad8a2f4a08ec",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -78,7 +78,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "ab505f67-35b8-4ca5-87a8-883ee85506b7",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -97,7 +97,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "5d11bb59-da27-42ac-a176-27215068bd6d",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -116,7 +116,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "e650bb92-2dff-44e2-9500-657efba14492",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -135,7 +135,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "8ad0d4b2-8256-41a9-8438-003216383215",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -154,7 +154,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "c7318db4-ba50-4b80-95a7-2a890eaa16c4",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -173,7 +173,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "80528228-7ecd-444f-be59-e2ff89cb20a1",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -192,7 +192,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "0eb77f43-dc85-450f-ab2c-d150a739570d",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -211,7 +211,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "688d21a7-7658-4874-b02b-9340b2c9ba12",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -230,7 +230,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "515a70d3-d599-426f-88a2-c5a651420812",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -249,7 +249,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "3a020c62-e5f9-4909-98d4-5538a8d43d9d",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -268,7 +268,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "5e689958-02f0-4e0a-9bb3-e04a6fe1dd30",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -287,7 +287,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "id": "fa82f6cc-4308-4d8b-96c1-2fb1a638e04d",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -330,7 +330,7 @@
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
-                            "id": "687b0206-05ad-4dc1-8a10-7be03f8e93f6",
+                            "id": "a5c97b47-580b-4ea3-8755-ef68380f5c2a",
                             "name": "slaveAddress",
                             "displayName": "Modbus slave address",
                             "type": "int",
@@ -417,7 +417,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "5f3af5d8-f42f-4654-ab12-6b046b32660c",
+                            "id": "25b0eaa7-14eb-49ea-a869-13b1ea3bd294",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -440,7 +440,7 @@
                             "type": "QString"
                         },
                         {
-                            "id": "0a4d4af6-1c79-4018-95a5-7850da59c040",
+                            "id": "d5ba1fe9-a93c-46e8-a162-4a9969f97806",
                             "name": "parentId",
                             "displayName": "Parent id",
                             "type": "QString"
@@ -471,7 +471,7 @@
                             "type": "QString"
                         },
                         {
-                            "id": "0a4d4af6-1c79-4018-95a5-7850da59c040",
+                            "id": "f356d835-7ad2-44c9-9cc7-2329235e6114",
                             "name": "parentId",
                             "displayName": "Parent id",
                             "type": "QString"
@@ -504,7 +504,7 @@
                             "type": "QString"
                         },
                         {
-                            "id": "0a4d4af6-1c79-4018-95a5-7850da59c040",
+                            "id": "384ba000-90fc-4f91-9a96-aa927359dd9b",
                             "name": "parentId",
                             "displayName": "Parent id",
                             "type": "QString"
@@ -540,7 +540,7 @@
                             "type": "QString"
                         },
                         {
-                            "id": "0a4d4af6-1c79-4018-95a5-7850da59c040",
+                            "id": "c403ffc4-db54-48d3-a10f-cfe2835e5cd3",
                             "name": "parentId",
                             "displayName": "Parent id",
                             "type": "QString"
@@ -572,7 +572,7 @@
                             "type": "QString"
                         },
                         {
-                            "id": "0a4d4af6-1c79-4018-95a5-7850da59c040",
+                            "id": "72f566c2-31f7-4a36-83ed-1cd06a5eecc8",
                             "name": "parentId",
                             "displayName": "Parent id",
                             "type": "QString"

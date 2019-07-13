@@ -47,6 +47,9 @@ public:
     explicit UniPi(UniPiType unipiType, QObject *parent = nullptr);
     ~UniPi();
 
+    bool init();
+    QString type();
+
     QList<QString> digitalInputs();
     QList<QString> digitalOutputs();
     QList<QString> analogInputs();
