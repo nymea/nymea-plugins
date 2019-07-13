@@ -44,7 +44,7 @@
 
 
 #include "deviceplugingenericinterfaces.h"
-#include "devicemanager.h"
+#include "devices/devicemanager.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -53,56 +53,56 @@ DevicePluginGenericInterfaces::DevicePluginGenericInterfaces()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginGenericInterfaces::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginGenericInterfaces::setupDevice(Device *device)
 {
     if (device->deviceClassId() == awningDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == blindDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == shutterDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == socketDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == lightDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == heatingDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
-DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginGenericInterfaces::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == awningDeviceClassId) {
         if (action.actionTypeId() == awningOpenActionTypeId) {
             device->setStateValue(awningStatusStateTypeId, "Opening");
             device->setStateValue(awningClosingOutputStateTypeId, false);
             device->setStateValue(awningOpeningOutputStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == awningStopActionTypeId) {
             device->setStateValue(awningStatusStateTypeId, "Stopped");
             device->setStateValue(awningOpeningOutputStateTypeId, false);
             device->setStateValue(awningClosingOutputStateTypeId, false);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == awningCloseActionTypeId) {
             device->setStateValue(awningStatusStateTypeId, "Closing");
             device->setStateValue(awningOpeningOutputStateTypeId, false);
             device->setStateValue(awningClosingOutputStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == blindDeviceClassId ) {
@@ -110,21 +110,21 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
             device->setStateValue(blindStatusStateTypeId, "Opening");
             device->setStateValue(blindClosingOutputStateTypeId, false);
             device->setStateValue(blindOpeningOutputStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindStopActionTypeId) {
             device->setStateValue(blindStatusStateTypeId, "Stopped");
             device->setStateValue(blindOpeningOutputStateTypeId, false);
             device->setStateValue(blindClosingOutputStateTypeId, false);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindCloseActionTypeId) {
             device->setStateValue(blindStatusStateTypeId, "Closing");
             device->setStateValue(blindOpeningOutputStateTypeId, false);
             device->setStateValue(blindClosingOutputStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == shutterDeviceClassId) {
@@ -132,45 +132,45 @@ DeviceManager::DeviceError DevicePluginGenericInterfaces::executeAction(Device *
             device->setStateValue(shutterStatusStateTypeId, "Opening");
             device->setStateValue(shutterClosingOutputStateTypeId, false);
             device->setStateValue(shutterOpeningOutputStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == shutterStopActionTypeId) {
             device->setStateValue(shutterStatusStateTypeId, "Stopped");
             device->setStateValue(shutterOpeningOutputStateTypeId, false);
             device->setStateValue(shutterClosingOutputStateTypeId, false);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == shutterCloseActionTypeId) {
             device->setStateValue(shutterStatusStateTypeId, "Closing");
             device->setStateValue(shutterOpeningOutputStateTypeId, false);
             device->setStateValue(shutterClosingOutputStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == socketDeviceClassId) {
         if (action.actionTypeId() == socketPowerActionTypeId) {
             device->setStateValue(socketPowerStateTypeId, action.param(socketPowerActionPowerParamTypeId).value());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == lightDeviceClassId) {
         if (action.actionTypeId() == lightPowerActionTypeId) {
             device->setStateValue(lightPowerStateTypeId, action.param(lightPowerActionPowerParamTypeId).value());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == heatingDeviceClassId) {
         if (action.actionTypeId() == heatingPowerActionTypeId) {
             device->setStateValue(heatingPowerStateTypeId, action.param(heatingPowerActionPowerParamTypeId).value());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
