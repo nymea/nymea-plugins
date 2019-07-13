@@ -95,7 +95,7 @@ bool MCP23008::writeRegister(MCP23008::RegisterAddress registerAddress, uint8_t 
     }
 
     // Write command
-    int length = i2c_smbus_write_byte_data(fileDescriptor, registerAddress, value);
+    int length = i2c_smbus_write_byte_data(m_fileDescriptor, registerAddress, value);
     if (length < 0) {
         qCWarning(dcUniPi()) << "MCP23008: Could not sent command to I2C bus.";
         return false;
@@ -117,7 +117,8 @@ bool MCP23008::readRegister(RegisterAddress registerAddress)
         return false;
     }
 
-    quint8 rawMsb = i2c_smbus_read_byte_data  (m_fileDescriptor, registerAddress);
+    quint8 registerValue = i2c_smbus_read_byte_data  (m_fileDescriptor, registerAddress);
+    Q_UNUSED(registerValue)
     return true;
 #else
     Q_UNUSED(registerAddress)

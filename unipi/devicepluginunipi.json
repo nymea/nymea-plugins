@@ -304,7 +304,7 @@
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
-                            "id": "687b0206-05ad-4dc1-8a10-7be03f8e93f6",
+                            "id": "c105e97a-1e00-44fd-ac10-d43e731e43b0",
                             "name": "slaveAddress",
                             "displayName": "Modbus slave address",
                             "type": "int",
@@ -313,7 +313,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "5f3af5d8-f42f-4654-ab12-6b046b32660c",
+                            "id": "caf378cd-eb86-4779-8618-6f9c2bd58c17",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -339,7 +339,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "5f3af5d8-f42f-4654-ab12-6b046b32660c",
+                            "id": "7afb047f-4ca4-469c-9171-b6de52d27504",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -356,7 +356,7 @@
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
-                            "id": "687b0206-05ad-4dc1-8a10-7be03f8e93f6",
+                            "id": "956254a2-83f5-4f3c-8e79-e1b009a7e203",
                             "name": "slaveAddress",
                             "displayName": "Modbus slave address",
                             "type": "int",
@@ -365,7 +365,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "5f3af5d8-f42f-4654-ab12-6b046b32660c",
+                            "id": "ed1adb91-54ec-430b-96ca-fb5ef5cf6628",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -382,7 +382,7 @@
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
-                            "id": "687b0206-05ad-4dc1-8a10-7be03f8e93f6",
+                            "id": "6b2da1ee-5cae-4325-913e-21d26d5909c3",
                             "name": "slaveAddress",
                             "displayName": "Modbus slave address",
                             "type": "int",
@@ -391,7 +391,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "5f3af5d8-f42f-4654-ab12-6b046b32660c",
+                            "id": "7caea8c3-ac29-42fb-835b-beec7fa1ce20",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
@@ -408,7 +408,7 @@
                     "interfaces": ["connectable"],
                     "paramTypes": [
                         {
-                            "id": "687b0206-05ad-4dc1-8a10-7be03f8e93f6",
+                            "id": "6d01f6b3-7c3c-4fc8-acf2-dc9811340a76",
                             "name": "slaveAddress",
                             "displayName": "Modbus slave address",
                             "type": "int",
@@ -566,7 +566,7 @@
                     "interfaces": ["power"],
                     "paramTypes": [
                         {
-                            "id": "c01d5bde-de5d-42c5-b462-79745827875a",
+                            "id": "88fffbd6-6469-47ce-bfba-700da90a6075",
                             "name": "circuit",
                             "displayName": "Circuit",
                             "type": "QString"
@@ -580,7 +580,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "470a0e30-a170-47ed-9ed3-c41db919555f",
+                            "id": "38878388-9a2e-45b0-8f3e-c25073c9dc1d",
                             "name": "power",
                             "displayName": "Power",
                             "displayNameAction": "set digital output",
