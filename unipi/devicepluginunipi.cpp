@@ -23,6 +23,9 @@
 
 #include "devicepluginunipi.h"
 #include "plugininfo.h"
+#include "devices/devicemanager.h"
+#include "devices/deviceplugin.h"
+#include "devices/device.h"
 
 #include <QJsonDocument>
 #include <QTimer>
@@ -328,7 +331,28 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             return Device::DeviceSetupStatusFailure;
         }
     }
+    if(device->deviceClassId() == uniPi1DeviceClassId) {
+        UniPi *unipi = new UniPi(UniPi::UniPiType::UniPi1, this);
+        m_unipis.insert(device->id(), unipi);
+        connect(unipi, &UniPi::digitalInputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalInputStatusChanged);
+        connect(unipi, &UniPi::digitalOutputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalOutputStatusChanged);
+        connect(unipi, &UniPi::analogInputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogInputStatusChanged);
+        connect(unipi, &UniPi::analogOutputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogOutputStatusChanged);
+        device->setStateValue(uniPi1ConnectedStateTypeId, true);
 
+        return Device::DeviceSetupStatusSuccess;
+    }
+    if(device->deviceClassId() == uniPi1LiteDeviceClassId) {
+        UniPi *unipi = new UniPi(UniPi::UniPiType::UniPi1Lite, this);
+        m_unipis.insert(device->id(), unipi);
+        connect(unipi, &UniPi::digitalInputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalInputStatusChanged);
+        connect(unipi, &UniPi::digitalOutputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalOutputStatusChanged);
+        connect(unipi, &UniPi::analogInputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogInputStatusChanged);
+        connect(unipi, &UniPi::analogOutputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogOutputStatusChanged);
+        device->setStateValue(uniPi1LiteConnectedStateTypeId, true);
+
+        return Device::DeviceSetupStatusSuccess;
+    }
     if(device->deviceClassId() == neuronS103DeviceClassId) {
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::S103, m_modbusTCPMaster, this);
@@ -742,45 +766,53 @@ Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Actio
 
 void DevicePluginUniPi::deviceRemoved(Device *device)
 {
-    if(m_neurons.contains(device->id())) {
+    Q_UNUSED(device);
+   if(m_neurons.contains(device->id())) {
         Neuron *neuron = m_neurons.take(device->id());
         neuron->deleteLater();
-
+        /* TODO - deviceManager is no longer availabler within a plug-in
         foreach(Device *child, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, device->id())) {
-            Device()->removeConfiguredDevice(child->id());
+            DeviceManager()->removeConfiguredDevice(child->id());
         }
         foreach(Device *child, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, device->id())) {
-            Device()->removeConfiguredDevice(child->id());
+            deviceManager()->removeConfiguredDevice(child->id());
         }
         foreach(Device *child, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, device->id())) {
-            Device()->removeConfiguredDevice(child->id());
+            //Device()->removeConfiguredDevice(child->id());
         }
         foreach(Device *child, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, device->id())) {
-            Device()->removeConfiguredDevice(child->id());
+            //Device()->removeConfiguredDevice(child->id());
         }
         foreach(Device *child, myDevices().filterByParam(userLEDDeviceParentIdParamTypeId,device->id())) {
-            Device()->removeConfiguredDevice(child->id());
-        }
+            //Device()->removeConfiguredDevice(child->id());
+        }*/
     }
     if(m_neuronExtensions.contains(device->id())) {
         NeuronExtension *neuronExtension = m_neuronExtensions.take(device->id());
         neuronExtension->deleteLater();
-
+        //TODO - deviceManager is no longer availabler within a plug-in
+        /*
         foreach(Device *child, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, device->id())) {
-            Device()->removeConfiguredDevice(child->id());
+            //Device()->removeConfiguredDevice(child->id());
         }
         foreach(Device *child, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, device->id())) {
-            Device()->removeConfiguredDevice(child->id());
+            //Device()->removeConfiguredDevice(child->id());
         }
         foreach(Device *child, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, device->id())) {
-            Device()->removeConfiguredDevice(child->id());
+            //Device()->removeConfiguredDevice(child->id());
         }
         foreach(Device *child, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, device->id())) {
-            Device()->removeConfiguredDevice(child->id());
+            //Device()->removeConfiguredDevice(child->id());
         }
         foreach(Device *child, myDevices().filterByParam(userLEDDeviceParentIdParamTypeId,device->id())) {
-            Device()->removeConfiguredDevice(child->id());
-        }
+            //Device()->removeConfiguredDevice(child->id());
+        }*/
+    }
+
+    if(m_unipis.contains(device->id())) {
+        UniPi *unipi = m_unipis.take(device->id());
+        unipi->deleteLater();
+        //TODO - deviceManager is no longer availabler within a plug-in
     }
 
     if (myDevices().isEmpty()) {
@@ -1065,4 +1097,63 @@ void DevicePluginUniPi::onModbusRTUStateChanged(QModbusDevice::State state)
         m_reconnectTimer->start(10000);
     }
     qCDebug(dcUniPi()) << "Connection status changed:" << connected;
+}
+
+void DevicePluginUniPi::onUniPiDigitalInputStatusChanged(QString &circuit, bool value)
+{
+    UniPi *unipi = static_cast<UniPi *>(sender());
+
+    foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
+        if (device->deviceClassId() == digitalInputDeviceClassId) {
+            if (device->paramValue(digitalInputDeviceCircuitParamTypeId).toString() == circuit) {
+
+                device->setStateValue(digitalInputInputStatusStateTypeId, value);
+                return;
+            }
+        }
+    }
+}
+
+void DevicePluginUniPi::onUniPiDigitalOutputStatusChanged(QString &circuit, bool value)
+{
+    UniPi *unipi = static_cast<UniPi *>(sender());
+
+    foreach(Device *device, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
+        if (device->deviceClassId() == digitalOutputDeviceClassId) {
+            if (device->paramValue(digitalOutputDeviceCircuitParamTypeId).toString() == circuit) {
+
+                device->setStateValue(digitalOutputPowerStateTypeId, value);
+                return;
+            }
+        }
+    }
+}
+
+void DevicePluginUniPi::onUniPiAnalogInputStatusChanged(QString &circuit, double value)
+{
+    UniPi *unipi = static_cast<UniPi *>(sender());
+
+    foreach(Device *device, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
+        if (device->deviceClassId() == analogInputDeviceClassId) {
+            if (device->paramValue(analogInputDeviceCircuitParamTypeId).toString() == circuit) {
+                device->setStateValue(analogInputInputValueStateTypeId, value);
+                return;
+            }
+        }
+    }
+}
+
+void DevicePluginUniPi::onUniPiAnalogOutputStatusChanged(QString &circuit, double value)
+{
+    UniPi *unipi = static_cast<UniPi *>(sender());
+
+    foreach(Device *device, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
+        if (device->deviceClassId() == analogOutputDeviceClassId) {
+            if (device->paramValue(analogOutputDeviceCircuitParamTypeId).toString() == circuit) {
+
+                device->setStateValue(analogOutputOutputValueStateTypeId, value);
+                return;
+            }
+        }
+    }
 }
