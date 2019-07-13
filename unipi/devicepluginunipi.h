@@ -26,6 +26,7 @@
 
 #include "devices/devicemanager.h"
 #include "plugintimer.h"
+#include "unipi.h"
 #include "neuron.h"
 #include "neuronextension.h"
 
@@ -51,7 +52,7 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
-
+    QHash<DeviceId, UniPi *> m_unipis;
     QHash<DeviceId, Neuron *> m_neurons;
     QHash<DeviceId, NeuronExtension *> m_neuronExtensions;
     QModbusTcpClient *m_modbusTCPMaster = nullptr;
@@ -81,6 +82,11 @@ private slots:
     void onModbusRTUErrorOccurred(QModbusDevice::Error error);
     void onModbusTCPStateChanged(QModbusDevice::State state);
     void onModbusRTUStateChanged(QModbusDevice::State state);
+
+    void onUniPiDigitalInputStatusChanged(QString &circuit, bool value);
+    void onUniPiDigitalOutputStatusChanged(QString &circuit, bool value);
+    void onUniPiAnalogInputStatusChanged(QString &circuit, double value);
+    void onUniPiAnalogOutputStatusChanged(QString &circuit,double value);
 };
 
 #endif // DEVICEPLUGINUNIPI_H

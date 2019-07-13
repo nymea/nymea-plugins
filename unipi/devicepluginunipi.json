@@ -50,6 +50,44 @@
             "id": "c82bfe27-d14d-40bd-b12f-ddba214b5fc5",
             "deviceClasses": [
                 {
+                    "id": "f9f5d5eb-a768-40da-af62-55b0b486a5e5",
+                    "name": "uniPi1",
+                    "displayName": "UniPi 1",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connection changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "6ecc110c-f8dc-48af-affd-feef7944421d",
+                    "name": "uniPi1Lite",
+                    "displayName": "UniPi 1 Lite",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7641d379-b832-40fc-a29b-7d32bba79236",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connection changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
                     "id": "72637166-6730-4b2c-9b5d-4d2066c2fea8",
                     "name": "neuronL403",
                     "displayName": "Neuron L403",
