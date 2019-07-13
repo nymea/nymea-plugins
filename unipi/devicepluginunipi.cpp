@@ -333,6 +333,11 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
     if(device->deviceClassId() == uniPi1DeviceClassId) {
         UniPi *unipi = new UniPi(UniPi::UniPiType::UniPi1, this);
+        if (!unipi->init()) {
+            qCWarning(dcUniPi()) << "Could not setup UniPi";
+            unipi->deleteLater();
+            return Device::DeviceSetupStatusFailure;
+        }
         m_unipis.insert(device->id(), unipi);
         connect(unipi, &UniPi::digitalInputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalInputStatusChanged);
         connect(unipi, &UniPi::digitalOutputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalOutputStatusChanged);
@@ -344,6 +349,11 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
     if(device->deviceClassId() == uniPi1LiteDeviceClassId) {
         UniPi *unipi = new UniPi(UniPi::UniPiType::UniPi1Lite, this);
+        if (!unipi->init()) {
+            qCWarning(dcUniPi()) << "Could not setup UniPi";
+            unipi->deleteLater();
+            return Device::DeviceSetupStatusFailure;
+        }
         m_unipis.insert(device->id(), unipi);
         connect(unipi, &UniPi::digitalInputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalInputStatusChanged);
         connect(unipi, &UniPi::digitalOutputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalOutputStatusChanged);
