@@ -33,10 +33,7 @@
 class UniPi : public QObject
 {
     Q_OBJECT
-    QList<GpioDescriptor> raspberryPiGpioDescriptors();
-    void setOutput(int pin, bool status);
-    bool getOutput(int pin);
-    bool getInput(int pin);
+
 
 public:
     enum UniPiType {
@@ -50,14 +47,26 @@ public:
     bool init();
     QString type();
 
+    void setDigitalOutput(const QString &cicuit, bool status);
+    bool getDigitalOutput(const QString &circuit);
+    bool getDigitalInput(const QString &circuit);
+
+    bool setAnalogOutput(const QString &circuit, double value);
+    bool getAnalogOutput(const QString &circuit);
+    bool getAnalogInput(const QString &circuit);
+
     QList<QString> digitalInputs();
     QList<QString> digitalOutputs();
     QList<QString> analogInputs();
     QList<QString> analogOutputs();
 
 private:
+    QList<GpioDescriptor> raspberryPiGpioDescriptors();
     UniPiType m_unipiType = UniPiType::UniPi1;
     MCP23008 *m_mcp23008 = nullptr;
+
+    int getPinFromCircuit(const QString &cicuit);
+    QHash<GpioMonitor *, QString> m_monitorGpios;
 
 signals:
     void digitalOutputStatusChanged(QString &circuit, const bool &value);
@@ -66,7 +75,7 @@ signals:
     void analogOutputStatusChanged(QString &circuit,double value);
 
 private slots:
-    void onGpioValueChanged(const bool &value);
+    void onInputValueChanged(const bool &value);
 };
 
 #endif // UNIPI_H

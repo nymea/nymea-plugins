@@ -39,6 +39,7 @@ UniPi::~UniPi()
 
 bool UniPi::init()
 {
+    //init MCP23008 Outputs
     if (m_mcp23008->enable()) {
         m_mcp23008->writeRegister(MCP23008::RegisterAddress::IODIR, 0x00); //set all pins as outputs
         m_mcp23008->writeRegister(MCP23008::RegisterAddress::IPOL, 0x00);  //set all pins to non inverted mode 1 = high
@@ -46,6 +47,19 @@ bool UniPi::init()
         m_mcp23008->writeRegister(MCP23008::RegisterAddress::OLAT, 0x00);  //Set all outputs to low
         return true;
     }
+
+    //Init Raspberry Pi Inputs
+    foreach (QString circuit, digitalInputs()){
+        int pin = getPinFromCircuit(circuit);
+        GpioMonitor *gpio = new GpioMonitor(pin, this);
+        gpio->enable();
+        connect(gpio, &GpioMonitor::valueChanged, this, &UniPi::onInputValueChanged);
+        m_monitorGpios.insert(gpio, circuit);
+    }
+
+    //TODO Init Raspberry Pi PWMs - Analog Output
+    //TODO Init Raspberry Pi Analog Input
+
     return false;
 }
 
@@ -135,6 +149,84 @@ QList<QString> UniPi::analogOutputs()
     return outputs;
 }
 
+int UniPi::getPinFromCircuit(const QString &circuit)
+{
+    int pin = 0;
+    if (circuit.startsWith("DI")) { //Raspberry Pi Input Pins
+        switch (circuit.mid(2, 2).toInt()) {
+        case 1: //DI01 GPIO04 Digital input
+            pin = 4;
+            break;
+        case 2: //DI02 GPIO17 Digital input
+            pin = 17;
+            break;
+        case 3: //DI03 GPIO27 Digital input
+            pin = 27;
+            break;
+        case 4: //DI04 GPIO23 Digital input
+            pin = 23;
+            break;
+        case 5: //DI05 GPIO22 Digital input
+            pin = 22;
+            break;
+        case 6: //DI06 GPIO24 Digital input
+            pin = 24;
+            break;
+        case 7: //I07 GPIO11 Digital Input
+            pin = 11;
+            break;
+        case 8: //I08 GPIO07 Digital Input
+            pin = 7;
+            break;
+        case 9: //I09 GPIO08 Digital Input
+            pin = 8;
+            break;
+        case 10: //I10 GPIO09 Digital Input
+            pin = 9;
+            break;
+        case 11: //I11 GPIO25 Digital Input
+            pin = 25;
+            break;
+        case 12: //DI12 GPIO10 Digital input
+            pin = 10;
+            break;
+        case 13: //DI13 GPIO31 Digital input
+            pin = 31;
+            break;
+        case 14: //DI14 GPIO30 Digital input
+            pin = 30;
+            break;
+        default:
+            return 0;
+        }
+    }
+    if (circuit.startsWith("DO")) { //MCP23008 Output Pins
+        switch (circuit.mid(2, 2).toInt()) {
+        case 01: //DO1 GP07 Digital Output
+            pin = 7;
+            break;
+        case 02: //DO1 GP07 Digital Output
+            pin = 6;
+            break;
+        case 03: //DO1 GP07 Digital Output
+            pin = 5;
+            break;
+        case 04: //DO1 GP07 Digital Output
+            pin = 4;
+            break;
+        case 05: //DO1 GP07 Digital Output
+            pin = 3;
+            break;
+        case 06: //DO1 GP07 Digital Output
+            pin = 2;
+            break;
+        default:
+            return 0;
+        }
+    }
+    return pin;
+}
+
 
 QList<GpioDescriptor> UniPi::raspberryPiGpioDescriptors()
 {
@@ -169,22 +261,22 @@ QList<GpioDescriptor> UniPi::raspberryPiGpioDescriptors()
     return gpioDescriptors;
 }
 
-void UniPi::setOutput(int pin, bool status)
+void UniPi::setDigitalOutput(const QString &circuit, bool status)
 {
-    Q_UNUSED(pin)
-    Q_UNUSED(status)
-    //read output register
-    if (pin > 7)
+    int pin = getPinFromCircuit(circuit);
+    if (pin == 0) {
+        qWarning(dcUniPi()) << "Out of range pin number";
         return;
-    //set bit
+    }
 
     //write output register
     m_mcp23008->writeRegister(MCP23008::RegisterAddress::OLAT, (static_cast<uint8_t>(status) << pin));
 }
 
-bool UniPi::getOutput(int pin)
+bool UniPi::getDigitalOutput(const QString &circuit)
 {
-    if (pin > 7)
+    int pin = getPinFromCircuit(circuit);
+    if (pin == 0)
         return false;
 
     uint8_t registerValue;
@@ -192,14 +284,38 @@ bool UniPi::getOutput(int pin)
     return ( registerValue & (static_cast<uint8_t>(registerValue) << pin)) ;
 }
 
-bool UniPi::getInput(int pin)
+bool UniPi::getDigitalInput(const QString &circuit)
 {
-    Q_UNUSED(pin)
+    int pin = getPinFromCircuit(circuit);
+    if (pin == 0) {
+        qWarning(dcUniPi()) << "Out of range pin number";
+        return false;
+    }
     //Read RPi pins
-    return true;
+    GpioMonitor *gpio = m_monitorGpios.key(circuit);
+    return gpio->value();
 }
 
-void UniPi::onGpioValueChanged(const bool &value)
+bool UniPi::setAnalogOutput(const QString &circuit, double value)
+{
+    Q_UNUSED(circuit)
+    Q_UNUSED(value)
+    return false;
+}
+
+bool UniPi::getAnalogOutput(const QString &circuit)
+{
+    Q_UNUSED(circuit)
+    return false;
+}
+
+bool UniPi::getAnalogInput(const QString &circuit)
+{
+    Q_UNUSED(circuit)
+    return false;
+}
+
+void UniPi::onInputValueChanged(const bool &value)
 {
     GpioMonitor *monitor = static_cast<GpioMonitor *>(sender());
     QString circuit;
