@@ -11,7 +11,7 @@
                 {
                     "id": "9e69585f-90ba-44e4-ad90-5b4bffbe345a",
                     "name": "awning",
-                    "displayName": "Awning",
+                    "displayName": "Awning interface",
                     "createMethods": ["user"],
                     "interfaces": ["awning"],
                     "stateTypes": [
@@ -66,7 +66,7 @@
                 {
                     "id": "17ee3657-6ad8-4ae2-8959-3cf66cec8d13",
                     "name": "blind",
-                    "displayName": "Blind",
+                    "displayName": "Blind interface",
                     "createMethods": ["user"],
                     "interfaces": ["blind"],
                     "stateTypes": [
@@ -121,7 +121,7 @@
                 {
                     "id": "7917c2e7-d7d2-4c47-a38d-41f7dd7693d9",
                     "name": "shutter",
-                    "displayName": "Shutter",
+                    "displayName": "Shutter interface",
                     "createMethods": ["user"],
                     "interfaces": ["shutter"],
                     "stateTypes": [
@@ -176,7 +176,7 @@
                 {
                     "id": "4e7261af-a27b-4446-8346-914ea59f7547",
                     "name": "socket",
-                    "displayName": "Socket",
+                    "displayName": "Socket interface",
                     "createMethods": ["user"],
                     "interfaces": ["powersocket"],
                     "stateTypes": [
@@ -195,7 +195,7 @@
                 {
                     "id": "c50d3216-f307-4f9f-8190-4391510c385c",
                     "name": "light",
-                    "displayName": "Light",
+                    "displayName": "Light interface",
                     "createMethods": ["user"],
                     "interfaces": ["light"],
                     "stateTypes": [
@@ -214,7 +214,7 @@
                 {
                     "id": "392854c4-3d14-4cf8-96cd-d933526bd197",
                     "name": "heating",
-                    "displayName": "Heating",
+                    "displayName": "Heating interface",
                     "createMethods": ["user"],
                     "interfaces": ["heating"],
                     "stateTypes": [
