@@ -275,10 +275,35 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
         HueLight *hueLight = new HueLight(this);
         hueLight->setHostAddress(bridge->hostAddress());
         hueLight->setApiKey(bridge->apiKey());
-        hueLight->setId(device->paramValue(dimmableLightDeviceLightIdParamTypeId).toInt());
+
+        // Migrate device parameters after changing param type UUIDs in 0.14.
+        QMap<QString, ParamTypeId> migrationMap;
+        migrationMap.insert("095a463b-f59e-46b1-989a-a71f9cbe3e30", dimmableLightDeviceModelIdParamTypeId);
+        migrationMap.insert("3f3467ef-4483-4eb9-bcae-84e628322f84", dimmableLightDeviceTypeParamTypeId);
+        migrationMap.insert("1a5129ca-006c-446c-9f2e-79b065de715f", dimmableLightDeviceUuidParamTypeId);
+        migrationMap.insert("491dc012-ccf2-4d3a-9f18-add98f7374af", dimmableLightDeviceLightIdParamTypeId);
+
+        ParamList migratedParams;
+        foreach (const Param &oldParam, device->params()) {
+            QString oldId = oldParam.paramTypeId().toString();
+            oldId.remove(QRegExp("[{}]"));
+            if (migrationMap.contains(oldId)) {
+                ParamTypeId newId = migrationMap.value(oldId);
+                QVariant oldValue = oldParam.value();
+                qCDebug(dcPhilipsHue()) << "Migrating hue white light param:" << oldId << "->" << newId << ":" << oldValue;
+                Param newParam(newId, oldValue);
+                migratedParams << newParam;
+            } else {
+                migratedParams << oldParam;
+            }
+        }
+        device->setParams(migratedParams);
+        // Migration done
+
         hueLight->setModelId(device->paramValue(dimmableLightDeviceModelIdParamTypeId).toString());
-        hueLight->setUuid(device->paramValue(dimmableLightDeviceUuidParamTypeId).toString());
         hueLight->setType(device->paramValue(dimmableLightDeviceTypeParamTypeId).toString());
+        hueLight->setUuid(device->paramValue(dimmableLightDeviceUuidParamTypeId).toString());
+        hueLight->setId(device->paramValue(dimmableLightDeviceLightIdParamTypeId).toInt());
 
         connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
 
@@ -296,6 +321,31 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
         HueRemote *hueRemote = new HueRemote(this);
         hueRemote->setHostAddress(bridge->hostAddress());
         hueRemote->setApiKey(bridge->apiKey());
+
+        // Migrate device parameters after changing param type UUIDs in 0.14.
+        QMap<QString, ParamTypeId> migrationMap;
+        migrationMap.insert("095a463b-f59e-46b1-989a-a71f9cbe3e30", remoteDeviceModelIdParamTypeId);
+        migrationMap.insert("3f3467ef-4483-4eb9-bcae-84e628322f84", remoteDeviceTypeParamTypeId);
+        migrationMap.insert("1a5129ca-006c-446c-9f2e-79b065de715f", remoteDeviceUuidParamTypeId);
+
+        ParamList migratedParams;
+        foreach (const Param &oldParam, device->params()) {
+            QString oldId = oldParam.paramTypeId().toString();
+            oldId.remove(QRegExp("[{}]"));
+            if (migrationMap.contains(oldId)) {
+                ParamTypeId newId = migrationMap.value(oldId);
+                QVariant oldValue = oldParam.value();
+                qCDebug(dcPhilipsHue()) << "Migrating hue remote param:" << oldId << "->" << newId << ":" << oldValue;
+                Param newParam(newId, oldValue);
+                migratedParams << newParam;
+            } else {
+                migratedParams << oldParam;
+            }
+        }
+        device->setParams(migratedParams);
+        // Migration done
+
+
         hueRemote->setId(device->paramValue(remoteDeviceSensorIdParamTypeId).toInt());
         hueRemote->setModelId(device->paramValue(remoteDeviceModelIdParamTypeId).toString());
         hueRemote->setType(device->paramValue(remoteDeviceTypeParamTypeId).toString());
