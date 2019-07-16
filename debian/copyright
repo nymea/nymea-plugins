@@ -57,6 +57,7 @@ Files: avahimonitor/*
        osdomotics/*
        senic/*
        udpcommander/*
+       usbrelay/*
        unitec/*
        wemo/*
 License: LGPL-2.1

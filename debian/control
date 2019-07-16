@@ -13,6 +13,8 @@ Build-depends: libboblight-dev,
                python:any,
                qtbase5-dev,
                qtconnectivity5-dev,
+               libudev-dev,
+               libhidapi-dev,
 Standards-Version: 3.9.3
 
 
@@ -689,6 +691,22 @@ Description: nymea.io plugin for remote ssh connection
  .
  This package will install the nymea.io plugin for unipi devices
 
+Package: nymea-plugin-usbrelay
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libudev1,
+         libhidapi-hidraw0,
+         nymea-plugins-translations,
+Description: nymea.io plugin for HID based USB relay
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for HID based USB relay
+
 Package: nymea-plugin-serialportcommander
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -825,6 +843,7 @@ Depends: nymea-plugins,
          nymea-plugins-433mhz,
          nymea-plugins-maker,
          nymea-plugins-merkurboard,
+         nymea-plugin-usbrelay,
 Replaces: guh-plugins-all
 Description: Plugins for nymea IoT server - Meta package for all plugins
  The nymea daemon is a plugin based IoT (Internet of Things) server. The		

@@ -41,6 +41,7 @@ PLUGIN_DIRS = \
     texasinstruments    \
     udpcommander        \
     unipi               \
+    usbrelay            \
     unitec              \
     wakeonlan           \
     wemo                \

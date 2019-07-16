@@ -1,0 +1,76 @@
+﻿{
+    "name": "UsbRelay",
+    "displayName": "Usb Relay",
+    "id": "d0b8c8a9-d8ac-4ddf-9a15-611e5eebbfb7",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "deviceClasses": [
+                {
+                    "name": "usbrelay",
+                    "displayName": "Usb Relay",
+                    "id": "69a0087f-4cda-4d0c-9c9e-fce5d6cca429",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["Discovery"],
+                    "interfaces": [ "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "c7e74b5d-785d-481f-ad33-3a1a51ef9491",
+                            "name": "path",
+                            "displayName": "System path",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "650814fa-7a55-40fd-9b5d-c022baf61b7e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "70b59d03-4f77-4a0b-9901-293066213397",
+                            "name": "powerOne",
+                            "displayName": "Power relay 1",
+                            "displayNameEvent": "Power relay 1",
+                            "displayNameAction": "Set power relay 1",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "335b0d51-db18-40d7-8927-637b91dd4ad1",
+                            "name": "powerTwo",
+                            "displayName": "Power relay 2",
+                            "displayNameEvent": "Power relay 2",
+                            "displayNameAction": "Set power relay 2",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "e9e74a3e-e22f-4280-aefc-71ebae835a80",
+                            "name": "impulseOne",
+                            "displayName": "Impulse relay 1"
+                        },
+                        {
+                            "id": "12ea74e2-ea26-4223-b878-0c54a31b893f",
+                            "name": "impulseTwo",
+                            "displayName": "Impulse relay 2"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
