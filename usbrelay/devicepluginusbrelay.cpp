@@ -235,8 +235,6 @@ Device::DeviceError DevicePluginUsbRelay::discoverDevices(const DeviceClassId &d
             qCDebug(dcUsbRelay()) << "Relay 1:" << relayStatusOne << "| Relay 2:" << relayStatusTwo;
             hid_close(hidDevice);
 
-
-
             DeviceDescriptor descriptor(usbrelayDeviceClassId, product, path);
             ParamList params;
             params.append(Param(usbrelayDevicePathParamTypeId, path));

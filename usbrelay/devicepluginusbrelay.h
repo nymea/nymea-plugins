@@ -33,7 +33,6 @@ class DevicePluginUsbRelay: public DevicePlugin
     Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginusbrelay.json")
     Q_INTERFACES(DevicePlugin)
 
-
 public:
     explicit DevicePluginUsbRelay();
 
