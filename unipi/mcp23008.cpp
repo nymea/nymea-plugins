@@ -33,10 +33,8 @@
 #include <sys/syscall.h>
 #include <linux/i2c-dev.h>
 
-#include <QFile>
-
 MCP23008::MCP23008(const QString &i2cPortName, int i2cAddress, QObject *parent) :
-    QThread(parent),
+    QObject(parent),
     m_i2cPortName(i2cPortName),
     m_i2cAddress(i2cAddress)
 {
@@ -45,40 +43,25 @@ MCP23008::MCP23008(const QString &i2cPortName, int i2cAddress, QObject *parent) 
 
 MCP23008::~MCP23008()
 {
-    disable();
-    wait();
+    m_i2cFile.close();
 }
 
-void MCP23008::run()
+void MCP23008::init()
 {
     qCDebug(dcUniPi()) << "MCP23008: initialize I2C port" << m_i2cPortName << QString("0x%1").arg(m_i2cAddress, 0, 16);
 
-    QFile i2cFile("/dev/" + m_i2cPortName);
-    if (!i2cFile.exists()) {
+    m_i2cFile.setFileName("/dev/" + m_i2cPortName);
+    if (!m_i2cFile.exists()) {
         qCWarning(dcUniPi()) << "MCP23008: The given I2C file descriptor does not exist:" << i2cFile.fileName();
         return;
     }
 
-    if (!i2cFile.open(QFile::ReadWrite)) {
+    if (!m_i2cFile.open(QFile::ReadWrite)) {
         qCWarning(dcUniPi()) << "MCP23008: Could not open the given I2C file descriptor:" << i2cFile.fileName() << i2cFile.errorString();
         return;
     }
+    m_fileDescriptor = m_i2cFile.handle();
 
-    m_fileDescriptor = i2cFile.handle();
-
-    // Continuouse reading of the ADC values
-    qCDebug(dcUniPi()) << "MCP23008: start reading values..." << this << "Process PID:" << syscall(SYS_gettid);
-    while (true) {
-
-
-        QMutexLocker valueLocker(&m_valueMutex);
-
-        QMutexLocker stopLocker(&m_stopMutex);
-        if (m_stop) break;
-        msleep(500);
-    }
-
-    i2cFile.close();
     qCDebug(dcUniPi()) << "MCP23008: Reading thread finished.";
 }
 
@@ -107,7 +90,7 @@ bool MCP23008::writeRegister(MCP23008::RegisterAddress registerAddress, uint8_t 
 
 bool MCP23008::readRegister(RegisterAddress registerAddress, uint8_t *value)
 {
-    #ifdef __arm__
+#ifdef __arm__
     if (ioctl(m_fileDescriptor, I2C_SLAVE, m_i2cAddress) < 0) {
         qCWarning(dcUniPi()) << "MCP23008: Could not set I2C into slave mode" << m_i2cPortName << QString("0x%1").arg(m_i2cAddress, 0, 16);
         return false;
@@ -120,32 +103,4 @@ bool MCP23008::readRegister(RegisterAddress registerAddress, uint8_t *value)
     Q_UNUSED(value)
     return false;
 #endif // __arm__
-}
-
-bool MCP23008::enable()
-{
-    // Check if this address can be opened
-    I2CPort port(m_i2cPortName);
-    if (!port.openPort(m_i2cAddress)) {
-        qCWarning(dcUniPi()) << "MCP23008 is not available on port" << port.portDeviceName() << QString("0x%1").arg(m_i2cAddress, 0, 16);
-        return false;
-    }
-    port.closePort();
-
-    // Start the reading thread
-    QMutexLocker locker(&m_stopMutex);
-    m_stop = false;
-    start();
-    return true;
-}
-
-void MCP23008::disable()
-{
-    // Stop the thread if not already disabled
-    QMutexLocker locker(&m_stopMutex);
-    if (m_stop)
-        return;
-
-    qCDebug(dcUniPi()) << "MCP23008: Disable measurements";
-    m_stop = true;
 }
