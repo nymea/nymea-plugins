@@ -23,12 +23,10 @@
 #ifndef MCP23008_H
 #define MCP23008_H
 
-#include <QMutex>
 #include <QObject>
-#include <QThread>
-#include <QMutexLocker>
+#include <QFile>
 
-class MCP23008 : public QThread
+class MCP23008 : public QObject
 {
     Q_OBJECT
 public:
@@ -61,17 +59,11 @@ public:
     bool writeRegister(RegisterAddress registerAddress, uint8_t value);
     bool readRegister(RegisterAddress registerAddress, uint8_t *value);
 
-protected:
-    void run() override;
-
 private:
+    QFile m_i2cFile;
     QString m_i2cPortName;
     int m_i2cAddress;
 
-    // Thread stuff
-    QMutex m_stopMutex;
-    bool m_stop = false;
-    QMutex m_valueMutex;
     int m_fileDescriptor = -1;
 
 public slots:

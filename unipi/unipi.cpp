@@ -77,8 +77,6 @@ bool UniPi::init()
         Q_UNUSED(pin)
         //TODO Init Raspberry Pi Analog Input
     }
-
-
     return false;
 }
 
@@ -244,7 +242,7 @@ int UniPi::getPinFromCircuit(const QString &circuit)
         }
     }
 
-    if (circuit.startsWith("AO")) {
+    if (circuit.startsWith("AO")) { //Raspberry Pi Analog Output
         switch (circuit.mid(2, 2).toInt()) {
         case 0: //AO GPIO18 PWM Analog Output 0-10V
             pin = 18;
@@ -303,24 +301,28 @@ QList<GpioDescriptor> UniPi::raspberryPiGpioDescriptors()
     return gpioDescriptors;
 }
 
-void UniPi::setDigitalOutput(const QString &circuit, bool status)
+bool UniPi::setDigitalOutput(const QString &circuit, bool status)
 {
     int pin = getPinFromCircuit(circuit);
     if (pin == 0) {
         qWarning(dcUniPi()) << "Out of range pin number";
-        return;
+        return false;
     }
 
     quint8 registerValue;
     if(!m_mcp23008->readRegister(MCP23008::RegisterAddress::OLAT, &registerValue))
-        return;
+        return false;
     if (status) {
         registerValue |= (1 << pin);
     } else {
         registerValue &= ~(1 << pin);
     }
     //write output register
-    m_mcp23008->writeRegister(MCP23008::RegisterAddress::OLAT, registerValue);
+    if(!m_mcp23008->writeRegister(MCP23008::RegisterAddress::OLAT, registerValue))
+        return false;
+
+    getDigitalOutput(circuit);
+    return true;
 }
 
 bool UniPi::getDigitalOutput(const QString &circuit)
@@ -365,6 +367,8 @@ bool UniPi::setAnalogOutput(const QString &circuit, double value)
     Pwm *pwm = m_pwms.key(circuit);
     if(!pwm->setPercentage(percentage))
         return false;
+
+    getAnalogOutput(circuit);
     return true;
 }
 

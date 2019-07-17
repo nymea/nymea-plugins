@@ -49,7 +49,7 @@ public:
     bool init();
     QString type();
 
-    void setDigitalOutput(const QString &cicuit, bool status);
+    bool setDigitalOutput(const QString &cicuit, bool status);
     bool getDigitalOutput(const QString &circuit);
     bool getDigitalInput(const QString &circuit);
 
