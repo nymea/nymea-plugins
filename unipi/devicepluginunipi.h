@@ -52,7 +52,7 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
-    QHash<DeviceId, UniPi *> m_unipis;
+    UniPi *m_unipi = nullptr;
     QHash<DeviceId, Neuron *> m_neurons;
     QHash<DeviceId, NeuronExtension *> m_neuronExtensions;
     QModbusTcpClient *m_modbusTCPMaster = nullptr;
@@ -61,6 +61,8 @@ private:
     QHash<Device *, QTimer *> m_unlatchTimer;
     QTimer *m_reconnectTimer = nullptr;
 
+    bool neuronDeviceInit();
+    bool neuronExtensionInterfaceInit();
 private slots:
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 

@@ -64,16 +64,12 @@ void MCP23008::run()
         return;
     }
 
-    int m_fileDescriptor = i2cFile.handle();
+    m_fileDescriptor = i2cFile.handle();
 
     // Continuouse reading of the ADC values
     qCDebug(dcUniPi()) << "MCP23008: start reading values..." << this << "Process PID:" << syscall(SYS_gettid);
     while (true) {
-        if (ioctl(m_fileDescriptor, I2C_SLAVE, m_i2cAddress) < 0) {
-            qCWarning(dcUniPi()) << "MCP23008: Could not set I2C into slave mode" << m_i2cPortName << QString("0x%1").arg(m_i2cAddress, 0, 16);
-            msleep(500);
-            continue;
-        }
+
 
         QMutexLocker valueLocker(&m_valueMutex);
 
