@@ -1139,7 +1139,7 @@ void DevicePluginUniPi::onModbusRTUStateChanged(QModbusDevice::State state)
     qCDebug(dcUniPi()) << "Connection status changed:" << connected;
 }
 
-void DevicePluginUniPi::onUniPiDigitalInputStatusChanged(QString &circuit, bool value)
+void DevicePluginUniPi::onUniPiDigitalInputStatusChanged(const QString &circuit, bool value)
 {
     foreach(Device *parentDevice, myDevices()) {
         if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
@@ -1157,7 +1157,7 @@ void DevicePluginUniPi::onUniPiDigitalInputStatusChanged(QString &circuit, bool 
     }
 }
 
-void DevicePluginUniPi::onUniPiDigitalOutputStatusChanged(QString &circuit, bool value)
+void DevicePluginUniPi::onUniPiDigitalOutputStatusChanged(const QString &circuit, bool value)
 {
     foreach(Device *parentDevice, myDevices()) {
         if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
@@ -1175,7 +1175,7 @@ void DevicePluginUniPi::onUniPiDigitalOutputStatusChanged(QString &circuit, bool
     }
 }
 
-void DevicePluginUniPi::onUniPiAnalogInputStatusChanged(QString &circuit, double value)
+void DevicePluginUniPi::onUniPiAnalogInputStatusChanged(const QString &circuit, double value)
 {
     foreach(Device *parentDevice, myDevices()) {
         if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
@@ -1193,7 +1193,7 @@ void DevicePluginUniPi::onUniPiAnalogInputStatusChanged(QString &circuit, double
 }
 
 
-void DevicePluginUniPi::onUniPiAnalogOutputStatusChanged(QString &circuit, double value)
+void DevicePluginUniPi::onUniPiAnalogOutputStatusChanged(const QString &circuit, double value)
 {
     foreach(Device *parentDevice, myDevices()) {
         if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {

@@ -26,9 +26,11 @@
 #include <QObject>
 #include "gpiodescriptor.h"
 #include "mcp23008.h"
+#include "mcp3422.h"
 
 #include "hardware/gpio.h"
 #include "hardware/gpiomonitor.h"
+#include "hardware/pwm.h"
 
 class UniPi : public QObject
 {
@@ -64,15 +66,17 @@ private:
     QList<GpioDescriptor> raspberryPiGpioDescriptors();
     UniPiType m_unipiType = UniPiType::UniPi1;
     MCP23008 *m_mcp23008 = nullptr;
+    MCP3422 *m_mcp3422 = nullptr;
 
     int getPinFromCircuit(const QString &cicuit);
     QHash<GpioMonitor *, QString> m_monitorGpios;
+    QHash<Pwm *, QString> m_pwms;
 
 signals:
-    void digitalOutputStatusChanged(QString &circuit, const bool &value);
-    void digitalInputStatusChanged(QString &circuit, const bool &value);
-    void analogInputStatusChanged(QString &circuit, double value);
-    void analogOutputStatusChanged(QString &circuit,double value);
+    void digitalOutputStatusChanged(const QString &circuit, const bool &value);
+    void digitalInputStatusChanged(const QString &circuit, const bool &value);
+    void analogInputStatusChanged(const QString &circuit, double value);
+    void analogOutputStatusChanged(const QString &circuit, double value);
 
 private slots:
     void onInputValueChanged(const bool &value);

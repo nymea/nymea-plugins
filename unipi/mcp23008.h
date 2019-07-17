@@ -74,10 +74,9 @@ private:
     QMutex m_valueMutex;
     int m_fileDescriptor = -1;
 
-
 public slots:
     bool enable();
-void disable();
+    void disable();
 };
 
 #endif // MCP23008_H
