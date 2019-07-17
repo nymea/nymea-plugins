@@ -311,19 +311,29 @@ void UniPi::setDigitalOutput(const QString &circuit, bool status)
         return;
     }
 
+    quint8 registerValue;
+    if(!m_mcp23008->readRegister(MCP23008::RegisterAddress::OLAT, &registerValue))
+        return;
+    if (status) {
+        registerValue |= (1 << pin);
+    } else {
+        registerValue &= ~(1 << pin);
+    }
     //write output register
-    m_mcp23008->writeRegister(MCP23008::RegisterAddress::OLAT, (static_cast<uint8_t>(status) << pin));
+    m_mcp23008->writeRegister(MCP23008::RegisterAddress::OLAT, registerValue);
 }
 
 bool UniPi::getDigitalOutput(const QString &circuit)
 {
     int pin = getPinFromCircuit(circuit);
-    if (pin == 0)
+    if (pin > 7)
         return false;
 
     uint8_t registerValue;
-    registerValue = m_mcp23008->readRegister(MCP23008::RegisterAddress::OLAT);
-    emit digitalOutputStatusChanged(circuit, ( registerValue & (static_cast<uint8_t>(registerValue) << pin)));
+    if(!m_mcp23008->readRegister(MCP23008::RegisterAddress::OLAT, &registerValue))
+        return false;
+
+    emit digitalOutputStatusChanged(circuit, ( registerValue & (1 << pin)));
     return  true;
 }
 
