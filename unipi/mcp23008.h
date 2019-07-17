@@ -59,7 +59,7 @@ public:
     ~MCP23008() override;
 
     bool writeRegister(RegisterAddress registerAddress, uint8_t value);
-    bool readRegister(RegisterAddress registerAddress);
+    bool readRegister(RegisterAddress registerAddress, uint8_t *value);
 
 protected:
     void run() override;

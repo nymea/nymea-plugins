@@ -105,7 +105,7 @@ bool MCP23008::writeRegister(MCP23008::RegisterAddress registerAddress, uint8_t 
 }
 
 
-bool MCP23008::readRegister(RegisterAddress registerAddress)
+bool MCP23008::readRegister(RegisterAddress registerAddress, uint8_t *value)
 {
     #ifdef __arm__
     if (ioctl(m_fileDescriptor, I2C_SLAVE, m_i2cAddress) < 0) {
@@ -113,11 +113,11 @@ bool MCP23008::readRegister(RegisterAddress registerAddress)
         return false;
     }
 
-    quint8 registerValue = i2c_smbus_read_byte_data  (m_fileDescriptor, registerAddress);
-    Q_UNUSED(registerValue)
+    *value = i2c_smbus_read_byte_data(m_fileDescriptor, registerAddress);
     return true;
 #else
     Q_UNUSED(registerAddress)
+    Q_UNUSED(value)
     return false;
 #endif // __arm__
 }
