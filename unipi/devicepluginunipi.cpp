@@ -48,22 +48,24 @@ Device::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &devi
 
     if (deviceClassId == digitalInputDeviceClassId) {
         QList<DeviceDescriptor> deviceDescriptors;
-        foreach (UniPi *unipi, m_unipis) {
-            DeviceId parentDeviceId = m_unipis.key(unipi);
-            foreach (QString circuit, unipi->digitalInputs()) {
-                DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), "UniPi 1", parentDeviceId);
-                foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
-                    if (device->paramValue(digitalInputDeviceCircuitParamTypeId) == circuit) {
-                        qCDebug(dcUniPi()) << "Found already added Circuit:" << circuit << parentDeviceId;
-                        deviceDescriptor.setDeviceId(parentDeviceId);
-                        break;
+        foreach(Device *parentDevice, myDevices()) {
+            if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
+                foreach (QString circuit, m_unipi->digitalInputs()) {
+                    DeviceDescriptor deviceDescriptor(digitalInputDeviceClassId, QString("Digital input %1").arg(circuit), "UniPi 1", parentDevice->id());
+                    foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, parentDevice->id())) {
+                        if (device->paramValue(digitalInputDeviceCircuitParamTypeId) == circuit) {
+                            qCDebug(dcUniPi()) << "Found already added Circuit:" << circuit << parentDevice->id();
+                            deviceDescriptor.setDeviceId(parentDevice->id());
+                            break;
+                        }
                     }
+                    ParamList params;
+                    params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
+                    params.append(Param(digitalInputDeviceParentIdParamTypeId, parentDevice->id()));
+                    deviceDescriptor.setParams(params);
+                    deviceDescriptors.append(deviceDescriptor);
                 }
-                ParamList params;
-                params.append(Param(digitalInputDeviceCircuitParamTypeId, circuit));
-                params.append(Param(digitalInputDeviceParentIdParamTypeId, parentDeviceId));
-                deviceDescriptor.setParams(params);
-                deviceDescriptors.append(deviceDescriptor);
+                break;
             }
         }
 
@@ -113,22 +115,24 @@ Device::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &devi
 
     if (deviceClassId == digitalOutputDeviceClassId) {
         QList<DeviceDescriptor> deviceDescriptors;
-        foreach (UniPi *unipi, m_unipis) {
-            DeviceId parentDeviceId = m_unipis.key(unipi);
-            foreach (QString circuit, unipi->digitalOutputs()) {
-                DeviceDescriptor deviceDescriptor(digitalOutputDeviceClassId, QString("Digital output %1").arg(circuit), "UniPi 1", parentDeviceId);
-                foreach(Device *device, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
-                    if (device->paramValue(digitalOutputDeviceCircuitParamTypeId) == circuit) {
-                        qCDebug(dcUniPi()) << "Found already added Circuit:" << circuit << parentDeviceId;
-                        deviceDescriptor.setDeviceId(parentDeviceId);
-                        break;
+        foreach(Device *parentDevice, myDevices()) {
+            if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
+                foreach (QString circuit, m_unipi->digitalOutputs()) {
+                    DeviceDescriptor deviceDescriptor(digitalOutputDeviceClassId, QString("Digital output %1").arg(circuit), "UniPi 1", parentDevice->id());
+                    foreach(Device *device, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, parentDevice->id())) {
+                        if (device->paramValue(digitalOutputDeviceCircuitParamTypeId) == circuit) {
+                            qCDebug(dcUniPi()) << "Found already added Circuit:" << circuit << parentDevice->id();
+                            deviceDescriptor.setDeviceId(parentDevice->id());
+                            break;
+                        }
                     }
+                    ParamList params;
+                    params.append(Param(digitalOutputDeviceCircuitParamTypeId, circuit));
+                    params.append(Param(digitalOutputDeviceParentIdParamTypeId, parentDevice->id()));
+                    deviceDescriptor.setParams(params);
+                    deviceDescriptors.append(deviceDescriptor);
                 }
-                ParamList params;
-                params.append(Param(digitalOutputDeviceCircuitParamTypeId, circuit));
-                params.append(Param(digitalOutputDeviceParentIdParamTypeId, parentDeviceId));
-                deviceDescriptor.setParams(params);
-                deviceDescriptors.append(deviceDescriptor);
+                break;
             }
         }
 
@@ -178,22 +182,24 @@ Device::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &devi
 
     if (deviceClassId == analogInputDeviceClassId) {
         QList<DeviceDescriptor> deviceDescriptors;
-        foreach (UniPi *unipi, m_unipis) {
-            DeviceId parentDeviceId = m_unipis.key(unipi);
-            foreach (QString circuit, unipi->analogInputs()) {
-                DeviceDescriptor deviceDescriptor(analogInputDeviceClassId, QString("Analog input %1").arg(circuit), "UniPi", parentDeviceId);
-                foreach(Device *device, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
-                    if (device->paramValue(analogInputDeviceCircuitParamTypeId) == circuit) {
-                        qCDebug(dcUniPi()) << "Found already added Circuit:" << circuit << parentDeviceId;
-                        deviceDescriptor.setDeviceId(parentDeviceId);
-                        break;
+        foreach(Device *parentDevice, myDevices()) {
+            if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
+                foreach (QString circuit, m_unipi->analogInputs()) {
+                    DeviceDescriptor deviceDescriptor(analogInputDeviceClassId, QString("Analog input %1").arg(circuit), "UniPi", parentDevice->id());
+                    foreach(Device *device, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, parentDevice->id())) {
+                        if (device->paramValue(analogInputDeviceCircuitParamTypeId) == circuit) {
+                            qCDebug(dcUniPi()) << "Found already added Circuit:" << circuit << parentDevice->id();
+                            deviceDescriptor.setDeviceId(parentDevice->id());
+                            break;
+                        }
                     }
+                    ParamList params;
+                    params.append(Param(analogInputDeviceCircuitParamTypeId, circuit));
+                    params.append(Param(analogInputDeviceParentIdParamTypeId, parentDevice->id()));
+                    deviceDescriptor.setParams(params);
+                    deviceDescriptors.append(deviceDescriptor);
                 }
-                ParamList params;
-                params.append(Param(analogInputDeviceCircuitParamTypeId, circuit));
-                params.append(Param(analogInputDeviceParentIdParamTypeId, parentDeviceId));
-                deviceDescriptor.setParams(params);
-                deviceDescriptors.append(deviceDescriptor);
+                break;
             }
         }
 
@@ -242,6 +248,8 @@ Device::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &devi
     }
 
     if (deviceClassId == analogOutputDeviceClassId) {
+        //TODO add unipi 1 and unipi 1 lite
+
         QList<DeviceDescriptor> deviceDescriptors;
         foreach (NeuronExtension *neuronExtension, m_neuronExtensions) {
             DeviceId parentDeviceId = m_neuronExtensions.key(neuronExtension);
@@ -343,84 +351,46 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         connect(m_reconnectTimer, &QTimer::timeout, this, &DevicePluginUniPi::onReconnectTimer);
     }
 
-    if(!m_modbusTCPMaster) {
-        int port = configValue(uniPiPluginPortParamTypeId).toInt();;
-        QHostAddress ipAddress = QHostAddress(configValue(uniPiPluginAddressParamTypeId).toString());
 
-        m_modbusTCPMaster = new QModbusTcpClient(this);
-        m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkPortParameter, port);
-        m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkAddressParameter, ipAddress.toString());
-        //m_modbusTCPMaster->setTimeout(100);
-        //m_modbusTCPMaster->setNumberOfRetries(1);
-
-        connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onModbusTCPStateChanged);
-        connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onModbusTCPErrorOccurred);
-
-        if (!m_modbusTCPMaster->connectDevice()) {
-            qCWarning(dcUniPi()) << "Connect failed:" << m_modbusTCPMaster->errorString();
-            return Device::DeviceSetupStatusFailure;
-        }
-    }
-
-    if(!m_modbusRTUMaster) {
-        QString serialPort = configValue(uniPiPluginSerialPortParamTypeId).toString();
-        int baudrate = configValue(uniPiPluginBaudrateParamTypeId).toInt();
-        QString parity = configValue(uniPiPluginParityParamTypeId).toString();
-
-        m_modbusRTUMaster = new QModbusRtuSerialMaster(this);
-        m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialPortNameParameter, serialPort);
-        if (parity == "Even") {
-            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialParityParameter, QSerialPort::Parity::EvenParity);
-        } else {
-            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialParityParameter, QSerialPort::Parity::NoParity);
-        }
-        m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baudrate);
-        m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, 8);
-        m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, 1);
-        //m_modbusRTUMaster->setTimeout(100);
-        //m_modbusRTUMaster->setNumberOfRetries(1);
-
-        connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::stateChanged, this, &DevicePluginUniPi::onModbusRTUStateChanged);
-        connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::errorOccurred, this, &DevicePluginUniPi::onModbusRTUErrorOccurred);
-
-        if (!m_modbusRTUMaster->connectDevice()) {
-            qCWarning(dcUniPi()) << "Connect failed:" << m_modbusRTUMaster->errorString();
-            return Device::DeviceSetupStatusFailure;
-        }
-    }
     if(device->deviceClassId() == uniPi1DeviceClassId) {
-        UniPi *unipi = new UniPi(UniPi::UniPiType::UniPi1, this);
-        if (!unipi->init()) {
+        if (m_unipi)
+            return Device::DeviceSetupStatusFailure; //only one parent device allowed
+
+        m_unipi = new UniPi(UniPi::UniPiType::UniPi1, this);
+        if (!m_unipi->init()) {
             qCWarning(dcUniPi()) << "Could not setup UniPi";
-            unipi->deleteLater();
+            m_unipi->deleteLater();
             return Device::DeviceSetupStatusFailure;
         }
-        m_unipis.insert(device->id(), unipi);
-        connect(unipi, &UniPi::digitalInputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalInputStatusChanged);
-        connect(unipi, &UniPi::digitalOutputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalOutputStatusChanged);
-        connect(unipi, &UniPi::analogInputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogInputStatusChanged);
-        connect(unipi, &UniPi::analogOutputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogOutputStatusChanged);
+        connect(m_unipi, &UniPi::digitalInputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalInputStatusChanged);
+        connect(m_unipi, &UniPi::digitalOutputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalOutputStatusChanged);
+        connect(m_unipi, &UniPi::analogInputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogInputStatusChanged);
+        connect(m_unipi, &UniPi::analogOutputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogOutputStatusChanged);
         device->setStateValue(uniPi1ConnectedStateTypeId, true);
 
         return Device::DeviceSetupStatusSuccess;
     }
     if(device->deviceClassId() == uniPi1LiteDeviceClassId) {
-        UniPi *unipi = new UniPi(UniPi::UniPiType::UniPi1Lite, this);
-        if (!unipi->init()) {
+        if (m_unipi)
+            return Device::DeviceSetupStatusFailure; //only one parent device allowed
+
+        m_unipi = new UniPi(UniPi::UniPiType::UniPi1Lite, this);
+        if (!m_unipi->init()) {
             qCWarning(dcUniPi()) << "Could not setup UniPi";
-            unipi->deleteLater();
+            m_unipi->deleteLater();
             return Device::DeviceSetupStatusFailure;
         }
-        m_unipis.insert(device->id(), unipi);
-        connect(unipi, &UniPi::digitalInputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalInputStatusChanged);
-        connect(unipi, &UniPi::digitalOutputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalOutputStatusChanged);
-        connect(unipi, &UniPi::analogInputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogInputStatusChanged);
-        connect(unipi, &UniPi::analogOutputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogOutputStatusChanged);
+        connect(m_unipi, &UniPi::digitalInputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalInputStatusChanged);
+        connect(m_unipi, &UniPi::digitalOutputStatusChanged, this, &DevicePluginUniPi::onUniPiDigitalOutputStatusChanged);
+        connect(m_unipi, &UniPi::analogInputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogInputStatusChanged);
+        connect(m_unipi, &UniPi::analogOutputStatusChanged, this, &DevicePluginUniPi::onUniPiAnalogOutputStatusChanged);
         device->setStateValue(uniPi1LiteConnectedStateTypeId, true);
 
         return Device::DeviceSetupStatusSuccess;
     }
     if(device->deviceClassId() == neuronS103DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::S103, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -441,6 +411,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronM103DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::M103, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -461,6 +433,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronM203DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::M203, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -481,6 +455,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronM303DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::M303, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -501,6 +477,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronM403DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::M403, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -521,6 +499,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronM503DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::M503, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -541,6 +521,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronL203DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::L203, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -561,6 +543,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronL303DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::L303, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -581,6 +565,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronL403DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::L403, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -601,6 +587,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronL503DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::L503, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -621,6 +609,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronL513DeviceClassId) {
+        if (!neuronDeviceInit())
+            return Device::DeviceSetupStatusFailure;
 
         Neuron *neuron = new Neuron(Neuron::NeuronTypes::L513, m_modbusTCPMaster, this);
         if (!neuron->init()) {
@@ -641,6 +631,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronXS10DeviceClassId) {
+        if (!neuronExtensionInterfaceInit())
+            return Device::DeviceSetupStatusFailure;
 
         int slaveAddress = device->paramValue(neuronXS10DeviceSlaveAddressParamTypeId).toInt();
         NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS10, m_modbusRTUMaster, slaveAddress, this);
@@ -662,6 +654,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronXS20DeviceClassId) {
+        if (!neuronExtensionInterfaceInit())
+            return Device::DeviceSetupStatusFailure;
 
         int slaveAddress = device->paramValue(neuronXS20DeviceSlaveAddressParamTypeId).toInt();
         NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS20, m_modbusRTUMaster, slaveAddress, this);
@@ -683,6 +677,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronXS30DeviceClassId) {
+        if (!neuronExtensionInterfaceInit())
+            return Device::DeviceSetupStatusFailure;
 
         int slaveAddress = device->paramValue(neuronXS30DeviceSlaveAddressParamTypeId).toInt();
         NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS30, m_modbusRTUMaster, slaveAddress, this);
@@ -704,6 +700,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronXS40DeviceClassId) {
+        if (!neuronExtensionInterfaceInit())
+            return Device::DeviceSetupStatusFailure;
 
         int slaveAddress = device->paramValue(neuronXS40DeviceSlaveAddressParamTypeId).toInt();
         NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS40, m_modbusRTUMaster, slaveAddress, this);
@@ -725,6 +723,8 @@ Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     }
 
     if(device->deviceClassId() == neuronXS50DeviceClassId) {
+        if (!neuronExtensionInterfaceInit())
+            return Device::DeviceSetupStatusFailure;
 
         int slaveAddress = device->paramValue(neuronXS50DeviceSlaveAddressParamTypeId).toInt();
         NeuronExtension *neuronExtension = new NeuronExtension(NeuronExtension::ExtensionTypes::xS50, m_modbusRTUMaster, slaveAddress, this);
@@ -776,9 +776,8 @@ Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Actio
             QString digitalOutputNumber = device->paramValue(digitalOutputDeviceCircuitParamTypeId).toString();
             bool stateValue = action.param(digitalOutputPowerActionPowerParamTypeId).value().toBool();
 
-            if (m_unipis.contains(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString())) {
-                UniPi *unipi = m_unipis.value(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString());
-                unipi->setDigitalOutput(digitalOutputNumber, stateValue);
+            if (m_unipi) {
+                m_unipi->setDigitalOutput(digitalOutputNumber, stateValue);
             }
             if (m_neurons.contains(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString())) {
                 Neuron *neuron = m_neurons.value(device->paramValue(digitalOutputDeviceParentIdParamTypeId).toString());
@@ -799,9 +798,8 @@ Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Actio
             QString analogOutputNumber = device->paramValue(analogOutputDeviceCircuitParamTypeId).toString();
             double analogValue = action.param(analogOutputOutputValueActionOutputValueParamTypeId).value().toDouble();
 
-            if (m_unipis.contains(device->paramValue(analogOutputDeviceParentIdParamTypeId).toString())) {
-                UniPi *unipi = m_unipis.value(device->paramValue(analogOutputDeviceParentIdParamTypeId).toString());
-                unipi->setAnalogOutput(analogOutputNumber, analogValue);
+            if (m_unipi) {
+                m_unipi->setAnalogOutput(analogOutputNumber, analogValue);
             }
             if (m_neurons.contains(device->paramValue(analogOutputDeviceParentIdParamTypeId).toString())) {
                 Neuron *neuron = m_neurons.value(device->paramValue(analogOutputDeviceParentIdParamTypeId).toString());
@@ -839,63 +837,33 @@ Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Actio
 void DevicePluginUniPi::deviceRemoved(Device *device)
 {
     Q_UNUSED(device);
-   if(m_neurons.contains(device->id())) {
+    if(m_neurons.contains(device->id())) {
         Neuron *neuron = m_neurons.take(device->id());
         neuron->deleteLater();
-        /* TODO - deviceManager is no longer availabler within a plug-in
-        foreach(Device *child, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, device->id())) {
-            DeviceManager()->removeConfiguredDevice(child->id());
-        }
-        foreach(Device *child, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, device->id())) {
-            deviceManager()->removeConfiguredDevice(child->id());
-        }
-        foreach(Device *child, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, device->id())) {
-            //Device()->removeConfiguredDevice(child->id());
-        }
-        foreach(Device *child, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, device->id())) {
-            //Device()->removeConfiguredDevice(child->id());
-        }
-        foreach(Device *child, myDevices().filterByParam(userLEDDeviceParentIdParamTypeId,device->id())) {
-            //Device()->removeConfiguredDevice(child->id());
-        }*/
     }
     if(m_neuronExtensions.contains(device->id())) {
         NeuronExtension *neuronExtension = m_neuronExtensions.take(device->id());
         neuronExtension->deleteLater();
-        //TODO - deviceManager is no longer availabler within a plug-in
-        /*
-        foreach(Device *child, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, device->id())) {
-            //devicem()->removeConfiguredDevice(child->id());
-        }
-        foreach(Device *child, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, device->id())) {
-            //Device()->removeConfiguredDevice(child->id());
-        }
-        foreach(Device *child, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, device->id())) {
-            //Device()->removeConfiguredDevice(child->id());
-        }
-        foreach(Device *child, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, device->id())) {
-            //Device()->removeConfiguredDevice(child->id());
-        }
-        foreach(Device *child, myDevices().filterByParam(userLEDDeviceParentIdParamTypeId,device->id())) {
-            //Device()->removeConfiguredDevice(child->id());
-        }*/
     }
 
-    if(m_unipis.contains(device->id())) {
-        UniPi *unipi = m_unipis.take(device->id());
-        unipi->deleteLater();
-        //TODO - deviceManager is no longer availabler within a plug-in
+    if ((device->deviceClassId() == uniPi1DeviceClassId) || (device->deviceClassId() == uniPi1LiteDeviceClassId)) {
+        if(m_unipi) {
+            m_unipi->deleteLater();
+        }
     }
 
     if (myDevices().isEmpty()) {
         m_reconnectTimer->stop();
         m_reconnectTimer->deleteLater();
 
-        m_modbusTCPMaster->disconnectDevice();
-        m_modbusTCPMaster->deleteLater();
-
-        m_modbusRTUMaster->disconnectDevice();
-        m_modbusRTUMaster->deleteLater();
+        if (m_modbusTCPMaster) {
+            m_modbusTCPMaster->disconnectDevice();
+            m_modbusTCPMaster->deleteLater();
+        }
+        if (m_modbusRTUMaster) {
+            m_modbusRTUMaster->disconnectDevice();
+            m_modbusRTUMaster->deleteLater();
+        }
     }
 }
 
@@ -903,31 +871,31 @@ void DevicePluginUniPi::onPluginConfigurationChanged(const ParamTypeId &paramTyp
 {
     qCDebug(dcUniPi()) << "Plugin configuration changed";
     if (paramTypeId == uniPiPluginPortParamTypeId) {
-        if (!m_modbusTCPMaster) {
+        if (m_modbusTCPMaster) {
             m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkAddressParameter, value.toString());
         }
     }
 
     if (paramTypeId == uniPiPluginAddressParamTypeId) {
-        if (!m_modbusTCPMaster) {
+        if (m_modbusTCPMaster) {
             m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkPortParameter, value.toInt());
         }
     }
 
     if (paramTypeId == uniPiPluginSerialPortParamTypeId) {
-        if (!m_modbusRTUMaster) {
+        if (m_modbusRTUMaster) {
             m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialPortNameParameter, value.toString());
         }
     }
 
     if (paramTypeId == uniPiPluginBaudrateParamTypeId) {
-        if (!m_modbusRTUMaster) {
+        if (m_modbusRTUMaster) {
             m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, value.toInt());
         }
     }
 
     if (paramTypeId == uniPiPluginParityParamTypeId) {
-        if (!m_modbusRTUMaster) {
+        if (m_modbusRTUMaster) {
             if (value == "Even") {
                 m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialParityParameter, QSerialPort::Parity::EvenParity);
             } else {
@@ -1173,59 +1141,126 @@ void DevicePluginUniPi::onModbusRTUStateChanged(QModbusDevice::State state)
 
 void DevicePluginUniPi::onUniPiDigitalInputStatusChanged(QString &circuit, bool value)
 {
-    UniPi *unipi = static_cast<UniPi *>(sender());
+    foreach(Device *parentDevice, myDevices()) {
+        if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
+            foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, parentDevice->id())) {
+                if (device->deviceClassId() == digitalInputDeviceClassId) {
+                    if (device->paramValue(digitalInputDeviceCircuitParamTypeId).toString() == circuit) {
 
-    foreach(Device *device, myDevices().filterByParam(digitalInputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
-        if (device->deviceClassId() == digitalInputDeviceClassId) {
-            if (device->paramValue(digitalInputDeviceCircuitParamTypeId).toString() == circuit) {
-
-                device->setStateValue(digitalInputInputStatusStateTypeId, value);
-                return;
+                        device->setStateValue(digitalInputInputStatusStateTypeId, value);
+                        return;
+                    }
+                }
             }
+            break;
         }
     }
 }
 
 void DevicePluginUniPi::onUniPiDigitalOutputStatusChanged(QString &circuit, bool value)
 {
-    UniPi *unipi = static_cast<UniPi *>(sender());
+    foreach(Device *parentDevice, myDevices()) {
+        if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
+            foreach(Device *device, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, parentDevice->id())) {
+                if (device->deviceClassId() == digitalOutputDeviceClassId) {
+                    if (device->paramValue(digitalOutputDeviceCircuitParamTypeId).toString() == circuit) {
 
-    foreach(Device *device, myDevices().filterByParam(digitalOutputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
-        if (device->deviceClassId() == digitalOutputDeviceClassId) {
-            if (device->paramValue(digitalOutputDeviceCircuitParamTypeId).toString() == circuit) {
-
-                device->setStateValue(digitalOutputPowerStateTypeId, value);
-                return;
+                        device->setStateValue(digitalOutputPowerStateTypeId, value);
+                        return;
+                    }
+                }
             }
+            break;
         }
     }
 }
 
 void DevicePluginUniPi::onUniPiAnalogInputStatusChanged(QString &circuit, double value)
 {
-    UniPi *unipi = static_cast<UniPi *>(sender());
-
-    foreach(Device *device, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
-        if (device->deviceClassId() == analogInputDeviceClassId) {
-            if (device->paramValue(analogInputDeviceCircuitParamTypeId).toString() == circuit) {
-                device->setStateValue(analogInputInputValueStateTypeId, value);
-                return;
+    foreach(Device *parentDevice, myDevices()) {
+        if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
+            foreach(Device *device, myDevices().filterByParam(analogInputDeviceParentIdParamTypeId, parentDevice->id())) {
+                if (device->deviceClassId() == analogInputDeviceClassId) {
+                    if (device->paramValue(analogInputDeviceCircuitParamTypeId).toString() == circuit) {
+                        device->setStateValue(analogInputInputValueStateTypeId, value);
+                        return;
+                    }
+                }
             }
+            break;
         }
     }
 }
 
+
 void DevicePluginUniPi::onUniPiAnalogOutputStatusChanged(QString &circuit, double value)
 {
-    UniPi *unipi = static_cast<UniPi *>(sender());
+    foreach(Device *parentDevice, myDevices()) {
+        if ((parentDevice->deviceClassId() == uniPi1DeviceClassId) || (parentDevice->deviceClassId() == uniPi1LiteDeviceClassId)) {
+            foreach(Device *device, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, parentDevice->id())) {
+                if (device->deviceClassId() == analogOutputDeviceClassId) {
+                    if (device->paramValue(analogOutputDeviceCircuitParamTypeId).toString() == circuit) {
 
-    foreach(Device *device, myDevices().filterByParam(analogOutputDeviceParentIdParamTypeId, m_unipis.key(unipi))) {
-        if (device->deviceClassId() == analogOutputDeviceClassId) {
-            if (device->paramValue(analogOutputDeviceCircuitParamTypeId).toString() == circuit) {
-
-                device->setStateValue(analogOutputOutputValueStateTypeId, value);
-                return;
+                        device->setStateValue(analogOutputOutputValueStateTypeId, value);
+                        return;
+                    }
+                }
             }
+            break;
         }
     }
+}
+
+bool DevicePluginUniPi::neuronDeviceInit()
+{
+    if(!m_modbusTCPMaster) {
+        int port = configValue(uniPiPluginPortParamTypeId).toInt();;
+        QHostAddress ipAddress = QHostAddress(configValue(uniPiPluginAddressParamTypeId).toString());
+
+        m_modbusTCPMaster = new QModbusTcpClient(this);
+        m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkPortParameter, port);
+        m_modbusTCPMaster->setConnectionParameter(QModbusDevice::NetworkAddressParameter, ipAddress.toString());
+        //m_modbusTCPMaster->setTimeout(100);
+        //m_modbusTCPMaster->setNumberOfRetries(1);
+
+        connect(m_modbusTCPMaster, &QModbusTcpClient::stateChanged, this, &DevicePluginUniPi::onModbusTCPStateChanged);
+        connect(m_modbusTCPMaster, &QModbusTcpClient::errorOccurred, this, &DevicePluginUniPi::onModbusTCPErrorOccurred);
+
+        if (!m_modbusTCPMaster->connectDevice()) {
+            qCWarning(dcUniPi()) << "Connect failed:" << m_modbusTCPMaster->errorString();
+            return false;
+        }
+    }
+    return true;
+}
+
+bool DevicePluginUniPi::neuronExtensionInterfaceInit()
+{
+    if(!m_modbusRTUMaster) {
+        QString serialPort = configValue(uniPiPluginSerialPortParamTypeId).toString();
+        int baudrate = configValue(uniPiPluginBaudrateParamTypeId).toInt();
+        QString parity = configValue(uniPiPluginParityParamTypeId).toString();
+
+        m_modbusRTUMaster = new QModbusRtuSerialMaster(this);
+        m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialPortNameParameter, serialPort);
+        if (parity == "Even") {
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialParityParameter, QSerialPort::Parity::EvenParity);
+        } else {
+            m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialParityParameter, QSerialPort::Parity::NoParity);
+        }
+        m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialBaudRateParameter, baudrate);
+        m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialDataBitsParameter, 8);
+        m_modbusRTUMaster->setConnectionParameter(QModbusDevice::SerialStopBitsParameter, 1);
+        //m_modbusRTUMaster->setTimeout(100);
+        //m_modbusRTUMaster->setNumberOfRetries(1);
+
+        connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::stateChanged, this, &DevicePluginUniPi::onModbusRTUStateChanged);
+        connect(m_modbusRTUMaster, &QModbusRtuSerialMaster::errorOccurred, this, &DevicePluginUniPi::onModbusRTUErrorOccurred);
+
+        if (!m_modbusRTUMaster->connectDevice()) {
+            qCWarning(dcUniPi()) << "Connect failed:" << m_modbusRTUMaster->errorString();
+            return false;
+        }
+    }
+    return true;
 }
