@@ -85,10 +85,10 @@ private slots:
     void onModbusTCPStateChanged(QModbusDevice::State state);
     void onModbusRTUStateChanged(QModbusDevice::State state);
 
-    void onUniPiDigitalInputStatusChanged(QString &circuit, bool value);
-    void onUniPiDigitalOutputStatusChanged(QString &circuit, bool value);
-    void onUniPiAnalogInputStatusChanged(QString &circuit, double value);
-    void onUniPiAnalogOutputStatusChanged(QString &circuit,double value);
+    void onUniPiDigitalInputStatusChanged(const QString &circuit, bool value);
+    void onUniPiDigitalOutputStatusChanged(const QString &circuit, bool value);
+    void onUniPiAnalogInputStatusChanged(const QString &circuit, double value);
+    void onUniPiAnalogOutputStatusChanged(const QString &circuit,double value);
 };
 
 #endif // DEVICEPLUGINUNIPI_H

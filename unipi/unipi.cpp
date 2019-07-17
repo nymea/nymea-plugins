@@ -29,12 +29,16 @@ UniPi::UniPi(UniPiType unipiType, QObject *parent) :
     m_unipiType(unipiType)
 {
     m_mcp23008 = new MCP23008("i2c-1", 0x20, this);
+    m_mcp3422 = new MCP3422("i2c-1", 0x68, this);
 }
 
 UniPi::~UniPi()
 {
     m_mcp23008->disable();
     m_mcp23008->deleteLater();
+
+    m_mcp3422->disable();
+    m_mcp3422->deleteLater();
 }
 
 bool UniPi::init()
@@ -57,8 +61,23 @@ bool UniPi::init()
         m_monitorGpios.insert(gpio, circuit);
     }
 
-    //TODO Init Raspberry Pi PWMs - Analog Output
-    //TODO Init Raspberry Pi Analog Input
+    //Init Raspberry Pi PWM outputs
+    foreach (QString circuit, analogOutputs()) {
+        int pin = getPinFromCircuit(circuit);
+        Pwm *pwm = new Pwm(pin, this);
+        pwm->enable();
+        pwm->setPolarity(Pwm::PolarityNormal);
+        pwm->setFrequency(400);
+        pwm->setPercentage(0);
+        m_pwms.insert(pwm, circuit);
+    }
+
+    foreach (QString circuit, analogInputs()){
+        int pin = getPinFromCircuit(circuit);
+        Q_UNUSED(pin)
+        //TODO Init Raspberry Pi Analog Input
+    }
+
 
     return false;
 }
@@ -82,12 +101,12 @@ QList<QString> UniPi::digitalInputs()
     QList<QString> inputs;
     switch (m_unipiType) {
     case UniPiType::UniPi1:
-        for (int i = 0; i < 13; ++i) {
+        for (int i = 1; i < 15; ++i) {
             inputs.append(QString("DI%1").arg(i));
         }
         break;
     case UniPiType::UniPi1Lite:
-        for (int i = 0; i < 7; ++i) {
+        for (int i = 1; i < 7; ++i) {
             inputs.append(QString("DI%1").arg(i));
         }
         break;
@@ -100,12 +119,12 @@ QList<QString> UniPi::digitalOutputs()
     QList<QString> outputs;
     switch (m_unipiType) {
     case UniPiType::UniPi1:
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 1; i < 7; ++i) {
             outputs.append(QString("DO%1").arg(i));
         }
         break;
     case UniPiType::UniPi1Lite:
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 1; i < 7; ++i) {
             outputs.append(QString("DO%1").arg(i));
         }
         break;
@@ -224,6 +243,29 @@ int UniPi::getPinFromCircuit(const QString &circuit)
             return 0;
         }
     }
+
+    if (circuit.startsWith("AO")) {
+        switch (circuit.mid(2, 2).toInt()) {
+        case 0: //AO GPIO18 PWM Analog Output 0-10V
+            pin = 18;
+            break;
+        default:
+            return 0;
+        }
+    }
+
+    if (circuit.startsWith("AI")) { //MCP3422 analog input channels
+        switch (circuit.mid(2, 2).toInt()) {
+        case 1:
+            pin = 1; //TODO
+            break;
+        case 2:
+            pin = 2; //TODO
+            break;
+        default:
+            return 0;
+        }
+    }
     return pin;
 }
 
@@ -281,7 +323,8 @@ bool UniPi::getDigitalOutput(const QString &circuit)
 
     uint8_t registerValue;
     registerValue = m_mcp23008->readRegister(MCP23008::RegisterAddress::OLAT);
-    return ( registerValue & (static_cast<uint8_t>(registerValue) << pin)) ;
+    emit digitalOutputStatusChanged(circuit, ( registerValue & (static_cast<uint8_t>(registerValue) << pin)));
+    return  true;
 }
 
 bool UniPi::getDigitalInput(const QString &circuit)
@@ -291,27 +334,50 @@ bool UniPi::getDigitalInput(const QString &circuit)
         qWarning(dcUniPi()) << "Out of range pin number";
         return false;
     }
+    if (!m_monitorGpios.values().contains(circuit))
+        return false;
     //Read RPi pins
     GpioMonitor *gpio = m_monitorGpios.key(circuit);
-    return gpio->value();
+    digitalInputStatusChanged(circuit, gpio->value());
+    return true;
 }
 
 bool UniPi::setAnalogOutput(const QString &circuit, double value)
 {
-    Q_UNUSED(circuit)
-    Q_UNUSED(value)
-    return false;
+    int pin = getPinFromCircuit(circuit);
+    if (pin == 0) {
+        qWarning(dcUniPi()) << "Out of range pin number";
+        return false;
+    }
+    if (!m_pwms.values().contains(circuit))
+        return false;
+    int percentage = value * 10;     //convert volt to percentage
+    Pwm *pwm = m_pwms.key(circuit);
+    if(!pwm->setPercentage(percentage))
+        return false;
+    return true;
 }
 
 bool UniPi::getAnalogOutput(const QString &circuit)
 {
-    Q_UNUSED(circuit)
-    return false;
+    int pin = getPinFromCircuit(circuit);
+    if (pin == 0) {
+        qWarning(dcUniPi()) << "Out of range pin number";
+        return false;
+    }
+    Pwm *pwm = m_pwms.key(circuit);
+    double voltage = pwm->percentage()/10.0;
+    emit analogOutputStatusChanged(circuit, voltage);
+
+    return true;
 }
 
 bool UniPi::getAnalogInput(const QString &circuit)
 {
     Q_UNUSED(circuit)
+    //
+
+    emit analogInputStatusChanged(circuit, 10.00);
     return false;
 }
 

@@ -15,7 +15,8 @@ SOURCES += \
     mcp23008.cpp \
     i2cport.cpp \
     unipi.cpp \
-    gpiodescriptor.cpp
+    gpiodescriptor.cpp \
+    mcp3422.cpp
 
 HEADERS += \
     devicepluginunipi.h \
@@ -25,7 +26,8 @@ HEADERS += \
     i2cport.h \
     unipi.h \
     gpiodescriptor.h \
-    i2cport_p.h
+    i2cport_p.h \
+    mcp3422.h
 
 MAP_FILES.files = modbus_maps/
 MAP_FILES.path = /usr/share/nymea/modbus/
