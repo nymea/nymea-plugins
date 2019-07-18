@@ -38,27 +38,14 @@ OneWire::~OneWire()
 bool OneWire::init()
 {
     QByteArray initArguments;
-    initArguments.append("--fake 28 --fake 10");
+    //initArguments.append("--fake 28 --fake 10"); //fake temperature sensors
+    //initArguments.append("--fake 29 --fake 12 --fake 05"); //fake temperature sensors
+    initArguments.append("--i2c=ALL:ALL");
     if (OW_init(initArguments) < 0) {
         qWarning(dcOneWire()) << "ERROR initialising one wire" << strerror(errno);
         return false;
     }
     m_path = "/";
-
-    /*QByteArray defaultPath = "/";
-    size_t dir_length ;
-    char *dir_buffer = nullptr;
-    if (OW_get(defaultPath, &dir_buffer, &dir_length) < 0) {
-        qWarning(dcOneWire()) << "ERROR initialising one wire" << strerror(errno);
-        return false;
-    }
-    m_path = QByteArray(dir_buffer, dir_length);
-    if(m_path[0] != '/') {
-        m_path.prepend('/');
-    }
-    m_path.append('\0');
-    qDebug(dcOneWire()) << "Path:" << m_path;
-    free(dir_buffer);*/
     return true;
 }
 
@@ -79,9 +66,20 @@ bool OneWire::discoverDevices()
 
     QList<OneWireDevice> oneWireDevices;
     foreach(QByteArray member, dirMembers) {
+
+        /* Other system members:
+         * bus.0
+         * uncached
+         * settings
+         * system
+         * statistics
+         * structure
+         * simultaneous
+         * alarm
+         */
+
         int family = member.split('.').first().toInt(nullptr, 16);
         if (family != 0) {
-            qDebug(dcOneWire()) << "Member" << member << member.left(2) << family;
             member.remove(member.indexOf('/'), 1);
             QByteArray type;
             OneWireDevice device;
