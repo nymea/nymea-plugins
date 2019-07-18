@@ -80,9 +80,65 @@
                     ]
                 },
                 {
+                    "id": "6db42501-5451-4aac-9525-5f886b3188e2",
+                    "name": "singleChannelSwitch",
+                    "displayName": "1-channel switch",
+                    "interfaces": [ ],
+                    "createMethods": ["discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "c9d6b7fd-fa21-473a-b5ed-9c5227749f06",
+                            "name": "address",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "6efc8cb6-81ae-45c0-8910-708401d1ba68",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                        }
+                    ]
+                },
+                {
+                    "id": "023f2b93-61e1-4422-97f5-3d5c14a6628f",
+                    "name": "dualChannelSwitch",
+                    "displayName": "2-channel switch",
+                    "interfaces": [ ],
+                    "createMethods": ["discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "b9a1a23d-1fbf-4849-8aa2-2855e7deaf84",
+                            "name": "address",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "b71ed57b-e768-4119-829e-a0f2c9fa5e18",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                        }
+                    ]
+                },
+                {
                     "id": "71691119-3bda-4424-b853-1a00f21086e1",
-                    "name": "switch",
-                    "displayName": "Switch",
+                    "name": "eightChannelSwitch",
+                    "displayName": "8-channel switch",
                     "interfaces": [ ],
                     "createMethods": ["discovery"],
                     "paramTypes": [
@@ -105,10 +161,80 @@
                     "stateTypes": [
                         {
                             "id": "78fa12c0-246c-4112-8be6-5943d3c3cda5",
-                            "name": "digitalOutput",
-                            "displayName": "Digital output",
-                            "displayNameEvent": "Digital output changed",
-                            "displayNameAction": "Set digital output",
+                            "name": "digitalOutput1",
+                            "displayName": "Digital output 1",
+                            "displayNameEvent": "Digital output 1 changed",
+                            "displayNameAction": "Set digital output 1",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "c7d2f4a8-2b13-4a48-81a8-72f4908c775b",
+                            "name": "digitalOutput2",
+                            "displayName": "Digital output 2",
+                            "displayNameEvent": "Digital output 2 changed",
+                            "displayNameAction": "Set digital output 2",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "4b2ac595-eba9-4364-8cd7-00ff8bccda5a",
+                            "name": "digitalOutput3",
+                            "displayName": "Digital output 3",
+                            "displayNameEvent": "Digital output 3 changed",
+                            "displayNameAction": "Set digital output 3",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "bbbd1863-ef04-4687-803d-3c9ccdfc8d8f",
+                            "name": "digitalOutput4",
+                            "displayName": "Digital output 4",
+                            "displayNameEvent": "Digital output 4 changed",
+                            "displayNameAction": "Set digital output 4",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "50855d2b-a700-4030-8674-fee00cc0b4e2",
+                            "name": "digitalOutput5",
+                            "displayName": "Digital output 5",
+                            "displayNameEvent": "Digital output 5 changed",
+                            "displayNameAction": "Set digital output 5",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "a91ce593-09ba-4754-8a2e-e3f507313585",
+                            "name": "digitalOutput6",
+                            "displayName": "Digital output 6",
+                            "displayNameEvent": "Digital output 6 changed",
+                            "displayNameAction": "Set digital output 6",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "5f46047c-b00d-486f-b169-b738fbc89cdb",
+                            "name": "digitalOutput7",
+                            "displayName": "Digital output 7",
+                            "displayNameEvent": "Digital output 7 changed",
+                            "displayNameAction": "Set digital output 7",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "63334a17-0847-4f53-8007-1b5e72b88aa8",
+                            "name": "digitalOutput8",
+                            "displayName": "Digital output 8",
+                            "displayNameEvent": "Digital output 8 changed",
+                            "displayNameAction": "Set digital output 8",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
