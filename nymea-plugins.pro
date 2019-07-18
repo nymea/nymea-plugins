@@ -27,6 +27,7 @@ PLUGIN_DIRS = \
     mqttclient          \
     netatmo             \
     networkdetector     \
+    onewire             \
     openweathermap      \
     osdomotics          \
     philipshue          \
