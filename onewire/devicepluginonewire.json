@@ -104,7 +104,15 @@
                     ],
                     "stateTypes": [
                         {
-                        }
+                                "id": "ca10a9fd-e4e0-4608-a2d2-6a4ce9644f40",
+                                "name": "digitalOutput",
+                                "displayName": "Digital output",
+                                "displayNameEvent": "Digital output changed",
+                                "displayNameAction": "Set digital output",
+                                "type": "bool",
+                                "defaultValue": false,
+                                "writable": true
+                            }
                     ]
                 },
                 {
@@ -132,6 +140,25 @@
                     ],
                     "stateTypes": [
                         {
+                            "id": "f8b6b4a7-355c-4580-a676-8a4d0d619ff9",
+                            "name": "digitalOutput1",
+                            "displayName": "Digital output 1",
+                            "displayNameEvent": "Digital output 1 changed",
+                            "displayNameAction": "Set digital output 1",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "82a78aed-5994-4af5-aecb-1806be5de1f3",
+                            "name": "digitalOutput2",
+                            "displayName": "Digital output 2",
+                            "displayNameEvent": "Digital output 2 changed",
+                            "displayNameAction": "Set digital output 2",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+
                         }
                     ]
                 },
