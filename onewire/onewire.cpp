@@ -141,11 +141,21 @@ QByteArray OneWire::getValue(const QByteArray &address, const QByteArray &type)
     return value;
 }
 
-void OneWire::setValue(const QByteArray &address, const QByteArray &deviceType, const QByteArray &value)
+void OneWire::setValue(const QByteArray &address, const QByteArray &type, const QByteArray &value)
 {
-    Q_UNUSED(address)
-    Q_UNUSED(deviceType)
     Q_UNUSED(value)
+    QByteArray devicePath;
+    devicePath.append(m_path);
+    if(!m_path.endsWith('/'))
+        devicePath.append('/');
+    devicePath.append(address);
+    devicePath.append('/');
+    devicePath.append(type);
+    devicePath.append('\0');
+
+    if (OW_put(devicePath, value, value.length()) < 0) {
+        qWarning(dcOneWire()) << "ERROR reading" << devicePath << strerror(errno);
+    }
 }
 
 double OneWire::getTemperature(const QByteArray &address)
@@ -167,20 +177,107 @@ QByteArray OneWire::getType(const QByteArray &address)
     return type;
 }
 
-bool OneWire::getSwitchState(const QByteArray &address)
+bool OneWire::getSwitchOutput(const QByteArray &address, SwitchChannel channel)
 {
-    QByteArray state = getValue(address, "switch_state");
-    qDebug(dcOneWire()) << "Switch state" << state;
-    return 0; //TODO
+    QByteArray c;
+    c.append("PIO.");
+    switch (channel) {
+    case PIO_A:
+        c.append('A');
+        break;
+    case PIO_B:
+        c.append('B');
+        break;
+    case PIO_C:
+        c.append('C');
+        break;
+    case PIO_D:
+        c.append('D');
+        break;
+    case PIO_E:
+        c.append('E');
+        break;
+    case PIO_F:
+        c.append('F');
+        break;
+    case PIO_G:
+        c.append('G');
+        break;
+    case PIO_H:
+        c.append('H');
+        break;
+    }
+    QByteArray state = getValue(address, c);
+    qDebug(dcOneWire()) << "Switch state" << state.toInt();
+    return state.toInt();
 }
 
-void OneWire::setSwitchState(const QByteArray &address, bool state)
+bool OneWire::getSwitchInput(const QByteArray &address, SwitchChannel channel)
 {
-    if (state) {
-        setValue(address, "switch_state", "TRUE");
-    } else {
-        setValue(address, "switch_state", "FALSE");
+    QByteArray c;
+    c.append("sensed.");
+    switch (channel) {
+    case PIO_A:
+        c.append('A');
+        break;
+    case PIO_B:
+        c.append('B');
+        break;
+    case PIO_C:
+        c.append('C');
+        break;
+    case PIO_D:
+        c.append('D');
+        break;
+    case PIO_E:
+        c.append('E');
+        break;
+    case PIO_F:
+        c.append('F');
+        break;
+    case PIO_G:
+        c.append('G');
+        break;
+    case PIO_H:
+        c.append('H');
+        break;
     }
+    QByteArray state = getValue(address, c);
+    qDebug(dcOneWire()) << "Switch state" << state.toInt();
+    return state.toInt();
+}
+
+void OneWire::setSwitchOutput(const QByteArray &address, SwitchChannel channel, bool state)
+{
+    QByteArray c;
+    c.append("PIO.");
+    switch (channel) {
+    case PIO_A:
+        c.append('A');
+        break;
+    case PIO_B:
+        c.append('B');
+        break;
+    case PIO_C:
+        c.append('C');
+        break;
+    case PIO_D:
+        c.append('D');
+        break;
+    case PIO_E:
+        c.append('E');
+        break;
+    case PIO_F:
+        c.append('F');
+        break;
+    case PIO_G:
+        c.append('G');
+        break;
+    case PIO_H:
+        c.append('H');
+        break;
+    }
+    setValue(address, c, QVariant(state).toByteArray());
 }
 
 

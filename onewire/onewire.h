@@ -40,6 +40,17 @@ public:
         Type        //Part name assigned by Dallas Semi. E.g. DS2401
     };
 
+    enum SwitchChannel {
+        PIO_A,
+        PIO_B,
+        PIO_C,
+        PIO_D,
+        PIO_E,
+        PIO_F,
+        PIO_G,
+        PIO_H
+    };
+
     struct OneWireDevice {
         QByteArray address;
         int family;
@@ -59,9 +70,9 @@ public:
     double getTemperature(const QByteArray &address);
     QByteArray getType(const QByteArray &address);
     QByteArray readMemory(const QByteArray &address);
-    bool getSwitchState(const QByteArray &address);
-    void setSwitchState(const QByteArray &address, bool state);
-
+    bool getSwitchOutput(const QByteArray &address, SwitchChannel channel);
+    void setSwitchOutput(const QByteArray &address, SwitchChannel channel, bool state);
+    bool getSwitchInput(const QByteArray &address, SwitchChannel channel);
 
 private:
     QByteArray m_deviceLocation;
