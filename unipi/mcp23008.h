@@ -56,6 +56,8 @@ public:
     explicit MCP23008(const QString &i2cPortName, int i2cAddress = 0x48, QObject *parent = nullptr);
     ~MCP23008() override;
 
+    bool init();
+
     bool writeRegister(RegisterAddress registerAddress, uint8_t value);
     bool readRegister(RegisterAddress registerAddress, uint8_t *value);
 
@@ -65,10 +67,6 @@ private:
     int m_i2cAddress;
 
     int m_fileDescriptor = -1;
-
-public slots:
-    bool enable();
-    void disable();
 };
 
 #endif // MCP23008_H

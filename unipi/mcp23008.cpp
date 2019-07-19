@@ -46,23 +46,23 @@ MCP23008::~MCP23008()
     m_i2cFile.close();
 }
 
-void MCP23008::init()
+bool MCP23008::init()
 {
     qCDebug(dcUniPi()) << "MCP23008: initialize I2C port" << m_i2cPortName << QString("0x%1").arg(m_i2cAddress, 0, 16);
 
     m_i2cFile.setFileName("/dev/" + m_i2cPortName);
     if (!m_i2cFile.exists()) {
-        qCWarning(dcUniPi()) << "MCP23008: The given I2C file descriptor does not exist:" << i2cFile.fileName();
-        return;
+        qCWarning(dcUniPi()) << "MCP23008: The given I2C file descriptor does not exist:" << m_i2cFile.fileName();
+        return false;
     }
 
     if (!m_i2cFile.open(QFile::ReadWrite)) {
-        qCWarning(dcUniPi()) << "MCP23008: Could not open the given I2C file descriptor:" << i2cFile.fileName() << i2cFile.errorString();
-        return;
+        qCWarning(dcUniPi()) << "MCP23008: Could not open the given I2C file descriptor:" << m_i2cFile.fileName() << m_i2cFile.errorString();
+        return false;
     }
     m_fileDescriptor = m_i2cFile.handle();
+    return true;
 
-    qCDebug(dcUniPi()) << "MCP23008: Reading thread finished.";
 }
 
 bool MCP23008::writeRegister(MCP23008::RegisterAddress registerAddress, uint8_t value)

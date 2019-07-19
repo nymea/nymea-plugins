@@ -34,7 +34,6 @@ UniPi::UniPi(UniPiType unipiType, QObject *parent) :
 
 UniPi::~UniPi()
 {
-    m_mcp23008->disable();
     m_mcp23008->deleteLater();
 
     m_mcp3422->disable();
@@ -44,7 +43,7 @@ UniPi::~UniPi()
 bool UniPi::init()
 {
     //init MCP23008 Outputs
-    if (m_mcp23008->enable()) {
+    if (m_mcp23008->init()) {
         m_mcp23008->writeRegister(MCP23008::RegisterAddress::IODIR, 0x00); //set all pins as outputs
         m_mcp23008->writeRegister(MCP23008::RegisterAddress::IPOL, 0x00);  //set all pins to non inverted mode 1 = high
         m_mcp23008->writeRegister(MCP23008::RegisterAddress::GPPU, 0x00);  //disable all pull up resistors
