@@ -24,6 +24,7 @@
 #include <QDebug>
 #include "extern-plugininfo.h"
 #include <QUrl>
+#include <QTime>
 
 Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *parent) :
     QObject(parent),
@@ -49,44 +50,11 @@ Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *par
     QVariantList properties;
     properties.append("thumbnail");
 
-    // Music
-    BrowserItem item = BrowserItem("audiolibrary", tr("Music library"), true);
-    item.setDescription(tr(""));
-    item.setIcon(BrowserItem::BrowserIconFolder);
-    VirtualFsNode *audioLibrary = new VirtualFsNode(item);
-    m_virtualFs->addChild(audioLibrary);
-
-    item = BrowserItem("artists", tr("Artists"), true);
-    item.setDescription(tr(""));
-    item.setIcon(BrowserItem::BrowserIconFolder);
-    VirtualFsNode *artists = new VirtualFsNode(item);
-    artists->getMethod = "AudioLibrary.GetArtists";
-    artists->getParams.insert("sort", sort);
-    artists->getParams.insert("properties", properties);
-    audioLibrary->addChild(artists);
-
-    item = BrowserItem("albums", tr("Albums"), true);
-    item.setDescription(tr(""));
-    item.setIcon(BrowserItem::BrowserIconFolder);
-    VirtualFsNode *albums = new VirtualFsNode(item);
-    albums->getMethod = "AudioLibrary.GetAlbums";
-    albums->getParams.insert("sort", sort);
-    albums->getParams.insert("properties", properties);
-    audioLibrary->addChild(albums);
-
-    item = BrowserItem("songs", tr("Songs"), true);
-    item.setDescription(tr(""));
-    item.setIcon(BrowserItem::BrowserIconFolder);
-    VirtualFsNode *songs = new VirtualFsNode(item);
-    songs->getMethod = "AudioLibrary.GetSongs";
-    songs->getParams.insert("sort", sort);
-    songs->getParams.insert("properties", properties);
-    audioLibrary->addChild(songs);
-
     // Video
-    item = BrowserItem("videolibrary", tr("Video library"), true);
+    BrowserItem item = BrowserItem("videolibrary", tr("Video library"), true);
     item.setDescription(tr(""));
     item.setIcon(BrowserItem::BrowserIconFolder);
+    item.setActionTypeIds({kodiUpdateLibraryBrowserItemActionTypeId, kodiCleanLibraryBrowserItemActionTypeId});
     VirtualFsNode *videoLibrary = new VirtualFsNode(item);
     m_virtualFs->addChild(videoLibrary);
 
@@ -96,7 +64,11 @@ Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *par
     VirtualFsNode *movies = new VirtualFsNode(item);
     movies->getMethod = "VideoLibrary.GetMovies";
     movies->getParams.insert("sort", sort);
-    movies->getParams.insert("properties", properties);
+    QVariantList movieProperties = properties;
+    movieProperties.append("year");
+    movieProperties.append("rating");
+    movieProperties.append("runtime");
+    movies->getParams.insert("properties", movieProperties);
     videoLibrary->addChild(movies);
 
     item = BrowserItem("tvshows", tr("TV Shows"), true);
@@ -105,7 +77,11 @@ Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *par
     VirtualFsNode *tvShows = new VirtualFsNode(item);
     tvShows->getMethod = "VideoLibrary.GetTVShows";
     tvShows->getParams.insert("sort", sort);
-    tvShows->getParams.insert("properties", properties);
+    QVariantList tvShowProperties = properties;
+    tvShowProperties.append("year");
+    tvShowProperties.append("rating");
+    tvShowProperties.append("season");
+    tvShows->getParams.insert("properties", tvShowProperties);
     videoLibrary->addChild(tvShows);
 
     item = BrowserItem("musicvideos", tr("Music Videos"), true);
@@ -117,6 +93,52 @@ Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *par
     musicVideos->getParams.insert("properties", properties);
     videoLibrary->addChild(musicVideos);
 
+    // Music
+    item = BrowserItem("audiolibrary", tr("Music library"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    item.setActionTypeIds({kodiUpdateLibraryBrowserItemActionTypeId, kodiCleanLibraryBrowserItemActionTypeId});
+    VirtualFsNode *audioLibrary = new VirtualFsNode(item);
+    m_virtualFs->addChild(audioLibrary);
+
+    item = BrowserItem("artists", tr("Artists"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *artists = new VirtualFsNode(item);
+    artists->getMethod = "AudioLibrary.GetArtists";
+    artists->getParams.insert("sort", sort);
+    QVariantList artistProperties = properties;
+    artistProperties.append("formed");
+    artistProperties.append("genre");
+    artists->getParams.insert("properties", artistProperties);
+    audioLibrary->addChild(artists);
+
+    item = BrowserItem("albums", tr("Albums"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *albums = new VirtualFsNode(item);
+    albums->getMethod = "AudioLibrary.GetAlbums";
+    albums->getParams.insert("sort", sort);
+    QVariantList albumProperties = properties;
+    albumProperties.append("artist");
+    albumProperties.append("year");
+    albums->getParams.insert("properties", albumProperties);
+    audioLibrary->addChild(albums);
+
+    item = BrowserItem("songs", tr("Songs"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *songs = new VirtualFsNode(item);
+    songs->getMethod = "AudioLibrary.GetSongs";
+    songs->getParams.insert("sort", sort);
+    QVariantList songProperties = properties;
+    songProperties.append("artist");
+    songProperties.append("album");
+    songProperties.append("year");
+    songs->getParams.insert("properties", songProperties);
+    audioLibrary->addChild(songs);
+
+    // Add-ons
     item = BrowserItem("addons", tr("Add-ons"), true);
     item.setDescription(tr(""));
     item.setIcon(BrowserItem::BrowserIconFolder);
@@ -203,10 +225,10 @@ int Kodi::setRepeat(const QString &repeat)
     return m_jsonHandler->sendData("Player.SetRepeat", params);
 }
 
-int Kodi::showNotification(const QString &message, const int &displayTime, const QString &notificationType)
+int Kodi::showNotification(const QString &title, const QString &message, const int &displayTime, const QString &notificationType)
 {
     QVariantMap params;
-    params.insert("title", "nymea notification");
+    params.insert("title", title);
     params.insert("message", message);
     params.insert("displaytime", displayTime);
     params.insert("image", notificationType);
@@ -237,34 +259,6 @@ int Kodi::systemCommand(const QString &command)
     }
 
     return m_jsonHandler->sendData("System." + method, QVariantMap());
-}
-
-int Kodi::videoLibrary(const QString &command)
-{
-    QString method;
-    if (command == "scan") {
-        method = "Scan";
-    } else if (command == "clean") {
-        method = "Clean";
-    } else {
-        // already checkt with allowed values
-    }
-
-    return m_jsonHandler->sendData("VideoLibrary." + method, QVariantMap());
-}
-
-int Kodi::audioLibrary(const QString &command)
-{
-    QString method;
-    if (command == "scan") {
-        method = "Scan";
-    } else if (command == "clean") {
-        method = "Clean";
-    } else {
-        // already checkt with allowed values
-    }
-
-    return m_jsonHandler->sendData("AudioLibrary." + method, QVariantMap());
 }
 
 void Kodi::update()
@@ -331,7 +325,10 @@ Device::BrowseResult Kodi::browse(const QString &itemId, Device::BrowseResult &r
         filter.insert("artistid", idString.toInt());
         QVariantMap params;
         params.insert("filter", filter);
-        params.insert("properties", properties);
+        QVariantList albumProperties = properties;
+        albumProperties.append("artist");
+        albumProperties.append("year");
+        params.insert("properties", albumProperties);
         int id = m_jsonHandler->sendData("AudioLibrary.GetAlbums", params);
         m_pendingBrowseRequests.insert(id, result);
         result.status = Device::DeviceErrorAsync;
@@ -345,10 +342,12 @@ Device::BrowseResult Kodi::browse(const QString &itemId, Device::BrowseResult &r
         filter.insert("albumid", idString.toInt());
         QVariantMap params;
         params.insert("filter", filter);
-        QVariantList properties;
-        properties.append("thumbnail");
-        properties.append("albumid");
-        params.insert("properties", properties);
+        QVariantList songProperties = properties;
+        songProperties.append("albumid");
+        songProperties.append("artist");
+        songProperties.append("album");
+        songProperties.append("year");
+        params.insert("properties", songProperties);
         int id = m_jsonHandler->sendData("AudioLibrary.GetSongs", params);
         m_pendingBrowseRequests.insert(id, result);
         result.status = Device::DeviceErrorAsync;
@@ -364,6 +363,7 @@ Device::BrowseResult Kodi::browse(const QString &itemId, Device::BrowseResult &r
         properties.append("tvshowid");
         properties.append("season");
         properties.append("thumbnail");
+        properties.append("showtitle");
         params.insert("properties", properties);
         int id = m_jsonHandler->sendData("VideoLibrary.GetSeasons", params);
         m_pendingBrowseRequests.insert(id, result);
@@ -380,6 +380,10 @@ Device::BrowseResult Kodi::browse(const QString &itemId, Device::BrowseResult &r
         QVariantMap params;
         params.insert("tvshowid", tvShowId);
         params.insert("season", seasonId);
+        QVariantList properties;
+        properties.append("thumbnail");
+        properties.append("showtitle");
+        properties.append("season");
         params.insert("properties", properties);
         qCDebug(dcKodi()) << "getting episodes:" << params;
         int id = m_jsonHandler->sendData("VideoLibrary.GetEpisodes", params);
@@ -505,6 +509,29 @@ Device::DeviceError Kodi::launchBrowserItem(const QString &itemId)
     return Device::DeviceErrorNoError;
 }
 
+int Kodi::executeBrowserItemAction(const QString &itemId, const ActionTypeId &actionTypeId)
+{
+    QString scope;
+    QString method;
+    if (actionTypeId == kodiUpdateLibraryBrowserItemActionTypeId) {
+        method = "Scan";
+    } else if (actionTypeId == kodiCleanLibraryBrowserItemActionTypeId) {
+        method = "Clean";
+    } else {
+        return -1;
+    }
+
+    if (itemId == "audiolibrary") {
+        scope = "AudioLibrary";
+    } else if (itemId == "videolibrary") {
+        scope = "VideoLibrary";
+    } else {
+        return -1;
+    }
+
+    return m_jsonHandler->sendData(scope + "." + method, QVariantMap());
+}
+
 void Kodi::onVolumeChanged(const int &volume, const bool &muted)
 {
     if (m_volume != volume || m_muted != muted) {
@@ -623,10 +650,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
     qCDebug(dcKodi) << "response received:" << method << response;
 
     if (response.contains("error")) {
-        //qCDebug(dcKodi) << QJsonDocument::fromVariant(response).toJson();
         qCWarning(dcKodi) << "got error response for request " << method << ":" << response.value("error").toMap().value("message").toString();
-        emit actionExecuted(id, false);
-        return;
     }
 
     if (method == "Application.GetProperties") {
@@ -661,7 +685,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
 
     if (method == "Player.SetShuffle" || method == "Player.SetRepeat") {
         updatePlayerProperties();
-        emit actionExecuted(id, true);
+        emit actionExecuted(id, !response.contains("error"));
         return;
     }
 
@@ -674,6 +698,14 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setBrowsable(true);
             item.setIcon(BrowserItem::BrowserIconFolder);
             item.setThumbnail(prepareThumbnail(artist.value("thumbnail").toString()));
+            QStringList description;
+            if (!artist.value("formed").toString().isEmpty()) {
+                description.append(artist.value("formed").toString());
+            }
+            if (!artist.value("genre").toStringList().isEmpty()) {
+                description.append(artist.value("genre").toStringList().join(", "));
+            }
+            item.setDescription(description.join(" - "));
             qCDebug(dcKodi()) << "Thumbnail" << item.thumbnail();
             result.items.append(item);
         }
@@ -689,6 +721,14 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setBrowsable(true);
             item.setIcon(BrowserItem::BrowserIconFolder);
             item.setThumbnail(prepareThumbnail(album.value("thumbnail").toString()));
+            QStringList description;
+            if (!album.value("artist").toStringList().isEmpty()) {
+                description.append(album.value("artist").toStringList().join(", "));
+            }
+            if (album.value("year").toInt() != 0) {
+                description.append(album.value("year").toString());
+            }
+            item.setDescription(description.join(" - "));
             result.items.append(item);
         }
         emit browseResult(result);
@@ -712,6 +752,16 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setExecutable(true);
             item.setIcon(BrowserItem::BrowserIconMusic);
             item.setThumbnail(prepareThumbnail(song.value("thumbnail").toString()));
+            QStringList description;
+            if (!song.value("artist").toStringList().isEmpty()) {
+                description.append(song.value("artist").toStringList().join(","));
+            }
+            if (!song.value("album").toString().isEmpty()) {
+                description.append(song.value("album").toString());
+            } else if (!song.value("year").toString().isEmpty()) {
+                description.append(song.value("year").toString());
+            }
+            item.setDescription(description.join(" - "));
             result.items.append(item);
             i++;
         }
@@ -729,6 +779,21 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setExecutable(true);
             item.setIcon(BrowserItem::BrowserIconVideo);
             item.setThumbnail(prepareThumbnail(movie.value("thumbnail").toString()));
+            QString rating;
+            for (int i = 0; i < 5; i++) {
+                if (qRound(movie.value("rating").toDouble() / 2) >= i) {
+                    rating += "★";
+                } else {
+                    rating += "☆";
+                }
+            }
+
+            int runtime = movie.value("runtime").toInt();
+            int hours = runtime / 60 / 60;
+            int minutes = (runtime / 60) % 60;
+            QString duration;
+            duration = QString("%1:%2").arg(hours).arg(minutes, 2, 10, QChar('0'));
+            item.setDescription(movie.value("year").toString() + " - " + duration + " - " + rating);
             result.items.append(item);
         }
         emit browseResult(result);
@@ -744,6 +809,15 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setBrowsable(true);
             item.setIcon(BrowserItem::BrowserIconFolder);
             item.setThumbnail(prepareThumbnail(tvShow.value("thumbnail").toString()));
+            QString rating;
+            for (int i = 0; i < 5; i++) {
+                if (qRound(tvShow.value("rating").toDouble() / 2) >= i) {
+                    rating += "★";
+                } else {
+                    rating += "☆";
+                }
+            }
+            item.setDescription(tvShow.value("year").toString() + " - " + tr("%1 seasons").arg(tvShow.value("season").toInt()) + " - " + rating);
             result.items.append(item);
         }
         emit browseResult(result);
@@ -759,6 +833,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setBrowsable(true);
             item.setIcon(BrowserItem::BrowserIconFolder);
             item.setThumbnail(prepareThumbnail(season.value("thumbnail").toString()));
+            item.setDescription(season.value("showtitle").toString());
             result.items.append(item);
         }
         emit browseResult(result);
@@ -774,6 +849,11 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setExecutable(true);
             item.setIcon(BrowserItem::BrowserIconVideo);
             item.setThumbnail(prepareThumbnail(episode.value("thumbnail").toString()));
+            if (!episode.value("season").toString().isEmpty()) {
+                item.setDescription(episode.value("showtitle").toString() + " - " + tr("Season %1").arg(episode.value("season").toString()));
+            } else {
+                item.setDescription(episode.value("showtitle").toString());
+            }
             result.items.append(item);
         }
         emit browseResult(result);
@@ -803,6 +883,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             BrowserItem item("addon:" + addon.value("addonid").toString(), addon.value("name").toString());
             item.setBrowsable(true);
             item.setIcon(BrowserItem::BrowserIconApplication);
+            item.setThumbnail(prepareThumbnail(addon.value("thumbnail").toString()));
             result.items.append(item);
         }
         emit browseResult(result);
@@ -825,6 +906,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
                 item.setExecutable(true);
                 item.setIcon(BrowserItem::BrowserIconMusic);
             }
+            item.setThumbnail(prepareThumbnail(file.value("thumbnail").toString()));
             result.items.append(item);
         }
         emit browseResult(result);
@@ -867,6 +949,16 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
         return;
     }
 
+    if (method == "GUI.ShowNotification") {
+        emit actionExecuted(id, !response.contains("error"));
+        return;
+    }
+
+    if (method == "VideoLibrary.Scan" || method == "VideoLibrary.Clean" || method == "AudioLibrary.Scan" || method == "AudioLibrary.Clean") {
+        emit browserItemActionExecuted(id, !response.contains("error"));
+        return;
+    }
+
     qCWarning(dcKodi()) << "unhandled reply" << method << response;
 }
 
@@ -896,8 +988,12 @@ QString Kodi::prepareThumbnail(const QString &thumbnail)
         return QString();
     }
 
+    QString addr = m_connection->hostAddress().toString();
+    if (m_connection->hostAddress().protocol() == QAbstractSocket::IPv6Protocol) {
+        addr = '[' + addr + ']';
+    }
     return QString("http://%1:%2/image/%3")
-                .arg(m_connection->hostAddress().toString())
+                .arg(addr)
                 .arg(m_httpPort)
                 .arg(QString(thumbnail.toUtf8().toPercentEncoding()));
 }

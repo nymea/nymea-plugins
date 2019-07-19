@@ -30,6 +30,7 @@
 #include "kodijsonhandler.h"
 
 #include "types/browseritem.h"
+#include "types/browseritemaction.h"
 #include "devices/device.h"
 
 class Kodi : public QObject
@@ -55,11 +56,9 @@ public:
     int setRepeat(const QString &repeat);
 
     // actions
-    int showNotification(const QString &message, const int &displayTime, const QString &notificationType);
+    int showNotification(const QString &title, const QString &message, const int &displayTime, const QString &notificationType);
     int pressButton(const QString &button);
     int systemCommand(const QString &command);
-    int videoLibrary(const QString &command);
-    int audioLibrary(const QString &command);
 
     void update();
     void checkVersion();
@@ -70,12 +69,13 @@ public:
     Device::BrowseResult browse(const QString &itemId, Device::BrowseResult &result);
     Device::BrowserItemResult browserItem(const QString &itemId, Device::BrowserItemResult &result);
     Device::DeviceError launchBrowserItem(const QString &itemId);
+    int executeBrowserItemAction(const QString &itemId, const ActionTypeId &actionTypeId);
 
 signals:
     void connectionStatusChanged();
     void stateChanged();
     void activePlayerChanged(const QString &playerType);
-    void actionExecuted(int actionId, const bool &success);
+    void actionExecuted(int actionId, bool success);
     void updateDataReceived(const QVariantMap &data);
     void versionDataReceived(const QVariantMap &data);
     void playbackStatusChanged(const QString &playbackState);
@@ -84,6 +84,7 @@ signals:
     void repeatChanged(const QString &repeat);
     void browseResult(const Device::BrowseResult &result);
     void browserItemResult(const Device::BrowserItemResult &result);
+    void browserItemActionExecuted(int actionId, bool success);
 
 private slots:
     void onVolumeChanged(const int &volume, const bool &muted);
