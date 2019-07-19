@@ -25,8 +25,9 @@
 #include "extern-plugininfo.h"
 #include <QUrl>
 
-Kodi::Kodi(const QHostAddress &hostAddress, const int &port, QObject *parent) :
+Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *parent) :
     QObject(parent),
+    m_httpPort(httpPort),
     m_muted(false),
     m_volume(-1)
 {
@@ -36,6 +37,113 @@ Kodi::Kodi(const QHostAddress &hostAddress, const int &port, QObject *parent) :
     m_jsonHandler = new KodiJsonHandler(m_connection, this);
     connect(m_jsonHandler, &KodiJsonHandler::notificationReceived, this, &Kodi::processNotification);
     connect(m_jsonHandler, &KodiJsonHandler::replyReceived, this, &Kodi::processResponse);
+
+
+    // Init FS
+    m_virtualFs = new VirtualFsNode(BrowserItem());
+
+    QVariantMap sort;
+    sort.insert("method", "label");
+    sort.insert("ignorearticle", true);
+
+    QVariantList properties;
+    properties.append("thumbnail");
+
+    // Music
+    BrowserItem item = BrowserItem("audiolibrary", tr("Music library"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *audioLibrary = new VirtualFsNode(item);
+    m_virtualFs->addChild(audioLibrary);
+
+    item = BrowserItem("artists", tr("Artists"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *artists = new VirtualFsNode(item);
+    artists->getMethod = "AudioLibrary.GetArtists";
+    artists->getParams.insert("sort", sort);
+    artists->getParams.insert("properties", properties);
+    audioLibrary->addChild(artists);
+
+    item = BrowserItem("albums", tr("Albums"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *albums = new VirtualFsNode(item);
+    albums->getMethod = "AudioLibrary.GetAlbums";
+    albums->getParams.insert("sort", sort);
+    albums->getParams.insert("properties", properties);
+    audioLibrary->addChild(albums);
+
+    item = BrowserItem("songs", tr("Songs"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *songs = new VirtualFsNode(item);
+    songs->getMethod = "AudioLibrary.GetSongs";
+    songs->getParams.insert("sort", sort);
+    songs->getParams.insert("properties", properties);
+    audioLibrary->addChild(songs);
+
+    // Video
+    item = BrowserItem("videolibrary", tr("Video library"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *videoLibrary = new VirtualFsNode(item);
+    m_virtualFs->addChild(videoLibrary);
+
+    item = BrowserItem("movies", tr("Movies"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *movies = new VirtualFsNode(item);
+    movies->getMethod = "VideoLibrary.GetMovies";
+    movies->getParams.insert("sort", sort);
+    movies->getParams.insert("properties", properties);
+    videoLibrary->addChild(movies);
+
+    item = BrowserItem("tvshows", tr("TV Shows"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *tvShows = new VirtualFsNode(item);
+    tvShows->getMethod = "VideoLibrary.GetTVShows";
+    tvShows->getParams.insert("sort", sort);
+    tvShows->getParams.insert("properties", properties);
+    videoLibrary->addChild(tvShows);
+
+    item = BrowserItem("musicvideos", tr("Music Videos"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *musicVideos = new VirtualFsNode(item);
+    musicVideos->getMethod = "VideoLibrary.GetMusicVideos";
+    musicVideos->getParams.insert("sort", sort);
+    musicVideos->getParams.insert("properties", properties);
+    videoLibrary->addChild(musicVideos);
+
+    item = BrowserItem("addons", tr("Add-ons"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *addons = new VirtualFsNode(item);
+    m_virtualFs->addChild(addons);
+
+    item = BrowserItem("videoaddons", tr("Video add-ons"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *videoAddons = new VirtualFsNode(item);
+    videoAddons->getMethod = "Files.GetDirectory";
+    videoAddons->getParams.insert("directory", "addons://sources/video");
+    videoAddons->getParams.insert("sort", sort);
+    videoAddons->getParams.insert("properties", properties);
+    addons->addChild(videoAddons);
+
+    item = BrowserItem("musicaddons", tr("Music add-ons"), true);
+    item.setDescription(tr(""));
+    item.setIcon(BrowserItem::BrowserIconFolder);
+    VirtualFsNode *musicAddons = new VirtualFsNode(item);
+    musicAddons->getMethod = "Files.GetDirectory";
+    musicAddons->getParams.insert("directory", "addons://sources/audio");
+    musicAddons->getParams.insert("sort", sort);
+    musicAddons->getParams.insert("properties", properties);
+    addons->addChild(musicAddons);
+
+
 }
 
 QHostAddress Kodi::hostAddress() const
@@ -188,6 +296,213 @@ void Kodi::connectKodi()
 void Kodi::disconnectKodi()
 {
     m_connection->disconnectKodi();
+}
+
+Device::BrowseResult Kodi::browse(const QString &itemId, Device::BrowseResult &result)
+{
+//    m_jsonHandler->sendData()
+    VirtualFsNode *node = m_virtualFs->findNode(itemId);
+
+    if (node) {
+        if (node->getMethod.isEmpty()) {
+            foreach (VirtualFsNode *child, node->childs) {
+                result.items.append(child->item);
+            }
+            return result;
+        }
+
+        qCDebug(dcKodi()) << "Sending:" << node->getMethod << node->getParams;
+        int id = m_jsonHandler->sendData(node->getMethod, node->getParams);
+        m_pendingBrowseRequests.insert(id, result);
+        result.status = Device::DeviceErrorAsync;
+        return result;
+    }
+
+    QVariantMap sort;
+    sort.insert("method", "label");
+    sort.insert("ignorearticle", true);
+    QVariantList properties;
+    properties.append("thumbnail");
+
+    if (itemId.startsWith("artist:")) {
+        QString idString = itemId;
+        idString.remove(QRegExp("^artist:"));
+        QVariantMap filter;
+        filter.insert("artistid", idString.toInt());
+        QVariantMap params;
+        params.insert("filter", filter);
+        params.insert("properties", properties);
+        int id = m_jsonHandler->sendData("AudioLibrary.GetAlbums", params);
+        m_pendingBrowseRequests.insert(id, result);
+        result.status = Device::DeviceErrorAsync;
+        return result;
+    }
+
+    if (itemId.startsWith("album:")) {
+        QString idString = itemId;
+        idString.remove(QRegExp("^album:"));
+        QVariantMap filter;
+        filter.insert("albumid", idString.toInt());
+        QVariantMap params;
+        params.insert("filter", filter);
+        QVariantList properties;
+        properties.append("thumbnail");
+        properties.append("albumid");
+        params.insert("properties", properties);
+        int id = m_jsonHandler->sendData("AudioLibrary.GetSongs", params);
+        m_pendingBrowseRequests.insert(id, result);
+        result.status = Device::DeviceErrorAsync;
+        return result;
+    }
+
+    if (itemId.startsWith("tvshow:")) {
+        QString idString = itemId;
+        idString.remove(QRegExp("^tvshow:"));
+        QVariantMap params;
+        params.insert("tvshowid", idString.toInt());
+        QVariantList properties;
+        properties.append("tvshowid");
+        properties.append("season");
+        properties.append("thumbnail");
+        params.insert("properties", properties);
+        int id = m_jsonHandler->sendData("VideoLibrary.GetSeasons", params);
+        m_pendingBrowseRequests.insert(id, result);
+        result.status = Device::DeviceErrorAsync;
+        return result;
+    }
+
+    if (itemId.startsWith("season:")) {
+        QString idString = itemId;
+        idString.remove(QRegExp("^season:"));
+        int seasonId = idString.left(idString.indexOf(",")).toInt();
+        idString.remove(QRegExp("^[0-9]*,tvshow:"));
+        int tvShowId = idString.toInt();
+        QVariantMap params;
+        params.insert("tvshowid", tvShowId);
+        params.insert("season", seasonId);
+        params.insert("properties", properties);
+        qCDebug(dcKodi()) << "getting episodes:" << params;
+        int id = m_jsonHandler->sendData("VideoLibrary.GetEpisodes", params);
+        m_pendingBrowseRequests.insert(id, result);
+        result.status = Device::DeviceErrorAsync;
+        return result;
+    }
+
+    if (itemId.startsWith("addon:")) {
+        QString idString = itemId;
+        idString.remove(QRegExp("^addon:"));
+        QVariantMap params;
+        params.insert("directory", "plugin://" + idString);
+//        QVariantList properties;
+//        properties.append("tvshowid");
+//        properties.append("season");
+//        params.insert("properties", properties);
+        qCDebug(dcKodi()) << "Sending" << params;
+        int id = m_jsonHandler->sendData("Files.GetDirectory", params);
+        m_pendingBrowseRequests.insert(id, result);
+        result.status = Device::DeviceErrorAsync;
+        return result;
+    }
+
+    if (itemId.startsWith("file:")) {
+        QString idString = itemId;
+        idString.remove(QRegExp("^file:"));
+        QVariantMap params;
+        params.insert("directory", idString);
+        params.insert("properties", properties);
+        qCDebug(dcKodi()) << "Sending" << params;
+        int id = m_jsonHandler->sendData("Files.GetDirectory", params);
+        m_pendingBrowseRequests.insert(id, result);
+        result.status = Device::DeviceErrorAsync;
+        return result;
+    }
+
+    result.status = Device::DeviceErrorItemNotFound;
+    return result;
+}
+
+Device::BrowserItemResult Kodi::browserItem(const QString &itemId, Device::BrowserItemResult &result)
+{
+    qCDebug(dcKodi()) << "Getting details for" << itemId;
+    QString idString = itemId;
+    QString method;
+    QVariantMap params;
+    if (idString.startsWith("song:")) {
+        idString.remove(QRegExp("^song:"));
+        params.insert("songid", idString.toInt());
+        method = "AudioLibrary.GetSongDetails";
+    } else if (idString.startsWith("movie:")) {
+        idString.remove(QRegExp("^movie:"));
+        params.insert("movieid", idString.toInt());
+        method = "VideoLibrary.GetMovieDetails";
+    } else if (idString.startsWith("episode:")) {
+        idString.remove(QRegExp("^episode:"));
+        params.insert("episodeid", idString.toInt());
+        method = "VideoLibrary.GetEpisodeDetails";
+    } else if (idString.startsWith("musicvideo:")) {
+        idString.remove(QRegExp("^musicvideo:"));
+        params.insert("musicvideoid", idString.toInt());
+        method = "VideoLibrary.GetMusicVideoDetails";
+    } else {
+        qCWarning(dcKodi()) << "Unhandled browserItem request!" << itemId;
+        result.status = Device::DeviceErrorUnsupportedFeature;
+        return result;
+    }
+    int id = m_jsonHandler->sendData(method, params);
+    m_pendingBrowserItemRequests.insert(id, result);
+    result.status = Device::DeviceErrorAsync;
+    return result;
+}
+
+Device::DeviceError Kodi::launchBrowserItem(const QString &itemId)
+{
+    qCDebug(dcKodi()) << "Launching" << itemId;
+    QVariantMap playlistItem;
+
+    QString idString = itemId;
+    if (idString.startsWith("song:")) {
+        idString.remove(QRegExp("^song:"));
+        int idx = idString.indexOf(",album:");
+        if (idx > 0) {
+            int position = idString.left(idx).toInt();
+            idString.remove(QRegExp("^[0-9]*,album:"));
+            int albumId = idString.toInt();
+
+            QVariantMap params;
+            params.insert("playlistid", 0);
+            m_jsonHandler->sendData("Playlist.Clear", params);
+
+            QVariantMap item;
+            item.insert("albumid", albumId);
+            params.insert("item", item);
+            m_jsonHandler->sendData("Playlist.Add", params);
+
+            playlistItem.insert("playlistid", 0);
+            playlistItem.insert("position", position);
+
+        } else {
+            playlistItem.insert("songid", idString.toInt());
+        }
+    } else if (idString.startsWith("movie:")) {
+        idString.remove(QRegExp("^movie:"));
+        playlistItem.insert("movieid", idString.toInt());
+    } else if (idString.startsWith("episode:")) {
+        idString.remove(QRegExp("^episode:"));
+        playlistItem.insert("episodeid", idString.toInt());
+    } else if (idString.startsWith("file:")) {
+        idString.remove(QRegExp("^file:"));
+        playlistItem.insert("file", idString);
+    } else {
+        qCWarning(dcKodi()) << "Unhandled launchBrowserItem request!" << itemId;
+        return Device::DeviceErrorItemNotFound;
+    }
+    QVariantMap params;
+    params.clear();
+    params.insert("item", playlistItem);
+
+    qCDebug(dcKodi()) << "Player.Open" << params;
+    m_jsonHandler->sendData("Player.Open", params);
+    return Device::DeviceErrorNoError;
 }
 
 void Kodi::onVolumeChanged(const int &volume, const bool &muted)
@@ -346,11 +661,213 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
 
     if (method == "Player.SetShuffle" || method == "Player.SetRepeat") {
         updatePlayerProperties();
+        emit actionExecuted(id, true);
+        return;
     }
 
-    emit actionExecuted(id, true);
+    if (method == "AudioLibrary.GetArtists") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &artistVariant, response.value("result").toMap().value("artists").toList()) {
+            QVariantMap artist = artistVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << artist;
+            BrowserItem item("artist:" + artist.value("artistid").toString(), artist.value("label").toString());
+            item.setBrowsable(true);
+            item.setIcon(BrowserItem::BrowserIconFolder);
+            item.setThumbnail(prepareThumbnail(artist.value("thumbnail").toString()));
+            qCDebug(dcKodi()) << "Thumbnail" << item.thumbnail();
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
 
-    qCDebug(dcKodi()) << "unhandled reply" << method << response;
+    if (method == "AudioLibrary.GetAlbums") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &albumVariant, response.value("result").toMap().value("albums").toList()) {
+            QVariantMap album = albumVariant.toMap();
+            BrowserItem item("album:" + album.value("albumid").toString(), album.value("label").toString());
+            item.setBrowsable(true);
+            item.setIcon(BrowserItem::BrowserIconFolder);
+            item.setThumbnail(prepareThumbnail(album.value("thumbnail").toString()));
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
+
+    if (method == "AudioLibrary.GetSongs") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        int i = 0;
+        foreach (const QVariant &songVariant, response.value("result").toMap().value("songs").toList()) {
+            QVariantMap song = songVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << song;
+            QString newId = "song:";
+            if (song.contains("albumid")) {
+                newId += QString::number(i);
+                newId += ",album:" + song.value("albumid").toString();
+            } else {
+                newId += song.value("songid").toString();
+            }
+            BrowserItem item(newId, song.value("label").toString());
+            item.setExecutable(true);
+            item.setIcon(BrowserItem::BrowserIconMusic);
+            item.setThumbnail(prepareThumbnail(song.value("thumbnail").toString()));
+            result.items.append(item);
+            i++;
+        }
+        emit browseResult(result);
+        return;
+    }
+
+
+    if (method == "VideoLibrary.GetMovies") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &movieVariant, response.value("result").toMap().value("movies").toList()) {
+            QVariantMap movie = movieVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << movie;
+            BrowserItem item("movie:" + movie.value("movieid").toString(), movie.value("label").toString());
+            item.setExecutable(true);
+            item.setIcon(BrowserItem::BrowserIconVideo);
+            item.setThumbnail(prepareThumbnail(movie.value("thumbnail").toString()));
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
+
+    if (method == "VideoLibrary.GetTVShows") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &tvShowVariant, response.value("result").toMap().value("tvshows").toList()) {
+            QVariantMap tvShow = tvShowVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << tvShow;
+            BrowserItem item("tvshow:" + tvShow.value("tvshowid").toString(), tvShow.value("label").toString());
+            item.setBrowsable(true);
+            item.setIcon(BrowserItem::BrowserIconFolder);
+            item.setThumbnail(prepareThumbnail(tvShow.value("thumbnail").toString()));
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
+
+    if (method == "VideoLibrary.GetSeasons") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &seasonVariant, response.value("result").toMap().value("seasons").toList()) {
+            QVariantMap season = seasonVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << season;
+            BrowserItem item("season:" + season.value("season").toString() + ",tvshow:" + season.value("tvshowid").toString(), season.value("label").toString());
+            item.setBrowsable(true);
+            item.setIcon(BrowserItem::BrowserIconFolder);
+            item.setThumbnail(prepareThumbnail(season.value("thumbnail").toString()));
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
+
+    if (method == "VideoLibrary.GetEpisodes") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &episodeVariant, response.value("result").toMap().value("episodes").toList()) {
+            QVariantMap episode = episodeVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << episode;
+            BrowserItem item("episode:" + episode.value("episodeid").toString(), episode.value("label").toString());
+            item.setExecutable(true);
+            item.setIcon(BrowserItem::BrowserIconVideo);
+            item.setThumbnail(prepareThumbnail(episode.value("thumbnail").toString()));
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
+
+    if (method == "VideoLibrary.GetMusicVideos") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &musicVideoVariant, response.value("result").toMap().value("musicvideos").toList()) {
+            QVariantMap musicVideo = musicVideoVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << musicVideo;
+            BrowserItem item("musicvideo:" + musicVideo.value("musicvideoid").toString(), musicVideo.value("label").toString());
+            item.setExecutable(true);
+            item.setIcon(BrowserItem::BrowserIconVideo);
+            item.setThumbnail(prepareThumbnail(musicVideo.value("thumbnail").toString()));
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
+
+    if (method == "Addons.GetAddons") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &addonVariant, response.value("result").toMap().value("addons").toList()) {
+            QVariantMap addon = addonVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << addon;
+            BrowserItem item("addon:" + addon.value("addonid").toString(), addon.value("name").toString());
+            item.setBrowsable(true);
+            item.setIcon(BrowserItem::BrowserIconApplication);
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
+
+    if (method == "Files.GetDirectory") {
+        Device::BrowseResult result = m_pendingBrowseRequests.take(id);
+        foreach (const QVariant &fileVariant, response.value("result").toMap().value("files").toList()) {
+            QVariantMap file = fileVariant.toMap();
+            qCDebug(dcKodi()) << "Entry:" << file;
+            BrowserItem item("file:" + file.value("file").toString(), file.value("label").toString());
+            if (file.value("type").toString() == "directory" || file.value("type").toString() == "unknown") {
+                item.setBrowsable(true);
+                item.setIcon(BrowserItem::BrowserIconFolder);
+            } else if (file.value("type").toString() == "episode" || file.value("type").toString() == "movie") {
+                item.setExecutable(true);
+                item.setIcon(BrowserItem::BrowserIconVideo);
+            } else if (file.value("type").toString() == "song") {
+                item.setExecutable(true);
+                item.setIcon(BrowserItem::BrowserIconMusic);
+            }
+            result.items.append(item);
+        }
+        emit browseResult(result);
+        return;
+    }
+
+    if (method == "AudioLibrary.GetSongDetails") {
+        Device::BrowserItemResult result = m_pendingBrowserItemRequests.take(id);
+        result.item.setId("song:" + response.value("result").toMap().value("songdetails").toMap().value("songid").toString());
+        result.item.setDisplayName(response.value("result").toMap().value("songdetails").toMap().value("label").toString());
+        qCDebug(dcKodi()) << "Song details:" << result.item.displayName();
+        emit browserItemResult(result);
+        return;
+    }
+
+    if (method == "VideoLibrary.GetMovieDetails") {
+        Device::BrowserItemResult result = m_pendingBrowserItemRequests.take(id);
+        result.item.setId("movie:" + response.value("result").toMap().value("moviedetails").toMap().value("movieid").toString());
+        result.item.setDisplayName(response.value("result").toMap().value("moviedetails").toMap().value("label").toString());
+        qCDebug(dcKodi()) << "Movie details:" << result.item.displayName();
+        emit browserItemResult(result);
+        return;
+    }
+
+    if (method == "VideoLibrary.GetEpisodeDetails") {
+        Device::BrowserItemResult result = m_pendingBrowserItemRequests.take(id);
+        result.item.setId("movie:" + response.value("result").toMap().value("episodedetails").toMap().value("episodeid").toString());
+        result.item.setDisplayName(response.value("result").toMap().value("episodedetails").toMap().value("label").toString());
+        qCDebug(dcKodi()) << "Episode details:" << result.item.displayName();
+        emit browserItemResult(result);
+        return;
+    }
+
+    if (method == "VideoLibrary.GetMusicVideoDetails") {
+        Device::BrowserItemResult result = m_pendingBrowserItemRequests.take(id);
+        result.item.setId("movie:" + response.value("result").toMap().value("musicvideodetails").toMap().value("musicvideoid").toString());
+        result.item.setDisplayName(response.value("result").toMap().value("musicvideodetails").toMap().value("label").toString());
+        qCDebug(dcKodi()) << "Episode details:" << result.item.displayName();
+        emit browserItemResult(result);
+        return;
+    }
+
+    qCWarning(dcKodi()) << "unhandled reply" << method << response;
 }
 
 void Kodi::updatePlayerProperties()
@@ -371,4 +888,16 @@ void Kodi::updateMetadata()
     fields << "title" << "artist" << "album" << "director" << "thumbnail" << "showtitle" << "fanart" << "channel" << "year";
     params.insert("properties", fields);
     m_jsonHandler->sendData("Player.GetItem", params);
+}
+
+QString Kodi::prepareThumbnail(const QString &thumbnail)
+{
+    if (thumbnail.isEmpty()) {
+        return QString();
+    }
+
+    return QString("http://%1:%2/image/%3")
+                .arg(m_connection->hostAddress().toString())
+                .arg(m_httpPort)
+                .arg(QString(thumbnail.toUtf8().toPercentEncoding()));
 }

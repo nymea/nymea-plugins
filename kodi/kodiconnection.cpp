@@ -26,7 +26,7 @@
 
 #include <QPixmap>
 
-KodiConnection::KodiConnection(const QHostAddress &hostAddress, const int &port, QObject *parent) :
+KodiConnection::KodiConnection(const QHostAddress &hostAddress, int port, QObject *parent) :
     QObject(parent),
     m_hostAddress(hostAddress),
     m_port(port),

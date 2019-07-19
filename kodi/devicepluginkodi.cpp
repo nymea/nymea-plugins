@@ -63,7 +63,10 @@ void DevicePluginKodi::init()
 Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
 {
     qCDebug(dcKodi) << "Setup Kodi device" << device->paramValue(kodiDeviceIpParamTypeId).toString();
-    Kodi *kodi= new Kodi(QHostAddress(device->paramValue(kodiDeviceIpParamTypeId).toString()), 9090, this);
+    QString ipString = device->paramValue(kodiDeviceIpParamTypeId).toString();
+    int port = device->paramValue(kodiDevicePortParamTypeId).toInt();
+    int httpPort = device->paramValue(kodiDeviceHttpPortParamTypeId).toInt();
+    Kodi *kodi= new Kodi(QHostAddress(ipString), port, httpPort, this);
 
     connect(kodi, &Kodi::connectionStatusChanged, this, &DevicePluginKodi::onConnectionChanged);
     connect(kodi, &Kodi::stateChanged, this, &DevicePluginKodi::onStateChanged);
@@ -71,6 +74,8 @@ Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
     connect(kodi, &Kodi::versionDataReceived, this, &DevicePluginKodi::versionDataReceived);
     connect(kodi, &Kodi::updateDataReceived, this, &DevicePluginKodi::onSetupFinished);
     connect(kodi, &Kodi::playbackStatusChanged, this, &DevicePluginKodi::onPlaybackStatusChanged);
+    connect(kodi, &Kodi::browseResult, this, &DevicePluginKodi::browseRequestFinished);
+    connect(kodi, &Kodi::browserItemResult, this, &DevicePluginKodi::browserItemRequestFinished);
 
     connect(kodi, &Kodi::activePlayerChanged, device, [device](const QString &playerType){
         device->setStateValue(kodiPlayerTypeStateTypeId, playerType);
@@ -105,7 +110,10 @@ Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
         connect(reply, &QNetworkReply::finished, device, [device, reply, addr](){
             reply->deleteLater();
             QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-            device->setStateValue(kodiArtworkStateTypeId, "http://" + addr + ":8080/" + jsonDoc.toVariant().toMap().value("result").toMap().value("details").toMap().value("path").toString());
+            QString fileUrl = "http://" + addr + ":8080/" + jsonDoc.toVariant().toMap().value("result").toMap().value("details").toMap().value("path").toString();
+            qCDebug(dcKodi()) << "DL result:" << jsonDoc.toJson();
+            qCDebug(dcKodi()) << "Resolved url:" << fileUrl;
+            device->setStateValue(kodiArtworkStateTypeId, fileUrl);
         });
 
     });
@@ -220,6 +228,43 @@ Device::DeviceError DevicePluginKodi::executeAction(Device *device, const Action
         return Device::DeviceErrorAsync;
     }
     return Device::DeviceErrorDeviceClassNotFound;
+}
+
+Device::BrowseResult DevicePluginKodi::browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale)
+{
+    Q_UNUSED(locale)
+
+    Kodi *kodi = m_kodis.key(device);
+    if (!kodi) {
+        result.status = Device::DeviceErrorHardwareNotAvailable;
+        return result;
+    }
+
+    return kodi->browse(itemId, result);
+}
+
+Device::BrowserItemResult DevicePluginKodi::browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale)
+{
+    Q_UNUSED(locale)
+
+    Kodi *kodi = m_kodis.key(device);
+    if (!kodi) {
+        result.status = Device::DeviceErrorHardwareNotAvailable;
+        return result;
+    }
+
+    return kodi->browserItem(itemId, result);
+
+}
+
+Device::DeviceError DevicePluginKodi::executeBrowserItem(Device *device, const BrowserAction &browserAction)
+{
+    Kodi *kodi = m_kodis.key(device);
+    if (!kodi) {
+        return Device::DeviceErrorHardwareNotAvailable;
+    }
+
+    return kodi->launchBrowserItem(browserAction.itemId());
 }
 
 void DevicePluginKodi::onPluginTimer()

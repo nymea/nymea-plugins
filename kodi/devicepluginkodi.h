@@ -47,6 +47,11 @@ public:
     Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
+    Device::BrowseResult browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale) override;
+    Device::BrowserItemResult browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale) override;
+    Device::DeviceError executeBrowserItem(Device *device, const BrowserAction &browserAction) override;
+//    Device::DeviceError executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction) override;
+
 private:
     PluginTimer *m_pluginTimer;
     QHash<Kodi *, Device *> m_kodis;
