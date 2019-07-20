@@ -57,7 +57,7 @@ public:
 
     // actions
     int showNotification(const QString &title, const QString &message, const int &displayTime, const QString &notificationType);
-    int pressButton(const QString &button);
+    int navigate(const QString &to);
     int systemCommand(const QString &command);
 
     void update();

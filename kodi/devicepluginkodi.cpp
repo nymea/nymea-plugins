@@ -242,24 +242,24 @@ Device::DeviceError DevicePluginKodi::executeAction(Device *device, const Action
             commandId = kodi->setVolume(action.param(kodiVolumeActionVolumeParamTypeId).value().toInt());
         } else if (action.actionTypeId() == kodiMuteActionTypeId) {
             commandId = kodi->setMuted(action.param(kodiMuteActionMuteParamTypeId).value().toBool());
-        } else if (action.actionTypeId() == kodiPressButtonActionTypeId) {
-            commandId = kodi->pressButton(action.param(kodiPressButtonActionButtonParamTypeId).value().toString());
+        } else if (action.actionTypeId() == kodiNavigateActionTypeId) {
+            commandId = kodi->navigate(action.param(kodiNavigateActionToParamTypeId).value().toString());
         } else if (action.actionTypeId() == kodiSystemActionTypeId) {
             commandId = kodi->systemCommand(action.param(kodiSystemActionSystemCommandParamTypeId).value().toString());
         } else if(action.actionTypeId() == kodiSkipBackActionTypeId) {
-            commandId = kodi->pressButton("skipprevious");
+            commandId = kodi->navigate("skipprevious");
         } else if(action.actionTypeId() == kodiFastRewindActionTypeId) {
-            commandId = kodi->pressButton("rewind");
+            commandId = kodi->navigate("rewind");
         } else if(action.actionTypeId() == kodiStopActionTypeId) {
-            commandId = kodi->pressButton("stop");
+            commandId = kodi->navigate("stop");
         } else if(action.actionTypeId() == kodiPlayActionTypeId) {
-            commandId = kodi->pressButton("play");
+            commandId = kodi->navigate("play");
         } else if(action.actionTypeId() == kodiPauseActionTypeId) {
-            commandId = kodi->pressButton("pause");
+            commandId = kodi->navigate("pause");
         } else if(action.actionTypeId() == kodiFastForwardActionTypeId) {
-            commandId = kodi->pressButton("fastforward");
+            commandId = kodi->navigate("fastforward");
         } else if(action.actionTypeId() == kodiSkipNextActionTypeId) {
-            commandId = kodi->pressButton("skipnext");
+            commandId = kodi->navigate("skipnext");
         } else if (action.actionTypeId() == kodiShuffleActionTypeId) {
             commandId = kodi->setShuffle(action.param(kodiShuffleActionShuffleParamTypeId).value().toBool());
         } else if (action.actionTypeId() == kodiRepeatActionTypeId) {

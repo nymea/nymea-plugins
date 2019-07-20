@@ -236,10 +236,19 @@ int Kodi::showNotification(const QString &title, const QString &message, const i
     return m_jsonHandler->sendData("GUI.ShowNotification", params);
 }
 
-int Kodi::pressButton(const QString &button)
+int Kodi::navigate(const QString &to)
 {
+    qCDebug(dcKodi()) << "Navigate:" << to;
+    if (to == "home") {
+        return m_jsonHandler->sendData("Input.Home", QVariantMap());
+    }
+
     QVariantMap params;
-    params.insert("action", button);
+    QString mappedTo = to;
+    if (to == "enter") {
+        mappedTo = "select";
+    }
+    params.insert("action", mappedTo);
     return m_jsonHandler->sendData("Input.ExecuteAction", params);
 }
 
@@ -949,7 +958,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
         return;
     }
 
-    if (method == "GUI.ShowNotification") {
+    if (method == "GUI.ShowNotification" || method == "Input.ExecuteAction") {
         emit actionExecuted(id, !response.contains("error"));
         return;
     }
