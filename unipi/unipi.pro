@@ -15,7 +15,6 @@ SOURCES += \
     mcp23008.cpp \
     i2cport.cpp \
     unipi.cpp \
-    gpiodescriptor.cpp \
     mcp3422.cpp
 
 HEADERS += \
@@ -25,7 +24,6 @@ HEADERS += \
     mcp23008.h \
     i2cport.h \
     unipi.h \
-    gpiodescriptor.h \
     i2cport_p.h \
     mcp3422.h
 

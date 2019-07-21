@@ -63,7 +63,6 @@ public:
     QList<QString> analogOutputs();
 
 private:
-    QList<GpioDescriptor> raspberryPiGpioDescriptors();
     UniPiType m_unipiType = UniPiType::UniPi1;
     MCP23008 *m_mcp23008 = nullptr;
     MCP3422 *m_mcp3422 = nullptr;

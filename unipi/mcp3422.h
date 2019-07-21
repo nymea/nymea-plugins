@@ -32,8 +32,17 @@ class MCP3422 : public QThread
 {
     Q_OBJECT
 public:
-    explicit MCP3422(const QString &i2cPortName, int i2cAddress = 0x48, QObject *parent = nullptr);
+    enum Channel {
+        Channel1 = 0x00,
+        Channel2 = 0x01,
+    };
+    Q_ENUM(Channel)
+
+    explicit MCP3422(const QString &i2cPortName, int i2cAddress = 0x68, QObject *parent = nullptr);
     ~MCP3422() override;
+
+    double getChannelVoltage(Channel channel);
+  int getChannelValue(Channel channel);
 
 protected:
     void run() override;
@@ -45,7 +54,11 @@ private:
     QMutex m_stopMutex;
     bool m_stop = false;
     QMutex m_valueMutex;
-    int m_fileDescriptor = -1;
+
+    int m_channel1Value = 0;
+    int m_channel2Value = 0;
+
+    int readInputValue(int fd, Channel channel);
 
 public slots:
     bool enable();

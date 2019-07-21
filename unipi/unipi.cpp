@@ -254,50 +254,16 @@ int UniPi::getPinFromCircuit(const QString &circuit)
     if (circuit.startsWith("AI")) { //MCP3422 analog input channels
         switch (circuit.mid(2, 2).toInt()) {
         case 1:
-            pin = 1; //TODO
+            pin = 1; //MCP3422 Channel 1
             break;
         case 2:
-            pin = 2; //TODO
+            pin = 2; //MCP3422 Channel 2
             break;
         default:
             return 0;
         }
     }
     return pin;
-}
-
-
-QList<GpioDescriptor> UniPi::raspberryPiGpioDescriptors()
-{
-    // Note: http://www.raspberrypi-spy.co.uk/wp-content/uploads/2012/06/Raspberry-Pi-GPIO-Layout-Model-B-Plus-rotated-2700x900.png
-    QList<GpioDescriptor> gpioDescriptors;
-    gpioDescriptors << GpioDescriptor(2, 3, "SDA1_I2C");
-    gpioDescriptors << GpioDescriptor(3, 5, "SCL1_I2C");
-    gpioDescriptors << GpioDescriptor(4, 7);
-    gpioDescriptors << GpioDescriptor(5, 29);
-    gpioDescriptors << GpioDescriptor(6, 31);
-    gpioDescriptors << GpioDescriptor(7, 26, "SPI0_CE1_N");
-    gpioDescriptors << GpioDescriptor(8, 24, "SPI0_CE0_N");
-    gpioDescriptors << GpioDescriptor(9, 21, "SPI0_MISO");
-    gpioDescriptors << GpioDescriptor(10, 19, "SPI0_MOSI");
-    gpioDescriptors << GpioDescriptor(11, 23, "SPI0_SCLK");
-    gpioDescriptors << GpioDescriptor(12, 32);
-    gpioDescriptors << GpioDescriptor(13, 33);
-    gpioDescriptors << GpioDescriptor(14, 8, "UART0_TXD");
-    gpioDescriptors << GpioDescriptor(15, 10, "UART0_RXD");
-    gpioDescriptors << GpioDescriptor(16, 36);
-    gpioDescriptors << GpioDescriptor(17, 11);
-    gpioDescriptors << GpioDescriptor(18, 12, "PCM_CLK");
-    gpioDescriptors << GpioDescriptor(19, 35);
-    gpioDescriptors << GpioDescriptor(20, 38);
-    gpioDescriptors << GpioDescriptor(21, 40);
-    gpioDescriptors << GpioDescriptor(22, 15);
-    gpioDescriptors << GpioDescriptor(23, 16);
-    gpioDescriptors << GpioDescriptor(24, 18);
-    gpioDescriptors << GpioDescriptor(25, 22);
-    gpioDescriptors << GpioDescriptor(26, 37);
-    gpioDescriptors << GpioDescriptor(27, 13);
-    return gpioDescriptors;
 }
 
 bool UniPi::setDigitalOutput(const QString &circuit, bool status)
@@ -387,10 +353,20 @@ bool UniPi::getAnalogOutput(const QString &circuit)
 
 bool UniPi::getAnalogInput(const QString &circuit)
 {
-    Q_UNUSED(circuit)
-    //
+    int pin = getPinFromCircuit(circuit);
+    if (pin == 0) {
+        qWarning(dcUniPi()) << "Out of range pin number";
+        return false;
+    }
 
-    emit analogInputStatusChanged(circuit, 10.00);
+    double voltage;
+    if (pin == 1) {
+        voltage= m_mcp3422->getChannelValue(MCP3422::Channel1);
+    } else {
+        voltage= m_mcp3422->getChannelValue(MCP3422::Channel2);
+    }
+
+    emit analogInputStatusChanged(circuit, voltage);
     return false;
 }
 
