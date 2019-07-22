@@ -1,6 +1,6 @@
 # GPIO
 
-This plugin allowes to control GPIOs on different boards.
+This plugin allows to control GPIOs on different boards.
 
 ## Raspberry Pi 2/3
 
