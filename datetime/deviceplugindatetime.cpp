@@ -22,8 +22,7 @@
 
 #include "deviceplugindatetime.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "hardwaremanager.h"
 #include "network/networkaccessmanager.h"
@@ -49,19 +48,19 @@ DevicePluginDateTime::DevicePluginDateTime() :
     connect(m_timer, &QTimer::timeout, this, &DevicePluginDateTime::onSecondChanged);
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *device)
 {
     // check timezone
     if(!m_timeZone.isValid()){
         qCWarning(dcDateTime) << "Invalid time zone.";
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
     }
 
     // date
     if (device->deviceClassId() == todayDeviceClassId) {
         if (m_todayDevice != 0) {
             qCWarning(dcDateTime) << "There is already a date device or not deleted correctly! this should never happen!!";
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
         m_todayDevice = device;
         qCDebug(dcDateTime) << "Create today device: current time" << m_currentDateTime.currentDateTime().toString();
@@ -109,7 +108,7 @@ DeviceManager::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *devic
 
     m_timer->start();
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginDateTime::postSetupDevice(Device *device)
@@ -150,23 +149,23 @@ void DevicePluginDateTime::deviceRemoved(Device *device)
     //startMonitoringAutoDevices();
 }
 
-DeviceManager::DeviceError DevicePluginDateTime::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginDateTime::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == countdownDeviceClassId) {
         Countdown *countdown = m_countdowns.value(device);
         if (action.actionTypeId() == countdownStartActionTypeId) {
             countdown->start();
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == countdownRestartActionTypeId) {
             countdown->restart();
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == countdownStopActionTypeId) {
             countdown->stop();
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }
 
 void DevicePluginDateTime::startMonitoringAutoDevices()

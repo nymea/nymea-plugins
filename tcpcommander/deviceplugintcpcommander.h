@@ -21,8 +21,7 @@
 #ifndef DEVICEPLUGINDEVTCPCOMMANDER_H
 #define DEVICEPLUGINDEVTCPCOMMANDER_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
 #include "tcpserver.h"
 
 class DevicePluginTcpCommander : public DevicePlugin
@@ -35,11 +34,11 @@ class DevicePluginTcpCommander : public DevicePlugin
 public:
     explicit DevicePluginTcpCommander();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
 
     void deviceRemoved(Device *device) override;
 
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     QHash<QTcpSocket *, Device *> m_tcpSockets;

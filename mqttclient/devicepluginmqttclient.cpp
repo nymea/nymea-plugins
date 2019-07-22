@@ -21,7 +21,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "devicepluginmqttclient.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "network/mqtt/mqttprovider.h"
 
@@ -32,7 +32,7 @@ DevicePluginMqttClient::DevicePluginMqttClient()
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginMqttClient::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginMqttClient::setupDevice(Device *device)
 {
     MqttClient *client = nullptr;
     if (device->deviceClassId() == internalMqttClientDeviceClassId) {
@@ -50,7 +50,7 @@ DeviceManager::DeviceSetupStatus DevicePluginMqttClient::setupDevice(Device *dev
     });
     connect(client, &MqttClient::subscribeResult, this, [this, device](quint16 packetId, const Mqtt::SubscribeReturnCodes returnCodes){
         Q_UNUSED(packetId)
-        emit deviceSetupFinished(device, returnCodes.first() == Mqtt::SubscribeReturnCodeFailure ? DeviceManager::DeviceSetupStatusFailure : DeviceManager::DeviceSetupStatusSuccess);
+        emit deviceSetupFinished(device, returnCodes.first() == Mqtt::SubscribeReturnCodeFailure ? Device::DeviceSetupStatusFailure : Device::DeviceSetupStatusSuccess);
     });
     connect(client, &MqttClient::publishReceived, this, &DevicePluginMqttClient::publishReceived);
     connect(client, &MqttClient::published, this, &DevicePluginMqttClient::published);
@@ -59,11 +59,11 @@ DeviceManager::DeviceSetupStatus DevicePluginMqttClient::setupDevice(Device *dev
         subscribe(device);
     }
 
-    return DeviceManager::DeviceSetupStatusAsync;
+    return Device::DeviceSetupStatusAsync;
 }
 
 
-DeviceManager::DeviceError DevicePluginMqttClient::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginMqttClient::executeAction(Device *device, const Action &action)
 {
     ParamTypeId topicParamTypeId = internalMqttClientTriggerActionTopicParamTypeId;
     ParamTypeId payloadParamTypeId = internalMqttClientTriggerActionDataParamTypeId;
@@ -80,7 +80,7 @@ DeviceManager::DeviceError DevicePluginMqttClient::executeAction(Device *device,
     MqttClient *client = m_clients.value(device);
     if (!client) {
         qCWarning(dcMqttclient) << "No valid MQTT client for device" << device->name();
-        return DeviceManager::DeviceErrorDeviceNotFound;
+        return Device::DeviceErrorDeviceNotFound;
     }
     Mqtt::QoS qos = Mqtt::QoS0;
     switch (action.param(qosParamTypeId).value().toInt()) {
@@ -100,7 +100,7 @@ DeviceManager::DeviceError DevicePluginMqttClient::executeAction(Device *device,
                     action.param(retainParamTypeId).value().toBool());
     m_pendingPublishes.insert(packetId, action);
 
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
 void DevicePluginMqttClient::subscribe(Device *device)
@@ -146,7 +146,7 @@ void DevicePluginMqttClient::published(quint16 packetId)
         return;
     }
 
-    emit actionExecutionFinished(m_pendingPublishes.take(packetId).id(), DeviceManager::DeviceErrorNoError);
+    emit actionExecutionFinished(m_pendingPublishes.take(packetId).id(), Device::DeviceErrorNoError);
 }
 
 void DevicePluginMqttClient::deviceRemoved(Device *device)

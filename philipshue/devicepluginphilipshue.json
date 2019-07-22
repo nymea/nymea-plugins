@@ -671,6 +671,18 @@
                             "readOnly": true
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "21d461b2-b4dd-4a70-b3d5-aaedc88605a4",
+                            "name": "timeout",
+                            "displayName": "Time period",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "defaultValue": 10,
+                            "minValue": 10
+                        }
+
+                    ],
                     "stateTypes": [
                         {
                             "id": "9fe43e6b-3c29-43a9-bb96-3b80eacc10db",
@@ -727,6 +739,147 @@
                         },
                         {
                             "id": "6fa16fb2-053c-4c3c-a39b-9548c1b15089",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "id": "25b79fff-4b88-4af8-b06c-2fe246238790",
+                    "name": "motionSensor",
+                    "displayName": "Hue Motion Sensor",
+                    "interfaces": ["presencesensor", "temperaturesensor", "lightsensor", "batterylevel", "connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "9cb488b7-a76f-4389-a6b5-b36250246f2b",
+                            "name": "modelId",
+                            "displayName": "Model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "3e9aad4c-1dff-42c0-bbd4-cdd8635c01a7",
+                            "name": "uuid",
+                            "displayName": "Uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "c9e81e29-f8d4-4370-ada2-f48b32def1fe",
+                            "name": "sensorIdTemperature",
+                            "displayName": "Temperature sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "aa29b5f1-5589-4fa9-bbd4-8869723c037c",
+                            "name": "sensorUuidTemperature",
+                            "displayName": "Temperature sensor uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "337b2c6c-e3bf-495c-943c-b45fa08add37",
+                            "name": "sensorIdPresence",
+                            "displayName": "Presence sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "3829bddb-e722-4724-be36-3a8402738581",
+                            "name": "sensorUuidPresence",
+                            "displayName": "Presence sensor uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "04fba73e-730e-437a-b6f2-10df21296af5",
+                            "name": "sensorIdLight",
+                            "displayName": "Light sensor id",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "171cc2e7-7a95-4116-986c-66d75e3e23eb",
+                            "name": "sensorUuidLight",
+                            "displayName": "Light sensor uuid",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "beedc4af-c107-4c53-be25-fd01a349fd35",
+                            "name": "timeout",
+                            "displayName": "Time period",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "defaultValue": 10,
+                            "minValue": 10
+                        }
+
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "19c28b69-a9c2-4908-8255-7681f72c2d92",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "ac463b30-24af-4352-84da-19a3ffc906bd",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "d7c4e143-6f03-411e-a12e-dd22806270fd",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "63ee79f7-702b-48c1-86cf-8ddebb78bae6",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "064f48c1-f86d-4a0a-bdae-3420123dff3f",
+                            "name": "lightIntensity",
+                            "displayName": "Ambient light",
+                            "displayNameEvent": "Ambient light changed",
+                            "unit": "Lux",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e38ee39c-c77f-40b5-b122-4efc411da0ed",
+                            "name": "isPresent",
+                            "displayName": "Person is present",
+                            "displayNameEvent": "Person is present changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ef2e564e-2443-448f-bcd9-f85a1126ee6a",
                             "name": "lastSeenTime",
                             "displayName": "Last seen time",
                             "displayNameEvent": "Last seen time changed",

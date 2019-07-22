@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINCOMMANDLAUNCHER_H
 #define DEVICEPLUGINCOMMANDLAUNCHER_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 #include <QProcess>
 #include <QFileInfo>
@@ -38,8 +38,8 @@ class DevicePluginCommandLauncher : public DevicePlugin
 public:
     explicit DevicePluginCommandLauncher();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
     void deviceRemoved(Device *device) override;
 

@@ -21,7 +21,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "devicepluginsnapd.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "network/networkaccessmanager.h"
 
@@ -103,7 +103,7 @@ void DevicePluginSnapd::deviceRemoved(Device *device)
     }
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginSnapd::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginSnapd::setupDevice(Device *device)
 {
     qCDebug(dcSnapd()) << "Setup" << device->name() << device->params();
 
@@ -122,59 +122,59 @@ DeviceManager::DeviceSetupStatus DevicePluginSnapd::setupDevice(Device *device)
         m_snapDevices.insert(device->paramValue(snapDeviceIdParamTypeId).toString(), device);
     }
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::DeviceError DevicePluginSnapd::executeAction(Device *device, const Action &action) {
+Device::DeviceError DevicePluginSnapd::executeAction(Device *device, const Action &action) {
 
     if (device->deviceClassId() == snapdControlDeviceClassId) {
 
         if (!m_snapdControl) {
             qCDebug(dcSnapd()) << "There is currently no snapd controller.";
-            return DeviceManager::DeviceErrorHardwareFailure;
+            return Device::DeviceErrorHardwareFailure;
         }
 
         if (!m_snapdControl->connected()) {
             qCDebug(dcSnapd()) << "Snapd controller not connected to to backend.";
-            return DeviceManager::DeviceErrorHardwareFailure;
+            return Device::DeviceErrorHardwareFailure;
         }
 
         if (action.actionTypeId() == snapdControlStartUpdateActionTypeId) {
             m_snapdControl->snapRefresh();
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == snapdControlCheckUpdatesActionTypeId) {
             m_snapdControl->checkForUpdates();
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
 
     } else if (device->deviceClassId() == snapDeviceClassId) {
 
         if (!m_snapdControl) {
             qCDebug(dcSnapd()) << "There is currently no snapd controller.";
-            return DeviceManager::DeviceErrorHardwareFailure;
+            return Device::DeviceErrorHardwareFailure;
         }
 
         if (!m_snapdControl->connected()) {
             qCDebug(dcSnapd()) << "Snapd controller not connected to the backend.";
-            return DeviceManager::DeviceErrorHardwareFailure;
+            return Device::DeviceErrorHardwareFailure;
         }
 
         if (action.actionTypeId() == snapChannelActionTypeId) {
             QString snapName = device->paramValue(snapDeviceNameParamTypeId).toString();
             m_snapdControl->changeSnapChannel(snapName, action.param(snapChannelActionChannelParamTypeId).value().toString());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == snapRevertActionTypeId) {
             QString snapName = device->paramValue(snapDeviceNameParamTypeId).toString();
             m_snapdControl->snapRevert(snapName);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginSnapd::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)

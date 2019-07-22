@@ -23,8 +23,7 @@
 
 #include "devicepluginavahimonitor.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "platform/platformzeroconfcontroller.h"
 #include "network/zeroconf/zeroconfservicebrowser.h"
@@ -39,19 +38,19 @@ DevicePluginAvahiMonitor::DevicePluginAvahiMonitor()
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginAvahiMonitor::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginAvahiMonitor::setupDevice(Device *device)
 {
     qCDebug(dcAvahiMonitor()) << "Setup" << device->name() << device->params();
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginAvahiMonitor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
 
     if (deviceClassId != avahiDeviceClassId)
-        return DeviceManager::DeviceErrorDeviceClassNotFound;
+        return Device::DeviceErrorDeviceClassNotFound;
 
     if (!m_serviceBrowser) {
         m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
@@ -77,7 +76,7 @@ DeviceManager::DeviceError DevicePluginAvahiMonitor::discoverDevices(const Devic
 
     emit devicesDiscovered(avahiDeviceClassId, deviceDescriptors);
 
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
 void DevicePluginAvahiMonitor::onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)

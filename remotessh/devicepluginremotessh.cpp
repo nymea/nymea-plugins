@@ -38,18 +38,18 @@ void DevicePluginRemoteSsh::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginRemoteSsh::onPluginTimeout);
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginRemoteSsh::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginRemoteSsh::setupDevice(Device *device)
 {
     qCDebug(dcRemoteSsh()) << "Setup" << device->name() << device->params();
 
     if (device->deviceClassId() == reverseSshDeviceClassId) {
         m_identityFilePath = QString("%1/.ssh/id_rsa_guh").arg(QDir::homePath());
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
-DeviceManager::DeviceError DevicePluginRemoteSsh::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginRemoteSsh::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == reverseSshDeviceClassId ) {
 
@@ -59,26 +59,26 @@ DeviceManager::DeviceError DevicePluginRemoteSsh::executeAction(Device *device, 
                 QProcess *process = startReverseSSHProcess(device);
                 m_reverseSSHProcess.insert(process, device);
                 m_startingProcess.insert(process, action.id());
-                return DeviceManager::DeviceErrorAsync;
+                return Device::DeviceErrorAsync;
             } else {
                 QProcess *process =  m_reverseSSHProcess.key(device);
 
                 // Check if the application is running...
                 if (!process)
-                    return DeviceManager::DeviceErrorNoError;
+                    return Device::DeviceErrorNoError;
 
                 if (process->state() == QProcess::NotRunning)
-                    return DeviceManager::DeviceErrorNoError;
+                    return Device::DeviceErrorNoError;
 
                 process->kill();
                 m_killingProcess.insert(process, action.id());
-                return DeviceManager::DeviceErrorAsync;
+                return Device::DeviceErrorAsync;
             }
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 
@@ -179,7 +179,7 @@ void DevicePluginRemoteSsh::processStateChanged(QProcess::ProcessState state)
     case QProcess::Running:
         device->setStateValue(reverseSshConnectedStateTypeId, true);
         if (m_startingProcess.contains(process)) {
-            emit actionExecutionFinished(m_startingProcess.value(process), DeviceManager::DeviceErrorNoError);
+            emit actionExecutionFinished(m_startingProcess.value(process), Device::DeviceErrorNoError);
             m_startingProcess.remove(process);
         }
         break;
@@ -189,12 +189,12 @@ void DevicePluginRemoteSsh::processStateChanged(QProcess::ProcessState state)
             device->setStateValue(reverseSshConnectedStateTypeId, false);
 
         if (m_startingProcess.contains(process)) {
-            emit actionExecutionFinished(m_startingProcess.value(process), DeviceManager::DeviceErrorInvalidParameter);
+            emit actionExecutionFinished(m_startingProcess.value(process), Device::DeviceErrorInvalidParameter);
             m_startingProcess.remove(process);
         }
 
         if (m_killingProcess.contains(process)) {
-            emit actionExecutionFinished(m_killingProcess.value(process), DeviceManager::DeviceErrorNoError);
+            emit actionExecutionFinished(m_killingProcess.value(process), Device::DeviceErrorNoError);
             m_reverseSSHProcess.remove(process);
             m_killingProcess.remove(process);
         }

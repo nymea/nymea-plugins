@@ -31,7 +31,6 @@
  * {0000fef5-0000-1000-8000-00805f9b34fb}
  */
 #include "plugininfo.h"
-#include "devicemanager.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
 #include "devicepluginflowercare.h"
 #include "flowercare.h"
@@ -52,23 +51,23 @@ void DevicePluginFlowercare::init()
 {
 }
 
-DeviceManager::DeviceError DevicePluginFlowercare::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginFlowercare::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     Q_UNUSED(deviceClassId)
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->available())
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->enabled())
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     BluetoothDiscoveryReply *reply = hardwareManager()->bluetoothLowEnergyManager()->discoverDevices();
     connect(reply, &BluetoothDiscoveryReply::finished, this, &DevicePluginFlowercare::onBluetoothDiscoveryFinished);
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginFlowercare::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginFlowercare::setupDevice(Device *device)
 {
     qCDebug(dcFlowerCare) << "Setting up Flower care" << device->name() << device->params();
 
@@ -87,9 +86,9 @@ DeviceManager::DeviceSetupStatus DevicePluginFlowercare::setupDevice(Device *dev
             m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer();
             connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginFlowercare::onPluginTimer);
         }
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginFlowercare::postSetupDevice(Device *device)
@@ -114,11 +113,11 @@ void DevicePluginFlowercare::deviceRemoved(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginFlowercare::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginFlowercare::executeAction(Device *device, const Action &action)
 {
     Q_UNUSED(device)
     Q_UNUSED(action)
-    return DeviceManager::DeviceErrorActionTypeNotFound;
+    return Device::DeviceErrorActionTypeNotFound;
 }
 
 bool DevicePluginFlowercare::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)

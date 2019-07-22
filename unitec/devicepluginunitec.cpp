@@ -21,7 +21,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "devicepluginunitec.h"
-#include "devicemanager.h"
 #include "plugininfo.h"
 #include "hardwaremanager.h"
 #include "hardware/radio433/radio433.h"
@@ -33,32 +32,32 @@ DevicePluginUnitec::DevicePluginUnitec()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginUnitec::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginUnitec::setupDevice(Device *device)
 {
     if (device->deviceClassId() != switchDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
     }
 
     foreach (Device* d, myDevices()) {
         if (d->paramValue(switchDeviceChannelParamTypeId).toString() == device->paramValue(switchDeviceChannelParamTypeId).toString()) {
             qCWarning(dcUnitec) << "Unitec switch with channel " << device->paramValue(switchDeviceChannelParamTypeId).toString() << "already added.";
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
     }
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::DeviceError DevicePluginUnitec::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginUnitec::executeAction(Device *device, const Action &action)
 {   
     if (!hardwareManager()->radio433()->available())
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     QList<int> rawData;
     QByteArray binCode;
 
     if (action.actionTypeId() != switchPowerActionTypeId) {
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     // Bin codes for buttons
@@ -105,8 +104,8 @@ DeviceManager::DeviceError DevicePluginUnitec::executeAction(Device *device, con
         qCDebug(dcUnitec) << "transmitted" << pluginName() << device->name() << "power: " << action.param(switchPowerActionPowerParamTypeId).value().toBool();
     }else{
         qCWarning(dcUnitec) << "could not transmitt" << pluginName() << device->name() << "power: " << action.param(switchPowerActionPowerParamTypeId).value().toBool();
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
 
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }

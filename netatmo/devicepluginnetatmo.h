@@ -24,7 +24,7 @@
 #define DEVICEPLUGINNETATMO_H
 
 #include "plugintimer.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "network/oauth2.h"
 #include "netatmobasestation.h"
 #include "netatmooutdoormodule.h"
@@ -43,12 +43,12 @@ public:
     ~DevicePluginNetatmo();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
     void postSetupDevice(Device *device) override;
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;

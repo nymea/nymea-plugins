@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINLEYNEW_H
 #define DEVICEPLUGINLEYNEW_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 class DevicePluginLeynew : public DevicePlugin
 {
@@ -35,10 +35,10 @@ class DevicePluginLeynew : public DevicePlugin
 public:
     explicit DevicePluginLeynew();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 };
 

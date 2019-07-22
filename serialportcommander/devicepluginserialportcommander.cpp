@@ -28,7 +28,7 @@ DevicePluginSerialPortCommander::DevicePluginSerialPortCommander()
 }
 
 
-DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginSerialPortCommander::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     // Create the list of available serial interfaces
@@ -51,11 +51,11 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::discoverDevices(cons
         deviceDescriptors.append(deviceDescriptor);
     }
     emit devicesDiscovered(deviceClassId, deviceDescriptors);
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
 
-DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(Device *device)
 {
     if(!m_reconnectTimer) {
         m_reconnectTimer = new QTimer(this);
@@ -69,7 +69,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
         QString interface = device->paramValue(serialPortCommanderDeviceSerialPortParamTypeId).toString();
         QSerialPort *serialPort = new QSerialPort(interface, this);
         if(!serialPort)
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
 
         serialPort->setBaudRate(device->paramValue(serialPortCommanderDeviceBaudRateParamTypeId).toInt());
         serialPort->setDataBits(QSerialPort::DataBits(device->paramValue(serialPortCommanderDeviceDataBitsParamTypeId).toInt()));
@@ -99,7 +99,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
         if (!serialPort->open(QIODevice::ReadWrite)) {
             qCWarning(dcSerialPortCommander()) << "Could not open serial port" << interface << serialPort->errorString();
             serialPort->deleteLater();
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         connect(serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
@@ -112,11 +112,11 @@ DeviceManager::DeviceSetupStatus DevicePluginSerialPortCommander::setupDevice(De
         m_serialPorts.insert(device, serialPort);
         device->setStateValue(serialPortCommanderConnectedStateTypeId, true);
     }
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 
-DeviceManager::DeviceError DevicePluginSerialPortCommander::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginSerialPortCommander::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == serialPortCommanderDeviceClassId ) {
 
@@ -125,13 +125,13 @@ DeviceManager::DeviceError DevicePluginSerialPortCommander::executeAction(Device
             QSerialPort *serialPort = m_serialPorts.value(device);
             qint64 size = serialPort->write(action.param(serialPortCommanderTriggerActionOutputDataParamTypeId).value().toByteArray());
             if(size != action.param(serialPortCommanderTriggerActionOutputDataParamTypeId).value().toByteArray().length()) {
-                return DeviceManager::DeviceErrorHardwareFailure;
+                return Device::DeviceErrorHardwareFailure;
             }
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 

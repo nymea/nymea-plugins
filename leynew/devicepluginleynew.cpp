@@ -21,7 +21,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "devicepluginleynew.h"
-#include "devicemanager.h"
 #include "plugininfo.h"
 #include "hardware/radio433/radio433.h"
 
@@ -32,21 +31,21 @@ DevicePluginLeynew::DevicePluginLeynew()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginLeynew::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginLeynew::setupDevice(Device *device)
 {
     Q_UNUSED(device);
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::DeviceError DevicePluginLeynew::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginLeynew::executeAction(Device *device, const Action &action)
 {   
     if (!hardwareManager()->radio433()->available()) {
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
 
     if (device->deviceClassId() != rfControllerDeviceClassId) {
-        return DeviceManager::DeviceErrorDeviceClassNotFound;
+        return Device::DeviceErrorDeviceClassNotFound;
     }
 
     QList<int> rawData;
@@ -64,7 +63,7 @@ DeviceManager::DeviceError DevicePluginLeynew::executeAction(Device *device, con
         binCode.append("111101010101");
     } else {
         qCWarning(dcLeynew) << "Could not get id of device: invalid parameter" << device->paramValue(rfControllerDeviceIdParamTypeId);
-        return DeviceManager::DeviceErrorInvalidParameter;
+        return Device::DeviceErrorInvalidParameter;
     }
 
     int repetitions = 12;
@@ -115,7 +114,7 @@ DeviceManager::DeviceError DevicePluginLeynew::executeAction(Device *device, con
     } else if (action.actionTypeId() == rfControllerFade7ActionTypeId) {
         binCode.append("001100000000");
     } else {
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     // =======================================
@@ -147,7 +146,7 @@ DeviceManager::DeviceError DevicePluginLeynew::executeAction(Device *device, con
         qCDebug(dcLeynew) << "Transmitted" << pluginName() << device->name() << action.id();
     }else{
         qCWarning(dcLeynew) << "Could not transmitt" << pluginName() << device->name() << action.id();
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }

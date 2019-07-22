@@ -44,7 +44,7 @@ void DevicePluginKeba::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginKeba::updateData);
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
 {
     qCDebug(dcKebaKeContact()) << "Setting up a new device:" << device->name() << device->params();
 
@@ -53,7 +53,7 @@ DeviceManager::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
         if (!m_kebaSocket->bind(QHostAddress::AnyIPv4, 7090)) {
             qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
             delete m_kebaSocket;
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
         connect(m_kebaSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
         qCDebug(dcKebaKeContact()) << "Create keba socket";
@@ -64,16 +64,16 @@ DeviceManager::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
     //Check if the IP is empty
     if (address.isNull()) {
         delete m_kebaSocket;
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
     }
 
     // check if IP is already added to another keba device
     if(m_kebaDevices.keys().contains(address)){
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
     }
 
     m_kebaDevices.insert(address, device);
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginKeba::postSetupDevice(Device *device)
@@ -109,7 +109,7 @@ void DevicePluginKeba::updateData()
     }
 }
 
-DeviceManager::DeviceError DevicePluginKeba::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginKeba::executeAction(Device *device, const Action &action)
 {
     qCDebug(dcKebaKeContact()) << "Execute action" << device->name() << action.actionTypeId().toString();
 
@@ -140,10 +140,10 @@ DeviceManager::DeviceError DevicePluginKeba::executeAction(Device *device, const
             m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(device->paramValue(wallboxDeviceIpParamTypeId).toString()) , 7090);
         }
 
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     }
 
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginKeba::readPendingDatagrams()

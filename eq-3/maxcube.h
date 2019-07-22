@@ -32,7 +32,7 @@
 #include "room.h"
 #include "wallthermostat.h"
 #include "radiatorthermostat.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 class MaxCube : public QTcpSocket
 {

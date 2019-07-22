@@ -22,8 +22,7 @@
 
 #include "devicepluginwakeonlan.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -34,13 +33,13 @@ DevicePluginWakeOnLan::DevicePluginWakeOnLan()
 {
 }
 
-DeviceManager::DeviceError DevicePluginWakeOnLan::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginWakeOnLan::executeAction(Device *device, const Action &action)
 {
     if(action.actionTypeId() == wolTriggerActionTypeId){
         qCDebug(dcWakeOnLan) << "Wake up" << device->name();
         wakeup(device->paramValue(wolDeviceMacParamTypeId).toString());
     }
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }
 
 void DevicePluginWakeOnLan::wakeup(QString mac)

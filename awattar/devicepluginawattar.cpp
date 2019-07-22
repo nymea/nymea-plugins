@@ -22,7 +22,7 @@
 
 
 #include "devicepluginawattar.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "hardwaremanager.h"
 #include "network/networkaccessmanager.h"
@@ -39,7 +39,7 @@ DevicePluginAwattar::~DevicePluginAwattar()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginAwattar::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginAwattar::setupDevice(Device *device)
 {
     qCDebug(dcAwattar) << "Setup device" << device->name() << device->params();
 
@@ -48,7 +48,7 @@ DeviceManager::DeviceSetupStatus DevicePluginAwattar::setupDevice(Device *device
 
     if (token.isEmpty() || userUuid.isEmpty()) {
         qCWarning(dcAwattar) << "Missing token oder user uuid.";
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
     }
 
     if (!m_pluginTimer) {
@@ -58,7 +58,7 @@ DeviceManager::DeviceSetupStatus DevicePluginAwattar::setupDevice(Device *device
 
     requestPriceData(device, true);
 
-    return DeviceManager::DeviceSetupStatusAsync;
+    return Device::DeviceSetupStatusAsync;
 }
 
 void DevicePluginAwattar::deviceRemoved(Device *device)
@@ -93,7 +93,7 @@ void DevicePluginAwattar::requestPriceData(Device* device, bool setupInProgress)
         if (status != 200) {
             qCWarning(dcAwattar) << "Update reply HTTP error:" << status << reply->errorString();
             if (setupInProgress) {
-                emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+                emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             } else {
                 device->setStateValue(awattarConnectedStateTypeId, false);
             }
@@ -105,14 +105,14 @@ void DevicePluginAwattar::requestPriceData(Device* device, bool setupInProgress)
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcAwattar) << "Update reply JSON error:" << error.errorString();
             if (setupInProgress) {
-                emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+                emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             } else {
                 device->setStateValue(awattarConnectedStateTypeId, false);
             }
             return;
         }
 
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
         device->setStateValue(awattarConnectedStateTypeId, true);
 
         processPriceData(device, jsonDoc.toVariant().toMap());

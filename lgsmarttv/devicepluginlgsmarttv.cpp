@@ -22,8 +22,7 @@
 
 #include "devicepluginlgsmarttv.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
@@ -45,7 +44,7 @@ void DevicePluginLgSmartTv::init()
 
 }
 
-DeviceManager::DeviceError DevicePluginLgSmartTv::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginLgSmartTv::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     Q_UNUSED(deviceClassId)
@@ -53,10 +52,10 @@ DeviceManager::DeviceError DevicePluginLgSmartTv::discoverDevices(const DeviceCl
     qCDebug(dcLgSmartTv()) << "Start discovering";
     UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices("udap:rootservice","UDAP/2.0");
     connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginLgSmartTv::onUpnpDiscoveryFinished);
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginLgSmartTv::setupDevice(Device *device)
 {
     qCDebug(dcLgSmartTv()) << "Setup LG smart TV" << device->name() << device->params();
     QHostAddress address = QHostAddress(device->paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString());
@@ -68,7 +67,7 @@ DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::setupDevice(Device *devi
         // Check if we know the key from the pairing procedure
         if (!m_tvKeys.contains(device->paramValue(lgSmartTvDeviceUuidParamTypeId).toString())) {
             qCWarning(dcLgSmartTv) << "could not find any pairing key";
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
         // Use the key from the pairing procedure
         QString key = m_tvKeys.value(device->paramValue(lgSmartTvDeviceUuidParamTypeId).toString());
@@ -90,7 +89,7 @@ DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::setupDevice(Device *devi
         connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginLgSmartTv::onPluginTimer);
     }
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginLgSmartTv::deviceRemoved(Device *device)
@@ -115,13 +114,13 @@ void DevicePluginLgSmartTv::postSetupDevice(Device *device)
     pairTvDevice(device);
 }
 
-DeviceManager::DeviceError DevicePluginLgSmartTv::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginLgSmartTv::executeAction(Device *device, const Action &action)
 {
     TvDevice * tvDevice = m_tvList.key(device);
 
     if (!tvDevice->reachable()) {
         qCWarning(dcLgSmartTv) << "Device not reachable";
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
 
     if (action.actionTypeId() == lgSmartTvCommandVolumeUpActionTypeId) {
@@ -215,12 +214,12 @@ DeviceManager::DeviceError DevicePluginLgSmartTv::executeAction(Device *device, 
         connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
         m_asyncActions.insert(reply, action.id());
     } else {
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceError DevicePluginLgSmartTv::displayPin(const PairingTransactionId &pairingTransactionId, const DeviceDescriptor &deviceDescriptor)
+Device::DeviceError DevicePluginLgSmartTv::displayPin(const PairingTransactionId &pairingTransactionId, const DeviceDescriptor &deviceDescriptor)
 {
     Q_UNUSED(pairingTransactionId)
 
@@ -231,10 +230,10 @@ DeviceManager::DeviceError DevicePluginLgSmartTv::displayPin(const PairingTransa
     connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
 
     m_showPinReply.append(reply);
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret)
+Device::DeviceSetupStatus DevicePluginLgSmartTv::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret)
 {
     Q_UNUSED(deviceClassId)
 
@@ -247,7 +246,7 @@ DeviceManager::DeviceSetupStatus DevicePluginLgSmartTv::confirmPairing(const Pai
     m_setupPairingTv.insert(reply, pairingTransactionId);
     m_tvKeys.insert(params.paramValue(lgSmartTvDeviceUuidParamTypeId).toString(), secret);
 
-    return DeviceManager::DeviceSetupStatusAsync;
+    return Device::DeviceSetupStatusAsync;
 }
 
 void DevicePluginLgSmartTv::pairTvDevice(Device *device)
@@ -350,7 +349,7 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
         PairingTransactionId pairingTransactionId = m_setupPairingTv.take(reply);
         if(status != 200) {
             qCWarning(dcLgSmartTv) << "pair TV request error:" << status << reply->errorString();
-            emit pairingFinished(pairingTransactionId, DeviceManager::DeviceSetupStatusFailure);
+            emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusFailure);
         } else {
             // End pairing before calling setupDevice, which will always try to pair
             QPair<QNetworkRequest, QByteArray> request = TvDevice::createEndPairingRequest(reply->request().url());
@@ -362,9 +361,9 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
         PairingTransactionId pairingTransactionId = m_setupEndPairingTv.take(reply);
         if(status != 200) {
             qCWarning(dcLgSmartTv) << "end pairing TV request error:" << status << reply->errorString();
-            emit pairingFinished(pairingTransactionId, DeviceManager::DeviceSetupStatusFailure);
+            emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusFailure);
         } else {
-            emit pairingFinished(pairingTransactionId, DeviceManager::DeviceSetupStatusSuccess);
+            emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusSuccess);
         }
     } else if (m_asyncSetup.keys().contains(reply)) {
         Device *device = m_asyncSetup.take(reply);
@@ -420,10 +419,10 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
     } else if (m_asyncActions.keys().contains(reply)) {
         ActionId actionId = m_asyncActions.value(reply);
         if(status != 200) {
-            emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorHardwareNotAvailable);
+            emit actionExecutionFinished(actionId, Device::DeviceErrorHardwareNotAvailable);
             qCWarning(dcLgSmartTv) << "Action request error:" << status << reply->errorString();
         } else {
-            emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
+            emit actionExecutionFinished(actionId, Device::DeviceErrorNoError);
         }
     }
 }

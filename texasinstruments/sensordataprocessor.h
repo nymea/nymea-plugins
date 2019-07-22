@@ -26,7 +26,7 @@
 #include <QFile>
 #include <QObject>
 
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "extern-plugininfo.h"
 
 #include "sensorfilter.h"

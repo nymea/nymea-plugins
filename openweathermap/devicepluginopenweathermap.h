@@ -24,7 +24,7 @@
 #define DEVICEPLUGINOPENWEATHERMAP_H
 
 #include "plugintimer.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "network/networkaccessmanager.h"
 
 #include <QTimer>
@@ -42,9 +42,9 @@ public:
     ~DevicePluginOpenweathermap();
 
     void init() override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
     void deviceRemoved(Device *device) override;
 

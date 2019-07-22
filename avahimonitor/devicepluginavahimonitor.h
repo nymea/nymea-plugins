@@ -24,7 +24,7 @@
 #ifndef DEVICEPLUGINAVAHIMONITOR_H
 #define DEVICEPLUGINAVAHIMONITOR_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "network/zeroconf/zeroconfservicebrowser.h"
 #include "network/zeroconf/zeroconfserviceentry.h"
 
@@ -40,8 +40,8 @@ class DevicePluginAvahiMonitor : public DevicePlugin
 public:
     explicit DevicePluginAvahiMonitor();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
 
 private slots:
     void onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);

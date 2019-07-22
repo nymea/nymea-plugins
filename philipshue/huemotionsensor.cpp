@@ -20,106 +20,109 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "hueoutdoorsensor.h"
+#include "huemotionsensor.h"
 #include "extern-plugininfo.h"
 
-HueOutdoorSensor::HueOutdoorSensor(QObject *parent) :
+HueMotionSensor::HueMotionSensor(QObject *parent) :
     HueDevice(parent)
 {
-
+    m_timeout.setInterval(10000);
+    connect(&m_timeout, &QTimer::timeout, this, [this](){
+        if (m_presence) {
+            qCDebug(dcPhilipsHue) << "Motion sensor timeout reached" << m_timeout.interval();
+            m_presence = false;
+            emit presenceChanged(m_presence);
+        }
+    });
 }
 
-QString HueOutdoorSensor::uuid() const
+void HueMotionSensor::setTimeout(int timeout)
 {
-    return m_uuid;
+    // The sensor keeps emitting presence = true for 10 secs, let's subtract that time from the timeout to compensate
+    m_timeout.setInterval((timeout - 9)* 1000);
 }
 
-void HueOutdoorSensor::setUuid(const QString &uuid)
-{
-    m_uuid = uuid;
-}
-
-int HueOutdoorSensor::temperatureSensorId() const
+int HueMotionSensor::temperatureSensorId() const
 {
     return m_temperatureSensorId;
 }
 
-void HueOutdoorSensor::setTemperatureSensorId(int sensorId)
+void HueMotionSensor::setTemperatureSensorId(int sensorId)
 {
     m_temperatureSensorId = sensorId;
 }
 
-QString HueOutdoorSensor::temperatureSensorUuid() const
+QString HueMotionSensor::temperatureSensorUuid() const
 {
     return m_temperatureSensorUuid;
 }
 
-void HueOutdoorSensor::setTemperatureSensorUuid(const QString &temperatureSensorUuid)
+void HueMotionSensor::setTemperatureSensorUuid(const QString &temperatureSensorUuid)
 {
     m_temperatureSensorUuid = temperatureSensorUuid;
 }
 
-int HueOutdoorSensor::presenceSensorId() const
+int HueMotionSensor::presenceSensorId() const
 {
     return m_presenceSensorId;
 }
 
-void HueOutdoorSensor::setPresenceSensorId(int sensorId)
+void HueMotionSensor::setPresenceSensorId(int sensorId)
 {
     m_presenceSensorId = sensorId;
 }
 
-QString HueOutdoorSensor::presenceSensorUuid() const
+QString HueMotionSensor::presenceSensorUuid() const
 {
     return m_presenceSensorUuid;
 }
 
-void HueOutdoorSensor::setPresenceSensorUuid(const QString &presenceSensorUuid)
+void HueMotionSensor::setPresenceSensorUuid(const QString &presenceSensorUuid)
 {
     m_presenceSensorUuid = presenceSensorUuid;
 }
 
-int HueOutdoorSensor::lightSensorId() const
+int HueMotionSensor::lightSensorId() const
 {
     return m_lightSensorId;
 }
 
-void HueOutdoorSensor::setLightSensorId(int sensorId)
+void HueMotionSensor::setLightSensorId(int sensorId)
 {
     m_lightSensorId = sensorId;
 }
 
-QString HueOutdoorSensor::lightSensorUuid() const
+QString HueMotionSensor::lightSensorUuid() const
 {
     return m_lightSensorUuid;
 }
 
-void HueOutdoorSensor::setLightSensorUuid(const QString &lightSensorUuid)
+void HueMotionSensor::setLightSensorUuid(const QString &lightSensorUuid)
 {
     m_lightSensorUuid = lightSensorUuid;
 }
 
-double HueOutdoorSensor::temperature() const
+double HueMotionSensor::temperature() const
 {
     return m_temperature;
 }
 
-double HueOutdoorSensor::lightIntensity() const
+double HueMotionSensor::lightIntensity() const
 {
     return m_lightIntensity;
 }
 
-bool HueOutdoorSensor::present() const
+bool HueMotionSensor::present() const
 {
     return m_presence;
 }
 
-int HueOutdoorSensor::batteryLevel() const
+int HueMotionSensor::batteryLevel() const
 {
     return m_batteryLevel;
 }
 
-void HueOutdoorSensor::updateStates(const QVariantMap &sensorMap)
+void HueMotionSensor::updateStates(const QVariantMap &sensorMap)
 {
     //qCDebug(dcPhilipsHue()) << "Outdoor sensor: Process sensor map" << qUtf8Printable(QJsonDocument::fromVariant(sensorMap).toJson(QJsonDocument::Indented));
 
@@ -144,17 +147,21 @@ void HueOutdoorSensor::updateStates(const QVariantMap &sensorMap)
         if (m_temperature != temperature) {
             m_temperature = temperature;
             emit temperatureChanged(m_temperature);
-            qCDebug(dcPhilipsHue) << "Outdoor sensor temperature changed" << m_temperature;
+            qCDebug(dcPhilipsHue) << "Motion sensor temperature changed" << m_temperature;
         }
     }
 
     // If presence sensor
     if (sensorMap.value("uniqueid").toString() == m_presenceSensorUuid) {
         bool presence = stateMap.value("presence", false).toBool();
-        if (m_presence != presence) {
-            m_presence = presence;
-            emit presenceChanged(m_presence);
-            qCDebug(dcPhilipsHue) << "Outdoor sensor presence changed" << presence;
+        if (presence) {
+            if (!m_presence) {
+                m_presence = true;
+                emit presenceChanged(m_presence);
+                qCDebug(dcPhilipsHue) << "Motion sensor presence changed" << presence;
+            }
+            qCDebug(dcPhilipsHue) << "Motion sensor restarting timeout" << m_timeout.interval();
+            m_timeout.start();
         }
     }
 
@@ -169,17 +176,17 @@ void HueOutdoorSensor::updateStates(const QVariantMap &sensorMap)
     }
 }
 
-bool HueOutdoorSensor::isValid()
+bool HueMotionSensor::isValid()
 {
     return !m_temperatureSensorUuid.isEmpty() && !m_presenceSensorUuid.isEmpty() && !m_lightSensorUuid.isEmpty();
 }
 
-bool HueOutdoorSensor::hasSensor(int sensorId)
+bool HueMotionSensor::hasSensor(int sensorId)
 {
     return m_temperatureSensorId == sensorId || m_presenceSensorId == sensorId || m_lightSensorId == sensorId;
 }
 
-bool HueOutdoorSensor::hasSensor(const QString &sensorUuid)
+bool HueMotionSensor::hasSensor(const QString &sensorUuid)
 {
     return m_temperatureSensorUuid == sensorUuid || m_presenceSensorUuid == sensorUuid || m_lightSensorUuid == sensorUuid;
 }

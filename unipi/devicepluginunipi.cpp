@@ -39,7 +39,7 @@ void DevicePluginUniPi::init()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
 {
     connectToEvok();
 
@@ -51,33 +51,33 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
     if (device->deviceClassId() == relayOutputDeviceClassId) {
 
         m_usedRelais.insert(device->paramValue(relayOutputDeviceNumberParamTypeId).toString(), device);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == digitalOutputDeviceClassId) {
 
         m_usedDigitalOutputs.insert(device->paramValue(digitalOutputDeviceNumberParamTypeId).toString(), device);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == digitalInputDeviceClassId) {
 
         m_usedDigitalInputs.insert(device->paramValue(digitalInputDeviceNumberParamTypeId).toString(), device);
         requestAllData();
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == analogInputDeviceClassId) {
 
         m_usedAnalogInputs.insert(device->paramValue(analogInputDeviceInputNumberParamTypeId).toString(), device);
         requestAllData();
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == analogOutputDeviceClassId) {
 
         m_usedAnalogOutputs.insert(device->paramValue(analogOutputDeviceOutputNumberParamTypeId).toString(), device);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == blindDeviceClassId) {
@@ -94,7 +94,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
             m_usedDigitalOutputs.insert(device->paramValue(blindDeviceOutputCloseParamTypeId).toString(), device);
         }
 
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == lightDeviceClassId) {
@@ -104,7 +104,7 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         } else if (device->paramValue(lightDeviceOutputParamTypeId) == GpioType::DigitalOutput) {
             m_usedDigitalOutputs.insert(device->paramValue(lightDeviceOutputParamTypeId).toString(), device);
         }
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == dimmerSwitchDeviceClassId) {
@@ -116,20 +116,20 @@ DeviceManager::DeviceSetupStatus DevicePluginUniPi::setupDevice(Device *device)
         connect(dimmerSwitch, &DimmerSwitch::doublePressed, this, &DevicePluginUniPi::onDimmerSwitchDoublePressed);
         connect(dimmerSwitch, &DimmerSwitch::dimValueChanged, this, &DevicePluginUniPi::onDimmerSwitchDimValueChanged);
         m_dimmerSwitches.insert(dimmerSwitch, device);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == temperatureSensorDeviceClassId) {
 
         m_usedTemperatureSensors.insert(device->paramValue(temperatureSensorDeviceAddressParamTypeId).toString(), device);
         requestAllData();
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
-DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params);
     qSort(m_relais);
@@ -138,7 +138,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
     qSort(m_analogInputs);
     qSort(m_analogOutputs);
 
-    const DeviceClass deviceClass = deviceManager()->findDeviceClass(deviceClassId);
+    const DeviceClass deviceClass = supportedDevices().findById(deviceClassId);
     if (deviceClass.vendorId() == unipiVendorId) {
 
         if (deviceClassId == relayOutputDeviceClassId) {
@@ -167,7 +167,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
 
         if (deviceClassId == digitalOutputDeviceClassId) {
@@ -187,7 +187,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
 
         if (deviceClassId == digitalInputDeviceClassId) {
@@ -207,7 +207,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
 
         if (deviceClassId == analogInputDeviceClassId) {
@@ -227,7 +227,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
 
         if (deviceClassId == analogOutputDeviceClassId) {
@@ -247,7 +247,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
 
         if (deviceClassId == blindDeviceClassId) {
@@ -308,7 +308,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
             }
 
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
 
         if (deviceClassId == lightDeviceClassId) {
@@ -344,7 +344,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
 
         if (deviceClassId == dimmerSwitchDeviceClassId) {
@@ -364,7 +364,7 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
 
         if (deviceClassId == temperatureSensorDeviceClassId) {
@@ -384,10 +384,10 @@ DeviceManager::DeviceError DevicePluginUniPi::discoverDevices(const DeviceClassI
                 deviceDescriptors.append(descriptor);
             }
             emit devicesDiscovered(deviceClassId, deviceDescriptors);
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginUniPi::setOutput(const QString &circuit, bool value)
@@ -472,10 +472,10 @@ void DevicePluginUniPi::deviceRemoved(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginUniPi::executeAction(Device *device, const Action &action)
 {
     if (m_webSocket->state() != QAbstractSocket::ConnectedState)
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     if (device->deviceClassId() == relayOutputDeviceClassId) {
 
@@ -484,9 +484,9 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             int stateValue = action.param(relayOutputPowerActionPowerParamTypeId).value().toInt();
             setOutput(relayNumber, stateValue);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == digitalOutputDeviceClassId) {
@@ -495,9 +495,9 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             bool stateValue = action.param(digitalOutputPowerActionPowerParamTypeId).value().toBool();
             setOutput(digitalOutputNumber, stateValue);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == analogOutputDeviceClassId) {
@@ -516,9 +516,9 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
             QByteArray bytes = doc.toJson(QJsonDocument::Compact);
             qCDebug(dcUniPi()) << "Send command" << bytes;
             m_webSocket->sendTextMessage(bytes);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == blindDeviceClassId) {
@@ -529,21 +529,21 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
 
             setOutput(circuitOpen, false);
             setOutput(circuitClose, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindOpenActionTypeId) {
 
             setOutput(circuitClose, false);
             setOutput(circuitOpen, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == blindStopActionTypeId) {
             setOutput(circuitOpen, false);
             setOutput(circuitClose, false);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == lightDeviceClassId) {
@@ -552,10 +552,10 @@ DeviceManager::DeviceError DevicePluginUniPi::executeAction(Device *device, cons
         bool stateValue = action.param(lightPowerActionPowerParamTypeId).value().toBool();
 
         setOutput(circuit, stateValue);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     }
 
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 

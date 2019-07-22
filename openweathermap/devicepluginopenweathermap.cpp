@@ -21,8 +21,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "devicepluginopenweathermap.h"
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -62,10 +61,10 @@ void DevicePluginOpenweathermap::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginOpenweathermap::onPluginTimer);
 }
 
-DeviceManager::DeviceError DevicePluginOpenweathermap::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginOpenweathermap::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     if (deviceClassId != openweathermapDeviceClassId) {
-        return DeviceManager::DeviceErrorDeviceClassNotFound;
+        return Device::DeviceErrorDeviceClassNotFound;
     }
 
     QString location = params.paramValue(openweathermapDiscoveryLocationParamTypeId).toString();
@@ -76,26 +75,26 @@ DeviceManager::DeviceError DevicePluginOpenweathermap::discoverDevices(const Dev
     } else {
         search(location);
     }
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginOpenweathermap::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginOpenweathermap::setupDevice(Device *device)
 {
     if (device->deviceClassId() != openweathermapDeviceClassId)
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
 
     update(device);
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::DeviceError DevicePluginOpenweathermap::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginOpenweathermap::executeAction(Device *device, const Action &action)
 {
     if(action.actionTypeId() == openweathermapRefreshWeatherActionTypeId){
         update(device);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     }
-    return DeviceManager::DeviceErrorActionTypeNotFound;
+    return Device::DeviceErrorActionTypeNotFound;
 }
 
 void DevicePluginOpenweathermap::deviceRemoved(Device *device)

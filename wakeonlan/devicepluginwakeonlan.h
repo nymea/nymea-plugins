@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINWAKEONLAN_H
 #define DEVICEPLUGINWAKEONLAN_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 #include <QProcess>
 
@@ -37,7 +37,7 @@ class DevicePluginWakeOnLan : public DevicePlugin
 public:
     explicit DevicePluginWakeOnLan();
 
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private slots:
     void wakeup(QString mac);

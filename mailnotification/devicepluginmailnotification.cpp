@@ -22,8 +22,7 @@
 
 #include "devicepluginmailnotification.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -39,7 +38,7 @@ DevicePluginMailNotification::~DevicePluginMailNotification()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Device *device)
 {
     // Custom mail
     if(device->deviceClassId() == customMailDeviceClassId) {
@@ -56,7 +55,7 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
         } else if(device->paramValue(customMailDeviceAuthenticationParamTypeId).toString() == "LOGIN") {
             smtpClient->setAuthenticationMethod(SmtpClient::AuthenticationMethodLogin);
         } else {
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         if(device->paramValue(customMailDeviceEncryptionParamTypeId).toString() == "NONE") {
@@ -66,7 +65,7 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
         } else if(device->paramValue(customMailDeviceEncryptionParamTypeId).toString() == "TLS") {
             smtpClient->setEncryptionType(SmtpClient::EncryptionTypeTLS);
         } else {
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         QString recipientsString = device->paramValue(customMailDeviceCustomRecipientParamTypeId).toString();
@@ -81,29 +80,29 @@ DeviceManager::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Devic
 
         smtpClient->testLogin();
 
-        return DeviceManager::DeviceSetupStatusAsync;
+        return Device::DeviceSetupStatusAsync;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
-DeviceManager::DeviceError DevicePluginMailNotification::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginMailNotification::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == customMailDeviceClassId) {
         if(action.actionTypeId() == customMailNotifyActionTypeId) {
             SmtpClient *smtpClient = m_clients.key(device);
             if (!smtpClient) {
                 qCWarning(dcMailNotification()) << "Could not find SMTP client for " << device;
-                return DeviceManager::DeviceErrorHardwareNotAvailable;
+                return Device::DeviceErrorHardwareNotAvailable;
             }
 
             smtpClient->sendMail(action.param(customMailNotifyActionTitleParamTypeId).value().toString(),
                                  action.param(customMailNotifyActionBodyParamTypeId).value().toString(),
                                  action.id());
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginMailNotification::deviceRemoved(Device *device)
@@ -119,10 +118,10 @@ void DevicePluginMailNotification::testLoginFinished(const bool &success)
     Device *device = m_clients.value(smtpClient);
     if (success) {
         qCDebug(dcMailNotification()) << "Email login test successfull";
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusSuccess);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
     } else {
         qCWarning(dcMailNotification()) << "Email login test failed";
-        emit deviceSetupFinished(device, DeviceManager::DeviceSetupStatusFailure);
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
         if(m_clients.contains(smtpClient)) {
             m_clients.remove(smtpClient);
         }
@@ -134,9 +133,9 @@ void DevicePluginMailNotification::sendMailFinished(const bool &success, const A
 {
     if (success) {
         qCDebug(dcMailNotification()) << "Email sent successfully";
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
+        emit actionExecutionFinished(actionId, Device::DeviceErrorNoError);
     } else {
         qCWarning(dcMailNotification()) << "Email sending failed";
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorDeviceNotFound);
+        emit actionExecutionFinished(actionId, Device::DeviceErrorDeviceNotFound);
     }
 }

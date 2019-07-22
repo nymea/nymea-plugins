@@ -21,8 +21,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "devicepluginsenic.h"
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
 
@@ -37,26 +36,26 @@ void DevicePluginSenic::init()
     connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginSenic::onReconnectTimeout);
 }
 
-DeviceManager::DeviceError DevicePluginSenic::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginSenic::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
 
     if (deviceClassId != nuimoDeviceClassId)
-        return DeviceManager::DeviceErrorDeviceClassNotFound;
+        return Device::DeviceErrorDeviceClassNotFound;
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->available())
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->enabled())
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     BluetoothDiscoveryReply *reply = hardwareManager()->bluetoothLowEnergyManager()->discoverDevices();
     connect(reply, &BluetoothDiscoveryReply::finished, this, &DevicePluginSenic::onBluetoothDiscoveryFinished);
 
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
 {
     qCDebug(dcSenic()) << "Setup device" << device->name() << device->params();
 
@@ -75,17 +74,17 @@ DeviceManager::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
     m_nuimos.insert(nuimo, device);
     nuimo->bluetoothDevice()->connectDevice();
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::DeviceError DevicePluginSenic::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginSenic::executeAction(Device *device, const Action &action)
 {
     QPointer<Nuimo> nuimo = m_nuimos.key(device);
     if (nuimo.isNull())
-        return DeviceManager::DeviceErrorHardwareFailure;
+        return Device::DeviceErrorHardwareFailure;
 
     if (!nuimo->bluetoothDevice()->connected()) {
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
 
     if (action.actionTypeId() == nuimoShowLogoActionTypeId) {
@@ -109,10 +108,10 @@ DeviceManager::DeviceError DevicePluginSenic::executeAction(Device *device, cons
         if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Heart")
             nuimo->showImage(Nuimo::MatrixTypeHeart);
 
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     }
 
-    return DeviceManager::DeviceErrorActionTypeNotFound;
+    return Device::DeviceErrorActionTypeNotFound;
 }
 
 void DevicePluginSenic::deviceRemoved(Device *device)

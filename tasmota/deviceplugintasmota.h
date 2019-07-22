@@ -21,8 +21,7 @@
 #ifndef DEVICEPLUGINTASMOTA_H
 #define DEVICEPLUGINTASMOTA_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
 
 class MqttChannel;
 
@@ -39,9 +38,9 @@ public:
     ~DevicePluginTasmota();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private slots:
     void onClientConnected(MqttChannel *channel);

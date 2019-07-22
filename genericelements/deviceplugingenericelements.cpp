@@ -21,7 +21,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "deviceplugingenericelements.h"
-#include "devicemanager.h"
 #include "plugininfo.h"
 
 #include <QDebug>
@@ -30,52 +29,52 @@ DevicePluginGenericElements::DevicePluginGenericElements()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginGenericElements::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginGenericElements::setupDevice(Device *device)
 {
     // Toggle Button
     if (device->deviceClassId() == toggleButtonDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
     // Button
     if (device->deviceClassId() == buttonDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
     // ON/OFF Button
     if (device->deviceClassId() == onOffButtonDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
-DeviceManager::DeviceError DevicePluginGenericElements::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginGenericElements::executeAction(Device *device, const Action &action)
 {
     // Toggle Button
     if (device->deviceClassId() == toggleButtonDeviceClassId ) {
         if (action.actionTypeId() == toggleButtonStateActionTypeId) {
             device->setStateValue(toggleButtonStateStateTypeId, !device->stateValue(toggleButtonStateStateTypeId).toBool());
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
     // Button
     if (device->deviceClassId() == buttonDeviceClassId ) {
         if (action.actionTypeId() == buttonButtonPressActionTypeId) {
             emit emitEvent(Event(buttonButtonPressedEventTypeId, device->id()));
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
     // ON/OFF Button
     if (device->deviceClassId() == onOffButtonDeviceClassId ) {
         if (action.actionTypeId() == onOffButtonOnActionTypeId) {
             emit emitEvent(Event(onOffButtonOnEventTypeId, device->id()));
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == onOffButtonOffActionTypeId) {
             emit emitEvent(Event(onOffButtonOffEventTypeId, device->id()));
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }

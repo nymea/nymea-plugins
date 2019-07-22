@@ -52,7 +52,7 @@ void DevicePluginSimulation::init()
     connect(m_pluginTimer5Min, &PluginTimer::timeout, this, &DevicePluginSimulation::onPluginTimer5Minutes);
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *device)
 {
     qCDebug(dcSimulation()) << "Set up device" << device->name();
     if (device->deviceClassId() == garageGateDeviceClassId ||
@@ -67,7 +67,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSimulation::setupDevice(Device *dev
     if (device->deviceClassId() == fingerPrintSensorDeviceClassId && device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList().count() > 0) {
         m_simulationTimers.value(device)->start(10000);
     }
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginSimulation::deviceRemoved(Device *device)
@@ -80,7 +80,7 @@ void DevicePluginSimulation::deviceRemoved(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginSimulation::executeAction(Device *device, const Action &action)
 {
     // Check the DeviceClassId for "Simple Button"
     if (device->deviceClassId() == simpleButtonDeviceClassId ) {
@@ -93,9 +93,9 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             Event event(simpleButtonPressedEventTypeId, device->id());
             emit emitEvent(event);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     // Check the DeviceClassId for "Alternative Button"
@@ -113,9 +113,9 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             // Set the "power" state
             device->setStateValue(alternativeButtonPowerStateTypeId, power);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == heatingDeviceClassId) {
@@ -128,7 +128,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             bool power = powerParam.value().toBool();
             qCDebug(dcSimulation()) << "Set power" << power << "for heating device" << device->name();
             device->setStateValue(heatingPowerStateTypeId, power);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == heatingPercentageActionTypeId) {
 
@@ -139,9 +139,9 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             qCDebug(dcSimulation()) << "Set target temperature percentage" << percentage << "for heating device" << device->name();
 
             device->setStateValue(heatingPercentageStateTypeId, percentage);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == thermostatDeviceClassId) {
@@ -152,7 +152,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             }
             qCDebug(dcSimulation()) << "Set power" << power << "for thermostat device" << device->name();
             device->setStateValue(thermostatPowerStateTypeId, power);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == thermostatBoostActionTypeId) {
             bool boost = action.param(thermostatBoostActionBoostParamTypeId).value().toBool();
@@ -162,7 +162,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             qCDebug(dcSimulation()) << "Set boost" << boost << "for thermostat device" << device->name();
             device->setStateValue(thermostatBoostStateTypeId, boost);
             m_simulationTimers.value(device)->start(5 * 60 * 1000);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == thermostatTargetTemperatureActionTypeId) {
             if (!device->stateValue(thermostatPowerStateTypeId).toBool()) {
@@ -171,7 +171,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             double targetTemp = action.param(thermostatTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
             qCDebug(dcSimulation()) << "Set targetTemp" << targetTemp << "for thermostat device" << device->name();
             device->setStateValue(thermostatTargetTemperatureStateTypeId, targetTemp);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
@@ -185,7 +185,7 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             qCDebug(dcSimulation()) << "Set power" << power << "for heating device" << device->name();
 
             device->setStateValue(evChargerPowerStateTypeId, power);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
 
         } else if(action.actionTypeId() == evChargerMaxChargingCurrentActionTypeId){
             // get the param value
@@ -193,9 +193,9 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             uint maxCharge = maxChargeParam.value().toInt();
             qCDebug(dcSimulation()) << "Set maximum charging current to" << maxCharge << "for EV Charger device" << device->name();
             device->setStateValue(evChargerMaxChargingCurrentStateTypeId, maxCharge);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if(device->deviceClassId() == socketDeviceClassId){
@@ -207,9 +207,9 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             // Set the "power" state
             qCDebug(dcSimulation()) << "Set power" << power << "for socket device" << device->name();
             device->setStateValue(socketPowerStateTypeId, power);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if(device->deviceClassId() == colorBulbDeviceClassId){
@@ -218,28 +218,28 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             int brightness = action.param(colorBulbBrightnessActionBrightnessParamTypeId).value().toInt();
             qCDebug(dcSimulation()) << "Set brightness" << brightness << "for color bulb device" << device->name();
             device->setStateValue(colorBulbBrightnessStateTypeId, brightness);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == colorBulbColorTemperatureActionTypeId){
             int temperature = action.param(colorBulbColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
             qCDebug(dcSimulation()) << "Set color temperature" << temperature << "for color bulb device" << device->name();
             device->setStateValue(colorBulbColorTemperatureStateTypeId, temperature);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == colorBulbColorActionTypeId) {
             QColor color = action.param(colorBulbColorActionColorParamTypeId).value().value<QColor>();
             qCDebug(dcSimulation()) << "Set color" << color << "for color bulb device" << device->name();
             device->setStateValue(colorBulbColorStateTypeId, color);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
 
         } else if (action.actionTypeId() == colorBulbPowerActionTypeId) {
             bool power = action.param(colorBulbPowerActionPowerParamTypeId).value().toBool();
             qCDebug(dcSimulation()) << "Set power" << power << "for color bulb device" << device->name();
             device->setStateValue(colorBulbPowerStateTypeId, power);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == heatingRodDeviceClassId) {
@@ -248,15 +248,15 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             bool power = action.param(heatingRodPowerActionPowerParamTypeId).value().toBool();
             qCDebug(dcSimulation()) << "Set power" << power << "for heating rod device" << device->name();
             device->setStateValue(heatingRodPowerStateTypeId, power);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == heatingRodPercentageActionTypeId) {
             int percentage = action.param(heatingRodPercentageActionPercentageParamTypeId).value().toInt();
             qCDebug(dcSimulation()) << "Set percentage" << percentage << "for heating rod device" << device->name();
             device->setStateValue(heatingRodPercentageStateTypeId, percentage);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == batteryDeviceClassId) {
@@ -265,64 +265,64 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             device->setStateValue(batteryMaxChargingStateTypeId, maxCharging);
             qCDebug(dcSimulation()) << "Set max charging power" << maxCharging << "for battery device" << device->name();
             device->setStateValue(batteryChargingStateTypeId, maxCharging);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == waterValveDeviceClassId) {
         if (action.actionTypeId() == waterValvePowerActionTypeId) {
             bool power = action.param(waterValvePowerActionPowerParamTypeId).value().toBool();
             device->setStateValue(waterValvePowerStateTypeId, power);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == garageGateDeviceClassId) {
         if (action.actionTypeId() == garageGateOpenActionTypeId) {
             if (device->stateValue(garageGateStateStateTypeId).toString() == "opening") {
                 qCDebug(dcSimulation()) << "Garage gate already opening.";
-                return DeviceManager::DeviceErrorNoError;
+                return Device::DeviceErrorNoError;
             }
             if (device->stateValue(garageGateStateStateTypeId).toString() == "open" &&
                     !device->stateValue(garageGateIntermediatePositionStateTypeId).toBool()) {
                 qCDebug(dcSimulation()) << "Garage gate already open.";
-                return DeviceManager::DeviceErrorNoError;
+                return Device::DeviceErrorNoError;
             }
             device->setStateValue(garageGateStateStateTypeId, "opening");
             device->setStateValue(garageGateIntermediatePositionStateTypeId, true);
             m_simulationTimers.value(device)->start(5000);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == garageGateCloseActionTypeId) {
             if (device->stateValue(garageGateStateStateTypeId).toString() == "closing") {
                 qCDebug(dcSimulation()) << "Garage gate already closing.";
-                return DeviceManager::DeviceErrorNoError;
+                return Device::DeviceErrorNoError;
             }
             if (device->stateValue(garageGateStateStateTypeId).toString() == "closed" &&
                     !device->stateValue(garageGateIntermediatePositionStateTypeId).toBool()) {
                 qCDebug(dcSimulation()) << "Garage gate already closed.";
-                return DeviceManager::DeviceErrorNoError;
+                return Device::DeviceErrorNoError;
             }
             device->setStateValue(garageGateStateStateTypeId, "closing");
             device->setStateValue(garageGateIntermediatePositionStateTypeId, true);
             m_simulationTimers.value(device)->start(5000);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == garageGateStopActionTypeId) {
             if (device->stateValue(garageGateStateStateTypeId).toString() == "opening" ||
                     device->stateValue(garageGateStateStateTypeId).toString() == "closing") {
                 device->setStateValue(garageGateStateStateTypeId, "open");
-                return DeviceManager::DeviceErrorNoError;
+                return Device::DeviceErrorNoError;
             }
             qCDebug(dcSimulation()) << "Garage gate not moving";
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == garageGatePowerActionTypeId) {
             bool power = action.param(garageGatePowerActionPowerParamTypeId).value().toBool();
             device->setStateValue(garageGatePowerStateTypeId, power);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
@@ -332,27 +332,27 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             m_simulationTimers.value(device)->setProperty("targetValue", 0);
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(rollerShutterMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == rollerShutterCloseActionTypeId) {
             qCDebug(dcSimulation()) << "Closing roller shutter";
             m_simulationTimers.value(device)->setProperty("targetValue", 100);
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(rollerShutterMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == rollerShutterStopActionTypeId) {
             qCDebug(dcSimulation()) << "Stopping roller shutter";
             m_simulationTimers.value(device)->stop();
             device->setStateValue(rollerShutterMovingStateTypeId, false);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == rollerShutterPercentageActionTypeId) {
             qCDebug(dcSimulation()) << "Setting awning to" << action.param(rollerShutterPercentageActionPercentageParamTypeId);
             m_simulationTimers.value(device)->setProperty("targetValue", action.param(rollerShutterPercentageActionPercentageParamTypeId).value());
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(rollerShutterMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
@@ -362,27 +362,27 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             m_simulationTimers.value(device)->setProperty("targetValue", 100);
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedAwningMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == extendedAwningCloseActionTypeId) {
             qCDebug(dcSimulation()) << "Closing awning";
             m_simulationTimers.value(device)->setProperty("targetValue", 0);
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedAwningMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == extendedAwningStopActionTypeId) {
             qCDebug(dcSimulation()) << "Stopping awning";
             m_simulationTimers.value(device)->stop();
             device->setStateValue(extendedAwningMovingStateTypeId, false);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == extendedAwningPercentageActionTypeId) {
             qCDebug(dcSimulation()) << "Setting awning to" << action.param(extendedAwningPercentageActionPercentageParamTypeId);
             m_simulationTimers.value(device)->setProperty("targetValue", action.param(extendedAwningPercentageActionPercentageParamTypeId).value());
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedAwningMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
@@ -395,13 +395,13 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             settings.beginGroup(device->id().toString());
             QStringList usedFingers = settings.value(username).toStringList();
             if (users.contains(username) && usedFingers.contains(finger)) {
-                return DeviceManager::DeviceErrorDuplicateUuid;
+                return Device::DeviceErrorDuplicateUuid;
             }
             QTimer::singleShot(5000, this, [this, action, device, username, finger]() {
                 if (username.toLower().trimmed() == "john") {
-                    emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorHardwareFailure);
+                    emit actionExecutionFinished(action.id(), Device::DeviceErrorHardwareFailure);
                 } else {
-                    emit actionExecutionFinished(action.id(), DeviceManager::DeviceErrorNoError);
+                    emit actionExecutionFinished(action.id(), Device::DeviceErrorNoError);
                     QStringList users = device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList();
                     if (!users.contains(username)) {
                         users.append(username);
@@ -417,35 +417,35 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
                     settings.endGroup();
                 }
             });
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
         if (action.actionTypeId() == fingerPrintSensorRemoveUserActionTypeId) {
             QStringList users = device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList();
             QString username = action.params().first().value().toString();
             if (!users.contains(username)) {
-                return DeviceManager::DeviceErrorInvalidParameter;
+                return Device::DeviceErrorInvalidParameter;
             }
             users.removeAll(username);
             device->setStateValue(fingerPrintSensorUsersStateTypeId, users);
             if (users.count() == 0) {
                 m_simulationTimers.value(device)->stop();
             }
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
     if (device->deviceClassId() == simpleBlindDeviceClassId) {
         if (action.actionTypeId() == simpleBlindOpenActionTypeId) {
             qCDebug(dcSimulation()) << "Opening simple blind";
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == simpleBlindCloseActionTypeId) {
             qCDebug(dcSimulation()) << "Closing simple blind";
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == simpleBlindStopActionTypeId) {
             qCDebug(dcSimulation()) << "Stopping simple blind";
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
@@ -455,33 +455,33 @@ DeviceManager::DeviceError DevicePluginSimulation::executeAction(Device *device,
             m_simulationTimers.value(device)->setProperty("targetValue", 0);
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedBlindMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == extendedBlindCloseActionTypeId) {
             qCDebug(dcSimulation()) << "Closing extended blind";
             m_simulationTimers.value(device)->setProperty("targetValue", 100);
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedBlindMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == extendedBlindStopActionTypeId) {
             qCDebug(dcSimulation()) << "Stopping extended blind";
             m_simulationTimers.value(device)->stop();
             device->setStateValue(extendedBlindMovingStateTypeId, false);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == extendedBlindPercentageActionTypeId) {
             qCDebug(dcSimulation()) << "Setting extended blind to" << action.param(extendedBlindPercentageActionPercentageParamTypeId);
             m_simulationTimers.value(device)->setProperty("targetValue", action.param(extendedBlindPercentageActionPercentageParamTypeId).value());
             m_simulationTimers.value(device)->start(500);
             device->setStateValue(extendedBlindMovingStateTypeId, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
     qCWarning(dcSimulation()) << "Unhandled device class" << device->deviceClassId() << "for device" << device->name();
 
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 int DevicePluginSimulation::generateRandomIntValue(int min, int max)

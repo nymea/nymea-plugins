@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINMQTTCLIENT_H
 #define DEVICEPLUGINMQTTCLIENT_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 #include <QHash>
 #include <QDebug>
@@ -40,10 +40,10 @@ class DevicePluginMqttClient: public DevicePlugin
 public:
     explicit DevicePluginMqttClient();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private slots:
     void subscribe(Device *device);

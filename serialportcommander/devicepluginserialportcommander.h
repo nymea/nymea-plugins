@@ -23,8 +23,7 @@
 #ifndef DEVICEPLUGINSERIALPORTCOMMANDER_H
 #define DEVICEPLUGINSERIALPORTCOMMANDER_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
 
 #include <QTimer>
 #include <QSerialPort>
@@ -40,10 +39,10 @@ class DevicePluginSerialPortCommander : public DevicePlugin
 public:
     explicit DevicePluginSerialPortCommander();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     QTimer *m_reconnectTimer = nullptr;

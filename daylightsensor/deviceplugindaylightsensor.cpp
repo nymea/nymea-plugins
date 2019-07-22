@@ -22,7 +22,6 @@
 
 
 #include "plugininfo.h"
-#include "devicemanager.h"
 #include "deviceplugindaylightsensor.h"
 #include "network/networkaccessmanager.h"
 
@@ -45,7 +44,7 @@ DevicePluginDaylightSensor::~DevicePluginDaylightSensor()
 
 }
 
-DeviceManager::DeviceError DevicePluginDaylightSensor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginDaylightSensor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(deviceClassId)
     Q_UNUSED(params)
@@ -84,14 +83,14 @@ DeviceManager::DeviceError DevicePluginDaylightSensor::discoverDevices(const Dev
         emit devicesDiscovered(deviceClassId, results);
     });
 
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginDaylightSensor::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginDaylightSensor::setupDevice(Device *device)
 {
     updateDevice(device);
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginDaylightSensor::deviceRemoved(Device *device)

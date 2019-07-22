@@ -39,13 +39,13 @@ DevicePluginTexasInstruments::~DevicePluginTexasInstruments()
 
 }
 
-DeviceManager::DeviceError DevicePluginTexasInstruments::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginTexasInstruments::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     Q_ASSERT_X(deviceClassId == sensorTagDeviceClassId, "DevicePluginTexasInstruments", "Unhandled DeviceClassId!");
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->available() || !hardwareManager()->bluetoothLowEnergyManager()->enabled()) {
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
 
     BluetoothDiscoveryReply *reply = hardwareManager()->bluetoothLowEnergyManager()->discoverDevices();
@@ -85,10 +85,10 @@ DeviceManager::DeviceError DevicePluginTexasInstruments::discoverDevices(const D
 
         emit devicesDiscovered(sensorTagDeviceClassId, deviceDescriptors);
     });
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginTexasInstruments::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginTexasInstruments::setupDevice(Device *device)
 {
     qCDebug(dcTexasInstruments()) << "Setting up Multi Sensor" << device->name() << device->params();
 
@@ -111,7 +111,7 @@ DeviceManager::DeviceSetupStatus DevicePluginTexasInstruments::setupDevice(Devic
         });
     }
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginTexasInstruments::postSetupDevice(Device *device)
@@ -150,72 +150,72 @@ void DevicePluginTexasInstruments::deviceRemoved(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginTexasInstruments::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginTexasInstruments::executeAction(Device *device, const Action &action)
 {
     SensorTag *sensorTag = m_sensorTags.value(device);
     if (action.actionTypeId() == sensorTagBuzzerActionTypeId) {
         sensorTag->setBuzzerPower(action.param(sensorTagBuzzerActionBuzzerParamTypeId).value().toBool());
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagGreenLedActionTypeId) {
         sensorTag->setGreenLedPower(action.param(sensorTagGreenLedActionGreenLedParamTypeId).value().toBool());
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagRedLedActionTypeId) {
         sensorTag->setRedLedPower(action.param(sensorTagRedLedActionRedLedParamTypeId).value().toBool());
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagBuzzerImpulseActionTypeId) {
         sensorTag->buzzerImpulse();
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagTemperatureSensorEnabledActionTypeId) {
         bool enabled = action.param(sensorTagTemperatureSensorEnabledActionTemperatureSensorEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagTemperatureSensorEnabledStateTypeId, enabled);
         sensorTag->setTemperatureSensorEnabled(enabled);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagHumiditySensorEnabledActionTypeId) {
         bool enabled = action.param(sensorTagHumiditySensorEnabledActionHumiditySensorEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagHumiditySensorEnabledStateTypeId, enabled);
         sensorTag->setHumiditySensorEnabled(enabled);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagPressureSensorEnabledActionTypeId) {
         bool enabled = action.param(sensorTagPressureSensorEnabledActionPressureSensorEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagPressureSensorEnabledStateTypeId, enabled);
         sensorTag->setPressureSensorEnabled(enabled);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagOpticalSensorEnabledActionTypeId) {
         bool enabled = action.param(sensorTagOpticalSensorEnabledActionOpticalSensorEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagOpticalSensorEnabledStateTypeId, enabled);
         sensorTag->setOpticalSensorEnabled(enabled);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagAccelerometerEnabledActionTypeId) {
         bool enabled = action.param(sensorTagAccelerometerEnabledActionAccelerometerEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagAccelerometerEnabledStateTypeId, enabled);
         sensorTag->setAccelerometerEnabled(enabled);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagGyroscopeEnabledActionTypeId) {
         bool enabled = action.param(sensorTagGyroscopeEnabledActionGyroscopeEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagGyroscopeEnabledStateTypeId, enabled);
         sensorTag->setGyroscopeEnabled(enabled);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMagnetometerEnabledActionTypeId) {
         bool enabled = action.param(sensorTagMagnetometerEnabledActionMagnetometerEnabledParamTypeId).value().toBool();
         device->setStateValue(sensorTagMagnetometerEnabledStateTypeId, enabled);
         sensorTag->setMagnetometerEnabled(enabled);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMeasurementPeriodActionTypeId) {
         int period = action.param(sensorTagMeasurementPeriodActionMeasurementPeriodParamTypeId).value().toInt();
         device->setStateValue(sensorTagMeasurementPeriodStateTypeId, period);
         sensorTag->setMeasurementPeriod(period);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMeasurementPeriodMovementActionTypeId) {
         int period = action.param(sensorTagMeasurementPeriodMovementActionMeasurementPeriodMovementParamTypeId).value().toInt();
         device->setStateValue(sensorTagMeasurementPeriodMovementStateTypeId, period);
         sensorTag->setMeasurementPeriodMovement(period);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     } else if (action.actionTypeId() == sensorTagMovementSensitivityActionTypeId) {
         int sensitivity = action.param(sensorTagMovementSensitivityActionMovementSensitivityParamTypeId).value().toInt();
         device->setStateValue(sensorTagMovementSensitivityStateTypeId, sensitivity);
         sensorTag->setMovementSensitivity(sensitivity);
-        return DeviceManager::DeviceErrorNoError;
+        return Device::DeviceErrorNoError;
     }
 
-    return DeviceManager::DeviceErrorActionTypeNotFound;
+    return Device::DeviceErrorActionTypeNotFound;
 }

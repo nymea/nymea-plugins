@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINGENERICELEMENTS_H
 #define DEVICEPLUGINGENERICELEMENTS_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 class DevicePluginGenericElements : public DevicePlugin
 {
@@ -34,10 +34,10 @@ class DevicePluginGenericElements : public DevicePlugin
 
 public:
     explicit DevicePluginGenericElements();
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 };
 

@@ -22,8 +22,7 @@
 
 #include "devicepluginwemo.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 #include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
@@ -52,30 +51,30 @@ void DevicePluginWemo::init()
     connect(hardwareManager()->upnpDiscovery(), &UpnpDiscovery::upnpNotify, this, &DevicePluginWemo::onUpnpNotifyReceived);
 }
 
-DeviceManager::DeviceError DevicePluginWemo::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginWemo::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params);
     Q_UNUSED(deviceClassId)
 
     UpnpDiscoveryReply *reply = hardwareManager()->upnpDiscovery()->discoverDevices("upnp:rootdevice");
     connect(reply, &UpnpDiscoveryReply::finished, this, &DevicePluginWemo::onUpnpDiscoveryFinished);
-    return DeviceManager::DeviceErrorAsync;
+    return Device::DeviceErrorAsync;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginWemo::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginWemo::setupDevice(Device *device)
 {
     if (device->deviceClassId() != wemoSwitchDeviceClassId) {
-        return DeviceManager::DeviceSetupStatusFailure;
+        return Device::DeviceSetupStatusFailure;
     }
 
     refresh(device);
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
-DeviceManager::DeviceError DevicePluginWemo::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginWemo::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() != wemoSwitchDeviceClassId)
-        return DeviceManager::DeviceErrorDeviceClassNotFound;
+        return Device::DeviceErrorDeviceClassNotFound;
 
     // Set power
     if (action.actionTypeId() == wemoSwitchPowerActionTypeId) {
@@ -83,16 +82,16 @@ DeviceManager::DeviceError DevicePluginWemo::executeAction(Device *device, const
         if (device->stateValue(wemoSwitchConnectedStateTypeId).toBool()) {
             // setPower returns false, if the curent powerState is already the new powerState
             if (setPower(device, action.param(wemoSwitchPowerActionPowerParamTypeId).value().toBool(), action.id())) {
-                return DeviceManager::DeviceErrorAsync;
+                return Device::DeviceErrorAsync;
             } else {
-                return DeviceManager::DeviceErrorNoError;
+                return Device::DeviceErrorNoError;
             }
         } else {
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
     }
 
-    return DeviceManager::DeviceErrorActionTypeNotFound;
+    return Device::DeviceErrorActionTypeNotFound;
 }
 
 void DevicePluginWemo::deviceRemoved(Device *device)
@@ -168,12 +167,12 @@ void DevicePluginWemo::processRefreshData(const QByteArray &data, Device *device
 void DevicePluginWemo::processSetPowerData(const QByteArray &data, Device *device, const ActionId &actionId)
 {
     if (data.contains("<BinaryState>1</BinaryState>") || data.contains("<BinaryState>0</BinaryState>")) {
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorNoError);
+        emit actionExecutionFinished(actionId, Device::DeviceErrorNoError);
         device->setStateValue(wemoSwitchConnectedStateTypeId, true);
         refresh(device);
     } else {
         device->setStateValue(wemoSwitchConnectedStateTypeId, false);
-        emit actionExecutionFinished(actionId, DeviceManager::DeviceErrorHardwareNotAvailable);
+        emit actionExecutionFinished(actionId, Device::DeviceErrorHardwareNotAvailable);
     }
 }
 

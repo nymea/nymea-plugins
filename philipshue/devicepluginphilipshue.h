@@ -24,13 +24,15 @@
 #ifndef DEVICEPLUGINPHILIPSHUE_H
 #define DEVICEPLUGINPHILIPSHUE_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "huebridge.h"
 #include "huelight.h"
 #include "hueremote.h"
 #include "pairinginfo.h"
+#include "huemotionsensor.h"
+#include "huemotionsensor.h"
+
 #include "plugintimer.h"
-#include "hueoutdoorsensor.h"
 #include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
 
@@ -48,25 +50,25 @@ public:
     ~DevicePluginPhilipsHue();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
+    Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
 
 public slots:
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action);
+    Device::DeviceError executeAction(Device *device, const Action &action);
 
 private slots:
     void lightStateChanged();
     void remoteStateChanged();
     void onRemoteButtonEvent(int buttonCode);
 
-    // Outdoor sensor
-    void onOutdoorSensorReachableChanged(bool reachable);
-    void onOutdoorSensorBatteryLevelChanged(int batteryLevel);
-    void onOutdoorSensorTemperatureChanged(double temperature);
-    void onOutdoorSensorPresenceChanged(bool presence);
-    void onOutdoorSensorLightIntensityChanged(double lightIntensity);
+    // Motion sensor
+    void onMotionSensorReachableChanged(bool reachable);
+    void onMotionSensorBatteryLevelChanged(int batteryLevel);
+    void onMotionSensorTemperatureChanged(double temperature);
+    void onMotionSensorPresenceChanged(bool presence);
+    void onMotionSensorLightIntensityChanged(double lightIntensity);
 
 private slots:
     void networkManagerReplyReady();
@@ -105,7 +107,7 @@ private:
     QHash<HueBridge *, Device *> m_bridges;
     QHash<HueLight *, Device *> m_lights;
     QHash<HueRemote *, Device *> m_remotes;
-    QHash<HueOutdoorSensor *, Device *> m_outdoorSensors;
+    QHash<HueMotionSensor *, Device *> m_motionSensors;
 
     void refreshLight(Device *device);
     void refreshBridge(Device *device);

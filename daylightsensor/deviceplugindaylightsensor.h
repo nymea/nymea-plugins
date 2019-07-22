@@ -24,8 +24,7 @@
 #define DEVICEPLUGINDAYLIGHTSENSOR_H
 
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
 #include "plugintimer.h"
 
 class DevicePluginDaylightSensor: public DevicePlugin
@@ -38,8 +37,8 @@ public:
     explicit DevicePluginDaylightSensor();
     ~DevicePluginDaylightSensor() override;
 
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
 private slots:

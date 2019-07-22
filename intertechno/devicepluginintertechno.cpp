@@ -22,8 +22,7 @@
 
 #include "devicepluginintertechno.h"
 
-#include "plugin/device.h"
-#include "devicemanager.h"
+#include "devices/device.h"
 #include "hardware/radio433/radio433.h"
 #include "plugininfo.h"
 
@@ -36,10 +35,10 @@ DevicePluginIntertechno::DevicePluginIntertechno()
 }
 
 
-DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginIntertechno::executeAction(Device *device, const Action &action)
 {
     if (!hardwareManager()->radio433()->available())
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
 
     QList<int> rawData;
     QByteArray binCode;
@@ -121,7 +120,7 @@ DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device
     }
 
     if (binCode.length() != 16){
-        return DeviceManager::DeviceErrorInvalidParameter;
+        return Device::DeviceErrorInvalidParameter;
     }
 
     // =======================================
@@ -160,9 +159,9 @@ DeviceManager::DeviceError DevicePluginIntertechno::executeAction(Device *device
         qCDebug(dcIntertechno) << "transmitted" << pluginName() << device->name() << "power: " << action.param(switchSetPowerActionPowerParamTypeId).value().toBool();
     } else {
         qCWarning(dcIntertechno) << "could not transmitt" << pluginName() << device->name() << "power: " << action.param(switchSetPowerActionPowerParamTypeId).value().toBool();
-        return DeviceManager::DeviceErrorHardwareNotAvailable;
+        return Device::DeviceErrorHardwareNotAvailable;
     }
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }
 
 void DevicePluginIntertechno::radioData(const QList<int> &rawData)

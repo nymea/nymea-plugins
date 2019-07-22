@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINOSDOMOTICS_H
 #define DEVICEPLUGINOSDOMOTICS_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 #include <QHash>
 #include <QDebug>
@@ -43,10 +43,10 @@ public:
     ~DevicePluginOsdomotics();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
     void postSetupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;

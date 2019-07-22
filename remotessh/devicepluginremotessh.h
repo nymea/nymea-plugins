@@ -25,7 +25,7 @@
 #define DEVICEPLUGINREMOTESSH_H
 
 #include "plugintimer.h"
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 #include <QProcess>
 
@@ -40,9 +40,9 @@ public:
     explicit DevicePluginRemoteSsh();
 
     void init() override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     QHash<QProcess *, Device *> m_reverseSSHProcess;

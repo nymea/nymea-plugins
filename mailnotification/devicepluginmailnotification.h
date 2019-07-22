@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINMAILNOTIFICATION_H
 #define DEVICEPLUGINMAILNOTIFICATION_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "smtpclient.h"
 
 class DevicePluginMailNotification : public DevicePlugin
@@ -37,8 +37,8 @@ public:
     explicit DevicePluginMailNotification();
     ~DevicePluginMailNotification();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
     void deviceRemoved(Device *device) override;
 
 private:

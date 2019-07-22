@@ -25,7 +25,7 @@
 
 #include <QObject>
 
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "extern-plugininfo.h"
 #include "sensordataprocessor.h"
 

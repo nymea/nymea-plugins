@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "devicepluginudpcommander.h"
-#include "plugin/device.h"
+#include "devices/device.h"
 #include "plugininfo.h"
 
 DevicePluginUdpCommander::DevicePluginUdpCommander()
@@ -30,7 +30,7 @@ DevicePluginUdpCommander::DevicePluginUdpCommander()
 
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *device)
 {
     qCDebug(dcUdpCommander()) << "Setup device" << device->name() << device->params();
 
@@ -40,25 +40,25 @@ DeviceManager::DeviceSetupStatus DevicePluginUdpCommander::setupDevice(Device *d
         if (!udpSocket->bind(QHostAddress::Any, port, QUdpSocket::ShareAddress)) {
             qCWarning(dcUdpCommander()) << device->name() << "cannot bind to port" << port;
             delete udpSocket;
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
         qCDebug(dcUdpCommander()) << "Listening on port" << port;
 
         connect(udpSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
         m_receiverList.insert(udpSocket, device);
 
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     } else if (device->deviceClassId() == udpCommanderDeviceClassId) {
         QUdpSocket *udpSocket = new QUdpSocket(this);
         m_commanderList.insert(udpSocket, device);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 
-DeviceManager::DeviceError DevicePluginUdpCommander::executeAction(Device *device, const Action &action) {
+Device::DeviceError DevicePluginUdpCommander::executeAction(Device *device, const Action &action) {
 
     if (device->deviceClassId() == udpCommanderDeviceClassId) {
         if (action.actionTypeId() == udpCommanderTriggerActionTypeId) {
@@ -69,11 +69,11 @@ DeviceManager::DeviceError DevicePluginUdpCommander::executeAction(Device *devic
             qDebug(dcUdpCommander()) << "Send UDP datagram:" << data << "address:" << address.toIPv4Address() << "port:" << port;
             udpSocket->writeDatagram(data, address, port);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginUdpCommander::deviceRemoved(Device *device)
