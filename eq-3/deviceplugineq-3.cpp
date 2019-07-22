@@ -481,6 +481,7 @@ void DevicePluginEQ3::radiatorThermostatDataUpdated()
         foreach (Device *device, myDevices().filterByDeviceClassId(radiatorThermostateDeviceClassId)){
             if(device->paramValue(radiatorThermostateDeviceSerialParamTypeId).toString() == radiatorThermostat->serialNumber()){
                 device->setStateValue(radiatorThermostateComfortTempStateTypeId, radiatorThermostat->comfortTemp());
+                device->setStateValue(radiatorThermostateEcoTempStateTypeId, radiatorThermostat->ecoTemp());
                 device->setStateValue(radiatorThermostateMaxSetpointTempStateTypeId, radiatorThermostat->maxSetPointTemp());
                 device->setStateValue(radiatorThermostateMinSetpointTempStateTypeId, radiatorThermostat->minSetPointTemp());
                 device->setStateValue(radiatorThermostateErrorOccurredStateTypeId, radiatorThermostat->errorOccurred());

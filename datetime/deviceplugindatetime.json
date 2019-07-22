@@ -104,9 +104,9 @@
                         },
                         {
                             "id": "44a99419-fbcd-4d8e-9441-897848b8f77c",
-                            "name": "dusk",
-                            "displayName": "dusk",
-                            "displayNameEvent": "dusk changed",
+                            "name": "duskTime",
+                            "displayName": "Dusk time",
+                            "displayNameEvent": "Dusk time changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0
@@ -114,26 +114,26 @@
                         {
                             "id": "3a08824d-285b-412e-a515-9664b491a85c",
                             "name": "sunriseTime",
-                            "displayName": "sunrise",
-                            "displayNameEvent": "sunrise changed",
+                            "displayName": "Sunrise time",
+                            "displayNameEvent": "Sunrise time changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0
                         },
                         {
                             "id": "d92be29a-929c-4240-91a0-30153850f838",
-                            "name": "noon",
-                            "displayName": "noon",
-                            "displayNameEvent": "noon changed",
+                            "name": "noonTime",
+                            "displayName": "Noon time",
+                            "displayNameEvent": "Noon time changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0
                         },
                         {
                             "id": "a5779b11-0499-4a6d-a7bd-8143dcc546b4",
-                            "name": "dawn",
-                            "displayName": "dawn",
-                            "displayNameEvent": "dawn changed",
+                            "name": "dawnTime",
+                            "displayName": "Dawn time",
+                            "displayNameEvent": "Dawn time changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0
@@ -141,8 +141,8 @@
                         {
                             "id": "377f04a7-df58-42ad-a234-e9e23bdc2f85",
                             "name": "sunsetTime",
-                            "displayName": "sunset",
-                            "displayNameEvent": "sunset changed",
+                            "displayName": "Sunset time",
+                            "displayNameEvent": "Sunset time changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0

@@ -79,6 +79,31 @@ Device::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
         return Device::DeviceSetupStatusSuccess;
     } else if (device->deviceClassId() == outdoorDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo outdoor module" << device->params();
+
+
+        // Migrate device parameters after changing param type UUIDs in 0.14.
+        QMap<QString, ParamTypeId> migrationMap;
+        migrationMap.insert("a97d256c-e159-4aa0-bc71-6bd7cd0688b3", outdoorDeviceNameParamTypeId);
+        migrationMap.insert("157d470a-e579-4d0e-b879-6b5bfa8e34ae", outdoorDeviceMacParamTypeId);
+
+        ParamList migratedParams;
+        foreach (const Param &oldParam, device->params()) {
+            QString oldId = oldParam.paramTypeId().toString();
+            oldId.remove(QRegExp("[{}]"));
+            if (migrationMap.contains(oldId)) {
+                ParamTypeId newId = migrationMap.value(oldId);
+                QVariant oldValue = oldParam.value();
+                qCDebug(dcNetatmo()) << "Migrating netatmo outdoor station param:" << oldId << "->" << newId << ":" << oldValue;
+                Param newParam(newId, oldValue);
+                migratedParams << newParam;
+            } else {
+                migratedParams << oldParam;
+            }
+        }
+        device->setParams(migratedParams);
+        // Migration done
+
+
         NetatmoOutdoorModule *outdoor = new NetatmoOutdoorModule(device->paramValue(outdoorDeviceNameParamTypeId).toString(),
                                                                  device->paramValue(outdoorDeviceMacParamTypeId).toString(),
                                                                  device->paramValue(outdoorDeviceBaseStationParamTypeId).toString(),
