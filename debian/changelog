@@ -1,7 +1,18 @@
-nymea-plugins (0.15.0) UNRELEASED; urgency=medium
+nymea-plugins (0.15.0) xenial; urgency=medium
 
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Wed, 26 Jun 2019 21:44:29 +0200
+  [ Simon Stürz ]
+  * All Plugins: Update docs mechanism
+
+  [ Michael Zanetti ]
+  * NetworkDetector: Change grace period to be a setting instead of a
+    param
+  * Philips Hue: Add support for the hue indoor motion sensor
+  * All Plugins: Update according to new DeviceManager API
+  * Use the new nymea-plugininfocompiler for building
+  * GenericElements: Fix toggle button writable state
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 22 Jul 2019 12:17:16 +0200
 
 nymea-plugins (0.12.3) xenial; urgency=medium
 
