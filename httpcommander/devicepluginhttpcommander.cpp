@@ -25,21 +25,6 @@
 #include "network/networkaccessmanager.h"
 #include "plugininfo.h"
 
-
-/*!
-    \page httpcommander.html
-    \title HTTP commander
-    \brief Plugin for generic HTTP commands
-    \ingroup plugins
-    \ingroup nymea-plugins
-    This plug-in supports generic HTTP calls like get, put, post
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-    \quotefile plugins/deviceplugins/denon/devicepluginhttpcommander.json
-*/
-
 DevicePluginHttpCommander::DevicePluginHttpCommander()
 {
 }

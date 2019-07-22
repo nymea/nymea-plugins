@@ -21,29 +21,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page networkdetector.html
-    \title Network Detector
-    \brief Plugin to monitor devices in the local network.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-
-    This plugin allows to find and monitor network devices in your local network by using the hostname of the devices.
-
-    \underline{NOTE}: the application \c nmap has to be installed and nymea has to run as root.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/networkdetector/devicepluginnetworkdetector.json
-*/
-
-
 #include "devicepluginnetworkdetector.h"
 
 #include "plugin/device.h"

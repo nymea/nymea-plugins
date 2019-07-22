@@ -20,26 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page elro.html
-    \title Elro
-    \brief Plugin for all Elro 433 MHz based devices.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to controll RF 433 MHz actors an receive remote signals from \l{http://www.elroshop.eu/}{Elro}
-    devices.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/elro/devicepluginelro.json
-*/
-
 #include "devicepluginelro.h"
 #include "devicemanager.h"
 #include "plugininfo.h"

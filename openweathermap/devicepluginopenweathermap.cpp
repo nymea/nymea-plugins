@@ -20,33 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page openweathermap.html
-    \title Open Weather Map
-    \brief Plugin for the Open Weather Map online weather service.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to get the current weather data from \l{http://www.openweathermap.org}{OpenWeatherMap}.
-    The weather data will be refreshed every 15 minutes automatically, but can also refreshed manually.
-    The plugin offers two different search methods for the location: if the user searches for a empty string,
-    the plugin makes an autodetction with the WAN ip and offers the user the found weather stations.
-    The autodetection function uses the geolocation of your WAN ip and searches all available weather
-    stations in a radius of 1.5 km. Otherwise the plugin returns the list of the found search results
-    from the search string.
-
-    \underline{NOTE}: If you are using a VPN connection, the autodetection will show the results around your VPN location.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/openweathermap/devicepluginopenweathermap.json
-*/
-
 #include "devicepluginopenweathermap.h"
 #include "plugin/device.h"
 #include "devicemanager.h"

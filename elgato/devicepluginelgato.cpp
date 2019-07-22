@@ -20,19 +20,7 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page elgato.html
-    \title Elgato
-    \brief Plugin for Elgato Avea Blutooth lamp.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to find and controll the Bluetooth Low Energy bulb from \l{https://www.elgato.com/en/smart/avea}{Elgato Avea}.
-
-    \chapter Device Overviw of \tt{Avea_44A9}
-    \section1 Services
-    \code
+/*
         ----------------------------------------------------------------
         name           : "Generic Access"
         type           : "<primary>"
@@ -69,10 +57,9 @@
         uuid           : "{f815e900-456c-6761-746f-4d756e696368}"
         uuid (hex)     : "f815e900-456c-6761-746f-4d756e696368"
         ----------------------------------------------------------------
-    \endcode
 
-    \section2 Service: "Generic Access" {00001800-0000-1000-8000-00805f9b34fb} details
-    \code
+    Service: "Generic Access" {00001800-0000-1000-8000-00805f9b34fb} details
+
         ----------------------------------------------------------------
         characteristics:
            name            : "GAP Device Name"
@@ -125,10 +112,10 @@
            ---------------------------------------------------------
            descriptor count: 0
            ---------------------------------------------------------
-    \endcode
 
-    \section2 Service: "Generic Attribute" {00001801-0000-1000-8000-00805f9b34fb} details
-    \code
+
+    Service: "Generic Attribute" {00001801-0000-1000-8000-00805f9b34fb} details
+
         ----------------------------------------------------------------
         characteristics:
            name            : "GATT Service Changed"
@@ -147,10 +134,10 @@
                value       : "
                value (hex) : "0000"
                -----------------------------------------------------
-    \endcode
 
-    \section2 Service: "Device Information" {0000180a-0000-1000-8000-00805f9b34fb} details
-    \code
+
+    Service: "Device Information" {0000180a-0000-1000-8000-00805f9b34fb} details
+
         ----------------------------------------------------------------
         characteristics:
            name            : "System ID"
@@ -233,10 +220,9 @@
            ---------------------------------------------------------
            descriptor count: 0
            ---------------------------------------------------------
-    \endcode
 
-    \section2 Service: "Unknown Service" {f815e600-456c-6761-746f-4d756e696368} details
-    \code
+    Service: "Unknown Service" {f815e600-456c-6761-746f-4d756e696368} details
+
         ----------------------------------------------------------------
         characteristics:
            name            : "Alert"
@@ -261,10 +247,10 @@
                value       : "Alert"
                value (hex) : "416c657274"
                -----------------------------------------------------
-    \endcode
 
-    \section2 Service: "Unknown Service" {f815e500-456c-6761-746f-4d756e696368} details
-    \code
+
+    Service: "Unknown Service" {f815e500-456c-6761-746f-4d756e696368} details
+
         ----------------------------------------------------------------
         characteristics:
            name            : "Seq Upload"
@@ -289,13 +275,11 @@
                value       : "Seq Upload"
                value (hex) : "5365712055706c6f6164"
                -----------------------------------------------------
-    \endcode
 
-    \section2 Service: "Unknown Service" {f815e810-456c-6761-746f-4d756e696368} details
 
-    Tis service will be used to set the color (handle \tt{0x2d}).
+    Service: "Unknown Service" {f815e810-456c-6761-746f-4d756e696368} details
+    Tis service will be used to set the color (handle 0x2d).
 
-    \code
         ----------------------------------------------------------------
         characteristics:
            name            : "Debug"
@@ -336,10 +320,9 @@
                value       : "User Name"
                value (hex) : "55736572204e616d65"
                -----------------------------------------------------
-    \endcode
 
-    \section2 Service: "Unknown Service" {f815e900-456c-6761-746f-4d756e696368} details
-    \code
+    Service: "Unknown Service" {f815e900-456c-6761-746f-4d756e696368} details
+
         ----------------------------------------------------------------
         characteristics:
            name            : "Img Identify"
@@ -386,17 +369,9 @@
                value       : "Img Block"
                value (hex) : "496d6720426c6f636b"
                -----------------------------------------------------
-    \endcode
-
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/elgato/devicepluginelgato.json
 */
+
+
 
 #include "devicepluginelgato.h"
 

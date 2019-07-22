@@ -20,38 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page genericelements.html
-    \title Generic elements
-    \brief Common elements to test the rule engine.
-
-    \ingroup plugins
-    \ingroup nymea-tests
-
-    The generic elements plugin allows you create virtual buttons, which can be connected with a rule. This gives you
-    the possibility to execute multiple \l{Action}{Actions} with one signal. Without a rule this generic elements are
-    useless.
-
-    \chapter Toggle Button
-    With the "Toggle Button" \l{DeviceClass} you can create a button with one \l{Action} \unicode{0x2192} toggle. In the \tt state \l{State} you can find out,
-    what happens if the button will be pressed. The states can be true or false.
-
-    \chapter Button
-    With the "Button" \l{DeviceClass} you can create a button with one \l{Action} \unicode{0x2192} press. This button just creates one \l{Event}.
-
-    \chapter ON/OFF Button
-    With the "ON/OFF Button" \l{DeviceClass} you create a button pair with the \l{Action}{Actions} \unicode{0x2192} ON and OFF.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/genericelements/deviceplugingenericelements.json
-*/
-
-
 #include "deviceplugingenericelements.h"
 #include "devicemanager.h"
 #include "plugininfo.h"

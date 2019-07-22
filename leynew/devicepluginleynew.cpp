@@ -20,32 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page leynew.html
-    \title Leynew
-    \brief Plugin for the Leynew RF 433 MHz led controller.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to controll RF 433 MHz actors an receive remote signals from \l{http://www.leynew.com/en/}{Leynew}
-    devices.
-
-    Currently only following device is supported:
-
-    \l{http://www.leynew.com/en/productview.asp?id=589}{http://www.leynew.com/en/productview.asp?id=589}
-
-    \l{http://image.en.09635.com/2012-8/15/RF-Controller-Aluminum-Version-LN-CON-RF20B-H-3CH-LV-316.jpg}{http://image.en.09635.com/2012-8/15/RF-Controller-Aluminum-Version-LN-CON-RF20B-H-3CH-LV-316.jpg}
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/leynew/devicepluginleynew.json
-*/
-
 #include "devicepluginleynew.h"
 #include "devicemanager.h"
 #include "plugininfo.h"

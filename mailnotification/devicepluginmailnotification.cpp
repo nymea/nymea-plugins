@@ -20,40 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page mailnotification.html
-    \title Mail Notification
-    \brief Plugin which allows to get mail notification from nymea.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    The mail notification plugin allows you to send a mail notification from a mail
-    account by performing an \l{Action}.
-
-    ATTENTION: The password currently will be saved as plain text in the nymea settings file.
-    This will be changed soon...
-
-    \chapter Supported services
-
-        \section2 Yahoo Mail
-        The Yahoo Mail Notification you can send a mail with your yahoo address to a recipient. The username
-        is your mail address (e.g. "chuck.norris@yahoo.com"). The recipient will receive the notification
-        from your yahoo account.
-
-        \section2 Custom Mail
-        With the Custom Mail Notification you can set up a custom SMTP connection. The supported authentication
-        methods are ["PLAIN", "LOGIN"], the supported encryption methods are ["NONE", "SSL", "TLS"].
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/mailnotification/devicepluginmailnotification.json
-*/
-
 #include "devicepluginmailnotification.h"
 
 #include "plugin/device.h"

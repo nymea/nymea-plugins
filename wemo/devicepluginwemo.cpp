@@ -20,30 +20,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page wemo.html
-    \title WeMo
-    \brief Plugin for Belkin WeMo sockets.
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plugin allows to find and control devices from WeMo, the
-    \l{http://www.belkin.com/de/PRODUKTE/home-automation/c/wemo-home-automation/}{Belkin}
-    home automation system.
-
-    \note: The devices can only be discovered if they are already in the local network. In order
-    to configure the WeMo devices please use the original software.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/wemo/devicepluginwemo.json
-*/
-
 #include "devicepluginwemo.h"
 
 #include "plugin/device.h"
