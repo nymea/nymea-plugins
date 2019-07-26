@@ -46,14 +46,6 @@ DevicePluginWs2812fx ::DevicePluginWs2812fx ()
 
 Device::DeviceSetupStatus DevicePluginWs2812fx::setupDevice(Device *device)
 {
-    if(!m_reconnectTimer) {
-        m_reconnectTimer = new QTimer(this);
-        m_reconnectTimer->setSingleShot(true);
-        m_reconnectTimer->setInterval(5000);
-
-        connect(m_reconnectTimer, &QTimer::timeout, this, &DevicePluginWs2812fx::onReconnectTimer);
-    }
-
     if (device->deviceClassId() == ws2812fxDeviceClassId) {
         QString interface = device->paramValue(ws2812fxDeviceSerialPortParamTypeId).toString();
 
@@ -82,6 +74,14 @@ Device::DeviceSetupStatus DevicePluginWs2812fx::setupDevice(Device *device)
             device->setStateValue(ws2812fxConnectedStateTypeId, true);
             m_usedInterfaces.append(interface);
             m_serialPorts.insert(device, serialPort);
+
+            if(!m_reconnectTimer) {
+                m_reconnectTimer = new QTimer(this);
+                m_reconnectTimer->setSingleShot(true);
+                m_reconnectTimer->setInterval(5000);
+
+                connect(m_reconnectTimer, &QTimer::timeout, this, &DevicePluginWs2812fx::onReconnectTimer);
+            }
         } else {
             return Device::DeviceSetupStatusFailure;
         }
