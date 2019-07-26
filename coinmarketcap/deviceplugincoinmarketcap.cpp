@@ -46,7 +46,7 @@ DevicePluginCoinMarketCap::DevicePluginCoinMarketCap()
 {
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginCoinMarketCap::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginCoinMarketCap::setupDevice(Device *device)
 {
     if(!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
@@ -55,9 +55,9 @@ DeviceManager::DeviceSetupStatus DevicePluginCoinMarketCap::setupDevice(Device *
 
     if (device->deviceClassId() == currentPricesDeviceClassId) {
         getPriceCall(device);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginCoinMarketCap::deviceRemoved(Device *device)
