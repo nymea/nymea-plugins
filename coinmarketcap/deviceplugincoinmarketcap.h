@@ -21,8 +21,8 @@
 #ifndef DEVICEPLUGINCOINMARKETCAP_H
 #define DEVICEPLUGINCOINMARKETCAP_H
 
-#include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/deviceplugin.h"
+#include "devices/devicemanager.h"
 #include "plugintimer.h"
 
 #include <QNetworkReply>
@@ -38,7 +38,7 @@ class DevicePluginCoinMarketCap : public DevicePlugin
 public:
     explicit DevicePluginCoinMarketCap();
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
 private:
