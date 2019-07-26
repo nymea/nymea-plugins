@@ -13,6 +13,7 @@ Build-depends: libboblight-dev,
                python:any,
                qtbase5-dev,
                qtconnectivity5-dev,
+               libow-dev,
 Standards-Version: 3.9.3
 
 
@@ -418,6 +419,24 @@ Description: nymea.io plugin for networkdetector
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for networkdetector
+
+
+
+Package: nymea-plugin-onewire
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libow-3.2-3 
+         libowcapi-3.2-3
+         nymea-plugins-translations,
+Description: nymea.io plugin for one wire devices
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for one wire devices
 
 
 Package: nymea-plugin-openweathermap
@@ -833,6 +852,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-unipi,
          nymea-plugin-serialportcommander,
          nymea-plugin-systemmonitor,
+         nymea-plugin-onewire,
 Replaces: guh-plugins-maker
 Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
