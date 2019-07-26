@@ -18,23 +18,6 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*!
-    \page coinmarketcap.html
-    \title coin market cap
-    \brief Plugin to get the latest crypto prices.
-
-    \ingroup plugins
-
-    The coin market cap plugin gets the latest crypto prices from coin market cap and displays it in your favourite fiat currency.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{DeviceClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/coinmarketcap/deviceplugincoinmarketcap.json
-*/
 
 #include "deviceplugincoinmarketcap.h"
 #include "network/networkaccessmanager.h"
@@ -85,11 +68,11 @@ void DevicePluginCoinMarketCap::onPluginTimer()
 void DevicePluginCoinMarketCap::onPriceCallFinished()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    qCDebug(dcCoinMarketCap()) << "GET reply finished";
+    reply->deleteLater();
+
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     if (!m_httpRequests.contains(reply)) {
-        reply->deleteLater();
         return;
     }
 
@@ -104,11 +87,9 @@ void DevicePluginCoinMarketCap::onPriceCallFinished()
     // check JSON file
     QJsonParseError error;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(reply->readAll(), &error);
-    reply->deleteLater();
 
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcCoinMarketCap()) << "Update reply JSON error:" << error.errorString();
-        reply->deleteLater();
         return;
     }
 
