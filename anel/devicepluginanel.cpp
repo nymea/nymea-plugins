@@ -236,6 +236,34 @@ Device::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId &devic
     return Device::DeviceErrorAsync;
 }
 
+Device::DeviceSetupStatus DevicePluginAnel::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &username, const QString &secret)
+{
+    Q_UNUSED(pairingTransactionId)
+    Q_UNUSED(deviceClassId)
+
+    QString ipAddress = params.paramValue(m_ipAddressParamTypeIdMap.value(deviceClassId)).toString();
+    int port = params.paramValue(m_portParamTypeIdMap.value(deviceClassId)).toInt();
+
+    QNetworkRequest request;
+    request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
+    request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(secret).toUtf8().toBase64());
+    qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << secret;
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, pairingTransactionId](){
+        reply->deleteLater();
+        if (reply->error() != QNetworkReply::NoError) {
+            emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusFailure);
+            return;
+        }
+        pluginStorage->beginGroup("");
+        emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusSuccess);
+    });
+
+
+    qCDebug(dcAnelElektronik()) << "User:" << username << "pass" << secret;
+    return Device::DeviceSetupStatusAsync;
+}
+
 Device::DeviceSetupStatus DevicePluginAnel::setupDevice(Device *device)
 {
     if (device->deviceClassId() == netPwrCtlHomeDeviceClassId

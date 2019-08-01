@@ -219,23 +219,34 @@ Device::DeviceError DevicePluginLgSmartTv::executeAction(Device *device, const A
     return Device::DeviceErrorAsync;
 }
 
-Device::DeviceError DevicePluginLgSmartTv::displayPin(const PairingTransactionId &pairingTransactionId, const DeviceDescriptor &deviceDescriptor)
+DevicePairingInfo DevicePluginLgSmartTv::pairDevice(DevicePairingInfo &devicePairingInfo)
 {
-    Q_UNUSED(pairingTransactionId)
 
-    QHostAddress host = QHostAddress(deviceDescriptor.params().paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString());
-    int port = deviceDescriptor.params().paramValue(lgSmartTvDevicePortParamTypeId).toInt();
+    QHostAddress host = QHostAddress(devicePairingInfo.params().paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString());
+    int port = devicePairingInfo.params().paramValue(lgSmartTvDevicePortParamTypeId).toInt();
     QPair<QNetworkRequest, QByteArray> request = TvDevice::createDisplayKeyRequest(host, port);
-    QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
-    connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
 
-    m_showPinReply.append(reply);
-    return Device::DeviceErrorNoError;
+    QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, devicePairingInfo](){
+        reply->deleteLater();
+        DevicePairingInfo copy(devicePairingInfo); // lambda captures are read-only
+        copy.setMessage(tr("Please enter the pairing key displayed on the Tv."));
+        if (reply->error() != QNetworkReply::NoError) {
+            copy.setStatus(Device::DeviceErrorAuthentificationFailure);
+        } else {
+            copy.setStatus(Device::DeviceErrorNoError);
+        }
+        emit pairingStarted(copy);
+    });
+
+    devicePairingInfo.setStatus(Device::DeviceErrorAsync);
+    return devicePairingInfo;
 }
 
-Device::DeviceSetupStatus DevicePluginLgSmartTv::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret)
+Device::DeviceSetupStatus DevicePluginLgSmartTv::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &username, const QString &secret)
 {
     Q_UNUSED(deviceClassId)
+    Q_UNUSED(username)
 
     QHostAddress host = QHostAddress(params.paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString());
     int port = params.paramValue(lgSmartTvDevicePortParamTypeId).toInt();
@@ -340,12 +351,7 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
     reply->deleteLater();
 
 
-    if (m_showPinReply.contains(reply)) {
-        m_showPinReply.removeAll(reply);
-        if (status != 200) {
-            qCWarning(dcLgSmartTv) << "display pin on TV request error:" << status << reply->errorString();
-        }
-    } else if (m_setupPairingTv.keys().contains(reply)) {
+    if (m_setupPairingTv.keys().contains(reply)) {
         PairingTransactionId pairingTransactionId = m_setupPairingTv.take(reply);
         if(status != 200) {
             qCWarning(dcLgSmartTv) << "pair TV request error:" << status << reply->errorString();

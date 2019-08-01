@@ -15,7 +15,6 @@
                     "interfaces": ["gateway"],
                     "createMethods": ["discovery"],
                     "setupMethod": "pushButton",
-                    "pairingInfo": "Please press the button on the Hue Bridge within 30 seconds before you continue",
                     "paramTypes": [
                         {
                             "id": "8bf5776a-d5a6-4600-8b27-481f0d803a8f",

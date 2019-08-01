@@ -14,6 +14,7 @@
                     "displayName": "NET-PwrCtl HOME",
                     "createMethods": ["user", "discovery"],
                     "interfaces": [ "gateway" ],
+                    "setupMethod": "userandpassword",
                     "paramTypes": [
                         {
                             "id": "1e273e10-3ea0-4337-a221-3b8e26c6e7dc",

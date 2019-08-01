@@ -456,9 +456,16 @@ void DevicePluginPhilipsHue::deviceRemoved(Device *device)
     }
 }
 
-Device::DeviceSetupStatus DevicePluginPhilipsHue::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret)
+DevicePairingInfo DevicePluginPhilipsHue::pairDevice(DevicePairingInfo &devicePairingInfo)
+{
+    devicePairingInfo.setMessage(tr("Please press the button on the Hue Bridge within 30 seconds before you continue"));
+    return devicePairingInfo;
+}
+
+Device::DeviceSetupStatus DevicePluginPhilipsHue::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &username, const QString &secret)
 {
     Q_UNUSED(secret)
+    Q_UNUSED(username)
 
     qCDebug(dcPhilipsHue()) << "Confirming pairing for transactionId" << pairingTransactionId;
     if (deviceClassId != bridgeDeviceClassId)

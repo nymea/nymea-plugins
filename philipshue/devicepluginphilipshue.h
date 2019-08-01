@@ -53,7 +53,8 @@ public:
     Device::DeviceSetupStatus setupDevice(Device *device) override;
     Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
+    DevicePairingInfo pairDevice(DevicePairingInfo &devicePairingInfo) override;
+    Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &username, const QString &secret) override;
 
 public slots:
     Device::DeviceError executeAction(Device *device, const Action &action);
