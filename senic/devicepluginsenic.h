@@ -51,8 +51,6 @@ private:
     PluginTimer *m_reconnectTimer = nullptr;
     bool m_autoSymbolMode = true;
 
-    bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
-
 private slots:
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
     void onReconnectTimeout();

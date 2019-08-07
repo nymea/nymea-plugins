@@ -140,15 +140,6 @@ void DevicePluginSenic::deviceRemoved(Device *device)
     }
 }
 
-bool DevicePluginSenic::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
-{
-    foreach (Device *device, myDevices()) {
-        if (device->paramValue(nuimoDeviceMacParamTypeId).toString() == deviceInfo.address().toString())
-            return true;
-    }
-
-    return false;
-}
 
 void DevicePluginSenic::onReconnectTimeout()
 {
@@ -158,6 +149,7 @@ void DevicePluginSenic::onReconnectTimeout()
         }
     }
 }
+
 
 void DevicePluginSenic::onBluetoothDiscoveryFinished()
 {
@@ -169,17 +161,21 @@ void DevicePluginSenic::onBluetoothDiscoveryFinished()
         return;
     }
 
-
     QList<DeviceDescriptor> deviceDescriptors;
     foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
         if (deviceInfo.name().contains("Nuimo")) {
-            if (!verifyExistingDevices(deviceInfo)) {
-                DeviceDescriptor descriptor(nuimoDeviceClassId, "Nuimo", deviceInfo.name() + " (" + deviceInfo.address().toString() + ")");
-                ParamList params;
-                params.append(Param(nuimoDeviceMacParamTypeId, deviceInfo.address().toString()));
-                descriptor.setParams(params);
-                deviceDescriptors.append(descriptor);
+            DeviceDescriptor descriptor(nuimoDeviceClassId, "Nuimo", deviceInfo.name() + " (" + deviceInfo.address().toString() + ")");
+            ParamList params;
+
+            foreach (Device *existingDevice, myDevices()) {
+                if (existingDevice->paramValue(nuimoDeviceMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                    descriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
             }
+            params.append(Param(nuimoDeviceMacParamTypeId, deviceInfo.address().toString()));
+            descriptor.setParams(params);
+            deviceDescriptors.append(descriptor);
         }
     }
 
@@ -209,7 +205,6 @@ void DevicePluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
-
 
     switch (direction) {
     case Nuimo::SwipeDirectionLeft:
@@ -260,5 +255,4 @@ void DevicePluginSenic::onPluginConfigurationChanged(const ParamTypeId &paramTyp
         qCDebug(dcSenic()) << "Auto symbol mode" << (value.toBool() ? "enabled." : "disabled.");
         m_autoSymbolMode = value.toBool();
     }
-
 }
