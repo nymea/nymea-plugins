@@ -32,7 +32,8 @@ DevicePluginSenic::DevicePluginSenic()
 
 void DevicePluginSenic::init()
 {
-
+    // Initialize plugin configurations
+    m_autoSymbolMode = configValue(senicPluginAutoSymbolsParamTypeId).toBool();
 }
 
 Device::DeviceError DevicePluginSenic::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
