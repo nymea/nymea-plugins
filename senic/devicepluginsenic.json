@@ -2,6 +2,15 @@
     "displayName": "Senic",
     "id": "413e9d77-335f-4ecf-abbc-8f2a8a399c39",
     "name": "Senic",
+    "paramTypes": [
+        {
+            "id": "ba3d4269-940b-42ee-8c73-1e1bdea329c2",
+            "name": "autoSymbols",
+            "displayName": "Automatically display symbols",
+            "type": "bool",
+            "defaultValue": true
+        }
+    ],
     "vendors": [
         {
             "displayName": "Senic",
@@ -108,7 +117,11 @@
                                         "Pause",
                                         "Stop",
                                         "Music",
-                                        "Heart"
+                                        "Heart",
+                                        "Next",
+                                        "Previous",
+                                        "Circle",
+                                        "Light"
                                     ]
                                 }
                             ]

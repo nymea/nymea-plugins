@@ -49,10 +49,12 @@ public:
 private:
     QHash<Nuimo *, Device *> m_nuimos;
     PluginTimer *m_reconnectTimer = nullptr;
+    bool m_autoSymbolMode = true;
 
     bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
 
 private slots:
+    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
     void onReconnectTimeout();
     void onBluetoothDiscoveryFinished();
 

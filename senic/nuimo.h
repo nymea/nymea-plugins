@@ -50,7 +50,11 @@ public:
         MatrixTypePause,
         MatrixTypeStop,
         MatrixTypeMusic,
-        MatrixTypeHeart
+        MatrixTypeHeart,
+        MatrixTypeNext,
+        MatrixTypePrevious,
+        MatrixTypeCircle,
+        MatrixTypeLight
     };
 
     explicit Nuimo(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);

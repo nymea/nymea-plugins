@@ -176,7 +176,57 @@ void Nuimo::showImage(const Nuimo::MatrixType &matrixType)
                     "    *    ");
         time = 5;
         break;
-    default:
+    case MatrixTypeNext:
+        matrix = QByteArray(
+                    "         "
+                    "  *   ** "
+                    "  **  ** "
+                    "  *** ** "
+                    "  ****** "
+                    "  *** ** "
+                    "  **  ** "
+                    "  *   ** "
+                    "         ");
+        time = 5;
+        break;
+    case MatrixTypePrevious:
+        matrix = QByteArray(
+                    "         "
+                    "  **   * "
+                    "  **  ** "
+                    "  ** *** "
+                    "  ****** "
+                    "  ** *** "
+                    "  **  ** "
+                    "  **   * "
+                    "         ");
+        time = 5;
+        break;
+    case MatrixTypeCircle:
+        matrix = QByteArray(
+                    "         "
+                    "         "
+                    "   ***   "
+                    "  *   *  "
+                    "  *   *  "
+                    "  *   *  "
+                    "   ***   "
+                    "         "
+                    "         ");
+        time = 5;
+        break;
+    case MatrixTypeLight:
+        matrix = QByteArray(
+                    "         "
+                    "   ***   "
+                    "  *   *  "
+                    "  *   *  "
+                    "  *   *  "
+                    "   ***   "
+                    "   ***   "
+                    "   ***   "
+                    "    *    ");
+        time = 5;
         break;
     }
 

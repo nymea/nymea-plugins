@@ -110,6 +110,14 @@ Device::DeviceError DevicePluginSenic::executeAction(Device *device, const Actio
             nuimo->showImage(Nuimo::MatrixTypeMusic);
         if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Heart")
             nuimo->showImage(Nuimo::MatrixTypeHeart);
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Next")
+            nuimo->showImage(Nuimo::MatrixTypeNext);
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Previous")
+            nuimo->showImage(Nuimo::MatrixTypePrevious);
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Circle")
+            nuimo->showImage(Nuimo::MatrixTypeCircle);
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Light")
+            nuimo->showImage(Nuimo::MatrixTypeLight);
 
         return Device::DeviceErrorNoError;
     }
@@ -185,7 +193,12 @@ void DevicePluginSenic::onButtonPressed()
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
     emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "•")));
+
+    if(m_autoSymbolMode) {
+        nuimo->showImage(Nuimo::MatrixType::MatrixTypeCircle);
+    }
 }
+
 
 void DevicePluginSenic::onButtonReleased()
 {
@@ -196,6 +209,7 @@ void DevicePluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
+
 
     switch (direction) {
     case Nuimo::SwipeDirectionLeft:
@@ -211,6 +225,23 @@ void DevicePluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
         emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "↓")));
         break;
     }
+
+    if (m_autoSymbolMode) {
+        switch (direction) {
+        case Nuimo::SwipeDirectionLeft:
+            nuimo->showImage(Nuimo::MatrixType::MatrixTypeLeft);
+            break;
+        case Nuimo::SwipeDirectionRight:
+            nuimo->showImage(Nuimo::MatrixType::MatrixTypeRight);
+            break;
+        case Nuimo::SwipeDirectionUp:
+            nuimo->showImage(Nuimo::MatrixType::MatrixTypeUp);
+            break;
+        case Nuimo::SwipeDirectionDown:
+            nuimo->showImage(Nuimo::MatrixType::MatrixTypeDown);
+            break;
+        }
+    }
 }
 
 void DevicePluginSenic::onRotationValueChanged(const uint &value)
@@ -218,4 +249,16 @@ void DevicePluginSenic::onRotationValueChanged(const uint &value)
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
     device->setStateValue(nuimoRotationStateTypeId, value);
+}
+
+void DevicePluginSenic::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    qCDebug(dcSenic()) << "Plugin configuration changed";
+
+    // Check auto symbol mode
+    if (paramTypeId == senicPluginAutoSymbolsParamTypeId) {
+        qCDebug(dcSenic()) << "Auto symbol mode" << (value.toBool() ? "enabled." : "disabled.");
+        m_autoSymbolMode = value.toBool();
+    }
+
 }
