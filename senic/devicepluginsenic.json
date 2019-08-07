@@ -13,15 +13,8 @@
                     "name": "nuimo",
                     "displayName": "Nuimo",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "simplemultibutton", "connectable"],
+                    "interfaces": ["batterylevel", "simplemultibutton", "connectable"],
                     "paramTypes": [
-                        {
-                            "id": "db67d1e6-26fa-44ed-ad55-c6aef45ea2ea",
-                            "name": "name",
-                            "displayName": "name",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
                         {
                             "id": "71553f6a-2ed4-4896-bb7b-52e7dca948b2",
                             "name": "mac",
@@ -64,10 +57,18 @@
                             "defaultValue": "-"
                         },
                         {
+                            "id": "aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
                             "id": "b5ee2465-7fa1-450b-8073-f115537d3409",
-                            "name": "battery",
-                            "displayName": "battery",
-                            "displayNameEvent": "battery changed",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,

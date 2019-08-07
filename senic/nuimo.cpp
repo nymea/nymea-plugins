@@ -224,7 +224,12 @@ void Nuimo::setBatteryValue(const QByteArray &data)
     int batteryPercentage = data.toHex().toUInt(0, 16);
     qCDebug(dcSenic()) << "Battery:" << batteryPercentage << "%";
 
-    device()->setStateValue(nuimoBatteryStateTypeId, batteryPercentage);
+    device()->setStateValue(nuimoBatteryLevelStateTypeId, batteryPercentage);
+    if (batteryPercentage < 20) {
+        device()->setStateValue(nuimoBatteryCriticalStateTypeId, true);
+    } else {
+        device()->setStateValue(nuimoBatteryCriticalStateTypeId, false);
+    }
 }
 
 void Nuimo::onConnectedChanged(const bool &connected)

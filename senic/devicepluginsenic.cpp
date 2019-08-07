@@ -32,8 +32,7 @@ DevicePluginSenic::DevicePluginSenic()
 
 void DevicePluginSenic::init()
 {
-    m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-    connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginSenic::onReconnectTimeout);
+
 }
 
 Device::DeviceError DevicePluginSenic::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -57,11 +56,15 @@ Device::DeviceError DevicePluginSenic::discoverDevices(const DeviceClassId &devi
 
 Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
 {
+    if (!m_reconnectTimer) {
+        m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginSenic::onReconnectTimeout);
+    }
+
     qCDebug(dcSenic()) << "Setup device" << device->name() << device->params();
 
-    QString name = device->paramValue(nuimoDeviceNameParamTypeId).toString();
     QBluetoothAddress address = QBluetoothAddress(device->paramValue(nuimoDeviceMacParamTypeId).toString());
-    QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
+    QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, device->name(), 0);
 
     BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::RandomAddress);
 
@@ -104,7 +107,7 @@ Device::DeviceError DevicePluginSenic::executeAction(Device *device, const Actio
         if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Stop")
             nuimo->showImage(Nuimo::MatrixTypeStop);
         if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Music")
-            nuimo->showImage(Nuimo::MatrixTypeStop);
+            nuimo->showImage(Nuimo::MatrixTypeMusic);
         if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Heart")
             nuimo->showImage(Nuimo::MatrixTypeHeart);
 
@@ -122,6 +125,11 @@ void DevicePluginSenic::deviceRemoved(Device *device)
     Nuimo *nuimo = m_nuimos.key(device);
     m_nuimos.take(nuimo);
     delete nuimo;
+
+    if (myDevices().isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
+        m_reconnectTimer = nullptr;
+    }
 }
 
 bool DevicePluginSenic::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
@@ -158,9 +166,8 @@ void DevicePluginSenic::onBluetoothDiscoveryFinished()
     foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
         if (deviceInfo.name().contains("Nuimo")) {
             if (!verifyExistingDevices(deviceInfo)) {
-                DeviceDescriptor descriptor(nuimoDeviceClassId, "Nuimo", deviceInfo.address().toString());
+                DeviceDescriptor descriptor(nuimoDeviceClassId, "Nuimo", deviceInfo.name() + " (" + deviceInfo.address().toString() + ")");
                 ParamList params;
-                params.append(Param(nuimoDeviceNameParamTypeId, deviceInfo.name()));
                 params.append(Param(nuimoDeviceMacParamTypeId, deviceInfo.address().toString()));
                 descriptor.setParams(params);
                 deviceDescriptors.append(descriptor);
@@ -212,5 +219,3 @@ void DevicePluginSenic::onRotationValueChanged(const uint &value)
     Device *device = m_nuimos.value(nuimo);
     device->setStateValue(nuimoRotationStateTypeId, value);
 }
-
-
