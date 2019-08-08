@@ -74,6 +74,7 @@ Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
 
     Nuimo *nuimo = new Nuimo(bluetoothDevice, this);
     nuimo->setLongPressTime(configValue(senicPluginLongPressTimeParamTypeId).toInt());
+    connect(nuimo, &Nuimo::deviceInitializationFinished, this, &DevicePluginSenic::onDeviceInitializationFinished);
     connect(nuimo, &Nuimo::buttonPressed, this, &DevicePluginSenic::onButtonPressed);
     connect(nuimo, &Nuimo::buttonLongPressed, this, &DevicePluginSenic::onButtonLongPressed);
     connect(nuimo, &Nuimo::swipeDetected, this, &DevicePluginSenic::onSwipeDetected);
@@ -85,7 +86,7 @@ Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
     m_nuimos.insert(nuimo, device);
     nuimo->bluetoothDevice()->connectDevice();
 
-    return Device::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusAsync;
 }
 
 
@@ -192,6 +193,16 @@ void DevicePluginSenic::onBluetoothDiscoveryFinished()
         }
     }
     emit devicesDiscovered(nuimoDeviceClassId, deviceDescriptors);
+}
+
+void DevicePluginSenic::onDeviceInitializationFinished()
+{
+    Nuimo *nuimo = static_cast<Nuimo *>(sender());
+    Device *device = m_nuimos.value(nuimo);
+    if (!device->setupComplete()) {
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+    }
+
 }
 
 void DevicePluginSenic::onConnectedChanged(bool connected)

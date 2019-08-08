@@ -95,6 +95,7 @@ signals:
     void swipeDetected(const SwipeDirection &direction);
     void rotationValueChanged(const uint &value);
     void deviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
+    void deviceInitializationFinished();
 
 private slots:
     void onConnectedChanged(const bool &connected);

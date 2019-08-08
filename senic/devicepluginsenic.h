@@ -56,6 +56,7 @@ private slots:
     void onReconnectTimeout();
     void onBluetoothDiscoveryFinished();
 
+    void onDeviceInitializationFinished();
     void onConnectedChanged(bool connected);
     void onBatteryValueChanged(const uint &percentage);
     void onButtonPressed();

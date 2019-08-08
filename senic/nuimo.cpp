@@ -402,7 +402,7 @@ void Nuimo::onServiceDiscoveryFinished()
             m_ledMatrixService->discoverDetails();
         }
     }
-
+    emit deviceInitializationFinished();
 }
 
 void Nuimo::onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceState &state)
