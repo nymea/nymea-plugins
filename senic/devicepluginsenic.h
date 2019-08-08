@@ -59,7 +59,7 @@ private slots:
     void onConnectedChanged(bool connected);
     void onBatteryValueChanged(const uint &percentage);
     void onButtonPressed();
-    void onButtonReleased();
+    void onButtonLongPressed();
     void onSwipeDetected(const Nuimo::SwipeDirection &direction);
     void onRotationValueChanged(const uint &value);
     void onDeviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);

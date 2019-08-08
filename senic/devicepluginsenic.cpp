@@ -73,8 +73,9 @@ Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
     BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::RandomAddress);
 
     Nuimo *nuimo = new Nuimo(bluetoothDevice, this);
+    nuimo->setLongPressTime(configValue(senicPluginLongPressTimeParamTypeId).toInt());
     connect(nuimo, &Nuimo::buttonPressed, this, &DevicePluginSenic::onButtonPressed);
-    connect(nuimo, &Nuimo::buttonReleased, this, &DevicePluginSenic::onButtonReleased);
+    connect(nuimo, &Nuimo::buttonLongPressed, this, &DevicePluginSenic::onButtonLongPressed);
     connect(nuimo, &Nuimo::swipeDetected, this, &DevicePluginSenic::onSwipeDetected);
     connect(nuimo, &Nuimo::rotationValueChanged, this, &DevicePluginSenic::onRotationValueChanged);
     connect(nuimo, &Nuimo::connectedChanged, this, &DevicePluginSenic::onConnectedChanged);
@@ -194,7 +195,6 @@ void DevicePluginSenic::onConnectedChanged(bool connected)
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
-
     device->setStateValue(nuimoConnectedStateTypeId, connected);
 }
 
@@ -205,15 +205,21 @@ void DevicePluginSenic::onButtonPressed()
     Device *device = m_nuimos.value(nuimo);
     emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "•")));
 
-    if(m_autoSymbolMode) {
-        nuimo->showImage(Nuimo::MatrixType::MatrixTypeCircle);
+    if (m_autoSymbolMode) {
+        nuimo->showImage(Nuimo::MatrixTypeCircle);
     }
 }
 
 
-void DevicePluginSenic::onButtonReleased()
+void DevicePluginSenic::onButtonLongPressed()
 {
-    // ENHANCEMENT: user timer to detekt long press events
+    Nuimo *nuimo = static_cast<Nuimo *>(sender());
+    Device *device = m_nuimos.value(nuimo);
+    emitEvent(Event(nuimoLongPressedEventTypeId, device->id()));
+
+    if (m_autoSymbolMode) {
+        nuimo->showImage(Nuimo::MatrixTypeFilledCircle);
+    }
 }
 
 
@@ -283,6 +289,13 @@ void DevicePluginSenic::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     if (paramTypeId == senicPluginAutoSymbolsParamTypeId) {
         qCDebug(dcSenic()) << "Auto symbol mode" << (value.toBool() ? "enabled." : "disabled.");
         m_autoSymbolMode = value.toBool();
+    }
+
+    if (paramTypeId == senicPluginLongPressTimeParamTypeId) {
+        qCDebug(dcSenic()) << "Long press time" << value.toUInt();
+        foreach(Nuimo *nuimo, m_nuimos.keys()) {
+            nuimo->setLongPressTime(value.toInt());
+        }
     }
 }
 

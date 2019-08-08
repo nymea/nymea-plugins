@@ -24,6 +24,7 @@
 #define NUIMO_H
 
 #include <QObject>
+#include <QTimer>
 #include <QBluetoothUuid>
 
 #include "typeutils.h"
@@ -53,14 +54,15 @@ public:
         MatrixTypeNext,
         MatrixTypePrevious,
         MatrixTypeCircle,
+        MatrixTypeFilledCircle,
         MatrixTypeLight
     };
 
     explicit Nuimo(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
     BluetoothLowEnergyDevice *bluetoothDevice();
-
     void showImage(const MatrixType &matrixType);
+    void setLongPressTime(int milliSeconds);
 
 private:
     BluetoothLowEnergyDevice *m_bluetoothDevice = nullptr;
@@ -78,14 +80,18 @@ private:
     QLowEnergyCharacteristic m_inputRotationCharacteristic;
 
     uint m_rotationValue;
+    QTimer *m_longPressTimer = nullptr;
+    int m_longPressTime = 250;
+    bool m_buttonPressed = false;
 
     void showMatrix(const QByteArray &matrix, const int &seconds);
     void printService(QLowEnergyService *service);
+    void onLongPressTimer();
 
 signals:
     void connectedChanged(bool connected);
     void buttonPressed();
-    void buttonReleased();
+    void buttonLongPressed();
     void batteryValueChanged(const uint &percentage);
     void swipeDetected(const SwipeDirection &direction);
     void rotationValueChanged(const uint &value);

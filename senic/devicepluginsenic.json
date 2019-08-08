@@ -9,6 +9,13 @@
             "displayName": "Automatically display symbols",
             "type": "bool",
             "defaultValue": true
+        },
+        {
+            "id": "f9900dfe-310b-462b-b09d-a999df441075",
+            "name": "longPressTime",
+            "displayName": "Long press time",
+            "type": "int",
+            "defaultValue": 250
         }
     ],
     "vendors": [
@@ -22,7 +29,7 @@
                     "name": "nuimo",
                     "displayName": "Nuimo",
                     "createMethods": ["discovery"],
-                    "interfaces": ["simplemultibutton", "connectable", "batterylevel"],
+                    "interfaces": ["simplemultibutton", "longpressbutton", "connectable", "batterylevel"],
                     "paramTypes": [
                         {
                             "id": "71553f6a-2ed4-4896-bb7b-52e7dca948b2",
@@ -141,6 +148,11 @@
                                     "allowedValues": ["•", "←", "↑", "→", "↓"]
                                 }
                             ]
+                        },
+                        {
+                            "id": "a2f4add5-f76a-4dca-ae68-4107533bee0e",
+                            "name": "longPressed",
+                            "displayName": "Button long pressed"
                         }
                     ]
                 }

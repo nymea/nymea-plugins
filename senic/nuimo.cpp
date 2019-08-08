@@ -41,6 +41,12 @@ Nuimo::Nuimo(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
 {
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::connectedChanged, this, &Nuimo::onConnectedChanged);
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::servicesDiscoveryFinished, this, &Nuimo::onServiceDiscoveryFinished);
+
+    if (!m_longPressTimer) {
+        m_longPressTimer = new QTimer(this);
+        m_longPressTimer->setSingleShot(true);
+    }
+    connect(m_longPressTimer, &QTimer::timeout, this, &Nuimo::onLongPressTimer);
 }
 
 
@@ -210,6 +216,19 @@ void Nuimo::showImage(const Nuimo::MatrixType &matrixType)
                     "         ");
         time = 5;
         break;
+    case MatrixTypeFilledCircle:
+        matrix = QByteArray(
+                    "         "
+                    "         "
+                    "   ***   "
+                    "  *****  "
+                    "  *****  "
+                    "  *****  "
+                    "   ***   "
+                    "         "
+                    "         ");
+        time = 5;
+        break;
     case MatrixTypeLight:
         matrix = QByteArray(
                     "         "
@@ -226,6 +245,11 @@ void Nuimo::showImage(const Nuimo::MatrixType &matrixType)
     }
 
     showMatrix(matrix, time);
+}
+
+void Nuimo::setLongPressTime(int milliSeconds)
+{
+    m_longPressTime = milliSeconds;
 }
 
 void Nuimo::showMatrix(const QByteArray &matrix, const int &seconds)
@@ -264,11 +288,22 @@ void Nuimo::printService(QLowEnergyService *service)
     }
 }
 
+void Nuimo::onLongPressTimer()
+{
+    if (m_buttonPressed) {
+        emit buttonLongPressed();
+    } else {
+        emit buttonPressed();
+    }
+}
+
 
 
 void Nuimo::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcSenic()) << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
+
+    m_longPressTimer->stop();
     emit connectedChanged(connected);
 
     if (!connected) {
@@ -468,12 +503,15 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
 void Nuimo::onInputCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic.uuid() == m_inputButtonCharacteristic.uuid()) {
-        bool pressed = (bool)value.toHex().toUInt(nullptr, 16);
-        qCDebug(dcSenic()) << "Button:" << (pressed ? "pressed": "released");
-        if (pressed) {
-            emit buttonPressed();
+        m_buttonPressed = (bool)value.toHex().toUInt(nullptr, 16);
+        qCDebug(dcSenic()) << "Button:" << (m_buttonPressed ? "pressed": "released");
+        if (m_buttonPressed) {
+            //emit buttonPressed();
+            m_longPressTimer->start(m_longPressTime);
         } else {
-            emit buttonReleased();
+            if (!m_longPressTimer->isActive())
+                m_longPressTimer->stop();
+                emit buttonLongPressed();
         }
         return;
     }
