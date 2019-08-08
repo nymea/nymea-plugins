@@ -27,7 +27,6 @@
 #include <QBluetoothUuid>
 
 #include "typeutils.h"
-#include "devices/device.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 class Nuimo : public QObject
@@ -57,15 +56,13 @@ public:
         MatrixTypeLight
     };
 
-    explicit Nuimo(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
+    explicit Nuimo(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
-    Device *device();
     BluetoothLowEnergyDevice *bluetoothDevice();
 
     void showImage(const MatrixType &matrixType);
 
 private:
-    Device *m_device = nullptr;
     BluetoothLowEnergyDevice *m_bluetoothDevice = nullptr;
 
     QLowEnergyService *m_deviceInfoService = nullptr;
@@ -83,19 +80,16 @@ private:
     uint m_rotationValue;
 
     void showMatrix(const QByteArray &matrix, const int &seconds);
-
     void printService(QLowEnergyService *service);
 
-    // Set states
-    void setBatteryValue(const QByteArray &data);
-
 signals:
-    void availableChanged();
+    void connectedChanged(bool connected);
     void buttonPressed();
     void buttonReleased();
-    void batteryValueChaged(const uint &percentage);
+    void batteryValueChanged(const uint &percentage);
     void swipeDetected(const SwipeDirection &direction);
     void rotationValueChanged(const uint &value);
+    void deviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
 
 private slots:
     void onConnectedChanged(const bool &connected);
