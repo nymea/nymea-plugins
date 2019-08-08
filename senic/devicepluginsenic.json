@@ -15,7 +15,7 @@
             "name": "longPressTime",
             "displayName": "Long press time",
             "type": "int",
-            "defaultValue": 500
+            "defaultValue": 2000
         }
     ],
     "vendors": [
