@@ -293,7 +293,7 @@ void DevicePluginSenic::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     }
 
     if (paramTypeId == senicPluginLongPressTimeParamTypeId) {
-        qCDebug(dcSenic()) << "Long press time" << value.toUInt();
+        qCDebug(dcSenic()) << "Long press time" << value.toInt();
         foreach(Nuimo *nuimo, m_nuimos.keys()) {
             nuimo->setLongPressTime(value.toInt());
         }
