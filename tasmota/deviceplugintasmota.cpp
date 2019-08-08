@@ -38,10 +38,12 @@ DevicePluginTasmota::DevicePluginTasmota()
     // Helper maps for parent devices (aka sonoff_*)
     m_ipAddressParamTypeMap[sonoff_basicDeviceClassId] = sonoff_basicDeviceIpAddressParamTypeId;
     m_ipAddressParamTypeMap[sonoff_dualDeviceClassId] = sonoff_dualDeviceIpAddressParamTypeId;
+    m_ipAddressParamTypeMap[sonoff_triDeviceClassId] = sonoff_triDeviceIpAddressParamTypeId;
     m_ipAddressParamTypeMap[sonoff_quadDeviceClassId] = sonoff_quadDeviceIpAddressParamTypeId;
 
     m_attachedDeviceParamTypeIdMap[sonoff_basicDeviceClassId] << sonoff_basicDeviceAttachedDeviceCH1ParamTypeId;
     m_attachedDeviceParamTypeIdMap[sonoff_dualDeviceClassId] << sonoff_dualDeviceAttachedDeviceCH1ParamTypeId << sonoff_dualDeviceAttachedDeviceCH2ParamTypeId;
+    m_attachedDeviceParamTypeIdMap[sonoff_triDeviceClassId] << sonoff_triDeviceAttachedDeviceCH1ParamTypeId << sonoff_triDeviceAttachedDeviceCH2ParamTypeId << sonoff_triDeviceAttachedDeviceCH3ParamTypeId;
     m_attachedDeviceParamTypeIdMap[sonoff_quadDeviceClassId] << sonoff_quadDeviceAttachedDeviceCH1ParamTypeId << sonoff_quadDeviceAttachedDeviceCH2ParamTypeId << sonoff_quadDeviceAttachedDeviceCH3ParamTypeId << sonoff_quadDeviceAttachedDeviceCH4ParamTypeId;
 
     // Helper maps for virtual childs (aka tasmota*)
@@ -57,6 +59,7 @@ DevicePluginTasmota::DevicePluginTasmota()
     // Helper maps for all devices
     m_connectedStateTypeMap[sonoff_basicDeviceClassId] = sonoff_basicConnectedStateTypeId;
     m_connectedStateTypeMap[sonoff_dualDeviceClassId] = sonoff_dualConnectedStateTypeId;
+    m_connectedStateTypeMap[sonoff_triDeviceClassId] = sonoff_triConnectedStateTypeId;
     m_connectedStateTypeMap[sonoff_quadDeviceClassId] = sonoff_quadConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaSwitchDeviceClassId] = tasmotaSwitchConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaLightDeviceClassId] = tasmotaLightConnectedStateTypeId;
