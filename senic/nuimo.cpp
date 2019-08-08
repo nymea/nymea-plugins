@@ -290,11 +290,7 @@ void Nuimo::printService(QLowEnergyService *service)
 
 void Nuimo::onLongPressTimer()
 {
-    if (m_buttonPressed) {
-        emit buttonLongPressed();
-    } else {
-        emit buttonPressed();
-    }
+    emit buttonLongPressed();
 }
 
 
@@ -503,15 +499,16 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
 void Nuimo::onInputCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic.uuid() == m_inputButtonCharacteristic.uuid()) {
-        m_buttonPressed = (bool)value.toHex().toUInt(nullptr, 16);
-        qCDebug(dcSenic()) << "Button:" << (m_buttonPressed ? "pressed": "released");
-        if (m_buttonPressed) {
-            //emit buttonPressed();
+        bool pressed = (bool)value.toHex().toUInt(nullptr, 16);
+        qCDebug(dcSenic()) << "Button:" << (pressed ? "pressed": "released");
+        if (pressed) {
             m_longPressTimer->start(m_longPressTime);
         } else {
-            if (!m_longPressTimer->isActive())
+            if (m_longPressTimer->isActive()) {
                 m_longPressTimer->stop();
-                emit buttonLongPressed();
+                emit buttonPressed();
+            }
+            // else the time run out and has the long pressed event emittted
         }
         return;
     }

@@ -80,6 +80,7 @@ Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
     connect(nuimo, &Nuimo::rotationValueChanged, this, &DevicePluginSenic::onRotationValueChanged);
     connect(nuimo, &Nuimo::connectedChanged, this, &DevicePluginSenic::onConnectedChanged);
     connect(nuimo, &Nuimo::deviceInformationChanged, this, &DevicePluginSenic::onDeviceInformationChanged);
+    connect(nuimo, &Nuimo::batteryValueChanged, this, &DevicePluginSenic::onBatteryValueChanged);
 
     m_nuimos.insert(nuimo, device);
     nuimo->bluetoothDevice()->connectDevice();

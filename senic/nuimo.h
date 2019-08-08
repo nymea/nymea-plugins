@@ -82,7 +82,6 @@ private:
     uint m_rotationValue;
     QTimer *m_longPressTimer = nullptr;
     int m_longPressTime = 250;
-    bool m_buttonPressed = false;
 
     void showMatrix(const QByteArray &matrix, const int &seconds);
     void printService(QLowEnergyService *service);
