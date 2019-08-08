@@ -142,7 +142,9 @@ void DevicePluginSenic::deviceRemoved(Device *device)
 
     Nuimo *nuimo = m_nuimos.key(device);
     m_nuimos.take(nuimo);
-    delete nuimo;
+
+    hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(nuimo->bluetoothDevice());
+    nuimo->deleteLater();
 
     if (myDevices().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
