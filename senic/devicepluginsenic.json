@@ -22,12 +22,12 @@
                     "name": "nuimo",
                     "displayName": "Nuimo",
                     "createMethods": ["discovery"],
-                    "interfaces": ["batterylevel", "simplemultibutton", "connectable"],
+                    "interfaces": ["simplemultibutton", "connectable", "batterylevel"],
                     "paramTypes": [
                         {
                             "id": "71553f6a-2ed4-4896-bb7b-52e7dca948b2",
                             "name": "mac",
-                            "displayName": "mac address",
+                            "displayName": "Mac address",
                             "type": "QString",
                             "inputType": "MacAddress"
                         }
@@ -87,8 +87,8 @@
                         {
                             "id": "69a5f495-5452-434b-8fb8-b73d992c5446",
                             "name": "rotation",
-                            "displayName": "rotation",
-                            "displayNameEvent": "rotation changed",
+                            "displayName": "Rotation",
+                            "displayNameEvent": "Rotation changed",
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
@@ -105,7 +105,7 @@
                                 {
                                     "id": "a8f72c37-9cb5-4885-a7e4-b2b396f8e4cd",
                                     "name": "logo",
-                                    "displayName": "logo",
+                                    "displayName": "Logo",
                                     "type": "QString",
                                     "defaultValue": "Heart",
                                     "allowedValues": [
