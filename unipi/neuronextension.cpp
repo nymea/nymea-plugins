@@ -125,25 +125,26 @@ bool NeuronExtension::loadModbusMap()
 
     switch(m_extensionType) {
     case ExtensionTypes::xS10:
-        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS10/Neuron_xS10-Coils-group-1.csv"));
+        fileCoilList.append(QString("/Neuron_xS10/Neuron_xS10-Coils-group-1.csv"));
         break;
     case ExtensionTypes::xS20:
-        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS20/Neuron_xS20-Coils-group-1.csv"));
+        fileCoilList.append(QString("/Neuron_xS20/Neuron_xS20-Coils-group-1.csv"));
         break;
     case ExtensionTypes::xS30:
-        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS30/Neuron_xS30-Coils-group-1.csv"));
+        fileCoilList.append(QString("/Neuron_xS30/Neuron_xS30-Coils-group-1.csv"));
         break;
     case ExtensionTypes::xS40:
-        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS40/Neuron_xS40-Coils-group-1.csv"));
+        fileCoilList.append(QString("/Neuron_xS40/Neuron_xS40-Coils-group-1.csv"));
         break;
     case ExtensionTypes::xS50:
-        fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_xS50/Neuron_xS50-Coils-group-1.csv"));
+        fileCoilList.append(QString("/Neuron_xS50/Neuron_xS50-Coils-group-1.csv"));
         break;
     }
 
-    foreach (QString csvFilePath, fileCoilList) {
-        qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
-        QFile *csvFile = new QFile(csvFilePath);
+    foreach (QString relativeFilePath, fileCoilList) {
+        QString absoluteFilePath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first() + "/nymea/modbus" + relativeFilePath;
+        qDebug(dcUniPi()) << "Open CSV File:" << absoluteFilePath;
+        QFile *csvFile = new QFile(absoluteFilePath);
         if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
             qCDebug(dcUniPi()) << csvFile->errorString();
             csvFile->deleteLater();
@@ -176,25 +177,26 @@ bool NeuronExtension::loadModbusMap()
 
     switch(m_extensionType) {
     case ExtensionTypes::xS10:
-        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS10/Neuron_xS10-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/Neuron_xS10/Neuron_xS10-Registers-group-1.csv"));
         break;
     case ExtensionTypes::xS20:
-        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS20/Neuron_xS20-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/Neuron_xS20/Neuron_xS20-Registers-group-1.csv"));
         break;
     case ExtensionTypes::xS30:
-        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS30/Neuron_xS30-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/Neuron_xS30/Neuron_xS30-Registers-group-1.csv"));
         break;
     case ExtensionTypes::xS40:
-        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS40/Neuron_xS40-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/Neuron_xS40/Neuron_xS40-Registers-group-1.csv"));
         break;
     case ExtensionTypes::xS50:
-        fileRegisterList.append(QString("/usr/share/nymea/modbus/Neuron_xS50/Neuron_xS50-Registers-group-1.csv"));
+        fileRegisterList.append(QString("/Neuron_xS50/Neuron_xS50-Registers-group-1.csv"));
         break;
     }
 
-    foreach (QString csvFilePath, fileRegisterList) {
-        qDebug(dcUniPi()) << "Open CSV File:" << csvFilePath;
-        QFile *csvFile = new QFile(csvFilePath);
+    foreach (QString relativeFilePath, fileRegisterList) {
+        QString absoluteFilePath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first() + "/nymea/modbus" + relativeFilePath;
+        qDebug(dcUniPi()) << "Open CSV File:" << absoluteFilePath;
+        QFile *csvFile = new QFile(absoluteFilePath);
         if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
             qCDebug(dcUniPi()) << csvFile->errorString();
             csvFile->deleteLater();
