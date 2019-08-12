@@ -5,7 +5,6 @@ TARGET = $$qtLibraryTarget(nymea_devicepluginunipi)
 QT += \
     network \
     serialport \
-    core \
     serialbus \
 
 SOURCES += \
@@ -28,6 +27,6 @@ HEADERS += \
     mcp3422.h
 
 MAP_FILES.files = modbus_maps/
-MAP_FILES.path = /usr/share/nymea/modbus/
+MAP_FILES.path = [QT_INSTALL_PREFIX]/share/nymea/modbus/
 INSTALLS += MAP_FiLES
 

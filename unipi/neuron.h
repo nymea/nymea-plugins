@@ -95,12 +95,9 @@ private:
 signals:
     void digitalInputStatusChanged(QString &circuit, bool value);
     void digitalOutputStatusChanged(QString &circuit, bool value);
-
     void analogInputStatusChanged(QString &circuit, double value);
     void analogOutputStatusChanged(QString &circuit, double value);
-
     void userLEDStatusChanged(QString &circuit, bool value);
-
     void connectionStateChanged(bool state);
 
 public slots:

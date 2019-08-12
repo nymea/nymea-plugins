@@ -25,6 +25,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QStandardPaths>
 
 Neuron::Neuron(NeuronTypes neuronType, QModbusTcpClient *modbusInterface,  QObject *parent) :
     QObject(parent),
@@ -33,7 +34,7 @@ Neuron::Neuron(NeuronTypes neuronType, QModbusTcpClient *modbusInterface,  QObje
 {
     connect(&m_inputPollingTimer, &QTimer::timeout, this, &Neuron::onInputPollingTimer);
     m_inputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
-    m_inputPollingTimer.start(100);
+    m_inputPollingTimer.start(200);
 
     connect(&m_outputPollingTimer, &QTimer::timeout, this, &Neuron::onOutputPollingTimer);
     m_outputPollingTimer.setTimerType(Qt::TimerType::PreciseTimer);
@@ -55,11 +56,11 @@ bool Neuron::init()
     }
 
     if (!m_modbusInterface) {
-        qWarning(dcUniPi()) << "Modbus RTU interface not available";
+        qWarning(dcUniPi()) << "Modbus TCP interface not available";
     }
 
     if (m_modbusInterface->connectDevice()) {
-        qWarning(dcUniPi()) << "Could not connect to RTU device";
+        qWarning(dcUniPi()) << "Could not connect to modbus TCP device";
     }
     return true;
 }
@@ -123,7 +124,7 @@ bool Neuron::loadModbusMap()
 {
     QStringList fileCoilList;
     QStringList fileRegisterList;
-
+    qDebug(dcUniPi) << QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first();
     switch (m_neuronType) {
     case NeuronTypes::S103:
         fileCoilList.append(QString("/usr/share/nymea/modbus/Neuron_S103/Neuron_S103-Coils-group-1.csv"));
@@ -468,10 +469,8 @@ bool Neuron::getDigitalOutput(const QString &circuit)
 
 bool Neuron::setAnalogOutput(const QString &circuit, double value)
 {
-    Q_UNUSED(value);
-
     int modbusAddress = m_modbusAnalogOutputRegisters.value(circuit);
-    qDebug(dcUniPi()) << "Reading analog Output" << circuit << modbusAddress;
+    qDebug(dcUniPi()) << "Writing analog Output" << circuit << modbusAddress;
 
     if (!m_modbusInterface)
         return false;
