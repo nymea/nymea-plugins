@@ -142,11 +142,11 @@ bool NeuronExtension::loadModbusMap()
     }
 
     foreach (QString relativeFilePath, fileCoilList) {
-        QString absoluteFilePath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first() + "/nymea/modbus" + relativeFilePath;
+        QString absoluteFilePath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).last() + "/nymea/modbus" + relativeFilePath;
         qDebug(dcUniPi()) << "Open CSV File:" << absoluteFilePath;
         QFile *csvFile = new QFile(absoluteFilePath);
         if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
-            qCDebug(dcUniPi()) << csvFile->errorString();
+            qCWarning(dcUniPi()) << csvFile->errorString() << absoluteFilePath;
             csvFile->deleteLater();
             return false;
         }
@@ -194,11 +194,11 @@ bool NeuronExtension::loadModbusMap()
     }
 
     foreach (QString relativeFilePath, fileRegisterList) {
-        QString absoluteFilePath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).first() + "/nymea/modbus" + relativeFilePath;
+        QString absoluteFilePath = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).last() + "/nymea/modbus" + relativeFilePath;
         qDebug(dcUniPi()) << "Open CSV File:" << absoluteFilePath;
         QFile *csvFile = new QFile(absoluteFilePath);
         if (!csvFile->open(QIODevice::ReadOnly | QIODevice::Text)) {
-            qCDebug(dcUniPi()) << csvFile->errorString();
+            qCWarning(dcUniPi()) << csvFile->errorString() << absoluteFilePath;
             csvFile->deleteLater();
             return false;
         }
