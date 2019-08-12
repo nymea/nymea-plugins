@@ -25,8 +25,7 @@
 
 #include "devices/deviceplugin.h"
 #include "plugintimer.h"
-
-#include <noson/sonossystem.h>
+#include "sonos.h"
 
 #include <QHash>
 #include <QDebug>
@@ -42,7 +41,6 @@ public:
     explicit DevicePluginSonos();
     ~DevicePluginSonos() override;
 
-    void init() override;
     Device::DeviceSetupStatus setupDevice(Device *device) override;
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
@@ -50,21 +48,12 @@ public:
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    SONOS::System *m_sonosSystem = nullptr;
-    PluginTimer *m_pluginTimer;
-    void updateZoneInfo();
-
-    void handleEventCB(void *handle);
+    Sonos *sonos = nullptr;
 
 private slots:
     void onPluginTimer();
-    /*void onConnectionChanged();
-    void onStateChanged();
-    void onActionExecuted(int actionId, bool success);
-    void versionDataReceived(const QVariantMap &data);
-    void onSetupFinished(const QVariantMap &data);
+    void onConnectionChanged();
 
-    void onPlaybackStatusChanged(const QString &playbackStatus);*/
 };
 
 #endif // DEVICEPLUGINSONOS_H

@@ -24,9 +24,6 @@
 #include "devices/device.h"
 #include "plugininfo.h"
 
-
-#include <noson/sonostypes.h>
-
 #include <QNetworkRequest>
 #include <QNetworkReply>
 
@@ -35,19 +32,19 @@ DevicePluginSonos::DevicePluginSonos()
 
 }
 
+
 DevicePluginSonos::~DevicePluginSonos()
 {
     hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
 }
 
-void DevicePluginSonos::init()
-{
-    qDebug(dcSonos) << "Nymea sonos plug-in using libnoson Copyright (C) 2018 Jean-Luc Barriere";
-    m_sonosSystem = new SONOS::System(nullptr, nullptr);
-}
 
 Device::DeviceSetupStatus DevicePluginSonos::setupDevice(Device *device)
 {
+    if (!sonos) {
+
+    }
+
     if (device->deviceClassId() == sonosDeviceClassId) {
         if (!m_sonosSystem->Discover()) {
             return Device::DeviceSetupStatusFailure;

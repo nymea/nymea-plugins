@@ -4,14 +4,26 @@
     "displayName": "Sonos",
     "vendors": [
         {
+
             "id": "30a60752-d06f-4ec9-a4e1-9810a5d22fa3",
             "name": "sonos",
-            "displayName": "Sonos",
+            "displayName": "Sono",
             "deviceClasses": [
                 {
                     "id": "22df416d-7732-44f1-b6b9-e41296211178",
-                    "name": "sonos",
-                    "displayName": "Sonos",
+                    "name": "sonosGroup",
+                    "displayName": "Sonos group",
+                    "interfaces": ["gateway", "connectable"],
+                    "createMethods": ["discovery"],
+                    "paramTypes": [
+                        {
+                        }
+                    ]
+                },
+                {
+                    "id": "22df416d-7732-44f1-b6b9-e41296211178",
+                    "name": "sonosGroup",
+                    "displayName": "Sonos group",
                     "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
