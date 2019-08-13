@@ -1,7 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
- *  Copyright (C) 2015 - 2019 Simon Stürz <simon.stuerz@guh.io>            *
+ *  Copyright (C) 2015 - 2019 Simon Stürz <simon.stuerz@nymea.io>          *
+ *  Copyright (C) 2019 Bernhard Trinns <bernhard.trinnes@nymea.io>         *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -25,11 +26,11 @@
 #define DEVICEPLUGINPHILIPSHUE_H
 
 #include "devices/deviceplugin.h"
+#include "bridgeconnection.h"
 #include "huebridge.h"
 #include "huelight.h"
 #include "hueremote.h"
 #include "pairinginfo.h"
-#include "huemotionsensor.h"
 #include "huemotionsensor.h"
 
 #include "plugintimer.h"
@@ -47,31 +48,28 @@ class DevicePluginPhilipsHue: public DevicePlugin
 
 public:
     explicit DevicePluginPhilipsHue();
-    ~DevicePluginPhilipsHue();
 
-    void init() override;
     Device::DeviceSetupStatus setupDevice(Device *device) override;
     Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     void deviceRemoved(Device *device) override;
     Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
-
-public slots:
-    Device::DeviceError executeAction(Device *device, const Action &action);
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private slots:
-    void lightStateChanged();
-    void remoteStateChanged();
+    // Light Device Events
+    void onLightStateChanged();
+
+    // Remote Device Eventes
+    void onRemoteStateChanged();
     void onRemoteButtonEvent(int buttonCode);
 
-    // Motion sensor
+    // Motion Sensor Events
     void onMotionSensorReachableChanged(bool reachable);
     void onMotionSensorBatteryLevelChanged(int batteryLevel);
     void onMotionSensorTemperatureChanged(double temperature);
     void onMotionSensorPresenceChanged(bool presence);
     void onMotionSensorLightIntensityChanged(double lightIntensity);
 
-private slots:
-    void networkManagerReplyReady();
     void onDeviceNameChanged();
 
 private:
@@ -83,66 +81,18 @@ private:
     };
     void finishDiscovery(DiscoveryJob* job);
 
-    PluginTimer *m_pluginTimer1Sec = nullptr;
-    PluginTimer *m_pluginTimer5Sec = nullptr;
-    PluginTimer *m_pluginTimer15Sec = nullptr;
-
     QHash<QNetworkReply *, PairingInfo *> m_pairingRequests;
     QHash<QNetworkReply *, PairingInfo *> m_informationRequests;
+
+    QHash<DeviceId, BridgeConnection *> m_bridgeConnections;
 
     QList<HueBridge *> m_unconfiguredBridges;
     QList<HueLight *> m_unconfiguredLights;
 
-    QHash<QNetworkReply *, Device *> m_lightRefreshRequests;
-    QHash<QNetworkReply *, Device *> m_setNameRequests;
-    QHash<QNetworkReply *, Device *> m_bridgeRefreshRequests;
-    QHash<QNetworkReply *, Device *> m_lightsRefreshRequests;
-    QHash<QNetworkReply *, Device *> m_sensorsRefreshRequests;
-    QHash<QNetworkReply *, Device *> m_bridgeLightsDiscoveryRequests;
-    QHash<QNetworkReply *, Device *> m_bridgeSensorsDiscoveryRequests;
-    QHash<QNetworkReply *, Device *> m_bridgeSearchDevicesRequests;
-
     QHash<QNetworkReply *, QPair<Device *, ActionId> > m_asyncActions;
 
-    QHash<HueBridge *, Device *> m_bridges;
-    QHash<HueLight *, Device *> m_lights;
-    QHash<HueRemote *, Device *> m_remotes;
-    QHash<HueMotionSensor *, Device *> m_motionSensors;
-
-    void refreshLight(Device *device);
-    void refreshBridge(Device *device);
-
-    void refreshLights(HueBridge *bridge);
-    void refreshSensors(HueBridge *bridge);
-
-    void discoverBridgeDevices(HueBridge *bridge);
-    void searchNewDevices(HueBridge *bridge, const QString &serialNumber);
-
-    void setLightName(Device *device);
-    void setRemoteName(Device *device);
-
-    void processNUpnpResponse(const QByteArray &data);
-    void processBridgeLightDiscoveryResponse(Device *device, const QByteArray &data);
-    void processBridgeSensorDiscoveryResponse(Device *device, const QByteArray &data);
-    void processLightRefreshResponse(Device *device, const QByteArray &data);
-    void processBridgeRefreshResponse(Device *device, const QByteArray &data);
-    void processLightsRefreshResponse(Device *device, const QByteArray &data);
-    void processSensorsRefreshResponse(Device *device, const QByteArray &data);
-    void processSetNameResponse(Device *device, const QByteArray &data);
-    void processPairingResponse(PairingInfo *pairingInfo, const QByteArray &data);
-    void processInformationResponse(PairingInfo *pairingInfo, const QByteArray &data);
-    void processActionResponse(Device *device, const ActionId actionId, const QByteArray &data);
-
-    void bridgeReachableChanged(Device *device, const bool &reachable);
-
-    Device* bridgeForBridgeId(const QString &id);
     bool lightAlreadyAdded(const QString &uuid);
     bool sensorAlreadyAdded(const QString &uuid);
-
-    int brightnessToPercentage(int brightness);
-    int percentageToBrightness(int percentage);
-
-    void abortRequests(QHash<QNetworkReply *, Device *> requestList, Device* device);
 };
 
-#endif // DEVICEPLUGINBOBLIGHT_H
+#endif // DEVICEPLUGINPHILIPSHUE_H

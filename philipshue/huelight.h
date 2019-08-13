@@ -103,7 +103,6 @@ private:
 
 signals:
     void stateChanged();
-
 };
 
 #endif // HUELIGHT_H

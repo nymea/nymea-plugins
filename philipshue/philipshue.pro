@@ -13,7 +13,8 @@ SOURCES += \
     huemotionsensor.cpp \
     pairinginfo.cpp \
     hueremote.cpp \
-    huedevice.cpp
+    huedevice.cpp \
+    bridgeconnection.cpp
 
 HEADERS += \
     devicepluginphilipshue.h \
@@ -25,7 +26,8 @@ HEADERS += \
     huemotionsensor.h \
     pairinginfo.h \
     hueremote.h \
-    huedevice.h
+    huedevice.h \
+    bridgeconnection.h
 
 
 
