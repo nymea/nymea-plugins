@@ -11,12 +11,19 @@
             "deviceClasses": [
                 {
                     "id": "22df416d-7732-44f1-b6b9-e41296211178",
-                    "name": "sonosGroup",
-                    "displayName": "Sonos group",
-                    "interfaces": ["gateway", "connectable"],
-                    "createMethods": ["discovery"],
-                    "paramTypes": [
+                    "name": "sonosConnection",
+                    "displayName": "Sonos connection",
+                    "interfaces": ["gateway"],
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
+                    "stateTypes": [
                         {
+                            "id": "5aa4360c-61de-47d0-a72e-a19d57712e1c",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         }
                     ]
                 },
@@ -29,8 +36,8 @@
                     "paramTypes": [
                         {
                             "id": "defc44cd-2ffb-4af1-b348-d6a3474c7515",
-                            "name": "zoneName",
-                            "displayName": "Zone name",
+                            "name": "groupId",
+                            "displayName": "Group id",
                             "type" : "QString"
                         }
                     ],

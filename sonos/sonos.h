@@ -27,6 +27,7 @@
 #include <QNetworkAccessManager>
 
 #include "devices/device.h"
+#include "oauth.h"
 
 class Sonos : public QObject
 {
@@ -135,8 +136,7 @@ public:
     {
         QString name;
         ArtistObject artist;
-        QString
-
+        //TODO
     };
 
     struct ContainerObject
@@ -150,6 +150,8 @@ public:
     };
 
     explicit Sonos(QByteArray apiKey, QObject *parent = nullptr);
+
+    void setApiKey(QByteArray apiKey);
     void authenticate(const QString &username, const QString &password);
 
     void getHouseholds();
@@ -201,14 +203,17 @@ public:
     void setPlayerSettings();
 
 private:
-    QUrl m_baseAuthorizationUrl = "api.sonos.com/login/v3/oauth";
-    QUrl m_baseControlUrl = "api.ws.sonos.com/control/api/v1";
+    QByteArray m_baseAuthorizationUrl = "api.sonos.com/login/v3/oauth";
+    QByteArray m_baseControlUrl = "api.ws.sonos.com/control/api/v1";
+    QByteArray m_apiKey;
+
+    OAuth *m_OAuth = nullptr;
 
 private slots:
 
 
 signals:
-    void authenticationSuccessfull();
+    void authenticationFinished();
     void authenticationFailed(const QString &reason);
 
 

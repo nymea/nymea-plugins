@@ -48,7 +48,9 @@ public:
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    Sonos *sonos = nullptr;
+    PluginTimer *m_pluginTimer = nullptr;
+    QHash<DeviceId, Sonos *> m_sonosConnections;
+
 
 private slots:
     void onPluginTimer();

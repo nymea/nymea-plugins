@@ -22,26 +22,33 @@
 
 #include "sonos.h"
 #include "extern-plugininfo.h"
+#include "network/networkaccessmanager.h"
 
 #include <QJsonDocument>
 
-Sonos::Sonos(QObject *parent)
+Sonos::Sonos(QByteArray apiKey, QObject *parent) :
+    QObject(parent),
+    m_apiKey(apiKey)
 {
 }
 
 void Sonos::authenticate(const QString &username, const QString &password)
 {
-    //get oauth autherisation
+    Q_UNUSED(username)
+    Q_UNUSED(password)
 
-    //get accesst token
+    m_OAuth = new OAuth(m_apiKey, this);
+    m_OAuth->setUrl(QUrl(m_baseAuthorizationUrl));
+    m_OAuth->setScope("playback-control-all");
+    m_OAuth->startAuthentication();
 }
 
 void Sonos::getHouseholds()
 {
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    request.setRawHeader("Authorization", "Bearer" + m_bearerToken);
-    request.setUrl(m_baseControlUrl + "/households");
+    request.setRawHeader("Authorization", "Bearer" + m_OAuth->bearerToken());
+    request.setUrl(QUrl(m_baseControlUrl + "/households"));
     QNetworkReply *reply = QNetworkAccessManager.get(request);
     connect(reply, &QNetworkReply::finished, this [this] {
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -60,13 +67,4 @@ void Sonos::getHouseholds()
         emit householdObjectsReceived(households);
     });
 }
-
-void Sonos::getPlayerVolume(int playerId)
-{
-    QNetworkRequest request;
-
-    QJsonObject object;
-    object.
-}
-
 
