@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -29,8 +29,8 @@ class TcpServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit TcpServer(const QHostAddress address, const int &port, QObject *parent);
-    explicit TcpServer(const int &port, QObject *parent = 0);
+    explicit TcpServer(const QHostAddress address, const quint16 &port, QObject *parent = nullptr);
+    explicit TcpServer(const quint16 &port, QObject *parent = nullptr);
     ~TcpServer();
 
     bool isValid();
@@ -42,19 +42,19 @@ public:
 
 
 private:
-    QTcpServer *m_tcpServer;
-    QTcpSocket *m_socket;
+    QTcpServer *m_tcpServer = nullptr;
+    QTcpSocket *m_socket = nullptr;
 
 signals:
     void newPendingConnection();
-    void textMessageReceived(QByteArray message);
-    void connected();
-    void disconnected();
+    void commandReceived(QByteArray message);
+    void connectionChanged(bool connected);
 
-public slots:
+private slots:
     void newConnection();
     void onDisconnected();
     void readData();
+    void onError(QAbstractSocket::SocketError error);
 };
 
 #endif // TCPSERVER_H

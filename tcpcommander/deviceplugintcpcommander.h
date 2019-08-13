@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -23,6 +23,7 @@
 
 #include "devices/deviceplugin.h"
 #include "tcpserver.h"
+#include "tcpsocket.h"
 
 class DevicePluginTcpCommander : public DevicePlugin
 {
@@ -41,18 +42,16 @@ public:
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    QHash<QTcpSocket *, Device *> m_tcpSockets;
+    QHash<TcpSocket *, Device *> m_tcpSockets;
     QHash<TcpServer *, Device *> m_tcpServer;
+    QHash<ActionId, DeviceId> m_pendingActions;
 
 private slots:
-    void onTcpSocketConnected();
-    void onTcpSocketDisconnected();
-    void onTcpSocketBytesWritten();
+    void onTcpSocketConnectionChanged(bool connected);
+    void onTcpSocketCommandSent(bool successfulle);
 
-    void onTcpServerConnected();
-    void onTcpServerDisconnected();
-    void onTcpServerTextMessageReceived(QByteArray message);
-
+    void onTcpServerConnectionChanged(bool connected);
+    void onTcpServerCommandReceived(QByteArray message);
 };
 
 #endif // DEVICEPLUGINTCPCOMMANDER_H
