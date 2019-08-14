@@ -50,8 +50,8 @@ public:
     QString presenceSensorUuid() const;
     void setPresenceSensorUuid(const QString &presenceSensorUuid);
 
-    int lightSensorId() const;
-    void setLightSensorId(int sensorId);
+    int sensorId() const;
+    void setSensorId(int sensorId);
 
     QString lightSensorUuid() const;
     void setLightSensorUuid(const QString &lightSensorUuid);

@@ -68,14 +68,25 @@ private slots:
     void remoteStateChanged();
     void onRemoteButtonEvent(int buttonCode);
 
-    // Motion sensor
-    void onMotionSensorReachableChanged(bool reachable);
-    void onMotionSensorBatteryLevelChanged(int batteryLevel);
-    void onMotionSensorTemperatureChanged(double temperature);
-    void onMotionSensorPresenceChanged(bool presence);
-    void onMotionSensorLightIntensityChanged(double lightIntensity);
 
-private slots:
+    // Motion sensor
+
+signals:
+    //Devices discovered
+
+    void lightDiscovered(QHash<QString, HueLight *>);
+    void remoteDiscovered(QHash<QString, HueRemote *>);
+    void motionSensorDiscovered(QHash<QString, HueMotionSensor *>);
+
+    // Light Device Events
+    void lightStateChanged();
+
+    void motionSensorReachableChanged(bool reachable);
+    void motionSensorBatteryLevelChanged(int batteryLevel);
+    void motionSensorTemperatureChanged(double temperature);
+    void motionSensorPresenceChanged(bool presence);
+    void motionSensorLightIntensityChanged(double lightIntensity);
+
     void networkManagerReplyReady();
     void onDeviceNameChanged();
 

@@ -56,6 +56,12 @@ public:
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private slots:
+
+    //Devices discovered
+    void onLightsDiscovered(QHash<QString, HueLight *> remotes);
+    void onRemotesDiscovered(QHash<QString, HueRemote *> remotes);
+    void onMotionSensorDiscovered(QHash<QString, HueMotionSensor *> motionSensors);
+
     // Light Device Events
     void onLightStateChanged();
 
