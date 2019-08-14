@@ -74,7 +74,7 @@ void BridgeConnection::init()
         // refresh bridges every 15 seconds
         refreshBridge();
         // search for new devices connected to the bridge
-
+        discoverBridgeDevices();
     });
 }
 
@@ -383,7 +383,7 @@ void BridgeConnection::processSetNameResponse(const QByteArray &data)
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
         //emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
-                return;
+        return;
     }
 
     // check response error
@@ -398,6 +398,327 @@ void BridgeConnection::processSetNameResponse(const QByteArray &data)
     }
 }
 
+void BridgeConnection::processBridgeLightDiscoveryResponse(const QByteArray &data)
+{
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+
+    // Check JSON error
+    if (error.error != QJsonParseError::NoError) {
+        qCWarning(dcPhilipsHue) << "Bridge light discovery json error in response" << error.errorString();
+        return;
+    }
+
+    // Check response error
+    if (data.contains("error")) {
+        if (!jsonDoc.toVariant().toList().isEmpty()) {
+            qCWarning(dcPhilipsHue) << "Failed to discover Hue Bridge lights:" << jsonDoc.toVariant().toList().first().toMap().value("error").toMap().value("description").toString();
+        } else {
+            qCWarning(dcPhilipsHue) << "Failed to discover Hue Bridge lights: Invalid error message format";
+        }
+        return;
+    }
+
+
+    QHash<QString, HueLight *> lights;
+
+    QVariantMap lightsMap = jsonDoc.toVariant().toMap();
+    foreach (QString lightId, lightsMap.keys()) {
+        QVariantMap lightMap = lightsMap.value(lightId).toMap();
+
+        QString uuid = lightMap.value("uniqueid").toString();
+        QString model = lightMap.value("modelid").toString();
+
+        if (lightAlreadyAdded(uuid))
+            continue;
+
+        HueLight *light = new HueLight();
+        light->modelId(model)
+
+
+        if (lightMap.value("type").toString() == "Dimmable light") {
+            DeviceDescriptor descriptor(dimmableLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue White Light", device->id());
+            ParamList params;
+            params.append(Param(dimmableLightDeviceModelIdParamTypeId, model));
+            params.append(Param(dimmableLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(dimmableLightDeviceUuidParamTypeId, uuid));
+            params.append(Param(dimmableLightDeviceLightIdParamTypeId, lightId));
+            descriptor.setParams(params);
+            dimmableLightDescriptors.append(descriptor);
+
+            qCDebug(dcPhilipsHue) << "Found new dimmable light" << lightMap.value("name").toString() << model;
+        } else if (lightMap.value("type").toString() == "Color temperature light") {
+            DeviceDescriptor descriptor(colorTemperatureLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue Color Temperature Light", device->id());
+            ParamList params;
+            params.append(Param(colorTemperatureLightDeviceModelIdParamTypeId, model));
+            params.append(Param(colorTemperatureLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(colorTemperatureLightDeviceUuidParamTypeId, uuid));
+            params.append(Param(colorTemperatureLightDeviceLightIdParamTypeId, lightId));
+            descriptor.setParams(params);
+            colorTemperatureLightDescriptors.append(descriptor);
+
+            qCDebug(dcPhilipsHue) << "Found new color temperature light" << lightMap.value("name").toString() << model;
+        } else {
+            DeviceDescriptor descriptor(colorLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue Color Light", device->id());
+            ParamList params;
+            params.append(Param(colorLightDeviceModelIdParamTypeId, model));
+            params.append(Param(colorLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
+            params.append(Param(colorLightDeviceUuidParamTypeId, uuid));
+            params.append(Param(colorLightDeviceLightIdParamTypeId, lightId));
+            descriptor.setParams(params);
+            colorLightDescriptors.append(descriptor);
+            qCDebug(dcPhilipsHue) << "Found new color light" << lightMap.value("name").toString() << model;
+        }
+    }
+
+    if (!lights.isEmpty())
+        emit lightDiscovered(lights);
+}
+
+void BridgeConnection::processBridgeSensorDiscoveryResponse(const QByteArray &data)
+{
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+
+    // Check JSON error
+    if (error.error != QJsonParseError::NoError) {
+        qCWarning(dcPhilipsHue) << "Bridge sensor discovery json error in response" << error.errorString();
+        return;
+    }
+
+    // Check response error
+    if (data.contains("error")) {
+        if (!jsonDoc.toVariant().toList().isEmpty()) {
+            qCWarning(dcPhilipsHue) << "Failed to discover Hue Bridge sensors:" << jsonDoc.toVariant().toList().first().toMap().value("error").toMap().value("description").toString();
+        } else {
+            qCWarning(dcPhilipsHue) << "Failed to discover Hue Bridge sensors: Invalid error message format";
+        }
+        return;
+    }
+
+    // Create sensors if not already added
+    QVariantMap sensorsMap = jsonDoc.toVariant().toMap();
+    QHash<QString, HueMotionSensor *> motionSensors;
+    QHash<QString, HueRemote *> remotes;
+    foreach (const QString &sensorId, sensorsMap.keys()) {
+
+        QVariantMap sensorMap = sensorsMap.value(sensorId).toMap();
+        QString uuid = sensorMap.value("uniqueid").toString();
+        QString model = sensorMap.value("modelid").toString();
+
+        if (sensorMap.value("type").toString() == "ZLLSwitch" || sensorMap.value("type").toString() == "ZGPSwitch") {
+
+            HueRemote *remote = new HueRemote(this);
+            remote->setModelId(model);
+            remote->setType(sensorMap.value("type").toString());
+            remote->setUuid(uuid);
+            remote->setSensorId(sensorId);
+            qCDebug(dcPhilipsHue) << "Found new remote" << sensorMap.value("name").toString() << model;
+
+        } else if (model == "SML001" || model == "SML002") {
+            // Get the base uuid from this sensor
+            QString baseUuid = HueDevice::getBaseUuid(uuid);
+
+            // Temperature sensor
+            if (sensorMap.value("type").toString() == "ZLLTemperature") {
+                qCDebug(dcPhilipsHue()) << "Found temperature sensor from OurdoorSensor:" << baseUuid << sensorMap;
+                // Check if we haven outdoor sensor for this temperature sensor
+                if (motionSensors.contains(baseUuid)) {
+                    HueMotionSensor *motionSensor = motionSensors.value(baseUuid);
+                    motionSensor->setTemperatureSensorUuid(uuid);
+                    motionSensor->setTemperatureSensorId(sensorId.toInt());
+                } else {
+                    // Create an outdoor sensor
+                    HueMotionSensor *motionSensor = nullptr;
+                    if (model == "SML001") {
+                        motionSensor = new HueIndoorSensor(this);
+                    } else {
+                        motionSensor = new HueOutdoorSensor(this);
+                    }
+                    motionSensor->setModelId(model);
+                    motionSensor->setUuid(baseUuid);
+                    motionSensor->setTemperatureSensorUuid(uuid);
+                    motionSensor->setTemperatureSensorId(sensorId.toInt());
+                    motionSensors.insert(baseUuid, motionSensor);
+                }
+            }
+
+            if (sensorMap.value("type").toString() == "ZLLPresence") {
+                qCDebug(dcPhilipsHue()) << "Found presence sensor from OurdoorSensor:" << baseUuid << sensorMap;
+                // Check if we haven outdoor sensor for this presence sensor
+                if (motionSensors.contains(baseUuid)) {
+                    HueMotionSensor *motionSensor = motionSensors.value(baseUuid);
+                    motionSensor->setPresenceSensorUuid(uuid);
+                    motionSensor->setPresenceSensorId(sensorId.toInt());
+                } else {
+                    // Create an outdoor sensor
+                    HueMotionSensor *motionSensor = nullptr;
+                    if (model == "SML001") {
+                        motionSensor = new HueIndoorSensor(this);
+                    } else {
+                        motionSensor = new HueOutdoorSensor(this);
+                    }
+                    motionSensor->setModelId(model);
+                    motionSensor->setUuid(baseUuid);
+                    motionSensor->setPresenceSensorUuid(uuid);
+                    motionSensor->setPresenceSensorId(sensorId.toInt());
+                    motionSensors.insert(baseUuid, motionSensor);
+                    //TODO create a request specific device list and compare it to the existing one
+                    //If a UUID is not preset it was removed fomr the bridge and the auto device should be removed too
+                    //maybe deleting the device list and adding the new devices is the way to go
+                }
+            }
+
+            if (sensorMap.value("type").toString() == "ZLLLightLevel") {
+                qCDebug(dcPhilipsHue()) << "Found light sensor from OurdoorSensor:" << sensorMap;
+                // Check if we haven outdoor sensor for this light sensor
+                if (motionSensors.contains(baseUuid)) {
+                    HueMotionSensor *motionSensor = motionSensors.value(baseUuid);
+                    motionSensor->setLightSensorUuid(uuid);
+                    motionSensor->setLightSensorId(sensorId.toInt());
+                } else {
+                    // Create an outdoor sensor
+                    HueMotionSensor *motionSensor = nullptr;
+                    if (model == "SML001") {
+                        motionSensor = new HueIndoorSensor(this);
+                    } else {
+                        motionSensor = new HueOutdoorSensor(this);
+                    }
+                    motionSensor->setModelId(model);
+                    motionSensor->setUuid(baseUuid);
+                    motionSensor->setLightSensorUuid(uuid);
+                    motionSensor->setLightSensorId(sensorId.toInt());
+                    motionSensors.insert(baseUuid, motionSensor);
+                }
+            }
+        } else {
+            qCDebug(dcPhilipsHue()) << "Found unknown sensor:" << model;
+        }
+    }
+
+    if (!remotes.isEmpty()) {
+        emit remotesDiscovered(remotes);
+    }
+
+    if (!motionSensors.isEmpty()) {
+        emit motionSensorsDiscovered(motionSensors);
+    }
+}
+
+
+
+void BridgeConnection::processPairingResponse(PairingInfo *pairingInfo, const QByteArray &data)
+{
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+
+    // check JSON error
+    if (error.error != QJsonParseError::NoError) {
+        qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
+        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        pairingInfo->deleteLater();
+        return;
+    }
+
+    // check response error
+    if (data.contains("error")) {
+        if (!jsonDoc.toVariant().toList().isEmpty()) {
+            qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge:" << jsonDoc.toVariant().toList().first().toMap().value("error").toMap().value("description").toString();
+        } else {
+            qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge: Invalid error message format";
+        }
+        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        pairingInfo->deleteLater();
+        return;
+    }
+
+    pairingInfo->setApiKey(jsonDoc.toVariant().toList().first().toMap().value("success").toMap().value("username").toString());
+
+    qCDebug(dcPhilipsHue) << "Got api key from bridge:" << pairingInfo->apiKey();
+
+    if (pairingInfo->apiKey().isEmpty()) {
+        qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge: did not get any key from the bridge";
+        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        pairingInfo->deleteLater();
+        return;
+    }
+
+    // Paired successfully, check bridge information
+    QNetworkRequest request(QUrl("http://" + pairingInfo->host().toString() + "/api/" + pairingInfo->apiKey() + "/config"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
+    m_informationRequests.insert(reply, pairingInfo);
+}
+
+void BridgeConnection::processInformationResponse(PairingInfo *pairingInfo, const QByteArray &data)
+{
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+
+    // check JSON error
+    if (error.error != QJsonParseError::NoError) {
+        qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
+        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        pairingInfo->deleteLater();
+        return;
+    }
+
+    QVariantMap response = jsonDoc.toVariant().toMap();
+
+    // check response error
+    if (response.contains("error")) {
+        qCWarning(dcPhilipsHue) << "Failed to get information from Hue Bridge:" << response.value("error").toMap().value("description").toString();
+        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        pairingInfo->deleteLater();
+        return;
+    }
+
+    // create Bridge
+    HueBridge *bridge = new HueBridge(this);
+    bridge->setId(response.value("bridgeid").toString());
+    bridge->setApiKey(pairingInfo->apiKey());
+    bridge->setHostAddress(pairingInfo->host());
+    bridge->setApiVersion(response.value("apiversion").toString());
+    bridge->setSoftwareVersion(response.value("swversion").toString());
+    bridge->setMacAddress(response.value("mac").toString());
+    bridge->setName(response.value("name").toString());
+    bridge->setZigbeeChannel(response.value("zigbeechannel").toInt());
+
+    m_unconfiguredBridges.append(bridge);
+
+    emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusSuccess);
+    pairingInfo->deleteLater();
+}
+
+void BridgeConnection::processActionResponse(Device *device, const ActionId actionId, const QByteArray &data)
+{
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+
+    // check JSON error
+    if (error.error != QJsonParseError::NoError) {
+        qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
+        emit actionExecutionFinished(actionId, Device::DeviceErrorHardwareFailure);
+        return;
+    }
+
+    // check response error
+    if (data.contains("error")) {
+        if (!jsonDoc.toVariant().toList().isEmpty()) {
+            qCWarning(dcPhilipsHue) << "Failed to execute Hue action:" << jsonDoc.toJson(); //jsonDoc.toVariant().toList().first().toMap().value("error").toMap().value("description").toString();
+        } else {
+            qCWarning(dcPhilipsHue) << "Failed to execute Hue action: Invalid error message format";
+        }
+        emit actionExecutionFinished(actionId, Device::DeviceErrorHardwareFailure);
+        return;
+    }
+
+    if (device->deviceClassId() != bridgeDeviceClassId)
+        m_lights.key(device)->processActionResponse(jsonDoc.toVariant().toList());
+
+    emit actionExecutionFinished(actionId, Device::DeviceErrorNoError);
+}
 
 void BridgeConnection::networkManagerReplyReady()
 {
