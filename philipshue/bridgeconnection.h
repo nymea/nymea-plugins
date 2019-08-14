@@ -60,8 +60,8 @@ public:
     void setFlash(const QString &uuid, const QString &flashMode);
     void setTemperature(const QString &uuid, quint16 temperature);
 
-    void setLightName();
-    void setRemoteName();
+    void setLightName(const QString &uuid, const QString &name);
+    void setRemoteName(const QString &uuid, const QString &name);
 
 private slots:
     void lightStateChanged();

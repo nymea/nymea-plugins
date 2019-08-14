@@ -770,39 +770,6 @@ void DevicePluginPhilipsHue::onMotionSensorLightIntensityChanged(double lightInt
 
 
 
-void DevicePluginPhilipsHue::setLightName(Device *device)
-{
-    HueLight *light = m_lights.key(device);
-
-    QVariantMap requestMap;
-    requestMap.insert("name", device->name());
-    QJsonDocument jsonDoc = QJsonDocument::fromVariant(requestMap);
-
-    QNetworkRequest request(QUrl("http://" + light->hostAddress().toString() + "/api/" + light->apiKey() +
-                                 "/lights/" + QString::number(light->id())));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = hardwareManager()->networkManager()->put(request,jsonDoc.toJson());
-    connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
-    m_setNameRequests.insert(reply, device);
-}
-
-void DevicePluginPhilipsHue::setRemoteName(Device *device)
-{
-    HueRemote *remote = m_remotes.key(device);
-
-    QVariantMap requestMap;
-    requestMap.insert("name", device->name());
-    QJsonDocument jsonDoc = QJsonDocument::fromVariant(requestMap);
-
-    QNetworkRequest request(QUrl("http://" + remote->hostAddress().toString() + "/api/" + remote->apiKey() +
-                                 "/sensors/" + QString::number(remote->id())));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-    QNetworkReply *reply = hardwareManager()->networkManager()->put(request,jsonDoc.toJson());
-    connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
-    m_setNameRequests.insert(reply, device);
-}
 
 void DevicePluginPhilipsHue::processBridgeLightDiscoveryResponse(Device *device, const QByteArray &data)
 {
@@ -1056,7 +1023,6 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
 }
 
 
-
 void DevicePluginPhilipsHue::processPairingResponse(PairingInfo *pairingInfo, const QByteArray &data)
 {
     QJsonParseError error;
@@ -1284,25 +1250,5 @@ bool DevicePluginPhilipsHue::sensorAlreadyAdded(const QString &uuid)
             }
         }
     }
-
     return false;
-}
-
-int DevicePluginPhilipsHue::brightnessToPercentage(int brightness)
-{
-    return qRound((100.0 * brightness) / 255.0);
-}
-
-int DevicePluginPhilipsHue::percentageToBrightness(int percentage)
-{
-    return qRound((255.0 * percentage) / 100.0);
-}
-
-void DevicePluginPhilipsHue::abortRequests(QHash<QNetworkReply *, Device *> requestList, Device *device)
-{
-    foreach (QNetworkReply* reply, requestList.keys()) {
-        if (requestList.value(reply) == device) {
-            reply->abort();
-        }
-    }
 }

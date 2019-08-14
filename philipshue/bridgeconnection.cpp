@@ -197,6 +197,41 @@ void BridgeConnection::setFlash(const QString &uuid, const QString &mode)
 }
 
 
+
+void BridgeConnection::setLightName(const QString &uuid, const QString &name)
+{
+    HueLight *light = m_lights.value(uuid);
+
+    QVariantMap requestMap;
+    requestMap.insert("name", name);
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(requestMap);
+
+    QNetworkRequest request(QUrl("http://" + light->hostAddress().toString() + "/api/" + light->apiKey() +
+                                 "/lights/" + QString::number(light->id())));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = m_hardwareManager->networkManager()->put(request,jsonDoc.toJson());
+    connect(reply, &QNetworkReply::finished, this, &BridgeConnection::networkManagerReplyReady);
+    //m_setNameRequests.insert(reply, device);
+}
+
+void BridgeConnection::setRemoteName(const QString &uuid, const QString &name)
+{
+    HueRemote *remote = m_remotes.balue(uuid);
+
+    QVariantMap requestMap;
+    requestMap.insert("name", device->name());
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(requestMap);
+
+    QNetworkRequest request(QUrl("http://" + remote->hostAddress().toString() + "/api/" + remote->apiKey() +
+                                 "/sensors/" + QString::number(remote->id())));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QNetworkReply *reply = m_hardwareManager->networkManager()->put(request,jsonDoc.toJson());
+    connect(reply, &QNetworkReply::finished, this, &BridgeConnection::networkManagerReplyReady);
+    //m_setNameRequests.insert(reply, device);
+}
+
 void BridgeConnection::processLightRefreshResponse(QString uuid, const QByteArray &data)
 {
     QJsonParseError error;
