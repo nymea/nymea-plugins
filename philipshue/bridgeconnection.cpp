@@ -138,6 +138,13 @@ void BridgeConnection::discoverBridgeDevices()
     //m_bridgeSensorsDiscoveryRequests.insert(reply, device);
 }
 
+void BridgeConnection::checkForUpdates()
+{
+    QPair<QNetworkRequest, QByteArray> request = m_bridge->createCheckUpdatesRequest();
+    QNetworkReply *reply = m_hardwareManager->networkManager()->put(request.first, request.second);
+    connect(reply, &QNetworkReply::finished, this, &BridgeConnection::networkManagerReplyReady);
+}
+
 void BridgeConnection::searchNewDevices(const QString &serialNumber)
 {
     qCDebug(dcPhilipsHue) << "Discover bridge devices" << m_bridge->hostAddress();
@@ -148,7 +155,7 @@ void BridgeConnection::searchNewDevices(const QString &serialNumber)
     //m_bridgeSearchDevicesRequests.insert(reply, device);
 }
 
-void BridgeConnection::setPower(const QString &uuid, bool power)
+QUuid BridgeConnection::setPower(const QString &uuid, bool power)
 {
     HueLight *light = m_lights.value(uuid);
     QPair<QNetworkRequest, QByteArray> request = light->createSetPowerRequest(power);
@@ -156,7 +163,7 @@ void BridgeConnection::setPower(const QString &uuid, bool power)
     connect(reply, &QNetworkReply::finished, this, &BridgeConnection::networkManagerReplyReady);
 }
 
-void BridgeConnection::setBrightness(const QString &uuid, quint8 percent)
+QUuid BridgeConnection::setBrightness(const QString &uuid, quint8 percent)
 {
     HueLight *light = m_lights.value(uuid);
     QPair<QNetworkRequest, QByteArray> request = light->createSetBrightnessRequest(percent);
@@ -164,7 +171,7 @@ void BridgeConnection::setBrightness(const QString &uuid, quint8 percent)
     connect(reply, &QNetworkReply::finished, this, &BridgeConnection::networkManagerReplyReady);
 }
 
-void BridgeConnection::setColor(const QString &uuid, QColor color)
+QUuid BridgeConnection::setColor(const QString &uuid, QColor color)
 {
     HueLight *light = m_lights.value(uuid);
     QPair<QNetworkRequest, QByteArray> request = light->createSetColorRequest(color);
@@ -172,7 +179,7 @@ void BridgeConnection::setColor(const QString &uuid, QColor color)
     connect(reply, &QNetworkReply::finished, this, &BridgeConnection::networkManagerReplyReady);
 }
 
-void BridgeConnection::setEffect(const QString &uuid, const QString &effect)
+QUuid BridgeConnection::setEffect(const QString &uuid, const QString &effect)
 {
     HueLight *light = m_lights.value(uuid);
     QPair<QNetworkRequest, QByteArray> request = light->createSetEffectRequest(effect);
@@ -198,9 +205,9 @@ void BridgeConnection::setFlash(const QString &uuid, const QString &mode)
 
 
 
-void BridgeConnection::setLightName(const QString &uuid, const QString &name)
+QUuid BridgeConnection::setLightName(const QString &deviceUuid, const QString &name)
 {
-    HueLight *light = m_lights.value(uuid);
+    HueLight *light = m_lights.value(deviceUuid);
 
     QVariantMap requestMap;
     requestMap.insert("name", name);
@@ -212,15 +219,16 @@ void BridgeConnection::setLightName(const QString &uuid, const QString &name)
 
     QNetworkReply *reply = m_hardwareManager->networkManager()->put(request,jsonDoc.toJson());
     connect(reply, &QNetworkReply::finished, this, &BridgeConnection::networkManagerReplyReady);
-    //m_setNameRequests.insert(reply, device);
+    QUuid actionUuid = scheduleActionRequest(request); // needs request, device uuid, request type
+    return actionUuid;
 }
 
 void BridgeConnection::setRemoteName(const QString &uuid, const QString &name)
 {
-    HueRemote *remote = m_remotes.balue(uuid);
+    HueRemote *remote = m_remotes.value(uuid);
 
     QVariantMap requestMap;
-    requestMap.insert("name", device->name());
+    requestMap.insert("name", name);
     QJsonDocument jsonDoc = QJsonDocument::fromVariant(requestMap);
 
     QNetworkRequest request(QUrl("http://" + remote->hostAddress().toString() + "/api/" + remote->apiKey() +
@@ -229,10 +237,16 @@ void BridgeConnection::setRemoteName(const QString &uuid, const QString &name)
 
     QNetworkReply *reply = m_hardwareManager->networkManager()->put(request,jsonDoc.toJson());
     connect(reply, &QNetworkReply::finished, this, &BridgeConnection::networkManagerReplyReady);
-    //m_setNameRequests.insert(reply, device);
+    if (!m_setNameRequests) {
+        m_setNameRequests = reply;
+    } else {
+        m_setNameRequests->abort();
+        m_setNameRequests->deleteLater();
+        m_setNameRequests = reply;
+    }
 }
 
-void BridgeConnection::processLightRefreshResponse(QString uuid, const QByteArray &data)
+void BridgeConnection::processLightRefreshResponse(const QByteArray &data)
 {
     QJsonParseError error;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -429,46 +443,11 @@ void BridgeConnection::processBridgeLightDiscoveryResponse(const QByteArray &dat
         QString uuid = lightMap.value("uniqueid").toString();
         QString model = lightMap.value("modelid").toString();
 
-        if (lightAlreadyAdded(uuid))
-            continue;
-
         HueLight *light = new HueLight();
-        light->modelId(model)
-
-
-        if (lightMap.value("type").toString() == "Dimmable light") {
-            DeviceDescriptor descriptor(dimmableLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue White Light", device->id());
-            ParamList params;
-            params.append(Param(dimmableLightDeviceModelIdParamTypeId, model));
-            params.append(Param(dimmableLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
-            params.append(Param(dimmableLightDeviceUuidParamTypeId, uuid));
-            params.append(Param(dimmableLightDeviceLightIdParamTypeId, lightId));
-            descriptor.setParams(params);
-            dimmableLightDescriptors.append(descriptor);
-
-            qCDebug(dcPhilipsHue) << "Found new dimmable light" << lightMap.value("name").toString() << model;
-        } else if (lightMap.value("type").toString() == "Color temperature light") {
-            DeviceDescriptor descriptor(colorTemperatureLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue Color Temperature Light", device->id());
-            ParamList params;
-            params.append(Param(colorTemperatureLightDeviceModelIdParamTypeId, model));
-            params.append(Param(colorTemperatureLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
-            params.append(Param(colorTemperatureLightDeviceUuidParamTypeId, uuid));
-            params.append(Param(colorTemperatureLightDeviceLightIdParamTypeId, lightId));
-            descriptor.setParams(params);
-            colorTemperatureLightDescriptors.append(descriptor);
-
-            qCDebug(dcPhilipsHue) << "Found new color temperature light" << lightMap.value("name").toString() << model;
-        } else {
-            DeviceDescriptor descriptor(colorLightDeviceClassId, lightMap.value("name").toString(), "Philips Hue Color Light", device->id());
-            ParamList params;
-            params.append(Param(colorLightDeviceModelIdParamTypeId, model));
-            params.append(Param(colorLightDeviceTypeParamTypeId, lightMap.value("type").toString()));
-            params.append(Param(colorLightDeviceUuidParamTypeId, uuid));
-            params.append(Param(colorLightDeviceLightIdParamTypeId, lightId));
-            descriptor.setParams(params);
-            colorLightDescriptors.append(descriptor);
-            qCDebug(dcPhilipsHue) << "Found new color light" << lightMap.value("name").toString() << model;
-        }
+        light->setModelId(model);
+        light->setType(lightMap.value("type").toString());
+        light->setUuid(uuid);
+        //light->setId(lightId);
     }
 
     if (!lights.isEmpty())
@@ -597,11 +576,11 @@ void BridgeConnection::processBridgeSensorDiscoveryResponse(const QByteArray &da
     }
 
     if (!remotes.isEmpty()) {
-        emit remotesDiscovered(remotes);
+        emit remoteDiscovered(remotes);
     }
 
     if (!motionSensors.isEmpty()) {
-        emit motionSensorsDiscovered(motionSensors);
+        emit motionSensorDiscovered(motionSensors);
     }
 }
 
@@ -655,12 +634,12 @@ void BridgeConnection::processInformationResponse(PairingInfo *pairingInfo, cons
 {
     QJsonParseError error;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+    pairingInfo->deleteLater();
 
     // check JSON error
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
-        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
-        pairingInfo->deleteLater();
+        emit pairingFinished(false);
         return;
     }
 
@@ -669,29 +648,13 @@ void BridgeConnection::processInformationResponse(PairingInfo *pairingInfo, cons
     // check response error
     if (response.contains("error")) {
         qCWarning(dcPhilipsHue) << "Failed to get information from Hue Bridge:" << response.value("error").toMap().value("description").toString();
-        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
-        pairingInfo->deleteLater();
+        emit pairingFinished(false);
         return;
     }
-
-    // create Bridge
-    HueBridge *bridge = new HueBridge(this);
-    bridge->setId(response.value("bridgeid").toString());
-    bridge->setApiKey(pairingInfo->apiKey());
-    bridge->setHostAddress(pairingInfo->host());
-    bridge->setApiVersion(response.value("apiversion").toString());
-    bridge->setSoftwareVersion(response.value("swversion").toString());
-    bridge->setMacAddress(response.value("mac").toString());
-    bridge->setName(response.value("name").toString());
-    bridge->setZigbeeChannel(response.value("zigbeechannel").toInt());
-
-    m_unconfiguredBridges.append(bridge);
-
-    emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusSuccess);
-    pairingInfo->deleteLater();
+    emit pairingFinished(true);
 }
 
-void BridgeConnection::processActionResponse(Device *device, const ActionId actionId, const QByteArray &data)
+void BridgeConnection::processActionResponse(const QUuid actionUuid, const QByteArray &data)
 {
     QJsonParseError error;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
@@ -699,7 +662,7 @@ void BridgeConnection::processActionResponse(Device *device, const ActionId acti
     // check JSON error
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
-        emit actionExecutionFinished(actionId, Device::DeviceErrorHardwareFailure);
+        emit actionFailed(actionUuid, error.errorString());
         return;
     }
 
@@ -707,17 +670,14 @@ void BridgeConnection::processActionResponse(Device *device, const ActionId acti
     if (data.contains("error")) {
         if (!jsonDoc.toVariant().toList().isEmpty()) {
             qCWarning(dcPhilipsHue) << "Failed to execute Hue action:" << jsonDoc.toJson(); //jsonDoc.toVariant().toList().first().toMap().value("error").toMap().value("description").toString();
+            emit actionFailed(actionUuid, "Failed to execute Hue action:");
         } else {
             qCWarning(dcPhilipsHue) << "Failed to execute Hue action: Invalid error message format";
+            emit actionFailed(actionUuid, "Invalid error message format");
         }
-        emit actionExecutionFinished(actionId, Device::DeviceErrorHardwareFailure);
         return;
     }
-
-    if (device->deviceClassId() != bridgeDeviceClassId)
-        m_lights.key(device)->processActionResponse(jsonDoc.toVariant().toList());
-
-    emit actionExecutionFinished(actionId, Device::DeviceErrorNoError);
+    emit actionExecuted(actionUuid);
 }
 
 void BridgeConnection::networkManagerReplyReady()
@@ -822,17 +782,17 @@ void BridgeConnection::networkManagerReplyReady()
         }
         processSensorsRefreshResponse(reply->readAll());
 
-    } else if (m_asyncActions.contains(reply)) {
-        QPair<Device *, ActionId> actionInfo = m_asyncActions.take(reply);
+    } else if (m_actionRequests.contains(reply)) {
+        QUuid actionUuid = m_actionRequests.take(reply);
 
         // check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcPhilipsHue) << "Execute Hue Light action request error:" << status << reply->errorString();
             bridgeReachableChanged(false);
-            //emit actionExecutionFinished(actionInfo.second, Device::DeviceErrorHardwareNotAvailable);
+            emit actionFailed(actionUuid, reply->errorString());
             return;
         }
-        processActionResponse(actionInfo.second, reply->readAll());
+        processActionResponse(actionUuid, reply->readAll());
 
     } else if (reply == m_setNameRequests) {
 
@@ -857,6 +817,14 @@ int BridgeConnection::brightnessToPercentage(int brightness)
 int BridgeConnection::percentageToBrightness(int percentage)
 {
     return qRound((255.0 * percentage) / 100.0);
+}
+
+QUuid BridgeConnection::scheduleActionRequest(QNetworkRequest *request)
+{
+    QUuid actionUuid;
+    request->url();
+            m_actionRequests.insert(request);
+    return actionUuid;
 }
 
 void BridgeConnection::abortRequests(QHash<QNetworkReply *, Device *> requestList, Device *device)

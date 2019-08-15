@@ -39,7 +39,6 @@
 
 DevicePluginPhilipsHue::DevicePluginPhilipsHue()
 {
-
 }
 
 Device::DeviceError DevicePluginPhilipsHue::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
@@ -137,7 +136,7 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
     // hue bridge
     if (device->deviceClassId() == bridgeDeviceClassId) {
         // unconfigured bridges (from pairing)
-        foreach (HueBridge *b, m_unconfiguredBridges) {
+        /*foreach (HueBridge *b, m_unconfiguredBridges) {
             if (b->hostAddress().toString() == device->paramValue(bridgeDeviceHostParamTypeId).toString()) {
                 m_unconfiguredBridges.removeAll(b);
                 qCDebug(dcPhilipsHue) << "Setup unconfigured Hue Bridge" << b->name();
@@ -147,14 +146,13 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
                 device->setParamValue(bridgeDeviceMacParamTypeId, b->macAddress());
                 m_bridgeConnections.insert(device->id(), );
                 device->setStateValue(bridgeConnectedStateTypeId, true);
-                discoverBridgeDevices(b);
+                //discoverBridgeDevices();
                 return Device::DeviceSetupStatusSuccess;
             }
-        }
+        }*/
 
         // Loaded bridge
         qCDebug(dcPhilipsHue) << "Setup Hue Bridge" << device->params();
-
 
         HueBridge *bridge = new HueBridge(this);
         bridge->setId(device->paramValue(bridgeDeviceIdParamTypeId).toString());
@@ -173,21 +171,11 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
     // Hue color light
     if (device->deviceClassId() == colorLightDeviceClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue color light" << device->params();
+        BridgeConnection *bridge = m_bridgeConnections.value(device->parentId());
+        if (!bridge)
+            return Device::DeviceSetupStatusFailure;
 
-        BridgeConnection *bridge = m_bridgeConnections;
-        HueLight *hueLight = new HueLight(this);
-        hueLight->setHostAddress(bridge->hostAddress());
-        hueLight->setApiKey(bridge->apiKey());
-        hueLight->setId(device->paramValue(colorLightDeviceLightIdParamTypeId).toInt());
-        hueLight->setModelId(device->paramValue(colorLightDeviceModelIdParamTypeId).toString());
-        hueLight->setUuid(device->paramValue(colorLightDeviceUuidParamTypeId).toString());
-        hueLight->setType(device->paramValue(colorLightDeviceTypeParamTypeId).toString());
-
-        connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
-        m_lights.insert(hueLight, device);
-
-        refreshLight(device);
-
+        bridge->refreshLight(device->paramValue(colorLightDeviceUuidParamTypeId).toString());
         return Device::DeviceSetupStatusSuccess;
     }
 
@@ -195,31 +183,17 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
     if (device->deviceClassId() == colorTemperatureLightDeviceClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue color temperature light" << device->params();
 
-        HueBridge *bridge = m_bridges.key(myDevices().findById(device->parentId()));
-        HueLight *hueLight = new HueLight(this);
-        hueLight->setHostAddress(bridge->hostAddress());
-        hueLight->setApiKey(bridge->apiKey());
-        hueLight->setId(device->paramValue(colorTemperatureLightDeviceLightIdParamTypeId).toInt());
-        hueLight->setModelId(device->paramValue(colorTemperatureLightDeviceModelIdParamTypeId).toString());
-        hueLight->setUuid(device->paramValue(colorTemperatureLightDeviceUuidParamTypeId).toString());
-        hueLight->setType(device->paramValue(colorTemperatureLightDeviceTypeParamTypeId).toString());
+        BridgeConnection *bridge = m_bridgeConnections.value(device->parentId());
+        if (!bridge)
+            return Device::DeviceSetupStatusFailure;
 
-        connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
-        m_lights.insert(hueLight, device);
-
-        refreshLight(device);
-
+        bridge->refreshLight(device->paramValue(colorTemperatureLightDeviceUuidParamTypeId).toString());
         return Device::DeviceSetupStatusSuccess;
     }
 
     // Hue white light
     if (device->deviceClassId() == dimmableLightDeviceClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue white light" << device->params();
-
-        HueBridge *bridge = m_bridges.key(myDevices().findById(device->parentId()));
-        HueLight *hueLight = new HueLight(this);
-        hueLight->setHostAddress(bridge->hostAddress());
-        hueLight->setApiKey(bridge->apiKey());
 
         // Migrate device parameters after changing param type UUIDs in 0.14.
         QMap<QString, ParamTypeId> migrationMap;
@@ -245,27 +219,17 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
         device->setParams(migratedParams);
         // Migration done
 
-        hueLight->setModelId(device->paramValue(dimmableLightDeviceModelIdParamTypeId).toString());
-        hueLight->setType(device->paramValue(dimmableLightDeviceTypeParamTypeId).toString());
-        hueLight->setUuid(device->paramValue(dimmableLightDeviceUuidParamTypeId).toString());
-        hueLight->setId(device->paramValue(dimmableLightDeviceLightIdParamTypeId).toInt());
+        BridgeConnection *bridge = m_bridgeConnections.value(device->parentId());
+        if (!bridge)
+            return Device::DeviceSetupStatusFailure;
 
-        connect(hueLight, &HueLight::stateChanged, this, &DevicePluginPhilipsHue::lightStateChanged);
-
-        m_lights.insert(hueLight, device);
-        refreshLight(device);
-
+        bridge->refreshLight(device->paramValue(dimmableLightDeviceUuidParamTypeId).toString());
         return Device::DeviceSetupStatusSuccess;
     }
 
     // Hue remote
     if (device->deviceClassId() == remoteDeviceClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue remote" << device->params() << device->deviceClassId();
-
-        BridgeConnection *bridge = m_bridgeConnections.value(device->parentId());
-        HueRemote *hueRemote = new HueRemote(this);
-        hueRemote->setHostAddress(bridge->hostAddress());
-        hueRemote->setApiKey(bridge->apiKey());
 
         // Migrate device parameters after changing param type UUIDs in 0.14.
         QMap<QString, ParamTypeId> migrationMap;
@@ -388,39 +352,9 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::setupDevice(Device *device)
 
 void DevicePluginPhilipsHue::deviceRemoved(Device *device)
 {
-    abortRequests(m_lightRefreshRequests, device);
-    abortRequests(m_setNameRequests, device);
-    abortRequests(m_bridgeRefreshRequests, device);
-    abortRequests(m_lightsRefreshRequests, device);
-    abortRequests(m_sensorsRefreshRequests, device);
-    abortRequests(m_bridgeLightsDiscoveryRequests, device);
-    abortRequests(m_bridgeSensorsDiscoveryRequests, device);
-    abortRequests(m_bridgeSearchDevicesRequests, device);
-
     if (device->deviceClassId() == bridgeDeviceClassId) {
-        HueBridge *bridge = m_bridges.key(device);
-        m_bridges.remove(bridge);
+        BridgeConnection *bridge = m_bridgeConnections.take(device->id());
         bridge->deleteLater();
-    }
-
-    if (device->deviceClassId() == colorLightDeviceClassId
-            || device->deviceClassId() == colorTemperatureLightDeviceClassId
-            || device->deviceClassId() == dimmableLightDeviceClassId) {
-        HueLight *light = m_lights.key(device);
-        m_lights.remove(light);
-        light->deleteLater();
-    }
-
-    if (device->deviceClassId() == remoteDeviceClassId || device->deviceClassId() == tapDeviceClassId) {
-        HueRemote *remote = m_remotes.key(device);
-        m_remotes.remove(remote);
-        remote->deleteLater();
-    }
-
-    if (device->deviceClassId() == outdoorSensorDeviceClassId) {
-        HueMotionSensor *outdoorSensor = m_motionSensors.key(device);
-        m_motionSensors.remove(outdoorSensor);
-        outdoorSensor->deleteLater();
     }
 }
 
@@ -454,14 +388,48 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::confirmPairing(const PairingTr
 void DevicePluginPhilipsHue::onDeviceNameChanged()
 {
     Device *device = static_cast<Device*>(sender());
-    if (m_lights.values().contains(device)) {
-        setLightName(device);
-    }
+    BridgeConnection *bridge = m_bridgeConnections.value(device->parentId());
+    if (!bridge)
+        return;
 
-    if (m_remotes.values().contains(device)) {
-        setRemoteName(device);
+    if (device->deviceClassId() == colorLightDeviceClassId) {
+        bridge->setLightName(device->paramValue(colorLightDeviceUuidParamTypeId).toString(), device->name());
+    }
+    if (device->deviceClassId() == colorTemperatureLightDeviceClassId) {
+        bridge->setLightName(device->paramValue(colorTemperatureLightDeviceUuidParamTypeId).toString(), device->name());
+    }
+    if (device->deviceClassId() == dimmableLightDeviceClassId) {
+        bridge->setLightName(device->paramValue(dimmableLightDeviceUuidParamTypeId).toString(), device->name());
+    }
+    if (device->deviceClassId() == remoteDeviceClassId) {
+        bridge->setLightName(device->paramValue(remoteDeviceUuidParamTypeId).toString(), device->name());
+    }
+    if (device->deviceClassId() == tapDeviceClassId) {
+        bridge->setLightName(device->paramValue(tapDeviceUuidParamTypeId).toString(), device->name());
+    }
+    if (device->deviceClassId() == outdoorSensorDeviceClassId) {
+        bridge->setLightName(device->paramValue(outdoorSensorDeviceUuidParamTypeId).toString(), device->name());
     }
 }
+
+void DevicePluginPhilipsHue::onActionExecuted(const QUuid &uuid)
+{
+    if (m_asyncActions.contains(uuid)) {
+        ActionId asyncAction = m_asyncActions.take(uuid);
+        emit actionExecutionFinished(asyncAction, Device::DeviceErrorNoError);
+    }
+}
+
+
+void DevicePluginPhilipsHue::onActionFailed(const QUuid &uuid, const QString &error)
+{
+    if (m_asyncActions.contains(uuid)) {
+        qWarning(dcPhilipsHue()) << "Action failed: " << error;
+        ActionId asyncAction = m_asyncActions.take(uuid);
+        emit actionExecutionFinished(asyncAction, Device::DeviceErrorHardwareNotAvailable);
+    }
+}
+
 
 void DevicePluginPhilipsHue::finishDiscovery(DevicePluginPhilipsHue::DiscoveryJob *job)
 {
@@ -489,6 +457,37 @@ void DevicePluginPhilipsHue::finishDiscovery(DevicePluginPhilipsHue::DiscoveryJo
     delete job;
 }
 
+Device *DevicePluginPhilipsHue::getDeviceByHueDeviceUuid(const QString &uuid)
+{
+    foreach(Device* device, myDevices()) {
+        if (device->deviceClassId() == colorLightDeviceClassId) {
+            if(device->paramValue(colorLightDeviceUuidParamTypeId).toString() == uuid)
+                return device;
+        }
+        if (device->deviceClassId() == colorTemperatureLightDeviceClassId) {
+            if(device->paramValue(colorTemperatureLightDeviceUuidParamTypeId).toString() == uuid)
+                return device;
+        }
+        if (device->deviceClassId() == dimmableLightDeviceClassId) {
+            if(device->paramValue(dimmableLightDeviceUuidParamTypeId).toString() == uuid)
+                return device;
+        }
+        if (device->deviceClassId() == remoteDeviceClassId) {
+            if(device->paramValue(remoteDeviceUuidParamTypeId).toString() == uuid)
+                return device;
+        }
+        if (device->deviceClassId() == tapDeviceClassId) {
+            if(device->paramValue(tapDeviceUuidParamTypeId).toString() == uuid)
+                return device;
+        }
+        if (device->deviceClassId() == outdoorSensorDeviceClassId) {
+            if(device->paramValue(outdoorSensorDeviceUuidParamTypeId).toString() == uuid)
+                return device;
+        }
+    }
+    return nullptr;
+}
+
 Device::DeviceError DevicePluginPhilipsHue::executeAction(Device *device, const Action &action)
 {
     qCDebug(dcPhilipsHue) << "Execute action" << action.actionTypeId() << action.params();
@@ -506,28 +505,28 @@ Device::DeviceError DevicePluginPhilipsHue::executeAction(Device *device, const 
 
         if (action.actionTypeId() == colorLightPowerActionTypeId) {
             //get bridge
-            bridge->setPower(uuid, action.param(colorLightPowerActionPowerParamTypeId).value().toBool())
-                    //m_asyncActions.insert(device, action.id());
-                    return Device::DeviceErrorAsync;
+            QUuid actionUuid = bridge->setPower(uuid, action.param(colorLightPowerActionPowerParamTypeId).value().toBool());
+            m_asyncActions.insert(actionUuid, action.id());
+            return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == colorLightColorActionTypeId) {
-            bridge->setColor(uuid, action.param(colorLightColorActionColorParamTypeId).value().value<QColor>());
-            //m_asyncActions.insert(reply,QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setColor(uuid, action.param(colorLightColorActionColorParamTypeId).value().value<QColor>());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == colorLightBrightnessActionTypeId) {
-            bridge->setBrightness(uuid, action.param(colorLightBrightnessActionBrightnessParamTypeId).value().toInt());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setBrightness(uuid, action.param(colorLightBrightnessActionBrightnessParamTypeId).value().toInt());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == colorLightEffectActionTypeId) {
-            bridge->setEffect(uuid, action.param(colorLightEffectActionEffectParamTypeId).value().toString());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setEffect(uuid, action.param(colorLightEffectActionEffectParamTypeId).value().toString());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == colorLightAlertActionTypeId) {
-            bridge->setFlash(uuid, action.param(colorLightAlertActionAlertParamTypeId).value().toString());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setFlash(uuid, action.param(colorLightAlertActionAlertParamTypeId).value().toString());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == colorLightColorTemperatureActionTypeId) {
-            bridge->setTemperature(uuid, action.param(colorLightColorTemperatureActionColorTemperatureParamTypeId).value().toInt());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setTemperature(uuid, action.param(colorLightColorTemperatureActionColorTemperatureParamTypeId).value().toInt());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         }
         return Device::DeviceErrorActionTypeNotFound;
@@ -544,20 +543,20 @@ Device::DeviceError DevicePluginPhilipsHue::executeAction(Device *device, const 
         }*/ //TODO
 
         if (action.actionTypeId() == colorTemperatureLightPowerActionTypeId) {
-            bridge->setTemperature(uuid, action.param(colorTemperatureLightPowerActionPowerParamTypeId).value().toBool());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setTemperature(uuid, action.param(colorTemperatureLightPowerActionPowerParamTypeId).value().toBool());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == colorTemperatureLightBrightnessActionTypeId) {
-            bridge->setBrightness(uuid, action.param(colorTemperatureLightBrightnessActionBrightnessParamTypeId).value().toInt());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setBrightness(uuid, action.param(colorTemperatureLightBrightnessActionBrightnessParamTypeId).value().toInt());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == colorTemperatureLightAlertActionTypeId) {
-            bridge->setFlash(uuid, action.param(colorTemperatureLightAlertActionAlertParamTypeId).value().toString());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setFlash(uuid, action.param(colorTemperatureLightAlertActionAlertParamTypeId).value().toString());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == colorTemperatureLightColorTemperatureActionTypeId) {
-            bridge->setTemperature(uuid, action.param(colorTemperatureLightColorTemperatureActionColorTemperatureParamTypeId).value().toInt());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setTemperature(uuid, action.param(colorTemperatureLightColorTemperatureActionColorTemperatureParamTypeId).value().toInt());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         }
         return Device::DeviceErrorActionTypeNotFound;
@@ -575,18 +574,16 @@ Device::DeviceError DevicePluginPhilipsHue::executeAction(Device *device, const 
         }*/ //TODO
 
         if (action.actionTypeId() == dimmableLightPowerActionTypeId) {
-            bridge->setPower(uuid, action.param(dimmableLightPowerActionPowerParamTypeId).value().toBool());
-            QNetworkReply *reply = hardwareManager()->networkManager()->put(request.first, request.second);
-            connect(reply, &QNetworkReply::finished, this, &DevicePluginPhilipsHue::networkManagerReplyReady);
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setPower(uuid, action.param(dimmableLightPowerActionPowerParamTypeId).value().toBool());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == dimmableLightBrightnessActionTypeId) {
-            bridge->setBrightness(uuid, action.param(dimmableLightBrightnessActionBrightnessParamTypeId).value().toInt());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setBrightness(uuid, action.param(dimmableLightBrightnessActionBrightnessParamTypeId).value().toInt());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         } else if (action.actionTypeId() == dimmableLightAlertActionTypeId) {
-            bridge->setFlash(uuid, action.param(dimmableLightAlertActionAlertParamTypeId).value().toString());
-            //m_asyncActions.insert(reply, QPair<Device *, ActionId>(device, action.id()));
+            QUuid actionUuid = bridge->setFlash(uuid, action.param(dimmableLightAlertActionAlertParamTypeId).value().toString());
+            m_asyncActions.insert(actionUuid, action.id());
             return Device::DeviceErrorAsync;
         }
         return Device::DeviceErrorActionTypeNotFound;
@@ -602,7 +599,7 @@ Device::DeviceError DevicePluginPhilipsHue::executeAction(Device *device, const 
         }
 
         if (action.actionTypeId() == bridgeSearchNewDevicesActionTypeId) {
-            bridge->searchNewDevices(action.param(bridgeSearchNewDevicesActionSerialParamTypeId).value().toString());
+            QUuid actionUuid = bridge->searchNewDevices(action.param(bridgeSearchNewDevicesActionSerialParamTypeId).value().toString());
             return Device::DeviceErrorNoError;
         } else if (action.actionTypeId() == bridgeCheckForUpdatesActionTypeId) {
             QPair<QNetworkRequest, QByteArray> request = bridge->createCheckUpdatesRequest();
@@ -622,6 +619,26 @@ Device::DeviceError DevicePluginPhilipsHue::executeAction(Device *device, const 
     return Device::DeviceErrorDeviceClassNotFound;
 }
 
+void DevicePluginPhilipsHue::onPairingFinished(bool successful)
+{
+    if(successful) {
+    //BridgeConnection *bridge = static_cast<BridgeConnection *>(sender());
+
+    // create Bridge
+    HueBridge *bridge = new HueBridge(this);
+    bridge->setId(response.value("bridgeid").toString());
+    bridge->setApiKey(pairingInfo->apiKey());
+    bridge->setHostAddress(pairingInfo->host());
+    bridge->setApiVersion(response.value("apiversion").toString());
+    bridge->setSoftwareVersion(response.value("swversion").toString());
+    bridge->setMacAddress(response.value("mac").toString());
+    bridge->setName(response.value("name").toString());
+    bridge->setZigbeeChannel(response.value("zigbeechannel").toInt());
+
+    m_unconfiguredBridges.append(bridge);
+    }
+}
+
 void DevicePluginPhilipsHue::onLightsDiscovered(QHash<QString, HueLight *> lights)
 {
     BridgeConnection *bridge = static_cast<BridgeConnection *>(sender());
@@ -632,22 +649,22 @@ void DevicePluginPhilipsHue::onLightsDiscovered(QHash<QString, HueLight *> light
     QList<DeviceDescriptor> colorTemperatureLightDescriptors;
     QList<DeviceDescriptor> dimmableLightDescriptors;
 
+    foreach (HueLight *light, lights.values()) {
 
-    foreach (HueLight *light, lights.keys()) {
-
+        QString uuid = lights.key(light);
         if (lightAlreadyAdded(uuid))
             continue;
 
         if (light->type() == "Dimmable light") {
             DeviceDescriptor descriptor(dimmableLightDeviceClassId, light->name(), "Philips Hue White Light", parentDeviceId);
             ParamList params;
-            params.append(Param(dimmableLightDeviceModelIdParamTypeId, model));
+            params.append(Param(dimmableLightDeviceModelIdParamTypeId, light->modelId()));
             params.append(Param(dimmableLightDeviceTypeParamTypeId, light->type()));
             params.append(Param(dimmableLightDeviceUuidParamTypeId, uuid));
-            params.append(Param(dimmableLightDeviceLightIdParamTypeId, lightId));
+            params.append(Param(dimmableLightDeviceLightIdParamTypeId, light->id()));
             descriptor.setParams(params);
             dimmableLightDescriptors.append(descriptor);
-            qCDebug(dcPhilipsHue) << "Found new dimmable light" << light->name() << light->modelId();
+            qCDebug(dcPhilipsHue) << "Found new dimmable light" << light->name();
 
         } else if (light->type() == "Color temperature light") {
             DeviceDescriptor descriptor(colorTemperatureLightDeviceClassId, light->name(), "Philips Hue Color Temperature Light", parentDeviceId);
@@ -659,7 +676,7 @@ void DevicePluginPhilipsHue::onLightsDiscovered(QHash<QString, HueLight *> light
             descriptor.setParams(params);
             colorTemperatureLightDescriptors.append(descriptor);
 
-            qCDebug(dcPhilipsHue) << "Found new color temperature light" << light->name() << model;
+            qCDebug(dcPhilipsHue) << "Found new color temperature light" << light->name();
         } else {
             DeviceDescriptor descriptor(colorLightDeviceClassId, light->name(), "Philips Hue Color Light", parentDeviceId);
             ParamList params;
@@ -669,7 +686,7 @@ void DevicePluginPhilipsHue::onLightsDiscovered(QHash<QString, HueLight *> light
             params.append(Param(colorLightDeviceLightIdParamTypeId, light->id()));
             descriptor.setParams(params);
             colorLightDescriptors.append(descriptor);
-            qCDebug(dcPhilipsHue) << "Found new color light" << light->name() << model;
+            qCDebug(dcPhilipsHue) << "Found new color light" << light->name();
         }
     }
 
@@ -687,7 +704,7 @@ void DevicePluginPhilipsHue::onRemotesDiscovered(QHash<QString, HueRemote *> rem
     DeviceId parentDeviceId = m_bridgeConnections.key(bridge);
 
     foreach (HueRemote *remote, remotes.values()) {
-        QString baseUuid = motionSensors.key(motionSensor);
+        QString uuid = remotes.key(remote);
         if (sensorAlreadyAdded(uuid))
             continue;
 
@@ -703,7 +720,7 @@ void DevicePluginPhilipsHue::onRemotesDiscovered(QHash<QString, HueRemote *> rem
         }
 
         if (remote->type() == "ZGPSwitch") {
-            DeviceDescriptor descriptor(tapDeviceClassId, remote->name(), "Philips Hue Tap", device->id());
+            DeviceDescriptor descriptor(tapDeviceClassId, remote->name(), "Philips Hue Tap", parentDeviceId);
             ParamList params;
             params.append(Param(tapDeviceUuidParamTypeId, remote->uuid()));
             params.append(Param(tapDeviceModelIdParamTypeId, remote->modelId()));
@@ -716,16 +733,18 @@ void DevicePluginPhilipsHue::onRemotesDiscovered(QHash<QString, HueRemote *> rem
 
 void DevicePluginPhilipsHue::onMotionSensorDiscovered(QHash<QString, HueMotionSensor *> motionSensors)
 {
+    BridgeConnection *bridge = static_cast<BridgeConnection *>(sender());
+    DeviceId parentDeviceId = m_bridgeConnections.key(bridge);
     // Create outdoor sensors if there are any new sensors found
     foreach (HueMotionSensor *motionSensor, motionSensors.values()) {
-        QString baseUuid = motionSensors.key(motionSensor);
+        QString uuid = motionSensors.key(motionSensor);
         if (sensorAlreadyAdded(uuid))
             continue;
 
         if (motionSensor->isValid()) {
 
             if (motionSensor->modelId() == "SML001") {
-                DeviceDescriptor descriptor(motionSensorDeviceClassId, tr("Philips Hue Motion sensor"), baseUuid, device->id());
+                DeviceDescriptor descriptor(motionSensorDeviceClassId, tr("Philips Hue Motion sensor"), uuid, parentDeviceId);
                 ParamList params;
                 params.append(Param(motionSensorDeviceUuidParamTypeId, motionSensor->uuid()));
                 params.append(Param(motionSensorDeviceModelIdParamTypeId, motionSensor->modelId()));
@@ -736,10 +755,10 @@ void DevicePluginPhilipsHue::onMotionSensorDiscovered(QHash<QString, HueMotionSe
                 params.append(Param(motionSensorDeviceSensorUuidLightParamTypeId, motionSensor->lightSensorUuid()));
                 params.append(Param(motionSensorDeviceSensorIdLightParamTypeId, motionSensor->lightSensorId()));
                 descriptor.setParams(params);
-                qCDebug(dcPhilipsHue()) << "Found new motion sensor" << baseUuid << outdoorSensorDeviceClassId;
+                qCDebug(dcPhilipsHue()) << "Found new motion sensor" << uuid << outdoorSensorDeviceClassId;
                 emit autoDevicesAppeared(motionSensorDeviceClassId, {descriptor});
             } else if (motionSensor->modelId() == "SML002") {
-                DeviceDescriptor descriptor(outdoorSensorDeviceClassId, tr("Philips Hue Outdoor sensor"), baseUuid, device->id());
+                DeviceDescriptor descriptor(outdoorSensorDeviceClassId, tr("Philips Hue Outdoor sensor"), uuid, parentDeviceId);
                 ParamList params;
                 params.append(Param(outdoorSensorDeviceUuidParamTypeId, motionSensor->uuid()));
                 params.append(Param(outdoorSensorDeviceModelIdParamTypeId, motionSensor->modelId()));
@@ -750,20 +769,18 @@ void DevicePluginPhilipsHue::onMotionSensorDiscovered(QHash<QString, HueMotionSe
                 params.append(Param(outdoorSensorDeviceSensorUuidLightParamTypeId, motionSensor->lightSensorUuid()));
                 params.append(Param(outdoorSensorDeviceSensorIdLightParamTypeId, motionSensor->lightSensorId()));
                 descriptor.setParams(params);
-                qCDebug(dcPhilipsHue()) << "Found new outdoor sensor" << baseUuid << outdoorSensorDeviceClassId;
+                qCDebug(dcPhilipsHue()) << "Found new outdoor sensor" << uuid << outdoorSensorDeviceClassId;
                 emit autoDevicesAppeared(outdoorSensorDeviceClassId, {descriptor});
             }
         }
     }
 }
 
-void DevicePluginPhilipsHue::lightStateChanged()
+void DevicePluginPhilipsHue::onLightStateChanged(const QString &uuid)
 {
-    HueLight *light = static_cast<HueLight *>(sender());
-
-    Device *device = m_lights.value(light);
+    Device *device = getDeviceByHueDeviceUuid(uuid);
     if (!device) {
-        qCWarning(dcPhilipsHue) << "Could not find device for light" << light->name();
+        qCWarning(dcPhilipsHue) << "Could not find device for light" << uuid;
         return;
     }
 
@@ -786,7 +803,7 @@ void DevicePluginPhilipsHue::lightStateChanged()
     }
 }
 
-void DevicePluginPhilipsHue::remoteStateChanged()
+void DevicePluginPhilipsHue::onRemoteStateChanged()
 {
     HueRemote *remote = static_cast<HueRemote *>(sender());
 
@@ -891,6 +908,7 @@ void DevicePluginPhilipsHue::onMotionSensorTemperatureChanged(double temperature
 void DevicePluginPhilipsHue::onMotionSensorPresenceChanged(bool presence)
 {
     HueMotionSensor *sensor = static_cast<HueMotionSensor *>(sender());
+    myDevices().filterByParam()
     Device *sensorDevice = m_motionSensors.value(sensor);
     sensorDevice->setStateValue(sensor->isPresentStateTypeId(), presence);
     if (presence) sensorDevice->setStateValue(sensor->lastSeenTimeStateTypeId(), QDateTime::currentDateTime().toTime_t());

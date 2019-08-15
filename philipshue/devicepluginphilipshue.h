@@ -56,6 +56,7 @@ public:
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private slots:
+    void onPairingFinished(bool successful);
 
     //Devices discovered
     void onLightsDiscovered(QHash<QString, HueLight *> remotes);
@@ -78,6 +79,9 @@ private slots:
 
     void onDeviceNameChanged();
 
+    void onActionExecuted(const QUuid &uuid);
+    void onActionFailed(const QUuid &uuid, const QString &error);
+
 private:
     class DiscoveryJob {
     public:
@@ -87,7 +91,6 @@ private:
     };
     void finishDiscovery(DiscoveryJob* job);
 
-    QHash<QNetworkReply *, PairingInfo *> m_pairingRequests;
     QHash<QNetworkReply *, PairingInfo *> m_informationRequests;
 
     QHash<DeviceId, BridgeConnection *> m_bridgeConnections;
@@ -95,7 +98,9 @@ private:
     QList<HueBridge *> m_unconfiguredBridges;
     QList<HueLight *> m_unconfiguredLights;
 
-    QHash<QNetworkReply *, QPair<Device *, ActionId> > m_asyncActions;
+    QHash<QUuid, ActionId> m_asyncActions;
+
+    Device *getDeviceByHueDeviceUuid(const QString &uuid);
 
     bool lightAlreadyAdded(const QString &uuid);
     bool sensorAlreadyAdded(const QString &uuid);

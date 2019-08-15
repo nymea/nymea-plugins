@@ -52,34 +52,34 @@ public:
     void discoverBridgeDevices();
     void searchNewDevices(const QString &serialNumber);
 
-    //light actions
-    void setPower(const QString &uuid, bool power);
-    void setBrightness(const QString &uuid, quint8 percent);
-    void setColor(const QString &uuid, QColor percent);
-    void setEffect(const QString &uuid, const QString &effect);
-    void setFlash(const QString &uuid, const QString &flashMode);
-    void setTemperature(const QString &uuid, quint16 temperature);
+    //light action - the uuid is to track if the actions has been executed
+    QUuid setPower(const QString &uuid, bool power);
+    QUuid setBrightness(const QString &uuid, quint8 percent);
+    QUuid setColor(const QString &uuid, QColor percent);
+    QUuid setEffect(const QString &uuid, const QString &effect);
+    QUuid setFlash(const QString &uuid, const QString &flashMode);
+    QUuid setTemperature(const QString &uuid, quint16 temperature);
 
-    void setLightName(const QString &uuid, const QString &name);
-    void setRemoteName(const QString &uuid, const QString &name);
+    QUuid setLightName(const QString &uuid, const QString &name);
+    QUuid setRemoteName(const QString &uuid, const QString &name);
 
-private slots:
-    void lightStateChanged();
-    void remoteStateChanged();
-    void onRemoteButtonEvent(int buttonCode);
-
-
-    // Motion sensor
+    void refreshLight(const QString &uuid);    //
+    void refreshBridge();
+    void refreshLights();
+    void refreshSensors();
 
 signals:
-    //Devices discovered
 
+    void pairingFinished(bool successful);
+
+    //Devices discovered
     void lightDiscovered(QHash<QString, HueLight *>);
     void remoteDiscovered(QHash<QString, HueRemote *>);
     void motionSensorDiscovered(QHash<QString, HueMotionSensor *>);
 
-    // Light Device Events
     void lightStateChanged();
+    void remoteStateChanged();
+    void onRemoteButtonEvent(int buttonCode);
 
     void motionSensorReachableChanged(bool reachable);
     void motionSensorBatteryLevelChanged(int batteryLevel);
@@ -89,6 +89,9 @@ signals:
 
     void networkManagerReplyReady();
     void onDeviceNameChanged();
+
+    void actionExecuted(QUuid actionUuid);
+    void actionFailed(const QUuid &uuid, const QString &error);
 
 private:
     HardwareManager *m_hardwareManager = nullptr;
@@ -100,6 +103,8 @@ private:
     QHash<QNetworkReply *, PairingInfo *> m_pairingRequests;
     QHash<QNetworkReply *, PairingInfo *> m_informationRequests;
 
+    QHash<QNetworkReply *, QUuid> m_actionRequests;
+
     QNetworkReply *m_lightRefreshRequests;
     QNetworkReply *m_setNameRequests;
     QNetworkReply *m_bridgeRefreshRequests;
@@ -109,17 +114,10 @@ private:
     QNetworkReply *m_bridgeSensorsDiscoveryRequests;
     QNetworkReply *m_bridgeSearchDevicesRequests;
 
-    QHash<QNetworkReply *, QPair<Device *, ActionId> > m_asyncActions;
-
     HueBridge *m_bridge;
     QHash<QString, HueLight *> m_lights;
     QHash<QString, HueRemote *> m_remotes;
     QHash<QString, HueMotionSensor *> m_motionSensors;
-
-    void refreshLight(const QString &uuid);    //
-    void refreshBridge();
-    void refreshLights();
-    void refreshSensors();
 
     void processBridgeLightDiscoveryResponse(const QByteArray &data);
     void processBridgeSensorDiscoveryResponse(const QByteArray &data);
@@ -130,17 +128,17 @@ private:
     void processSetNameResponse(const QByteArray &data);
     void processPairingResponse(PairingInfo *pairingInfo, const QByteArray &data);
     void processInformationResponse(PairingInfo *pairingInfo, const QByteArray &data);
-    void processActionResponse(const ActionId actionId, const QByteArray &data);
+    void processActionResponse(const QUuid actionUuid, const QByteArray &data);
 
     void bridgeReachableChanged(const bool &reachable);
 
-    bool lightAlreadyAdded(const QString &uuid);
-    bool sensorAlreadyAdded(const QString &uuid);
+    //bool lightAlreadyAdded(const QString &uuid);
+    //bool sensorAlreadyAdded(const QString &uuid);
 
     int brightnessToPercentage(int brightness);
     int percentageToBrightness(int percentage);
 
-    void abortRequests(QHash<QNetworkReply *, Device *> requestList);
+    QUuid scheduleActionRequest(QNetworkRequest *request);
 };
 
 #endif // BRIDGECONNECTION_H

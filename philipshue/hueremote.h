@@ -56,8 +56,8 @@ public:
     int battery() const;
     void setBattery(const int &battery);
 
-    int remoteSensorId() const;
-    void setRemoteSensorId(int sensorId);
+    int remoteId() const;
+    void setRemoteId(int sensorId);
 
     void updateStates(const QVariantMap &statesMap, const QVariantMap &configMap);
 
