@@ -1,0 +1,93 @@
+{
+    "displayName": "Key event",
+    "name": "keyEvent",
+    "id": "fe93a12e-36f4-4015-8019-26b659817773",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "deviceClasses": [
+                {
+                    "id": "d4d260a9-4b0e-41c7-93ff-02d4ac547a4d",
+                    "name": "keyEvent",
+                    "displayName": "Key event",
+                    "createMethods": ["user"],
+                    "interfaces": ["simplemultibutton", "mediacontroller"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "3171f6d7-d544-40b9-98c1-a06693dda6b5",
+                            "name": "skipBack",
+                            "displayName": "Skip back"
+                        },
+                        {
+                            "id": "3e56fc10-4fc3-445d-a14c-1e49948372c6",
+                            "name": "fastRewind",
+                            "displayName": "Rewind"
+                        },
+                        {
+                            "id": "3d6d3e04-275f-480d-954a-8f9b99ee63ad",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "785c8487-9bed-4018-a551-af416119c685",
+                            "name": "play",
+                            "displayName": "Play"
+                        },
+                        {
+                            "id": "e39be594-3c4a-4935-96e9-c41b14191e39",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "f9475947-9a79-43a4-8497-e22285a21141",
+                            "name": "fastForward",
+                            "displayName": "Fast forward"
+                        },
+                        {
+                            "id": "183c04ea-c3bc-422d-9156-d5ef5af8b78a",
+                            "name": "skipNext",
+                            "displayName": "Skip next"
+                        },
+                        {
+                            "id": "6b4cbd8a-719d-40ba-af1d-701d1ae870f7",
+                            "name": "volumeUp",
+                            "displayName": "Volume up"
+                        },
+                        {
+                            "id": "34f8a530-9164-4571-aaac-6d45c7abc8f9",
+                            "name": "volumeDown",
+                            "displayName": "Volume down"
+                        },
+                        {
+                            "id": "09a98f74-ad23-418c-b160-c0b88890bc4c",
+                            "name": "mute",
+                            "displayName": "Mute"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "c05c7ba9-e27a-45d8-8b0d-b8d7ceab2f5b",
+                            "name": "pressed",
+                            "displayName": "Key pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "427a25ec-f2bc-46c4-ad82-598d008293bd",
+                                    "name": "buttonName",
+                                    "displayName": "Key",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
