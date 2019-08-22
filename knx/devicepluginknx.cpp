@@ -49,22 +49,21 @@ void DevicePluginKnx::startMonitoringAutoDevices()
     // Start seaching for devices which can be discovered and added automatically
 }
 
-DeviceManager::DeviceError DevicePluginKnx::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginKnx::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
 
     if (deviceClassId == knxNetIpServerDeviceClassId) {
         if (!m_discovery->startDisovery()) {
-            return DeviceManager::DeviceErrorDeviceInUse;
+            return Device::DeviceErrorDeviceInUse;
         } else {
-            return DeviceManager::DeviceErrorAsync;
+            return Device::DeviceErrorAsync;
         }
     }
-
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
 {
     qCDebug(dcKnx()) << "Setup device" << device->name() << device->params();
 
@@ -92,7 +91,7 @@ DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
 
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for address" << tunnelAddress.toString();
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         device->setParentId(m_tunnels.value(tunnel)->id());
@@ -109,7 +108,7 @@ DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
 
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for address" << tunnelAddress.toString();
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         device->setParentId(m_tunnels.value(tunnel)->id());
@@ -126,7 +125,7 @@ DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
 
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for address" << tunnelAddress.toString();
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         device->setParentId(m_tunnels.value(tunnel)->id());
@@ -143,13 +142,13 @@ DeviceManager::DeviceSetupStatus DevicePluginKnx::setupDevice(Device *device)
 
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for address" << tunnelAddress.toString();
-            return DeviceManager::DeviceSetupStatusFailure;
+            return Device::DeviceSetupStatusFailure;
         }
 
         device->setParentId(m_tunnels.value(tunnel)->id());
     }
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginKnx::postSetupDevice(Device *device)
@@ -296,7 +295,7 @@ void DevicePluginKnx::deviceRemoved(Device *device)
     }
 }
 
-DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginKnx::executeAction(Device *device, const Action &action)
 {
     qCDebug(dcKnx()) << "Executing action for device" << device->name() << action.actionTypeId().toString() << action.params();
 
@@ -304,7 +303,7 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
     if (device->deviceClassId() == knxNetIpServerDeviceClassId) {
         if (action.actionTypeId() == knxNetIpServerAutoCreateDevicesActionTypeId) {
             autoCreateKnownDevices(device);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
@@ -313,12 +312,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxGenericSwitchDeviceKnxAddressParamTypeId).toString());
@@ -337,12 +336,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
         QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxGenericUpDownDeviceKnxAddressParamTypeId).toString());
 
@@ -361,12 +360,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxGenericScalingDeviceKnxAddressParamTypeId).toString());
@@ -379,12 +378,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxGenericTemperatureSensorDeviceKnxAddressParamTypeId).toString());
@@ -400,12 +399,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxGenericLightSensorDeviceKnxAddressParamTypeId).toString());
@@ -421,12 +420,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxGenericWindSpeedSensorDeviceKnxAddressParamTypeId).toString());
@@ -442,12 +441,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         QKnxAddress knxAddressStep = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxShutterDeviceKnxAddressStepParamTypeId).toString());
@@ -457,19 +456,19 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
             // Note: first send step, then delayed the up/down command
             tunnel->sendKnxDpdStepFrame(knxAddressStep, false);
             tunnel->sendKnxDpdUpDownFrame(knxAddressUpDown, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == knxShutterCloseActionTypeId) {
             // Note: first send step, then delayed the up/down command
             tunnel->sendKnxDpdStepFrame(knxAddressStep, true);
             tunnel->sendKnxDpdUpDownFrame(knxAddressUpDown, false);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
 
         if (action.actionTypeId() == knxShutterStopActionTypeId) {
             tunnel->sendKnxDpdStepFrame(knxAddressStep, true);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
     }
 
@@ -478,12 +477,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         QKnxAddress knxAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxLightDeviceKnxAddressParamTypeId).toString());
@@ -501,12 +500,12 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         KnxTunnel *tunnel = getTunnelForDevice(device);
         if (!tunnel) {
             qCWarning(dcKnx()) << "Could not find tunnel for this device";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         if (!tunnel->connected()) {
             qCWarning(dcKnx()) << "The corresponding tunnel is not connected.";
-            return DeviceManager::DeviceErrorHardwareNotAvailable;
+            return Device::DeviceErrorHardwareNotAvailable;
         }
 
         QKnxAddress knxSwitchAddress = QKnxAddress(QKnxAddress::Type::Group, device->paramValue(knxDimmableLightDeviceKnxSwitchAddressParamTypeId).toString());
@@ -530,7 +529,7 @@ DeviceManager::DeviceError DevicePluginKnx::executeAction(Device *device, const 
         }
     }
 
-    return DeviceManager::DeviceErrorNoError;
+    return Device::DeviceErrorNoError;
 }
 
 KnxTunnel *DevicePluginKnx::getTunnelForDevice(Device *device)

@@ -24,8 +24,8 @@
 #define DEVICEPLUGINKNX_H
 
 #include "plugintimer.h"
-#include "devicemanager.h"
-#include "plugin/deviceplugin.h"
+#include "devices/devicemanager.h"
+#include "devicse/deviceplugin.h"
 
 #include "knxtunnel.h"
 #include "knxserverdiscovery.h"
@@ -44,13 +44,13 @@ public:
     void init() override;
     void startMonitoringAutoDevices() override;
 
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
 
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
