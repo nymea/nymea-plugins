@@ -12,15 +12,15 @@
                     "id": "c36c68d9-6182-4ae1-972d-b8b5e0cf185f",
                     "name": "oneWireInterface",
                     "displayName": "One wire interface",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["gateway"],
                     "createMethods": ["user"],
                     "paramTypes": [
                         {
                             "id": "a0e773ff-fd19-499e-96f0-830168229cd3",
-                            "name": "path",
-                            "displayName": "Path",
+                            "name": "initArgs",
+                            "displayName": "OWFS init arguments",
                             "type": "QString",
-                            "defaultValue": "/dev/ttyS0"
+                            "defaultValue": "--i2c=ALL:ALL"
                         }
                     ],
                     "stateTypes": [
@@ -265,40 +265,6 @@
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
-                        }
-                    ]
-                },
-                {
-                    "id": "22aff41f-0f48-40f2-aa4e-bb251723be1c",
-                    "name": "iButton",
-                    "displayName": "iButton",
-                    "interfaces": [ ],
-                    "createMethods": ["discovery"],
-                    "paramTypes": [
-                        {
-                            "id": "759e919c-8af2-43dd-af99-9b8c59321050",
-                            "name": "address",
-                            "displayName": "Address",
-                            "type": "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "5ca8d942-4ef2-47be-8ac9-be2ee19e168d",
-                            "name": "type",
-                            "displayName": "Type",
-                            "type": "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        }
-                    ],
-                    "stateTypes": [
-                    ],
-                    "eventTypes": [
-                        {
-
-                            "id": "61d69bec-c948-4703-9686-8762381d0ae4",
-                            "name": "authenticated",
-                            "displayName": "Authenticated"
                         }
                     ]
                 }
