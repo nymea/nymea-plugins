@@ -58,9 +58,9 @@ public:
         QByteArray type;
     };
 
-    explicit OneWire(const QByteArray &deviceLocation, QObject *parent = nullptr);
+    explicit OneWire(QObject *parent = nullptr);
     ~OneWire();
-    bool init();
+    bool init(const QByteArray &owfsInitArguments);
 
     QByteArray getPath();
     bool discoverDevices();
@@ -69,13 +69,11 @@ public:
 
     double getTemperature(const QByteArray &address);
     QByteArray getType(const QByteArray &address);
-    QByteArray readMemory(const QByteArray &address);
     bool getSwitchOutput(const QByteArray &address, SwitchChannel channel);
     void setSwitchOutput(const QByteArray &address, SwitchChannel channel, bool state);
     bool getSwitchInput(const QByteArray &address, SwitchChannel channel);
 
 private:
-    QByteArray m_deviceLocation;
     QByteArray m_path;
     QByteArray getValue(const QByteArray &address, const QByteArray &deviceType);
     void setValue(const QByteArray &address, const QByteArray &deviceType, const QByteArray &value);

@@ -23,9 +23,8 @@
 #include "onewire.h"
 #include "extern-plugininfo.h"
 
-OneWire::OneWire(const QByteArray &deviceLocation, QObject *parent) :
-    QObject(parent),
-    m_deviceLocation(deviceLocation)
+OneWire::OneWire(QObject *parent) :
+    QObject(parent)
 {
 
 }
@@ -35,13 +34,17 @@ OneWire::~OneWire()
     OW_finish();
 }
 
-bool OneWire::init()
+bool OneWire::init(const QByteArray &owfsInitArguments)
 {
-    QByteArray initArguments;
+    //QByteArray initArguments;
+    //Test OWFS arguments
     //initArguments.append("--fake 28 --fake 10"); //fake temperature sensors
-    //initArguments.append("--fake 29 --fake 12 --fake 05"); //fake temperature sensors
-    initArguments.append("--i2c=ALL:ALL");
-    if (OW_init(initArguments) < 0) {
+    //initArguments.append("--fake 29 --fake 12 --fake 05"); //fake temperature sensor
+
+    //Test i2c
+    //initArguments.append("--i2c=ALL:ALL");
+
+    if (OW_init(owfsInitArguments) < 0) {
         qWarning(dcOneWire()) << "ERROR initialising one wire" << strerror(errno);
         return false;
     }
@@ -163,12 +166,6 @@ double OneWire::getTemperature(const QByteArray &address)
     QByteArray temperature = getValue(address, "temperature");
     qDebug(dcOneWire()) << "Temperature" << temperature << temperature.replace(',','.').toDouble();
     return temperature.toDouble();
-}
-
-QByteArray OneWire::readMemory(const QByteArray &address)
-{
-    //getValue
-    return address; //TODDO
 }
 
 QByteArray OneWire::getType(const QByteArray &address)
