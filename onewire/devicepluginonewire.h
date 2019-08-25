@@ -37,6 +37,7 @@ class DevicePluginOneWire : public DevicePlugin
 
 public:
     explicit DevicePluginOneWire();
+    void init() override;
 
     Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     Device::DeviceSetupStatus setupDevice(Device *device) override;
@@ -49,7 +50,6 @@ private:
 
 private slots:
     void onPluginTimer();
-
     void onOneWireDevicesDiscovered(QList<OneWire::OneWireDevice> devices);
 };
 
