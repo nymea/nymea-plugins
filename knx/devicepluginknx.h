@@ -25,7 +25,7 @@
 
 #include "plugintimer.h"
 #include "devices/devicemanager.h"
-#include "devicse/deviceplugin.h"
+#include "devices/deviceplugin.h"
 
 #include "knxtunnel.h"
 #include "knxserverdiscovery.h"

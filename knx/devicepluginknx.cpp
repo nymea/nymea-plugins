@@ -650,7 +650,7 @@ void DevicePluginKnx::createGenericDevices(Device *parentDevice)
                     ParamList params;
                     params.append(Param(knxGenericSwitchDeviceKnxNameParamTypeId, addressInfo.name()));
                     params.append(Param(knxGenericSwitchDeviceKnxAddressParamTypeId, addressInfo.address().toString()));
-                    Device *device = findDeviceByParams(params);
+                    Device *device = myDevices().findByParams(params);
 
                     // If there is already a device with this params, continue
                     if (device) continue;
@@ -667,7 +667,7 @@ void DevicePluginKnx::createGenericDevices(Device *parentDevice)
                     ParamList params;
                     params.append(Param(knxGenericUpDownDeviceKnxNameParamTypeId, addressInfo.name()));
                     params.append(Param(knxGenericUpDownDeviceKnxAddressParamTypeId, addressInfo.address().toString()));
-                    Device *device = findDeviceByParams(params);
+                    Device *device = myDevices().findByParams(params);
 
                     // If there is already a device with this params, continue
                     if (device) continue;
@@ -684,7 +684,7 @@ void DevicePluginKnx::createGenericDevices(Device *parentDevice)
                     ParamList params;
                     params.append(Param(knxGenericScalingDeviceKnxNameParamTypeId, addressInfo.name()));
                     params.append(Param(knxGenericScalingDeviceKnxAddressParamTypeId, addressInfo.address().toString()));
-                    Device *device = findDeviceByParams(params);
+                    Device *device = myDevices().findByParams(params);
 
                     // If there is already a device with this params, continue
                     if (device) continue;
@@ -700,7 +700,7 @@ void DevicePluginKnx::createGenericDevices(Device *parentDevice)
                     ParamList params;
                     params.append(Param(knxGenericTemperatureSensorDeviceKnxNameParamTypeId, addressInfo.name()));
                     params.append(Param(knxGenericTemperatureSensorDeviceKnxAddressParamTypeId, addressInfo.address().toString()));
-                    Device *device = findDeviceByParams(params);
+                    Device *device = myDevices().findByParams(params);
 
                     // If there is already a device with this params, continue
                     if (device) continue;
@@ -716,7 +716,7 @@ void DevicePluginKnx::createGenericDevices(Device *parentDevice)
                     ParamList params;
                     params.append(Param(knxGenericLightSensorDeviceKnxNameParamTypeId, addressInfo.name()));
                     params.append(Param(knxGenericLightSensorDeviceKnxAddressParamTypeId, addressInfo.address().toString()));
-                    Device *device = findDeviceByParams(params);
+                    Device *device = myDevices().findByParams(params);
 
                     // If there is already a device with this params, continue
                     if (device) continue;
@@ -732,7 +732,7 @@ void DevicePluginKnx::createGenericDevices(Device *parentDevice)
                     ParamList params;
                     params.append(Param(knxGenericWindSpeedSensorDeviceKnxNameParamTypeId, addressInfo.name()));
                     params.append(Param(knxGenericWindSpeedSensorDeviceKnxAddressParamTypeId, addressInfo.address().toString()));
-                    Device *device = findDeviceByParams(params);
+                    Device *device = myDevices().findByParams(params);
 
                     // If there is already a device with this params, continue
                     if (device) continue;
