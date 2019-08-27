@@ -23,8 +23,8 @@
 #ifndef DEVICEPLUGINSYSTEMMONITOR_H
 #define DEVICEPLUGINSYSTEMMONITOR_H
 
-#include "devicemanager.h"
-#include "plugin/deviceplugin.h"
+#include "devices/devicemanager.h"
+#include "devices/deviceplugin.h"
 #include "plugintimer.h"
 
 #include <QDebug>
@@ -39,9 +39,9 @@ class DevicePluginSystemMonitor: public DevicePlugin {
 
 public:
     explicit DevicePluginSystemMonitor();
-    ~DevicePluginSystemMonitor();
+    ~DevicePluginSystemMonitor() override;
 
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
 private slots:

@@ -36,7 +36,7 @@ DevicePluginSystemMonitor::~DevicePluginSystemMonitor()
     }
 }
 
-DeviceManager::DeviceSetupStatus DevicePluginSystemMonitor::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginSystemMonitor::setupDevice(Device *device)
 {
     Q_UNUSED(device)
 
@@ -46,7 +46,7 @@ DeviceManager::DeviceSetupStatus DevicePluginSystemMonitor::setupDevice(Device *
     }
 
 
-    return DeviceManager::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusSuccess;
 }
 
 void DevicePluginSystemMonitor::deviceRemoved(Device *device)
