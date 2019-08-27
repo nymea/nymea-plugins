@@ -236,32 +236,34 @@ Device::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId &devic
     return Device::DeviceErrorAsync;
 }
 
-Device::DeviceSetupStatus DevicePluginAnel::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &username, const QString &secret)
+DevicePairingInfo DevicePluginAnel::confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret)
 {
-    Q_UNUSED(pairingTransactionId)
-    Q_UNUSED(deviceClassId)
-
-    QString ipAddress = params.paramValue(m_ipAddressParamTypeIdMap.value(deviceClassId)).toString();
-    int port = params.paramValue(m_portParamTypeIdMap.value(deviceClassId)).toInt();
+    QString ipAddress = devicePairingInfo.params().paramValue(m_ipAddressParamTypeIdMap.value(devicePairingInfo.deviceClassId())).toString();
+    int port = devicePairingInfo.params().paramValue(m_portParamTypeIdMap.value(devicePairingInfo.deviceClassId())).toInt();
 
     QNetworkRequest request;
     request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
     request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(secret).toUtf8().toBase64());
     qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << secret;
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, pairingTransactionId](){
+    connect(reply, &QNetworkReply::finished, this, [this, reply, devicePairingInfo](){
         reply->deleteLater();
         if (reply->error() != QNetworkReply::NoError) {
-            emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusFailure);
+            DevicePairingInfo ret(devicePairingInfo);
+            ret.setStatus(Device::DeviceErrorAuthenticationFailure);
+            ret.setMessage(tr("Wrong username or password."));
+            emit pairingFinished(ret);
             return;
         }
-        pluginStorage->beginGroup("");
-        emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusSuccess);
+        DevicePairingInfo ret(devicePairingInfo);
+        ret.setStatus(Device::DeviceErrorNoError);
+        emit pairingFinished(ret);
     });
 
 
     qCDebug(dcAnelElektronik()) << "User:" << username << "pass" << secret;
-    return Device::DeviceSetupStatusAsync;
+    devicePairingInfo.setStatus(Device::DeviceErrorAsync);
+    return devicePairingInfo;
 }
 
 Device::DeviceSetupStatus DevicePluginAnel::setupDevice(Device *device)

@@ -462,18 +462,20 @@ DevicePairingInfo DevicePluginPhilipsHue::pairDevice(DevicePairingInfo &devicePa
     return devicePairingInfo;
 }
 
-Device::DeviceSetupStatus DevicePluginPhilipsHue::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &username, const QString &secret)
+DevicePairingInfo DevicePluginPhilipsHue::confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret)
 {
     Q_UNUSED(secret)
     Q_UNUSED(username)
 
-    qCDebug(dcPhilipsHue()) << "Confirming pairing for transactionId" << pairingTransactionId;
-    if (deviceClassId != bridgeDeviceClassId)
-        return Device::DeviceSetupStatusFailure;
+    qCDebug(dcPhilipsHue()) << "Confirming pairing for transactionId" << devicePairingInfo.transactionId();
+    if (devicePairingInfo.deviceClassId() != bridgeDeviceClassId) {
+        devicePairingInfo.setStatus(Device::DeviceErrorDeviceClassNotFound);
+        return devicePairingInfo;
+    }
 
     PairingInfo *pairingInfo = new PairingInfo(this);
-    pairingInfo->setPairingTransactionId(pairingTransactionId);
-    pairingInfo->setHost(QHostAddress(params.paramValue(bridgeDeviceHostParamTypeId).toString()));
+    pairingInfo->setPairingInfo(devicePairingInfo);
+    pairingInfo->setHost(QHostAddress(devicePairingInfo.params().paramValue(bridgeDeviceHostParamTypeId).toString()));
 
     QVariantMap deviceTypeParam;
     deviceTypeParam.insert("devicetype", "nymea");
@@ -487,7 +489,8 @@ Device::DeviceSetupStatus DevicePluginPhilipsHue::confirmPairing(const PairingTr
 
     m_pairingRequests.insert(reply, pairingInfo);
 
-    return Device::DeviceSetupStatusAsync;
+    devicePairingInfo.setStatus(Device::DeviceErrorAsync);
+    return devicePairingInfo;
 }
 
 void DevicePluginPhilipsHue::networkManagerReplyReady()
@@ -1503,7 +1506,9 @@ void DevicePluginPhilipsHue::processPairingResponse(PairingInfo *pairingInfo, co
     // check JSON error
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
-        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        DevicePairingInfo ret(pairingInfo->pairingInfo());
+        ret.setStatus(Device::DeviceErrorHardwareFailure);
+        emit pairingFinished(ret);
         pairingInfo->deleteLater();
         return;
     }
@@ -1515,7 +1520,9 @@ void DevicePluginPhilipsHue::processPairingResponse(PairingInfo *pairingInfo, co
         } else {
             qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge: Invalid error message format";
         }
-        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        DevicePairingInfo ret(pairingInfo->pairingInfo());
+        ret.setStatus(Device::DeviceErrorHardwareFailure);
+        emit pairingFinished(ret);
         pairingInfo->deleteLater();
         return;
     }
@@ -1526,7 +1533,9 @@ void DevicePluginPhilipsHue::processPairingResponse(PairingInfo *pairingInfo, co
 
     if (pairingInfo->apiKey().isEmpty()) {
         qCWarning(dcPhilipsHue) << "Failed to pair Hue Bridge: did not get any key from the bridge";
-        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        DevicePairingInfo ret(pairingInfo->pairingInfo());
+        ret.setStatus(Device::DeviceErrorHardwareFailure);
+        emit pairingFinished(ret);
         pairingInfo->deleteLater();
         return;
     }
@@ -1547,7 +1556,9 @@ void DevicePluginPhilipsHue::processInformationResponse(PairingInfo *pairingInfo
     // check JSON error
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcPhilipsHue) << "Hue Bridge json error in response" << error.errorString();
-        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        DevicePairingInfo ret(pairingInfo->pairingInfo());
+        ret.setStatus(Device::DeviceErrorHardwareFailure);
+        emit pairingFinished(ret);
         pairingInfo->deleteLater();
         return;
     }
@@ -1557,7 +1568,9 @@ void DevicePluginPhilipsHue::processInformationResponse(PairingInfo *pairingInfo
     // check response error
     if (response.contains("error")) {
         qCWarning(dcPhilipsHue) << "Failed to get information from Hue Bridge:" << response.value("error").toMap().value("description").toString();
-        emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusFailure);
+        DevicePairingInfo ret(pairingInfo->pairingInfo());
+        ret.setStatus(Device::DeviceErrorHardwareFailure);
+        emit pairingFinished(ret);
         pairingInfo->deleteLater();
         return;
     }
@@ -1575,7 +1588,9 @@ void DevicePluginPhilipsHue::processInformationResponse(PairingInfo *pairingInfo
 
     m_unconfiguredBridges.append(bridge);
 
-    emit pairingFinished(pairingInfo->pairingTransactionId(), Device::DeviceSetupStatusSuccess);
+    DevicePairingInfo ret(pairingInfo->pairingInfo());
+    ret.setStatus(Device::DeviceErrorNoError);
+    emit pairingFinished(ret);
     pairingInfo->deleteLater();
 }
 

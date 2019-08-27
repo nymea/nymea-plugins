@@ -232,7 +232,7 @@ DevicePairingInfo DevicePluginLgSmartTv::pairDevice(DevicePairingInfo &devicePai
         DevicePairingInfo copy(devicePairingInfo); // lambda captures are read-only
         copy.setMessage(tr("Please enter the pairing key displayed on the Tv."));
         if (reply->error() != QNetworkReply::NoError) {
-            copy.setStatus(Device::DeviceErrorAuthentificationFailure);
+            copy.setStatus(Device::DeviceErrorAuthenticationFailure);
         } else {
             copy.setStatus(Device::DeviceErrorNoError);
         }
@@ -243,21 +243,21 @@ DevicePairingInfo DevicePluginLgSmartTv::pairDevice(DevicePairingInfo &devicePai
     return devicePairingInfo;
 }
 
-Device::DeviceSetupStatus DevicePluginLgSmartTv::confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &username, const QString &secret)
+DevicePairingInfo DevicePluginLgSmartTv::confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret)
 {
-    Q_UNUSED(deviceClassId)
     Q_UNUSED(username)
 
-    QHostAddress host = QHostAddress(params.paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString());
-    int port = params.paramValue(lgSmartTvDevicePortParamTypeId).toInt();
+    QHostAddress host = QHostAddress(devicePairingInfo.params().paramValue(lgSmartTvDeviceHostAddressParamTypeId).toString());
+    int port = devicePairingInfo.params().paramValue(lgSmartTvDevicePortParamTypeId).toInt();
     QPair<QNetworkRequest, QByteArray> request = TvDevice::createPairingRequest(host, port, secret);
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
 
-    m_setupPairingTv.insert(reply, pairingTransactionId);
-    m_tvKeys.insert(params.paramValue(lgSmartTvDeviceUuidParamTypeId).toString(), secret);
+    m_setupPairingTv.insert(reply, devicePairingInfo);
+    m_tvKeys.insert(devicePairingInfo.params().paramValue(lgSmartTvDeviceUuidParamTypeId).toString(), secret);
 
-    return Device::DeviceSetupStatusAsync;
+    devicePairingInfo.setStatus(Device::DeviceErrorAsync);
+    return devicePairingInfo;
 }
 
 void DevicePluginLgSmartTv::pairTvDevice(Device *device)
@@ -352,24 +352,27 @@ void DevicePluginLgSmartTv::onNetworkManagerReplyFinished()
 
 
     if (m_setupPairingTv.keys().contains(reply)) {
-        PairingTransactionId pairingTransactionId = m_setupPairingTv.take(reply);
+        DevicePairingInfo pairingInfo = m_setupPairingTv.take(reply);
         if(status != 200) {
             qCWarning(dcLgSmartTv) << "pair TV request error:" << status << reply->errorString();
-            emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusFailure);
+            pairingInfo.setStatus(Device::DeviceErrorAuthenticationFailure);
+            emit pairingFinished(pairingInfo);
         } else {
             // End pairing before calling setupDevice, which will always try to pair
             QPair<QNetworkRequest, QByteArray> request = TvDevice::createEndPairingRequest(reply->request().url());
             QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
             connect(reply, &QNetworkReply::finished, this, &DevicePluginLgSmartTv::onNetworkManagerReplyFinished);
-            m_setupEndPairingTv.insert(reply, pairingTransactionId);
+            m_setupEndPairingTv.insert(reply, pairingInfo);
         }
     } else if (m_setupEndPairingTv.keys().contains(reply)) {
-        PairingTransactionId pairingTransactionId = m_setupEndPairingTv.take(reply);
+        DevicePairingInfo pairingInfo = m_setupEndPairingTv.take(reply);
         if(status != 200) {
             qCWarning(dcLgSmartTv) << "end pairing TV request error:" << status << reply->errorString();
-            emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusFailure);
+            pairingInfo.setStatus(Device::DeviceErrorAuthenticationFailure);
+            emit pairingFinished(pairingInfo);
         } else {
-            emit pairingFinished(pairingTransactionId, Device::DeviceSetupStatusSuccess);
+            pairingInfo.setStatus(Device::DeviceErrorNoError);
+            emit pairingFinished(pairingInfo);
         }
     } else if (m_asyncSetup.keys().contains(reply)) {
         Device *device = m_asyncSetup.take(reply);

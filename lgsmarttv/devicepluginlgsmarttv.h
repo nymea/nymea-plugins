@@ -47,7 +47,7 @@ public:
 
     Device::DeviceError executeAction(Device *device, const Action &action) override;
     DevicePairingInfo pairDevice(DevicePairingInfo &devicePairingInfo) override;
-    Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &username, const QString &secret) override;
+    DevicePairingInfo confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
@@ -55,8 +55,8 @@ private:
     QHash<QString, QString> m_tvKeys;
 
     // first pairing setup
-    QHash<QNetworkReply *, PairingTransactionId> m_setupPairingTv;
-    QHash<QNetworkReply *, PairingTransactionId> m_setupEndPairingTv;
+    QHash<QNetworkReply *, DevicePairingInfo> m_setupPairingTv;
+    QHash<QNetworkReply *, DevicePairingInfo> m_setupEndPairingTv;
 
     // async setup
     QHash<QNetworkReply *, Device *> m_asyncSetup;

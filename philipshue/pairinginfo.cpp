@@ -27,14 +27,14 @@ PairingInfo::PairingInfo(QObject *parent) :
 {
 }
 
-PairingTransactionId PairingInfo::pairingTransactionId() const
+DevicePairingInfo PairingInfo::pairingInfo() const
 {
-    return m_pairingTransactionId;
+    return m_pairingInfo;
 }
 
-void PairingInfo::setPairingTransactionId(const PairingTransactionId &pairingTransactionId)
+void PairingInfo::setPairingInfo(const DevicePairingInfo &pairingInfo)
 {
-    m_pairingTransactionId = pairingTransactionId;
+    m_pairingInfo = pairingInfo;
 }
 
 QHostAddress PairingInfo::host() const

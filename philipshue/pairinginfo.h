@@ -27,15 +27,16 @@
 #include <QHostAddress>
 
 #include "typeutils.h"
+#include "devices/devicepairinginfo.h"
 
 class PairingInfo : public QObject
 {
     Q_OBJECT
 public:
-    explicit PairingInfo(QObject *parent = 0);
+    explicit PairingInfo(QObject *parent = nullptr);
 
-    PairingTransactionId pairingTransactionId() const;
-    void setPairingTransactionId(const PairingTransactionId &pairingTransactionId);
+    DevicePairingInfo pairingInfo() const;
+    void setPairingInfo(const DevicePairingInfo &pairingInfo);
 
     QHostAddress host() const;
     void setHost(const QHostAddress &host);
@@ -44,7 +45,7 @@ public:
     void setApiKey(const QString &apiKey);
 
 private:
-    PairingTransactionId m_pairingTransactionId;
+    DevicePairingInfo m_pairingInfo;
     QHostAddress m_host;
     QString m_apiKey;
 };
