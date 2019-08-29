@@ -42,15 +42,17 @@ public:
     ~DevicePluginSonos() override;
 
     Device::DeviceSetupStatus setupDevice(Device *device) override;
+    DevicePairingInfo pairDevice(DevicePairingInfo &devicePairingInfo) override;
+    DevicePairingInfo confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret) override;
+
     void postSetupDevice(Device *device) override;
+    void startMonitoringAutoDevices() override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QHash<DeviceId, Sonos *> m_sonosConnections;
-
+    QHash<Device *, Sonos *> m_sonosConnections;
 
 private slots:
     void onPluginTimer();

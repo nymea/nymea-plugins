@@ -24,10 +24,9 @@
 #define SONOS_H
 
 #include <QObject>
-#include <QNetworkAccessManager>
 
+#include "network/networkaccessmanager.h"
 #include "devices/device.h"
-#include "oauth.h"
 
 class Sonos : public QObject
 {
@@ -149,10 +148,9 @@ public:
         //tags enum
     };
 
-    explicit Sonos(QByteArray apiKey, QObject *parent = nullptr);
+    explicit Sonos(NetworkAccessManager *networkManager, const QByteArray &accessToken, QObject *parent = nullptr);
 
-    void setApiKey(QByteArray apiKey);
-    void authenticate(const QString &username, const QString &password);
+    void setAccessToken(const QByteArray &accessToken);
 
     void getHouseholds();
 
@@ -205,19 +203,14 @@ public:
 private:
     QByteArray m_baseAuthorizationUrl = "api.sonos.com/login/v3/oauth";
     QByteArray m_baseControlUrl = "api.ws.sonos.com/control/api/v1";
-    QByteArray m_apiKey;
+    QByteArray m_accessToken;
 
-    OAuth *m_OAuth = nullptr;
+    NetworkAccessManager *m_networkManager = nullptr;
 
 private slots:
 
 
 signals:
-    void authenticationFinished();
-    void authenticationFailed(const QString &reason);
-
-
-public slots:
 
 };
 

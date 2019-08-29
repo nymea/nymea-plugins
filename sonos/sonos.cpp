@@ -22,35 +22,30 @@
 
 #include "sonos.h"
 #include "extern-plugininfo.h"
-#include "network/networkaccessmanager.h"
 
 #include <QJsonDocument>
 
-Sonos::Sonos(QByteArray apiKey, QObject *parent) :
+Sonos::Sonos(NetworkAccessManager *networkmanager, const QByteArray &accessToken, QObject *parent) :
     QObject(parent),
-    m_apiKey(apiKey)
+    m_accessToken(accessToken),
+    m_networkManager(networkmanager)
 {
 }
 
-void Sonos::authenticate(const QString &username, const QString &password)
+void Sonos::setAccessToken(const QByteArray &accessToken)
 {
-    Q_UNUSED(username)
-    Q_UNUSED(password)
-
-    m_OAuth = new OAuth(m_apiKey, this);
-    m_OAuth->setUrl(QUrl(m_baseAuthorizationUrl));
-    m_OAuth->setScope("playback-control-all");
-    m_OAuth->startAuthentication();
+    m_accessToken = accessToken;
 }
 
 void Sonos::getHouseholds()
 {
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    request.setRawHeader("Authorization", "Bearer" + m_OAuth->bearerToken());
+    request.setRawHeader("Authorization", "Bearer" + m_accessToken);
     request.setUrl(QUrl(m_baseControlUrl + "/households"));
-    QNetworkReply *reply = QNetworkAccessManager.get(request);
-    connect(reply, &QNetworkReply::finished, this [this] {
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+        reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -58,13 +53,176 @@ void Sonos::getHouseholds()
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        QJsonDocument data = reply->readAll();
+
+        qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
+        /*QJsonDocument data = reply->readAll();
         if (!data.isObject())
             return;
 
 
         QList<HouseholdObject> households;
-        emit householdObjectsReceived(households);
+        emit householdObjectsReceived(households);*/
     });
+}
+
+void Sonos::cancelAudioClip()
+{
+
+}
+
+void Sonos::loadAudioClip()
+{
+
+}
+
+void Sonos::getFavorites()
+{
+
+}
+
+void Sonos::loadFavorite()
+{
+
+}
+
+void Sonos::getGroups()
+{
+
+}
+
+void Sonos::createGroup()
+{
+
+}
+
+void Sonos::modifyGroupMembers()
+{
+
+}
+
+void Sonos::setGroupMembers()
+{
+
+}
+
+void Sonos::getGroupVolume(int groupId)
+{
+    Q_UNUSED(groupId)
+}
+
+void Sonos::setGroupVolume(int groupId, int volume)
+{
+ Q_UNUSED(groupId)
+     Q_UNUSED(volume)
+}
+
+void Sonos::setGroupMute(int groupId, bool mute)
+{
+ Q_UNUSED(groupId)
+     Q_UNUSED(mute)
+}
+
+void Sonos::setGroupRelativeVolume(int groupId, int volumeDelta)
+{
+ Q_UNUSED(groupId)
+     Q_UNUSED(volumeDelta)
+}
+
+void Sonos::getPlaybackStatus()
+{
+
+}
+
+void Sonos::loadLineIn()
+{
+
+}
+
+void Sonos::play()
+{
+
+}
+
+void Sonos::pause()
+{
+
+}
+
+void Sonos::seek()
+{
+
+}
+
+void Sonos::seekRelative()
+{
+
+}
+
+void Sonos::setPlayModes()
+{
+
+}
+
+void Sonos::skipToNextTrack()
+{
+
+}
+
+void Sonos::skipToPreviousTrack()
+{
+
+}
+
+void Sonos::togglePlayPause()
+{
+
+}
+
+void Sonos::getPlayerVolume(int playerId)
+{
+  Q_UNUSED(playerId)
+}
+
+void Sonos::setPlayerVolume(int playerId, int volume)
+{
+ Q_UNUSED(playerId)
+     Q_UNUSED(volume)
+}
+
+void Sonos::setPlayerRelativeVolume(int playerId, int volumeDelta)
+{
+ Q_UNUSED(playerId)
+     Q_UNUSED(volumeDelta)
+}
+
+void Sonos::setPlayerMute(int playerId, bool mute)
+{
+ Q_UNUSED(playerId)
+     Q_UNUSED(mute)
+}
+
+void Sonos::getPlaylist()
+{
+
+}
+
+void Sonos::getPlaylists()
+{
+
+}
+
+void Sonos::loadPlaylist()
+{
+
+}
+
+void Sonos::getPlayerSettings()
+{
+
+}
+
+void Sonos::setPlayerSettings()
+{
+
 }
 

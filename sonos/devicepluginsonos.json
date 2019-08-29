@@ -15,7 +15,7 @@
                     "displayName": "Sonos connection",
                     "interfaces": ["gateway"],
                     "createMethods": ["user"],
-                    "setupMethod": "userandpassword",
+                    "setupMethod": "oauth",
                     "stateTypes": [
                         {
                             "id": "5aa4360c-61de-47d0-a72e-a19d57712e1c",
@@ -28,11 +28,11 @@
                     ]
                 },
                 {
-                    "id": "22df416d-7732-44f1-b6b9-e41296211178",
+                    "id": "72d9332b-2b25-4136-87a6-e534eae4cc80",
                     "name": "sonosGroup",
                     "displayName": "Sonos group",
                     "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
-                    "createMethods": ["discovery"],
+                    "createMethods": ["auto"],
                     "paramTypes": [
                         {
                             "id": "defc44cd-2ffb-4af1-b348-d6a3474c7515",
