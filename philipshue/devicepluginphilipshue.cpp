@@ -53,9 +53,6 @@ void DevicePluginPhilipsHue::init()
     m_pluginTimer1Sec = hardwareManager()->pluginTimerManager()->registerTimer(1);
     connect(m_pluginTimer1Sec, &PluginTimer::timeout, this, [this]() {
         // refresh sensors every second
-        if (m_remotes.isEmpty()) {
-            return;
-        }
         foreach (HueBridge *bridge, m_bridges.keys()) {
             refreshSensors(bridge);
         }
@@ -452,10 +449,10 @@ void DevicePluginPhilipsHue::deviceRemoved(Device *device)
         remote->deleteLater();
     }
 
-    if (device->deviceClassId() == outdoorSensorDeviceClassId) {
-        HueMotionSensor *outdoorSensor = m_motionSensors.key(device);
-        m_motionSensors.remove(outdoorSensor);
-        outdoorSensor->deleteLater();
+    if (device->deviceClassId() == outdoorSensorDeviceClassId || device->deviceClassId() == motionSensorDeviceClassId) {
+        HueMotionSensor *motionSensor = m_motionSensors.key(device);
+        m_motionSensors.remove(motionSensor);
+        motionSensor->deleteLater();
     }
 }
 
@@ -1296,7 +1293,7 @@ void DevicePluginPhilipsHue::processBridgeSensorDiscoveryResponse(Device *device
                 params.append(Param(motionSensorDeviceSensorUuidLightParamTypeId, motionSensor->lightSensorUuid()));
                 params.append(Param(motionSensorDeviceSensorIdLightParamTypeId, motionSensor->lightSensorId()));
                 descriptor.setParams(params);
-                qCDebug(dcPhilipsHue()) << "Found new motion sensor" << baseUuid << outdoorSensorDeviceClassId;
+                qCDebug(dcPhilipsHue()) << "Found new motion sensor" << baseUuid << motionSensorDeviceClassId;
                 emit autoDevicesAppeared(motionSensorDeviceClassId, {descriptor});
             } else if (motionSensor->modelId() == "SML002") {
                 DeviceDescriptor descriptor(outdoorSensorDeviceClassId, tr("Philips Hue Outdoor sensor"), baseUuid, device->id());
@@ -1454,7 +1451,7 @@ void DevicePluginPhilipsHue::processSensorsRefreshResponse(Device *device, const
             }
         }
 
-        // Outdoor sensors
+        // Motion sensors
         foreach (HueMotionSensor *motionSensor, m_motionSensors.keys()) {
             if (motionSensor->hasSensor(sensorId.toInt()) && m_motionSensors.value(motionSensor)->parentId() == device->id()) {
                 motionSensor->updateStates(sensorMap);
