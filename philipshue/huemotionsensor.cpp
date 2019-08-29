@@ -167,7 +167,7 @@ void HueMotionSensor::updateStates(const QVariantMap &sensorMap)
 
     // If light sensor
     if (sensorMap.value("uniqueid").toString() == m_lightSensorUuid) {
-        int lightIntensity = stateMap.value("lightlevel", 0).toInt();
+        int lightIntensity = 10^((stateMap.value("lightlevel", 0).toInt()-1)/10000);
         if (m_lightIntensity != lightIntensity) {
             m_lightIntensity = lightIntensity;
             emit lightIntensityChanged(m_lightIntensity);
