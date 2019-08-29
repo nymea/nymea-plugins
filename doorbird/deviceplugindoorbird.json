@@ -1,0 +1,70 @@
+{
+    "name": "doorBird",
+    "displayName": "DoorBird",
+    "id": "6fe1614a-fc47-4eb2-a47c-13c50f1798ee",
+    "vendors": [
+        {
+            "name": "doorBird",
+            "displayName": "DoorBird",
+            "id": "2da07435-571e-4956-a387-6caa51d6e845",
+            "deviceClasses": [
+                {
+                    "id": "0485eb61-2a22-42ba-9dd2-a5961485bf08",
+                    "name": "doorBird",
+                    "displayName": "DoorBird",
+                    "createMethods": ["discovery", "user" ],
+                    "interfaces": [ "inputtrigger", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "8873b17d-526e-408d-95d8-6439b501f489",
+                            "name": "address",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "7ccd8f3a-2a5f-4b90-8042-92899d0ee32a",
+                            "name": "username",
+                            "displayName": "Username",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "ea285a57-47c5-43f1-b0d6-e0a4d6230f3c",
+                            "name": "password",
+                            "displayName": "Password",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "b6c3377b-91de-411a-9d48-8b509c39d67c",
+                            "name": "unlatch",
+                            "displayName": "Unlatch the door"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "186c270b-923c-46e4-a7da-33e45427cdbb",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "9bc89937-a2ab-4e8e-af0e-a9ba41caa89b",
+                            "name": "triggered",
+                            "displayName": "Doorbell pressed"
+                        },
+                        {
+                            "id": "e9bb229b-8776-4110-a813-9c0dc67375db",
+                            "name": "motionDetected",
+                            "displayName": "Motion detected"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
