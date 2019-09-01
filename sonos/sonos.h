@@ -33,19 +33,38 @@ class Sonos : public QObject
     Q_OBJECT
 public:
 
-    enum PlayMode {
-      Repeat,
-        RepeatOne,
-        Shuffle,
-        Crossfade
+    enum RepeatMode {
+        RepeatModeOne,
+        RepeatModeAll,
+        RepeatModeNone
     };
+
+    struct PlayMode {
+        bool repeat;
+        bool repeatOne;
+        bool shuffle;
+        bool crossfade;
+    };
+
+    struct PlayerObject {
+
+    };
+
+   /* Represents a Sonos household.*/
+   struct GroupObject {
+       QByteArray CoordinatorId;     //Player acting as the group coordinator for the group
+       QByteArray groupId;           //The ID of the group.
+       QString playbackState;        //The playback state corresponding to the group.
+       QList<QByteArray> playerIds;  //The IDs of the primary players in the group.
+       QString displayName;          //The display name for the group, such as “Living Room” or “Kitchen + 2”.
+   };
 
     /*
      * Represents a Sonos household.*/
-    struct HouseholdObject {
+    /*struct HouseholdObject {
         QString id;         //Identifies a Sonos household.
         QString name;       //A user-displayable name of the Sonos household
-    };
+    };*/
 
     /*
      * The music service identifier or a pseudo-service identifier in the case of local library. */
@@ -160,36 +179,40 @@ public:
     void getFavorites();
     void loadFavorite();
 
-    void getGroups();
-    void createGroup();
+    void getGroups(const QByteArray &householdId);
+    void createGroup(const QByteArray &householdId, QList<QByteArray> playerIds);
     void modifyGroupMembers();
-    void setGroupMembers();
+    void setGroupMembers(const QByteArray &groupId);
 
     //group volume
-    void getGroupVolume(int groupId);           //Get the volume and mute state of a group.
-    void setGroupVolume(int groupId, int volume);           //Set group volume to a specific level and unmute the group if muted.
-    void setGroupMute(int groupId, bool mute);    //Mute and unmute the group.
-    void setGroupRelativeVolume(int groupId, int volumeDelta); 	//Increase or decrease group volume.
+    void getGroupVolume(const QByteArray &groupId);           //Get the volume and mute state of a group.
+    void setGroupVolume(const QByteArray &groupId, int volume);           //Set group volume to a specific level and unmute the group if muted.
+    void setGroupMute(const QByteArray &groupId, bool mute);    //Mute and unmute the group.
+    void setGroupRelativeVolume(const QByteArray &groupId, int volumeDelta); 	//Increase or decrease group volume.
 
-    //playback
-    void getPlaybackStatus();
-    void loadLineIn();
-    void play();
-    void pause();
-    void seek();
-    void seekRelative();
-    void setPlayModes();
-    void skipToNextTrack();
-    void skipToPreviousTrack();
-    void togglePlayPause();
+    //group playback
+    void getGroupPlaybackStatus(const QByteArray &groupId);
+    void groupLoadLineIn(const QByteArray &groupId);
+    void groupPlay(const QByteArray &groupId);
+    void groupPause(const QByteArray &groupId);
+    void groupSeek(const QByteArray &groupId);
+    void groupSeekRelative(const QByteArray &groupId, int deltaMillis);
+    void groupSetPlayModes(const QByteArray &groupId, PlayMode playMode);
+    void groupSetShuffle(const QByteArray &groupId, bool shuffle);
+    void groupSetRepeat(const QByteArray &groupId, RepeatMode repeatMode);
+    void groupSetCrossfade(const QByteArray &groupId, bool crossfade);
+
+    void groupSkipToNextTrack(const QByteArray &groupId);
+    void groupSkipToPreviousTrack(const QByteArray &groupId);
+    void groupTogglePlayPause(const QByteArray &groupId);
 
     //playbackMetadata
 
     // playerVolume
-    void getPlayerVolume(int playerId);
-    void setPlayerVolume(int playerId, int volume);
-    void setPlayerRelativeVolume(int playerId, int volumeDelta);
-    void setPlayerMute(int playerId, bool mute);
+    void getPlayerVolume(const QByteArray &playerId);
+    void setPlayerVolume(const QByteArray &playerId, int volume);
+    void setPlayerRelativeVolume(const QByteArray &playerId, int volumeDelta);
+    void setPlayerMute(const QByteArray &playerId, bool mute);
 
     //Playlists API namespace
     void getPlaylist();
@@ -201,16 +224,18 @@ public:
     void setPlayerSettings();
 
 private:
-    QByteArray m_baseAuthorizationUrl = "api.sonos.com/login/v3/oauth";
-    QByteArray m_baseControlUrl = "api.ws.sonos.com/control/api/v1";
+    QByteArray m_baseAuthorizationUrl = "https://api.sonos.com/login/v3/oauth";
+    QByteArray m_baseControlUrl = "https://api.ws.sonos.com/control/api/v1";
     QByteArray m_accessToken;
+    QByteArray m_apiKey = "b15cbf8c-a39c-47aa-bd93-635a96e9696c";
 
     NetworkAccessManager *m_networkManager = nullptr;
-
 private slots:
 
 
 signals:
+    void householdIdsReceived(QList<QByteArray> householdIds);
+    void groupsReceived(QList<GroupObject> groups);
 
 };
 

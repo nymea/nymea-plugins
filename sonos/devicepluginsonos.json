@@ -16,6 +16,8 @@
                     "interfaces": ["gateway"],
                     "createMethods": ["user"],
                     "setupMethod": "oauth",
+                    "paramTypes": [
+                    ],
                     "stateTypes": [
                         {
                             "id": "5aa4360c-61de-47d0-a72e-a19d57712e1c",

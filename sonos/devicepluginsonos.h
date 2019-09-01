@@ -29,6 +29,7 @@
 
 #include <QHash>
 #include <QDebug>
+#include <QTimer>
 
 
 class DevicePluginSonos : public DevicePlugin
@@ -52,11 +53,20 @@ public:
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
+    QTimer *m_tokenRefreshTimer = nullptr;
+
     QHash<Device *, Sonos *> m_sonosConnections;
+    QList<QByteArray> m_householdIds;
+
+    QByteArray m_sonosConnectionAccessToken;
+    QByteArray m_sonosConnectionRefreshToken;
 
 private slots:
     void onPluginTimer();
     void onConnectionChanged();
+    void onRefreshTimeout();
+
+     void onHouseholdIdsReceived(QList<QByteArray> householdIds);
 
 };
 
