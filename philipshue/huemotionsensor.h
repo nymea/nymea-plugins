@@ -125,7 +125,7 @@ class HueOutdoorSensor: public HueMotionSensor
 public:
     HueOutdoorSensor(QObject *parent = nullptr): HueMotionSensor(parent) {}
 
-    StateTypeId connectedStateTypeId() const override { return outdoorSensorTemperatureStateTypeId; }
+    StateTypeId connectedStateTypeId() const override { return outdoorSensorConnectedStateTypeId; }
     StateTypeId temperatureStateTypeId() const override { return outdoorSensorTemperatureStateTypeId; }
     StateTypeId lightIntensityStateTypeId() const override { return outdoorSensorLightIntensityStateTypeId; }
     StateTypeId isPresentStateTypeId() const override { return outdoorSensorIsPresentStateTypeId; }
