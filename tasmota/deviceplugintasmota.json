@@ -176,6 +176,13 @@
                             "defaultValue": false,
                             "writable": true
                         }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "1be4d6a1-475e-43bb-a47c-9063e279e78d",
+                            "name": "pressed",
+                            "displayName": "Pressed"
+                        }
                     ]
                 },
                 {

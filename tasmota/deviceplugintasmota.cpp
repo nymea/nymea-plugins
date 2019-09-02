@@ -299,6 +299,10 @@ void DevicePluginTasmota::onPublishReceived(MqttChannel *channel, const QString 
                 if (m_powerStateTypeMap.contains(child->deviceClassId())) {
                     child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), payload == "ON");
                 }
+                if (child->deviceClassId() == tasmotaSwitchDeviceClassId) {
+                    Event event(tasmotaSwitchPressedEventTypeId, child->id());
+                    emit emitEvent(event);
+                }
             }
         }
         if (topic.startsWith(channel->topicPrefix() + "/sonoff/STATE")) {
