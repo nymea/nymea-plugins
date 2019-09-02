@@ -2,6 +2,22 @@
     "displayName": "Senic",
     "id": "413e9d77-335f-4ecf-abbc-8f2a8a399c39",
     "name": "Senic",
+    "paramTypes": [
+        {
+            "id": "ba3d4269-940b-42ee-8c73-1e1bdea329c2",
+            "name": "autoSymbols",
+            "displayName": "Automatically display symbols",
+            "type": "bool",
+            "defaultValue": true
+        },
+        {
+            "id": "f9900dfe-310b-462b-b09d-a999df441075",
+            "name": "longPressTime",
+            "displayName": "Long press time",
+            "type": "int",
+            "defaultValue": 2000
+        }
+    ],
     "vendors": [
         {
             "displayName": "Senic",
@@ -13,19 +29,12 @@
                     "name": "nuimo",
                     "displayName": "Nuimo",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "simplemultibutton", "connectable"],
+                    "interfaces": ["simplemultibutton", "longpressbutton", "connectable", "batterylevel"],
                     "paramTypes": [
-                        {
-                            "id": "db67d1e6-26fa-44ed-ad55-c6aef45ea2ea",
-                            "name": "name",
-                            "displayName": "name",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
                         {
                             "id": "71553f6a-2ed4-4896-bb7b-52e7dca948b2",
                             "name": "mac",
-                            "displayName": "mac address",
+                            "displayName": "Mac address",
                             "type": "QString",
                             "inputType": "MacAddress"
                         }
@@ -64,10 +73,18 @@
                             "defaultValue": "-"
                         },
                         {
+                            "id": "aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
                             "id": "b5ee2465-7fa1-450b-8073-f115537d3409",
-                            "name": "battery",
-                            "displayName": "battery",
-                            "displayNameEvent": "battery changed",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
@@ -77,8 +94,8 @@
                         {
                             "id": "69a5f495-5452-434b-8fb8-b73d992c5446",
                             "name": "rotation",
-                            "displayName": "rotation",
-                            "displayNameEvent": "rotation changed",
+                            "displayName": "Rotation",
+                            "displayNameEvent": "Rotation changed",
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100,
@@ -95,7 +112,7 @@
                                 {
                                     "id": "a8f72c37-9cb5-4885-a7e4-b2b396f8e4cd",
                                     "name": "logo",
-                                    "displayName": "logo",
+                                    "displayName": "Logo",
                                     "type": "QString",
                                     "defaultValue": "Heart",
                                     "allowedValues": [
@@ -107,7 +124,11 @@
                                         "Pause",
                                         "Stop",
                                         "Music",
-                                        "Heart"
+                                        "Heart",
+                                        "Next",
+                                        "Previous",
+                                        "Circle",
+                                        "Light"
                                     ]
                                 }
                             ]
@@ -127,6 +148,11 @@
                                     "allowedValues": ["•", "←", "↑", "→", "↓"]
                                 }
                             ]
+                        },
+                        {
+                            "id": "a2f4add5-f76a-4dca-ae68-4107533bee0e",
+                            "name": "longPressed",
+                            "displayName": "Button long pressed"
                         }
                     ]
                 }

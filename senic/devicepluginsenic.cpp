@@ -32,9 +32,11 @@ DevicePluginSenic::DevicePluginSenic()
 
 void DevicePluginSenic::init()
 {
-    m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-    connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginSenic::onReconnectTimeout);
+    // Initialize plugin configurations
+    m_autoSymbolMode = configValue(senicPluginAutoSymbolsParamTypeId).toBool();
+    connect(this, &DevicePluginSenic::configValueChanged, this, &DevicePluginSenic::onPluginConfigurationChanged);
 }
+
 
 Device::DeviceError DevicePluginSenic::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
@@ -55,27 +57,38 @@ Device::DeviceError DevicePluginSenic::discoverDevices(const DeviceClassId &devi
     return Device::DeviceErrorAsync;
 }
 
+
 Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
 {
+    if (!m_reconnectTimer) {
+        m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginSenic::onReconnectTimeout);
+    }
+
     qCDebug(dcSenic()) << "Setup device" << device->name() << device->params();
 
-    QString name = device->paramValue(nuimoDeviceNameParamTypeId).toString();
     QBluetoothAddress address = QBluetoothAddress(device->paramValue(nuimoDeviceMacParamTypeId).toString());
-    QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, name, 0);
+    QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, device->name(), 0);
 
     BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::RandomAddress);
 
-    Nuimo *nuimo = new Nuimo(device, bluetoothDevice, this);
+    Nuimo *nuimo = new Nuimo(bluetoothDevice, this);
+    nuimo->setLongPressTime(configValue(senicPluginLongPressTimeParamTypeId).toInt());
+    connect(nuimo, &Nuimo::deviceInitializationFinished, this, &DevicePluginSenic::onDeviceInitializationFinished);
     connect(nuimo, &Nuimo::buttonPressed, this, &DevicePluginSenic::onButtonPressed);
-    connect(nuimo, &Nuimo::buttonReleased, this, &DevicePluginSenic::onButtonReleased);
+    connect(nuimo, &Nuimo::buttonLongPressed, this, &DevicePluginSenic::onButtonLongPressed);
     connect(nuimo, &Nuimo::swipeDetected, this, &DevicePluginSenic::onSwipeDetected);
     connect(nuimo, &Nuimo::rotationValueChanged, this, &DevicePluginSenic::onRotationValueChanged);
+    connect(nuimo, &Nuimo::connectedChanged, this, &DevicePluginSenic::onConnectedChanged);
+    connect(nuimo, &Nuimo::deviceInformationChanged, this, &DevicePluginSenic::onDeviceInformationChanged);
+    connect(nuimo, &Nuimo::batteryValueChanged, this, &DevicePluginSenic::onBatteryValueChanged);
 
     m_nuimos.insert(nuimo, device);
     nuimo->bluetoothDevice()->connectDevice();
 
-    return Device::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusAsync;
 }
+
 
 Device::DeviceError DevicePluginSenic::executeAction(Device *device, const Action &action)
 {
@@ -104,15 +117,24 @@ Device::DeviceError DevicePluginSenic::executeAction(Device *device, const Actio
         if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Stop")
             nuimo->showImage(Nuimo::MatrixTypeStop);
         if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Music")
-            nuimo->showImage(Nuimo::MatrixTypeStop);
+            nuimo->showImage(Nuimo::MatrixTypeMusic);
         if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Heart")
             nuimo->showImage(Nuimo::MatrixTypeHeart);
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Next")
+            nuimo->showImage(Nuimo::MatrixTypeNext);
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Previous")
+            nuimo->showImage(Nuimo::MatrixTypePrevious);
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Circle")
+            nuimo->showImage(Nuimo::MatrixTypeCircle);
+        if (action.param(nuimoShowLogoActionLogoParamTypeId).value().toString() == "Light")
+            nuimo->showImage(Nuimo::MatrixTypeLight);
 
         return Device::DeviceErrorNoError;
     }
 
     return Device::DeviceErrorActionTypeNotFound;
 }
+
 
 void DevicePluginSenic::deviceRemoved(Device *device)
 {
@@ -121,18 +143,16 @@ void DevicePluginSenic::deviceRemoved(Device *device)
 
     Nuimo *nuimo = m_nuimos.key(device);
     m_nuimos.take(nuimo);
-    delete nuimo;
-}
 
-bool DevicePluginSenic::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
-{
-    foreach (Device *device, myDevices()) {
-        if (device->paramValue(nuimoDeviceMacParamTypeId).toString() == deviceInfo.address().toString())
-            return true;
+    hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(nuimo->bluetoothDevice());
+    nuimo->deleteLater();
+
+    if (myDevices().isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
+        m_reconnectTimer = nullptr;
     }
-
-    return false;
 }
+
 
 void DevicePluginSenic::onReconnectTimeout()
 {
@@ -143,33 +163,53 @@ void DevicePluginSenic::onReconnectTimeout()
     }
 }
 
+
 void DevicePluginSenic::onBluetoothDiscoveryFinished()
 {
     BluetoothDiscoveryReply *reply = static_cast<BluetoothDiscoveryReply *>(sender());
+    reply->deleteLater();
+
     if (reply->error() != BluetoothDiscoveryReply::BluetoothDiscoveryReplyErrorNoError) {
         qCWarning(dcSenic()) << "Bluetooth discovery error:" << reply->error();
-        reply->deleteLater();
         emit devicesDiscovered(nuimoDeviceClassId, QList<DeviceDescriptor>());
         return;
     }
 
-
     QList<DeviceDescriptor> deviceDescriptors;
     foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
         if (deviceInfo.name().contains("Nuimo")) {
-            if (!verifyExistingDevices(deviceInfo)) {
-                DeviceDescriptor descriptor(nuimoDeviceClassId, "Nuimo", deviceInfo.address().toString());
-                ParamList params;
-                params.append(Param(nuimoDeviceNameParamTypeId, deviceInfo.name()));
-                params.append(Param(nuimoDeviceMacParamTypeId, deviceInfo.address().toString()));
-                descriptor.setParams(params);
-                deviceDescriptors.append(descriptor);
+            DeviceDescriptor descriptor(nuimoDeviceClassId, "Nuimo", deviceInfo.name() + " (" + deviceInfo.address().toString() + ")");
+            ParamList params;
+
+            foreach (Device *existingDevice, myDevices()) {
+                if (existingDevice->paramValue(nuimoDeviceMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                    descriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
             }
+            params.append(Param(nuimoDeviceMacParamTypeId, deviceInfo.address().toString()));
+            descriptor.setParams(params);
+            deviceDescriptors.append(descriptor);
         }
     }
-
-    reply->deleteLater();
     emit devicesDiscovered(nuimoDeviceClassId, deviceDescriptors);
+}
+
+void DevicePluginSenic::onDeviceInitializationFinished()
+{
+    Nuimo *nuimo = static_cast<Nuimo *>(sender());
+    Device *device = m_nuimos.value(nuimo);
+    if (!device->setupComplete()) {
+        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+    }
+
+}
+
+void DevicePluginSenic::onConnectedChanged(bool connected)
+{
+    Nuimo *nuimo = static_cast<Nuimo *>(sender());
+    Device *device = m_nuimos.value(nuimo);
+    device->setStateValue(nuimoConnectedStateTypeId, connected);
 }
 
 
@@ -178,12 +218,24 @@ void DevicePluginSenic::onButtonPressed()
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
     emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "•")));
+
+    if (m_autoSymbolMode) {
+        nuimo->showImage(Nuimo::MatrixTypeCircle);
+    }
 }
 
-void DevicePluginSenic::onButtonReleased()
+
+void DevicePluginSenic::onButtonLongPressed()
 {
-    // TODO: user timer for detekt long pressed (if needed)
+    Nuimo *nuimo = static_cast<Nuimo *>(sender());
+    Device *device = m_nuimos.value(nuimo);
+    emitEvent(Event(nuimoLongPressedEventTypeId, device->id()));
+
+    if (m_autoSymbolMode) {
+        nuimo->showImage(Nuimo::MatrixTypeFilledCircle);
+    }
 }
+
 
 void DevicePluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
 {
@@ -204,7 +256,25 @@ void DevicePluginSenic::onSwipeDetected(const Nuimo::SwipeDirection &direction)
         emitEvent(Event(nuimoPressedEventTypeId, device->id(), ParamList() << Param(nuimoPressedEventButtonNameParamTypeId, "↓")));
         break;
     }
+
+    if (m_autoSymbolMode) {
+        switch (direction) {
+        case Nuimo::SwipeDirectionLeft:
+            nuimo->showImage(Nuimo::MatrixType::MatrixTypeLeft);
+            break;
+        case Nuimo::SwipeDirectionRight:
+            nuimo->showImage(Nuimo::MatrixType::MatrixTypeRight);
+            break;
+        case Nuimo::SwipeDirectionUp:
+            nuimo->showImage(Nuimo::MatrixType::MatrixTypeUp);
+            break;
+        case Nuimo::SwipeDirectionDown:
+            nuimo->showImage(Nuimo::MatrixType::MatrixTypeDown);
+            break;
+        }
+    }
 }
+
 
 void DevicePluginSenic::onRotationValueChanged(const uint &value)
 {
@@ -214,3 +284,44 @@ void DevicePluginSenic::onRotationValueChanged(const uint &value)
 }
 
 
+void DevicePluginSenic::onDeviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision)
+{
+    Nuimo *nuimo = static_cast<Nuimo *>(sender());
+    Device *device = m_nuimos.value(nuimo);
+
+    device->setStateValue(nuimoFirmwareRevisionStateTypeId, firmwareRevision);
+    device->setStateValue(nuimoHardwareRevisionStateTypeId, hardwareRevision);
+    device->setStateValue(nuimoSoftwareRevisionStateTypeId, softwareRevision);
+}
+
+
+void DevicePluginSenic::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    qCDebug(dcSenic()) << "Plugin configuration changed";
+
+    // Check auto symbol mode
+    if (paramTypeId == senicPluginAutoSymbolsParamTypeId) {
+        qCDebug(dcSenic()) << "Auto symbol mode" << (value.toBool() ? "enabled." : "disabled.");
+        m_autoSymbolMode = value.toBool();
+    }
+
+    if (paramTypeId == senicPluginLongPressTimeParamTypeId) {
+        qCDebug(dcSenic()) << "Long press time" << value.toInt();
+        foreach(Nuimo *nuimo, m_nuimos.keys()) {
+            nuimo->setLongPressTime(value.toInt());
+        }
+    }
+}
+
+void DevicePluginSenic::onBatteryValueChanged(const uint &percentage)
+{
+    Nuimo *nuimo = static_cast<Nuimo *>(sender());
+    Device *device = m_nuimos.value(nuimo);
+
+    device->setStateValue(nuimoBatteryLevelStateTypeId, percentage);
+    if (percentage < 20) {
+        device->setStateValue(nuimoBatteryCriticalStateTypeId, true);
+    } else {
+        device->setStateValue(nuimoBatteryCriticalStateTypeId, false);
+    }
+}

@@ -49,18 +49,21 @@ public:
 private:
     QHash<Nuimo *, Device *> m_nuimos;
     PluginTimer *m_reconnectTimer = nullptr;
-
-    bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
+    bool m_autoSymbolMode = true;
 
 private slots:
+    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
     void onReconnectTimeout();
     void onBluetoothDiscoveryFinished();
 
+    void onDeviceInitializationFinished();
+    void onConnectedChanged(bool connected);
+    void onBatteryValueChanged(const uint &percentage);
     void onButtonPressed();
-    void onButtonReleased();
+    void onButtonLongPressed();
     void onSwipeDetected(const Nuimo::SwipeDirection &direction);
     void onRotationValueChanged(const uint &value);
-
+    void onDeviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
 };
 
 #endif // DEVICEPLUGINSENIC_H

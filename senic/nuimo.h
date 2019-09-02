@@ -24,10 +24,10 @@
 #define NUIMO_H
 
 #include <QObject>
+#include <QTimer>
 #include <QBluetoothUuid>
 
 #include "typeutils.h"
-#include "devices/device.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 class Nuimo : public QObject
@@ -50,18 +50,21 @@ public:
         MatrixTypePause,
         MatrixTypeStop,
         MatrixTypeMusic,
-        MatrixTypeHeart
+        MatrixTypeHeart,
+        MatrixTypeNext,
+        MatrixTypePrevious,
+        MatrixTypeCircle,
+        MatrixTypeFilledCircle,
+        MatrixTypeLight
     };
 
-    explicit Nuimo(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
+    explicit Nuimo(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
-    Device *device();
     BluetoothLowEnergyDevice *bluetoothDevice();
-
     void showImage(const MatrixType &matrixType);
+    void setLongPressTime(int milliSeconds);
 
 private:
-    Device *m_device = nullptr;
     BluetoothLowEnergyDevice *m_bluetoothDevice = nullptr;
 
     QLowEnergyService *m_deviceInfoService = nullptr;
@@ -77,21 +80,22 @@ private:
     QLowEnergyCharacteristic m_inputRotationCharacteristic;
 
     uint m_rotationValue;
+    QTimer *m_longPressTimer = nullptr;
+    int m_longPressTime = 2000; //default value 2 seconds
 
     void showMatrix(const QByteArray &matrix, const int &seconds);
-
     void printService(QLowEnergyService *service);
-
-    // Set states
-    void setBatteryValue(const QByteArray &data);
+    void onLongPressTimer();
 
 signals:
-    void availableChanged();
+    void connectedChanged(bool connected);
     void buttonPressed();
-    void buttonReleased();
-    void batteryValueChaged(const uint &percentage);
+    void buttonLongPressed();
+    void batteryValueChanged(const uint &percentage);
     void swipeDetected(const SwipeDirection &direction);
     void rotationValueChanged(const uint &value);
+    void deviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
+    void deviceInitializationFinished();
 
 private slots:
     void onConnectedChanged(const bool &connected);

@@ -35,19 +35,20 @@ static QBluetoothUuid inputRotationCharacteristicUuid   = QBluetoothUuid(QUuid("
 static QBluetoothUuid inputButtonCharacteristicUuid     = QBluetoothUuid(QUuid("f29b1529-cb19-40f3-be5c-7241ecb82fd2"));
 
 
-Nuimo::Nuimo(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
+Nuimo::Nuimo(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
     QObject(parent),
-    m_device(device),
     m_bluetoothDevice(bluetoothDevice)
 {
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::connectedChanged, this, &Nuimo::onConnectedChanged);
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::servicesDiscoveryFinished, this, &Nuimo::onServiceDiscoveryFinished);
+
+    if (!m_longPressTimer) {
+        m_longPressTimer = new QTimer(this);
+        m_longPressTimer->setSingleShot(true);
+    }
+    connect(m_longPressTimer, &QTimer::timeout, this, &Nuimo::onLongPressTimer);
 }
 
-Device *Nuimo::device()
-{
-    return m_device;
-}
 
 BluetoothLowEnergyDevice *Nuimo::bluetoothDevice()
 {
@@ -176,11 +177,79 @@ void Nuimo::showImage(const Nuimo::MatrixType &matrixType)
                     "    *    ");
         time = 5;
         break;
-    default:
+    case MatrixTypeNext:
+        matrix = QByteArray(
+                    "         "
+                    "  *   ** "
+                    "  **  ** "
+                    "  *** ** "
+                    "  ****** "
+                    "  *** ** "
+                    "  **  ** "
+                    "  *   ** "
+                    "         ");
+        time = 5;
+        break;
+    case MatrixTypePrevious:
+        matrix = QByteArray(
+                    "         "
+                    "  **   * "
+                    "  **  ** "
+                    "  ** *** "
+                    "  ****** "
+                    "  ** *** "
+                    "  **  ** "
+                    "  **   * "
+                    "         ");
+        time = 5;
+        break;
+    case MatrixTypeCircle:
+        matrix = QByteArray(
+                    "         "
+                    "         "
+                    "   ***   "
+                    "  *   *  "
+                    "  *   *  "
+                    "  *   *  "
+                    "   ***   "
+                    "         "
+                    "         ");
+        time = 5;
+        break;
+    case MatrixTypeFilledCircle:
+        matrix = QByteArray(
+                    "         "
+                    "         "
+                    "   ***   "
+                    "  *****  "
+                    "  *****  "
+                    "  *****  "
+                    "   ***   "
+                    "         "
+                    "         ");
+        time = 5;
+        break;
+    case MatrixTypeLight:
+        matrix = QByteArray(
+                    "         "
+                    "   ***   "
+                    "  *   *  "
+                    "  *   *  "
+                    "  *   *  "
+                    "   ***   "
+                    "   ***   "
+                    "   ***   "
+                    "    *    ");
+        time = 5;
         break;
     }
 
     showMatrix(matrix, time);
+}
+
+void Nuimo::setLongPressTime(int milliSeconds)
+{
+    m_longPressTime = milliSeconds;
 }
 
 void Nuimo::showMatrix(const QByteArray &matrix, const int &seconds)
@@ -219,18 +288,19 @@ void Nuimo::printService(QLowEnergyService *service)
     }
 }
 
-void Nuimo::setBatteryValue(const QByteArray &data)
+void Nuimo::onLongPressTimer()
 {
-    int batteryPercentage = data.toHex().toUInt(0, 16);
-    qCDebug(dcSenic()) << "Battery:" << batteryPercentage << "%";
-
-    device()->setStateValue(nuimoBatteryStateTypeId, batteryPercentage);
+    emit buttonLongPressed();
 }
+
+
 
 void Nuimo::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcSenic()) << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
-    m_device->setStateValue(nuimoConnectedStateTypeId, connected);
+
+    m_longPressTimer->stop();
+    emit connectedChanged(connected);
 
     if (!connected) {
         // Clean up services
@@ -332,7 +402,7 @@ void Nuimo::onServiceDiscoveryFinished()
             m_ledMatrixService->discoverDetails();
         }
     }
-
+    emit deviceInitializationFinished();
 }
 
 void Nuimo::onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceState &state)
@@ -344,11 +414,11 @@ void Nuimo::onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceStat
     qCDebug(dcSenic()) << "Device info service discovered.";
 
     printService(m_deviceInfoService);
+    QString firmware = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::FirmwareRevisionString).value());
+    QString hardware = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::HardwareRevisionString).value());
+    QString software = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::SoftwareRevisionString).value());
 
-    device()->setStateValue(nuimoFirmwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::FirmwareRevisionString).value()));
-    device()->setStateValue(nuimoHardwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::HardwareRevisionString).value()));
-    device()->setStateValue(nuimoSoftwareRevisionStateTypeId, QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::SoftwareRevisionString).value()));
-
+    emit deviceInformationChanged(firmware, hardware, software);
 }
 
 void Nuimo::onBatteryServiceStateChanged(const QLowEnergyService::ServiceState &state)
@@ -371,13 +441,15 @@ void Nuimo::onBatteryServiceStateChanged(const QLowEnergyService::ServiceState &
     QLowEnergyDescriptor notificationDescriptor = m_batteryCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
     m_batteryService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
-    setBatteryValue(m_batteryCharacteristic.value());
+    uint batteryPercentage = m_batteryCharacteristic.value().toHex().toUInt(nullptr, 16);
+    emit batteryValueChanged(batteryPercentage);
 }
 
 void Nuimo::onBatteryCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic.uuid() == m_batteryCharacteristic.uuid()) {
-        setBatteryValue(value);
+        uint batteryPercentage = value.toHex().toUInt(nullptr, 16);
+        emit batteryValueChanged(batteryPercentage);
     }
 }
 
@@ -427,18 +499,22 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
 void Nuimo::onInputCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic.uuid() == m_inputButtonCharacteristic.uuid()) {
-        bool pressed = (bool)value.toHex().toUInt(0, 16);
+        bool pressed = (bool)value.toHex().toUInt(nullptr, 16);
         qCDebug(dcSenic()) << "Button:" << (pressed ? "pressed": "released");
         if (pressed) {
-            emit buttonPressed();
+            m_longPressTimer->start(m_longPressTime);
         } else {
-            emit buttonReleased();
+            if (m_longPressTimer->isActive()) {
+                m_longPressTimer->stop();
+                emit buttonPressed();
+            }
+            // else the time run out and has the long pressed event emittted
         }
         return;
     }
 
     if (characteristic.uuid() == m_inputSwipeCharacteristic.uuid()) {
-        quint8 swipe = (quint8)value.toHex().toUInt(0, 16);
+        quint8 swipe = (quint8)value.toHex().toUInt(nullptr, 16);
         switch (swipe) {
         case 0:
             qCDebug(dcSenic()) << "Swipe: Left";
