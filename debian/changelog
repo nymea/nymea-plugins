@@ -1,3 +1,26 @@
+nymea-plugins (0.15.1) xenial; urgency=medium
+
+  [ Bernhard Trinnes ]
+  * New Plugin: WS2812FX
+
+  [ Michael Zanetti ]
+  * Tasmota: Use new powerswitch interface
+
+  [ Bernhard Trinnes ]
+  * Add plug-in bose soundtouch
+  * New plugin: generic interfaces
+
+  [ Michael Zanetti ]
+  * Kodi: Add support for media browsing
+
+  [ Bernhard Trinnes ]
+  * Fix senic
+
+  [ Michael Zanetti ]
+  * Fix hue outdoorsensor
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 02 Sep 2019 18:02:07 +0200
+
 nymea-plugins (0.15.0) xenial; urgency=medium
 
 
