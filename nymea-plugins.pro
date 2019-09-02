@@ -17,6 +17,7 @@ PLUGIN_DIRS = \
     eq-3                \
     flowercare          \
     genericelements     \
+    genericinterfaces   \
     gpio                \
     httpcommander       \
     intertechno         \
