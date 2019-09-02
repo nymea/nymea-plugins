@@ -5,6 +5,7 @@ PLUGIN_DIRS = \
     avahimonitor        \
     awattar             \
     boblight            \
+    bose                \
     commandlauncher     \
     conrad              \
     datetime            \
