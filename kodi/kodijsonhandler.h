@@ -50,6 +50,7 @@ private:
     KodiConnection *m_connection;
     int m_id;
     QHash<int, KodiReply> m_replys;
+    QByteArray m_dataBuffer;
 
 };
 

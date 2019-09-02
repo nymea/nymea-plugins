@@ -29,12 +29,16 @@
 #include "kodiconnection.h"
 #include "kodijsonhandler.h"
 
+#include "types/browseritem.h"
+#include "types/browseritemaction.h"
+#include "devices/device.h"
+
 class Kodi : public QObject
 {
     Q_OBJECT
 public:
 
-    explicit Kodi(const QHostAddress &hostAddress, const int &port = 9090, QObject *parent = nullptr);
+    explicit Kodi(const QHostAddress &hostAddress, int port = 9090, int httpPort = 8080, QObject *parent = nullptr);
 
     QHostAddress hostAddress() const;
     int port() const;
@@ -52,11 +56,9 @@ public:
     int setRepeat(const QString &repeat);
 
     // actions
-    int showNotification(const QString &message, const int &displayTime, const QString &notificationType);
-    int pressButton(const QString &button);
+    int showNotification(const QString &title, const QString &message, const int &displayTime, const QString &notificationType);
+    int navigate(const QString &to);
     int systemCommand(const QString &command);
-    int videoLibrary(const QString &command);
-    int audioLibrary(const QString &command);
 
     void update();
     void checkVersion();
@@ -64,17 +66,25 @@ public:
     void connectKodi();
     void disconnectKodi();
 
+    Device::BrowseResult browse(const QString &itemId, Device::BrowseResult &result);
+    Device::BrowserItemResult browserItem(const QString &itemId, Device::BrowserItemResult &result);
+    Device::DeviceError launchBrowserItem(const QString &itemId);
+    int executeBrowserItemAction(const QString &itemId, const ActionTypeId &actionTypeId);
+
 signals:
     void connectionStatusChanged();
     void stateChanged();
     void activePlayerChanged(const QString &playerType);
-    void actionExecuted(int actionId, const bool &success);
+    void actionExecuted(int actionId, bool success);
     void updateDataReceived(const QVariantMap &data);
     void versionDataReceived(const QVariantMap &data);
     void playbackStatusChanged(const QString &playbackState);
     void mediaMetadataChanged(const QString &title, const QString &artist, const QString &collection, const QString &artwork);
     void shuffleChanged(bool shuffle);
     void repeatChanged(const QString &repeat);
+    void browseResult(const Device::BrowseResult &result);
+    void browserItemResult(const Device::BrowserItemResult &result);
+    void browserItemActionExecuted(int actionId, bool success);
 
 private slots:
     void onVolumeChanged(const int &volume, const bool &muted);
@@ -91,12 +101,38 @@ private slots:
     void updateMetadata();
 
 private:
+    QString prepareThumbnail(const QString &thumbnail);
+
+private:
     KodiConnection *m_connection;
+    int m_httpPort;
     KodiJsonHandler *m_jsonHandler;
     bool m_muted;
     int m_volume;
     int m_activePlayerCount = 0; // if it's > 0, there is something playing (either music or video or slideshow)
     int m_activePlayer = -1;
+
+    class VirtualFsNode {
+    public:
+        VirtualFsNode(const BrowserItem &item):item(item) {}
+        BrowserItem item;
+        QList<VirtualFsNode*> childs;
+        QString getMethod;
+        QVariantMap getParams;
+        void addChild(VirtualFsNode* child) {childs.append(child); }
+        VirtualFsNode *findNode(const QString &id) {
+            if (item.id() == id) return this;
+            foreach (VirtualFsNode *child, childs) {
+                VirtualFsNode *node = child->findNode(id);
+                if (node) return node;
+            }
+            return nullptr;
+        }
+    };
+    VirtualFsNode* m_virtualFs = nullptr;
+
+    QHash<int, Device::BrowseResult> m_pendingBrowseRequests;
+    QHash<int, Device::BrowserItemResult> m_pendingBrowserItemRequests;
 
 };
 

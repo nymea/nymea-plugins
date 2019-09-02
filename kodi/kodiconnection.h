@@ -32,13 +32,14 @@ class KodiConnection : public QObject
 {
     Q_OBJECT
 public:
-    explicit KodiConnection(const QHostAddress &hostAddress, const int &port = 9090, QObject *parent = nullptr);
+    explicit KodiConnection(const QHostAddress &hostAddress, int port = 9090, QObject *parent = nullptr);
 
     void connectKodi();
     void disconnectKodi();
 
     QHostAddress hostAddress() const;
     int port() const;
+    int httpPort() const;
 
     bool connected();
 

@@ -63,7 +63,10 @@ void DevicePluginKodi::init()
 Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
 {
     qCDebug(dcKodi) << "Setup Kodi device" << device->paramValue(kodiDeviceIpParamTypeId).toString();
-    Kodi *kodi= new Kodi(QHostAddress(device->paramValue(kodiDeviceIpParamTypeId).toString()), 9090, this);
+    QString ipString = device->paramValue(kodiDeviceIpParamTypeId).toString();
+    int port = device->paramValue(kodiDevicePortParamTypeId).toInt();
+    int httpPort = device->paramValue(kodiDeviceHttpPortParamTypeId).toInt();
+    Kodi *kodi= new Kodi(QHostAddress(ipString), port, httpPort, this);
 
     connect(kodi, &Kodi::connectionStatusChanged, this, &DevicePluginKodi::onConnectionChanged);
     connect(kodi, &Kodi::stateChanged, this, &DevicePluginKodi::onStateChanged);
@@ -71,6 +74,9 @@ Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
     connect(kodi, &Kodi::versionDataReceived, this, &DevicePluginKodi::versionDataReceived);
     connect(kodi, &Kodi::updateDataReceived, this, &DevicePluginKodi::onSetupFinished);
     connect(kodi, &Kodi::playbackStatusChanged, this, &DevicePluginKodi::onPlaybackStatusChanged);
+    connect(kodi, &Kodi::browseResult, this, &DevicePluginKodi::browseRequestFinished);
+    connect(kodi, &Kodi::browserItemResult, this, &DevicePluginKodi::browserItemRequestFinished);
+    connect(kodi, &Kodi::browserItemActionExecuted, this, &DevicePluginKodi::onBrowserItemActionExecuted);
 
     connect(kodi, &Kodi::activePlayerChanged, device, [device](const QString &playerType){
         device->setStateValue(kodiPlayerTypeStateTypeId, playerType);
@@ -89,8 +95,9 @@ Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
         } else {
             addr = "[" + hostAddr.toString() + "]";
         }
+        QString port = device->paramValue(kodiDeviceHttpPortParamTypeId).toString();
 
-        request.setUrl(QUrl("http://" + addr + ":8080/jsonrpc"));
+        request.setUrl(QUrl(QString("http://%1:%2/jsonrpc").arg(addr).arg(port)));
         qCDebug(dcKodi) << "Prepping file dl" << "http://" + addr + ":" + device->paramValue(kodiDevicePortParamTypeId).toString() + "/jsonrpc";
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         QVariantMap map;
@@ -102,10 +109,13 @@ Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
         map.insert("params", params);
         QJsonDocument jsonDoc = QJsonDocument::fromVariant(map);
         QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
-        connect(reply, &QNetworkReply::finished, device, [device, reply, addr](){
+        connect(reply, &QNetworkReply::finished, device, [device, reply, addr, port](){
             reply->deleteLater();
             QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-            device->setStateValue(kodiArtworkStateTypeId, "http://" + addr + ":8080/" + jsonDoc.toVariant().toMap().value("result").toMap().value("details").toMap().value("path").toString());
+            QString fileUrl = "http://" + addr + ":" + port + "/" + jsonDoc.toVariant().toMap().value("result").toMap().value("details").toMap().value("path").toString();
+            qCDebug(dcKodi()) << "DL result:" << jsonDoc.toJson();
+            qCDebug(dcKodi()) << "Resolved url:" << fileUrl;
+            device->setStateValue(kodiArtworkStateTypeId, fileUrl);
         });
 
     });
@@ -144,19 +154,68 @@ Device::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId &devic
     Q_UNUSED(deviceClassId)
 
     ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_xbmc-jsonrpc._tcp");
-    QTimer::singleShot(5000, this, [this, serviceBrowser](){
-        QList<DeviceDescriptor> descriptors;
+    ZeroConfServiceBrowser *httpServiceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_http._tcp");
+    QTimer::singleShot(5000, this, [this, serviceBrowser, httpServiceBrowser](){
+        QHash<QString, DeviceDescriptor> descriptors;
+
         foreach (const ZeroConfServiceEntry avahiEntry, serviceBrowser->serviceEntries()) {
+
+            QString uuid;
+            foreach (const QString &txt, avahiEntry.txt()) {
+                if (txt.startsWith("uuid")) {
+                    uuid = txt.split("=").last();
+                    break;
+                }
+            }
+
+            if (descriptors.contains(uuid)) {
+                // Might appear multiple times, IPv4 and IPv6
+                continue;
+            }
+
             qCDebug(dcKodi) << "Zeroconf entry:" << avahiEntry;
             DeviceDescriptor descriptor(kodiDeviceClassId, avahiEntry.name(), avahiEntry.hostName() + " (" + avahiEntry.hostAddress().toString() + ")");
             ParamList params;
             params << Param(kodiDeviceIpParamTypeId, avahiEntry.hostAddress().toString());
             params << Param(kodiDevicePortParamTypeId, avahiEntry.port());
+            params << Param(kodiDeviceUuidParamTypeId, uuid);
             descriptor.setParams(params);
-            descriptors << descriptor;
+
+            Devices existing = myDevices().filterByParam(kodiDeviceUuidParamTypeId, uuid);
+            if (existing.count() > 0) {
+                descriptor.setDeviceId(existing.first()->id());
+            }
+
+            descriptors.insert(uuid, descriptor);
         }
-        emit devicesDiscovered(kodiDeviceClassId, descriptors);
+
+        foreach (const ZeroConfServiceEntry avahiEntry, httpServiceBrowser->serviceEntries()) {
+//            qCDebug(dcKodi) << "Zeroconf http entry:" << avahiEntry;
+            QString uuid;
+            foreach (const QString &txt, avahiEntry.txt()) {
+                if (txt.startsWith("uuid")) {
+                    uuid = txt.split("=").last();
+                    break;
+                }
+            }
+            if (!descriptors.contains(uuid)) {
+                continue;
+            }
+            qCDebug(dcKodi()) << "Updating http parameter:" << avahiEntry.port();
+            DeviceDescriptor descriptor = descriptors.value(uuid);
+            ParamList params = descriptor.params();
+            params << Param(kodiDeviceHttpPortParamTypeId, avahiEntry.port());
+            descriptor.setParams(params);
+            descriptors[uuid] = descriptor;
+        }
+
+
+        foreach (const DeviceDescriptor &d, descriptors.values()) {
+            qCDebug(dcKodi()) << "Returning descritpor:" << d.params();
+        }
+        emit devicesDiscovered(kodiDeviceClassId, descriptors.values());
         serviceBrowser->deleteLater();
+        httpServiceBrowser->deleteLater();
     });
 
     return Device::DeviceErrorAsync;
@@ -173,34 +232,34 @@ Device::DeviceError DevicePluginKodi::executeAction(Device *device, const Action
         }
 
         int commandId = -1;
-        if (action.actionTypeId() == kodiShowNotificationActionTypeId) {
-            commandId = kodi->showNotification(action.param(kodiShowNotificationActionMessageParamTypeId).value().toString(), 8000, action.param(kodiShowNotificationActionTypeParamTypeId).value().toString());
+        if (action.actionTypeId() == kodiNotifyActionTypeId) {
+            commandId = kodi->showNotification(
+                        action.param(kodiNotifyActionTitleParamTypeId).value().toString(),
+                        action.param(kodiNotifyActionBodyParamTypeId).value().toString(),
+                        8000,
+                        action.param(kodiNotifyActionTypeParamTypeId).value().toString());
         } else if (action.actionTypeId() == kodiVolumeActionTypeId) {
             commandId = kodi->setVolume(action.param(kodiVolumeActionVolumeParamTypeId).value().toInt());
         } else if (action.actionTypeId() == kodiMuteActionTypeId) {
             commandId = kodi->setMuted(action.param(kodiMuteActionMuteParamTypeId).value().toBool());
-        } else if (action.actionTypeId() == kodiPressButtonActionTypeId) {
-            commandId = kodi->pressButton(action.param(kodiPressButtonActionButtonParamTypeId).value().toString());
+        } else if (action.actionTypeId() == kodiNavigateActionTypeId) {
+            commandId = kodi->navigate(action.param(kodiNavigateActionToParamTypeId).value().toString());
         } else if (action.actionTypeId() == kodiSystemActionTypeId) {
             commandId = kodi->systemCommand(action.param(kodiSystemActionSystemCommandParamTypeId).value().toString());
-        } else if (action.actionTypeId() == kodiVideoLibraryActionTypeId) {
-            commandId = kodi->videoLibrary(action.param(kodiVideoLibraryActionVideoCommandParamTypeId).value().toString());
-        } else if (action.actionTypeId() == kodiAudioLibraryActionTypeId) {
-            commandId = kodi->audioLibrary(action.param(kodiAudioLibraryActionAudioCommandParamTypeId).value().toString());
         } else if(action.actionTypeId() == kodiSkipBackActionTypeId) {
-            commandId = kodi->pressButton("skipprevious");
+            commandId = kodi->navigate("skipprevious");
         } else if(action.actionTypeId() == kodiFastRewindActionTypeId) {
-            commandId = kodi->pressButton("rewind");
+            commandId = kodi->navigate("rewind");
         } else if(action.actionTypeId() == kodiStopActionTypeId) {
-            commandId = kodi->pressButton("stop");
+            commandId = kodi->navigate("stop");
         } else if(action.actionTypeId() == kodiPlayActionTypeId) {
-            commandId = kodi->pressButton("play");
+            commandId = kodi->navigate("play");
         } else if(action.actionTypeId() == kodiPauseActionTypeId) {
-            commandId = kodi->pressButton("pause");
+            commandId = kodi->navigate("pause");
         } else if(action.actionTypeId() == kodiFastForwardActionTypeId) {
-            commandId = kodi->pressButton("fastforward");
+            commandId = kodi->navigate("fastforward");
         } else if(action.actionTypeId() == kodiSkipNextActionTypeId) {
-            commandId = kodi->pressButton("skipnext");
+            commandId = kodi->navigate("skipnext");
         } else if (action.actionTypeId() == kodiShuffleActionTypeId) {
             commandId = kodi->setShuffle(action.param(kodiShuffleActionShuffleParamTypeId).value().toBool());
         } else if (action.actionTypeId() == kodiRepeatActionTypeId) {
@@ -220,6 +279,58 @@ Device::DeviceError DevicePluginKodi::executeAction(Device *device, const Action
         return Device::DeviceErrorAsync;
     }
     return Device::DeviceErrorDeviceClassNotFound;
+}
+
+Device::BrowseResult DevicePluginKodi::browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale)
+{
+    Q_UNUSED(locale)
+
+    Kodi *kodi = m_kodis.key(device);
+    if (!kodi) {
+        result.status = Device::DeviceErrorHardwareNotAvailable;
+        return result;
+    }
+
+    return kodi->browse(itemId, result);
+}
+
+Device::BrowserItemResult DevicePluginKodi::browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale)
+{
+    Q_UNUSED(locale)
+
+    Kodi *kodi = m_kodis.key(device);
+    if (!kodi) {
+        result.status = Device::DeviceErrorHardwareNotAvailable;
+        return result;
+    }
+
+    return kodi->browserItem(itemId, result);
+
+}
+
+Device::DeviceError DevicePluginKodi::executeBrowserItem(Device *device, const BrowserAction &browserAction)
+{
+    Kodi *kodi = m_kodis.key(device);
+    if (!kodi) {
+        return Device::DeviceErrorHardwareNotAvailable;
+    }
+
+    return kodi->launchBrowserItem(browserAction.itemId());
+}
+
+Device::DeviceError DevicePluginKodi::executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction)
+{
+    Kodi *kodi = m_kodis.key(device);
+    if (!kodi) {
+        return Device::DeviceErrorHardwareNotAvailable;
+    }
+
+    int id = kodi->executeBrowserItemAction(browserItemAction.itemId(), browserItemAction.actionTypeId());
+    if (id == -1) {
+        return Device::DeviceErrorHardwareFailure;
+    }
+    m_pendingBrowserItemActions.insert(id, browserItemAction.id());
+    return Device::DeviceErrorAsync;
 }
 
 void DevicePluginKodi::onPluginTimer()
@@ -263,7 +374,15 @@ void DevicePluginKodi::onActionExecuted(int actionId, bool success)
     if (!m_pendingActions.contains(actionId)) {
         return;
     }
-    emit actionExecutionFinished(m_pendingActions.value(actionId), success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
+    emit actionExecutionFinished(m_pendingActions.take(actionId), success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
+}
+
+void DevicePluginKodi::onBrowserItemActionExecuted(int actionId, bool success)
+{
+    if (!m_pendingBrowserItemActions.contains(actionId)) {
+        return;
+    }
+    emit browserItemActionExecutionFinished(m_pendingBrowserItemActions.take(actionId), success ? Device::DeviceErrorNoError : Device::DeviceErrorHardwareFailure);
 }
 
 void DevicePluginKodi::versionDataReceived(const QVariantMap &data)
@@ -294,7 +413,7 @@ void DevicePluginKodi::onSetupFinished(const QVariantMap &data)
 
     emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
 
-    kodi->showNotification("Connected", 2000, "info");
+    kodi->showNotification("nymea", tr("Connected"), 2000, "info");
 }
 
 void DevicePluginKodi::onPlaybackStatusChanged(const QString &playbackStatus)

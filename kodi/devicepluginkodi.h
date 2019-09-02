@@ -47,18 +47,25 @@ public:
     Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
+    Device::BrowseResult browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale) override;
+    Device::BrowserItemResult browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale) override;
+    Device::DeviceError executeBrowserItem(Device *device, const BrowserAction &browserAction) override;
+    Device::DeviceError executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction) override;
+
 private:
     PluginTimer *m_pluginTimer;
     QHash<Kodi *, Device *> m_kodis;
     QList<Kodi *> m_asyncSetups;
 
     QHash<int, ActionId> m_pendingActions;
+    QHash<int, ActionId> m_pendingBrowserItemActions;
 
 private slots:
     void onPluginTimer();
     void onConnectionChanged();
     void onStateChanged();
     void onActionExecuted(int actionId, bool success);
+    void onBrowserItemActionExecuted(int actionId, bool success);
     void versionDataReceived(const QVariantMap &data);
     void onSetupFinished(const QVariantMap &data);
 

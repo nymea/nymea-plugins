@@ -53,13 +53,28 @@ int KodiJsonHandler::sendData(const QString &method, const QVariantMap &params)
 
 void KodiJsonHandler::processResponse(const QByteArray &data)
 {
+    m_dataBuffer.append(data);
+
+    QByteArray packet = m_dataBuffer;
+    int pos = packet.indexOf("}{");
+    if (pos > 0) {
+        packet = m_dataBuffer.left(pos + 1);
+    }
+
+    if (!packet.endsWith("}")) {
+        return; // Won't parse for sure, likely not enough data yet
+    }
+
     QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(packet, &error);
 
     if(error.error != QJsonParseError::NoError) {
         qCWarning(dcKodi) << "failed to parse JSON data:" << data << ":" << error.errorString();
         return;
     }
+
+    // Ok, we managed to parse a complete packet, remove it from the input buffer
+    m_dataBuffer.remove(0, packet.length());
 
     //qCDebug(dcKodi) << "data received:" << jsonDoc.toJson();
 

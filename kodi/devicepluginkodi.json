@@ -12,21 +12,35 @@
                     "id": "d09953e3-c5bd-415b-973b-0d0bf2be3f69",
                     "name": "kodi",
                     "displayName": "Kodi",
-                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "notifications", "extendednavigationpad", "connectable"],
                     "createMethods": ["user", "discovery"],
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "1a897065-57c6-49b3-bac9-1e5db27859e5",
                             "name": "ip",
-                            "displayName": "ip",
+                            "displayName": "IP Address",
                             "type" : "QString",
                             "inputType": "IPv4Address"
                         },
                         {
                             "id": "660fb4d7-9479-4c9d-a900-ce221d2b8ae4",
                             "name": "port",
-                            "displayName": "port",
+                            "displayName": "Port",
                             "type" : "int"
+                        },
+                        {
+                            "id": "27ea7e46-80f0-49ea-9352-b57c78905c67",
+                            "name": "httpPort",
+                            "displayName": "HTTP port",
+                            "type" : "int",
+                            "defaultValue": 8080
+                        },
+                        {
+                            "id": "692eb6e0-7f4e-4f43-92da-8347372287ce",
+                            "name": "uuid",
+                            "displayName": "UUID",
+                            "type": "QString"
                         }
                     ],
                     "stateTypes": [
@@ -190,12 +204,19 @@
                         },
                         {
                             "id": "dc0aa3b5-4eae-4e58-a4ac-d4c124da53f1",
-                            "name": "showNotification",
+                            "name": "notify",
                             "displayName": "show notification",
                             "paramTypes": [
                                 {
                                     "id": "798f720a-cc4f-40e7-91d7-2ef5957ca7ad",
-                                    "name": "message",
+                                    "name": "title",
+                                    "displayName": "title",
+                                    "type": "QString",
+                                    "inputType": "TextLine"
+                                },
+                                {
+                                    "id": "c92d79ad-3b74-4cb6-a21b-d6a0a3cfd3e1",
+                                    "name": "body",
                                     "displayName": "message",
                                     "type": "QString",
                                     "inputType": "TextLine"
@@ -216,45 +237,24 @@
                         },
                         {
                             "id": "28060803-aa85-44a4-9dec-ee669dfb629f",
-                            "name": "pressButton",
-                            "displayName": "press button",
+                            "name": "navigate",
+                            "displayName": "Navigate",
                             "paramTypes": [
                                 {
                                     "id": "93861dac-0c24-4a3b-903d-d1be44eae611",
-                                    "name": "button",
-                                    "displayName": "button",
+                                    "name": "to",
+                                    "displayName": "to",
                                     "type": "QString",
                                     "allowedValues": [
-                                        "left",
-                                        "right",
                                         "up",
                                         "down",
-                                        "pageup",
-                                        "pagedown",
-                                        "select",
+                                        "left",
+                                        "right",
+                                        "enter",
                                         "back",
+                                        "menu",
                                         "info",
-                                        "pause",
-                                        "stop",
-                                        "skipnext",
-                                        "skipprevious",
-                                        "stepforward",
-                                        "stepback",
-                                        "osd",
-                                        "play",
-                                        "playpause",
-                                        "fastforward",
-                                        "rewind",
-                                        "fullscreen",
-                                        "mute",
-                                        "volumeup",
-                                        "volumedown",
-                                        "channelup",
-                                        "channeldown",
-                                        "red",
-                                        "green",
-                                        "yellow",
-                                        "blue"
+                                        "home"
                                     ]
                                 }
                             ]
@@ -278,42 +278,18 @@
                                     ]
                                 }
                             ]
+                        }
+                    ],
+                    "browserItemActionTypes": [
+                        {
+                            "id": "3fed69c5-dddf-4500-a674-c79015f63974",
+                            "name": "updateLibrary",
+                            "displayName": "Update library"
                         },
                         {
-                            "id": "59f7ad10-16eb-40b7-a88b-c8393ae8e413",
-                            "name": "videoLibrary",
-                            "displayName": "video library",
-                            "paramTypes": [
-                                {
-                                    "id": "3219855b-e043-43aa-91ae-794b474379bf",
-                                    "name": "videoCommand",
-                                    "displayName": "command",
-                                    "type": "QString",
-                                    "defaultValue": "scan",
-                                    "allowedValues": [
-                                        "scan",
-                                        "clean"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "id": "3d5120eb-1007-46c3-b76e-d9d4b105b9f2",
-                            "name": "audioLibrary",
-                            "displayName": "audio library",
-                            "paramTypes": [
-                                {
-                                    "id": "ba89d098-56d7-40a2-b499-c02499c1ec0c",
-                                    "name": "audioCommand",
-                                    "displayName": "command",
-                                    "type": "QString",
-                                    "defaultValue": "scan",
-                                    "allowedValues": [
-                                        "scan",
-                                        "clean"
-                                    ]
-                                }
-                            ]
+                            "id": "dbc2c455-ae75-493e-9d8b-659e951b55a1",
+                            "name": "cleanLibrary",
+                            "displayName": "Clean library"
                         }
                     ]
                 }
