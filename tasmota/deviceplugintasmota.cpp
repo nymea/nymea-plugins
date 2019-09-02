@@ -213,6 +213,10 @@ Device::DeviceError DevicePluginTasmota::executeAction(Device *device, const Act
     if (m_powerStateTypeMap.contains(device->deviceClassId())) {
         Device *parentDev = myDevices().findById(device->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDev);
+        if (!channel) {
+            qCWarning(dcTasmota()) << "No mqtt channel for this device.";
+            return Device::DeviceErrorHardwareNotAvailable;
+        }
         ParamTypeId channelParamTypeId = m_channelParamTypeMap.value(device->deviceClassId());
         ParamTypeId powerActionParamTypeId = ParamTypeId(m_powerStateTypeMap.value(device->deviceClassId()).toString());
         qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString() << (action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
@@ -223,6 +227,10 @@ Device::DeviceError DevicePluginTasmota::executeAction(Device *device, const Act
     if (device->deviceClassId() == tasmotaShutterDeviceClassId) {
         Device *parentDev = myDevices().findById(device->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDev);
+        if (!channel) {
+            qCWarning(dcTasmota()) << "No mqtt channel for this device.";
+            return Device::DeviceErrorHardwareNotAvailable;
+        }
         ParamTypeId openingChannelParamTypeId = m_openingChannelParamTypeMap.value(device->deviceClassId());
         ParamTypeId closingChannelParamTypeId = m_closingChannelParamTypeMap.value(device->deviceClassId());
         if (action.actionTypeId() == tasmotaShutterOpenActionTypeId) {
@@ -290,6 +298,10 @@ void DevicePluginTasmota::onPublishReceived(MqttChannel *channel, const QString 
                 }
                 if (m_powerStateTypeMap.contains(child->deviceClassId())) {
                     child->setStateValue(m_powerStateTypeMap.value(child->deviceClassId()), payload == "ON");
+                }
+                if (child->deviceClassId() == tasmotaSwitchDeviceClassId) {
+                    Event event(tasmotaSwitchPressedEventTypeId, child->id());
+                    emit emitEvent(event);
                 }
             }
         }
