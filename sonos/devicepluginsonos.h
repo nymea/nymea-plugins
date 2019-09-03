@@ -61,13 +61,18 @@ private:
     QByteArray m_sonosConnectionAccessToken;
     QByteArray m_sonosConnectionRefreshToken;
 
+    QHash<QUuid, ActionId> m_pendingActions;
 private slots:
     void onPluginTimer();
-    void onConnectionChanged();
+    void onConnectionChanged(bool connected);
     void onRefreshTimeout();
 
-     void onHouseholdIdsReceived(QList<QByteArray> householdIds);
-
+    void onHouseholdIdsReceived(QList<QString> householdIds);
+    void onGroupsReceived(QList<Sonos::GroupObject> groupIds);
+    void onPlayBackStatusReceived(const QString &groupId, Sonos::PlayBackObject playBack);
+    void onMetadataStatusReceived(const QString &groupId, Sonos::MetadataStatus metaDataStatus);
+    void onVolumeReceived(const QString &groupId, Sonos::GroupVolumeObject groupVolume);
+    void onActionExecuted(QUuid actionId, bool success);
 };
 
 #endif // DEVICEPLUGINSONOS_H

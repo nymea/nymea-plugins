@@ -39,6 +39,13 @@ public:
         RepeatModeNone
     };
 
+    enum PlayBackState {
+        PlayBackStateBuffering,
+        PlayBackStateIdle,
+        PlayBackStatePause,
+        PlayBackStatePlaying
+    };
+
     struct PlayMode {
         bool repeat;
         bool repeatOne;
@@ -50,15 +57,20 @@ public:
 
     };
 
-   /* Represents a Sonos household.*/
-   struct GroupObject {
-       QByteArray CoordinatorId;     //Player acting as the group coordinator for the group
-       QByteArray groupId;           //The ID of the group.
-       QString playbackState;        //The playback state corresponding to the group.
-       QList<QByteArray> playerIds;  //The IDs of the primary players in the group.
-       QString displayName;          //The display name for the group, such as “Living Room” or “Kitchen + 2”.
-   };
+    /* Represents a Sonos household.*/
+    struct GroupObject {
+        QString CoordinatorId;     //Player acting as the group coordinator for the group
+        QString groupId;           //The ID of the group.
+        QString playbackState;        //The playback state corresponding to the group.
+        QList<QByteArray> playerIds;  //The IDs of the primary players in the group.
+        QString displayName;          //The display name for the group, such as “Living Room” or “Kitchen + 2”.
+    };
 
+    struct GroupVolumeObject {
+        int volume; //Group volume as an integer between 0 and 100, inclusive.
+        bool muted; //A value indicating whether or not the group is muted
+        bool fixed; //A value indicating whether or not the group volume is fixed or changeable.
+    };
     /*
      * Represents a Sonos household.*/
     /*struct HouseholdObject {
@@ -100,16 +112,7 @@ public:
         bool monoMode;
         bool wifiDisabled;
     };
-    /*
-     * A single music track or audio file. Tracks are identified by type,
-     * which determines the key values for the object types included.
-     * The following fields are shared by all types of tracks. */
-    struct TrackObject
-    {
-        bool canCrossfade;
-        bool canSkip;
-        int durationMillis;
-    };
+
 
     /* The music object identifier for the item in a music service.
      * This identifies the content within a music service, the music service,
@@ -130,17 +133,6 @@ public:
         bool isVisible;
     };
 
-    /* An item in a queue. Used for cloud queue tracks and radio stations that have track-like data
-     * for the currently playing content. For example, the currentItem and nextItem parameters in the
-     * metadataStatus event are item object types.*/
-    struct ItemObject
-    {
-        QString itemId;
-        TrackObject track;
-        bool deleted;
-        TrackPoliciesObject policies;
-    };
-
     /* The artist of the track. */
     struct ArtistObject
     {
@@ -154,7 +146,6 @@ public:
     {
         QString name;
         ArtistObject artist;
-        //TODO
     };
 
     struct ContainerObject
@@ -167,75 +158,130 @@ public:
         //tags enum
     };
 
+    struct PlayBackObject {
+      QString itemId;
+      bool isDucking;
+      PlayBackState playbackState;
+      PlayMode playMode;
+      uint positionMillis;
+      QString previousItemId;
+      uint previousPositionMillis;
+      QString queueVersion;
+    };
+
+    /*
+     * A single music track or audio file. Tracks are identified by type,
+     * which determines the key values for the object types included.
+     * The following fields are shared by all types of tracks. */
+    struct TrackObject
+    {
+        QString type;
+        QString name;
+        QString imageUrl;
+        int trackNumber;
+        bool canCrossfade;
+        bool canSkip;
+        int durationMillis;
+        ArtistObject artist;
+        AlbumObject album;
+        ServiceObject service;
+    };
+
+    /* An item in a queue. Used for cloud queue tracks and radio stations that have track-like data
+     * for the currently playing content. For example, the currentItem and nextItem parameters in the
+     * metadataStatus event are item object types.*/
+    struct ItemObject
+    {
+        QString itemId;
+        TrackObject track;
+        bool deleted;
+        TrackPoliciesObject policies;
+    };
+
+    struct MetadataStatus {
+        ContainerObject container;
+        ItemObject currentItem;
+        ItemObject nextItem;
+    };
+
     explicit Sonos(NetworkAccessManager *networkManager, const QByteArray &accessToken, QObject *parent = nullptr);
 
     void setAccessToken(const QByteArray &accessToken);
 
     void getHouseholds();
-
-    void cancelAudioClip();
-    void loadAudioClip();
-
     void getFavorites();
-    void loadFavorite();
+    void getGroups(const QString &householdId);
 
-    void getGroups(const QByteArray &householdId);
-    void createGroup(const QByteArray &householdId, QList<QByteArray> playerIds);
-    void modifyGroupMembers();
-    void setGroupMembers(const QByteArray &groupId);
+    QUuid cancelAudioClip();
+    QUuid loadAudioClip();
+    QUuid loadFavorite();
 
-    //group volume
-    void getGroupVolume(const QByteArray &groupId);           //Get the volume and mute state of a group.
-    void setGroupVolume(const QByteArray &groupId, int volume);           //Set group volume to a specific level and unmute the group if muted.
-    void setGroupMute(const QByteArray &groupId, bool mute);    //Mute and unmute the group.
-    void setGroupRelativeVolume(const QByteArray &groupId, int volumeDelta); 	//Increase or decrease group volume.
+    QUuid createGroup(const QString &householdId, QList<QString> playerIds);
+    QUuid modifyGroupMembers();
+    QUuid setGroupMembers(const QString &groupId);
+
+    //Group volume
+    void getGroupVolume(const QString &groupId);                             //Get the volume and mute state of a group.
+    //Group volume actions
+    QUuid setGroupVolume(const QString &groupId, int volume);                //Set group volume to a specific level and unmute the group if muted.
+    QUuid setGroupMute(const QString &groupId, bool mute);                   //Mute and unmute the group.
+    QUuid setGroupRelativeVolume(const QString &groupId, int volumeDelta); 	//Increase or decrease group volume.
 
     //group playback
-    void getGroupPlaybackStatus(const QByteArray &groupId);
-    void groupLoadLineIn(const QByteArray &groupId);
-    void groupPlay(const QByteArray &groupId);
-    void groupPause(const QByteArray &groupId);
-    void groupSeek(const QByteArray &groupId);
-    void groupSeekRelative(const QByteArray &groupId, int deltaMillis);
-    void groupSetPlayModes(const QByteArray &groupId, PlayMode playMode);
-    void groupSetShuffle(const QByteArray &groupId, bool shuffle);
-    void groupSetRepeat(const QByteArray &groupId, RepeatMode repeatMode);
-    void groupSetCrossfade(const QByteArray &groupId, bool crossfade);
+    void getGroupPlaybackStatus(const QString &groupId);
 
-    void groupSkipToNextTrack(const QByteArray &groupId);
-    void groupSkipToPreviousTrack(const QByteArray &groupId);
-    void groupTogglePlayPause(const QByteArray &groupId);
+    //Group playback actions
+    QUuid groupLoadLineIn(const QString &groupId);
+    QUuid groupPlay(const QString &groupId);
+    QUuid groupPause(const QString &groupId);
+    QUuid groupSeek(const QString &groupId, int possitionMillis);
+    QUuid groupSeekRelative(const QString &groupId, int deltaMillis);
+    QUuid groupSetPlayModes(const QString &groupId, PlayMode playMode);
+    QUuid groupSetShuffle(const QString &groupId, bool shuffle);
+    QUuid groupSetRepeat(const QString &groupId, RepeatMode repeatMode);
+    QUuid groupSetCrossfade(const QString &groupId, bool crossfade);
+    QUuid groupSkipToNextTrack(const QString &groupId);
+    QUuid groupSkipToPreviousTrack(const QString &groupId);
+    QUuid groupTogglePlayPause(const QString &groupId);
 
     //playbackMetadata
+    void getGroupMetadataStatus(const QString &groupId);
 
     // playerVolume
     void getPlayerVolume(const QByteArray &playerId);
-    void setPlayerVolume(const QByteArray &playerId, int volume);
-    void setPlayerRelativeVolume(const QByteArray &playerId, int volumeDelta);
-    void setPlayerMute(const QByteArray &playerId, bool mute);
+    QUuid setPlayerVolume(const QByteArray &playerId, int volume);
+    QUuid setPlayerRelativeVolume(const QByteArray &playerId, int volumeDelta);
+    QUuid setPlayerMute(const QByteArray &playerId, bool mute);
 
     //Playlists API namespace
     void getPlaylist();
     void getPlaylists();
-    void loadPlaylist();
+    QUuid loadPlaylist();
 
     //Settings
     void getPlayerSettings();
-    void setPlayerSettings();
+    QUuid setPlayerSettings();
 
 private:
     QByteArray m_baseAuthorizationUrl = "https://api.sonos.com/login/v3/oauth";
     QByteArray m_baseControlUrl = "https://api.ws.sonos.com/control/api/v1";
-    QByteArray m_accessToken;
     QByteArray m_apiKey = "b15cbf8c-a39c-47aa-bd93-635a96e9696c";
+    QByteArray m_accessToken;
 
     NetworkAccessManager *m_networkManager = nullptr;
 private slots:
 
 
 signals:
-    void householdIdsReceived(QList<QByteArray> householdIds);
+    void connectionChanged(bool connected);
+    void householdIdsReceived(QList<QString> householdIds);
     void groupsReceived(QList<GroupObject> groups);
+
+    void playBackStatusReceived(const QString &groupId, PlayBackObject playBack);
+    void metadataStatusReceived(const QString &groupId, MetadataStatus metaDataStatus);
+    void volumeReceived(const QString &groupId, GroupVolumeObject groupVolume);
+
+    void actionExecuted(QUuid actionId,bool success);
 
 };
 

@@ -45,7 +45,8 @@ DevicePluginSonos::~DevicePluginSonos()
 Device::DeviceSetupStatus DevicePluginSonos::setupDevice(Device *device)
 {
     if (!m_pluginTimer) {
-        hardwareManager()->pluginTimerManager()->registerTimer(1);
+        hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginSonos::onPluginTimer);
     }
 
     if(!m_tokenRefreshTimer) {
@@ -62,19 +63,25 @@ Device::DeviceSetupStatus DevicePluginSonos::setupDevice(Device *device)
         pluginStorage()->endGroup();
 
         Sonos *sonos = new Sonos(hardwareManager()->networkManager(), accessToken, this);
+        connect(sonos, &Sonos::connectionChanged, this, &DevicePluginSonos::onConnectionChanged);
+        connect(sonos, &Sonos::householdIdsReceived, this, &DevicePluginSonos::onHouseholdIdsReceived);
+        connect(sonos, &Sonos::groupsReceived, this, &DevicePluginSonos::onGroupsReceived);
+        connect(sonos, &Sonos::playBackStatusReceived, this, &DevicePluginSonos::onPlayBackStatusReceived);
+        connect(sonos, &Sonos::metadataStatusReceived, this, &DevicePluginSonos::onMetadataStatusReceived);
+        connect(sonos, &Sonos::volumeReceived, this, &DevicePluginSonos::onVolumeReceived);
+        connect(sonos, &Sonos::actionExecuted, this, &DevicePluginSonos::onActionExecuted);
         m_sonosConnections.insert(device, sonos);
     }
 
     if (device->deviceClassId() == sonosGroupDeviceClassId) {
 
-        //set parent ID
+
     }
     return Device::DeviceSetupStatusSuccess;
 }
 
 DevicePairingInfo DevicePluginSonos::pairDevice(DevicePairingInfo &devicePairingInfo)
 {
-
     if (devicePairingInfo.deviceClassId() == sonosConnectionDeviceClassId) {
         QString clientId = "b15cbf8c-a39c-47aa-bd93-635a96e9696c";
         QString clientSecret = "c086ba71-e562-430b-a52f-867c6482fd11";
@@ -153,11 +160,12 @@ DevicePairingInfo DevicePluginSonos::confirmPairing(DevicePairingInfo &devicePai
             pluginStorage()->setValue("refresh_token", refreshToken);
             pluginStorage()->endGroup();
 
-            /*if (jsonDoc.toVariant().toMap().contains("expires_in")) {
+            if (jsonDoc.toVariant().toMap().contains("expires_in")) {
                 int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
                 qCDebug(dcSonos()) << "expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
-                m_tokenRefreshTimer->start((expireTime - 20) * 1000);
-            }*/
+                //m_tokenRefreshTimer->start((expireTime - 20) * 1000);
+                //TODO
+            }
 
             info.setStatus(Device::DeviceErrorNoError);
             emit pairingFinished(info);
@@ -179,7 +187,15 @@ void DevicePluginSonos::postSetupDevice(Device *device)
     }
 
     if (device->deviceClassId() == sonosGroupDeviceClassId) {
-
+        Device *parentDevice = myDevices().findById(device->parentId());
+        Sonos *sonos = m_sonosConnections.value(parentDevice);
+        if (!sonos) {
+            return;
+        }
+        QString groupId = device->paramValue(sonosGroupDeviceGroupIdParamTypeId).toString();
+        sonos->getGroupPlaybackStatus(groupId);
+        sonos->getGroupMetadataStatus(groupId);
+        sonos->getGroupVolume(groupId);
     }
 }
 
@@ -188,7 +204,7 @@ void DevicePluginSonos::startMonitoringAutoDevices()
 {
     foreach (Device *device, myDevices()) {
         if (device->deviceClassId() == sonosGroupDeviceClassId) {
-            return; // We already have a Auto Mock device... do nothing.
+            return;
         }
     }
 }
@@ -197,13 +213,14 @@ void DevicePluginSonos::deviceRemoved(Device *device)
 {
     qCDebug(dcSonos) << "Delete " << device->name();
     if (myDevices().empty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
     }
 }
 
 
 Device::DeviceError DevicePluginSonos::executeAction(Device *device, const Action &action)
 {
-    Q_UNUSED(action)
     if (device->deviceClassId() == sonosGroupDeviceClassId) {
         Sonos *sonos = m_sonosConnections.value(device);
         QByteArray groupId = device->paramValue(sonosGroupDeviceGroupIdParamTypeId).toByteArray();
@@ -237,29 +254,41 @@ Device::DeviceError DevicePluginSonos::executeAction(Device *device, const Actio
         }
 
         if (action.actionTypeId() == sonosGroupPauseActionTypeId) {
-            sonos->groupPause(groupId);
-            return Device::DeviceErrorNoError;
+            m_pendingActions.insert(sonos->groupPause(groupId), action.id());
+            return Device::DeviceErrorAsync;
         }
 
         if (action.actionTypeId() == sonosGroupStopActionTypeId) {
-            sonos->groupPause(groupId);
-            return Device::DeviceErrorNoError;
+            m_pendingActions.insert(sonos->groupPause(groupId), action.id());
+            return Device::DeviceErrorAsync;
         }
 
         if (action.actionTypeId() == sonosGroupMuteActionTypeId) {
             bool mute = action.param(sonosGroupMuteActionMuteParamTypeId).value().toBool();
-            sonos->setGroupMute(groupId, mute);
-            return Device::DeviceErrorNoError;
+            m_pendingActions.insert(sonos->setGroupMute(groupId, mute), action.id());
+            return Device::DeviceErrorAsync;
         }
 
         if (action.actionTypeId() == sonosGroupSkipNextActionTypeId) {
-            sonos->groupSkipToNextTrack(groupId);
-            return Device::DeviceErrorNoError;
+            m_pendingActions.insert(sonos->groupSkipToNextTrack(groupId), action.id());
+            return Device::DeviceErrorAsync;
         }
 
         if (action.actionTypeId() == sonosGroupSkipBackActionTypeId) {
-            sonos->groupSkipToPreviousTrack(groupId);
-            return Device::DeviceErrorNoError;
+            m_pendingActions.insert(sonos->groupSkipToPreviousTrack(groupId), action.id());
+            return Device::DeviceErrorAsync;
+        }
+
+        if (action.actionTypeId() == sonosGroupPlaybackStatusActionTypeId) {
+            QString playbackStatus = action.param(sonosGroupPlaybackStatusActionPlaybackStatusParamTypeId).value().toString();
+            if (playbackStatus == "Playing") {
+                sonos->groupPlay(groupId);
+            } else if(playbackStatus == "Stopped") {
+                sonos->groupPause(groupId);
+            } else if(playbackStatus == "Paused") {
+                sonos->groupPause(groupId);
+            }
+            return Device::DeviceErrorAsync;
         }
         return Device::DeviceErrorActionTypeNotFound;
     }
@@ -267,16 +296,36 @@ Device::DeviceError DevicePluginSonos::executeAction(Device *device, const Actio
 }
 
 void DevicePluginSonos::onPluginTimer()
-{
+{    
+    foreach (Device *device, myDevices().filterByDeviceClassId(sonosConnectionDeviceClassId)) {
+
+        //get groups for each household in order to add or remove groups
+        Sonos *sonos = m_sonosConnections.value(device);
+        if (!sonos)
+            continue;
+        sonos->getHouseholds();
+
+        foreach (Device *groupDevice, myDevices().filterByParentDeviceId(device->id())) {
+            if (device->deviceClassId() == sonosGroupDeviceClassId) {
+                //get playback status of each group
+                QByteArray groupId = groupDevice->paramValue(sonosGroupDeviceGroupIdParamTypeId).toByteArray();
+                sonos->getGroupPlaybackStatus(groupId);
+                sonos->getGroupMetadataStatus(groupId);
+                sonos->getGroupVolume(groupId);
+            }
+        }
+    }
 }
 
-void DevicePluginSonos::onConnectionChanged()
+void DevicePluginSonos::onConnectionChanged(bool connected)
 {
     Sonos *sonos = static_cast<Sonos *>(sender());
     Device *device = m_sonosConnections.key(sonos);
-    device->setStateValue(sonosConnectionConnectedStateTypeId, false); //TODO
+    device->setStateValue(sonosConnectionConnectedStateTypeId, connected);
 
-    //TODO set all groups
+    foreach (Device *groupDevice, myDevices().filterByParentDeviceId(device->id())) {
+        groupDevice->setStateValue(sonosGroupConnectedStateTypeId, connected);
+    }
 }
 
 void DevicePluginSonos::onRefreshTimeout()
@@ -310,11 +359,89 @@ void DevicePluginSonos::onRefreshTimeout()
     });
 }
 
-void DevicePluginSonos::onHouseholdIdsReceived(QList<QByteArray> householdIds)
+void DevicePluginSonos::onHouseholdIdsReceived(QList<QString> householdIds)
 {
-    qDebug(dcSonos()) << "Household Id received, start to discover groups";
     Sonos *sonos = static_cast<Sonos *>(sender());
-    foreach(QByteArray householdId, householdIds) {
+    foreach(QString householdId, householdIds) {
         sonos->getGroups(householdId);
+    }
+}
+
+void DevicePluginSonos::onGroupsReceived(QList<Sonos::GroupObject> groupObjects)
+{
+    Sonos *sonos = static_cast<Sonos *>(sender());
+    Device *parentDevice = m_sonosConnections.key(sonos);
+    if (!parentDevice)
+        return;
+
+    QList<DeviceDescriptor> deviceDescriptors;
+    foreach(Sonos::GroupObject groupObject, groupObjects) {
+        if (!myDevices().filterByParam(sonosGroupDeviceGroupIdParamTypeId, groupObject.groupId).isEmpty()) {
+            continue;
+        }
+        DeviceDescriptor deviceDescriptor(sonosGroupDeviceClassId, groupObject.displayName, "Sonos Group", parentDevice->id());
+        ParamList params;
+        params.append(Param(sonosGroupDeviceGroupIdParamTypeId, groupObject.groupId));
+        deviceDescriptor.setParams(params);
+        deviceDescriptors.append(deviceDescriptor);
+    }
+
+    if (!deviceDescriptors.isEmpty())
+        emit autoDevicesAppeared(sonosGroupDeviceClassId, deviceDescriptors);
+}
+
+void DevicePluginSonos::onPlayBackStatusReceived(const QString &groupId, Sonos::PlayBackObject playBack)
+{
+    qDebug(dcSonos()) << "Playback status received" << playBack.playbackState;
+    Device *device = myDevices().findByParams(ParamList() << Param(sonosGroupDeviceGroupIdParamTypeId, groupId));
+    if (!device)
+        return;
+
+    switch (playBack.playbackState) {
+    case Sonos::PlayBackStateIdle:
+        device->setStateValue(sonosGroupPlaybackStatusStateTypeId, "Stopped");
+        break;
+    case Sonos::PlayBackStatePause:
+        device->setStateValue(sonosGroupPlaybackStatusStateTypeId, "Paused");
+        break;
+    case Sonos::PlayBackStateBuffering:
+    case Sonos::PlayBackStatePlaying:
+        device->setStateValue(sonosGroupPlaybackStatusStateTypeId, "Playing");
+        break;
+    }
+}
+
+void DevicePluginSonos::onMetadataStatusReceived(const QString &groupId, Sonos::MetadataStatus metaDataStatus)
+{
+    Device *device = myDevices().findByParams(ParamList() << Param(sonosGroupDeviceGroupIdParamTypeId, groupId));
+    if (!device)
+        return;
+
+    device->setStateValue(sonosGroupTitleStateTypeId, metaDataStatus.currentItem.track.name);
+    device->setStateValue(sonosGroupArtistStateTypeId, metaDataStatus.currentItem.track.artist.name);
+    device->setStateValue(sonosGroupCollectionStateTypeId, metaDataStatus.currentItem.track.album.name);
+    //device->setStateValue(sonosGroupArtworkStateTypeId, metaDataStatus.currentItem.track.imageUrl);
+    device->setStateValue(sonosGroupArtworkStateTypeId, metaDataStatus.container.imageUrl);
+}
+
+void DevicePluginSonos::onVolumeReceived(const QString &groupId, Sonos::GroupVolumeObject groupVolume)
+{
+    Device *device = myDevices().findByParams(ParamList() << Param(sonosGroupDeviceGroupIdParamTypeId, groupId));
+    if (!device)
+        return;
+
+    device->setStateValue(sonosGroupVolumeStateTypeId, groupVolume.volume);
+    device->setStateValue(sonosGroupMuteStateTypeId, groupVolume.muted);
+}
+
+void DevicePluginSonos::onActionExecuted(QUuid sonosActionId, bool success)
+{
+    if (m_pendingActions.contains(sonosActionId)) {
+        ActionId nymeaActionId = m_pendingActions.value(sonosActionId);
+        if (success) {
+            emit actionExecutionFinished(nymeaActionId, Device::DeviceErrorNoError);
+        } else {
+            emit actionExecutionFinished(nymeaActionId, Device::DeviceErrorHardwareFailure);
+        }
     }
 }
