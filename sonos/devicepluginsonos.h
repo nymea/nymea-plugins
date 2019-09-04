@@ -52,7 +52,8 @@ public:
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_pluginTimer5sec = nullptr;
+    PluginTimer *m_pluginTimer60sec = nullptr;
     QTimer *m_tokenRefreshTimer = nullptr;
 
     QHash<Device *, Sonos *> m_sonosConnections;
@@ -63,15 +64,18 @@ private:
 
     QHash<QUuid, ActionId> m_pendingActions;
 private slots:
-    void onPluginTimer();
     void onConnectionChanged(bool connected);
     void onRefreshTimeout();
 
     void onHouseholdIdsReceived(QList<QString> householdIds);
+    void onFavouritesReceived(const QString &householdId, QList<Sonos::FavouriteObject> favourites);
+    void onPlaylistsReceived(const QString &householdId, QList<Sonos::PlaylistObject> playlists);
+    void onPlaylistSummaryReceived(const QString &householdId, Sonos::PlaylistSummaryObject playlistSummary);
+
     void onGroupsReceived(QList<Sonos::GroupObject> groupIds);
     void onPlayBackStatusReceived(const QString &groupId, Sonos::PlayBackObject playBack);
     void onMetadataStatusReceived(const QString &groupId, Sonos::MetadataStatus metaDataStatus);
-    void onVolumeReceived(const QString &groupId, Sonos::GroupVolumeObject groupVolume);
+    void onVolumeReceived(const QString &groupId, Sonos::VolumeObject groupVolume);
     void onActionExecuted(QUuid actionId, bool success);
 };
 

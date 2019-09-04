@@ -53,10 +53,6 @@ public:
         bool crossfade;
     };
 
-    struct PlayerObject {
-
-    };
-
     /* Represents a Sonos household.*/
     struct GroupObject {
         QString CoordinatorId;     //Player acting as the group coordinator for the group
@@ -66,17 +62,11 @@ public:
         QString displayName;          //The display name for the group, such as “Living Room” or “Kitchen + 2”.
     };
 
-    struct GroupVolumeObject {
+    struct VolumeObject {
         int volume; //Group volume as an integer between 0 and 100, inclusive.
         bool muted; //A value indicating whether or not the group is muted
         bool fixed; //A value indicating whether or not the group volume is fixed or changeable.
     };
-    /*
-     * Represents a Sonos household.*/
-    /*struct HouseholdObject {
-        QString id;         //Identifies a Sonos household.
-        QString name;       //A user-displayable name of the Sonos household
-    };*/
 
     /*
      * The music service identifier or a pseudo-service identifier in the case of local library. */
@@ -95,6 +85,7 @@ public:
         QString name;
         QString description;
         QString imageUrl;
+        ServiceObject service;
     };
 
     struct PlaylistObject
@@ -107,8 +98,8 @@ public:
 
     struct PlayerSettingsObject
     {
-        int volumeMode;
-        float volumeScalingFactor;
+        QString volumeMode;
+        double volumeScalingFactor;
         bool monoMode;
         bool wifiDisabled;
     };
@@ -173,8 +164,7 @@ public:
      * A single music track or audio file. Tracks are identified by type,
      * which determines the key values for the object types included.
      * The following fields are shared by all types of tracks. */
-    struct TrackObject
-    {
+    struct TrackObject {
         QString type;
         QString name;
         QString imageUrl;
@@ -190,8 +180,7 @@ public:
     /* An item in a queue. Used for cloud queue tracks and radio stations that have track-like data
      * for the currently playing content. For example, the currentItem and nextItem parameters in the
      * metadataStatus event are item object types.*/
-    struct ItemObject
-    {
+    struct ItemObject {
         QString itemId;
         TrackObject track;
         bool deleted;
@@ -204,21 +193,28 @@ public:
         ItemObject nextItem;
     };
 
+    struct PlaylistTrackObject {
+        QString name;
+        QString artist;
+        QString album;
+    };
+
+    struct PlaylistSummaryObject {
+        QString id;
+        QString name;
+        QString type;
+        QList<PlaylistTrackObject> tracks;
+    };
+
     explicit Sonos(NetworkAccessManager *networkManager, const QByteArray &accessToken, QObject *parent = nullptr);
 
     void setAccessToken(const QByteArray &accessToken);
 
     void getHouseholds();
-    void getFavorites();
+    void getFavorites(const QString &householdId);
     void getGroups(const QString &householdId);
 
-    QUuid cancelAudioClip();
-    QUuid loadAudioClip();
-    QUuid loadFavorite();
-
-    QUuid createGroup(const QString &householdId, QList<QString> playerIds);
-    QUuid modifyGroupMembers();
-    QUuid setGroupMembers(const QString &groupId);
+    QUuid loadFavorite(const QString &groupId, const QString &favouriteId);
 
     //Group volume
     void getGroupVolume(const QString &groupId);                             //Get the volume and mute state of a group.
@@ -254,13 +250,13 @@ public:
     QUuid setPlayerMute(const QByteArray &playerId, bool mute);
 
     //Playlists API namespace
-    void getPlaylist();
-    void getPlaylists();
-    QUuid loadPlaylist();
+    void getPlaylists(const QString &householdId);
+    void getPlaylist(const QString &householdId, const QString &playlistId);
+    QUuid loadPlaylist(const QString &groupId, const QString &playlistId);
 
     //Settings
-    void getPlayerSettings();
-    QUuid setPlayerSettings();
+    void getPlayerSettings(const QString &playerId);
+    QUuid setPlayerSettings(const QString &playerId, PlayerSettingsObject settings);
 
 private:
     QByteArray m_baseAuthorizationUrl = "https://api.sonos.com/login/v3/oauth";
@@ -275,12 +271,17 @@ private slots:
 signals:
     void connectionChanged(bool connected);
     void householdIdsReceived(QList<QString> householdIds);
+    void favouritesReceived(const QString &householdId, QList<FavouriteObject> favourites);
+    void playlistsReceived(const QString &householdId, QList<PlaylistObject> playlists);
     void groupsReceived(QList<GroupObject> groups);
+    void playlistSummaryReceived(const QString &householdId, PlaylistSummaryObject playlistSummary);
 
     void playBackStatusReceived(const QString &groupId, PlayBackObject playBack);
     void metadataStatusReceived(const QString &groupId, MetadataStatus metaDataStatus);
-    void volumeReceived(const QString &groupId, GroupVolumeObject groupVolume);
+    void volumeReceived(const QString &groupId, VolumeObject groupVolume);
 
+    void playerVolumeReceived(const QString &playerId, VolumeObject playerVolume);
+    void playerSettingsRecieved(const QString &playerId, PlayerSettingsObject playerSettings);
     void actionExecuted(QUuid actionId,bool success);
 
 };
