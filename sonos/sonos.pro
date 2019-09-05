@@ -11,5 +11,3 @@ SOURCES += \
 HEADERS += \
     devicepluginsonos.h \
     sonos.h \
-
-

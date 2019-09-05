@@ -26,17 +26,46 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QUrlQuery>
 
-Sonos::Sonos(NetworkAccessManager *networkmanager, const QByteArray &accessToken, QObject *parent) :
+Sonos::Sonos(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,  const QByteArray &clientSecret, const QByteArray &refreshToken,  QObject *parent) :
     QObject(parent),
-    m_accessToken(accessToken),
+    m_clientKey(clientKey),
+    m_clientSecret(clientSecret),
+    m_refreshToken(refreshToken),
     m_networkManager(networkmanager)
 {
+    if(!m_tokenRefreshTimer) {
+        m_tokenRefreshTimer = new QTimer(this);
+        m_tokenRefreshTimer->setSingleShot(true);
+        connect(m_tokenRefreshTimer, &QTimer::timeout, this, &Sonos::onRefreshTimeout);
+    }
 }
 
-void Sonos::setAccessToken(const QByteArray &accessToken)
+QUrl Sonos::getLoginUrl(const QUrl &redirectUrl)
 {
-    m_accessToken = accessToken;
+    QString clientId = "b15cbf8c-a39c-47aa-bd93-635a96e9696c";
+
+    QUrl url("https://api.sonos.com/login/v3/oauth");
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("client_id", clientId);
+    queryParams.addQueryItem("redirect_uri", redirectUrl.toString());
+    queryParams.addQueryItem("response_type", "code");
+    queryParams.addQueryItem("scope", "playback-control-all");
+    queryParams.addQueryItem("state", QUuid::createUuid().toString());
+    url.setQuery(queryParams);
+
+    return url;
+}
+
+QByteArray Sonos::accessToken()
+{
+    return m_accessToken;
+}
+
+QByteArray Sonos::refreshToken()
+{
+    return m_refreshToken;
 }
 
 void Sonos::getHouseholds()
@@ -44,7 +73,7 @@ void Sonos::getHouseholds()
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/households"));
     QNetworkReply *reply = m_networkManager->get(request);
     qDebug(dcSonos()) << "Sending request" << request.url() << request.rawHeaderList() << request.rawHeader("Authorization");
@@ -53,6 +82,12 @@ void Sonos::getHouseholds()
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         connectionChanged(true);
+
+        if (status == 401) {
+            //Authentication required
+            getAccessTokenFromRefreshToken(m_refreshToken);
+            return;
+        }
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
@@ -82,7 +117,7 @@ QUuid Sonos::loadFavorite(const QString &groupId, const QString &favouriteId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/favourites"));
     QUuid actionId = QUuid::createUuid();
 
@@ -90,7 +125,7 @@ QUuid Sonos::loadFavorite(const QString &groupId, const QString &favouriteId)
     object.insert("favoriteId", QJsonValue::fromVariant(favouriteId));
     QJsonDocument doc(object);
 
-    QNetworkReply *reply = m_networkManager->post(request, doc.toBinaryData());
+    QNetworkReply *reply = m_networkManager->post(request, doc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, this, [reply, actionId, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -101,8 +136,6 @@ QUuid Sonos::loadFavorite(const QString &groupId, const QString &favouriteId)
             emit actionExecuted(actionId, false);
             return;
         }
-
-        //TODO parse response
         emit actionExecuted(actionId, true);
     });
     return actionId;
@@ -113,7 +146,7 @@ void Sonos::getFavorites(const QString &householdId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/households/" + householdId + "/favorites"));
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, householdId, this] {
@@ -126,7 +159,6 @@ void Sonos::getFavorites(const QString &householdId)
             return;
         }
 
-        //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
         if (!data.isObject())
             return;
@@ -156,10 +188,10 @@ void Sonos::getGroups(const QString &householdId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/households/" + householdId + "/groups"));
     QNetworkReply *reply = m_networkManager->get(request);
-    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+    connect(reply, &QNetworkReply::finished, this, [reply, householdId, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
@@ -187,7 +219,7 @@ void Sonos::getGroups(const QString &householdId)
             group.displayName = obj["name"].toString();
             groupObjects.append(group);
         }
-        emit groupsReceived(groupObjects);
+        emit groupsReceived(householdId, groupObjects);
     });
 }
 
@@ -196,7 +228,7 @@ void Sonos::getGroupVolume(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/groupVolume"));
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, groupId, this] {
@@ -229,7 +261,7 @@ QUuid Sonos::setGroupVolume(const QString &groupId, int volume)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/groupVolume"));
     QUuid actionId = QUuid::createUuid();
 
@@ -260,7 +292,7 @@ QUuid Sonos::setGroupMute(const QString &groupId, bool mute)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/groupVolume/mute"));
     QUuid actionId = QUuid::createUuid();
 
@@ -292,7 +324,7 @@ QUuid Sonos::setGroupRelativeVolume(const QString &groupId, int volumeDelta)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/groupVolume/relative"));
     QUuid actionId = QUuid::createUuid();
 
@@ -324,7 +356,7 @@ void Sonos::getGroupPlaybackStatus(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback"));
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, this, groupId] {
@@ -378,7 +410,7 @@ QUuid Sonos::groupLoadLineIn(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/lineIn"));
     QUuid actionId = QUuid::createUuid();
 
@@ -404,7 +436,7 @@ QUuid Sonos::groupPlay(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/play"));
     QUuid actionId = QUuid::createUuid();
 
@@ -432,7 +464,7 @@ QUuid Sonos::groupPause(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/pause"));
     QUuid actionId = QUuid::createUuid();
 
@@ -461,7 +493,7 @@ QUuid Sonos::groupSeek(const QString &groupId, int possitionMillis)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/seek"));
     QUuid actionId = QUuid::createUuid();
 
@@ -490,7 +522,7 @@ QUuid Sonos::groupSeekRelative(const QString &groupId, int deltaMillis)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/seekRelative"));
     QUuid actionId = QUuid::createUuid();
 
@@ -519,7 +551,7 @@ QUuid Sonos::groupSetPlayModes(const QString &groupId, PlayMode playMode)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/playMode"));
     QUuid actionId = QUuid::createUuid();
 
@@ -554,7 +586,7 @@ QUuid Sonos::groupSetShuffle(const QString &groupId, bool shuffle)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/playMode"));
     QUuid actionId = QUuid::createUuid();
 
@@ -586,7 +618,7 @@ QUuid Sonos::groupSetRepeat(const QString &groupId, RepeatMode repeatMode)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/playMode"));
     QUuid actionId = QUuid::createUuid();
 
@@ -630,7 +662,7 @@ QUuid Sonos::groupSetCrossfade(const QString &groupId, bool crossfade)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/playMode"));
     QUuid actionId = QUuid::createUuid();
 
@@ -662,7 +694,7 @@ QUuid Sonos::groupSkipToNextTrack(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/skipToNextTrack"));
     QUuid actionId = QUuid::createUuid();
 
@@ -688,7 +720,7 @@ QUuid Sonos::groupSkipToPreviousTrack(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/skipToPreviousTrack"));
     QUuid actionId = QUuid::createUuid();
 
@@ -714,7 +746,7 @@ QUuid Sonos::groupTogglePlayPause(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playback/togglePlayPause"));
     QUuid actionId = QUuid::createUuid();
 
@@ -740,7 +772,7 @@ void Sonos::getGroupMetadataStatus(const QString &groupId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playbackMetadata"));
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, groupId, this] {
@@ -871,7 +903,7 @@ void Sonos::getPlayerVolume(const QByteArray &playerId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/players/" + playerId + "/playerVolume"));
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, playerId, this] {
@@ -902,7 +934,7 @@ QUuid Sonos::setPlayerVolume(const QByteArray &playerId, int volume)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/players/" + playerId + "/playerVolume"));
     QUuid actionId = QUuid::createUuid();
 
@@ -934,7 +966,7 @@ QUuid Sonos::setPlayerRelativeVolume(const QByteArray &playerId, int volumeDelta
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/players/" + playerId + "/playerVolume/relative"));
     QUuid actionId = QUuid::createUuid();
 
@@ -964,7 +996,7 @@ QUuid Sonos::setPlayerMute(const QByteArray &playerId, bool mute)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/players/" + playerId + "/playerVolume"));
     QUuid actionId = QUuid::createUuid();
 
@@ -994,7 +1026,7 @@ void Sonos::getPlaylist(const QString &householdId, const QString &playlistId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/households/" + householdId + "/playlists/getPlaylist"));
 
 
@@ -1041,7 +1073,7 @@ void Sonos::getPlaylists(const QString &householdId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/households/" + householdId + "/playlists"));
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, householdId, this] {
@@ -1083,7 +1115,7 @@ QUuid Sonos::loadPlaylist(const QString &groupId, const QString &playlistId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/playlists"));
     QUuid actionId = QUuid::createUuid();
 
@@ -1112,7 +1144,7 @@ void Sonos::getPlayerSettings(const QString &playerId)
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/players/" + playerId + "/settings/player"));
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, playerId, this] {
@@ -1142,7 +1174,7 @@ QUuid Sonos::setPlayerSettings(const QString &playerId, PlayerSettingsObject set
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
-    request.setRawHeader("X-Sonos-Api-Key", m_apiKey);
+    request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/players/" + playerId + "/settings/player"));
     QUuid actionId = QUuid::createUuid();
 
@@ -1168,4 +1200,92 @@ QUuid Sonos::setPlayerSettings(const QString &playerId, PlayerSettingsObject set
         emit actionExecuted(actionId, true);
     });
     return actionId;
+}
+
+void Sonos::onRefreshTimeout()
+{
+    qCDebug(dcSonos) << "Refresh authentication token";
+    getAccessTokenFromRefreshToken(m_refreshToken);
+}
+
+
+void Sonos::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
+{
+    QUrlQuery query;
+    query.addQueryItem("grant_type", "refresh_token");
+    query.addQueryItem("refresh_token", refreshToken);
+
+    QUrl url("https://api.sonos.com/login/v3/oauth");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded; charset=UTF-8");
+    QNetworkReply *reply = m_networkManager->post(request, QByteArray());
+    connect(reply, &QNetworkReply::finished, this, [this, reply](){
+        reply->deleteLater();
+
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        qCDebug(dcSonos()) << "Sonos accessToken reply:" << this << reply->error() << reply->errorString() << jsonDoc.toJson();
+        if(!jsonDoc.toVariant().toMap().contains("access_token")) {
+            emit authenticationStatusChanged(false);
+            return;
+        }
+        qCDebug(dcSonos()) << "Access token:" << jsonDoc.toVariant().toMap().value("access_token").toString();
+        m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
+
+        if (jsonDoc.toVariant().toMap().contains("expires_in")) {
+            int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
+            qCDebug(dcSonos()) << "expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
+            if (!m_tokenRefreshTimer) {
+                qWarning(dcSonos()) << "Token refresh timer not initialized";
+                return;
+            }
+            m_tokenRefreshTimer->start((expireTime - 20) * 1000);
+        }
+        emit authenticationStatusChanged(true);;
+    });
+}
+
+void Sonos::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode)
+{
+    // Obtaining access token
+    QUrl url = QUrl(m_baseAuthorizationUrl);
+    QUrlQuery query;
+    query.clear();
+    query.addQueryItem("grant_type", "authorization_code");
+    query.addQueryItem("code", authorizationCode);
+    query.addQueryItem("redirect_uri", "https%3A%2F%2F127.0.0.1%3A8888");
+    url.setQuery(query);
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded;charset=utf-8");
+
+    QByteArray auth = QByteArray(m_clientKey + ':' + m_clientSecret).toBase64(QByteArray::Base64Encoding | QByteArray::KeepTrailingEquals);
+    request.setRawHeader("Authorization", QString("Basic %1").arg(QString(auth)).toUtf8());
+
+    QNetworkReply *reply = m_networkManager->post(request, QByteArray());
+    connect(reply, &QNetworkReply::finished, this, [this, reply](){
+        reply->deleteLater();
+
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        qCDebug(dcSonos()) << "Sonos accessToken reply:" << this << reply->error() << reply->errorString() << jsonDoc.toJson();
+        if(!jsonDoc.toVariant().toMap().contains("access_token") || !jsonDoc.toVariant().toMap().contains("refresh_token") ) {
+            emit authenticationStatusChanged(false);;
+            return;
+        }
+        qCDebug(dcSonos()) << "Access token:" << jsonDoc.toVariant().toMap().value("access_token").toString();
+        m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
+
+        qCDebug(dcSonos()) << "Refresh token:" << jsonDoc.toVariant().toMap().value("refresh_token").toString();
+        m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();
+
+        if (jsonDoc.toVariant().toMap().contains("expires_in")) {
+            int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
+            qCDebug(dcSonos()) << "expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
+            if (!m_tokenRefreshTimer) {
+                qWarning(dcSonos()) << "Token refresh timer not initialized";
+                return;
+            }
+            m_tokenRefreshTimer->start((expireTime - 20) * 1000);
+        }
+        emit authenticationStatusChanged(true);;
+    });
 }

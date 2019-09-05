@@ -29,8 +29,6 @@
 
 #include <QHash>
 #include <QDebug>
-#include <QTimer>
-
 
 class DevicePluginSonos : public DevicePlugin
 {
@@ -54,8 +52,8 @@ public:
 private:
     PluginTimer *m_pluginTimer5sec = nullptr;
     PluginTimer *m_pluginTimer60sec = nullptr;
-    QTimer *m_tokenRefreshTimer = nullptr;
 
+     QHash<DeviceId, Sonos *> m_setupSonosConnections;
     QHash<Device *, Sonos *> m_sonosConnections;
     QList<QByteArray> m_householdIds;
 
@@ -63,16 +61,17 @@ private:
     QByteArray m_sonosConnectionRefreshToken;
 
     QHash<QUuid, ActionId> m_pendingActions;
+
 private slots:
     void onConnectionChanged(bool connected);
-    void onRefreshTimeout();
+    void onAuthenticationStatusChanged(bool authenticated);
 
     void onHouseholdIdsReceived(QList<QString> householdIds);
     void onFavouritesReceived(const QString &householdId, QList<Sonos::FavouriteObject> favourites);
     void onPlaylistsReceived(const QString &householdId, QList<Sonos::PlaylistObject> playlists);
     void onPlaylistSummaryReceived(const QString &householdId, Sonos::PlaylistSummaryObject playlistSummary);
 
-    void onGroupsReceived(QList<Sonos::GroupObject> groupIds);
+    void onGroupsReceived(const QString &householdId, QList<Sonos::GroupObject> groupIds);
     void onPlayBackStatusReceived(const QString &groupId, Sonos::PlayBackObject playBack);
     void onMetadataStatusReceived(const QString &groupId, Sonos::MetadataStatus metaDataStatus);
     void onVolumeReceived(const QString &groupId, Sonos::VolumeObject groupVolume);

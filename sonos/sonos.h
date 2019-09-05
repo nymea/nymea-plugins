@@ -24,6 +24,7 @@
 #define SONOS_H
 
 #include <QObject>
+#include <QTimer>
 
 #include "network/networkaccessmanager.h"
 #include "devices/device.h"
@@ -150,14 +151,14 @@ public:
     };
 
     struct PlayBackObject {
-      QString itemId;
-      bool isDucking;
-      PlayBackState playbackState;
-      PlayMode playMode;
-      uint positionMillis;
-      QString previousItemId;
-      uint previousPositionMillis;
-      QString queueVersion;
+        QString itemId;
+        bool isDucking;
+        PlayBackState playbackState;
+        PlayMode playMode;
+        uint positionMillis;
+        QString previousItemId;
+        uint previousPositionMillis;
+        QString queueVersion;
     };
 
     /*
@@ -206,9 +207,13 @@ public:
         QList<PlaylistTrackObject> tracks;
     };
 
-    explicit Sonos(NetworkAccessManager *networkManager, const QByteArray &accessToken, QObject *parent = nullptr);
+    explicit Sonos(NetworkAccessManager *networkManager, const QByteArray &clientId,  const QByteArray &clientSecret, const QByteArray &refreshToken = "", QObject *parent = nullptr);
 
-    void setAccessToken(const QByteArray &accessToken);
+    QUrl getLoginUrl(const QUrl &redirectUrl);
+    QByteArray accessToken();
+    QByteArray refreshToken();
+    void getAccessTokenFromRefreshToken(const QByteArray &refreshToken);
+    void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
 
     void getHouseholds();
     void getFavorites(const QString &householdId);
@@ -259,21 +264,27 @@ public:
     QUuid setPlayerSettings(const QString &playerId, PlayerSettingsObject settings);
 
 private:
-    QByteArray m_baseAuthorizationUrl = "https://api.sonos.com/login/v3/oauth";
+    QByteArray m_baseAuthorizationUrl = "https://api.sonos.com/login/v3/oauth/access";
     QByteArray m_baseControlUrl = "https://api.ws.sonos.com/control/api/v1";
-    QByteArray m_apiKey = "b15cbf8c-a39c-47aa-bd93-635a96e9696c";
+    QByteArray m_clientKey;
+    QByteArray m_clientSecret;
+
     QByteArray m_accessToken;
+    QByteArray m_refreshToken;
 
     NetworkAccessManager *m_networkManager = nullptr;
+    QTimer *m_tokenRefreshTimer = nullptr;
 private slots:
-
+    void onRefreshTimeout();
 
 signals:
     void connectionChanged(bool connected);
+    void authenticationStatusChanged(bool authenticated);
+
     void householdIdsReceived(QList<QString> householdIds);
     void favouritesReceived(const QString &householdId, QList<FavouriteObject> favourites);
     void playlistsReceived(const QString &householdId, QList<PlaylistObject> playlists);
-    void groupsReceived(QList<GroupObject> groups);
+    void groupsReceived(const QString &householdId, QList<GroupObject> groups);
     void playlistSummaryReceived(const QString &householdId, PlaylistSummaryObject playlistSummary);
 
     void playBackStatusReceived(const QString &groupId, PlayBackObject playBack);
@@ -283,7 +294,5 @@ signals:
     void playerVolumeReceived(const QString &playerId, VolumeObject playerVolume);
     void playerSettingsRecieved(const QString &playerId, PlayerSettingsObject playerSettings);
     void actionExecuted(QUuid actionId,bool success);
-
 };
-
 #endif // SONOS_H

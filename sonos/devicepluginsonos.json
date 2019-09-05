@@ -26,6 +26,14 @@
                             "displayNameEvent": "connected changed",
                             "defaultValue": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "48b5c1bf-7df0-45d0-9ba3-290fc3acddc3",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         }
                     ]
                 },
