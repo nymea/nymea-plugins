@@ -47,6 +47,7 @@ PLUGIN_DIRS = \
     tcpcommander        \
     texasinstruments    \
     tplink              \
+    tuya                \
     udpcommander        \
     unitec              \
     wakeonlan           \
