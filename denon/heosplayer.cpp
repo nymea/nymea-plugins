@@ -1,7 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
- *  Copyright (C) 2016 Bernhard Trinnes <bernhard.trinnes@guh.guru>        *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -21,50 +20,76 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DENONCONNECTION_H
-#define DENONCONNECTION_H
+#include "heosplayer.h"
 
-#include <QObject>
-#include <QTcpSocket>
-#include <QHostAddress>
-
-class DenonConnection : public QObject
+HeosPlayer::HeosPlayer(int playerId, QObject *parent) :
+    QObject(parent),
+    m_playerId(playerId)
 {
-    Q_OBJECT
-public:
-    explicit DenonConnection(const QHostAddress &hostAddress, const int &port = 23, QObject *parent = 0);
-    ~DenonConnection();
 
-    void connectDenon();
-    void disconnectDenon();
+}
 
-    QHostAddress hostAddress() const;
-    int port() const;
+HeosPlayer::HeosPlayer(int playerId, QString name, QString serialNumber, QObject *parent) :
+    QObject(parent),
+    m_playerId(playerId),
+    m_serialNumber(serialNumber),
+    m_name(name)
+{
+}
 
-    bool connected();
+QString HeosPlayer::name()
+{
+    return m_name;
+}
 
-    void sendData(const QByteArray &message);
+void HeosPlayer::setName(QString name)
+{
+    m_name = name;
+}
 
-private:
-    QTcpSocket *m_socket;
+int HeosPlayer::playerId()
+{
+    return m_playerId;
+}
 
-    QHostAddress m_hostAddress;
-    int m_port;
-    bool m_connected;
+int HeosPlayer::groupId()
+{
+    return m_groupId;
+}
 
-private slots:
-    void onConnected();
-    void onDisconnected();
-    void onError(QAbstractSocket::SocketError socketError);
-    void readData();
+void HeosPlayer::setGroupId(int groupId)
+{
+    m_groupId = groupId;
+}
 
-    void setConnected(const bool &connected);
+QString HeosPlayer::playerModel()
+{
+    return m_playerModel;
+}
 
-signals:
-    void socketErrorOccured(QAbstractSocket::SocketError socketError);
-    void connectionStatusChanged();
-    void dataReady(const QByteArray &data);
+QString HeosPlayer::playerVersion()
+{
+    return m_playerVersion;
+}
 
-};
+QString HeosPlayer::network()
+{
+    return m_network;
+}
 
-#endif // DENONCONNECTION_H
+QString HeosPlayer::serialNumber()
+{
+    return m_serialNumber;
+}
+
+QString HeosPlayer::lineOut()
+{
+    return m_lineOut;
+}
+
+QString HeosPlayer::control()
+{
+    return m_control;
+}
+
+
