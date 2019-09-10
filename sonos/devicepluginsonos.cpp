@@ -37,8 +37,10 @@ DevicePluginSonos::DevicePluginSonos()
 
 DevicePluginSonos::~DevicePluginSonos()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer5sec);
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer60sec);
+    if (m_pluginTimer5sec)
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer5sec);
+    if (m_pluginTimer60sec)
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer60sec);
 }
 
 
@@ -83,42 +85,54 @@ Device::DeviceSetupStatus DevicePluginSonos::setupDevice(Device *device)
     }
 
     if (device->deviceClassId() == sonosConnectionDeviceClassId) {
-        qCDebug(dcSonos()) << "Sonos OAuth setup complete";
         Sonos *sonos;
         if (m_setupSonosConnections.keys().contains(device->id())) {
             //Fresh device setup, has already a fresh access token
+            qCDebug(dcSonos()) << "Sonos OAuth setup complete";
             sonos = m_setupSonosConnections.take(device->id());
+            connect(sonos, &Sonos::connectionChanged, this, &DevicePluginSonos::onConnectionChanged);
+            connect(sonos, &Sonos::householdIdsReceived, this, &DevicePluginSonos::onHouseholdIdsReceived);
+            connect(sonos, &Sonos::groupsReceived, this, &DevicePluginSonos::onGroupsReceived);
+            connect(sonos, &Sonos::playBackStatusReceived, this, &DevicePluginSonos::onPlayBackStatusReceived);
+            connect(sonos, &Sonos::metadataStatusReceived, this, &DevicePluginSonos::onMetadataStatusReceived);
+            connect(sonos, &Sonos::volumeReceived, this, &DevicePluginSonos::onVolumeReceived);
+            connect(sonos, &Sonos::actionExecuted, this, &DevicePluginSonos::onActionExecuted);
+            connect(sonos, &Sonos::authenticationStatusChanged, this, &DevicePluginSonos::onAuthenticationStatusChanged);
+            m_sonosConnections.insert(device, sonos);
+            return Device::DeviceSetupStatusSuccess;
         } else {
             //device loaded from the device database, needs a new access token;
             pluginStorage()->beginGroup(device->id().toString());
             QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
             pluginStorage()->endGroup();
 
-            sonos = new Sonos(hardwareManager()->networkManager(), "b15cbf8c-a39c-47aa-bd93-635a96e9696c", "c086ba71-e562-430b-a52f-867c6482fd11", "", this);
+            sonos = new Sonos(hardwareManager()->networkManager(), "0a8f6d44-d9d1-4474-bcfa-cfb41f8b66e8", "3095ce48-0c5d-47ce-a1f4-6005c7b8fdb5", this);
+            connect(sonos, &Sonos::connectionChanged, this, &DevicePluginSonos::onConnectionChanged);
+            connect(sonos, &Sonos::householdIdsReceived, this, &DevicePluginSonos::onHouseholdIdsReceived);
+            connect(sonos, &Sonos::groupsReceived, this, &DevicePluginSonos::onGroupsReceived);
+            connect(sonos, &Sonos::playBackStatusReceived, this, &DevicePluginSonos::onPlayBackStatusReceived);
+            connect(sonos, &Sonos::metadataStatusReceived, this, &DevicePluginSonos::onMetadataStatusReceived);
+            connect(sonos, &Sonos::volumeReceived, this, &DevicePluginSonos::onVolumeReceived);
+            connect(sonos, &Sonos::actionExecuted, this, &DevicePluginSonos::onActionExecuted);
+            connect(sonos, &Sonos::authenticationStatusChanged, this, &DevicePluginSonos::onAuthenticationStatusChanged);
             sonos->getAccessTokenFromRefreshToken(refreshToken);
+            m_sonosConnections.insert(device, sonos);
+            return Device::DeviceSetupStatusAsync;
         }
-
-        connect(sonos, &Sonos::connectionChanged, this, &DevicePluginSonos::onConnectionChanged);
-        connect(sonos, &Sonos::householdIdsReceived, this, &DevicePluginSonos::onHouseholdIdsReceived);
-        connect(sonos, &Sonos::groupsReceived, this, &DevicePluginSonos::onGroupsReceived);
-        connect(sonos, &Sonos::playBackStatusReceived, this, &DevicePluginSonos::onPlayBackStatusReceived);
-        connect(sonos, &Sonos::metadataStatusReceived, this, &DevicePluginSonos::onMetadataStatusReceived);
-        connect(sonos, &Sonos::volumeReceived, this, &DevicePluginSonos::onVolumeReceived);
-        connect(sonos, &Sonos::actionExecuted, this, &DevicePluginSonos::onActionExecuted);
-        m_sonosConnections.insert(device, sonos);
     }
 
     if (device->deviceClassId() == sonosGroupDeviceClassId) {
+        return Device::DeviceSetupStatusSuccess;
     }
-    return Device::DeviceSetupStatusSuccess;
+    return Device::DeviceSetupStatusFailure;
 }
 
 DevicePairingInfo DevicePluginSonos::pairDevice(DevicePairingInfo &devicePairingInfo)
 {
     if (devicePairingInfo.deviceClassId() == sonosConnectionDeviceClassId) {
 
-        Sonos *sonos = new Sonos(hardwareManager()->networkManager(), "b15cbf8c-a39c-47aa-bd93-635a96e9696c", "c086ba71-e562-430b-a52f-867c6482fd11", "", this);
-        QUrl url = sonos->getLoginUrl(QUrl("https://127.0.0.1:8000"));
+        Sonos *sonos = new Sonos(hardwareManager()->networkManager(), "0a8f6d44-d9d1-4474-bcfa-cfb41f8b66e8", "3095ce48-0c5d-47ce-a1f4-6005c7b8fdb5", this);
+        QUrl url = sonos->getLoginUrl(QUrl("https://127.0.0.1:8888"));
         qCDebug(dcSonos()) << "Sonos url:" << url;
         devicePairingInfo.setOAuthUrl(url);
         devicePairingInfo.setStatus(Device::DeviceErrorNoError);
@@ -134,28 +148,30 @@ DevicePairingInfo DevicePluginSonos::pairDevice(DevicePairingInfo &devicePairing
 DevicePairingInfo DevicePluginSonos::confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret)
 {
     Q_UNUSED(username);
-    qCDebug(dcSonos()) << "Confirm pairing";
 
     if (devicePairingInfo.deviceClassId() == sonosConnectionDeviceClassId) {
-        qCDebug(dcSonos()) << "Secret is" << secret;
+        qCDebug(dcSonos()) << "Redirect url is" << secret;
         QUrl url(secret);
         QUrlQuery query(url);
-        QByteArray accessCode = query.queryItemValue("code").toLocal8Bit();
-        qCDebug(dcSonos()) << "Acess code is:" << accessCode;
+        QByteArray authorizationCode = query.queryItemValue("code").toLocal8Bit();
+        QByteArray state = query.queryItemValue("state").toLocal8Bit();
+        //TODO evaluate state if it equals the given state
 
         Sonos *sonos = m_setupSonosConnections.value(devicePairingInfo.deviceId());
 
         if (!sonos) {
+            qWarning(dcSonos()) << "No sonos connection found for device:"  << devicePairingInfo.deviceName();
             m_setupSonosConnections.remove(devicePairingInfo.deviceId());
             sonos->deleteLater();
             devicePairingInfo.setStatus(Device::DeviceErrorHardwareFailure);
             return devicePairingInfo;
         }
-        sonos->getAccessTokenFromAuthorizationCode(accessCode);
+        sonos->getAccessTokenFromAuthorizationCode(authorizationCode);
         connect(sonos, &Sonos::authenticationStatusChanged, this, [devicePairingInfo, this](bool authenticated){
             Sonos *sonos = static_cast<Sonos *>(sender());
             DevicePairingInfo info(devicePairingInfo);
             if(!authenticated) {
+                qWarning(dcSonos()) << "Authentication process failed"  << devicePairingInfo.deviceName();
                 m_setupSonosConnections.remove(info.deviceId());
                 sonos->deleteLater();
                 info.setStatus(Device::DeviceErrorSetupFailed);
@@ -164,9 +180,9 @@ DevicePairingInfo DevicePluginSonos::confirmPairing(DevicePairingInfo &devicePai
             }
             QByteArray accessToken = sonos->accessToken();
             QByteArray refreshToken = sonos->refreshToken();
+            qCDebug(dcSonos()) << "Token:" << accessToken << refreshToken;
 
             pluginStorage()->beginGroup(info.deviceId().toString());
-            pluginStorage()->setValue("access_token", accessToken);
             pluginStorage()->setValue("refresh_token", refreshToken);
             pluginStorage()->endGroup();
 
@@ -311,6 +327,8 @@ void DevicePluginSonos::onConnectionChanged(bool connected)
 {
     Sonos *sonos = static_cast<Sonos *>(sender());
     Device *device = m_sonosConnections.key(sonos);
+    if (!device)
+        return;
     device->setStateValue(sonosConnectionConnectedStateTypeId, connected);
 
     foreach (Device *groupDevice, myDevices().filterByParentDeviceId(device->id())) {
@@ -322,13 +340,24 @@ void DevicePluginSonos::onAuthenticationStatusChanged(bool authenticated)
 {
     Sonos *sonosConnection = static_cast<Sonos *>(sender());
     Device *device = m_sonosConnections.key(sonosConnection);
-    device->setStateValue(sonosConnectionLoggedInStateTypeId, authenticated);
-    if (!authenticated) {
-        //refresh access token needs to be refreshed
-        pluginStorage()->beginGroup(device->id().toString());
-        QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
-        pluginStorage()->endGroup();
-        sonosConnection->getAccessTokenFromRefreshToken(refreshToken);
+    if (!device)
+        return;
+
+    if (!device->setupComplete()) {
+        if (authenticated) {
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+        } else {
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+        }
+    } else {
+        device->setStateValue(sonosConnectionLoggedInStateTypeId, authenticated);
+        if (!authenticated) {
+            //refresh access token needs to be refreshed
+            pluginStorage()->beginGroup(device->id().toString());
+            QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
+            pluginStorage()->endGroup();
+            sonosConnection->getAccessTokenFromRefreshToken(refreshToken);
+        }
     }
 }
 

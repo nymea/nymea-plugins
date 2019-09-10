@@ -207,7 +207,7 @@ public:
         QList<PlaylistTrackObject> tracks;
     };
 
-    explicit Sonos(NetworkAccessManager *networkManager, const QByteArray &clientId,  const QByteArray &clientSecret, const QByteArray &refreshToken = "", QObject *parent = nullptr);
+    explicit Sonos(NetworkAccessManager *networkManager, const QByteArray &clientId,  const QByteArray &clientSecret, QObject *parent = nullptr);
 
     QUrl getLoginUrl(const QUrl &redirectUrl);
     QByteArray accessToken();
@@ -271,6 +271,7 @@ private:
 
     QByteArray m_accessToken;
     QByteArray m_refreshToken;
+    QByteArray m_redirectUri;
 
     NetworkAccessManager *m_networkManager = nullptr;
     QTimer *m_tokenRefreshTimer = nullptr;

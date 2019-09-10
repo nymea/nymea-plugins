@@ -24,7 +24,7 @@
                             "name": "connected",
                             "displayName": "connected",
                             "displayNameEvent": "connected changed",
-                            "defaultValue": false,
+                            "defaultValue": true,
                             "type": "bool"
                         },
                         {
@@ -32,8 +32,15 @@
                             "name": "loggedIn",
                             "displayName": "Logged in",
                             "displayNameEvent": "Logged in changed",
-                            "defaultValue": false,
+                            "defaultValue": true,
                             "type": "bool"
+                        },
+                        {
+                            "id": "fb993eab-f1b5-44dd-9b99-041faec5a3b9",
+                            "name": "userDisplayName",
+                            "displayName": "User name",
+                            "displayNameEvent": "User name changed",
+                            "type": "QString"
                         }
                     ]
                 },

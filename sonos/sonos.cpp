@@ -28,11 +28,10 @@
 #include <QJsonArray>
 #include <QUrlQuery>
 
-Sonos::Sonos(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,  const QByteArray &clientSecret, const QByteArray &refreshToken,  QObject *parent) :
+Sonos::Sonos(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,  const QByteArray &clientSecret, QObject *parent) :
     QObject(parent),
     m_clientKey(clientKey),
     m_clientSecret(clientSecret),
-    m_refreshToken(refreshToken),
     m_networkManager(networkmanager)
 {
     if(!m_tokenRefreshTimer) {
@@ -44,12 +43,20 @@ Sonos::Sonos(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,
 
 QUrl Sonos::getLoginUrl(const QUrl &redirectUrl)
 {
-    QString clientId = "b15cbf8c-a39c-47aa-bd93-635a96e9696c";
+    if (m_clientKey.isEmpty()) {
+        qWarning(dcSonos()) << "Client key not defined!";
+        return QUrl("");
+    }
+
+    if (redirectUrl.isEmpty()){
+        qWarning(dcSonos()) << "No redirect uri defined!";
+    }
+    m_redirectUri = QUrl::toPercentEncoding(redirectUrl.toString());
 
     QUrl url("https://api.sonos.com/login/v3/oauth");
     QUrlQuery queryParams;
-    queryParams.addQueryItem("client_id", clientId);
-    queryParams.addQueryItem("redirect_uri", redirectUrl.toString());
+    queryParams.addQueryItem("client_id", m_clientKey);
+    queryParams.addQueryItem("redirect_uri", m_redirectUri);
     queryParams.addQueryItem("response_type", "code");
     queryParams.addQueryItem("scope", "playback-control-all");
     queryParams.addQueryItem("state", QUuid::createUuid().toString());
@@ -81,20 +88,20 @@ void Sonos::getHouseholds()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        connectionChanged(true);
-
-        if (status == 401) {
-            //Authentication required
-            getAccessTokenFromRefreshToken(m_refreshToken);
-            return;
-        }
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
-        //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
         if (!data.isObject()) {
             qDebug(dcSonos()) << "Household ID: Recieved invalide JSON object";
@@ -132,10 +139,18 @@ QUuid Sonos::loadFavorite(const QString &groupId, const QString &favouriteId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
     });
     return actionId;
@@ -155,9 +170,17 @@ void Sonos::getFavorites(const QString &householdId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
         if (!data.isObject())
@@ -197,9 +220,17 @@ void Sonos::getGroups(const QString &householdId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
@@ -237,9 +268,17 @@ void Sonos::getGroupVolume(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
@@ -277,12 +316,20 @@ QUuid Sonos::setGroupVolume(const QString &groupId, int volume)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupVolume(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupVolume(groupId);
     });
     return actionId;
 }
@@ -309,12 +356,20 @@ QUuid Sonos::setGroupMute(const QString &groupId, bool mute)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupVolume(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupVolume(groupId);
     });
     return actionId;
 }
@@ -341,12 +396,20 @@ QUuid Sonos::setGroupRelativeVolume(const QString &groupId, int volumeDelta)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupVolume(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupVolume(groupId);
     });
     return actionId;
 }
@@ -365,9 +428,17 @@ void Sonos::getGroupPlaybackStatus(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
         if (!data.isObject())
@@ -421,12 +492,20 @@ QUuid Sonos::groupLoadLineIn(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupVolume(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupVolume(groupId);
     });
     return actionId;
 }
@@ -449,12 +528,20 @@ QUuid Sonos::groupPlay(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupPlaybackStatus(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupPlaybackStatus(groupId);
     });
     return actionId;
 }
@@ -477,12 +564,20 @@ QUuid Sonos::groupPause(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupPlaybackStatus(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupPlaybackStatus(groupId);
     });
     return actionId;
 }
@@ -508,10 +603,18 @@ QUuid Sonos::groupSeek(const QString &groupId, int possitionMillis)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
     });
     return actionId;
@@ -537,10 +640,18 @@ QUuid Sonos::groupSeekRelative(const QString &groupId, int deltaMillis)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
     });
     return actionId;
@@ -571,12 +682,20 @@ QUuid Sonos::groupSetPlayModes(const QString &groupId, PlayMode playMode)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupPlaybackStatus(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupPlaybackStatus(groupId);
     });
     return actionId;
 }
@@ -603,12 +722,20 @@ QUuid Sonos::groupSetShuffle(const QString &groupId, bool shuffle)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupPlaybackStatus(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupPlaybackStatus(groupId);
     });
     return actionId;
 }
@@ -647,12 +774,20 @@ QUuid Sonos::groupSetRepeat(const QString &groupId, RepeatMode repeatMode)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupPlaybackStatus(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupPlaybackStatus(groupId);
     });
     return actionId;
 }
@@ -679,12 +814,20 @@ QUuid Sonos::groupSetCrossfade(const QString &groupId, bool crossfade)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getGroupPlaybackStatus(groupId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getGroupPlaybackStatus(groupId);
     });
     return actionId;
 }
@@ -705,12 +848,20 @@ QUuid Sonos::groupSkipToNextTrack(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
+            emit actionExecuted(actionId, false);
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
-            actionExecuted(actionId, false);
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
+        emit actionExecuted(actionId, true);
         getGroupMetadataStatus(groupId);
-        actionExecuted(actionId, true);
     });
     return actionId;
 }
@@ -731,12 +882,20 @@ QUuid Sonos::groupSkipToPreviousTrack(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
+            emit actionExecuted(actionId, false);
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
-            actionExecuted(actionId, false);
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
+        emit actionExecuted(actionId, true);
         getGroupMetadataStatus(groupId);
-        actionExecuted(actionId, true);
     });
     return actionId;
 }
@@ -757,12 +916,20 @@ QUuid Sonos::groupTogglePlayPause(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
+            emit actionExecuted(actionId, false);
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
-            actionExecuted(actionId, false);
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
+        emit actionExecuted(actionId, true);
         getGroupPlaybackStatus(groupId);
-        actionExecuted(actionId, true);
     });
     return actionId;
 }
@@ -781,9 +948,17 @@ void Sonos::getGroupMetadataStatus(const QString &groupId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
         if (!data.isObject())
@@ -912,9 +1087,17 @@ void Sonos::getPlayerVolume(const QByteArray &playerId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
@@ -951,12 +1134,20 @@ QUuid Sonos::setPlayerVolume(const QByteArray &playerId, int volume)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getPlayerVolume(playerId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getPlayerVolume(playerId);
     });
     return actionId;
 }
@@ -981,12 +1172,20 @@ QUuid Sonos::setPlayerRelativeVolume(const QByteArray &playerId, int volumeDelta
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getPlayerVolume(playerId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getPlayerVolume(playerId);
     });
     return actionId;
 }
@@ -1011,12 +1210,20 @@ QUuid Sonos::setPlayerMute(const QByteArray &playerId, bool mute)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getPlayerVolume(playerId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getPlayerVolume(playerId);
     });
     return actionId;
 }
@@ -1041,9 +1248,17 @@ void Sonos::getPlaylist(const QString &householdId, const QString &playlistId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
@@ -1082,9 +1297,17 @@ void Sonos::getPlaylists(const QString &householdId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
@@ -1130,10 +1353,18 @@ QUuid Sonos::loadPlaylist(const QString &groupId, const QString &playlistId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
     });
     return actionId;
@@ -1153,9 +1384,18 @@ void Sonos::getPlayerSettings(const QString &playerId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
+
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
         if (!data.isObject())
             return;
@@ -1192,12 +1432,20 @@ QUuid Sonos::setPlayerSettings(const QString &playerId, PlayerSettingsObject set
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
             emit actionExecuted(actionId, false);
+            qCWarning(dcSonos()) << "Request error:" << status << reply->errorString();
             return;
         }
-        getPlayerSettings(playerId);
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
         emit actionExecuted(actionId, true);
+        getPlayerSettings(playerId);
     });
     return actionId;
 }
@@ -1211,31 +1459,49 @@ void Sonos::onRefreshTimeout()
 
 void Sonos::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
 {
+    if (refreshToken.isEmpty()) {
+        qWarning(dcSonos()) << "No refresh token given!";
+        emit authenticationStatusChanged(false);
+        return;
+    }
+
+    QUrl url(m_baseAuthorizationUrl);
     QUrlQuery query;
+    query.clear();
     query.addQueryItem("grant_type", "refresh_token");
     query.addQueryItem("refresh_token", refreshToken);
+    url.setQuery(query);
 
-    QUrl url("https://api.sonos.com/login/v3/oauth");
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded; charset=UTF-8");
+
+    QByteArray auth = QByteArray(m_clientKey + ':' + m_clientSecret).toBase64(QByteArray::Base64Encoding | QByteArray::KeepTrailingEquals);
+    request.setRawHeader("Authorization", QString("Basic %1").arg(QString(auth)).toUtf8());
+
     QNetworkReply *reply = m_networkManager->post(request, QByteArray());
     connect(reply, &QNetworkReply::finished, this, [this, reply](){
         reply->deleteLater();
 
         QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-        qCDebug(dcSonos()) << "Sonos accessToken reply:" << this << reply->error() << reply->errorString() << jsonDoc.toJson();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if(jsonDoc.toVariant().toMap().contains("error_description")) {
+                qWarning(dcSonos()) << "Access token error:" << jsonDoc.toVariant().toMap().value("error_description").toString();
+            }
+            emit authenticationStatusChanged(false);
+            return;
+        }
         if(!jsonDoc.toVariant().toMap().contains("access_token")) {
             emit authenticationStatusChanged(false);
             return;
         }
-        qCDebug(dcSonos()) << "Access token:" << jsonDoc.toVariant().toMap().value("access_token").toString();
         m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
 
         if (jsonDoc.toVariant().toMap().contains("expires_in")) {
             int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
-            qCDebug(dcSonos()) << "expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
+            qCDebug(dcSonos()) << "Access token expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
             if (!m_tokenRefreshTimer) {
-                qWarning(dcSonos()) << "Token refresh timer not initialized";
+                qWarning(dcSonos()) << "Access token refresh timer not initialized";
                 return;
             }
             m_tokenRefreshTimer->start((expireTime - 20) * 1000);
@@ -1247,12 +1513,19 @@ void Sonos::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
 void Sonos::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode)
 {
     // Obtaining access token
+    if(authorizationCode.isEmpty())
+        qWarning(dcSonos) << "No auhtorization code given!";
+    if(m_clientKey.isEmpty())
+        qWarning(dcSonos) << "Client key not set!";
+    if(m_clientSecret.isEmpty())
+        qWarning(dcSonos) << "Client secret not set!";
+
     QUrl url = QUrl(m_baseAuthorizationUrl);
     QUrlQuery query;
     query.clear();
     query.addQueryItem("grant_type", "authorization_code");
     query.addQueryItem("code", authorizationCode);
-    query.addQueryItem("redirect_uri", "https%3A%2F%2F127.0.0.1%3A8888");
+    query.addQueryItem("redirect_uri", m_redirectUri);
     url.setQuery(query);
 
     QNetworkRequest request(url);
@@ -1264,11 +1537,35 @@ void Sonos::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
     QNetworkReply *reply = m_networkManager->post(request, QByteArray());
     connect(reply, &QNetworkReply::finished, this, [this, reply](){
         reply->deleteLater();
-
         QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        switch (status){
+        case 400:
+            if(!jsonDoc.toVariant().toMap().contains("error")) {
+                if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_client") {
+                    qWarning(dcSonos()) << "Client token provided doesn’t correspond to client that generated auth code.";
+                }
+                if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_redirect_uri") {
+                    qWarning(dcSonos()) << "Missing redirect_uri parameter.";
+                }
+                if(jsonDoc.toVariant().toMap().value("error").toString() == "invalid_code") {
+                    qWarning(dcSonos()) << "Expired authorization code.";
+                }
+            }
+            return;
+        case 401:
+            qWarning(dcSonos()) << "Client does not have permission to use this API.";
+            return;
+        case 405:
+            qWarning(dcSonos()) << "Wrong HTTP method used.";
+            return;
+        default:
+            break;
+        }
         qCDebug(dcSonos()) << "Sonos accessToken reply:" << this << reply->error() << reply->errorString() << jsonDoc.toJson();
         if(!jsonDoc.toVariant().toMap().contains("access_token") || !jsonDoc.toVariant().toMap().contains("refresh_token") ) {
-            emit authenticationStatusChanged(false);;
+            emit authenticationStatusChanged(false);
             return;
         }
         qCDebug(dcSonos()) << "Access token:" << jsonDoc.toVariant().toMap().value("access_token").toString();
@@ -1282,10 +1579,11 @@ void Sonos::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
             qCDebug(dcSonos()) << "expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
             if (!m_tokenRefreshTimer) {
                 qWarning(dcSonos()) << "Token refresh timer not initialized";
+                emit authenticationStatusChanged(false);
                 return;
             }
             m_tokenRefreshTimer->start((expireTime - 20) * 1000);
         }
-        emit authenticationStatusChanged(true);;
+        emit authenticationStatusChanged(true);
     });
 }
