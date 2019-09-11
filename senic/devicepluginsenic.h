@@ -42,6 +42,7 @@ public:
     void init() override;
     Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void postSetupDevice(Device *device) override;
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
     void deviceRemoved(Device *device) override;
@@ -56,7 +57,7 @@ private slots:
     void onReconnectTimeout();
     void onBluetoothDiscoveryFinished();
 
-    void onDeviceInitializationFinished();
+    void onDeviceInitializationFinished(bool success);
     void onConnectedChanged(bool connected);
     void onBatteryValueChanged(const uint &percentage);
     void onButtonPressed();

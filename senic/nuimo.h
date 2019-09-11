@@ -95,10 +95,10 @@ signals:
     void swipeDetected(const SwipeDirection &direction);
     void rotationValueChanged(const uint &value);
     void deviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
-    void deviceInitializationFinished();
+    void deviceInitializationFinished(bool success);
 
 private slots:
-    void onConnectedChanged(const bool &connected);
+    void onConnectedChanged(bool connected);
     void onServiceDiscoveryFinished();
 
     void onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceState &state);

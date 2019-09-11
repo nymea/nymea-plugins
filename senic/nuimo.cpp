@@ -295,7 +295,7 @@ void Nuimo::onLongPressTimer()
 
 
 
-void Nuimo::onConnectedChanged(const bool &connected)
+void Nuimo::onConnectedChanged(bool connected)
 {
     qCDebug(dcSenic()) << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
 
@@ -323,21 +323,25 @@ void Nuimo::onServiceDiscoveryFinished()
 
     if (!m_bluetoothDevice->serviceUuids().contains(QBluetoothUuid::DeviceInformation)) {
         qCWarning(dcSenic()) << "Device Information service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        emit deviceInitializationFinished(false);
         return;
     }
 
     if (!m_bluetoothDevice->serviceUuids().contains(QBluetoothUuid::BatteryService)) {
         qCWarning(dcSenic()) << "Battery service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        emit deviceInitializationFinished(false);
         return;
     }
 
     if (!m_bluetoothDevice->serviceUuids().contains(ledMatrinxServiceUuid)) {
         qCWarning(dcSenic()) << "Led matrix service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        emit deviceInitializationFinished(false);
         return;
     }
 
     if (!m_bluetoothDevice->serviceUuids().contains(inputServiceUuid)) {
         qCWarning(dcSenic()) << "Input service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        emit deviceInitializationFinished(false);
         return;
     }
 
@@ -346,6 +350,7 @@ void Nuimo::onServiceDiscoveryFinished()
         m_deviceInfoService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::DeviceInformation, this);
         if (!m_deviceInfoService) {
             qCWarning(dcSenic()) << "Could not create device info service.";
+            emit deviceInitializationFinished(false);
             return;
         }
 
@@ -361,6 +366,7 @@ void Nuimo::onServiceDiscoveryFinished()
         m_batteryService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::BatteryService, this);
         if (!m_batteryService) {
             qCWarning(dcSenic()) << "Could not create battery service.";
+            emit deviceInitializationFinished(false);
             return;
         }
 
@@ -377,6 +383,7 @@ void Nuimo::onServiceDiscoveryFinished()
         m_inputService = m_bluetoothDevice->controller()->createServiceObject(inputServiceUuid, this);
         if (!m_inputService) {
             qCWarning(dcSenic()) << "Could not create input service.";
+            emit deviceInitializationFinished(false);
             return;
         }
 
@@ -393,6 +400,7 @@ void Nuimo::onServiceDiscoveryFinished()
         m_ledMatrixService = m_bluetoothDevice->controller()->createServiceObject(ledMatrinxServiceUuid, this);
         if (!m_ledMatrixService) {
             qCWarning(dcSenic()) << "Could not create led matrix service.";
+            emit deviceInitializationFinished(false);
             return;
         }
 
@@ -402,7 +410,7 @@ void Nuimo::onServiceDiscoveryFinished()
             m_ledMatrixService->discoverDetails();
         }
     }
-    emit deviceInitializationFinished();
+    emit deviceInitializationFinished(true);
 }
 
 void Nuimo::onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceState &state)
