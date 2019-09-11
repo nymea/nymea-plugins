@@ -33,10 +33,6 @@ DevicePluginOneWire::DevicePluginOneWire()
 {
 }
 
-void DevicePluginOneWire::init()
-{
-}
-
 Device::DeviceError DevicePluginOneWire::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params);
@@ -45,6 +41,11 @@ Device::DeviceError DevicePluginOneWire::discoverDevices(const DeviceClassId &de
             deviceClassId == singleChannelSwitchDeviceClassId ||
             deviceClassId == dualChannelSwitchDeviceClassId   ||
             deviceClassId == eightChannelSwitchDeviceClassId) {
+
+        if (myDevices().filterByDeviceClassId(oneWireInterfaceDeviceClassId).isEmpty()) {
+            //No one wire interface intitialized
+            return Device::DeviceErrorHardwareNotAvailable;
+        }
 
         foreach(Device *parentDevice, myDevices().filterByDeviceClassId(oneWireInterfaceDeviceClassId)) {
             if (parentDevice->stateValue(oneWireInterfaceAutoAddStateTypeId).toBool()) {
@@ -277,6 +278,7 @@ void DevicePluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWireDevic
             switch (oneWireDevice.family) {
             //https://github.com/owfs/owfs-doc/wiki/1Wire-Device-List
             case 0x10:  //DS18S20
+            case 0x22:  //DS1822
             case 0x28:  //DS18B20
             case 0x3b:  {//DS1825, MAX31826, MAX31850
                 DeviceDescriptor descriptor(temperatureSensorDeviceClassId, oneWireDevice.type, "One wire temperature sensor", parentDevice->id());
@@ -347,22 +349,22 @@ void DevicePluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWireDevic
         }
         if (autoDiscoverEnabled) {
             if (!temperatureDeviceDescriptors.isEmpty())
-                emit autoDevicesAppeared(temperatureSensorDeviceClassId,  temperatureDeviceDescriptors);
+                emit autoDevicesAppeared(temperatureSensorDeviceClassId, temperatureDeviceDescriptors);
             if (!singleChannelSwitchDeviceDescriptors.isEmpty())
-                emit autoDevicesAppeared(singleChannelSwitchDeviceClassId,  singleChannelSwitchDeviceDescriptors);
+                emit autoDevicesAppeared(singleChannelSwitchDeviceClassId, singleChannelSwitchDeviceDescriptors);
             if (!dualChannelSwitchDeviceDescriptors.isEmpty())
-                emit autoDevicesAppeared(dualChannelSwitchDeviceClassId,  dualChannelSwitchDeviceDescriptors);
+                emit autoDevicesAppeared(dualChannelSwitchDeviceClassId, dualChannelSwitchDeviceDescriptors);
             if (!eightChannelSwitchDeviceDescriptors.isEmpty())
-                emit autoDevicesAppeared(eightChannelSwitchDeviceClassId,  eightChannelSwitchDeviceDescriptors);
+                emit autoDevicesAppeared(eightChannelSwitchDeviceClassId, eightChannelSwitchDeviceDescriptors);
         } else {
             if (!temperatureDeviceDescriptors.isEmpty())
-                emit devicesDiscovered(temperatureSensorDeviceClassId,  temperatureDeviceDescriptors);
+                emit devicesDiscovered(temperatureSensorDeviceClassId, temperatureDeviceDescriptors);
             if (!singleChannelSwitchDeviceDescriptors.isEmpty())
-                emit devicesDiscovered(singleChannelSwitchDeviceClassId,  singleChannelSwitchDeviceDescriptors);
+                emit devicesDiscovered(singleChannelSwitchDeviceClassId, singleChannelSwitchDeviceDescriptors);
             if (!dualChannelSwitchDeviceDescriptors.isEmpty())
-                emit devicesDiscovered(dualChannelSwitchDeviceClassId,  dualChannelSwitchDeviceDescriptors);
+                emit devicesDiscovered(dualChannelSwitchDeviceClassId, dualChannelSwitchDeviceDescriptors);
             if (!eightChannelSwitchDeviceDescriptors.isEmpty())
-                emit devicesDiscovered(eightChannelSwitchDeviceClassId,  eightChannelSwitchDeviceDescriptors);
+                emit devicesDiscovered(eightChannelSwitchDeviceClassId, eightChannelSwitchDeviceDescriptors);
         }
         break;
     }
