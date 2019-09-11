@@ -27,7 +27,6 @@
 
 DevicePluginGpio::DevicePluginGpio()
 {
-
 }
 
 Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
@@ -87,26 +86,55 @@ Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
         if (device->deviceClassId() == gpioInputBbbDeviceClassId)
             gpioId = device->paramValue(gpioInputBbbDeviceGpioParamTypeId).toInt();
 
-        GpioMonitor *monior = new GpioMonitor(gpioId, this);
+        GpioMonitor *monitor = new GpioMonitor(gpioId, this);
 
-        if (!monior->enable()) {
+        if (!monitor->enable()) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for device" << device->name();
             return Device::DeviceSetupStatusFailure;
         }
 
-        connect(monior, &GpioMonitor::valueChanged, this, &DevicePluginGpio::onGpioValueChanged);
+        connect(monitor, &GpioMonitor::valueChanged, this, &DevicePluginGpio::onGpioValueChanged);
 
-        m_monitorDevices.insert(monior, device);
+        m_monitorDevices.insert(monitor, device);
 
-        if (device->deviceClassId() == gpioOutputRpiDeviceClassId)
-            m_raspberryPiGpioMoniors.insert(monior->gpio()->gpioNumber(), monior);
+        if (device->deviceClassId() == gpioInputRpiDeviceClassId)
+            m_raspberryPiGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
 
-        if (device->deviceClassId() == gpioOutputBbbDeviceClassId)
-            m_beagleboneBlackGpioMoniors.insert(monior->gpio()->gpioNumber(), monior);
+        if (device->deviceClassId() == gpioInputBbbDeviceClassId)
+            m_beagleboneBlackGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
 
         return Device::DeviceSetupStatusSuccess;
     }
 
+    if (device->deviceClassId() == counterRpiDeviceClassId || device->deviceClassId() == counterBbbDeviceClassId) {
+
+        int gpioId = -1;
+        if (device->deviceClassId() == counterRpiDeviceClassId)
+            gpioId = device->paramValue(counterRpiDeviceGpioParamTypeId).toInt();
+
+        if (device->deviceClassId() == counterBbbDeviceClassId)
+            gpioId = device->paramValue(counterBbbDeviceGpioParamTypeId).toInt();
+
+        GpioMonitor *monitor = new GpioMonitor(gpioId, this);
+
+        if (!monitor->enable()) {
+            qCWarning(dcGpioController()) << "Could not enable gpio monitor for device" << device->name();
+            return Device::DeviceSetupStatusFailure;
+        }
+
+        connect(monitor, &GpioMonitor::valueChanged, this, &DevicePluginGpio::onGpioValueChanged);
+
+        m_monitorDevices.insert(monitor, device);
+
+        if (device->deviceClassId() == counterRpiDeviceClassId)
+            m_raspberryPiGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
+
+        if (device->deviceClassId() == counterBbbDeviceClassId)
+            m_beagleboneBlackGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
+
+        m_counterValues.insert(device->id(), 0);
+        return Device::DeviceSetupStatusSuccess;
+    }
     return Device::DeviceSetupStatusSuccess;
 }
 
@@ -252,6 +280,14 @@ void DevicePluginGpio::deviceRemoved(Device *device)
         delete monitor;
     }
 
+    if (m_counterValues.contains(device->id())) {
+        m_counterValues.remove(device->id());
+    }
+
+    if (myDevices().filterByDeviceClassId(counterRpiDeviceClassId).isEmpty() && myDevices().filterByDeviceClassId(counterBbbDeviceClassId).isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_counterTimer);
+        m_counterTimer = nullptr;
+    }
 }
 
 Device::DeviceError DevicePluginGpio::executeAction(Device *device, const Action &action)
@@ -275,9 +311,9 @@ Device::DeviceError DevicePluginGpio::executeAction(Device *device, const Action
 
     // GPIO Switch power action
     if (deviceClass.vendorId() == raspberryPiVendorId) {
-        if (action.actionTypeId() == gpioOutputRpiPowerValueActionTypeId) {
+        if (action.actionTypeId() == gpioOutputRpiPowerActionTypeId) {
             bool success = false;
-            if (action.param(gpioOutputRpiPowerValueActionPowerValueParamTypeId).value().toBool()) {
+            if (action.param(gpioOutputRpiPowerActionPowerParamTypeId).value().toBool()) {
                 success = gpio->setValue(Gpio::ValueHigh);
             } else {
                 success = gpio->setValue(Gpio::ValueLow);
@@ -289,14 +325,14 @@ Device::DeviceError DevicePluginGpio::executeAction(Device *device, const Action
             }
 
             // Set the current state
-            device->setStateValue(gpioOutputRpiPowerValueStateTypeId, action.param(gpioOutputRpiPowerValueActionPowerValueParamTypeId).value());
+            device->setStateValue(gpioOutputRpiPowerStateTypeId, action.param(gpioOutputRpiPowerActionPowerParamTypeId).value());
 
             return Device::DeviceErrorNoError;
         }
     } else if (deviceClass.vendorId() == beagleboneBlackVendorId) {
-        if (action.actionTypeId() == gpioOutputBbbPowerValueActionTypeId) {
+        if (action.actionTypeId() == gpioOutputBbbPowerActionTypeId) {
             bool success = false;
-            if (action.param(gpioOutputBbbPowerValueActionPowerValueParamTypeId).value().toBool()) {
+            if (action.param(gpioOutputBbbPowerActionPowerParamTypeId).value().toBool()) {
                 success = gpio->setValue(Gpio::ValueHigh);
             } else {
                 success = gpio->setValue(Gpio::ValueLow);
@@ -308,7 +344,7 @@ Device::DeviceError DevicePluginGpio::executeAction(Device *device, const Action
             }
 
             // Set the current state
-            device->setStateValue(gpioOutputBbbPowerValueStateTypeId, action.param(gpioOutputBbbPowerValueActionPowerValueParamTypeId).value());
+            device->setStateValue(gpioOutputBbbPowerStateTypeId, action.param(gpioOutputBbbPowerActionPowerParamTypeId).value());
 
             return Device::DeviceErrorNoError;
         }
@@ -326,10 +362,10 @@ void DevicePluginGpio::postSetupDevice(Device *device)
 
         gpio->setValue(Gpio::ValueLow);
         if (device->deviceClassId() == gpioOutputRpiDeviceClassId) {
-            device->setStateValue(gpioOutputRpiPowerValueStateTypeId, false);
+            device->setStateValue(gpioOutputRpiPowerStateTypeId, false);
         }
         if (device->deviceClassId() == gpioOutputBbbDeviceClassId) {
-            device->setStateValue(gpioOutputBbbPowerValueStateTypeId, false);
+            device->setStateValue(gpioOutputBbbPowerStateTypeId, false);
         }
     }
 
@@ -343,6 +379,28 @@ void DevicePluginGpio::postSetupDevice(Device *device)
         } else if (device->deviceClassId() == gpioInputBbbDeviceClassId) {
             device->setStateValue(gpioInputBbbPressedStateTypeId, monitor->value());
         }
+    }
+
+    if (device->deviceClassId() == counterRpiDeviceClassId || device->deviceClassId() == counterBbbDeviceClassId) {
+        if (!m_counterTimer) {
+            m_counterTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
+            connect(m_counterTimer, &PluginTimer::timeout, this, [this] (){
+
+                foreach (Device *device, myDevices()) {
+                    if (device->deviceClassId() == counterRpiDeviceClassId) {
+                        int counterValue = m_counterValues.value(device->id());
+                        device->setStateValue(counterRpiCounterStateTypeId, counterValue);
+                        m_counterValues[device->id()] = 0;
+                    }
+                    if (device->deviceClassId() == counterBbbDeviceClassId) {
+                        int counterValue = m_counterValues.value(device->id());
+                        device->setStateValue(counterBbbCounterStateTypeId, counterValue);
+                    }
+                }
+            });
+        }
+
+
     }
 }
 
@@ -463,8 +521,14 @@ void DevicePluginGpio::onGpioValueChanged(const bool &value)
 
     if (device->deviceClassId() == gpioInputRpiDeviceClassId) {
         device->setStateValue(gpioInputRpiPressedStateTypeId, value);
+        //start longpresss timer
     } else if (device->deviceClassId() == gpioInputBbbDeviceClassId) {
         device->setStateValue(gpioInputBbbPressedStateTypeId, value);
+        //start longpress timer
+    } else if (device->deviceClassId() == counterRpiDeviceClassId || device->deviceClassId() == counterBbbDeviceClassId) {
+        if (value) {
+            m_counterValues[device->id()] += 1;
+        }
     }
 }
 

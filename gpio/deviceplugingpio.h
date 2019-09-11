@@ -28,6 +28,7 @@
 #include "gpiodescriptor.h"
 #include "hardware/gpiomonitor.h"
 #include "devices/deviceplugin.h"
+#include "plugintimer.h"
 
 class DevicePluginGpio : public DevicePlugin
 {
@@ -44,7 +45,7 @@ public:
     void deviceRemoved(Device *device) override;
     Device::DeviceError executeAction(Device *device, const Action &action) override;
 
-    void postSetupDevice(Device *device);
+    void postSetupDevice(Device *device) override;
 
 private:
     QHash<Gpio *, Device *> m_gpioDevices;
@@ -58,6 +59,8 @@ private:
 
     QList<GpioDescriptor> raspberryPiGpioDescriptors();
     QList<GpioDescriptor> beagleboneBlackGpioDescriptors();
+    PluginTimer *m_counterTimer = nullptr;
+    QHash<DeviceId, int> m_counterValues;
 
 private slots:
     void onGpioValueChanged(const bool &value);
