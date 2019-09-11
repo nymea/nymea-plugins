@@ -64,12 +64,6 @@ Device::DeviceError DevicePluginOneWire::discoverDevices(const DeviceClassId &de
 
 Device::DeviceSetupStatus DevicePluginOneWire::setupDevice(Device *device)
 {
-
-    if(!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginOneWire::onPluginTimer);
-    }
-
     if (device->deviceClassId() == oneWireInterfaceDeviceClassId) {
         qCDebug(dcOneWire) << "Setup one wire interface";
 
@@ -136,9 +130,18 @@ Device::DeviceSetupStatus DevicePluginOneWire::setupDevice(Device *device)
     return Device::DeviceSetupStatusFailure;
 }
 
+void DevicePluginOneWire::postSetupDevice(Device *device)
+{
+    Q_UNUSED(device);
+
+    if(!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginOneWire::onPluginTimer);
+    }
+}
+
 Device::DeviceError DevicePluginOneWire::executeAction(Device *device, const Action &action)
 {
-    Q_UNUSED(action)
     if (device->deviceClassId() == oneWireInterfaceDeviceClassId) {
         if (action.actionTypeId() == oneWireInterfaceAutoAddActionTypeId){
             device->setStateValue(oneWireInterfaceAutoAddStateTypeId, action.param(oneWireInterfaceAutoAddActionAutoAddParamTypeId).value());

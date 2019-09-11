@@ -104,15 +104,15 @@
                     ],
                     "stateTypes": [
                         {
-                                "id": "ca10a9fd-e4e0-4608-a2d2-6a4ce9644f40",
-                                "name": "digitalOutput",
-                                "displayName": "Digital output",
-                                "displayNameEvent": "Digital output changed",
-                                "displayNameAction": "Set digital output",
-                                "type": "bool",
-                                "defaultValue": false,
-                                "writable": true
-                            }
+                            "id": "ca10a9fd-e4e0-4608-a2d2-6a4ce9644f40",
+                            "name": "digitalOutput",
+                            "displayName": "Digital output",
+                            "displayNameEvent": "Digital output changed",
+                            "displayNameAction": "Set digital output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
                     ]
                 },
                 {
