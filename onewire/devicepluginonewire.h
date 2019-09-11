@@ -40,6 +40,7 @@ public:
 
     Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void postSetupDevice(Device *device) override;
     Device::DeviceError executeAction(Device *device, const Action &action) override;
     void deviceRemoved(Device *device) override;
 
