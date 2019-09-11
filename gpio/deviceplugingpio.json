@@ -2,6 +2,16 @@
     "displayName": "Gpio Controller",
     "name": "GpioController",
     "id": "127ead55-996a-44ac-ba82-fc3c634e018a",
+    "paramTypes": [
+    {
+            "id": "bfb31f88-b481-49e1-9a0a-41b156b64efe",
+            "name": "longPressTime",
+            "displayName": "Long press time",
+            "type": "int",
+            "unit": "Seconds",
+            "defaultValue": 2
+        }
+    ],
     "vendors": [
         {
             "displayName": "Raspberry Pi 2/3",

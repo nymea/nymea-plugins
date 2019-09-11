@@ -30,6 +30,8 @@
 #include "devices/deviceplugin.h"
 #include "plugintimer.h"
 
+#include <QTimer>
+
 class DevicePluginGpio : public DevicePlugin
 {
     Q_OBJECT
@@ -61,10 +63,11 @@ private:
     QList<GpioDescriptor> beagleboneBlackGpioDescriptors();
     PluginTimer *m_counterTimer = nullptr;
     QHash<DeviceId, int> m_counterValues;
+    QHash<Device *, QTimer *> m_longPressTimers;
 
 private slots:
     void onGpioValueChanged(const bool &value);
-
+    void onLongPressedTimeout();
 };
 
 #endif // DEVICEPLUGINGPIO_H

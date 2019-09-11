@@ -192,7 +192,6 @@ Device::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId &devic
                     break;
                 }
             }
-
             deviceDescriptors.append(descriptor);
         }
 
@@ -278,6 +277,12 @@ void DevicePluginGpio::deviceRemoved(Device *device)
             m_beagleboneBlackGpioMoniors.remove(monitor->gpio()->gpioNumber());
 
         delete monitor;
+    }
+
+    if (m_longPressTimers.contains(device)) {
+        QTimer *timer = m_longPressTimers.take(device);
+        timer->stop();
+        timer->deleteLater();
     }
 
     if (m_counterValues.contains(device->id())) {
@@ -370,6 +375,10 @@ void DevicePluginGpio::postSetupDevice(Device *device)
     }
 
     if (device->deviceClassId() == gpioInputRpiDeviceClassId || device->deviceClassId() == gpioInputBbbDeviceClassId) {
+        QTimer *timer = new QTimer(this);
+        timer->setSingleShot(true);
+        m_longPressTimers.insert(device, timer);
+
         GpioMonitor *monitor = m_monitorDevices.key(device);
         if (!monitor)
             return;
@@ -399,8 +408,6 @@ void DevicePluginGpio::postSetupDevice(Device *device)
                 }
             });
         }
-
-
     }
 }
 
@@ -522,13 +529,58 @@ void DevicePluginGpio::onGpioValueChanged(const bool &value)
     if (device->deviceClassId() == gpioInputRpiDeviceClassId) {
         device->setStateValue(gpioInputRpiPressedStateTypeId, value);
         //start longpresss timer
+        QTimer *timer = m_longPressTimers.value(device);
+        if (!timer){
+            qWarning(dcGpioController()) << "Long press timer not available";
+            return;
+        }
+        if (value) {
+            int seconds = configValue( gpioControllerPluginLongPressTimeParamTypeId).toInt();
+            timer->start(seconds * 1000);
+        } else {
+            if (timer->isActive()) {
+                timer->stop();
+                //emit timer pressed
+            }
+        }
     } else if (device->deviceClassId() == gpioInputBbbDeviceClassId) {
         device->setStateValue(gpioInputBbbPressedStateTypeId, value);
-        //start longpress timer
+        //start longpresss timer
+        QTimer *timer = m_longPressTimers.value(device);
+        if (!timer){
+            qWarning(dcGpioController()) << "Long press timer not available";
+            return;
+        }
+        if (value) {
+            int seconds = configValue( gpioControllerPluginLongPressTimeParamTypeId).toInt();
+            timer->start(seconds * 1000);
+        } else {
+            if (timer->isActive()) {
+                timer->stop();
+                //emit timer pressed
+            }
+        }
     } else if (device->deviceClassId() == counterRpiDeviceClassId || device->deviceClassId() == counterBbbDeviceClassId) {
         if (value) {
             m_counterValues[device->id()] += 1;
         }
+    }
+}
+
+
+void DevicePluginGpio::onLongPressedTimeout()
+{
+    QTimer *timer = static_cast<QTimer *>(sender());
+    qCDebug(dcGpioController()) << "Button long pressed";
+    timer->stop();
+    Device *device = m_longPressTimers.key(timer);
+    if (!device)
+        return;
+
+    if (device->deviceClassId() == gpioInputRpiDeviceClassId){
+        emitEvent(Event(gpioInputRpiLongPressedEventTypeId, device->id()));
+    } else if (device->deviceClassId() == gpioInputBbbDeviceClassId){
+        emitEvent(Event(gpioInputBbbLongPressedEventTypeId, device->id()));
     }
 }
 
