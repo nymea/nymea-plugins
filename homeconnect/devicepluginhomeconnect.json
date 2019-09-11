@@ -1,0 +1,49 @@
+{
+    "id": "109abdc7-5d53-4f63-a4b2-851e97cea8ea",
+    "name": "homeConnect",
+    "displayName": "Home Connect",
+    "vendors": [
+        {
+            "id": "43cfb7a4-402f-4315-86b5-ce095697fd13",
+            "name": "homeConnect",
+            "displayName": "Home Connect",
+            "deviceClasses": [
+                {
+                    "id": "babc1a39-730a-4516-95bf-ff51a8ce887a",
+                    "name": "homeConnectConnection",
+                    "displayName": "Home Connect connection",
+                    "interfaces": ["gateway"],
+                    "createMethods": ["user"],
+                    "setupMethod": "oauth",
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1180576a-1de2-4815-b442-877b572ce586",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "ff40d5c7-3095-4b3e-9e10-4c0774336764",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "5d3b2396-6528-47c2-b5a4-f751531bccea",
+                            "name": "userDisplayName",
+                            "displayName": "User name",
+                            "displayNameEvent": "User name changed",
+                            "type": "QString"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
