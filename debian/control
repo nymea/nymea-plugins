@@ -375,7 +375,7 @@ Package: nymea-plugin-modbuscommander
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libmodbus5,
+         libqt5serialbus5,
          nymea-plugins-translations,
 Replaces: guh-plugin-mailnotification
 Description: nymea.io plugin to send and receive generic modbus commands

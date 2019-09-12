@@ -23,7 +23,7 @@
 #ifndef DEVICEPLUGINMODBUSCOMMANDER_H
 #define DEVICEPLUGINMODBUSCOMMANDER_H
 
-#include "plugin/deviceplugin.h"
+#include "devices/deviceplugin.h"
 #include "devices/devicemanager.h"
 #include "plugintimer.h"
 #include "modbustcpmaster.h"
