@@ -57,15 +57,8 @@ void DevicePluginModbusCommander::init()
 }
 
 
-DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device *device)
+Device::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device *device)
 {
-    if (!m_refreshTimer) {
-        // Refresh timer for TCP read
-        int refreshTime = configValue(modbusCommanderPluginUpdateIntervalParamTypeId).toInt();
-        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(refreshTime);
-        connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginModbusCommander::onRefreshTimer);
-    }
-
     if (device->deviceClassId() == modbusTCPClientDeviceClassId) {
         QString ipAddress = device->paramValue(modbusTCPClientDeviceIpv4addressParamTypeId).toString();
         int port = device->paramValue(modbusTCPClientDevicePortParamTypeId).toInt();
@@ -73,7 +66,7 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
         foreach (ModbusTCPMaster *modbusTCPMaster, m_modbusTCPMasters.values()) {
             if ((modbusTCPMaster->ipv4Address() == ipAddress) && (modbusTCPMaster->port() == port)){
                 m_modbusTCPMasters.insert(device, modbusTCPMaster);
-                return DeviceManager::DeviceSetupStatusSuccess;
+                return Device::DeviceSetupStatusSuccess;
             }
         }
 
@@ -86,7 +79,7 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
         connect(modbusTCPMaster, &ModbusTCPMaster::receivedInputRegister, this, &DevicePluginModbusCommander::onReceivedInputRegister);
 
         m_modbusTCPMasters.insert(device, modbusTCPMaster);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
 
@@ -114,34 +107,34 @@ DeviceManager::DeviceSetupStatus DevicePluginModbusCommander::setupDevice(Device
         connect(modbusRTUMaster, &ModbusRTUMaster::receivedInputRegister, this, &DevicePluginModbusCommander::onReceivedInputRegister);
 
         m_modbusRTUMasters.insert(device, modbusRTUMaster);
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == coilDeviceClassId) {
 
         device->setParentId(device->paramValue(coilDeviceParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == discreteInputDeviceClassId) {
 
         device->setParentId(device->paramValue(discreteInputDeviceParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == holdingRegisterDeviceClassId) {
         device->setParentId(device->paramValue(holdingRegisterDeviceParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
 
     if (device->deviceClassId() == inputRegisterDeviceClassId) {
         device->setParentId(device->paramValue(inputRegisterDeviceParentIdParamTypeId).toString());
-        return DeviceManager::DeviceSetupStatusSuccess;
+        return Device::DeviceSetupStatusSuccess;
     }
-    return DeviceManager::DeviceSetupStatusFailure;
+    return Device::DeviceSetupStatusFailure;
 }
 
-DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+Device::DeviceError DevicePluginModbusCommander::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
 {
     Q_UNUSED(params)
     // Create the list of available serial Clients
@@ -166,7 +159,7 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             deviceDescriptors.append(deviceDescriptor);
         }
         emit devicesDiscovered(deviceClassId, deviceDescriptors);
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
 
     if (deviceClassId == discreteInputDeviceClassId) {
@@ -187,7 +180,7 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             }
         }
         emit devicesDiscovered(deviceClassId, deviceDescriptors);
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
 
     if (deviceClassId == coilDeviceClassId) {
@@ -208,7 +201,7 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             }
         }
         emit devicesDiscovered(deviceClassId, deviceDescriptors);
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
 
     if (deviceClassId == holdingRegisterDeviceClassId) {
@@ -229,7 +222,7 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             }
         }
         emit devicesDiscovered(deviceClassId, deviceDescriptors);
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
 
     if (deviceClassId == inputRegisterDeviceClassId) {
@@ -250,13 +243,20 @@ DeviceManager::DeviceError DevicePluginModbusCommander::discoverDevices(const De
             }
         }
         emit devicesDiscovered(deviceClassId, deviceDescriptors);
-        return DeviceManager::DeviceErrorAsync;
+        return Device::DeviceErrorAsync;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 void DevicePluginModbusCommander::postSetupDevice(Device *device)
 {
+    if (!m_refreshTimer) {
+        // Refresh timer for TCP read
+        int refreshTime = configValue(modbusCommanderPluginUpdateIntervalParamTypeId).toInt();
+        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(refreshTime);
+        connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginModbusCommander::onRefreshTimer);
+    }
+
     if ((device->deviceClassId() == coilDeviceClassId) ||
             (device->deviceClassId() == discreteInputDeviceClassId) ||
             (device->deviceClassId() == holdingRegisterDeviceClassId) ||
@@ -266,27 +266,27 @@ void DevicePluginModbusCommander::postSetupDevice(Device *device)
 }
 
 
-DeviceManager::DeviceError DevicePluginModbusCommander::executeAction(Device *device, const Action &action)
+Device::DeviceError DevicePluginModbusCommander::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == coilDeviceClassId) {
 
         if (action.actionTypeId() == coilValueActionTypeId) {
             writeRegister(device, action);
 
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
 
     if (device->deviceClassId() == holdingRegisterDeviceClassId) {
 
         if (action.actionTypeId() == holdingRegisterValueActionTypeId) {
             writeRegister(device, action);
-            return DeviceManager::DeviceErrorNoError;
+            return Device::DeviceErrorNoError;
         }
-        return DeviceManager::DeviceErrorActionTypeNotFound;
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return DeviceManager::DeviceErrorDeviceClassNotFound;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 

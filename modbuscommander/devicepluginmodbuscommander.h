@@ -24,7 +24,7 @@
 #define DEVICEPLUGINMODBUSCOMMANDER_H
 
 #include "plugin/deviceplugin.h"
-#include "devicemanager.h"
+#include "devices/devicemanager.h"
 #include "plugintimer.h"
 #include "modbustcpmaster.h"
 #include "modbusrtumaster.h"
@@ -42,10 +42,10 @@ public:
     explicit DevicePluginModbusCommander();
 
     void init() override;
-    DeviceManager::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    DeviceManager::DeviceSetupStatus setupDevice(Device *device) override;
+    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    Device::DeviceSetupStatus setupDevice(Device *device) override;
     void postSetupDevice(Device *device) override;
-    DeviceManager::DeviceError executeAction(Device *device, const Action &action) override;
+    Device::DeviceError executeAction(Device *device, const Action &action) override;
     void deviceRemoved(Device *device) override;
 
 private:

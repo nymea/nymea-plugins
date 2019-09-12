@@ -7,7 +7,6 @@ QT += \
     network \
     serialbus \
 
-
 SOURCES += \
     devicepluginmodbuscommander.cpp \  
     modbustcpmaster.cpp \
