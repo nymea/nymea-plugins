@@ -30,6 +30,7 @@ PLUGIN_DIRS = \
     kodi                \
     lgsmarttv           \
     lifx                \
+    logfilepublisher    \
     mailnotification    \
     mqttclient          \
     nanoleaf            \

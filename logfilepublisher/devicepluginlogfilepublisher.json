@@ -1,0 +1,54 @@
+{
+    "id": "1eb64356-4019-4982-b7e2-43810a2b27a1",
+    "name": "logfilePublisher",
+    "displayName": "Logfile publisher",
+    "vendors": [
+        {
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "name": "nymea",
+            "displayName": "nymea",
+            "deviceClasses": [
+                {
+                    "id": "45c44185-28d8-4b5d-abbb-7dd825c8759f",
+                    "name": "logfilePublisher",
+                    "displayName": "Logfile publisher",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["user", "discovery"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "5a3c9e56-51a6-4a80-be93-0028226fe357",
+                            "name": "ip",
+                            "displayName": "IP Address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address"
+                        },
+                        {
+                            "id": "a3e91302-9d10-43cf-8326-c3061f91bd10",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8c1669ce-31f8-494f-8695-591a05705a52",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        }
+                    ],
+                    "browserItemActionTypes": [
+                        {
+                            "id": "72eaef49-67d0-42b9-afe4-7cd272516e00",
+                            "name": "logFile",
+                            "displayName": "logfile"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
