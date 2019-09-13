@@ -24,13 +24,17 @@
 #include "i2cport_p.h"
 #include "loggingcategories.h"
 
+extern "C" {
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <sys/syscall.h>
 #include <linux/i2c-dev.h>
+#include <i2c/smbus.h>
+}
 
 #include <QDir>
 

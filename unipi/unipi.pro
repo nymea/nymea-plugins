@@ -2,6 +2,8 @@ include(../plugins.pri)
 
 TARGET = $$qtLibraryTarget(nymea_devicepluginunipi)
 
+LIBS += -li2c
+
 QT += \
     network \
     serialport \
@@ -26,7 +28,7 @@ HEADERS += \
     i2cport_p.h \
     mcp3422.h
 
-MAP_FILES.files = modbus_maps/
+MAP_FILES.files = files(modbus_maps/*)
 MAP_FILES.path = [QT_INSTALL_PREFIX]/share/nymea/modbus/
-INSTALLS += MAP_FiLES
+INSTALLS += MAP_FILES
 

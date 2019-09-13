@@ -24,6 +24,7 @@
 #include "i2cport.h"
 #include "extern-plugininfo.h"
 
+extern "C" {
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,8 @@
 #include <sys/ioctl.h>
 #include <sys/syscall.h>
 #include <linux/i2c-dev.h>
+#include <i2c/smbus.h>
+}
 
 MCP23008::MCP23008(const QString &i2cPortName, int i2cAddress, QObject *parent) :
     QObject(parent),
