@@ -426,8 +426,8 @@ Package: nymea-plugin-onewire
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libow-3.2-3 
-         libowcapi-3.2-3
+         libow-3.2-3,
+         libowcapi-3.2-3,
          nymea-plugins-translations,
 Description: nymea.io plugin for one wire devices
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
