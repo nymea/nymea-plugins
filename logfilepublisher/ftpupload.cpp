@@ -3,14 +3,14 @@
 
 #include <QDateTime>
 
-FtpUpload::FtpUpload(QNetworkAccessManager *networkManager, const QHostAddress &address, const QString &username, const QString &password, QObject *parent) :
+FtpUpload::FtpUpload(const QHostAddress &address, int port, const QString &username, const QString &password, QObject *parent) :
     QObject(parent),
-    m_networkAccessManager(networkManager),
     m_serverAddress(address),
+    m_port(port),
     m_username(username),
     m_password(password)
 {
-
+    m_networkAccessManager = new QNetworkAccessManager(this);
 }
 
 void FtpUpload::uploadFile(const QString &fileName, const QString &targetName)
@@ -18,12 +18,11 @@ void FtpUpload::uploadFile(const QString &fileName, const QString &targetName)
     QFile *file = new QFile(fileName);
 
     QFileInfo fileInfo(*file);
-    QString targetFileName = QString::number(QDateTime::currentSecsSinceEpoch()) + "_" + targetName + "_" + fileInfo.fileName();
-    QUrl url(m_serverAddress.toString() + targetFileName);
+    QUrl url(m_serverAddress.toString() + targetName);
     url.setScheme("ftp");
     url.setUserName(m_username);
     url.setPassword(m_password);
-    url.setPort(21);
+    url.setPort(m_port);
 
     if (file->open(QIODevice::ReadOnly)) {
         // Start upload
@@ -32,7 +31,6 @@ void FtpUpload::uploadFile(const QString &fileName, const QString &targetName)
         connect(reply, &QNetworkReply::uploadProgress, this, &FtpUpload::onUploadProgress);
         connect(reply, &QNetworkReply::finished, this, &FtpUpload::onFinished);
     }
-
 }
 
 void FtpUpload::onFinished()

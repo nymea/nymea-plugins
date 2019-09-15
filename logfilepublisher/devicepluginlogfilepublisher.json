@@ -13,7 +13,8 @@
                     "name": "logfilePublisher",
                     "displayName": "Logfile publisher",
                     "interfaces": ["connectable"],
-                    "createMethods": ["user", "discovery"],
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
                     "browsable": true,
                     "paramTypes": [
                         {
@@ -27,7 +28,8 @@
                             "id": "a3e91302-9d10-43cf-8326-c3061f91bd10",
                             "name": "port",
                             "displayName": "Port",
-                            "type" : "int"
+                            "type" : "int",
+                            "defaultValue": 21
                         }
                     ],
                     "stateTypes": [
@@ -57,6 +59,14 @@
                             "type": "int",
                             "minValue": 0,
                             "maxValue": 100
+                        },
+                        {
+                            "id": "56ca29d5-2521-4100-b757-1733c8438e01",
+                            "name": "filename",
+                            "displayName": "Filename",
+                            "displayNameEvent": "Filename changed",
+                            "defaultValue": "",
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
@@ -64,6 +74,22 @@
                             "id": "289d85c2-b300-476c-a858-027ae12221a5",
                             "name": "upload",
                             "displayName": "Upload"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "4e8fe761-3d99-4d18-8d92-2ca30c6a21ca",
+                            "name": "uploadFinished",
+                            "displayName": "Upload finished",
+                            "paramTypes": [
+                                {
+                                    "id": "ca5f384f-4530-4018-8f37-42ba2bdd92c2",
+                                    "name": "success",
+                                    "displayName": "Success",
+                                    "defaultValue": false,
+                                    "type": "bool"
+                                }
+                            ]
                         }
                     ],
                     "browserItemActionTypes": [

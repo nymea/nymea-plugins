@@ -24,6 +24,7 @@
 #include "devices/device.h"
 #include "plugininfo.h"
 
+#include <QHostInfo>
 
 DevicePluginLogfilePublisher::DevicePluginLogfilePublisher()
 {
@@ -35,11 +36,6 @@ DevicePluginLogfilePublisher::~DevicePluginLogfilePublisher()
 
 }
 
-void DevicePluginLogfilePublisher::init()
-{
-
-}
-
 Device::DeviceSetupStatus DevicePluginLogfilePublisher::setupDevice(Device *device)
 {
     if (device->deviceClassId() == logfilePublisherDeviceClassId) {
@@ -47,8 +43,14 @@ Device::DeviceSetupStatus DevicePluginLogfilePublisher::setupDevice(Device *devi
             m_fileSystem = new FileSystem(this);
         }
 
-        QString address = device->paramValue(logfilePublisherDeviceIpParamTypeId).toString();
-        FtpUpload *ftpUpload = new FtpUpload(hardwareManager()->networkManager(),address , "", "", this);
+        pluginStorage()->beginGroup(device->id().toString());
+        QString username = pluginStorage()->value("username").toString();
+        QString password = pluginStorage()->value("password").toString();
+        pluginStorage()->endGroup();
+
+        QHostAddress address = QHostAddress(device->paramValue(logfilePublisherDeviceIpParamTypeId).toString());
+        int port = device->paramValue(logfilePublisherDevicePortParamTypeId).toInt();
+        FtpUpload *ftpUpload = new FtpUpload(address, port, username, password, this);
         m_ftpUploads->insert(device, ftpUpload);
 
         return Device::DeviceSetupStatusSuccess;
@@ -58,34 +60,67 @@ Device::DeviceSetupStatus DevicePluginLogfilePublisher::setupDevice(Device *devi
 
 void DevicePluginLogfilePublisher::deviceRemoved(Device *device)
 {
-    Q_UNUSED(device)
+    if (device->deviceClassId() == logfilePublisherDeviceClassId) {
+        FtpUpload *ftpUpload = m_ftpUploads->take(device);
+        if (ftpUpload)
+            ftpUpload->deleteLater();
+    }
+
+    if (myDevices().isEmpty()) {
+        m_fileSystem->deleteLater();
+    }
 }
 
-Device::DeviceError DevicePluginLogfilePublisher::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+
+DevicePairingInfo DevicePluginLogfilePublisher::pairDevice(DevicePairingInfo &devicePairingInfo)
 {
-    Q_UNUSED(deviceClassId)
-    Q_UNUSED(params)
-    return Device::DeviceErrorNoError;
+    qCDebug(dcLogfilePublisher()) << "PairDevice:" << devicePairingInfo.deviceClassId();
+
+    devicePairingInfo.setStatus(Device::DeviceErrorNoError);
+    devicePairingInfo.setMessage(tr("Please enter username and password for your ring doorbell account."));
+    return devicePairingInfo;
 }
+
+DevicePairingInfo DevicePluginLogfilePublisher::confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret)
+{
+    pluginStorage()->beginGroup(devicePairingInfo.deviceId().toString());
+    pluginStorage()->setValue("username", username);
+    pluginStorage()->setValue("password", secret);
+    pluginStorage()->endGroup();
+
+    devicePairingInfo.setStatus(Device::DeviceErrorNoError);
+    return devicePairingInfo;
+}
+
 
 Device::DeviceError DevicePluginLogfilePublisher::executeAction(Device *device, const Action &action)
 {
     if (device->deviceClassId() == logfilePublisherDeviceClassId) {
+        FtpUpload *ftpUpload = m_ftpUploads->value(device);
+        if (!ftpUpload)
+            return  Device::DeviceErrorItemNotExecutable;
 
-        if (action.actionTypeId() == logFilePublisherUploadActionTypeId) {
+        if (action.actionTypeId() == logfilePublisherUploadActionTypeId) {
 
+            QString fileName = device->stateValue(logfilePublisherFilenameStateTypeId).toString();
+            QString targetFileName = QString::number(QDateTime::currentSecsSinceEpoch()) + "_" + QHostInfo::localHostName() + "_" + fileName;
+
+            ftpUpload->uploadFile(fileName ,targetFileName);
+            return Device::DeviceErrorNoError;
         }
         if (action.actionTypeId() == logfilePublisherLogFileBrowserItemActionTypeId) {
-
+            qDebug(dcLogfilePublisher()) << "Logfile browser item action triggered";
+            return Device::DeviceErrorNoError;
         }
+        return Device::DeviceErrorActionTypeNotFound;
     }
-    return Device::DeviceErrorNoError;
+    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 
 Device::BrowseResult DevicePluginLogfilePublisher::browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale)
 {
-     Q_UNUSED(device)
+    Q_UNUSED(device)
     Q_UNUSED(locale)
 
     return m_fileSystem->browse(itemId, result);
@@ -100,8 +135,8 @@ Device::BrowserItemResult DevicePluginLogfilePublisher::browserItem(Device *devi
 
 Device::DeviceError DevicePluginLogfilePublisher::executeBrowserItem(Device *device, const BrowserAction &browserAction)
 {
-    Q_UNUSED(device);
-    return m_fileSystem->launchBrowserItem(browserAction.itemId());
+    device->setStateValue(logfilePublisherFilenameStateTypeId, browserAction.itemId());
+    return Device::DeviceErrorNoError;
 }
 
 Device::DeviceError DevicePluginLogfilePublisher::executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction)
@@ -125,9 +160,21 @@ void DevicePluginLogfilePublisher::onConnectionChanged()
 void DevicePluginLogfilePublisher::onUploadProgress(int percentage)
 {
     FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
-    Device *device;
+    Device *device = m_ftpUploads->key(ftpUpload);
     if (!device) {
         return;
     }
-    //device->setStateValue(logfil)
+    device->setStateValue(logfilePublisherUploadProgressStateTypeId, percentage);
+    device->setStateValue(logfilePublisherUploadInProgressStateTypeId, true);
+}
+
+void DevicePluginLogfilePublisher::onUploadFinished(bool success)
+{
+    Q_UNUSED(success);
+    FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
+    Device *device = m_ftpUploads->key(ftpUpload);
+    if (!device) {
+        return;
+    }
+    device->setStateValue(logfilePublisherUploadInProgressStateTypeId, false);
 }

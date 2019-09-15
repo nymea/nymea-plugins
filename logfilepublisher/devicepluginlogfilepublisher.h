@@ -41,11 +41,12 @@ public:
     explicit DevicePluginLogfilePublisher();
     ~DevicePluginLogfilePublisher() override;
 
-    void init() override;
     Device::DeviceSetupStatus setupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
     Device::DeviceError executeAction(Device *device, const Action &action) override;
+
+    DevicePairingInfo pairDevice(DevicePairingInfo &devicePairingInfo) override;
+    DevicePairingInfo confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret) override;
 
     Device::BrowseResult browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale) override;
     Device::BrowserItemResult browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale) override;
@@ -53,7 +54,6 @@ public:
     Device::DeviceError executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction) override;
 
 private:
-    PluginTimer *m_pluginTimer;
     FileSystem *m_fileSystem;
     QHash<Device *, FtpUpload *> *m_ftpUploads;
 
@@ -61,8 +61,9 @@ private:
     QHash<int, ActionId> m_pendingBrowserItemActions;
 
 private slots:
-    void onPluginTimer();
     void onConnectionChanged();
+    void onUploadProgress(int percentage);
+    void onUploadFinished(bool success);
 };
 
 #endif // DEVICEPLUGINLOGFILEPUBLISHER_H
