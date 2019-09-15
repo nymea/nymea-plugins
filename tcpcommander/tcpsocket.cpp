@@ -31,7 +31,7 @@ void TcpSocket::connectionTest()
         emit  connectionTestFinished(true);
         testSocket->deleteLater();
     });
-    connect(testSocket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), this, [this, testSocket] {
+    connect(testSocket, static_cast<void (QTcpSocket::*) (QAbstractSocket::SocketError)>(&QTcpSocket::error), this, [this, testSocket] {
         emit connectionTestFinished(false);
         testSocket->deleteLater();
     });
