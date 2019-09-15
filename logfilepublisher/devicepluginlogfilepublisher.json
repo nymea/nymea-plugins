@@ -38,13 +38,39 @@
                             "displayNameEvent": "connected changed",
                             "defaultValue": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "484ea246-34ba-44f2-aa79-887245324125",
+                            "name": "uploadInProgress",
+                            "displayName": "Upload in progress",
+                            "displayNameEvent": "Upload in progress changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "a1a5e077-804e-44f6-acae-ee25a8cfcbde",
+                            "name": "uploadProgress",
+                            "displayName": "Upload progress",
+                            "displayNameEvent": "Upload progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "289d85c2-b300-476c-a858-027ae12221a5",
+                            "name": "upload",
+                            "displayName": "Upload"
                         }
                     ],
                     "browserItemActionTypes": [
                         {
                             "id": "72eaef49-67d0-42b9-afe4-7cd272516e00",
                             "name": "logFile",
-                            "displayName": "logfile"
+                            "displayName": "Logfile"
                         }
                     ]
                 }

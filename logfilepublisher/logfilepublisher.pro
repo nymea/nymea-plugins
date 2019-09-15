@@ -6,8 +6,10 @@ TARGET = $$qtLibraryTarget(nymea_devicepluginlogfilepublisher)
 
 SOURCES += \
     devicepluginlogfilepublisher.cpp \
-    filesystem.cpp
+    filesystem.cpp \
+    ftpupload.cpp
 
 HEADERS += \
     devicepluginlogfilepublisher.h \
-    filesystem.h
+    filesystem.h \
+    ftpupload.h

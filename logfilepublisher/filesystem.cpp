@@ -1,4 +1,10 @@
 #include "filesystem.h"
+#include "extern-plugininfo.h"
+
+#include <QDir>
+#include <QFile>
+#include <QUuid>
+#include <QDateTime>
 
 FileSystem::FileSystem(QObject *parent) : QObject(parent)
 {
@@ -7,48 +13,67 @@ FileSystem::FileSystem(QObject *parent) : QObject(parent)
 
 Device::BrowseResult FileSystem::browse(const QString &itemId, Device::BrowseResult &result)
 {
+    QDir directory;
+    if (!itemId.isEmpty()) {
+        directory.setPath(itemId);
+    } else {
+        directory.setPath("/");
+    }
+    QFileInfoList list = directory.entryInfoList();
 
+    foreach (QFileInfo item, list) {
+        qCDebug(dcLogfilePublisher) << "Found item" << item;
+        BrowserItem browserItem;
+        browserItem.setId(item.filePath());
+        if (item.isHidden()) {
+            continue;
+        }
+        if (item.isDir()) {
+            browserItem.setIcon(BrowserItem::BrowserIconFolder);
+            browserItem.setBrowsable(true);
+        } else {
+            browserItem.setIcon(BrowserItem::BrowserIconFile);
+            browserItem.setBrowsable(false);
+            browserItem.setExecutable(item.isReadable());
+        }
+        browserItem.setDescription("Date modified: " + item.lastModified().toString() + " Size: " + QString::number(item.size()/1000) + " kB");
+        browserItem.setDisplayName(item.fileName());
+        result.items.append(browserItem);
+    }
+
+    result.status = Device::DeviceErrorNoError;
+
+    return result;
 }
 
 Device::BrowserItemResult FileSystem::browserItem(const QString &itemId, Device::BrowserItemResult &result)
 {
-    qCDebug(dcLogfileBrowser) << "Getting details for" << itemId;
+    qCDebug(dcLogfilePublisher) << "Getting details for" << itemId;
     QString idString = itemId;
     QString method;
     QVariantMap params;
-    if (idString.startsWith("song:")) {
-        idString.remove(QRegExp("^song:"));
-        params.insert("songid", idString.toInt());
-        method = "AudioLibrary.GetSongDetails";
-    } else if (idString.startsWith("movie:")) {
-        idString.remove(QRegExp("^movie:"));
-        params.insert("movieid", idString.toInt());
-        method = "VideoLibrary.GetMovieDetails";
-    } else if (idString.startsWith("episode:")) {
-        idString.remove(QRegExp("^episode:"));
-        params.insert("episodeid", idString.toInt());
-        method = "VideoLibrary.GetEpisodeDetails";
-    } else if (idString.startsWith("musicvideo:")) {
-        idString.remove(QRegExp("^musicvideo:"));
-        params.insert("musicvideoid", idString.toInt());
-        method = "VideoLibrary.GetMusicVideoDetails";
-    } else {
-        qCWarning(dcKodi()) << "Unhandled browserItem request!" << itemId;
-        result.status = Device::DeviceErrorUnsupportedFeature;
-        return result;
+
+    QDir directory(itemId);
+    QStringList list = directory.entryList();
+
+    foreach (QString item, list) {
+        qCDebug(dcLogfilePublisher) << "Found item" << item;
     }
-    int id = m_jsonHandler->sendData(method, params);
-    m_pendingBrowserItemRequests.insert(id, result);
-    result.status = Device::DeviceErrorAsync;
+
+    result.status = Device::DeviceErrorNoError;
     return result;
 }
 
 Device::DeviceError FileSystem::launchBrowserItem(const QString &itemId)
 {
-
+    Q_UNUSED(itemId)
+    return Device::DeviceErrorNoError;
 }
 
 int FileSystem::executeBrowserItemAction(const QString &itemId, const ActionTypeId &actionTypeId)
 {
+    Q_UNUSED(itemId)
+    Q_UNUSED(actionTypeId)
 
+    return 0;
 }

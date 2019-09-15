@@ -26,6 +26,7 @@
 #include "devices/deviceplugin.h"
 #include "plugintimer.h"
 #include "filesystem.h"
+#include "ftpupload.h"
 
 #include <QHash>
 #include <QDebug>
@@ -54,6 +55,7 @@ public:
 private:
     PluginTimer *m_pluginTimer;
     FileSystem *m_fileSystem;
+    QHash<Device *, FtpUpload *> *m_ftpUploads;
 
     QHash<int, ActionId> m_pendingActions;
     QHash<int, ActionId> m_pendingBrowserItemActions;

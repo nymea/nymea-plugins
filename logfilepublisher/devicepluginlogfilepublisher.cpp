@@ -42,10 +42,18 @@ void DevicePluginLogfilePublisher::init()
 
 Device::DeviceSetupStatus DevicePluginLogfilePublisher::setupDevice(Device *device)
 {
-     Q_UNUSED(device)
-    if (!m_fileSystem) {
-        m_fileSystem = new FileSystem(this);
+    if (device->deviceClassId() == logfilePublisherDeviceClassId) {
+        if (!m_fileSystem) {
+            m_fileSystem = new FileSystem(this);
+        }
+
+        QString address = device->paramValue(logfilePublisherDeviceIpParamTypeId).toString();
+        FtpUpload *ftpUpload = new FtpUpload(hardwareManager()->networkManager(),address , "", "", this);
+        m_ftpUploads->insert(device, ftpUpload);
+
+        return Device::DeviceSetupStatusSuccess;
     }
+    return Device::DeviceSetupStatusFailure;
 }
 
 void DevicePluginLogfilePublisher::deviceRemoved(Device *device)
@@ -57,12 +65,21 @@ Device::DeviceError DevicePluginLogfilePublisher::discoverDevices(const DeviceCl
 {
     Q_UNUSED(deviceClassId)
     Q_UNUSED(params)
+    return Device::DeviceErrorNoError;
 }
 
 Device::DeviceError DevicePluginLogfilePublisher::executeAction(Device *device, const Action &action)
 {
-    Q_UNUSED(device)
-    Q_UNUSED(action)
+    if (device->deviceClassId() == logfilePublisherDeviceClassId) {
+
+        if (action.actionTypeId() == logFilePublisherUploadActionTypeId) {
+
+        }
+        if (action.actionTypeId() == logfilePublisherLogFileBrowserItemActionTypeId) {
+
+        }
+    }
+    return Device::DeviceErrorNoError;
 }
 
 
@@ -83,6 +100,7 @@ Device::BrowserItemResult DevicePluginLogfilePublisher::browserItem(Device *devi
 
 Device::DeviceError DevicePluginLogfilePublisher::executeBrowserItem(Device *device, const BrowserAction &browserAction)
 {
+    Q_UNUSED(device);
     return m_fileSystem->launchBrowserItem(browserAction.itemId());
 }
 
@@ -98,12 +116,18 @@ Device::DeviceError DevicePluginLogfilePublisher::executeBrowserItemAction(Devic
     return Device::DeviceErrorAsync;
 }
 
-void DevicePluginLogfilePublisher::onPluginTimer()
-{
-
-}
 
 void DevicePluginLogfilePublisher::onConnectionChanged()
 {
 
+}
+
+void DevicePluginLogfilePublisher::onUploadProgress(int percentage)
+{
+    FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
+    Device *device;
+    if (!device) {
+        return;
+    }
+    //device->setStateValue(logfil)
 }
