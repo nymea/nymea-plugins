@@ -12,6 +12,7 @@
                     "id": "a3a15700-c251-4803-a608-0f3ddfcbd7a8",
                     "name": "systemMonitor",
                     "displayName": "System monitor",
+                    "interfaces": [ "system" ],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
