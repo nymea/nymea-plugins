@@ -71,10 +71,10 @@
                             "writable": true
                         },
                         {
-                            "displayName": "channel",
+                            "displayName": "Channel",
                             "id": "f29ffa2c-31d6-4d88-b160-a38288c82ce1",
                             "name": "channel",
-                            "displayNameEvent": "channel changed",
+                            "displayNameEvent": "Channel changed",
                             "displayNameAction": "Set channel",
                             "type": "QString",
                             "writable": true,
@@ -200,7 +200,7 @@
                     "name": "heosPlayer",
                     "displayName": "Heos player",
                     "createMethods": ["auto"],
-                    "interfaces": ["extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
                     "paramTypes":[
                         {
                             "id": "89629008-6ad8-4e92-863d-b86e0e012d0b",
@@ -231,7 +231,7 @@
                         {
                             "id": "9a4e527e-057c-4b19-8a02-605cc8349f5e",
                             "name": "connected",
-                            "displayName": "connected",
+                            "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false,
@@ -252,8 +252,8 @@
                             "id": "6d4886a1-fa5d-4889-96c5-7a1c206f59be",
                             "name": "volume",
                             "displayName": "Volume",
-                            "displayNameEvent": "volume changed",
-                            "displayNameAction": "set volume",
+                            "displayNameEvent": "Volume changed",
+                            "displayNameAction": "Set volume",
                             "type": "int",
                             "defaultValue": 50,
                             "minValue": 0,
@@ -263,9 +263,9 @@
                         {
                             "id": "6db3b484-4cd4-477b-b822-275865d308db",
                             "name": "playbackStatus",
-                            "displayName": "playback status",
-                            "displayNameEvent": "playback status changed",
-                            "displayNameAction": "set playback status",
+                            "displayName": "Playback status",
+                            "displayNameEvent": "Playback status changed",
+                            "displayNameAction": "Set playback status",
                             "type": "QString",
                             "defaultValue": "Stopped",
                             "possibleValues": ["Playing", "Paused", "Stopped"],
@@ -275,9 +275,9 @@
                         {
                             "id": "4b581237-acf5-4d8f-9e83-9b24e9ac900a",
                             "name": "shuffle",
-                            "displayName": "shuffle",
-                            "displayNameEvent": "shuffle changed",
-                            "displayNameAction": "set shuffle",
+                            "displayName": "Shuffle",
+                            "displayNameEvent": "Shuffle changed",
+                            "displayNameAction": "Set shuffle",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false,
@@ -286,9 +286,9 @@
                         {
                             "id": "4e60cd17-5845-4351-aa2c-2504610e1532",
                             "name": "repeat",
-                            "displayName": "repeat mode",
-                            "displayNameEvent": "repeat mode changed",
-                            "displayNameAction": "set repeat mode",
+                            "displayName": "Repeat mode",
+                            "displayNameEvent": "Repeat mode changed",
+                            "displayNameAction": "Set repeat mode",
                             "type": "QString",
                             "defaultValue": "None",
                             "possibleValues": ["None", "One", "All"],
@@ -298,79 +298,91 @@
                         {
                             "id": "eee22722-3ee5-48f7-8af8-275dc04b21eb",
                             "name": "source",
-                            "displayName": "source",
-                            "displayNameEvent": "source changed",
+                            "displayName": "Source",
+                            "displayNameEvent": "Source changed",
                             "type": "QString",
                             "defaultValue": ""
                         },
                         {
                             "id": "0a9183a4-b633-4773-ba7a-f4266895157e",
                             "name": "artist",
-                            "displayName": "artist",
-                            "displayNameEvent": "artist changed",
+                            "displayName": "Artist",
+                            "displayNameEvent": "Artist changed",
                             "type": "QString",
                             "defaultValue": ""
                         },
                         {
                             "id": "9cd60864-f141-4e03-a85b-357690cad1b8",
                             "name": "collection",
-                            "displayName": "album",
-                            "displayNameEvent": "album changed",
+                            "displayName": "Album",
+                            "displayNameEvent": "Album changed",
                             "type": "QString",
                             "defaultValue": ""
                         },
                         {
                             "id": "bbeecf30-6feb-48d5-ade3-57b2a4eea05f",
                             "name": "title",
-                            "displayName": "title",
-                            "displayNameEvent": "title changed",
+                            "displayName": "Title",
+                            "displayNameEvent": "Title changed",
                             "type": "QString",
                             "defaultValue": ""
                         },
                         {
                             "id": "a7f0ba95-383a-4efd-adc5-a36e50a04018",
                             "name": "artwork",
-                            "displayName": "artwork",
-                            "displayNameEvent": "artwork changed",
+                            "displayName": "Artwork",
+                            "displayNameEvent": "Artwork changed",
                             "type": "QString",
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "c59835ac-ee6e-4e6c-aa20-aeb3501937c5",
+                            "name": "playerType",
+                            "displayName": "Player type",
+                            "displayNameEvent": "Player type changed",
+                            "possibleValues": [
+                                "audio",
+                                "video"
+                            ],
+                            "type": "QString",
+                            "defaultValue": "audio"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "a718f7e9-0b54-4403-b661-49f7b0d13085",
                             "name": "skipBack",
-                            "displayName": "skip back"
+                            "displayName": "Akip back"
                         },
                         {
                             "id": "fe42d89f-aaad-4f33-a022-d80bdf3a7b19",
                             "name": "fastRewind",
-                            "displayName": "fast rewind"
+                            "displayName": "Tast rewind"
                         },
                         {
                             "id": "c4b29c09-e3b3-4843-b6d9-e032f3fc1d78",
                             "name": "stop",
-                            "displayName": "stop"
+                            "displayName": "Stop"
                         },
                         {
                             "id": "c64964e4-cea0-468a-a9bf-8f69657b74e9",
                             "name": "play",
-                            "displayName": "play"
+                            "displayName": "Play"
                         },
                         {
                             "id": "21c1cbe6-278f-4688-a65f-6620be1ee5ea",
                             "name": "pause",
-                            "displayName": "pause"
+                            "displayName": "Pause"
                         },
                         {
                             "id": "60b62e88-c68b-463f-b328-2c5d67a71ca0",
                             "name": "fastForward",
-                            "displayName": "fast forward"
+                            "displayName": "Fast forward"
                         },
                         {
                             "id": "57697e9c-ce5e-4b8f-b42e-16662829ceb2",
                             "name": "skipNext",
-                            "displayName": "skip next"
+                            "displayName": "Skip next"
                         }
                     ]
                 }
