@@ -37,7 +37,8 @@
                             "displayName": "Online",
                             "type": "bool",
                             "defaultValue": false,
-                            "displayNameEvent": "online changed"
+                            "displayNameEvent": "online changed",
+                            "cached": false
                         },
                         {
                             "id": "4a570e58-d227-4af8-a64e-c018b9d84474",
