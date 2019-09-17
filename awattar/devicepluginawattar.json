@@ -23,23 +23,8 @@
                     "displayName": "aWATTar",
                     "name": "awattar",
                     "createMethods": ["user"],
+                    "setupMethod": "displaypin",
                     "interfaces": ["connectable"],
-                    "paramTypes": [
-                        {
-                            "id": "cbbf6f0a-6a91-4844-83f5-60eadb46099b",
-                            "name": "userUuid",
-                            "displayName": "user uuid",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
-                            "id": "7ab323d0-f3b5-4baa-9ff9-4843b4dd9811",
-                            "name": "token",
-                            "displayName": "token",
-                            "type": "QString",
-                            "inputType": "Password"
-                        }
-                    ],
                     "stateTypes": [
                         {
                             "id": "470b9b88-17f3-42e3-9250-cc181984eafe",

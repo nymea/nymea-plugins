@@ -39,26 +39,50 @@ DevicePluginAwattar::~DevicePluginAwattar()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginAwattar::setupDevice(Device *device)
+void DevicePluginAwattar::startPairing(DevicePairingInfo *info)
 {
-    qCDebug(dcAwattar) << "Setup device" << device->name() << device->params();
+    info->finish(Device::DeviceErrorNoError, QT_TR_NOOP("Please enter your token for awattar.com"));
+}
 
-    QString userUuid = device->paramValue(awattarDeviceUserUuidParamTypeId).toString();
-    QString token = device->paramValue(awattarDeviceTokenParamTypeId).toString();
+void DevicePluginAwattar::confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret)
+{
+    Q_UNUSED(username)
 
-    if (token.isEmpty() || userUuid.isEmpty()) {
-        qCWarning(dcAwattar) << "Missing token oder user uuid.";
-        return Device::DeviceSetupStatusFailure;
-    }
+    QByteArray data = QString(secret + ":").toUtf8().toBase64();
+    QString header = "Basic " + data;
+    QNetworkRequest request(QUrl("https://api.awattar.com/v1/marketdata"));
+    request.setRawHeader("Authorization", header.toLocal8Bit());
+    request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, info, [this, reply, info, secret](){
+        reply->deleteLater();
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // check HTTP status code
+        if (status != 200) {
+            info->finish(Device::DeviceErrorAuthenticationFailure, QT_TR_NOOP("This token is not valid."));
+            return;
+        }
+
+        pluginStorage()->beginGroup(info->deviceId().toString());
+        pluginStorage()->setValue("token", secret);
+        pluginStorage()->endGroup();
+        info->finish(Device::DeviceErrorNoError);
+    });
+}
+
+void DevicePluginAwattar::setupDevice(DeviceSetupInfo *info)
+{
+    qCDebug(dcAwattar) << "Setup device" << info->device()->name() << info->device()->params();
+
 
     if (!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60 * 60);
         connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginAwattar::onPluginTimer);
     }
 
-    requestPriceData(device, true);
-
-    return Device::DeviceSetupStatusAsync;
+    requestPriceData(info->device(), info);
 }
 
 void DevicePluginAwattar::deviceRemoved(Device *device)
@@ -76,24 +100,27 @@ void DevicePluginAwattar::onPluginTimer()
     }
 }
 
-void DevicePluginAwattar::requestPriceData(Device* device, bool setupInProgress)
+void DevicePluginAwattar::requestPriceData(Device* device, DeviceSetupInfo *setup)
 {
-    QString token = device->paramValue(awattarDeviceTokenParamTypeId).toString();
+    pluginStorage()->beginGroup(device->id().toString());
+    QString token = pluginStorage()->value("token").toString();
+    pluginStorage()->endGroup();
+
     QByteArray data = QString(token + ":").toUtf8().toBase64();
     QString header = "Basic " + data;
     QNetworkRequest request(QUrl("https://api.awattar.com/v1/marketdata"));
     request.setRawHeader("Authorization", header.toLocal8Bit());
     request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, device, [this, reply, device, setupInProgress](){
+    connect(reply, &QNetworkReply::finished, device, [this, reply, device, setup](){
         reply->deleteLater();
 
         // check HTTP status code
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (status != 200) {
             qCWarning(dcAwattar) << "Update reply HTTP error:" << status << reply->errorString();
-            if (setupInProgress) {
-                emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+            if (setup) {
+                setup->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error getting data from server."));
             } else {
                 device->setStateValue(awattarConnectedStateTypeId, false);
             }
@@ -104,15 +131,18 @@ void DevicePluginAwattar::requestPriceData(Device* device, bool setupInProgress)
         QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcAwattar) << "Update reply JSON error:" << error.errorString();
-            if (setupInProgress) {
-                emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+            if (setup) {
+                setup->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("The server returned unexpected data."));
             } else {
                 device->setStateValue(awattarConnectedStateTypeId, false);
             }
             return;
         }
 
-        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+        if (setup) {
+            setup->finish(Device::DeviceErrorNoError);
+        }
+
         device->setStateValue(awattarConnectedStateTypeId, true);
 
         processPriceData(device, jsonDoc.toVariant().toMap());
