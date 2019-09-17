@@ -51,44 +51,73 @@ void DevicePluginFlowercare::init()
 {
 }
 
-Device::DeviceError DevicePluginFlowercare::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginFlowercare::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params)
-    Q_UNUSED(deviceClassId)
-
     if (!hardwareManager()->bluetoothLowEnergyManager()->available())
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("Cannot discover Bluetooth devices. Bluetooth is not available on this system."));
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->enabled())
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("Cannot discover Bluetooth devices. Bluetooth is disabled."));
 
     BluetoothDiscoveryReply *reply = hardwareManager()->bluetoothLowEnergyManager()->discoverDevices();
-    connect(reply, &BluetoothDiscoveryReply::finished, this, &DevicePluginFlowercare::onBluetoothDiscoveryFinished);
-    return Device::DeviceErrorAsync;
+
+    connect(reply, &BluetoothDiscoveryReply::finished, info, [this, info, reply](){
+        reply->deleteLater();
+
+        if (reply->error() != BluetoothDiscoveryReply::BluetoothDiscoveryReplyErrorNoError) {
+            qCWarning(dcFlowerCare()) << "Bluetooth discovery error:" << reply->error();
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("An error happened during Bluetooth discovery."));
+            return;
+        }
+
+        qCDebug(dcFlowerCare()) << "Discovery finished";
+
+        foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
+            qCDebug(dcFlowerCare()) << "Discovered device" << deviceInfo.name();
+            if (deviceInfo.name().contains("Flower care")) {
+                if (!verifyExistingDevices(deviceInfo)) {
+                    DeviceDescriptor descriptor(flowerCareDeviceClassId, deviceInfo.name(), deviceInfo.address().toString());
+                    ParamList params;
+                    params << Param(flowerCareDeviceMacParamTypeId, deviceInfo.address().toString());
+                    descriptor.setParams(params);
+                    foreach (Device *existingDevice, myDevices()) {
+                        if (existingDevice->paramValue(flowerCareDeviceMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                            descriptor.setDeviceId(existingDevice->id());
+                            break;
+                        }
+                    }
+                    info->addDeviceDescriptor(descriptor);
+                }
+            }
+        }
+
+        info->finish(Device::DeviceErrorNoError);
+    });
+
 }
 
-Device::DeviceSetupStatus DevicePluginFlowercare::setupDevice(Device *device)
+void DevicePluginFlowercare::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     qCDebug(dcFlowerCare) << "Setting up Flower care" << device->name() << device->params();
 
-    if (device->deviceClassId() == flowerCareDeviceClassId) {
-        QBluetoothAddress address = QBluetoothAddress(device->paramValue(flowerCareDeviceMacParamTypeId).toString());
-        QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, device->name(), 0);
+    QBluetoothAddress address = QBluetoothAddress(device->paramValue(flowerCareDeviceMacParamTypeId).toString());
+    QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, device->name(), 0);
 
-        BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
-        FlowerCare *flowerCare = new FlowerCare(bluetoothDevice, this);
-        connect(flowerCare, &FlowerCare::finished, this, &DevicePluginFlowercare::onSensorDataReceived);
-        m_list.insert(device, flowerCare);
+    BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::PublicAddress);
+    FlowerCare *flowerCare = new FlowerCare(bluetoothDevice, this);
+    connect(flowerCare, &FlowerCare::finished, this, &DevicePluginFlowercare::onSensorDataReceived);
+    m_list.insert(device, flowerCare);
 
-        m_refreshMinutes[flowerCare] = 0;
+    m_refreshMinutes[flowerCare] = 0;
 
-        if (!m_reconnectTimer) {
-            m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer();
-            connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginFlowercare::onPluginTimer);
-        }
-        return Device::DeviceSetupStatusSuccess;
+    if (!m_reconnectTimer) {
+        m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer();
+        connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginFlowercare::onPluginTimer);
     }
-    return Device::DeviceSetupStatusFailure;
+
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginFlowercare::postSetupDevice(Device *device)
@@ -111,13 +140,6 @@ void DevicePluginFlowercare::deviceRemoved(Device *device)
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
         m_reconnectTimer = nullptr;
     }
-}
-
-Device::DeviceError DevicePluginFlowercare::executeAction(Device *device, const Action &action)
-{
-    Q_UNUSED(device)
-    Q_UNUSED(action)
-    return Device::DeviceErrorActionTypeNotFound;
 }
 
 bool DevicePluginFlowercare::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
@@ -147,41 +169,6 @@ void DevicePluginFlowercare::onPluginTimer()
             m_list.key(flowerCare)->setStateValue(flowerCareConnectedStateTypeId, false);
         }
     }
-}
-
-void DevicePluginFlowercare::onBluetoothDiscoveryFinished()
-{
-    BluetoothDiscoveryReply *reply = static_cast<BluetoothDiscoveryReply *>(sender());
-    if (reply->error() != BluetoothDiscoveryReply::BluetoothDiscoveryReplyErrorNoError) {
-        qCWarning(dcFlowerCare()) << "Bluetooth discovery error:" << reply->error();
-        reply->deleteLater();
-        emit devicesDiscovered(flowerCareDeviceClassId, QList<DeviceDescriptor>());
-        return;
-    }
-
-    QList<DeviceDescriptor> deviceDescriptors;
-    qCDebug(dcFlowerCare()) << "Discovery finished";
-    foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
-        qCDebug(dcFlowerCare()) << "Discovered device" << deviceInfo.name();
-        if (deviceInfo.name().contains("Flower care")) {
-            if (!verifyExistingDevices(deviceInfo)) {
-                DeviceDescriptor descriptor(flowerCareDeviceClassId, deviceInfo.name(), deviceInfo.address().toString());
-                ParamList params;
-                params.append(Param(flowerCareDeviceMacParamTypeId, deviceInfo.address().toString()));
-                descriptor.setParams(params);
-                foreach (Device *existingDevice, myDevices()) {
-                    if (existingDevice->paramValue(flowerCareDeviceMacParamTypeId).toString() == deviceInfo.address().toString()) {
-                        descriptor.setDeviceId(existingDevice->id());
-                        break;
-                    }
-                }
-                deviceDescriptors.append(descriptor);
-            }
-        }
-    }
-
-    reply->deleteLater();
-    emit devicesDiscovered(flowerCareDeviceClassId, deviceDescriptors);
 }
 
 void DevicePluginFlowercare::onSensorDataReceived(quint8 batteryLevel, double degreeCelsius, double lux, double moisture, double fertility)
