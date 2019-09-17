@@ -29,14 +29,15 @@ DevicePluginGpio::DevicePluginGpio()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
+void DevicePluginGpio::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
     qCDebug(dcGpioController()) << "Setup" << device->name() << device->params();
 
     // Check if GPIOs are available on this platform
     if (!Gpio::isAvailable()) {
         qCWarning(dcGpioController()) << "There are ou GPIOs on this plattform";
-        return Device::DeviceSetupStatusFailure;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("No GPIOs found on this system."));
     }
 
     // GPIO Switch
@@ -53,17 +54,17 @@ Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
 
         if (!gpio->exportGpio()) {
             qCWarning(dcGpioController()) << "Could not export gpio for device" << device->name();
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Exporting GPIO failed."));
         }
 
         if (!gpio->setDirection(Gpio::DirectionOutput)) {
             qCWarning(dcGpioController()) << "Could not configure output gpio for device" << device->name();
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Configuring output GPIO failed."));
         }
 
         if (!gpio->setValue(Gpio::ValueLow)) {
             qCWarning(dcGpioController()) << "Could not set gpio  value for device" << device->name();
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Setting GPIO value failed."));
         }
 
         m_gpioDevices.insert(gpio, device);
@@ -74,7 +75,7 @@ Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
         if (device->deviceClassId() == gpioOutputBbbDeviceClassId)
             m_beagleboneBlackGpios.insert(gpio->gpioNumber(), gpio);
 
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (device->deviceClassId() == gpioInputRpiDeviceClassId || device->deviceClassId() == gpioInputBbbDeviceClassId) {
@@ -90,7 +91,7 @@ Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
 
         if (!monitor->enable()) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for device" << device->name();
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
 
         connect(monitor, &GpioMonitor::valueChanged, this, &DevicePluginGpio::onGpioValueChanged);
@@ -103,7 +104,7 @@ Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
         if (device->deviceClassId() == gpioInputBbbDeviceClassId)
             m_beagleboneBlackGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
 
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (device->deviceClassId() == counterRpiDeviceClassId || device->deviceClassId() == counterBbbDeviceClassId) {
@@ -119,7 +120,7 @@ Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
 
         if (!monitor->enable()) {
             qCWarning(dcGpioController()) << "Could not enable gpio monitor for device" << device->name();
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Enabling GPIO monitor failed."));
         }
 
         connect(monitor, &GpioMonitor::valueChanged, this, &DevicePluginGpio::onGpioValueChanged);
@@ -133,19 +134,19 @@ Device::DeviceSetupStatus DevicePluginGpio::setupDevice(Device *device)
             m_beagleboneBlackGpioMoniors.insert(monitor->gpio()->gpioNumber(), monitor);
 
         m_counterValues.insert(device->id(), 0);
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
-    return Device::DeviceSetupStatusSuccess;
+    return info->finish(Device::DeviceErrorNoError);
 }
 
-Device::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginGpio::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params)
+    DeviceClassId deviceClassId = info->deviceClassId();
 
     // Check if GPIOs are available on this platform
     if (!Gpio::isAvailable()) {
         qCWarning(dcGpioController()) << "There are no GPIOs on this plattform";
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("No GPIOs available on this system."));
     }
 
     // Check which board / gpio configuration
@@ -153,8 +154,6 @@ Device::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId &devic
     if (deviceClass.vendorId() == raspberryPiVendorId) {
 
         // Create the list of available gpios
-        QList<DeviceDescriptor> deviceDescriptors;
-
         QList<GpioDescriptor> gpioDescriptors = raspberryPiGpioDescriptors();
         for (int i = 0; i < gpioDescriptors.count(); i++) {
             const GpioDescriptor gpioDescriptor = gpioDescriptors.at(i);
@@ -192,18 +191,15 @@ Device::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId &devic
                     break;
                 }
             }
-            deviceDescriptors.append(descriptor);
+            info->addDeviceDescriptor(descriptor);
         }
 
-        emit devicesDiscovered(deviceClassId, deviceDescriptors);
-        return Device::DeviceErrorAsync;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (deviceClass.vendorId() == beagleboneBlackVendorId) {
 
         // Create the list of available gpios
-        QList<DeviceDescriptor> deviceDescriptors;
-
         QList<GpioDescriptor> gpioDescriptors = beagleboneBlackGpioDescriptors();
         for (int i = 0; i < gpioDescriptors.count(); i++) {
             const GpioDescriptor gpioDescriptor = gpioDescriptors.at(i);
@@ -235,14 +231,11 @@ Device::DeviceError DevicePluginGpio::discoverDevices(const DeviceClassId &devic
             }
             descriptor.setParams(parameters);
 
-            deviceDescriptors.append(descriptor);
+            info->addDeviceDescriptor(descriptor);
         }
 
-        emit devicesDiscovered(deviceClassId, deviceDescriptors);
-        return Device::DeviceErrorAsync;
+        return info->finish(Device::DeviceErrorNoError);
     }
-
-    return Device::DeviceErrorVendorNotFound;
 }
 
 void DevicePluginGpio::deviceRemoved(Device *device)
@@ -295,8 +288,11 @@ void DevicePluginGpio::deviceRemoved(Device *device)
     }
 }
 
-Device::DeviceError DevicePluginGpio::executeAction(Device *device, const Action &action)
+void DevicePluginGpio::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     // Get the gpio
     const DeviceClass deviceClass = supportedDevices().findById(device->deviceClassId());
     Gpio *gpio = Q_NULLPTR;
@@ -311,7 +307,7 @@ Device::DeviceError DevicePluginGpio::executeAction(Device *device, const Action
     // Check if gpio was found
     if (!gpio) {
         qCWarning(dcGpioController()) << "Could not find gpio for executing action on" << device->name();
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("GPIO not found"));
     }
 
     // GPIO Switch power action
@@ -326,13 +322,13 @@ Device::DeviceError DevicePluginGpio::executeAction(Device *device, const Action
 
             if (!success) {
                 qCWarning(dcGpioController()) << "Could not set gpio value while execute action on" << device->name();
-                return Device::DeviceErrorHardwareFailure;
+                return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Setting GPIO value failed."));
             }
 
             // Set the current state
             device->setStateValue(gpioOutputRpiPowerStateTypeId, action.param(gpioOutputRpiPowerActionPowerParamTypeId).value());
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
     } else if (deviceClass.vendorId() == beagleboneBlackVendorId) {
         if (action.actionTypeId() == gpioOutputBbbPowerActionTypeId) {
@@ -345,17 +341,17 @@ Device::DeviceError DevicePluginGpio::executeAction(Device *device, const Action
 
             if (!success) {
                 qCWarning(dcGpioController()) << "Could not set gpio value while execute action on" << device->name();
-                return Device::DeviceErrorHardwareFailure;
+                return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Setting GPIO value failed."));
             }
 
             // Set the current state
             device->setStateValue(gpioOutputBbbPowerStateTypeId, action.param(gpioOutputBbbPowerActionPowerParamTypeId).value());
 
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
         }
     }
 
-    return Device::DeviceErrorNoError;
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginGpio::postSetupDevice(Device *device)
