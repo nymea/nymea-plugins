@@ -48,19 +48,23 @@ DevicePluginDateTime::DevicePluginDateTime() :
     connect(m_timer, &QTimer::timeout, this, &DevicePluginDateTime::onSecondChanged);
 }
 
-Device::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *device)
+void DevicePluginDateTime::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     // check timezone
     if(!m_timeZone.isValid()){
         qCWarning(dcDateTime) << "Invalid time zone.";
-        return Device::DeviceSetupStatusFailure;
+        info->finish(Device::DeviceErrorInvalidParameter);
+        return;
     }
 
     // date
     if (device->deviceClassId() == todayDeviceClassId) {
         if (m_todayDevice != 0) {
             qCWarning(dcDateTime) << "There is already a date device or not deleted correctly! this should never happen!!";
-            return Device::DeviceSetupStatusFailure;
+            info->finish(Device::DeviceErrorHardwareNotAvailable);
+            return;
         }
         m_todayDevice = device;
         qCDebug(dcDateTime) << "Create today device: current time" << m_currentDateTime.currentDateTime().toString();
@@ -97,7 +101,7 @@ Device::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *device)
                                              QTime(device->paramValue(countdownDeviceHoursParamTypeId).toInt(),
                                                    device->paramValue(countdownDeviceMinutesParamTypeId).toInt(),
                                                    device->paramValue(countdownDeviceSecondsParamTypeId).toInt()),
-                                             device->paramValue(countdownDeviceRepeatingParamTypeId).toBool());
+                                                   device->paramValue(countdownDeviceRepeatingParamTypeId).toBool());
 
         connect(countdown, &Countdown::countdownTimeout, this, &DevicePluginDateTime::onCountdownTimeout);
         connect(countdown, &Countdown::runningStateChanged, this, &DevicePluginDateTime::onCountdownRunningChanged);
@@ -108,7 +112,7 @@ Device::DeviceSetupStatus DevicePluginDateTime::setupDevice(Device *device)
 
     m_timer->start();
 
-    return Device::DeviceSetupStatusSuccess;
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginDateTime::postSetupDevice(Device *device)
@@ -149,23 +153,23 @@ void DevicePluginDateTime::deviceRemoved(Device *device)
     //startMonitoringAutoDevices();
 }
 
-Device::DeviceError DevicePluginDateTime::executeAction(Device *device, const Action &action)
+void DevicePluginDateTime::executeAction(DeviceActionInfo *info)
 {
-    if (device->deviceClassId() == countdownDeviceClassId) {
-        Countdown *countdown = m_countdowns.value(device);
-        if (action.actionTypeId() == countdownStartActionTypeId) {
-            countdown->start();
-            return Device::DeviceErrorNoError;
-        } else if (action.actionTypeId() == countdownRestartActionTypeId) {
-            countdown->restart();
-            return Device::DeviceErrorNoError;
-        } else if (action.actionTypeId() == countdownStopActionTypeId) {
-            countdown->stop();
-            return Device::DeviceErrorNoError;
-        }
-        return Device::DeviceErrorActionTypeNotFound;
+    if (info->device()->deviceClassId() != countdownDeviceClassId) {
+        info->finish(Device::DeviceErrorDeviceClassNotFound);
+        return;
     }
-    return Device::DeviceErrorNoError;
+
+    Countdown *countdown = m_countdowns.value(info->device());
+    if (info->action().actionTypeId() == countdownStartActionTypeId) {
+        countdown->start();
+    } else if (info->action().actionTypeId() == countdownRestartActionTypeId) {
+        countdown->restart();
+    } else if (info->action().actionTypeId() == countdownStopActionTypeId) {
+        countdown->stop();
+    }
+
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginDateTime::startMonitoringAutoDevices()
