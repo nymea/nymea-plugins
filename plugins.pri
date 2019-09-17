@@ -12,6 +12,6 @@ isEmpty(PLUGIN_PRI) {
     error("plugin.pri not found. Cannot continue")
   }
 } else {
-  message("Using $$PLUGIN_PRI")
+#  message("Using $$PLUGIN_PRI")
   include($$PLUGIN_PRI)
 }
