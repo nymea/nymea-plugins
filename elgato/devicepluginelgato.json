@@ -12,7 +12,7 @@
                     "id": "164f9602-90ee-4693-bda3-9cafae37603e",
                     "name": "avea",
                     "displayName": "Avea",
-                    "interfaces": ["connectable", "light", "colorlight", "colortemperaturelight"],
+                    "interfaces": ["light", "colorlight", "colortemperaturelight", "connectable"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
