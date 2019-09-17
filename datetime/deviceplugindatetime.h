@@ -43,11 +43,11 @@ class DevicePluginDateTime : public DevicePlugin
 public:
     explicit DevicePluginDateTime();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
     void startMonitoringAutoDevices() override;
 
