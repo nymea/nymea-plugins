@@ -44,8 +44,10 @@ void DevicePluginKeba::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginKeba::updateData);
 }
 
-Device::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
+void DevicePluginKeba::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     qCDebug(dcKebaKeContact()) << "Setting up a new device:" << device->name() << device->params();
 
     if(m_kebaDevices.isEmpty()) {
@@ -53,7 +55,8 @@ Device::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
         if (!m_kebaSocket->bind(QHostAddress::AnyIPv4, 7090)) {
             qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
             delete m_kebaSocket;
-            return Device::DeviceSetupStatusFailure;
+            //: Error setting up device
+            return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("Error opening network port."));
         }
         connect(m_kebaSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
         qCDebug(dcKebaKeContact()) << "Create keba socket";
@@ -64,16 +67,18 @@ Device::DeviceSetupStatus DevicePluginKeba::setupDevice(Device *device)
     //Check if the IP is empty
     if (address.isNull()) {
         delete m_kebaSocket;
-        return Device::DeviceSetupStatusFailure;
+        //: Error setting up device
+        return info->finish(Device::DeviceErrorInvalidParameter, QT_TR_NOOP("The provided IP adress is not valid."));
     }
 
     // check if IP is already added to another keba device
     if(m_kebaDevices.keys().contains(address)){
-        return Device::DeviceSetupStatusFailure;
+        //: Error setting up device
+        return info->finish(Device::DeviceErrorInvalidParameter, QT_TR_NOOP("Device with IP adress %1 is already added in the system."));
     }
 
     m_kebaDevices.insert(address, device);
-    return Device::DeviceSetupStatusSuccess;
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginKeba::postSetupDevice(Device *device)
@@ -109,8 +114,11 @@ void DevicePluginKeba::updateData()
     }
 }
 
-Device::DeviceError DevicePluginKeba::executeAction(Device *device, const Action &action)
+void DevicePluginKeba::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     qCDebug(dcKebaKeContact()) << "Execute action" << device->name() << action.actionTypeId().toString();
 
     if (device->deviceClassId() == wallboxDeviceClassId) {
@@ -140,10 +148,10 @@ Device::DeviceError DevicePluginKeba::executeAction(Device *device, const Action
             m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(device->paramValue(wallboxDeviceIpParamTypeId).toString()) , 7090);
         }
 
-        return Device::DeviceErrorNoError;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
-    return Device::DeviceErrorDeviceClassNotFound;
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginKeba::readPendingDatagrams()
