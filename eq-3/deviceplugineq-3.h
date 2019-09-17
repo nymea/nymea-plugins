@@ -44,12 +44,12 @@ public:
     ~DevicePluginEQ3();
 
     void init() override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
 
-    void startMonitoringAutoDevices() override;
-
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
+
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     QString modeToString(EqivaBluetooth::Mode mode);
@@ -57,22 +57,13 @@ private:
 
     PluginTimer *m_pluginTimer = nullptr;
     QList<Param> m_config;
-    MaxCubeDiscovery *m_cubeDiscovery = nullptr;
     QHash<MaxCube *, Device *> m_cubes;
 
-    EqivaBluetoothDiscovery *m_eqivaBluetoothDiscovery = nullptr;
     QHash<Device*, EqivaBluetooth*> m_eqivaDevices;
-    QHash<int, ActionId> m_commandMap;
-
-public slots:
-    Device::DeviceError executeAction(Device *device, const Action &action);
 
 private slots:
     void onPluginTimer();
     void cubeConnectionStatusChanged(const bool &connected);
-    void discoveryDone(const QList<MaxCube *> &cubeList);
-    void bluetoothDiscoveryDone(const QStringList results);
-    void commandActionFinished(const bool &succeeded, const ActionId &actionId);
 
     void wallThermostatFound();
     void radiatorThermostatFound();
