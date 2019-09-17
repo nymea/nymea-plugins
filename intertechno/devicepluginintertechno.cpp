@@ -35,10 +35,13 @@ DevicePluginIntertechno::DevicePluginIntertechno()
 }
 
 
-Device::DeviceError DevicePluginIntertechno::executeAction(Device *device, const Action &action)
+void DevicePluginIntertechno::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     if (!hardwareManager()->radio433()->available())
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("No 433MHz radio available on this system."));
 
     QList<int> rawData;
     QByteArray binCode;
@@ -120,7 +123,7 @@ Device::DeviceError DevicePluginIntertechno::executeAction(Device *device, const
     }
 
     if (binCode.length() != 16){
-        return Device::DeviceErrorInvalidParameter;
+        return info->finish(Device::DeviceErrorInvalidParameter);
     }
 
     // =======================================
@@ -159,9 +162,9 @@ Device::DeviceError DevicePluginIntertechno::executeAction(Device *device, const
         qCDebug(dcIntertechno) << "transmitted" << pluginName() << device->name() << "power: " << action.param(switchSetPowerActionPowerParamTypeId).value().toBool();
     } else {
         qCWarning(dcIntertechno) << "could not transmitt" << pluginName() << device->name() << "power: " << action.param(switchSetPowerActionPowerParamTypeId).value().toBool();
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error sending data."));
     }
-    return Device::DeviceErrorNoError;
+    return info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginIntertechno::radioData(const QList<int> &rawData)
