@@ -49,22 +49,20 @@ void DevicePluginDweetio::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginDweetio::onPluginTimer);
 }
 
-Device::DeviceSetupStatus DevicePluginDweetio::setupDevice(Device *device)
+void DevicePluginDweetio::setupDevice(DeviceSetupInfo *info)
 {
-
-    if (device->deviceClassId() == postDeviceClassId) {
-
-        QString thing = device->paramValue(postDeviceThingParamTypeId).toString();
+    if (info->device()->deviceClassId() == postDeviceClassId) {
+        QString thing = info->device()->paramValue(postDeviceThingParamTypeId).toString();
         if (thing.isEmpty()){
             qDebug(dcDweetio) << "No thing name given, creating one";
             thing = QUuid::createUuid().toString();
         }
-        return Device::DeviceSetupStatusSuccess;
-    } else if (device->deviceClassId() == getDeviceClassId) {
-
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
+    } else if (info->device()->deviceClassId() == getDeviceClassId) {
+        return info->finish(Device::DeviceErrorNoError);
     }
-    return Device::DeviceSetupStatusFailure;
+
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginDweetio::postSetupDevice(Device *device)
@@ -93,8 +91,10 @@ void DevicePluginDweetio::deviceRemoved(Device *device)
     }
 }
 
-Device::DeviceError DevicePluginDweetio::executeAction(Device *device, const Action &action)
+void DevicePluginDweetio::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
     qCDebug(dcDweetio) << "Execute action" << device->id() << action.id() << action.params();
 
     if (device->deviceClassId() == postDeviceClassId) {
@@ -102,16 +102,15 @@ Device::DeviceError DevicePluginDweetio::executeAction(Device *device, const Act
         if (action.actionTypeId() == postContentDataActionTypeId) {
 
             QString content = action.param(postContentDataActionContentDataAreaParamTypeId).value().toString();
-            postContent(content, device, action);
-
-            return Device::DeviceErrorAsync;
+            postContent(content, device, info);
+            return;
         }
-        return Device::DeviceErrorActionTypeNotFound;
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+    return info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
-void DevicePluginDweetio::postContent(const QString &content, Device *device, const Action &action)
+void DevicePluginDweetio::postContent(const QString &content, Device *device, DeviceActionInfo *info)
 {
     QUrl url = QString("https://dweet.io:443/dweet/for/") + device->paramValue(postDeviceThingParamTypeId).toString();
     QNetworkRequest request(url);
@@ -133,7 +132,9 @@ void DevicePluginDweetio::postContent(const QString &content, Device *device, co
     qDebug(dcDweetio) << "Dweet: " << data << "Url: " << url;
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, data);
-    m_asyncActions.insert(reply, action.id());
+    m_asyncActions.insert(reply, info);
+    // In case the action is cancelled before the reply returns
+    connect(info, &DeviceActionInfo::destroyed, this, [this, reply](){ m_asyncActions.remove(reply); });
     connect(reply, &QNetworkReply::finished, this, &DevicePluginDweetio::onNetworkReplyFinished);
     m_postReplies.insert(reply, device);
 
@@ -169,18 +170,18 @@ void DevicePluginDweetio::onNetworkReplyFinished()
     if (m_postReplies.contains(reply)) {
         Device *device = m_postReplies.value(reply);
         m_postReplies.remove(reply);
-        ActionId actionId = m_asyncActions.value(reply);
+        DeviceActionInfo *info = m_asyncActions.take(reply);
 
         // check HTTP status code
         if ((status != 200) && (status != 204)) {
             qCWarning(dcDweetio) << "Update reply HTTP error:" << status << reply->errorString() << reply->readAll();
-            emit actionExecutionFinished(actionId, Device::DeviceErrorMissingParameter);
+            info->finish(Device::DeviceErrorMissingParameter);
             setConnectionStatus(false, device);
             reply->deleteLater();
             return;
         }
 
-        emit actionExecutionFinished(actionId, Device::DeviceErrorNoError);
+        info->finish(Device::DeviceErrorNoError);
         setConnectionStatus(true, device);
         if (status == 204){
             reply->deleteLater();
