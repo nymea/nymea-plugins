@@ -34,14 +34,12 @@ class DevicePluginConrad : public DevicePlugin
     Q_INTERFACES(DevicePlugin)
 
 public:
-    explicit DevicePluginConrad();
+    explicit DevicePluginConrad(QObject *parent = nullptr);
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void radioData(const QList<int> &rawData);
 
-
-public slots:
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 };
 
