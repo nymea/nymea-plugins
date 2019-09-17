@@ -29,8 +29,9 @@ DevicePluginHttpCommander::DevicePluginHttpCommander()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginHttpCommander::setupDevice(Device *device)
+void DevicePluginHttpCommander::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
     qDebug(dcHttpCommander()) << "Setup device" << device->name() << device->params();
 
     if(!m_pluginTimer) {
@@ -42,30 +43,30 @@ Device::DeviceSetupStatus DevicePluginHttpCommander::setupDevice(Device *device)
         QUrl url = device->paramValue(httpGetCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
             qDebug(dcHttpCommander()) << "Given URL is not valid";
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorInvalidParameter, QT_TR_NOOP("The given url is not valid."));
         }
 
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (device->deviceClassId() == httpPutCommanderDeviceClassId) {
         QUrl url = device->paramValue(httpPutCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
             qDebug(dcHttpCommander()) << "Given URL is not valid";
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorInvalidParameter, QT_TR_NOOP("The given url is not valid."));
         }
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (device->deviceClassId() == httpPostCommanderDeviceClassId) {
         QUrl url = device->paramValue(httpPostCommanderDeviceUrlParamTypeId).toUrl();
         if (!url.isValid()) {
             qDebug(dcHttpCommander()) << "Given URL is not valid";
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorInvalidParameter, QT_TR_NOOP("The given url is not valid."));
         }
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
-    return Device::DeviceSetupStatusFailure;
+    info->finish(Device::DeviceErrorNoError);
 }
 
 
@@ -77,8 +78,11 @@ void  DevicePluginHttpCommander::postSetupDevice(Device *device)
 }
 
 
-Device::DeviceError DevicePluginHttpCommander::executeAction(Device *device, const Action &action)
+void DevicePluginHttpCommander::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     if (device->deviceClassId() == httpPostCommanderDeviceClassId) {
 
         if (action.actionTypeId() == httpPostCommanderPostActionTypeId) {
@@ -91,10 +95,9 @@ Device::DeviceError DevicePluginHttpCommander::executeAction(Device *device, con
 
             m_httpRequests.insert(reply, device);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
-        return Device::DeviceErrorActionTypeNotFound;
-
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
 
     if (device->deviceClassId() == httpPutCommanderDeviceClassId) {
@@ -110,10 +113,10 @@ Device::DeviceError DevicePluginHttpCommander::executeAction(Device *device, con
 
             m_httpRequests.insert(reply, device);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+    return info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginHttpCommander::makeGetCall(Device *device)
