@@ -44,7 +44,9 @@ public:
     explicit DevicePluginAwattar();
     ~DevicePluginAwattar();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
 
 private:
@@ -52,7 +54,7 @@ private:
 
 private slots:
     void onPluginTimer();
-    void requestPriceData(Device* device, bool setupInProgress = false);
+    void requestPriceData(Device* device, DeviceSetupInfo *setup = nullptr);
     void processPriceData(Device *device, const QVariantMap &data);
 };
 
