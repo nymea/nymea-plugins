@@ -289,11 +289,6 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
             return Device::DeviceErrorNoError;
         }
 
-        if (action.actionTypeId() == heosPlayerFastRewindActionTypeId) {
-
-            return Device::DeviceErrorActionTypeNotFound;
-        }
-
         if (action.actionTypeId() == heosPlayerStopActionTypeId) {
             heos->setPlayerState(playerId, PLAYER_STATE_STOP);
             return Device::DeviceErrorNoError;
@@ -307,11 +302,6 @@ Device::DeviceError DevicePluginDenon::executeAction(Device *device, const Actio
         if (action.actionTypeId() == heosPlayerPauseActionTypeId) {
             heos->setPlayerState(playerId, PLAYER_STATE_PAUSE);
             return Device::DeviceErrorNoError;
-        }
-
-        if (action.actionTypeId() == heosPlayerFastForwardActionTypeId) {
-
-            return Device::DeviceErrorActionTypeNotFound;
         }
 
         if (action.actionTypeId() == heosPlayerSkipNextActionTypeId) {

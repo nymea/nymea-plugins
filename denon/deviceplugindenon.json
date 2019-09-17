@@ -200,7 +200,7 @@
                     "name": "heosPlayer",
                     "displayName": "Heos player",
                     "createMethods": ["auto"],
-                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "interfaces": ["mediaplayer", "mediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
                     "paramTypes":[
                         {
                             "id": "89629008-6ad8-4e92-863d-b86e0e012d0b",
@@ -355,11 +355,6 @@
                             "displayName": "Akip back"
                         },
                         {
-                            "id": "fe42d89f-aaad-4f33-a022-d80bdf3a7b19",
-                            "name": "fastRewind",
-                            "displayName": "Tast rewind"
-                        },
-                        {
                             "id": "c4b29c09-e3b3-4843-b6d9-e032f3fc1d78",
                             "name": "stop",
                             "displayName": "Stop"
@@ -373,11 +368,6 @@
                             "id": "21c1cbe6-278f-4688-a65f-6620be1ee5ea",
                             "name": "pause",
                             "displayName": "Pause"
-                        },
-                        {
-                            "id": "60b62e88-c68b-463f-b328-2c5d67a71ca0",
-                            "name": "fastForward",
-                            "displayName": "Fast forward"
                         },
                         {
                             "id": "57697e9c-ce5e-4b8f-b42e-16662829ceb2",
