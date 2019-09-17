@@ -38,26 +38,14 @@ class DevicePluginCommandLauncher : public DevicePlugin
 public:
     explicit DevicePluginCommandLauncher();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
 
     void deviceRemoved(Device *device) override;
 
 private:
     QHash<QProcess*,Device*> m_scripts;
     QHash<QProcess*,Device*> m_applications;
-
-    // Hashes for action execution4
-    QHash<QProcess*,ActionId> m_startingScripts;
-    QHash<QProcess*,ActionId> m_startingApplications;
-    QHash<QProcess*,ActionId> m_killingScripts;
-    QHash<QProcess*,ActionId> m_killingApplications;
-
-private slots:
-    void scriptStateChanged(QProcess::ProcessState state);
-    void scriptFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void applicationStateChanged(QProcess::ProcessState state);
-    void applicationFinished(int exitCode, QProcess::ExitStatus exitStatus);
 };
 
 #endif // DEVICEPLUGINCOMMANDLAUNCHER_H
