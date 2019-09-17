@@ -41,10 +41,12 @@ public:
     ~DevicePluginAnel();
 
     void init() override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private slots:
     void refreshStates();
@@ -52,8 +54,8 @@ private slots:
 private:
     void setConnectedState(Device *device, bool connected);
 
-    Device::DeviceSetupStatus setupHomeProDevice(Device *device);
-    Device::DeviceSetupStatus setupAdvDevice(Device *device);
+    void setupHomeProDevice(DeviceSetupInfo *info);
+    void setupAdvDevice(DeviceSetupInfo *info);
 
     void refreshHomePro(Device *device);
     void refreshAdv(Device *device);
@@ -65,8 +67,6 @@ private:
     QHash<DeviceClassId, StateTypeId> m_connectedStateTypeIdMap;
     QHash<DeviceClassId, ParamTypeId> m_ipAddressParamTypeIdMap;
     QHash<DeviceClassId, ParamTypeId> m_portParamTypeIdMap;
-    QHash<DeviceClassId, ParamTypeId> m_userParamTypeIdMap;
-    QHash<DeviceClassId, ParamTypeId> m_passParamTypeIdMap;
 };
 
 #endif // DEVICEPLUGINANEL_H
