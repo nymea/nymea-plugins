@@ -32,6 +32,8 @@
 #include "types/browseritem.h"
 #include "types/browseritemaction.h"
 #include "devices/device.h"
+#include "devices/browseresult.h"
+#include "devices/browseritemresult.h"
 
 class Kodi : public QObject
 {
@@ -66,9 +68,9 @@ public:
     void connectKodi();
     void disconnectKodi();
 
-    Device::BrowseResult browse(const QString &itemId, Device::BrowseResult &result);
-    Device::BrowserItemResult browserItem(const QString &itemId, Device::BrowserItemResult &result);
-    Device::DeviceError launchBrowserItem(const QString &itemId);
+    void browse(BrowseResult *result);
+    void browserItem(BrowserItemResult *result);
+    int launchBrowserItem(const QString &itemId);
     int executeBrowserItemAction(const QString &itemId, const ActionTypeId &actionTypeId);
 
 signals:
@@ -76,15 +78,14 @@ signals:
     void stateChanged();
     void activePlayerChanged(const QString &playerType);
     void actionExecuted(int actionId, bool success);
+    void browserItemExecuted(int actionId, bool success);
+    void browserItemActionExecuted(int actionId, bool success);
     void updateDataReceived(const QVariantMap &data);
     void versionDataReceived(const QVariantMap &data);
     void playbackStatusChanged(const QString &playbackState);
     void mediaMetadataChanged(const QString &title, const QString &artist, const QString &collection, const QString &artwork);
     void shuffleChanged(bool shuffle);
     void repeatChanged(const QString &repeat);
-    void browseResult(const Device::BrowseResult &result);
-    void browserItemResult(const Device::BrowserItemResult &result);
-    void browserItemActionExecuted(int actionId, bool success);
 
 private slots:
     void onVolumeChanged(const int &volume, const bool &muted);
@@ -131,8 +132,8 @@ private:
     };
     VirtualFsNode* m_virtualFs = nullptr;
 
-    QHash<int, Device::BrowseResult> m_pendingBrowseRequests;
-    QHash<int, Device::BrowserItemResult> m_pendingBrowserItemRequests;
+    QHash<int, BrowseResult*> m_pendingBrowseRequests;
+    QHash<int, BrowserItemResult*> m_pendingBrowserItemRequests;
 
 };
 
