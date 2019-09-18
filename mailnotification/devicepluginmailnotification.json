@@ -11,34 +11,21 @@
                 {
                     "id": "f4844c97-7ca6-4349-904e-ff9749a9fe74",
                     "name": "customMail",
-                    "displayName": "Custom mail",
+                    "displayName": "E-mail notifications",
                     "createMethods": [ "user" ],
+                    "setupMethod": "userandpassword",
                     "interfaces": [ "notifications" ],
                     "paramTypes": [
                         {
                             "id": "af30ce7b-fb6b-42f0-889d-20b32f8b8fa4",
-                            "name": "customSender",
+                            "name": "sender",
                             "displayName": "Sender mail",
                             "type": "QString",
                             "inputType": "Mail"
                         },
                         {
-                            "id": "b91d0ecc-6903-4991-ae8d-f36757ce40a7",
-                            "name": "customUser",
-                            "displayName": "User",
-                            "type": "QString",
-                            "inputType": "TextLine"
-                        },
-                        {
-                            "id": "ac29e643-1d18-4612-8d2f-65fb07a67182",
-                            "name": "customPassword",
-                            "displayName": "Password",
-                            "type": "QString",
-                            "inputType": "Password"
-                        },
-                        {
                             "id": "d657f002-9741-42e1-9fef-32eae96dacdb",
-                            "name": "customRecipient",
+                            "name": "recipient",
                             "displayName": "Recipient",
                             "type": "QString",
                             "inputType": "Mail"
