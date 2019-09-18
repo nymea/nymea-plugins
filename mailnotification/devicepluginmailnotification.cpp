@@ -38,24 +38,40 @@ DevicePluginMailNotification::~DevicePluginMailNotification()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Device *device)
+void DevicePluginMailNotification::startPairing(DevicePairingInfo *info)
 {
+    info->finish(Device::DeviceErrorNoError, QT_TR_NOOP("Please enter your username and password for the e-mail account."));
+}
+
+void DevicePluginMailNotification::confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret)
+{
+    // Just store details, we'll do a test login in setupDevice anyways
+    pluginStorage()->beginGroup(info->deviceId().toString());
+    pluginStorage()->setValue("username", username);
+    pluginStorage()->setValue("password", secret);
+    pluginStorage()->endGroup();
+    info->finish(Device::DeviceErrorNoError);
+}
+
+void DevicePluginMailNotification::setupDevice(DeviceSetupInfo *info)
+{
+    Device *device = info->device();
+
     // Custom mail
     if(device->deviceClassId() == customMailDeviceClassId) {
         SmtpClient *smtpClient = new SmtpClient(this);
         smtpClient->setHost(device->paramValue(customMailDeviceSmtpParamTypeId).toString());
         smtpClient->setPort(static_cast<quint16>(device->paramValue(customMailDevicePortParamTypeId).toUInt()));
-        smtpClient->setUser(device->paramValue(customMailDeviceCustomUserParamTypeId).toString());
 
-        // TODO: use cryptography to save password not as plain text
-        smtpClient->setPassword(device->paramValue(customMailDeviceCustomPasswordParamTypeId).toString());
+        pluginStorage()->beginGroup(device->id().toString());
+        smtpClient->setUser(pluginStorage()->value("username").toString());
+        smtpClient->setPassword(pluginStorage()->value("password").toString());
+        pluginStorage()->endGroup();
 
         if(device->paramValue(customMailDeviceAuthenticationParamTypeId).toString() == "PLAIN") {
             smtpClient->setAuthenticationMethod(SmtpClient::AuthenticationMethodPlain);
         } else if(device->paramValue(customMailDeviceAuthenticationParamTypeId).toString() == "LOGIN") {
             smtpClient->setAuthenticationMethod(SmtpClient::AuthenticationMethodLogin);
-        } else {
-            return Device::DeviceSetupStatusFailure;
         }
 
         if(device->paramValue(customMailDeviceEncryptionParamTypeId).toString() == "NONE") {
@@ -64,45 +80,64 @@ Device::DeviceSetupStatus DevicePluginMailNotification::setupDevice(Device *devi
             smtpClient->setEncryptionType(SmtpClient::EncryptionTypeSSL);
         } else if(device->paramValue(customMailDeviceEncryptionParamTypeId).toString() == "TLS") {
             smtpClient->setEncryptionType(SmtpClient::EncryptionTypeTLS);
-        } else {
-            return Device::DeviceSetupStatusFailure;
         }
 
-        QString recipientsString = device->paramValue(customMailDeviceCustomRecipientParamTypeId).toString();
+        QString recipientsString = device->paramValue(customMailDeviceRecipientParamTypeId).toString();
         QStringList recipients = recipientsString.split(",");
 
         smtpClient->setRecipients(recipients);
-        smtpClient->setSender(device->paramValue(customMailDeviceCustomSenderParamTypeId).toString());
-
-        connect(smtpClient, &SmtpClient::testLoginFinished, this, &DevicePluginMailNotification::testLoginFinished);
-        connect(smtpClient, &SmtpClient::sendMailFinished, this, &DevicePluginMailNotification::sendMailFinished);
-        m_clients.insert(smtpClient,device);
+        smtpClient->setSender(device->paramValue(customMailDeviceSenderParamTypeId).toString());
 
         smtpClient->testLogin();
+        connect(smtpClient, &SmtpClient::testLoginFinished, info, [this, smtpClient, info, device](bool success){
+            if (!success) {
+                qCWarning(dcMailNotification()) << "Email login test failed";
+                info->finish(Device::DeviceErrorAuthenticationFailure, QT_TR_NOOP("The email account cannot be accessed. Wrong username or password?"));
+                smtpClient->deleteLater();
+                return;
+            }
 
-        return Device::DeviceSetupStatusAsync;
+            qCDebug(dcMailNotification()) << "Email login test successful.";
+            m_clients.insert(smtpClient,device);
+            info->finish(Device::DeviceErrorNoError);
+        });
+
+        return;
     }
-    return Device::DeviceSetupStatusFailure;
+
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
-Device::DeviceError DevicePluginMailNotification::executeAction(Device *device, const Action &action)
+void DevicePluginMailNotification::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     if (device->deviceClassId() == customMailDeviceClassId) {
         if(action.actionTypeId() == customMailNotifyActionTypeId) {
             SmtpClient *smtpClient = m_clients.key(device);
             if (!smtpClient) {
                 qCWarning(dcMailNotification()) << "Could not find SMTP client for " << device;
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
             }
 
-            smtpClient->sendMail(action.param(customMailNotifyActionTitleParamTypeId).value().toString(),
-                                 action.param(customMailNotifyActionBodyParamTypeId).value().toString(),
-                                 action.id());
-            return Device::DeviceErrorAsync;
+            int id = smtpClient->sendMail(action.param(customMailNotifyActionTitleParamTypeId).value().toString(),
+                                 action.param(customMailNotifyActionBodyParamTypeId).value().toString());
+            connect(smtpClient, &SmtpClient::sendMailFinished, info, [info, id](bool success, int resultId){
+                if (id != resultId) {
+                    return; // Not the process we were waiting for
+                }
+                if (!success) {
+                    info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error sending email."));
+                    return;
+                }
+                info->finish(Device::DeviceErrorNoError);
+            });
+            return;
         }
-        return Device::DeviceErrorActionTypeNotFound;
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+    return info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginMailNotification::deviceRemoved(Device *device)
@@ -110,32 +145,4 @@ void DevicePluginMailNotification::deviceRemoved(Device *device)
     SmtpClient *smtpClient = m_clients.key(device);
     m_clients.remove(smtpClient);
     delete smtpClient;
-}
-
-void DevicePluginMailNotification::testLoginFinished(const bool &success)
-{
-    SmtpClient *smtpClient = static_cast<SmtpClient*>(sender());
-    Device *device = m_clients.value(smtpClient);
-    if (success) {
-        qCDebug(dcMailNotification()) << "Email login test successfull";
-        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
-    } else {
-        qCWarning(dcMailNotification()) << "Email login test failed";
-        emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
-        if(m_clients.contains(smtpClient)) {
-            m_clients.remove(smtpClient);
-        }
-        smtpClient->deleteLater();
-    }
-}
-
-void DevicePluginMailNotification::sendMailFinished(const bool &success, const ActionId &actionId)
-{
-    if (success) {
-        qCDebug(dcMailNotification()) << "Email sent successfully";
-        emit actionExecutionFinished(actionId, Device::DeviceErrorNoError);
-    } else {
-        qCWarning(dcMailNotification()) << "Email sending failed";
-        emit actionExecutionFinished(actionId, Device::DeviceErrorDeviceNotFound);
-    }
 }

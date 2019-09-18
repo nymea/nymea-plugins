@@ -31,14 +31,14 @@
 #include <QStringList>
 #include <QLoggingCategory>
 
-#include "devices/deviceplugin.h"
+//#include "devices/deviceplugin.h"
 
 Q_DECLARE_LOGGING_CATEGORY(dcSmtpClient)
 
 struct Message {
     QString subject;
     QString body;
-    ActionId actionId;
+    int id;
 };
 
 
@@ -82,7 +82,7 @@ public:
 
     void connectToHost();
     void testLogin();
-    void sendMail(const QString &subject, const QString &body, const ActionId &actionId);
+    int sendMail(const QString &subject, const QString &body);
 
     void setHost(const QString &host);
     void setPort(const quint16 &port);
@@ -127,8 +127,8 @@ private:
     void handleUnexpectedSmtpCode(int responseCode, const QString &serverMessage);
 
 signals:
-    void sendMailFinished(const bool &success, const ActionId &actionId);
-    void testLoginFinished(const bool &success);
+    void sendMailFinished(bool success, int &id);
+    void testLoginFinished(bool success);
 
 private slots:
 
