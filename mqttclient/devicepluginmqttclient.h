@@ -40,22 +40,18 @@ class DevicePluginMqttClient: public DevicePlugin
 public:
     explicit DevicePluginMqttClient();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
 
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private slots:
     void subscribe(Device *device);
 
     void publishReceived(const QString &topic, const QByteArray &payload, bool retained);
-    void published(quint16 packetId);
-
 
 private:
     QHash<Device*, MqttClient*> m_clients;
-
-    QHash<quint16, Action> m_pendingPublishes;
 };
 
 #endif // DEVICEPLUGINMQTTCLIENT_H
