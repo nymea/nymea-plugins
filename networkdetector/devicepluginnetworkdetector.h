@@ -48,14 +48,12 @@ public:
 
     void init() override;
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
     void deviceRemoved(Device *device) override;
 
 
 private slots:
-    void discoveryFinished(const QList<Host> &hosts);
-
     void deviceReachableChanged(bool reachable);
     void deviceAddressChanged(const QString &address);
     void deviceSeen();
@@ -64,7 +62,6 @@ private slots:
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    Discovery *m_discovery = nullptr;
     BroadcastPing *m_broadcastPing = nullptr;
     QHash<DeviceMonitor*, Device*> m_monitors;
 };
