@@ -42,29 +42,31 @@ public:
     ~DevicePluginKodi();
 
     void init() override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
 
-    Device::BrowseResult browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale) override;
-    Device::BrowserItemResult browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale) override;
-    Device::DeviceError executeBrowserItem(Device *device, const BrowserAction &browserAction) override;
-    Device::DeviceError executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction) override;
+    void browseDevice(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+    void executeBrowserItemAction(BrowserItemActionInfo *info) override;
 
 private:
     PluginTimer *m_pluginTimer;
-    QHash<Kodi *, Device *> m_kodis;
-    QList<Kodi *> m_asyncSetups;
+    QHash<Kodi*, Device*> m_kodis;
+    QHash<Kodi*, DeviceSetupInfo*> m_asyncSetups;
 
-    QHash<int, ActionId> m_pendingActions;
-    QHash<int, ActionId> m_pendingBrowserItemActions;
+    QHash<int, DeviceActionInfo*> m_pendingActions;
+    QHash<int, BrowserActionInfo*> m_pendingBrowserActions;
+    QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
 
 private slots:
     void onPluginTimer();
     void onConnectionChanged();
     void onStateChanged();
     void onActionExecuted(int actionId, bool success);
+    void onBrowserItemExecuted(int actionId, bool success);
     void onBrowserItemActionExecuted(int actionId, bool success);
     void versionDataReceived(const QVariantMap &data);
     void onSetupFinished(const QVariantMap &data);
