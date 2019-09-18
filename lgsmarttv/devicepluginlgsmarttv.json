@@ -15,7 +15,6 @@
                     "createMethods": [ "discovery" ],
                     "setupMethod": "displayPin",
                     "interfaces": ["connectable"],
-                    "pairingInfo": "Please enter the pairing key displayed on the Tv.",
                     "paramTypes": [
                         {
                             "id": "797a1915-cb85-400a-9c1a-db09c73b54d5",
@@ -50,13 +49,6 @@
                             "name": "port",
                             "displayName": "port",
                             "type": "int"
-                        },
-                        {
-                            "id": "60a455e2-0668-4f11-a789-43c85e5a4bc5",
-                            "name": "key",
-                            "displayName": "key",
-                            "type": "QString",
-                            "inputType": "Password"
                         }
                     ],
                     "stateTypes": [
