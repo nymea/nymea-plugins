@@ -43,16 +43,12 @@ public:
     ~DevicePluginNetatmo();
 
     void init() override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
     void postSetupDevice(Device *device) override;
 
-public slots:
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
-
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QList<Device *> m_asyncSetups;
 
     QHash<QString, QVariantMap> m_indoorStationInitData;
     QHash<QString, QVariantMap> m_outdoorStationInitData;
