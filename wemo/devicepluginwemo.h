@@ -40,22 +40,19 @@ public:
     ~DevicePluginWemo();
 
     void init() override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
     void deviceRemoved(Device *device) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<QNetworkReply *, Device *> m_refreshReplies;
-    QHash<QNetworkReply *, Device *> m_setPowerReplies;
-    QHash<QNetworkReply *, ActionId> m_runningActionExecutions;
 
     void refresh(Device* device);
     bool setPower(Device *device, const bool &power, const ActionId &actionId);
 
     void processRefreshData(const QByteArray &data, Device *device);
-    void processSetPowerData(const QByteArray &data, Device *device, const ActionId &actionId);
 
 private slots:
     void onNetworkReplyFinished();
