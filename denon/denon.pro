@@ -6,8 +6,13 @@ TARGET = $$qtLibraryTarget(nymea_deviceplugindenon)
 
 SOURCES += \
     deviceplugindenon.cpp \
-    denonconnection.cpp
+    heos.cpp \
+    heosplayer.cpp \
+    avrconnection.cpp
 
 HEADERS += \
     deviceplugindenon.h \
-    denonconnection.h
+    heos.h \
+    heosplayer.h \
+    avrconnection.h \
+    heostypes.h
