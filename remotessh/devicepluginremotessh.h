@@ -40,16 +40,16 @@ public:
     explicit DevicePluginRemoteSsh();
 
     void init() override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     QHash<QProcess *, Device *> m_reverseSSHProcess;
     QHash<QProcess *, Device *> m_sshKeyGenProcess;
 
-    QHash<QProcess *, ActionId> m_startingProcess;
-    QHash<QProcess *, ActionId> m_killingProcess;
+    QHash<QProcess *, DeviceActionInfo*> m_startingProcess;
+    QHash<QProcess *, DeviceActionInfo*> m_killingProcess;
 
     PluginTimer *m_pluginTimer = nullptr;
 
