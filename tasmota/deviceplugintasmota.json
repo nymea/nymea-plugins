@@ -85,6 +85,56 @@
                     ]
                 },
                 {
+                    "id": "e1073af2-f207-4dc9-8caa-e933421885db",
+                    "name": "sonoff_tri",
+                    "displayName": "3 channel switch (Sonoff 3CH, Tuya 3CH...)",
+                    "createMethods": ["user"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "b7532005-4157-4687-952f-ac3cd6b7f606",
+                            "name":"ipAddress",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "93b97754-faa7-4b60-9d63-f7ee44570363",
+                            "name": "attachedDeviceCH1",
+                            "displayName": "Connected device 1",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "8fc9e8e6-c6d9-4108-bffb-2563f8b93fa1",
+                            "name": "attachedDeviceCH2",
+                            "displayName": "Connected device 2",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
+                            "defaultValue": "None"
+                        },
+                        {
+                            "id": "7dada813-d341-4c9a-bb82-e2aef128bef6",
+                            "name": "attachedDeviceCH3",
+                            "displayName": "Connected device 3",
+                            "type": "QString",
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
+                            "defaultValue": "None"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e6439ea4-4373-4ac1-a790-748604cf2830",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ]
+                },
+                {
                     "id": "ae845ec9-be61-4bdf-9015-4c156f937da7",
                     "name": "sonoff_quad",
                     "displayName": "4 channel switch (Sonoff 4CH, T1 4CH...)",
