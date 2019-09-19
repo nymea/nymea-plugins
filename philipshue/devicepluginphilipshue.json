@@ -15,16 +15,7 @@
                     "interfaces": ["gateway"],
                     "createMethods": ["discovery"],
                     "setupMethod": "pushButton",
-                    "pairingInfo": "Please press the button on the Hue Bridge within 30 seconds before you continue",
                     "paramTypes": [
-                        {
-                            "id": "8bf5776a-d5a6-4600-8b27-481f0d803a8f",
-                            "name": "apiKey",
-                            "displayName": "api key",
-                            "type" : "QString",
-                            "inputType": "TextLine",
-                            "readOnly": true
-                        },
                         {
                             "id": "1845975b-1184-4440-bc0d-73d53a9f683c",
                             "name": "host",
@@ -34,32 +25,10 @@
                             "readOnly": true
                         },
                         {
-                            "id": "2c67203d-a308-45ec-9a08-fc4183c06ff8",
-                            "name": "mac",
-                            "displayName": "mac address",
-                            "type" : "QString",
-                            "inputType": "MacAddress",
-                            "readOnly": true
-                        },
-                        {
                             "id": "a496feb0-3b7b-46cb-a63a-e063447d6b1d",
                             "name": "id",
                             "displayName": "id",
                             "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "ea228c4d-975c-4b43-9445-7c9a907c29d6",
-                            "name": "softwareVersion",
-                            "displayName": "software version",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "53170394-956c-4511-b3a8-2c8a502ef1ed",
-                            "name": "zigbeeChannel",
-                            "displayName": "zigbee channel",
-                            "type" : "int",
                             "readOnly": true
                         }
                     ],
@@ -70,7 +39,8 @@
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "7a230e89-c4ce-4276-90e0-6a9ddb890603",
@@ -172,7 +142,8 @@
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "90aaffe5-6a76-47d2-a14a-550f60390245",
@@ -300,7 +271,8 @@
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "4e579f6a-e4b3-4876-804a-9fcc066f90f9",
@@ -403,7 +375,8 @@
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "5995ecb7-b5e5-4f6a-b4d6-33c93497e5fb",
@@ -494,7 +467,8 @@
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "683e493a-9796-4d5e-b0e3-61cb178d5819",
@@ -590,7 +564,8 @@
                             "displayName": "reachable",
                             "displayNameEvent": "reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         }
                     ],
                     "eventTypes": [
@@ -693,7 +668,8 @@
                             "displayName": "Reachable",
                             "displayNameEvent": "Reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "19b18531-61e5-4998-89d1-765d740e24eb",
@@ -834,7 +810,8 @@
                             "displayName": "Reachable",
                             "displayNameEvent": "Reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "ac463b30-24af-4352-84da-19a3ffc906bd",

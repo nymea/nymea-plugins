@@ -28,7 +28,6 @@
 #include "huebridge.h"
 #include "huelight.h"
 #include "hueremote.h"
-#include "pairinginfo.h"
 #include "huemotionsensor.h"
 #include "huemotionsensor.h"
 
@@ -50,13 +49,12 @@ public:
     ~DevicePluginPhilipsHue();
 
     void init() override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
-
-public slots:
-    Device::DeviceError executeAction(Device *device, const Action &action);
+    void executeAction(DeviceActionInfo *info) override;
 
 private slots:
     void lightStateChanged();
@@ -79,18 +77,15 @@ private:
     public:
         UpnpDiscoveryReply* upnpReply;
         QNetworkReply* nUpnpReply;
-        QList<DeviceDescriptor> results;
+        DeviceDescriptors results;
     };
+    QHash<DeviceDiscoveryInfo*, DiscoveryJob*> m_discoveries;
     void finishDiscovery(DiscoveryJob* job);
 
     PluginTimer *m_pluginTimer1Sec = nullptr;
     PluginTimer *m_pluginTimer5Sec = nullptr;
     PluginTimer *m_pluginTimer15Sec = nullptr;
 
-    QHash<QNetworkReply *, PairingInfo *> m_pairingRequests;
-    QHash<QNetworkReply *, PairingInfo *> m_informationRequests;
-
-    QList<HueBridge *> m_unconfiguredBridges;
     QList<HueLight *> m_unconfiguredLights;
 
     QHash<QNetworkReply *, Device *> m_lightRefreshRequests;
@@ -129,8 +124,6 @@ private:
     void processLightsRefreshResponse(Device *device, const QByteArray &data);
     void processSensorsRefreshResponse(Device *device, const QByteArray &data);
     void processSetNameResponse(Device *device, const QByteArray &data);
-    void processPairingResponse(PairingInfo *pairingInfo, const QByteArray &data);
-    void processInformationResponse(PairingInfo *pairingInfo, const QByteArray &data);
     void processActionResponse(Device *device, const ActionId actionId, const QByteArray &data);
 
     void bridgeReachableChanged(Device *device, const bool &reachable);

@@ -11,7 +11,6 @@ SOURCES += \
     huebridge.cpp \
     huelight.cpp \
     huemotionsensor.cpp \
-    pairinginfo.cpp \
     hueremote.cpp \
     huedevice.cpp
 
@@ -23,7 +22,6 @@ HEADERS += \
     huebridge.h \
     huelight.h \
     huemotionsensor.h \
-    pairinginfo.h \
     hueremote.h \
     huedevice.h
 
