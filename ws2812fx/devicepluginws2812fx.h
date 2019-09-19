@@ -101,10 +101,10 @@ class DevicePluginWs2812fx : public DevicePlugin
 public:
     explicit DevicePluginWs2812fx();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     enum CommandType {
@@ -116,10 +116,10 @@ private:
 
     QHash<Device *, QSerialPort *> m_serialPorts;
     QList<QString> m_usedInterfaces;
-    QHash<CommandType, ActionId> m_pendingActions;
+    QHash<CommandType, DeviceActionInfo*> m_pendingActions;
 
     QTimer *m_reconnectTimer = nullptr;
-    Device::DeviceError sendCommand(Device *device, ActionId actionId, const QByteArray &command, CommandType commandType);
+    void sendCommand(DeviceActionInfo *info, const QByteArray &command, CommandType commandType);
 
 private slots:
     void onReadyRead();
