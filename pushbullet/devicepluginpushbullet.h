@@ -36,8 +36,8 @@ public:
     explicit DevicePluginPushbullet(QObject *parent = nullptr);
     ~DevicePluginPushbullet() override;
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 };
 
