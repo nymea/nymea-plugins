@@ -38,9 +38,9 @@ public:
     ~DevicePluginTasmota();
 
     void init() override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private slots:
     void onClientConnected(MqttChannel *channel);

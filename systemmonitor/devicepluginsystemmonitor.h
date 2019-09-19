@@ -41,7 +41,7 @@ public:
     explicit DevicePluginSystemMonitor();
     ~DevicePluginSystemMonitor() override;
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
 
 private slots:
