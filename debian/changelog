@@ -1,3 +1,28 @@
+nymea-plugins (0.15.2) xenial; urgency=medium
+
+  [ Bernhard Trinnes ]
+  * Denon Plug-In: Add heos devices
+
+  [ George Yatsev ]
+  * Tasmota: Add support for 3ch devices
+
+  [ Bernhard Trinnes ]
+  * TcpCommander: Fixed input and output device class
+  * New plug-in: systemmonitor
+
+  [ Michael Zanetti ]
+  * PhilipsHue: Make use of the new alert interface
+
+  [ Bernhard Trinnes ]
+  * New plugin: One-Wire
+  * GPIO Plug-In: add counter device
+  * Senic: Fixed device clean up on a failed device setup
+
+  [ Michael Zanetti ]
+  * Remove Plugin: UniPi
+
+ -- Jenkins <jenkins@nymea.io>  Thu, 19 Sep 2019 12:28:02 +0200
+
 nymea-plugins (0.15.1) xenial; urgency=medium
 
   [ Bernhard Trinnes ]
