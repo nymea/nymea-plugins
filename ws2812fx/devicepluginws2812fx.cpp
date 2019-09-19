@@ -44,258 +44,252 @@ DevicePluginWs2812fx ::DevicePluginWs2812fx ()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginWs2812fx::setupDevice(Device *device)
+void DevicePluginWs2812fx::setupDevice(DeviceSetupInfo *info)
 {
-    if (device->deviceClassId() == ws2812fxDeviceClassId) {
-        QString interface = device->paramValue(ws2812fxDeviceSerialPortParamTypeId).toString();
+    Device *device = info->device();
 
-        if (!m_usedInterfaces.contains(interface)) {
+    QString interface = device->paramValue(ws2812fxDeviceSerialPortParamTypeId).toString();
 
-            QSerialPort *serialPort = new QSerialPort(interface, this);
-            if(!serialPort)
-                return Device::DeviceSetupStatusFailure;
-
-            serialPort->setBaudRate(115200);
-            serialPort->setDataBits(QSerialPort::DataBits::Data8);
-            serialPort->setParity(QSerialPort::Parity::NoParity);
-            serialPort->setStopBits(QSerialPort::StopBits::OneStop);
-            serialPort->setFlowControl(QSerialPort::FlowControl::NoFlowControl);
-
-            if (!serialPort->open(QIODevice::ReadWrite)) {
-                qCWarning(dcWs2812fx()) << "Could not open serial port" << interface << serialPort->errorString();
-                serialPort->deleteLater();
-                return Device::DeviceSetupStatusFailure;
-            }
-
-            connect(serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
-            connect(serialPort, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-
-            qCDebug(dcWs2812fx()) << "Setup successfully serial port" << interface;
-            device->setStateValue(ws2812fxConnectedStateTypeId, true);
-            m_usedInterfaces.append(interface);
-            m_serialPorts.insert(device, serialPort);
-
-            if(!m_reconnectTimer) {
-                m_reconnectTimer = new QTimer(this);
-                m_reconnectTimer->setSingleShot(true);
-                m_reconnectTimer->setInterval(5000);
-
-                connect(m_reconnectTimer, &QTimer::timeout, this, &DevicePluginWs2812fx::onReconnectTimer);
-            }
-        } else {
-            return Device::DeviceSetupStatusFailure;
-        }
-        return Device::DeviceSetupStatusSuccess;
+    if (m_usedInterfaces.contains(interface)) {
+        info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("This serial port is already used."));
+        return;
     }
-    return Device::DeviceSetupStatusFailure;
+
+    QSerialPort *serialPort = new QSerialPort(interface, this);
+
+    serialPort->setBaudRate(115200);
+    serialPort->setDataBits(QSerialPort::DataBits::Data8);
+    serialPort->setParity(QSerialPort::Parity::NoParity);
+    serialPort->setStopBits(QSerialPort::StopBits::OneStop);
+    serialPort->setFlowControl(QSerialPort::FlowControl::NoFlowControl);
+
+    if (!serialPort->open(QIODevice::ReadWrite)) {
+        qCWarning(dcWs2812fx()) << "Could not open serial port" << interface << serialPort->errorString();
+        serialPort->deleteLater();
+        return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error opening serial port."));
+    }
+
+    connect(serialPort, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(onSerialError(QSerialPort::SerialPortError)));
+    connect(serialPort, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
+
+    qCDebug(dcWs2812fx()) << "Setup successfully serial port" << interface;
+    device->setStateValue(ws2812fxConnectedStateTypeId, true);
+    m_usedInterfaces.append(interface);
+    m_serialPorts.insert(device, serialPort);
+
+    if(!m_reconnectTimer) {
+        m_reconnectTimer = new QTimer(this);
+        m_reconnectTimer->setSingleShot(true);
+        m_reconnectTimer->setInterval(5000);
+
+        connect(m_reconnectTimer, &QTimer::timeout, this, &DevicePluginWs2812fx::onReconnectTimer);
+    }
+
+    info->finish(Device::DeviceErrorNoError);
 }
 
 
-Device::DeviceError DevicePluginWs2812fx::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginWs2812fx::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params)
     // Create the list of available serial interfaces
-    QList<DeviceDescriptor> deviceDescriptors;
 
     Q_FOREACH(QSerialPortInfo port, QSerialPortInfo::availablePorts()) {
 
         qCDebug(dcWs2812fx()) << "Found serial port:" << port.portName();
         QString description = port.manufacturer() + " " + port.description();
-        DeviceDescriptor descriptor(deviceClassId, port.portName(), description);
+        DeviceDescriptor descriptor(info->deviceClassId(), port.portName(), description);
         foreach (Device *existingDevice, myDevices().filterByParam(ws2812fxDeviceSerialPortParamTypeId, port.portName())) {
             descriptor.setDeviceId(existingDevice->id());
         }
         ParamList parameters;
         parameters.append(Param(ws2812fxDeviceSerialPortParamTypeId, port.portName()));
         descriptor.setParams(parameters);
-        deviceDescriptors.append(descriptor);
+        info->addDeviceDescriptor(descriptor);
     }
-    emit devicesDiscovered(deviceClassId, deviceDescriptors);
-    return Device::DeviceErrorAsync;
+    info->finish(Device::DeviceErrorNoError);
 }
 
 
-Device::DeviceError DevicePluginWs2812fx::executeAction(Device *device, const Action &action)
+void DevicePluginWs2812fx::executeAction(DeviceActionInfo *info)
 {
-    if (device->deviceClassId() == ws2812fxDeviceClassId ) {
+    Device *device = info->device();
+    Action action = info->action();
 
-        QByteArray command;
-        if (action.actionTypeId() == ws2812fxPowerActionTypeId) {
-            command.append("b ");
-            if (action.param(ws2812fxPowerActionPowerParamTypeId).value().toBool()) {
-                command.append("30");
-            } else {
-                command.append("0");
-            }
-            command.append("\r\n");
-            return sendCommand(device, action.id(), command, CommandType::Brightness);
+
+    QByteArray command;
+    if (action.actionTypeId() == ws2812fxPowerActionTypeId) {
+        command.append("b ");
+        if (action.param(ws2812fxPowerActionPowerParamTypeId).value().toBool()) {
+            command.append("30");
+        } else {
+            command.append("0");
         }
-
-        if (action.actionTypeId() == ws2812fxBrightnessActionTypeId) {
-
-            command.append("b ");
-            command.append(action.param(ws2812fxBrightnessActionBrightnessParamTypeId).value().toString());
-            command.append("\r\n");
-            return sendCommand(device, action.id(), command, CommandType::Brightness);
-        }
-
-        if (action.actionTypeId() == ws2812fxSpeedActionTypeId) {
-
-            command.append("s ");
-            command.append(action.param(ws2812fxSpeedActionSpeedParamTypeId).value().toString());
-            command.append("\r\n");
-            return sendCommand(device, action.id(), command, CommandType::Speed);
-        }
-
-        if (action.actionTypeId() == ws2812fxColorActionTypeId) {
-
-            QColor color;
-            color= action.param(ws2812fxColorActionColorParamTypeId).value().value<QColor>();
-            command.append("c ");
-            command.append(QString(color.name()).remove("#"));
-            command.append("\r\n");
-            return sendCommand(device, action.id(), command, CommandType::Color);
-        }
-
-        if (action.actionTypeId() == ws2812fxColorTemperatureActionTypeId) {
-
-            // minValue 153, maxValue 500
-            QColor color;
-            color.setRgb(255, 255, static_cast<int>((255.00-(((action.param(ws2812fxColorTemperatureActionColorTemperatureParamTypeId).value().toDouble()-153.00)/347.00))*255.00)));
-            device->setStateValue(ws2812fxColorTemperatureStateTypeId, action.param(ws2812fxColorTemperatureActionColorTemperatureParamTypeId).value());
-            command.append("c ");
-            command.append(QString(color.name()).remove("#"));
-            command.append("\r\n");
-            return sendCommand(device, action.id(), command, CommandType::Color);
-        }
-
-        if (action.actionTypeId() == ws2812fxEffectModeActionTypeId) {
-
-            QString effectMode = action.param(ws2812fxEffectModeActionEffectModeParamTypeId).value().toString();
-            command.append("m ");
-            if (effectMode == "Static") {
-                command.append(QString::number(FX_MODE_STATIC));
-            } else if (effectMode == "Blink") {
-                command.append(QString::number(FX_MODE_BLINK));
-            } else if (effectMode == "Color Wipe") {
-                command.append(QString::number(FX_MODE_COLOR_WIPE));
-            } else if (effectMode == "Color Wipe Inverse") {
-                command.append(QString::number(FX_MODE_COLOR_WIPE_INV));
-            } else if (effectMode == "Color Wipe Reverse") {
-                command.append(QString::number(FX_MODE_COLOR_WIPE_REV));
-            } else if (effectMode == "Color Wipe Reverse Inverse") {
-                command.append(QString::number(FX_MODE_COLOR_WIPE_REV_INV));
-            } else if (effectMode == "Color Wipe Random") {
-                command.append(QString::number(FX_MODE_COLOR_WIPE_RANDOM));
-            } else if (effectMode == "Random Color") {
-                command.append(QString::number(FX_MODE_RANDOM_COLOR));
-            } else if (effectMode == "Single Dynamic") {
-                command.append(QString::number(FX_MODE_SINGLE_DYNAMIC));
-            } else if (effectMode == "Multi Dynamic") {
-                command.append(QString::number(FX_MODE_MULTI_DYNAMIC));
-            } else if (effectMode == "Rainbow") {
-                command.append(QString::number(FX_MODE_RAINBOW));
-            } else if (effectMode == "Rainbow Cycle") {
-                command.append(QString::number(FX_MODE_RAINBOW_CYCLE));
-            } else if (effectMode == "Scan") {
-                command.append(QString::number(FX_MODE_SCAN));
-            } else if (effectMode == "Dual Scan") {
-                command.append(QString::number(FX_MODE_DUAL_SCAN));
-            } else if (effectMode == "Fade") {
-                command.append(QString::number(FX_MODE_FADE));
-            } else if (effectMode == "Theater Chase") {
-                command.append(QString::number(FX_MODE_THEATER_CHASE));
-            } else if (effectMode == "Theater Chase Rainbow") {
-                command.append(QString::number(FX_MODE_THEATER_CHASE_RAINBOW));
-            } else if (effectMode == "Running Lights") {
-                command.append(QString::number(FX_MODE_RUNNING_LIGHTS));
-            } else if (effectMode == "Twinkle") {
-                command.append(QString::number(FX_MODE_TWINKLE));
-            } else if (effectMode == "Twinkle Random") {
-                command.append(QString::number(FX_MODE_TWINKLE_RANDOM));
-            } else if (effectMode == "Twinkle Fade") {
-                command.append(QString::number(FX_MODE_TWINKLE_FADE));
-            } else if (effectMode == "Twinkle Fade Random") {
-                command.append(QString::number(FX_MODE_TWINKLE_FADE_RANDOM));
-            } else if (effectMode == "Sparkle") {
-                command.append(QString::number(FX_MODE_SPARKLE));
-            } else if (effectMode == "Flash Sparkle") {
-                command.append(QString::number(FX_MODE_FLASH_SPARKLE));
-            } else if (effectMode == "Hyper Sparkle") {
-                command.append(QString::number(FX_MODE_HYPER_SPARKLE));
-            } else if (effectMode == "Strobe") {
-                command.append(QString::number(FX_MODE_STROBE));
-            } else if (effectMode == "Strobe Rainbow") {
-                command.append(QString::number(FX_MODE_STROBE_RAINBOW));
-            } else if (effectMode == "Multi Strobe") {
-                command.append(QString::number(FX_MODE_MULTI_STROBE));
-            } else if (effectMode == "Blink Rainbow") {
-                command.append(QString::number(FX_MODE_BLINK_RAINBOW));
-            } else if (effectMode == "Chase White") {
-                command.append(QString::number(FX_MODE_CHASE_WHITE));
-            } else if (effectMode == "Chase Color") {
-                command.append(QString::number(FX_MODE_CHASE_COLOR));
-            } else if (effectMode == "Chase Random") {
-                command.append(QString::number(FX_MODE_CHASE_RANDOM));
-            } else if (effectMode == "Chase Flash") {
-                command.append(QString::number(FX_MODE_CHASE_FLASH));
-            } else if (effectMode == "Chase Flash Random") {
-                command.append(QString::number(FX_MODE_CHASE_FLASH_RANDOM));
-            } else if (effectMode == "Chase Rainbow White") {
-                command.append(QString::number(FX_MODE_CHASE_RAINBOW_WHITE));
-            } else if (effectMode == "Chase Blackout") {
-                command.append(QString::number(FX_MODE_CHASE_BLACKOUT));
-            } else if (effectMode == "Chase Blackout Rainbow") {
-                command.append(QString::number(FX_MODE_CHASE_BLACKOUT_RAINBOW));
-            } else if (effectMode == "Color Sweep Random") {
-                command.append(QString::number(FX_MODE_COLOR_SWEEP_RANDOM));
-            } else if (effectMode == "Running Color") {
-                command.append(QString::number(FX_MODE_RUNNING_COLOR));
-            } else if (effectMode == "Running Red Blue") {
-                command.append(QString::number(FX_MODE_RUNNING_RED_BLUE));
-            } else if (effectMode == "Running Random") {
-                command.append(QString::number(FX_MODE_RUNNING_RANDOM));
-            }else if (effectMode == "Larson Scanner") {
-                command.append(QString::number(FX_MODE_LARSON_SCANNER));
-            }else if (effectMode == "Comet") {
-                command.append(QString::number(FX_MODE_COMET));
-            }else if (effectMode == "Fireworks") {
-                command.append(QString::number(FX_MODE_FIREWORKS));
-            }else if (effectMode == "Fireworks Random") {
-                command.append(QString::number(FX_MODE_FIREWORKS_RANDOM));
-            }else if (effectMode == "Merry Christmas") {
-                command.append(QString::number(FX_MODE_MERRY_CHRISTMAS));
-            }else if (effectMode == "Fire Flicker") {
-                command.append(QString::number(FX_MODE_FIRE_FLICKER));
-            }else if (effectMode == "Fire Flicker (soft)") {
-                command.append(QString::number(FX_MODE_FIRE_FLICKER_SOFT));
-            }else if (effectMode == "Fire Flicker (intense)") {
-                command.append(QString::number(FX_MODE_FIRE_FLICKER_INTENSE));
-            }else if (effectMode == "Circus Combustus") {
-                command.append(QString::number(FX_MODE_CIRCUS_COMBUSTUS));
-            }else if (effectMode == "Halloween") {
-                command.append(QString::number(FX_MODE_HALLOWEEN));
-            }else if (effectMode == "Bicolor Chase") {
-                command.append(QString::number(FX_MODE_BICOLOR_CHASE));
-            }else if (effectMode == "Tricolor Chase") {
-                command.append(QString::number(FX_MODE_TRICOLOR_CHASE));
-            }else if (effectMode == "ICU") {
-                command.append(QString::number(FX_MODE_ICU));
-            }else if (effectMode == "Custom 0") {
-                command.append(QString::number(FX_MODE_CUSTOM_0));
-            }else if (effectMode == "Custom 1") {
-                command.append(QString::number(FX_MODE_CUSTOM_1));
-            }else if (effectMode == "Custom 2") {
-                command.append(QString::number(FX_MODE_CUSTOM_2));
-            }else if (effectMode == "Custom 3") {
-                command.append(QString::number(FX_MODE_CUSTOM_3));
-            }
-            command.append("\r\n");
-            return sendCommand(device, action.id(), command, CommandType::Mode);
-        }
-        return Device::DeviceErrorActionTypeNotFound;
+        command.append("\r\n");
+        return sendCommand(info, command, CommandType::Brightness);
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+
+    if (action.actionTypeId() == ws2812fxBrightnessActionTypeId) {
+
+        command.append("b ");
+        command.append(action.param(ws2812fxBrightnessActionBrightnessParamTypeId).value().toString());
+        command.append("\r\n");
+        return sendCommand(info, command, CommandType::Brightness);
+    }
+
+    if (action.actionTypeId() == ws2812fxSpeedActionTypeId) {
+
+        command.append("s ");
+        command.append(action.param(ws2812fxSpeedActionSpeedParamTypeId).value().toString());
+        command.append("\r\n");
+        return sendCommand(info, command, CommandType::Speed);
+    }
+
+    if (action.actionTypeId() == ws2812fxColorActionTypeId) {
+
+        QColor color;
+        color= action.param(ws2812fxColorActionColorParamTypeId).value().value<QColor>();
+        command.append("c ");
+        command.append(QString(color.name()).remove("#"));
+        command.append("\r\n");
+        return sendCommand(info, command, CommandType::Color);
+    }
+
+    if (action.actionTypeId() == ws2812fxColorTemperatureActionTypeId) {
+
+        // minValue 153, maxValue 500
+        QColor color;
+        color.setRgb(255, 255, static_cast<int>((255.00-(((action.param(ws2812fxColorTemperatureActionColorTemperatureParamTypeId).value().toDouble()-153.00)/347.00))*255.00)));
+        device->setStateValue(ws2812fxColorTemperatureStateTypeId, action.param(ws2812fxColorTemperatureActionColorTemperatureParamTypeId).value());
+        command.append("c ");
+        command.append(QString(color.name()).remove("#"));
+        command.append("\r\n");
+        return sendCommand(info, command, CommandType::Color);
+    }
+
+    if (action.actionTypeId() == ws2812fxEffectModeActionTypeId) {
+
+        QString effectMode = action.param(ws2812fxEffectModeActionEffectModeParamTypeId).value().toString();
+        command.append("m ");
+        if (effectMode == "Static") {
+            command.append(QString::number(FX_MODE_STATIC));
+        } else if (effectMode == "Blink") {
+            command.append(QString::number(FX_MODE_BLINK));
+        } else if (effectMode == "Color Wipe") {
+            command.append(QString::number(FX_MODE_COLOR_WIPE));
+        } else if (effectMode == "Color Wipe Inverse") {
+            command.append(QString::number(FX_MODE_COLOR_WIPE_INV));
+        } else if (effectMode == "Color Wipe Reverse") {
+            command.append(QString::number(FX_MODE_COLOR_WIPE_REV));
+        } else if (effectMode == "Color Wipe Reverse Inverse") {
+            command.append(QString::number(FX_MODE_COLOR_WIPE_REV_INV));
+        } else if (effectMode == "Color Wipe Random") {
+            command.append(QString::number(FX_MODE_COLOR_WIPE_RANDOM));
+        } else if (effectMode == "Random Color") {
+            command.append(QString::number(FX_MODE_RANDOM_COLOR));
+        } else if (effectMode == "Single Dynamic") {
+            command.append(QString::number(FX_MODE_SINGLE_DYNAMIC));
+        } else if (effectMode == "Multi Dynamic") {
+            command.append(QString::number(FX_MODE_MULTI_DYNAMIC));
+        } else if (effectMode == "Rainbow") {
+            command.append(QString::number(FX_MODE_RAINBOW));
+        } else if (effectMode == "Rainbow Cycle") {
+            command.append(QString::number(FX_MODE_RAINBOW_CYCLE));
+        } else if (effectMode == "Scan") {
+            command.append(QString::number(FX_MODE_SCAN));
+        } else if (effectMode == "Dual Scan") {
+            command.append(QString::number(FX_MODE_DUAL_SCAN));
+        } else if (effectMode == "Fade") {
+            command.append(QString::number(FX_MODE_FADE));
+        } else if (effectMode == "Theater Chase") {
+            command.append(QString::number(FX_MODE_THEATER_CHASE));
+        } else if (effectMode == "Theater Chase Rainbow") {
+            command.append(QString::number(FX_MODE_THEATER_CHASE_RAINBOW));
+        } else if (effectMode == "Running Lights") {
+            command.append(QString::number(FX_MODE_RUNNING_LIGHTS));
+        } else if (effectMode == "Twinkle") {
+            command.append(QString::number(FX_MODE_TWINKLE));
+        } else if (effectMode == "Twinkle Random") {
+            command.append(QString::number(FX_MODE_TWINKLE_RANDOM));
+        } else if (effectMode == "Twinkle Fade") {
+            command.append(QString::number(FX_MODE_TWINKLE_FADE));
+        } else if (effectMode == "Twinkle Fade Random") {
+            command.append(QString::number(FX_MODE_TWINKLE_FADE_RANDOM));
+        } else if (effectMode == "Sparkle") {
+            command.append(QString::number(FX_MODE_SPARKLE));
+        } else if (effectMode == "Flash Sparkle") {
+            command.append(QString::number(FX_MODE_FLASH_SPARKLE));
+        } else if (effectMode == "Hyper Sparkle") {
+            command.append(QString::number(FX_MODE_HYPER_SPARKLE));
+        } else if (effectMode == "Strobe") {
+            command.append(QString::number(FX_MODE_STROBE));
+        } else if (effectMode == "Strobe Rainbow") {
+            command.append(QString::number(FX_MODE_STROBE_RAINBOW));
+        } else if (effectMode == "Multi Strobe") {
+            command.append(QString::number(FX_MODE_MULTI_STROBE));
+        } else if (effectMode == "Blink Rainbow") {
+            command.append(QString::number(FX_MODE_BLINK_RAINBOW));
+        } else if (effectMode == "Chase White") {
+            command.append(QString::number(FX_MODE_CHASE_WHITE));
+        } else if (effectMode == "Chase Color") {
+            command.append(QString::number(FX_MODE_CHASE_COLOR));
+        } else if (effectMode == "Chase Random") {
+            command.append(QString::number(FX_MODE_CHASE_RANDOM));
+        } else if (effectMode == "Chase Flash") {
+            command.append(QString::number(FX_MODE_CHASE_FLASH));
+        } else if (effectMode == "Chase Flash Random") {
+            command.append(QString::number(FX_MODE_CHASE_FLASH_RANDOM));
+        } else if (effectMode == "Chase Rainbow White") {
+            command.append(QString::number(FX_MODE_CHASE_RAINBOW_WHITE));
+        } else if (effectMode == "Chase Blackout") {
+            command.append(QString::number(FX_MODE_CHASE_BLACKOUT));
+        } else if (effectMode == "Chase Blackout Rainbow") {
+            command.append(QString::number(FX_MODE_CHASE_BLACKOUT_RAINBOW));
+        } else if (effectMode == "Color Sweep Random") {
+            command.append(QString::number(FX_MODE_COLOR_SWEEP_RANDOM));
+        } else if (effectMode == "Running Color") {
+            command.append(QString::number(FX_MODE_RUNNING_COLOR));
+        } else if (effectMode == "Running Red Blue") {
+            command.append(QString::number(FX_MODE_RUNNING_RED_BLUE));
+        } else if (effectMode == "Running Random") {
+            command.append(QString::number(FX_MODE_RUNNING_RANDOM));
+        }else if (effectMode == "Larson Scanner") {
+            command.append(QString::number(FX_MODE_LARSON_SCANNER));
+        }else if (effectMode == "Comet") {
+            command.append(QString::number(FX_MODE_COMET));
+        }else if (effectMode == "Fireworks") {
+            command.append(QString::number(FX_MODE_FIREWORKS));
+        }else if (effectMode == "Fireworks Random") {
+            command.append(QString::number(FX_MODE_FIREWORKS_RANDOM));
+        }else if (effectMode == "Merry Christmas") {
+            command.append(QString::number(FX_MODE_MERRY_CHRISTMAS));
+        }else if (effectMode == "Fire Flicker") {
+            command.append(QString::number(FX_MODE_FIRE_FLICKER));
+        }else if (effectMode == "Fire Flicker (soft)") {
+            command.append(QString::number(FX_MODE_FIRE_FLICKER_SOFT));
+        }else if (effectMode == "Fire Flicker (intense)") {
+            command.append(QString::number(FX_MODE_FIRE_FLICKER_INTENSE));
+        }else if (effectMode == "Circus Combustus") {
+            command.append(QString::number(FX_MODE_CIRCUS_COMBUSTUS));
+        }else if (effectMode == "Halloween") {
+            command.append(QString::number(FX_MODE_HALLOWEEN));
+        }else if (effectMode == "Bicolor Chase") {
+            command.append(QString::number(FX_MODE_BICOLOR_CHASE));
+        }else if (effectMode == "Tricolor Chase") {
+            command.append(QString::number(FX_MODE_TRICOLOR_CHASE));
+        }else if (effectMode == "ICU") {
+            command.append(QString::number(FX_MODE_ICU));
+        }else if (effectMode == "Custom 0") {
+            command.append(QString::number(FX_MODE_CUSTOM_0));
+        }else if (effectMode == "Custom 1") {
+            command.append(QString::number(FX_MODE_CUSTOM_1));
+        }else if (effectMode == "Custom 2") {
+            command.append(QString::number(FX_MODE_CUSTOM_2));
+        }else if (effectMode == "Custom 3") {
+            command.append(QString::number(FX_MODE_CUSTOM_3));
+        }
+        command.append("\r\n");
+        return sendCommand(info, command, CommandType::Mode);
+    }
 }
 
 
@@ -328,7 +322,7 @@ void DevicePluginWs2812fx::onReadyRead()
 
         if (data.contains("mode")) {
             if (m_pendingActions.contains(CommandType::Mode)) {
-                emit actionExecutionFinished(m_pendingActions.value(CommandType::Mode), Device::DeviceErrorNoError);
+                m_pendingActions.take(CommandType::Mode)->finish(Device::DeviceErrorNoError);
             }
             QString mode = data.split('-').at(1);
             mode.remove(0, 1);
@@ -338,7 +332,7 @@ void DevicePluginWs2812fx::onReadyRead()
         }
         if (data.contains("brightness")) {
             if (m_pendingActions.contains(CommandType::Brightness)) {
-                emit actionExecutionFinished(m_pendingActions.value(CommandType::Brightness), Device::DeviceErrorNoError);
+                m_pendingActions.take(CommandType::Brightness)->finish(Device::DeviceErrorNoError);
             }
             QString rawBrightness = data.split(':').at(1);
             rawBrightness.remove(" ");
@@ -355,7 +349,7 @@ void DevicePluginWs2812fx::onReadyRead()
         }
         if (data.contains("speed")) {
             if (m_pendingActions.contains(CommandType::Speed)) {
-                emit actionExecutionFinished(m_pendingActions.value(CommandType::Speed), Device::DeviceErrorNoError);
+                m_pendingActions.take(CommandType::Speed)->finish(Device::DeviceErrorNoError);
             }
             QString rawSpeed = data.split(':').at(1);
             rawSpeed.remove(" ");
@@ -367,7 +361,7 @@ void DevicePluginWs2812fx::onReadyRead()
         }
         if (data.contains("color")) {
             if (m_pendingActions.contains(CommandType::Color)) {
-                emit actionExecutionFinished(m_pendingActions.value(CommandType::Color), Device::DeviceErrorNoError);
+                m_pendingActions.take(CommandType::Color)->finish(Device::DeviceErrorNoError);
             }
             QString rawColor = data.split(':').at(1);
             rawColor.remove(" ");
@@ -411,16 +405,15 @@ void DevicePluginWs2812fx::onSerialError(QSerialPort::SerialPortError error)
     }
 }
 
-Device::DeviceError DevicePluginWs2812fx::sendCommand(Device* device, ActionId actionId, const QByteArray &command, CommandType commandType)
+void DevicePluginWs2812fx::sendCommand(DeviceActionInfo *info, const QByteArray &command, CommandType commandType)
 {
     qDebug(dcWs2812fx()) << "Sending command" << command;
-    QSerialPort *serialPort = m_serialPorts.value(device);
+    QSerialPort *serialPort = m_serialPorts.value(info->device());
     if (!serialPort)
-        return Device::DeviceErrorDeviceNotFound;
+        return info->finish(Device::DeviceErrorDeviceNotFound);
     if (serialPort->write(command) != command.length()) {
         qCWarning(dcWs2812fx) << "Error writing to serial port";
-        return Device::DeviceErrorHardwareFailure;
+        return info->finish(Device::DeviceErrorHardwareFailure);
     }
-    m_pendingActions.insert(commandType, actionId);
-    return Device::DeviceErrorAsync;
+    m_pendingActions.insert(commandType, info);
 }
