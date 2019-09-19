@@ -39,10 +39,10 @@ class DevicePluginUdpCommander : public DevicePlugin
 public:
     explicit DevicePluginUdpCommander();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
 
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     QHash<QUdpSocket *, Device *> m_receiverList;
