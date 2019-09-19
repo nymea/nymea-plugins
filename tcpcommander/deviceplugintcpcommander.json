@@ -4,9 +4,9 @@
     "id": "741b7b0a-0c9c-4c93-be99-0d0bcf5a4643",
     "vendors": [
         {
-            "name": "tcpCommander",
-            "displayName": "TCP Commander",
-            "id": "9181278e-7812-4a3e-a9ce-f00f3f8b8afd",
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "deviceClasses": [
                 {
                     "id": "c67d059f-694f-47cb-8e1d-9e3e6d014c1a",
@@ -35,10 +35,10 @@
                         {
                             "id": "725b541a-9e0c-4634-81eb-e415c0b8f025",
                             "name": "connected",
-                            "displayName": "connected",
+                            "displayName": "Connected",
                             "type": "bool",
                             "defaultValue": false,
-                            "displayNameEvent": "connection status changed"
+                            "displayNameEvent": "Connection status changed"
                         }
                     ],
                     "actionTypes": [
@@ -71,53 +71,23 @@
                             "displayName": "Port",
                             "type": "int",
                             "defaultValue": "22"
-                        },
-                        {
-                            "id": "d99f55c7-0e14-45ee-b0f0-33f2d1d2e674",
-                            "name": "comparision",
-                            "displayName": "Data Comparison",
-                            "type": "QString",
-                            "allowedValues": [
-                                "Is exactly",
-                                "Contains",
-                                "Contains not",
-                                "Starts with",
-                                "Ends with"
-                            ],
-                            "defaultValue": "Exactly"
-                        },
-                        {
-                            "id": "23051bdf-3f50-41fa-abde-bc4fe0bcc4fc",
-                            "name": "inputData",
-                            "displayName": "Command",
-                            "type": "QString",
-                            "inputType": "TextArea",
-                            "defaultValue": ""
                         }
                     ],
                     "stateTypes": [
                         {
                             "id": "a2eb1619-261c-45ee-9587-6b5994633ad0",
                             "name": "connected",
-                            "displayName": "connected",
+                            "displayName": "Connected",
                             "type": "bool",
                             "defaultValue": false,
-                            "displayNameEvent": "connection status changed"
-                        },
-                        {
-                            "id": "b98fdacc-59d7-41c4-b790-1fdca50dfb22",
-                            "name": "dataReceived",
-                            "displayName": "Data Received",
-                            "type": "QString",
-                            "defaultValue": "",
-                            "displayNameEvent": "Data received"
+                            "displayNameEvent": "Connection status changed"
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "6d7c6df6-cb61-4d9e-b0d7-37c43911ca4b",
                             "name": "triggered",
-                            "displayName": "Command Received",
+                            "displayName": "Data recieved",
                             "paramTypes": [
                                 {
                                     "id": "97d7ee8c-d9db-40b4-9855-4ceecd64c411",

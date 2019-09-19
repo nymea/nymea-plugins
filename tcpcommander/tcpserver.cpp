@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -23,28 +23,27 @@
 #include <QNetworkInterface>
 
 
-TcpServer::TcpServer(const QHostAddress address, const int &port, QObject *parent) :
+TcpServer::TcpServer(const QHostAddress address, const quint16 &port, QObject *parent) :
     QObject(parent)
 {
     m_tcpServer = new QTcpServer(this);
     connect(m_tcpServer, &QTcpServer::newConnection, this, &TcpServer::newConnection);
     qDebug(dcTCPCommander()) << "TCP Server on Port: " << port << "Address: " << address.toString();
     if (!m_tcpServer->listen(address, port)) {
-        qDebug(dcTCPCommander()) << "Unable to start the server: " << m_tcpServer->errorString();
+        qWarning(dcTCPCommander()) << "Unable to start the server: " << m_tcpServer->errorString();
         return;
     }
 }
 
 
-TcpServer::TcpServer(const int &port, QObject *parent) :
+TcpServer::TcpServer(const quint16 &port, QObject *parent) :
     QObject(parent)
 {
-
     m_tcpServer = new QTcpServer(this);
     connect(m_tcpServer, &QTcpServer::newConnection, this, &TcpServer::newConnection);
     qDebug(dcTCPCommander()) << "TCP Server on Port: " << port;
     if (!m_tcpServer->listen(QHostAddress::Any, port)) {
-        qDebug(dcTCPCommander()) << "Unable to start the server: " << m_tcpServer->errorString();
+        qWarning(dcTCPCommander()) << "Unable to start the server: " << m_tcpServer->errorString();
         return;
     }
 }
@@ -72,14 +71,13 @@ void TcpServer::newConnection()
 {
     qDebug(dcTCPCommander()) << "TCP Server new Connection request";
     m_socket = m_tcpServer->nextPendingConnection();
-    m_socket->write("Hello client");
     m_socket->flush();
 
-    emit connected();
+    emit connectionChanged(true);
     connect(m_socket, &QTcpSocket::disconnected, this, &TcpServer::onDisconnected);
     connect(m_socket, &QTcpSocket::readyRead, this, &TcpServer::readData);
     // Note: error signal will be interpreted as function, not as signal in C++11
-    //connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
+    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
 }
 
 
@@ -89,13 +87,18 @@ void TcpServer::onDisconnected()
     disconnect(m_socket, &QTcpSocket::disconnected, this, &TcpServer::onDisconnected);
     disconnect(m_socket, &QTcpSocket::readyRead, this, &TcpServer::readData);
     m_socket->deleteLater();
-    emit disconnected();
+    emit connectionChanged(false);
 }
 
 void TcpServer::readData()
 {
     QByteArray data = m_socket->readAll();
     qDebug(dcTCPCommander()) << "TCP Server data received: " << data;
-    emit textMessageReceived(data);
+    m_socket->write("OK\n");
+    emit commandReceived(data);
+}
 
+void TcpServer::onError(QAbstractSocket::SocketError error)
+{
+    qWarning(dcTCPCommander()) << "Socket Error" << m_socket->errorString() << error;
 }

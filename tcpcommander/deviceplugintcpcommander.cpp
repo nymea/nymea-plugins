@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2017 Bernhard Trinnes <bernhard.trinnes@guh.io>          *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -26,14 +26,27 @@ DevicePluginTcpCommander::DevicePluginTcpCommander()
 {
 }
 
+
 Device::DeviceSetupStatus DevicePluginTcpCommander::setupDevice(Device *device)
 {
     if (device->deviceClassId() == tcpOutputDeviceClassId) {
-        QTcpSocket *tcpSocket = new QTcpSocket(this);
+
+        quint16 port = device->paramValue(tcpOutputDevicePortParamTypeId).toUInt();
+        QHostAddress address= QHostAddress(device->paramValue(tcpOutputDeviceIpv4addressParamTypeId).toString());
+        TcpSocket *tcpSocket = new TcpSocket(address, port, this);
         m_tcpSockets.insert(tcpSocket, device);
-        connect(tcpSocket, &QTcpSocket::connected, this, &DevicePluginTcpCommander::onTcpSocketConnected);
-        connect(tcpSocket, &QTcpSocket::disconnected, this, &DevicePluginTcpCommander::onTcpSocketDisconnected);
-        connect(tcpSocket, &QTcpSocket::bytesWritten, this, &DevicePluginTcpCommander::onTcpSocketBytesWritten);
+        connect(tcpSocket, &TcpSocket::connectionChanged, this, &DevicePluginTcpCommander::onTcpSocketConnectionChanged);
+        connect(tcpSocket, &TcpSocket::commandSent, this, &DevicePluginTcpCommander::onTcpSocketCommandSent);
+        connect(tcpSocket, &TcpSocket::connectionTestFinished, this, [this, device] (bool status) {
+
+            if (status) {
+               emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+            } else {
+               emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+            }
+        });
+        tcpSocket->connectionTest();
+        // Test the socket, if a socket can be established the setup process was successfull
         return Device::DeviceSetupStatusAsync;
     }
 
@@ -43,8 +56,8 @@ Device::DeviceSetupStatus DevicePluginTcpCommander::setupDevice(Device *device)
 
         if (tcpServer->isValid()) {
             m_tcpServer.insert(tcpServer, device);
-            connect(tcpServer, &TcpServer::connected, this, &DevicePluginTcpCommander::onTcpServerConnected);
-            connect(tcpServer, &TcpServer::disconnected, this, &DevicePluginTcpCommander::onTcpServerDisconnected);
+            connect(tcpServer, &TcpServer::connectionChanged, this, &DevicePluginTcpCommander::onTcpServerConnectionChanged);
+            connect(tcpServer, &TcpServer::commandReceived, this, &DevicePluginTcpCommander::onTcpServerCommandReceived);
             return Device::DeviceSetupStatusSuccess;
         } else {
             tcpServer->deleteLater();
@@ -60,11 +73,11 @@ Device::DeviceError DevicePluginTcpCommander::executeAction(Device *device, cons
     if (device->deviceClassId() == tcpOutputDeviceClassId) {
 
         if (action.actionTypeId() == tcpOutputTriggerActionTypeId) {
-            int port = device->paramValue(tcpOutputDevicePortParamTypeId).toInt();
-            QHostAddress address= QHostAddress(device->paramValue(tcpOutputDeviceIpv4addressParamTypeId).toString());
-            QTcpSocket *tcpSocket = m_tcpSockets.key(device);
-            tcpSocket->connectToHost(address, port);
-            return Device::DeviceErrorNoError;
+            TcpSocket *tcpSocket = m_tcpSockets.key(device);
+            QByteArray data = action.param(tcpOutputTriggerActionOutputDataAreaParamTypeId).value().toByteArray();
+            tcpSocket->sendCommand(data);
+            m_pendingActions.insert(action.id(), device->id());
+            return Device::DeviceErrorAsync;
         }
         return Device::DeviceErrorActionTypeNotFound;
     }
@@ -76,11 +89,11 @@ void DevicePluginTcpCommander::deviceRemoved(Device *device)
 {
     if(device->deviceClassId() == tcpOutputDeviceClassId){
 
-        QTcpSocket *tcpSocket = m_tcpSockets.key(device);
+        TcpSocket *tcpSocket = m_tcpSockets.key(device);
         m_tcpSockets.remove(tcpSocket);
         tcpSocket->deleteLater();
 
-    }else if(device->deviceClassId() == tcpInputDeviceClassId){
+    } else if(device->deviceClassId() == tcpInputDeviceClassId){
 
         TcpServer *tcpServer = m_tcpServer.key(device);
         m_tcpServer.remove(tcpServer);
@@ -89,105 +102,49 @@ void DevicePluginTcpCommander::deviceRemoved(Device *device)
 }
 
 
-void DevicePluginTcpCommander::onTcpSocketConnected()
+void DevicePluginTcpCommander::onTcpSocketConnectionChanged(bool connected)
 {
-    QTcpSocket *tcpSocket = static_cast<QTcpSocket *>(sender());
+    TcpSocket *tcpSocket = static_cast<TcpSocket *>(sender());
     Device *device = m_tcpSockets.value(tcpSocket);
     if (device->deviceClassId() == tcpOutputDeviceClassId) {
-        if (!device->setupComplete()) {
-            qDebug(dcTCPCommander()) << device->name() << "Setup finished" ;
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
-        } else {
-            QByteArray data = device->paramValue(tcpOutputTriggerActionOutputDataAreaParamTypeId).toByteArray();
-            tcpSocket->write(data);
-        }
-        device->setStateValue(tcpOutputConnectedStateTypeId, true);
-    }
-    if (device->deviceClassId() == tcpInputDeviceClassId) {
-        if (!device->setupComplete()) {
-            qDebug(dcTCPCommander()) << device->name() << "Setup finished" ;
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
-        }
-        device->setStateValue(tcpInputConnectedStateTypeId, true);
+        device->setStateValue(tcpOutputConnectedStateTypeId, connected);
     }
 }
 
-
-void DevicePluginTcpCommander::onTcpSocketDisconnected()
+void DevicePluginTcpCommander::onTcpSocketCommandSent(bool successfull)
 {
-    QTcpSocket *tcpSocket = static_cast<QTcpSocket *>(sender());
+    TcpSocket *tcpSocket = static_cast<TcpSocket *>(sender());
     Device *device = m_tcpSockets.value(tcpSocket);
-    if (device->deviceClassId() == tcpInputDeviceClassId) {
-        device->setStateValue(tcpInputConnectedStateTypeId, false);
-    } else if (device->deviceClassId() == tcpOutputDeviceClassId) {
-        device->setStateValue(tcpOutputConnectedStateTypeId, false);
+
+    ActionId action = m_pendingActions.key(device->id());
+    m_pendingActions.remove(action);
+    if (successfull) {
+        emit actionExecutionFinished(action, Device::DeviceErrorNoError);
+    } else {
+        emit actionExecutionFinished(action, Device::DeviceErrorHardwareNotAvailable);
     }
 }
 
 
-void DevicePluginTcpCommander::onTcpSocketBytesWritten()
-{
-    QTcpSocket *tcpSocket = static_cast<QTcpSocket *>(sender());
-    tcpSocket->close();
-}
-
-void DevicePluginTcpCommander::onTcpServerConnected()
+void DevicePluginTcpCommander::onTcpServerConnectionChanged(bool connected)
 {
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Device *device = m_tcpServer.value(tcpServer);
     qDebug(dcTCPCommander()) << device->name() << "Tcp Server Client connected" ;
     if (device->deviceClassId() == tcpInputDeviceClassId) {
-        device->setStateValue(tcpInputConnectedStateTypeId, true);
-    } else if (device->deviceClassId() == tcpOutputDeviceClassId) {
-        device->setStateValue(tcpOutputConnectedStateTypeId, true);
-    }
-
-    connect(tcpServer, &TcpServer::textMessageReceived, this, &DevicePluginTcpCommander::onTcpServerTextMessageReceived);
-    //send signal device Setup was successful
-}
-
-
-void DevicePluginTcpCommander::onTcpServerDisconnected()
-{
-    TcpServer *tcpServer = static_cast<TcpServer *>(sender());
-    Device *device = m_tcpServer.value(tcpServer);
-    qDebug(dcTCPCommander()) << device->name() << "Tcp Server Client disconnected" ;
-    if (device->deviceClassId() == tcpInputDeviceClassId) {
-        device->setStateValue(tcpInputConnectedStateTypeId, false);
-    } else if (device->deviceClassId() == tcpOutputDeviceClassId) {
-        device->setStateValue(tcpOutputConnectedStateTypeId, false);
+        device->setStateValue(tcpInputConnectedStateTypeId, connected);
     }
 }
 
-void DevicePluginTcpCommander::onTcpServerTextMessageReceived(QByteArray data)
+void DevicePluginTcpCommander::onTcpServerCommandReceived(QByteArray data)
 {
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Device *device = m_tcpServer.value(tcpServer);
     qDebug(dcTCPCommander()) << device->name() << "Message received" << data;
-    device->setStateValue(tcpInputDataReceivedStateTypeId, data);
 
-    if (device->paramValue(tcpInputDeviceComparisionParamTypeId).toString() == "Is exactly") {
-        qDebug(dcTCPCommander()) << "is exactly";
-        if (data == device->paramValue(tcpInputDeviceInputDataParamTypeId)) {
-            qDebug(dcTCPCommander()) << "comparison successful";
-            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
-        }
-
-    } else if (device->paramValue(tcpInputDeviceComparisionParamTypeId).toString() == "Contains") {
-        if (data.contains(device->paramValue(tcpInputDeviceInputDataParamTypeId).toByteArray())) {
-            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
-        }
-
-    } else if (device->paramValue(tcpInputDeviceComparisionParamTypeId) == "Contains not") {
-        if (!data.contains(device->paramValue(tcpInputDeviceInputDataParamTypeId).toByteArray()))
-            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
-
-    } else if (device->paramValue(tcpInputDeviceComparisionParamTypeId) == "Starts with") {
-        if (data.startsWith(device->paramValue(tcpInputDeviceInputDataParamTypeId).toByteArray()))
-            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
-
-    } else if (device->paramValue(tcpInputDeviceComparisionParamTypeId) == "Ends with") {
-        if (data.endsWith(device->paramValue(tcpInputDeviceInputDataParamTypeId).toByteArray()))
-            emitEvent(Event(tcpInputTriggeredEventTypeId, device->id()));
-    }
+    Event event = Event(tcpInputTriggeredEventTypeId, device->id());
+    ParamList params;
+    params.append(Param(tcpInputTriggeredEventDataParamTypeId, data));
+    event.setParams(params);
+    emitEvent(event);
 }
