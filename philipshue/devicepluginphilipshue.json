@@ -133,7 +133,7 @@
                     "id": "0edba26c-96ab-44fb-a6a2-c0574d19630e",
                     "name": "colorLight",
                     "displayName": "Hue color light",
-                    "interfaces": ["colorlight", "colortemperaturelight", "connectable"],
+                    "interfaces": ["colorlight", "colortemperaturelight", "alert", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -247,6 +247,7 @@
                                     "name": "alert",
                                     "displayName": "alert",
                                     "type": "QString",
+                                    "defaultValue": "flash",
                                     "allowedValues": [
                                         "flash",
                                         "flash 15 [s]"
@@ -260,7 +261,7 @@
                     "id": "35f749f7-b60a-4922-bd25-1bdd2eddcbe3",
                     "name": "colorTemperatureLight",
                     "displayName": "Hue color temperature light",
-                    "interfaces": ["colortemperaturelight", "connectable"],
+                    "interfaces": ["colortemperaturelight", "alert", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -349,6 +350,7 @@
                                     "name": "alert",
                                     "displayName": "alert",
                                     "type": "QString",
+                                    "defaultValue": "flash",
                                     "allowedValues": [
                                         "flash",
                                         "flash 15 [s]"
@@ -362,7 +364,7 @@
                     "id": "4fa568ef-7a3a-422b-b0c0-206d37cb4eed",
                     "name": "dimmableLight",
                     "displayName": "Hue dimmable light",
-                    "interfaces": ["dimmablelight", "connectable"],
+                    "interfaces": ["dimmablelight", "alert", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -439,6 +441,7 @@
                                     "name": "alert",
                                     "displayName": "alert",
                                     "type": "QString",
+                                    "defaultValue": "flash",
                                     "allowedValues": [
                                         "flash",
                                         "flash 15 [s]"
