@@ -37,7 +37,7 @@ class DevicePluginWakeOnLan : public DevicePlugin
 public:
     explicit DevicePluginWakeOnLan();
 
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private slots:
     void wakeup(QString mac);

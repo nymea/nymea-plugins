@@ -33,13 +33,11 @@ DevicePluginWakeOnLan::DevicePluginWakeOnLan()
 {
 }
 
-Device::DeviceError DevicePluginWakeOnLan::executeAction(Device *device, const Action &action)
+void DevicePluginWakeOnLan::executeAction(DeviceActionInfo *info)
 {
-    if(action.actionTypeId() == wolTriggerActionTypeId){
-        qCDebug(dcWakeOnLan) << "Wake up" << device->name();
-        wakeup(device->paramValue(wolDeviceMacParamTypeId).toString());
-    }
-    return Device::DeviceErrorNoError;
+    qCDebug(dcWakeOnLan) << "Wake up" << info->device()->name();
+    wakeup(info->device()->paramValue(wolDeviceMacParamTypeId).toString());
+    return info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginWakeOnLan::wakeup(QString mac)
