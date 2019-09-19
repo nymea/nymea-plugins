@@ -60,11 +60,6 @@ Device::DeviceError DevicePluginSenic::discoverDevices(const DeviceClassId &devi
 
 Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
 {
-    if (!m_reconnectTimer) {
-        m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-        connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginSenic::onReconnectTimeout);
-    }
-
     qCDebug(dcSenic()) << "Setup device" << device->name() << device->params();
 
     QBluetoothAddress address = QBluetoothAddress(device->paramValue(nuimoDeviceMacParamTypeId).toString());
@@ -87,6 +82,16 @@ Device::DeviceSetupStatus DevicePluginSenic::setupDevice(Device *device)
     nuimo->bluetoothDevice()->connectDevice();
 
     return Device::DeviceSetupStatusAsync;
+}
+
+void DevicePluginSenic::postSetupDevice(Device *device)
+{
+    Q_UNUSED(device)
+
+    if (!m_reconnectTimer) {
+        m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginSenic::onReconnectTimeout);
+    }
 }
 
 
@@ -195,12 +200,21 @@ void DevicePluginSenic::onBluetoothDiscoveryFinished()
     emit devicesDiscovered(nuimoDeviceClassId, deviceDescriptors);
 }
 
-void DevicePluginSenic::onDeviceInitializationFinished()
+void DevicePluginSenic::onDeviceInitializationFinished(bool success)
 {
     Nuimo *nuimo = static_cast<Nuimo *>(sender());
     Device *device = m_nuimos.value(nuimo);
     if (!device->setupComplete()) {
-        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+        if (success) {
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+        } else {
+            m_nuimos.take(nuimo);
+
+            hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(nuimo->bluetoothDevice());
+            nuimo->deleteLater();
+
+            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+        }
     }
 
 }
