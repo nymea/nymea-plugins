@@ -321,6 +321,7 @@ void DevicePluginWs2812fx::deviceRemoved(Device *device)
 void DevicePluginWs2812fx::onReadyRead()
 {
     QSerialPort *serialPort =  static_cast<QSerialPort*>(sender());
+
     Device *device = m_serialPorts.key(serialPort);
     if (!device)
         return;
@@ -334,52 +335,64 @@ void DevicePluginWs2812fx::onReadyRead()
             if (m_pendingActions.contains(CommandType::Mode)) {
                 emit actionExecutionFinished(m_pendingActions.value(CommandType::Mode), Device::DeviceErrorNoError);
             }
-            QString mode = data.split('-').at(1);
-            mode.remove(0, 1);
-            mode.remove("\r\n");
-            qDebug(dcWs2812fx()) << "set mode to:" << mode;
-            device->setStateValue(ws2812fxEffectModeStateTypeId, mode);
+            QByteArrayList list = data.split('-');
+            if(list.length() >= 2) {
+                QString mode = list.at(1);
+                mode.remove(0, 1);
+                mode.remove("\r\n");
+                qDebug(dcWs2812fx()) << "set mode to:" << mode;
+                device->setStateValue(ws2812fxEffectModeStateTypeId, mode);
+            }
         }
         if (data.contains("brightness")) {
             if (m_pendingActions.contains(CommandType::Brightness)) {
                 emit actionExecutionFinished(m_pendingActions.value(CommandType::Brightness), Device::DeviceErrorNoError);
             }
-            QString rawBrightness = data.split(':').at(1);
-            rawBrightness.remove(" ");
-            rawBrightness.remove("\r\n");
-            int brightness = rawBrightness.toInt();
+            QByteArrayList list = data.split(':');
+            if(list.length() >= 2) {
+                QString rawBrightness = list.at(1);;
+                rawBrightness.remove(" ");
+                rawBrightness.remove("\r\n");
+                int brightness = rawBrightness.toInt();
 
-            qDebug(dcWs2812fx()) << "set brightness to:" << brightness;
-            device->setStateValue(ws2812fxBrightnessStateTypeId, brightness);
-            if (brightness == 0) {
-                device->setStateValue(ws2812fxPowerStateTypeId, false);
-            } else {
-                device->setStateValue(ws2812fxPowerStateTypeId, true);
+                qDebug(dcWs2812fx()) << "set brightness to:" << brightness;
+                device->setStateValue(ws2812fxBrightnessStateTypeId, brightness);
+                if (brightness == 0) {
+                    device->setStateValue(ws2812fxPowerStateTypeId, false);
+                } else {
+                    device->setStateValue(ws2812fxPowerStateTypeId, true);
+                }
             }
         }
         if (data.contains("speed")) {
             if (m_pendingActions.contains(CommandType::Speed)) {
                 emit actionExecutionFinished(m_pendingActions.value(CommandType::Speed), Device::DeviceErrorNoError);
             }
-            QString rawSpeed = data.split(':').at(1);
-            rawSpeed.remove(" ");
-            rawSpeed.remove("\r\n");
-            int speed = data.split(':').at(1).toInt();
+            QByteArrayList list = data.split(':');
+            if(list.length() >= 2) {
+                QString rawSpeed = list.at(1);
+                rawSpeed.remove(" ");
+                rawSpeed.remove("\r\n");
+                int speed = data.split(':').at(1).toInt();
 
-            qDebug(dcWs2812fx()) << "set speed to:" << speed;
-            device->setStateValue(ws2812fxSpeedStateTypeId, speed);
+                qDebug(dcWs2812fx()) << "set speed to:" << speed;
+                device->setStateValue(ws2812fxSpeedStateTypeId, speed);
+            }
         }
         if (data.contains("color")) {
             if (m_pendingActions.contains(CommandType::Color)) {
                 emit actionExecutionFinished(m_pendingActions.value(CommandType::Color), Device::DeviceErrorNoError);
             }
-            QString rawColor = data.split(':').at(1);
-            rawColor.remove(" ");
-            rawColor.remove("0x");
-            rawColor.remove("\r\n");
-            rawColor.prepend("#");
-            qDebug(dcWs2812fx()) << "set color to:" << rawColor;
-            device->setStateValue(ws2812fxColorStateTypeId, rawColor);
+            QByteArrayList list = data.split(':');
+            if(list.length() >= 2) {
+                QString rawColor = list.at(1);
+                rawColor.remove(" ");
+                rawColor.remove("0x");
+                rawColor.remove("\r\n");
+                rawColor.prepend("#");
+                qDebug(dcWs2812fx()) << "set color to:" << rawColor;
+                device->setStateValue(ws2812fxColorStateTypeId, rawColor);
+            }
         }
     }
 }
