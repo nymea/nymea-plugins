@@ -305,9 +305,11 @@ void DevicePluginWs2812fx::deviceRemoved(Device *device)
 
         m_usedInterfaces.removeAll(device->paramValue(ws2812fxDeviceSerialPortParamTypeId).toString());
         QSerialPort *serialPort = m_serialPorts.take(device);
-        serialPort->flush();
-        serialPort->close();
-        serialPort->deleteLater();
+        if(serialPort) {
+            serialPort->flush();
+            serialPort->close();
+            serialPort->deleteLater();
+        }
     }
 
     if (myDevices().empty()) {
@@ -320,6 +322,8 @@ void DevicePluginWs2812fx::onReadyRead()
 {
     QSerialPort *serialPort =  static_cast<QSerialPort*>(sender());
     Device *device = m_serialPorts.key(serialPort);
+    if (!device)
+        return;
 
     QByteArray data;
     while (serialPort->canReadLine()) {
@@ -402,6 +406,8 @@ void DevicePluginWs2812fx::onSerialError(QSerialPort::SerialPortError error)
 {
     QSerialPort *serialPort =  static_cast<QSerialPort*>(sender());
     Device *device = m_serialPorts.key(serialPort);
+    if (!device)
+        return;
 
     if (error != QSerialPort::NoError && serialPort->isOpen()) {
         qCCritical(dcWs2812fx()) << "Serial port error:" << error << serialPort->errorString();
