@@ -13,7 +13,8 @@
                     "name": "doorBird",
                     "displayName": "DoorBird",
                     "createMethods": ["discovery", "user" ],
-                    "interfaces": [ "inputtrigger", "connectable" ],
+                    "interfaces": [ "doorbell", "presencesensor", "connectable" ],
+                    "setupMethod": "userandpassword",
                     "paramTypes": [
                         {
                             "id": "8873b17d-526e-408d-95d8-6439b501f489",
@@ -22,23 +23,30 @@
                             "type": "QString"
                         },
                         {
-                            "id": "7ccd8f3a-2a5f-4b90-8042-92899d0ee32a",
-                            "name": "username",
-                            "displayName": "Username",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "ea285a57-47c5-43f1-b0d6-e0a4d6230f3c",
-                            "name": "password",
-                            "displayName": "Password",
+                            "id": "67ea5534-330a-4291-93b5-0237034e15fa",
+                            "name": "serialnumber",
+                            "displayName": "Serial number",
                             "type": "QString"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "b6c3377b-91de-411a-9d48-8b509c39d67c",
-                            "name": "unlatch",
-                            "displayName": "Unlatch the door"
+                            "name": "openDoor",
+                            "displayName": "Open door",
+                            "paramTypes": [
+                                {
+                                    "id": "6dcce056-e4d4-49c4-8b68-d3f478c00a52",
+                                    "name": "number",
+                                    "displayName": "Number",
+                                    "type": "int"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "3a6cfc5d-804c-4d21-91b5-999913d4f1a5",
+                            "name": "lightOn",
+                            "displayName": "Light on"
                         }
                     ],
                     "stateTypes": [
@@ -49,18 +57,30 @@
                             "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "0f5eb200-6c0d-45c5-9156-3060fd66d332",
+                            "name": "isPresent",
+                            "displayName": "Motion sensor presence",
+                            "displayNameEvent": "Motion sensor presence detected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "295c9700-b598-4681-898f-d63e2889cedf",
+                            "name": "lastSeenTime",
+                            "displayName": "Motion sensor last seen time",
+                            "displayNameEvent": "Motion sensor last seen time changedd",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "9bc89937-a2ab-4e8e-af0e-a9ba41caa89b",
-                            "name": "triggered",
+                            "name": "doorbellPressed",
                             "displayName": "Doorbell pressed"
-                        },
-                        {
-                            "id": "e9bb229b-8776-4110-a813-9c0dc67375db",
-                            "name": "motionDetected",
-                            "displayName": "Motion detected"
                         }
                     ]
                 }
