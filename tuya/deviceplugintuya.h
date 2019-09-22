@@ -35,21 +35,23 @@ class DevicePluginTuya: public DevicePlugin
 
 public:
     explicit DevicePluginTuya(QObject *parent = nullptr);
-    ~DevicePluginTuya();
+    ~DevicePluginTuya() override;
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    DevicePairingInfo pairDevice(DevicePairingInfo &info) override;
-    DevicePairingInfo confirmPairing(DevicePairingInfo &info, const QString &username, const QString &secret) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+    void executeAction(DeviceActionInfo *info) override;
 
+signals:
+    void tokenRefreshed(Device *device, bool success);
 
 private:
-    void refreshAccessToken(Device *device, bool emitSetupFinished = false);
+    void refreshAccessToken(Device *device);
     void updateChildDevices(Device *device);
 
-    void controlTuyaSwitch(Device *device, bool on, const ActionId &actionId);
+    void controlTuyaSwitch(DeviceActionInfo *info);
 
     QHash<DeviceId, QTimer*> m_tokenExpiryTimers;
     PluginTimer *m_pluginTimer = nullptr;

@@ -38,8 +38,14 @@ DevicePluginTuya::DevicePluginTuya(QObject *parent): DevicePlugin(parent)
 
 }
 
-Device::DeviceSetupStatus DevicePluginTuya::setupDevice(Device *device)
+DevicePluginTuya::~DevicePluginTuya()
 {
+
+}
+
+void DevicePluginTuya::setupDevice(DeviceSetupInfo *info)
+{
+    Device *device = info->device();
     if (device->deviceClassId() == tuyaCloudDeviceClassId) {
         QTimer *tokenRefreshTimer = m_tokenExpiryTimers.value(device->id());
         if (!tokenRefreshTimer) {
@@ -49,6 +55,7 @@ Device::DeviceSetupStatus DevicePluginTuya::setupDevice(Device *device)
         }
 
         connect(tokenRefreshTimer, &QTimer::timeout, device, [this, device](){
+            qCDebug(dcTuya()) << "Timer refresh token";
             refreshAccessToken(device);
         });
 
@@ -56,15 +63,27 @@ Device::DeviceSetupStatus DevicePluginTuya::setupDevice(Device *device)
         if (tokenRefreshTimer->isActive()) {
             qCDebug(dcTuya()) << "Device already set up during pairing.";
             device->setStateValue(tuyaCloudConnectedStateTypeId, true);
-            return Device::DeviceSetupStatusSuccess;
+            return info->finish(Device::DeviceErrorNoError);
         }
 
         // Else, let's refresh the token now
-        refreshAccessToken(device, true);
-        return  Device::DeviceSetupStatusAsync;
+        qCDebug(dcTuya()) << "Setup refresh token";
+        refreshAccessToken(device);
+
+        connect(this, &DevicePluginTuya::tokenRefreshed, info, [info](Device *device, bool success){
+            if (device == info->device()) {
+                if (!success) {
+                    info->finish(Device::DeviceErrorAuthenticationFailure, QT_TR_NOOP("Error authenticating to Tuya device."));
+                } else {
+                    info->finish(Device::DeviceErrorNoError);
+                }
+            }
+        });
+
+        return ;
     }
 
-    return Device::DeviceSetupStatusSuccess;
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginTuya::postSetupDevice(Device *device)
@@ -95,13 +114,12 @@ void DevicePluginTuya::deviceRemoved(Device *device)
     }
 }
 
-DevicePairingInfo DevicePluginTuya::pairDevice(DevicePairingInfo &info)
+void DevicePluginTuya::startPairing(DevicePairingInfo *info)
 {
-    info.setMessage(tr("Please enter username and password for your Tuya (Smart Life) account."));
-    return info;
+    info->finish(Device::DeviceErrorNoError, QT_TR_NOOP("Please enter username and password for your Tuya (Smart Life) account."));
 }
 
-DevicePairingInfo DevicePluginTuya::confirmPairing(DevicePairingInfo &info, const QString &username, const QString &secret)
+void DevicePluginTuya::confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret)
 {
     QUrl url(QString("http://px1.tuyaeu.com/homeassistant/auth.do"));
 
@@ -117,19 +135,16 @@ DevicePairingInfo DevicePluginTuya::confirmPairing(DevicePairingInfo &info, cons
 
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, query.toString().toUtf8());
+    connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
 
     qCDebug(dcTuya()) << "Pairing Tuya device";
-    connect(reply, &QNetworkReply::finished, this, [this, reply, info](){
+    connect(reply, &QNetworkReply::finished, info, [this, reply, info](){
         reply->deleteLater();
         QByteArray data = reply->readAll();
 
-        DevicePairingInfo ret(info);
-
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcTuya()) << "Server error:" << reply->errorString();
-            ret.setMessage(tr("Error communicating with Tuya server."));
-            ret.setStatus(Device::DeviceErrorHardwareFailure);
-            emit pairingFinished(ret);
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error communicating with Tuya server."));
             return;
         }
 
@@ -137,14 +152,22 @@ DevicePairingInfo DevicePluginTuya::confirmPairing(DevicePairingInfo &info, cons
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcTuya()) << "Json parse error:" << error.errorString();
-            ret.setMessage(tr("Error communicating with Tuya server."));
-            ret.setStatus(Device::DeviceErrorHardwareFailure);
-            emit pairingFinished(ret);
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error communicating with Tuya server."));
             return;
         }
 
+        qCDebug(dcTuya()) << "Response from tuya api:" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
+
         QVariantMap result = jsonDoc.toVariant().toMap();
-        pluginStorage()->beginGroup(info.deviceId().toString());
+
+
+        if (result.value("responseStatus") == "error") {
+            qCDebug(dcTuya()) << "Error response from service.";
+            info->finish(Device::DeviceErrorAuthenticationFailure, QT_TR_NOOP("Wrong username or password."));
+            return;
+        }
+
+        pluginStorage()->beginGroup(info->deviceId().toString());
         pluginStorage()->setValue("accessToken", result.value("access_token").toString());
         pluginStorage()->setValue("refreshToken", result.value("refresh_token").toString());
         pluginStorage()->endGroup();
@@ -155,31 +178,26 @@ DevicePairingInfo DevicePluginTuya::confirmPairing(DevicePairingInfo &info, cons
         t->setSingleShot(true);
         t->start(timeout * 1000);
 
-        m_tokenExpiryTimers.insert(info.deviceId(), t);
+        m_tokenExpiryTimers.insert(info->deviceId(), t);
 
         qCDebug(dcTuya()) << "Tuya device paired. Token expires in" << timeout;
 
-        ret.setStatus(Device::DeviceErrorNoError);
-        emit pairingFinished(ret);
-
+        info->finish(Device::DeviceErrorNoError);
     });
-
-    info.setStatus(Device::DeviceErrorAsync);
-    return info;
 }
 
-Device::DeviceError DevicePluginTuya::executeAction(Device *device, const Action &action)
+void DevicePluginTuya::executeAction(DeviceActionInfo *info)
 {
-    if (action.actionTypeId() == tuyaSwitchPowerActionTypeId) {
-        controlTuyaSwitch(device, action.param(tuyaSwitchPowerActionPowerParamTypeId).value().toBool(), action.id());
-        return Device::DeviceErrorAsync;
+    if (info->action().actionTypeId() == tuyaSwitchPowerActionTypeId) {
+        controlTuyaSwitch(info);
+        return;
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+    Q_ASSERT_X(false, "tuyaplugin", "Unhandled action type " + info->action().actionTypeId().toByteArray());
 }
 
-void DevicePluginTuya::refreshAccessToken(Device *device, bool emitSetupFinished)
+void DevicePluginTuya::refreshAccessToken(Device *device)
 {
-    qCDebug(dcTuya()) << device->name() << "Refreshing access token.";
+    qCDebug(dcTuya()) << device->name() << "Refreshing access token for" << device->name();
 
     pluginStorage()->beginGroup(device->id().toString());
     QString refreshToken = pluginStorage()->value("refreshToken").toString();
@@ -196,13 +214,12 @@ void DevicePluginTuya::refreshAccessToken(Device *device, bool emitSetupFinished
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, [reply](){ reply->deleteLater(); });
-    connect(reply, &QNetworkReply::finished, device, [this, reply, device, emitSetupFinished](){
+
+    connect(reply, &QNetworkReply::finished, device, [this, reply, device](){
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcTuya()) << "Error refreshing access token";
-            if (emitSetupFinished) {
-                emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
-            }
             device->setStateValue(tuyaCloudConnectedStateTypeId, false);
+            emit tokenRefreshed(device, false);
             return;
         }
         QByteArray data = reply->readAll();
@@ -211,9 +228,13 @@ void DevicePluginTuya::refreshAccessToken(Device *device, bool emitSetupFinished
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcTuya()) << "Failed to parse json reply when refreshing access token" << error.errorString();
-            if (emitSetupFinished) {
-                emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
-            }
+            device->setStateValue(tuyaCloudConnectedStateTypeId, false);
+            emit tokenRefreshed(device, false);
+            return;
+        }
+
+        if (jsonDoc.toVariant().toMap().isEmpty()) {
+            qCWarning(dcTuya()) << "Empty response from Tuya server";
             device->setStateValue(tuyaCloudConnectedStateTypeId, false);
             return;
         }
@@ -224,15 +245,14 @@ void DevicePluginTuya::refreshAccessToken(Device *device, bool emitSetupFinished
         pluginStorage()->endGroup();
         int tokenExpiry = jsonDoc.toVariant().toMap().value("expires_in").toInt();
 
+        qCDebug(dcTuya()) << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
         qCDebug(dcTuya()) << "Access token for" << device->name() << "refreshed. Expires in" << tokenExpiry;
 
         QTimer *t = m_tokenExpiryTimers.value(device->id());
         t->start(tokenExpiry);
         device->setStateValue(tuyaCloudConnectedStateTypeId, true);
 
-        if (emitSetupFinished) {
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
-        }
+        emit tokenRefreshed(device, true);
     });
 }
 
@@ -267,7 +287,6 @@ void DevicePluginTuya::updateChildDevices(Device *device)
     connect(reply, &QNetworkReply::finished, device, [this, device, reply](){
         if (reply->error() !=  QNetworkReply::NoError) {
             qCWarning(dcTuya()) << "Error fetching devices from Tuya cloud" << reply->error();
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
 
@@ -276,14 +295,12 @@ void DevicePluginTuya::updateChildDevices(Device *device)
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcTuya()) << "Json parser error updating child devices" << error.errorString();
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
 
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         if (!dataMap.contains("payload") || !dataMap.value("payload").toMap().contains("devices")) {
             qCWarning(dcTuya()) << "Invalid data from Tuya cloud:" << jsonDoc.toJson();
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
             return;
         }
         QVariantList devices = dataMap.value("payload").toMap().value("devices").toList();
@@ -321,16 +338,19 @@ void DevicePluginTuya::updateChildDevices(Device *device)
         }
 
         if (!unknownDevices.isEmpty()) {
-            emit autoDevicesAppeared(tuyaSwitchDeviceClassId, unknownDevices);
+            emit autoDevicesAppeared(unknownDevices);
         }
     });
 
 }
 
-void DevicePluginTuya::controlTuyaSwitch(Device *device, bool on, const ActionId &actionId)
+void DevicePluginTuya::controlTuyaSwitch(DeviceActionInfo *info)
 {
-    qCDebug(dcTuya()) << device->name() << "Controlling Tuya switch";
+    bool on = info->action().param(tuyaSwitchPowerActionPowerParamTypeId).value().toBool();
+    Device *device = info->device();
     Device *parentDevice = myDevices().findById(device->parentId());
+
+    qCDebug(dcTuya()) << device->name() << "Controlling Tuya switch. Parent:" << parentDevice->name() << "on:" << on;
 
     pluginStorage()->beginGroup(parentDevice->id().toString());
     QString accesToken = pluginStorage()->value("accessToken").toString();
@@ -359,10 +379,10 @@ void DevicePluginTuya::controlTuyaSwitch(Device *device, bool on, const ActionId
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, [reply](){reply->deleteLater();});
-    connect(reply, &QNetworkReply::finished, device, [this, device, reply, on, actionId](){
+    connect(reply, &QNetworkReply::finished, info, [this, info, reply, on](){
         if (reply->error() !=  QNetworkReply::NoError) {
             qCWarning(dcTuya()) << "Error setting switch state" << reply->error();
-            emit actionExecutionFinished(actionId, Device::DeviceErrorHardwareFailure);
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error connecting to Tuya switch."));
             return;
         }
 
@@ -371,15 +391,21 @@ void DevicePluginTuya::controlTuyaSwitch(Device *device, bool on, const ActionId
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcTuya()) << "Json parser error in control switch reply" << error.errorString() << data;
-            emit actionExecutionFinished(actionId, Device::DeviceErrorHardwareFailure);
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Received an unexpected reply from the Tuya switch."));
             return;
         }
 
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         bool success = dataMap.value("header").toMap().value("code").toString() == "SUCCESS";
-        emit actionExecutionFinished(actionId, success ? Device::DeviceErrorNoError : Device::DeviceErrorHardwareFailure);
-        device->setStateValue(tuyaSwitchPowerStateTypeId, on);
+        if (!success) {
+            qCWarning(dcTuya()) << "Tuya response indicates an issue...";
+            info->finish(Device::DeviceErrorHardwareFailure);
+            return;
+        }
+
         qCDebug(dcTuya())  << "Device controlled";
+        info->device()->setStateValue(tuyaSwitchPowerStateTypeId, on);
+        info->finish(Device::DeviceErrorNoError);
     });
 }
 
