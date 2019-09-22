@@ -81,7 +81,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "b5ac83c4-e1ff-4682-80f2-61cca097ed8f",
+                            "id": "cf051676-3041-4e90-8c37-63e98412dfe8",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
@@ -89,9 +89,25 @@
                             "defaultValue": false,
                             "cached": false
                         }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "f9f34515-670d-439e-851a-0bf82f867882",
+                            "name": "open",
+                            "displayName": "Open blinds"
+                        },
+                        {
+                            "id": "f266ea4a-052f-466b-bf31-8c5c7e80a843",
+                            "name": "close",
+                            "displayName": "Close blinds"
+                        },
+                        {
+                            "id": "8fc2ea7d-b945-41c8-bbda-820bdadc9e02",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
                     ]
                 }
-
             ]
         }
     ]
