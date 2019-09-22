@@ -34,6 +34,10 @@
 
 #include "plugintimer.h"
 
+// API info:
+// Python project: https://github.com/PaulAnnekov/tuyaha
+// JS project: https://github.com/unparagoned/cloudtuya
+
 DevicePluginTuya::DevicePluginTuya(QObject *parent): DevicePlugin(parent)
 {
 
