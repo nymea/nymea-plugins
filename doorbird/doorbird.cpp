@@ -29,6 +29,8 @@
 #include <QAuthenticator>
 #include <QTimer>
 #include <QImage>
+#include <QUrl>
+#include <QUrlQuery>
 
 Doorbird::Doorbird(const QHostAddress &address, const QString &username, const QString &password, QObject *parent) :
     QObject(parent),
@@ -38,9 +40,10 @@ Doorbird::Doorbird(const QHostAddress &address, const QString &username, const Q
 {
     m_networkAccessManager = new QNetworkAccessManager(this);
     connect(m_networkAccessManager, &QNetworkAccessManager::authenticationRequired, this, [this](QNetworkReply *reply, QAuthenticator *authenticator) {
+        Q_UNUSED(reply);
         qCDebug(dcDoorBird) << "Credentials requested:";
-        authenticator->setUser(username);
-        authenticator->setPassword(password);
+        authenticator->setUser(m_username);
+        authenticator->setPassword(m_password);
     });
 }
 
@@ -114,7 +117,22 @@ QUuid Doorbird::lightOn()
 
 QUuid Doorbird::liveVideoRequest()
 {
+    QNetworkRequest request(QString("http://%1/bha-api/info.cgi").arg(m_address.toString()));
+    qCDebug(dcDoorBird) << "Sending request:" << request.url();
+    QNetworkReply *reply = m_networkAccessManager->get(request);
+    QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
+        reply->deleteLater();
 
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDoorBird) << "Error unlatching DoorBird device";
+            emit requestSent(requestId, false);
+            return;
+        }
+        qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+        emit requestSent(requestId, true);
+    });
+    return requestId;
 }
 
 QUuid Doorbird::liveImageRequest()
@@ -142,7 +160,52 @@ QUuid Doorbird::liveImageRequest()
 
 QUuid Doorbird::historyImageRequest(int index)
 {
+    QUrl url(QString("http://%1/bha-api/history.cgi").arg(m_address.toString()));
+    QUrlQuery query;
+    query.addQueryItem("index", QString::number(index));
+    url.setQuery(query);
 
+    qCDebug(dcDoorBird) << "Sending request:" << url;
+    QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
+    QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
+        reply->deleteLater();
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDoorBird) << "Error unlatching DoorBird device";
+            emit requestSent(requestId, false);
+            return;
+        }
+        qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+        emit requestSent(requestId, true);
+    });
+    return requestId;
+}
+
+QUuid Doorbird::liveAudioReceive()
+{
+    QNetworkRequest request(QString("http://%1/bha-api/audio-receive.cgi").arg(m_address.toString()));
+    qCDebug(dcDoorBird) << "Sending request:" << request.url();
+    QNetworkReply *reply = m_networkAccessManager->get(request);
+    QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
+        reply->deleteLater();
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDoorBird) << "Error DoorBird device";
+            emit requestSent(requestId, false);
+            return;
+        }
+        qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+        emit requestSent(requestId, true);
+    });
+    return requestId;
+}
+
+QUuid Doorbird::liveAudioTransmit()
+{
+
+    return QUuid::createUuid();
 }
 
 QUuid Doorbird::infoRequest()
@@ -150,26 +213,57 @@ QUuid Doorbird::infoRequest()
     QNetworkRequest request(QString("http://%1/bha-api/info.cgi").arg(m_address.toString()));
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
-
-    connect(reply, &QNetworkReply::finished, this, [this, reply, action](){
+    QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error unlatching DoorBird device";
+            emit requestSent(requestId, false);
             return;
         }
         qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+        emit requestSent(requestId, true);
     });
+    return requestId;
 }
 
 QUuid Doorbird::listFavorites()
 {
+    QNetworkRequest request(QString("http://%1/bha-api/favorites.cgi").arg(m_address.toString()));
+    qCDebug(dcDoorBird) << "Sending request:" << request.url();
+    QNetworkReply *reply = m_networkAccessManager->get(request);
+    QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
+        reply->deleteLater();
 
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDoorBird) << "Error DoorBird device" << reply->error() << reply->errorString();
+            emit requestSent(requestId, false);
+            return;
+        }
+        emit requestSent(requestId, true);
+    });
+    return requestId;
 }
 
 QUuid Doorbird::listSchedules()
 {
+    QNetworkRequest request(QString("http://%1/bha-api/schedule.cgi").arg(m_address.toString()));
+    qCDebug(dcDoorBird) << "Sending request:" << request.url();
+    QNetworkReply *reply = m_networkAccessManager->get(request);
+    QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
+        reply->deleteLater();
 
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDoorBird) << "Error DoorBird device" << reply->error() << reply->errorString();
+            emit requestSent(requestId, false);
+            return;
+        }
+        emit requestSent(requestId, true);
+    });
+    return requestId;
 }
 
 QUuid Doorbird::restart()
@@ -177,24 +271,27 @@ QUuid Doorbird::restart()
     QNetworkRequest request(QString("http://%1/bha-api/restart.cgi").arg(m_address.toString()));
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
-
-    connect(reply, &QNetworkReply::finished, this, [this, reply, action](){
+    QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error restarting DoorBird device" << reply;
+            emit requestSent(requestId, false);
             return;
         }
         qCDebug(dcDoorBird) << "DoorBird restarting";
+        emit requestSent(requestId, true);
     });
+    return requestId;
 }
 
 void Doorbird::connectToEventMonitor()
 {
     qCDebug(dcDoorBird) << "Starting monitoring";
 
-    QNetworkRequest request(QString("http://%1/bha-api/monitor.cgi?ring=doorbell,motionsensor").arg(m_address.toString());
-            QNetworkReply *reply = m_networkAccessManager->get(request);
+    QNetworkRequest request(QString("http://%1/bha-api/monitor.cgi?ring=doorbell,motionsensor").arg(m_address.toString()));
+    QNetworkReply *reply = m_networkAccessManager->get(request);
 
     connect(reply, &QNetworkReply::downloadProgress, this, [this, reply](qint64 bytesReceived, qint64 bytesTotal){
         Q_UNUSED(bytesReceived)
@@ -210,7 +307,7 @@ void Doorbird::connectToEventMonitor()
 
         while (!m_readBuffers.isEmpty()) {
             // find next --ioboundary
-            QString boundary = QStringLiteral("--ioboundary");
+            /*QString boundary = QStringLiteral("--ioboundary");
             int startIndex = m_readBuffers.indexOf(boundary);
             if (startIndex == -1) {
                 qCWarning(dcDoorBird) << "No meaningful data in buffer:" << m_readBuffers;
@@ -265,17 +362,18 @@ void Doorbird::connectToEventMonitor()
                 }
             } else {
                 qCWarning(dcDoorBird) << "Unhandled DoorBird data:" << message;
-            }
+            }*/
         }
     });
-    connect(reply, &QNetworkReply::finished, this, [this, reply](){
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         reply->deleteLater();
 
         //device->setStateValue(doorBirdConnectedStateTypeId, false);
         qCDebug(dcDoorBird) << "Monitor request finished:" << reply->error();
 
         QTimer::singleShot(2000, this, [this] {
-            connectToEventMonitor(device);
+            connectToEventMonitor();
         });
     });
 }

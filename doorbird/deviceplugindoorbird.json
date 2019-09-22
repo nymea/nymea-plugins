@@ -33,15 +33,7 @@
                         {
                             "id": "b6c3377b-91de-411a-9d48-8b509c39d67c",
                             "name": "openDoor",
-                            "displayName": "Open door",
-                            "paramTypes": [
-                                {
-                                    "id": "6dcce056-e4d4-49c4-8b68-d3f478c00a52",
-                                    "name": "number",
-                                    "displayName": "Number",
-                                    "type": "int"
-                                }
-                            ]
+                            "displayName": "Open door"
                         },
                         {
                             "id": "3a6cfc5d-804c-4d21-91b5-999913d4f1a5",
