@@ -1,5 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *  Copyright (C) 2019 Michael Zanetti <michael.zanetti@nymea.io>          *
  *                                                                         *
  *  This file is part of nymea.                                            *
@@ -18,39 +19,58 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINDOORBIRD_H
-#define DEVICEPLUGINDOORBIRD_H
+#ifndef DOORBIRD_H
+#define DOORBIRD_H
 
-#include "devices/deviceplugin.h"
-#include "devices/devicemanager.h"
-#include "doorbird.h"
+#include <QObject>
+#include <QHostAddress>
+#include <QNetworkAccessManager>
+#include <QUuid>
 
-class QNetworkAccessManager;
-class QNetworkReply;
-
-class DevicePluginDoorbird: public DevicePlugin
+class Doorbird : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "deviceplugindoorbird.json")
-    Q_INTERFACES(DevicePlugin)
-
-
 public:
-    explicit DevicePluginDoorbird();
-    ~DevicePluginDoorbird() override;
+    explicit Doorbird(const QHostAddress &address, const QString &username, const QString &password, QObject *parent = nullptr);
 
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    QUuid getSession();
+    QUuid openDoor(int value);
+    QUuid lightOn();
+    QUuid liveVideoRequest();
+    QUuid liveImageRequest();
+    QUuid historyImageRequest(int index);
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    QUuid liveAudioReceive();
+    QUuid liveAudioTransmit();
+    QUuid infoRequest();
 
-    DevicePairingInfo confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret) override;
-    DevicePairingInfo pairDevice(DevicePairingInfo &devicePairingInfo) override;
-    void deviceRemoved(Device *device)override;
+    QUuid listFavorites();
+    QUuid addFavorite();
+    QUuid deleteFavorite();
 
+    QUuid listSchedules();
+    QUuid daddScheduleEntry();
+    QUuid deleteScheduleEntry();
+
+    QUuid restart();
+
+    void connectToEventMonitor();
 private:
-    QHash<Device*, Doorbird *> m_doorbirdConnections;
+    QNetworkAccessManager *m_networkAccessManager;
+    QList<QByteArray> m_readBuffers;
+
+    QHostAddress m_address;
+    QList<QNetworkReply *> m_networkRequests;
+
+    QString m_username;
+    QString m_password;
+
+    QByteArray sessionId;
+
+signals:
+    void requestSent(QUuid requestId, bool success);
+
+public slots:
 };
 
-#endif // DEVICEPLUGINDOORBIRD_H
+#endif // DOORBIRD_H
