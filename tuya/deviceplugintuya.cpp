@@ -27,6 +27,7 @@
 #include <QNetworkReply>
 #include <QJsonDocument>
 #include <QTimer>
+#include <QColor>
 
 #include "hardwaremanager.h"
 #include "network/networkaccessmanager.h"
@@ -189,7 +190,23 @@ void DevicePluginTuya::confirmPairing(DevicePairingInfo *info, const QString &us
 void DevicePluginTuya::executeAction(DeviceActionInfo *info)
 {
     if (info->action().actionTypeId() == tuyaSwitchPowerActionTypeId) {
-        controlTuyaSwitch(info);
+        bool on = info->action().param(tuyaSwitchPowerActionPowerParamTypeId).value().toBool();
+        controlTuyaSwitch("turnOnOff", on ? "1" : "0", info);
+        connect(info, &DeviceActionInfo::finished, [info, on](){
+            info->device()->setStateValue(tuyaSwitchPowerStateTypeId, on);
+        });
+        return;
+    }
+    if (info->action().actionTypeId() == tuyaClosableOpenActionTypeId) {
+        controlTuyaSwitch("turnOnOff", "1", info);
+        return;
+    }
+    if (info->action().actionTypeId() == tuyaClosableCloseActionTypeId) {
+        controlTuyaSwitch("turnOnOff", "0", info);
+        return;
+    }
+    if (info->action().actionTypeId() == tuyaClosableStopActionTypeId) {
+        controlTuyaSwitch("startStop", "0", info);
         return;
     }
     Q_ASSERT_X(false, "tuyaplugin", "Unhandled action type " + info->action().actionTypeId().toByteArray());
@@ -331,6 +348,20 @@ void DevicePluginTuya::updateChildDevices(Device *device)
                     descriptor.setParams(ParamList() << Param(tuyaSwitchDeviceIdParamTypeId, id));
                     unknownDevices.append(descriptor);
                 }
+            } else if (devType == "cover") {
+                bool online = deviceMap.value("data").toMap().value("online").toBool();
+
+                Device *d = myDevices().findByParams(ParamList() << Param(tuyaClosableDeviceIdParamTypeId, id));
+                if (d) {
+                    qCDebug(dcTuya()) << "Found existing Tuya cover" << id << name;
+                    d->setName(name);
+                    d->setStateValue(tuyaClosableConnectedStateTypeId, online);
+                } else {
+                    qCDebug(dcTuya()) << "Found new Tuya cover" << id << name;
+                    DeviceDescriptor descriptor(tuyaClosableDeviceClassId, name, QString(), device->id());
+                    descriptor.setParams(ParamList() << Param(tuyaClosableDeviceIdParamTypeId, id));
+                    unknownDevices.append(descriptor);
+                }
             } else {
                 qCWarning(dcTuya()) << "Skipping unsupported device type:" << devType;
                 continue;
@@ -344,13 +375,12 @@ void DevicePluginTuya::updateChildDevices(Device *device)
 
 }
 
-void DevicePluginTuya::controlTuyaSwitch(DeviceActionInfo *info)
+void DevicePluginTuya::controlTuyaSwitch(const QString &command, const QString &value, DeviceActionInfo *info)
 {
-    bool on = info->action().param(tuyaSwitchPowerActionPowerParamTypeId).value().toBool();
     Device *device = info->device();
     Device *parentDevice = myDevices().findById(device->parentId());
 
-    qCDebug(dcTuya()) << device->name() << "Controlling Tuya switch. Parent:" << parentDevice->name() << "on:" << on;
+    qCDebug(dcTuya()) << device->name() << "Controlling Tuya switch. Parent:" << parentDevice->name() << "command:" << command << "value:" << value;
 
     pluginStorage()->beginGroup(parentDevice->id().toString());
     QString accesToken = pluginStorage()->value("accessToken").toString();
@@ -362,14 +392,14 @@ void DevicePluginTuya::controlTuyaSwitch(DeviceActionInfo *info)
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
     QVariantMap header;
-    header.insert("name", "turnOnOff");
+    header.insert("name", command);
     header.insert("namespace", "control");
     header.insert("payloadVersion", 1);
 
     QVariantMap payload;
     payload.insert("accessToken", accesToken);
     payload.insert("devId", device->paramValue(tuyaSwitchDeviceIdParamTypeId).toString());
-    payload.insert("value", on ? 1 : 0);
+    payload.insert("value", value);
 
     QVariantMap data;
     data.insert("header", header);
@@ -379,7 +409,7 @@ void DevicePluginTuya::controlTuyaSwitch(DeviceActionInfo *info)
 
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, [reply](){reply->deleteLater();});
-    connect(reply, &QNetworkReply::finished, info, [this, info, reply, on](){
+    connect(reply, &QNetworkReply::finished, info, [info, reply](){
         if (reply->error() !=  QNetworkReply::NoError) {
             qCWarning(dcTuya()) << "Error setting switch state" << reply->error();
             info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error connecting to Tuya switch."));
@@ -404,7 +434,6 @@ void DevicePluginTuya::controlTuyaSwitch(DeviceActionInfo *info)
         }
 
         qCDebug(dcTuya())  << "Device controlled";
-        info->device()->setStateValue(tuyaSwitchPowerStateTypeId, on);
         info->finish(Device::DeviceErrorNoError);
     });
 }
