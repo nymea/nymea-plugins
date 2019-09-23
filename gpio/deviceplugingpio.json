@@ -143,7 +143,7 @@
                             "displayName": "Counter",
                             "type": "int",
                             "defaultValue": 0,
-                            "unit": "Herz",
+                            "unit": "Hertz",
                             "displayNameEvent": "Counter changed"
                         }
                     ]
@@ -280,7 +280,7 @@
                             "displayName": "Counter",
                             "type": "int",
                             "defaultValue": 0,
-                            "unit": "Herz",
+                            "unit": "Hertz",
                             "displayNameEvent": "Counter changed"
                         }
                     ]
