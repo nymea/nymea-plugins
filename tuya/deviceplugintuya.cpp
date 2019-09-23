@@ -26,7 +26,6 @@
 #include <QUrlQuery>
 #include <QNetworkReply>
 #include <QJsonDocument>
-#include <QTimer>
 #include <QColor>
 
 #include "hardwaremanager.h"
