@@ -21,6 +21,8 @@
 #ifndef DEVICEPLUGINTUYA_H
 #define DEVICEPLUGINTUYA_H
 
+#include <QTimer>
+
 #include "devices/deviceplugin.h"
 
 class PluginTimer;
