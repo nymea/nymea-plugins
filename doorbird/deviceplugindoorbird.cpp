@@ -35,64 +35,74 @@ DevicePluginDoorbird::DevicePluginDoorbird()
 {
 }
 
-DevicePluginDoorbird::~DevicePluginDoorbird()
-{
 
-}
-
-Device::DeviceError DevicePluginDoorbird::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginDoorbird::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params)
-    if (deviceClassId == doorBirdDeviceClassId) {
-        ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
-        QTimer::singleShot(5000, this, [this, serviceBrowser](){
-            QList<DeviceDescriptor> deviceDescriptors;
+    if (info->deviceClassId() == doorBirdDeviceClassId) {
+        ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_axis-video._tcp");
+        connect(info, &QObject::destroyed, serviceBrowser, &QObject::deleteLater);
+
+        QTimer::singleShot(5000, this, [this, info, serviceBrowser](){
             foreach (const ZeroConfServiceEntry serviceEntry, serviceBrowser->serviceEntries()) {
                 if (serviceEntry.hostName().startsWith("bha-")) {
-                    qCDebug(dcDoorBird) << "Found DoorBird device";
+                    qCDebug(dcDoorBird) << "Found DoorBird device, name: " << serviceEntry.name() << "\n   host address:" << serviceEntry.hostAddress().toString() << "\n    text:" << serviceEntry.txt() << serviceEntry.protocol() << serviceEntry.serviceType();
                     DeviceDescriptor deviceDescriptor(doorBirdDeviceClassId, serviceEntry.name(), serviceEntry.hostAddress().toString());
                     ParamList params;
-                    //TODO add rediscovery
-                    params.append(Param(doorBirdDeviceSerialnumberParamTypeId, serviceEntry.hostName()));
+                    QString macAddress = serviceEntry.txt().first();
+                    if (!myDevices().filterByParam(doorBirdDeviceSerialnumberParamTypeId, macAddress).isEmpty()) {
+                        Device *existingDevice = myDevices().filterByParam(doorBirdDeviceSerialnumberParamTypeId, serviceEntry.hostName()).first();
+                        deviceDescriptor.setDeviceId(existingDevice->id());
+                    }
+                    params.append(Param(doorBirdDeviceSerialnumberParamTypeId, macAddress));
                     params.append(Param(doorBirdDeviceAddressParamTypeId, serviceEntry.hostAddress().toString()));
                     deviceDescriptor.setParams(params);
-                    deviceDescriptors.append(deviceDescriptor);
+                    info->addDeviceDescriptor(deviceDescriptor);
                 }
             }
-            emit devicesDiscovered(doorBirdDeviceClassId, deviceDescriptors);
             serviceBrowser->deleteLater();
+            info->finish(Device::DeviceErrorNoError);
         });
-        return Device::DeviceErrorAsync;
+        return;
     }
-    return Device::DeviceErrorDeviceClassNotFound;
-}
-
-DevicePairingInfo DevicePluginDoorbird::pairDevice(DevicePairingInfo &devicePairingInfo)
-{
-    qCDebug(dcDoorBird()) << "PairDevice:" << devicePairingInfo.deviceClassId();
-
-    devicePairingInfo.setStatus(Device::DeviceErrorNoError);
-    devicePairingInfo.setMessage(tr("Please enter username and password for your Doorbird device."));
-    return devicePairingInfo;
-}
-
-DevicePairingInfo DevicePluginDoorbird::confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret)
-{
-    qCDebug(dcDoorBird()) << "confirm pairing called";
-
-    pluginStorage()->beginGroup(devicePairingInfo.deviceId().toString());
-    pluginStorage()->setValue("username", username);
-    pluginStorage()->setValue("password", secret);
-    pluginStorage()->endGroup();
-
-    devicePairingInfo.setStatus(Device::DeviceErrorNoError);
-
-    return devicePairingInfo;
+    qCWarning(dcDoorBird()) << "Cannot discover for deviceClassId" << info->deviceClassId();
+    info->finish(Device::DeviceErrorDeviceNotFound);
 }
 
 
-Device::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *device)
+void DevicePluginDoorbird::startPairing(DevicePairingInfo *info)
 {
+
+    if (info->deviceClassId() == doorBirdDeviceClassId) {
+        qCDebug(dcDoorBird()) << "User and password. Login is \"user\" and \"password\".";
+        info->finish(Device::DeviceErrorNoError, QT_TR_NOOP("Please enter the user credentials"));
+        return;
+    }
+    info->finish(Device::DeviceErrorCreationMethodNotSupported);
+}
+
+
+void DevicePluginDoorbird::confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret)
+{
+    if (info->deviceClassId() == doorBirdDeviceClassId) {
+        qCDebug(dcDoorBird()) << "confirm pairing called";
+
+        pluginStorage()->beginGroup(info->deviceId().toString());
+        pluginStorage()->setValue("username", username);
+        pluginStorage()->setValue("password", secret);
+        pluginStorage()->endGroup();
+
+        info->finish(Device::DeviceErrorNoError);
+        return;
+    }
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
+    return;
+}
+
+
+void DevicePluginDoorbird::setupDevice(DeviceSetupInfo *info)
+{
+    Device *device = info->device();
+
     if (device->deviceClassId() == doorBirdDeviceClassId) {
         QHostAddress address = QHostAddress(device->paramValue(doorBirdDeviceAddressParamTypeId).toString());
 
@@ -101,32 +111,61 @@ Device::DeviceSetupStatus DevicePluginDoorbird::setupDevice(Device *device)
         QString password = pluginStorage()->value("password").toString();
         pluginStorage()->endGroup();
 
+        qCDebug(dcDoorBird()) << "Device setup" << device->name() << username << password;
         Doorbird *doorbird = new Doorbird(address, username, password, this);
+        connect(doorbird, &Doorbird::deviceConnected, this, &DevicePluginDoorbird::onDoorBirdConnected);
+        connect(doorbird, &Doorbird::eventReveiced, this, &DevicePluginDoorbird::onDoorBirdEvent);
+        connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
         doorbird->connectToEventMonitor();
         m_doorbirdConnections.insert(device, doorbird);
-        return Device::DeviceSetupStatusSuccess;
+        info->finish(Device::DeviceErrorNoError);
+        return;
     }
-    return Device::DeviceSetupStatusFailure;
+    qCWarning(dcDoorBird()) << "Unhandled device class" << info->device()->deviceClass();
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
-Device::DeviceError DevicePluginDoorbird::executeAction(Device *device, const Action &action)
+
+void DevicePluginDoorbird::postSetupDevice(Device *device)
 {
     if (device->deviceClassId() == doorBirdDeviceClassId) {
-        Doorbird *doorbird = m_doorbirdConnections.value(device);
-        if (!doorbird)
-            return Device::DeviceErrorDeviceNotFound;
-
-        if (action.actionTypeId() == doorBirdOpenDoorActionTypeId) {
-            //Todo get action param
-            doorbird->openDoor(1);
-            return Device::DeviceErrorNoError;
-        }
-        if (action.actionTypeId() == doorBirdLightOnActionTypeId) {
-            doorbird->lightOn();
-            return Device::DeviceErrorNoError;
-        }
+        Doorbird *doorbird =  m_doorbirdConnections.value(device);
+        doorbird->infoRequest();
+        doorbird->listFavorites();
+        doorbird->listSchedules();
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+}
+
+
+void DevicePluginDoorbird::executeAction(DeviceActionInfo *info)
+{
+    Device *device = info->device();
+    Action action = info->action();
+
+    if (device->deviceClassId() == doorBirdDeviceClassId) {
+        Doorbird *doorbird = m_doorbirdConnections.value(device);
+        if (!doorbird) {
+            info->finish(Device::DeviceErrorHardwareFailure);
+            return;
+        }
+        if (action.actionTypeId() == doorBirdOpenDoorActionTypeId) {
+            int number = action.param(doorBirdOpenDoorActionNumberParamTypeId).value().toInt();
+            doorbird->openDoor(number);
+            info->finish(Device::DeviceErrorNoError);
+            return;
+        } else if (action.actionTypeId() == doorBirdLightOnActionTypeId) {
+            doorbird->lightOn();
+            info->finish(Device::DeviceErrorNoError);
+            return;
+        } else if (action.actionTypeId() == doorBirdRestartActionTypeId) {
+            doorbird->restart();
+            info->finish(Device::DeviceErrorNoError);
+            return;
+        }
+        info->finish(Device::DeviceErrorActionTypeNotFound);
+        return;
+    }
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginDoorbird::deviceRemoved(Device *device)
@@ -135,4 +174,60 @@ void DevicePluginDoorbird::deviceRemoved(Device *device)
         Doorbird *doorbirdConnection = m_doorbirdConnections.take(device);
         doorbirdConnection->deleteLater();
     }
+}
+
+void DevicePluginDoorbird::onDoorBirdConnected(bool status)
+{
+    Doorbird *doorbird = static_cast<Doorbird *>(sender());
+    Device *device = m_doorbirdConnections.key(doorbird);
+    if (!device)
+        return;
+
+    device->setStateValue(doorBirdConnectedStateTypeId, status);
+}
+
+void DevicePluginDoorbird::onDoorBirdEvent(Doorbird::EventType eventType, bool status)
+{
+    Doorbird *doorbird = static_cast<Doorbird *>(sender());
+    Device *device = m_doorbirdConnections.key(doorbird);
+    if (!device)
+        return;
+
+    switch (eventType) {
+    case Doorbird::EventType::Rfid:
+        break;
+    case Doorbird::EventType::Input:
+        break;
+    case Doorbird::EventType::Motion:
+        device->setStateValue(doorBirdIsPresentStateTypeId, status);
+        if (status) {
+            doorbird->liveImageRequest();
+        }
+        break;
+    case Doorbird::EventType::Doorbell:
+        if (status) {
+            emit emitEvent(Event(doorBirdDoorbellPressedEventTypeId ,device->id()));
+        }
+        break;
+    }
+}
+
+void DevicePluginDoorbird::onDoorBirdRequestSent(QUuid requestId, bool success)
+{
+    Doorbird *doorbird = static_cast<Doorbird *>(sender());
+    Device *device = m_doorbirdConnections.key(doorbird);
+    if (!device)
+        return;
+
+    if (!m_asyncActions.contains(requestId))
+        return;
+
+    DeviceActionInfo* actionInfo = m_asyncActions.take(requestId);
+    actionInfo->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
+}
+
+void DevicePluginDoorbird::onImageReceived(QImage image)
+{
+    Q_UNUSED(image)
+    //QString code =
 }
