@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.     *
  *                                                                           *
  ****************************************************************************/
-
+/*
 #ifndef QRCODEREADER_H
 #define QRCODEREADER_H
 
@@ -36,7 +36,6 @@ class QRCodeReader : public QObject
     Q_PROPERTY(QString imageSource READ imageSource NOTIFY validChanged)
     Q_PROPERTY(QRect scanRect READ scanRect WRITE setScanRect NOTIFY scanRectChanged)
     Q_PROPERTY(bool scanning READ scanning NOTIFY scanningChanged)
-    Q_PROPERTY(HistoryModel* history READ history CONSTANT)
 
 public:
     explicit QRCodeReader(QObject *parent = nullptr);
@@ -86,3 +85,4 @@ signals:
 };
 
 #endif // QRCODEREADER_H
+*/

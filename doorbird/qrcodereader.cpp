@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.     *
  *                                                                           *
  ****************************************************************************/
-
+/*
 #include "qrcodereader.h"
 
 #include <QDebug>
@@ -87,7 +87,7 @@ void QRCodeReader::grab(QImage image)
     connect(reader, SIGNAL(resultReady(QString, QString, QImage)), this, SLOT(handleResults(QString, QString, QImage)));
     m_readerThread.start();
 
-    QMetaObject::invokeMethod(reader, "doWork", Q_ARG(QImage, img), Q_ARG(bool, false));
+    //QMetaObject::invokeMethod(reader, "doWork", Q_ARG(QImage, img), Q_ARG(bool, false));
 }
 
 void QRCodeReader::processImage(const QUrl &url)
@@ -187,3 +187,4 @@ void Reader::doWork(const QImage &image, bool invert)
 
     emit finished();
 }
+*/

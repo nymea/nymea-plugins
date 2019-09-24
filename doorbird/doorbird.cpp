@@ -218,11 +218,11 @@ QUuid Doorbird::infoRequest()
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error unlatching DoorBird device";
+            qCWarning(dcDoorBird) << "Error DoorBird" << reply->error() << reply->errorString();
             emit requestSent(requestId, false);
             return;
         }
-        qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+        qCDebug(dcDoorBird) << "DoorBird info:" << reply->readAll() ;
         emit requestSent(requestId, true);
     });
     return requestId;
@@ -233,6 +233,36 @@ QUuid Doorbird::listFavorites()
     QNetworkRequest request(QString("http://%1/bha-api/favorites.cgi").arg(m_address.toString()));
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
+    QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
+        reply->deleteLater();
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDoorBird) << "Error DoorBird device" << reply->error() << reply->errorString();
+            emit requestSent(requestId, false);
+            return;
+        }
+        emit requestSent(requestId, true);
+    });
+    return requestId;
+}
+
+QUuid Doorbird::addFavorite(FavoriteType type, const QString &name, const QUrl &commandUrl, int id)
+{
+    QUrl url(QString("http://%1/bha-api/favorites.cgi").arg(m_address.toString()));
+    QUrlQuery query;
+    query.addQueryItem("action", "save");
+    if (type == FavoriteType::Http) {
+        query.addQueryItem("type", "http");
+    } else {
+        query.addQueryItem("type", "sip");
+    }
+    query.addQueryItem("title", name);
+    query.addQueryItem("value", commandUrl.toString());
+    query.addQueryItem("id", QString::number(id));
+    url.setQuery(query);
+
+    QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     QUuid requestId = QUuid::createUuid();
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
         reply->deleteLater();
@@ -297,35 +327,34 @@ void Doorbird::connectToEventMonitor()
         Q_UNUSED(bytesReceived)
         Q_UNUSED(bytesTotal);
 
-        //TODO emit signal connected
-        m_readBuffers.append(reply->readAll());
-        //        qCDebug(dcDoorBird) << "Monitor data for" << device->name();
-        //        qCDebug(dcDoorBird) << m_readBuffers[device];
+        emit deviceConnected(true);
+        m_readBuffer.append(reply->readAll());
+        qCDebug(dcDoorBird) << "Event received" << m_readBuffer;
 
         // Input data looks like:
         // "--ioboundary\r\nContent-Type: text/plain\r\n\r\ndoorbell:H\r\n\r\n"
 
-        while (!m_readBuffers.isEmpty()) {
+        while (!m_readBuffer.isEmpty()) {
             // find next --ioboundary
-            /*QString boundary = QStringLiteral("--ioboundary");
-            int startIndex = m_readBuffers.indexOf(boundary);
+            QString boundary = QStringLiteral("--ioboundary");
+            int startIndex = m_readBuffer.indexOf(boundary);
             if (startIndex == -1) {
-                qCWarning(dcDoorBird) << "No meaningful data in buffer:" << m_readBuffers;
-                if (m_readBuffers.size() > 1024) {
+                qCWarning(dcDoorBird) << "No meaningful data in buffer:" << m_readBuffer;
+                if (m_readBuffer.size() > 1024) {
                     qCWarning(dcDoorBird) << "Buffer size > 1KB and still no meaningful data. Discarding buffer...";
-                    m_readBuffers.clear();
+                    m_readBuffer.clear();
                 }
                 // Assuming we don't have enough data yet...
                 return;
             }
 
             QByteArray contentType = QByteArrayLiteral("Content-Type: text/plain");
-            int contentTypeIndex = m_readBuffers.indexOf(contentType);
+            int contentTypeIndex = m_readBuffer.indexOf(contentType);
             if (contentTypeIndex == -1) {
-                qCWarning(dcDoorBird) << "Cannot find Content-Type in buffer:" << m_readBuffers;
-                if (m_readBuffers.size() > startIndex + 50) {
+                qCWarning(dcDoorBird) << "Cannot find Content-Type in buffer:" << m_readBuffer;
+                if (m_readBuffer.size() > startIndex + 50) {
                     qCWarning(dcDoorBird) << boundary << "found but unexpected data follows. Skipping this element...";
-                    m_readBuffers.remove(0, startIndex + boundary.length());
+                    m_readBuffer.remove(0, startIndex + boundary.length());
                     continue;
                 }
                 // Assuming we don't have enough data yet...
@@ -333,15 +362,15 @@ void Doorbird::connectToEventMonitor()
             }
 
             // At this point we have the boundary and Content-Type. Remove all of that and take the entire string to either end or next boundary
-            m_readBuffers.remove(0, contentTypeIndex + contentType.length());
-            int nextStartIndex = m_readBuffers.indexOf(boundary);
+            m_readBuffer.remove(0, contentTypeIndex + contentType.length());
+            int nextStartIndex = m_readBuffer.indexOf(boundary);
             QByteArray data;
             if (nextStartIndex == -1) {
-                data = m_readBuffers;
-                m_readBuffers.clear();
+                data = m_readBuffer;
+                m_readBuffer.clear();
             } else {
-                data = m_readBuffers.left(nextStartIndex);
-                m_readBuffers.remove(0, nextStartIndex);
+                data = m_readBuffer.left(nextStartIndex);
+                m_readBuffer.remove(0, nextStartIndex);
             }
 
             QString message = data.trimmed();
@@ -353,23 +382,27 @@ void Doorbird::connectToEventMonitor()
             if (parts.first() == "doorbell") {
                 if (parts.at(1) == "H") {
                     qCDebug(dcDoorBird) << "Doorbell ringing!";
-                    //emitEvent(Event(doorBirdTriggeredEventTypeId, device->id()));
+                    emit eventReveiced(EventType::Doorbell, true);
+                } else {
+                    emit eventReveiced(EventType::Doorbell, false);
                 }
             } else if (parts.first() == "motionsensor") {
                 if (parts.at(1) == "H") {
                     qCDebug(dcDoorBird) << "Motion sensor detected a person";
-                    //emitEvent(Event(doorBirdMotionDetectedEventTypeId, device->id()));
+                    emit eventReveiced(EventType::Motion, true);
+                } else {
+                    emit eventReveiced(EventType::Motion, false);
                 }
             } else {
                 qCWarning(dcDoorBird) << "Unhandled DoorBird data:" << message;
-            }*/
+            }
         }
     });
 
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         reply->deleteLater();
 
-        //device->setStateValue(doorBirdConnectedStateTypeId, false);
+        emit deviceConnected(false);
         qCDebug(dcDoorBird) << "Monitor request finished:" << reply->error();
 
         QTimer::singleShot(2000, this, [this] {
@@ -378,3 +411,40 @@ void Doorbird::connectToEventMonitor()
     });
 }
 
+void Doorbird::onUdpBroadcast(const QByteArray &data)
+{
+    Q_UNUSED(data);
+    //TODO decryption
+}
+
+
+/*NotifyBroadcastCiphertext decryptBroadcastNotification(const NotifyBroadcast* notification, const
+                                                       StretchedPassword* password) {
+    NotifyBroadcastCiphertext decrypted = {{0},{0},0};
+    if(crypto_aead_chacha20poly1305_decrypt((unsigned char*)&decrypted, NULL, NULL, notification->ciphertext,
+                                            sizeof(notification->ciphertext), NULL, 0, notification->nonce, password->key)!=0){
+        LOGGING("crypto_aead_chacha20poly1305_decrypt() failed");
+    }
+    return decrypted;
+}
+
+unsigned char* stretchPasswordArgon(const char *password, unsigned char *salt, unsigned* oplimit, unsigned* memlimit) {
+    if (sodium_is_zero(salt, CRYPTO_SALT_BYTES) && random_bytes(salt, CRYPTO_SALT_BYTES)) {
+        return NULL;
+    }
+    unsigned char* key = malloc(CRYPTO_ARGON_OUT_SIZE);
+    if (!*oplimit) {
+        *oplimit = crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE;
+    }
+    if (!*memlimit) {
+        *memlimit = crypto_pwhash_MEMLIMIT_MIN;
+    }
+    if (crypto_pwhash(key, CRYPTO_ARGON_OUT_SIZE, password, str_len(password), salt, *oplimit, *memlimit, crypto_pwhash_ALG_ARGON2I13)) {
+        LOGGING("Argon2 Failed");
+        *oplimit = 0;
+        *memlimit = 0;
+        CLEAN(key);
+        return NULL;
+    }
+    return key;
+}*/

@@ -33,12 +33,30 @@
                         {
                             "id": "b6c3377b-91de-411a-9d48-8b509c39d67c",
                             "name": "openDoor",
-                            "displayName": "Open door"
+                            "displayName": "Open door",
+                            "paramTypes": [
+                                {
+                                    "id": "95dd35d7-0bc3-49e1-af96-d8da8ea5244d",
+                                    "name": "number",
+                                    "displayName": "Relay number",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "1",
+                                        "2"
+                                    ],
+                                    "defaultValue": 1
+                                }
+                            ]
                         },
                         {
                             "id": "3a6cfc5d-804c-4d21-91b5-999913d4f1a5",
                             "name": "lightOn",
                             "displayName": "Light on"
+                        },
+                        {
+                            "id": "e874242e-5acb-4d98-94c7-0a70db65150c",
+                            "name": "restart",
+                            "displayName": "Restart"
                         }
                     ],
                     "stateTypes": [

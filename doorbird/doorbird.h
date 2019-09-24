@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *  Copyright (C) 2019 Michael Zanetti <michael.zanetti@nymea.io>          *
@@ -33,6 +33,24 @@ class Doorbird : public QObject
 public:
     explicit Doorbird(const QHostAddress &address, const QString &username, const QString &password, QObject *parent = nullptr);
 
+    enum EventType {
+        Doorbell,
+        Motion,
+        Input,
+        Rfid
+    };
+    enum FavoriteType {
+        Http,
+        Sip
+    };
+
+    struct FavoriteObject {
+        FavoriteType type;
+        QString title;
+        QUrl value;
+        int id;
+    };
+
     QUuid getSession();
     QUuid openDoor(int value);
     QUuid lightOn();
@@ -45,11 +63,11 @@ public:
     QUuid infoRequest();
 
     QUuid listFavorites();
-    QUuid addFavorite();
+    QUuid addFavorite(FavoriteType type, const QString &name, const QUrl &url, int id);
     QUuid deleteFavorite();
 
     QUuid listSchedules();
-    QUuid daddScheduleEntry();
+    QUuid addScheduleEntry(EventType event, int favoriteNumber, bool enabled);
     QUuid deleteScheduleEntry();
 
     QUuid restart();
@@ -57,7 +75,7 @@ public:
     void connectToEventMonitor();
 private:
     QNetworkAccessManager *m_networkAccessManager;
-    QList<QByteArray> m_readBuffers;
+    QByteArray m_readBuffer;
 
     QHostAddress m_address;
     QList<QNetworkReply *> m_networkRequests;
@@ -68,9 +86,14 @@ private:
     QByteArray sessionId;
 
 signals:
+    void deviceConnected(bool status);
     void requestSent(QUuid requestId, bool success);
 
+    void eventReveiced(EventType eventType, bool status);
+    void favoritesReceived(QList<FavoriteObject> favourites);
+
 public slots:
+    void onUdpBroadcast(const QByteArray &data);
 };
 
 #endif // DOORBIRD_H

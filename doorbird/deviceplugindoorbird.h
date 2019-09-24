@@ -21,6 +21,8 @@
 #ifndef DEVICEPLUGINDOORBIRD_H
 #define DEVICEPLUGINDOORBIRD_H
 
+#include <QImage>
+
 #include "devices/deviceplugin.h"
 #include "devices/devicemanager.h"
 #include "doorbird.h"
@@ -35,22 +37,28 @@ class DevicePluginDoorbird: public DevicePlugin
     Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "deviceplugindoorbird.json")
     Q_INTERFACES(DevicePlugin)
 
-
 public:
     explicit DevicePluginDoorbird();
-    ~DevicePluginDoorbird() override;
 
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void postSetupDevice(Device *device) override;
+    void executeAction(DeviceActionInfo *info) override;
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
 
-    DevicePairingInfo confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret) override;
-    DevicePairingInfo pairDevice(DevicePairingInfo &devicePairingInfo) override;
     void deviceRemoved(Device *device)override;
 
 private:
     QHash<Device*, Doorbird *> m_doorbirdConnections;
+    QHash<QUuid, DeviceActionInfo *> m_asyncActions;
+
+private slots:
+    void onDoorBirdConnected(bool status);
+    void onDoorBirdEvent(Doorbird::EventType eventType, bool status);
+    void onDoorBirdRequestSent(QUuid requestId, bool success);
+    void onImageReceived(QImage image);
 };
 
 #endif // DEVICEPLUGINDOORBIRD_H
