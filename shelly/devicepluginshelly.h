@@ -51,9 +51,20 @@ private slots:
     void onPublishReceived(MqttChannel* channel, const QString &topic, const QByteArray &payload);
 
 private:
+    void setupShellyGateway(DeviceSetupInfo *info);
+    void setupShellyChild(DeviceSetupInfo *info);
+
+    QString getIP(Device *device) const;
+
+private:
     ZeroConfServiceBrowser *m_zeroconfBrowser = nullptr;
 
     QHash<Device*, MqttChannel*> m_mqttChannels;
+
+    QHash<DeviceClassId, StateTypeId> m_connectedStateTypesMap;
+    QHash<DeviceClassId, StateTypeId> m_powerStateTypeMap;
+    QHash<ActionTypeId, DeviceClassId> m_powerActionTypesMap;
+    QHash<ActionTypeId, ParamTypeId> m_powerActionParamTypesMap;
 };
 
 #endif // DEVICEPLUGINSHELLY_H

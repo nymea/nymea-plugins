@@ -1,20 +1,29 @@
-# Tasmota
+# Shelly
 
-This plugin allows to make use of Sonoff-Tasmota devices via the nymea internal MQTT broker. There is no external MQTT broker needed.
+The Shelly plugin adds support for Shelly devices (https://shelly.cloud).
 
-Note that Sonoff devices must be flashed with the Tasmota sofware and connected to the WiFi network in order to work with this plugin.
+Currently the Shelly1 and Shelly1PM are supported.
 
-See the [Sonoff-Tasmota wiki](https://github.com/arendst/Sonoff-Tasmota/wiki) for a list of all supported devices and instructions on how to
-install Tasmota on those.
+## Requirements
+Shelly devices communicate with via MQTT. This means, in order to add Shelly devices to nymea, the nymea instance is required
+to have the MQTT broker enabled in the nymea settings and the Shelly device needs to be connected to the same WiFi as nymea is
+in. New Shelly devices will open a WiFi named with their name as SSID. For instance, a Shelly 1 would appear as "shelly1-XXXXXX".
+Connect to this WiFi and open the webpage that will pop up. From there, it can be configured it to connect to the same
+network where the nymea system is located. No other options need to be set as they can be configured using nymea later on.
 
-After flashing Tasmota to a Sonoff device and connecting it to WiFi, it can be added to nymea. The only required
-thing is the IP address to the device. This plugin will create a new isoloated MQTT channel on the nymea internal
-MQTT broker and provision login details to the Tasmota device via HTTP. Once that is successful, the Tasmota device
-will connect to the MQTT broker and appear as connected in nymea.
+
+## Setting up devices
+Once the Shelly is connected to the WiFi, a device discovery in nymea can be performed and will list the Shelly device.
+During setup, the connected device can be configured. If the Shelly is connected to e.g. a light bulb, choose "Light" here.
+Optionally, a username and password can be set. If the Shelly device is already configured to require authentication,
+the username and password here must match the ones set on the Shelly. NOTE: If the Shelly is not configured to require a
+login yet, but credentials are entered during setup, the Shelly device will be configured to require authentication from
+now on.
 
 ## Plugin properties
-When adding a Tasmota device it will add a new Gateway type device representing the Tasmota device itself. In addition
-to that a power switch device will appear which can be used to control the switches in the Tasmota device. Upon
-device setup, the user can optionally select the type of the connected hardware, (e.g. a light) which causes this
-plugin to create a light device in the system which also controls the switches inside the Tasmota device and nicely
-integrates with the nymea:ux for the given device type.
+When adding a Shelly device it will add a new Gateway type device representing the Shelly device itself. It will allow
+basic monitoring (such as the connected state) and interaction (e.g. reboot the Shelly device). In addition to that, a
+power switch device will appear which will reflect presses on the Shelly's SW input. This power switch device also
+offers the possiblity to configure the used switch (e.g. toggle, momentary, edge or detached from the Shelly's output).
+If a connected device has been selected during setup, an additional device, e.g. the light will appear in the system and
+can be used to control the power output of the Shelly, e.g. turning on or off the connected light.
