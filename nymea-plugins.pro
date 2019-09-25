@@ -34,6 +34,7 @@ PLUGIN_DIRS = \
     osdomotics          \
     philipshue          \
     pushbullet          \
+    shelly              \
     systemmonitor       \
     remotessh           \
     senic               \

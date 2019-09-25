@@ -1,0 +1,57 @@
+{
+    "name": "shelly",
+    "displayName": "Shelly",
+    "id": "6162773b-0435-408c-a4f8-7860d38031a9",
+    "vendors": [
+        {
+            "name": "shelly",
+            "displayName": "Shelly",
+            "id": "d8e45fc2-90af-492e-8305-50baa1ec4c18",
+            "deviceClasses": [
+                {
+                    "id": "f810b66a-7177-4397-9771-4229abaabbb6",
+                    "name": "shellyOne",
+                    "displayName": "Shelly One",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "powerswitch", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "1d301dc0-5e48-473f-a611-8e407289e545",
+                            "name":"id",
+                            "displayName": "ID",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e5d41e05-2296-457e-97d8-98a5ac0de615",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "0f6df838-7fc4-4fc0-9247-b9b8fa4ec924",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "172e6aa3-13d3-4c71-8a4d-112605460863",
+                            "name": "pressed",
+                            "displayName": "Pressed"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

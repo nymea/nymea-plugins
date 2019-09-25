@@ -36,7 +36,7 @@ Device::DeviceSetupStatus DevicePluginMqttClient::setupDevice(Device *device)
 {
     MqttClient *client = nullptr;
     if (device->deviceClassId() == internalMqttClientDeviceClassId) {
-        client = hardwareManager()->mqttProvider()->createInternalClient(device->id());
+        client = hardwareManager()->mqttProvider()->createInternalClient(device->id().toString());
     } else if (device->deviceClassId() == mqttClientDeviceClassId){
         client = new MqttClient("nymea-" + device->id().toString().remove(QRegExp("[{}]")).left(8), this);
         client->setUsername(device->paramValue(mqttClientDeviceUsernameParamTypeId).toString());

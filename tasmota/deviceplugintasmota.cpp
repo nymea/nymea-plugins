@@ -84,7 +84,7 @@ Device::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device)
             qCWarning(dcTasmota) << "Not a valid IP address given for IP address parameter";
             return Device::DeviceSetupStatusFailure;
         }
-        MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(device->id(), deviceAddress);
+        MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(device->id().toString().remove(QRegExp("[{}-]")), deviceAddress);
         if (!channel) {
             qCWarning(dcTasmota) << "Failed to create MQTT channel.";
             return Device::DeviceSetupStatusFailure;
@@ -99,7 +99,7 @@ Device::DeviceSetupStatus DevicePluginTasmota::setupDevice(Device *device)
         configItems.insert("MqttUser", channel->username());
         configItems.insert("MqttPassword", channel->password());
         configItems.insert("Topic", "sonoff");
-        configItems.insert("FullTopic", channel->topicPrefix() + "/%topic%/");
+        configItems.insert("FullTopic", channel->topicPrefixList().first() + "/%topic%/");
 
         QStringList configList;
         foreach (const QString &key, configItems.keys()) {
@@ -222,8 +222,8 @@ Device::DeviceError DevicePluginTasmota::executeAction(Device *device, const Act
         }
         ParamTypeId channelParamTypeId = m_channelParamTypeMap.value(device->deviceClassId());
         ParamTypeId powerActionParamTypeId = ParamTypeId(m_powerStateTypeMap.value(device->deviceClassId()).toString());
-        qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString() << (action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
-        channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString().toLower(), action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
+        qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString() << (action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
+        channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(channelParamTypeId).toString().toLower(), action.param(powerActionParamTypeId).value().toBool() ? "ON" : "OFF");
         device->setStateValue(m_powerStateTypeMap.value(device->deviceClassId()), action.param(powerActionParamTypeId).value().toBool());
         return Device::DeviceErrorNoError;
     }
@@ -237,20 +237,20 @@ Device::DeviceError DevicePluginTasmota::executeAction(Device *device, const Act
         ParamTypeId openingChannelParamTypeId = m_openingChannelParamTypeMap.value(device->deviceClassId());
         ParamTypeId closingChannelParamTypeId = m_closingChannelParamTypeMap.value(device->deviceClassId());
         if (action.actionTypeId() == tasmotaShutterOpenActionTypeId) {
-            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "OFF";
-            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "OFF");
-            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "ON";
-            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "ON");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "OFF";
+            channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "OFF");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "ON";
+            channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "ON");
         } else if (action.actionTypeId() == tasmotaShutterCloseActionTypeId) {
-            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "OFF";
-            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "OFF");
-            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "ON";
-            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "ON");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "OFF";
+            channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "OFF");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "ON";
+            channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "ON");
         } else { // Stop
-            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "OFF";
-            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "OFF");
-            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "OFF";
-            channel->publish(channel->topicPrefix() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "OFF");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "OFF";
+            channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "OFF");
+            qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "OFF";
+            channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "OFF");
         }
         return Device::DeviceErrorNoError;
     }
@@ -289,7 +289,7 @@ void DevicePluginTasmota::onPublishReceived(MqttChannel *channel, const QString 
     qCDebug(dcTasmota) << "Publish received from Sonoff device:" << topic << payload;
     Device *dev = m_mqttChannels.key(channel);
     if (m_ipAddressParamTypeMap.contains(dev->deviceClassId())) {
-        if (topic.startsWith(channel->topicPrefix() + "/sonoff/POWER")) {
+        if (topic.startsWith(channel->topicPrefixList().first() + "/sonoff/POWER")) {
             QString channelName = topic.split("/").last();
 
             foreach (Device *child, myDevices()) {
@@ -308,7 +308,7 @@ void DevicePluginTasmota::onPublishReceived(MqttChannel *channel, const QString 
                 }
             }
         }
-        if (topic.startsWith(channel->topicPrefix() + "/sonoff/STATE")) {
+        if (topic.startsWith(channel->topicPrefixList().first() + "/sonoff/STATE")) {
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
             if (error.error != QJsonParseError::NoError) {
