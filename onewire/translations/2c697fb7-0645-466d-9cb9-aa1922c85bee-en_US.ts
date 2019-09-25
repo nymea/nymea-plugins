@@ -4,18 +4,21 @@
 <context>
     <name>DevicePluginOneWire</name>
     <message>
-        <location filename="../devicepluginonewire.cpp" line="47"/>
+        <location filename="../devicepluginonewire.cpp" line="48"/>
         <source>No one wire interface initialized. Please set up a one wire interface first.</source>
+        <extracomment>Error discovering one wire devices</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devicepluginonewire.cpp" line="80"/>
-        <source>There can only be one One wire interface per system.</source>
+        <location filename="../devicepluginonewire.cpp" line="82"/>
+        <source>There can only be one one wire interface per system.</source>
+        <extracomment>Error setting up device</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devicepluginonewire.cpp" line="88"/>
+        <location filename="../devicepluginonewire.cpp" line="91"/>
         <source>Error initializing one wire interface.</source>
+        <extracomment>Error setting up device</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -4,33 +4,33 @@
 <context>
     <name>WakeOnLan</name>
     <message>
-        <location filename="../plugininfo.h" line="29"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="31"/>
         <source>Wake on Lan</source>
-        <extracomment>The name of the plugin WakeOnLan (b5a87848-de56-451e-84a6-edd26ad4958f)</extracomment>
+        <extracomment>The name of the plugin WakeOnLan ({b5a87848-de56-451e-84a6-edd26ad4958f})</extracomment>
         <translation>Wake on Lan</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="32"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="37"/>
         <source>nymea</source>
-        <extracomment>The name of the vendor (2062d64d-3232-433c-88bc-0d33c0ba2ba6)</extracomment>
+        <extracomment>The name of the vendor ({2062d64d-3232-433c-88bc-0d33c0ba2ba6})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="35"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="28"/>
         <source>Wake On Lan</source>
-        <extracomment>The name of the DeviceClass (3c8f2447-dcd0-4882-8c09-99e579e4d24c)</extracomment>
+        <extracomment>The name of the DeviceClass ({3c8f2447-dcd0-4882-8c09-99e579e4d24c})</extracomment>
         <translation>Wake On Lan</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="38"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="25"/>
         <source>MAC address</source>
-        <extracomment>The name of the ParamType (DeviceClass: wol, Type: device, ID: e2ba04ac-9fe1-4f9d-8152-024c27030cde)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wol, Type: device, ID: {e2ba04ac-9fe1-4f9d-8152-024c27030cde})</extracomment>
         <translation>MAC adresse</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="41"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="34"/>
         <source>Wake up device</source>
-        <extracomment>The name of the ActionType fb9b9d87-218f-4f0d-9e16-39f8a105029a of deviceClass wol</extracomment>
+        <extracomment>The name of the ActionType ({fb9b9d87-218f-4f0d-9e16-39f8a105029a}) of DeviceClass wol</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

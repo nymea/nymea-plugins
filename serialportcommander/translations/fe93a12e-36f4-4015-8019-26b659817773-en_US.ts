@@ -4,12 +4,13 @@
 <context>
     <name>DevicePluginSerialPortCommander</name>
     <message>
-        <location filename="../devicepluginserialportcommander.cpp" line="100"/>
+        <location filename="../devicepluginserialportcommander.cpp" line="101"/>
         <source>Could not open serial port.</source>
+        <extracomment>Error setting up device</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devicepluginserialportcommander.cpp" line="128"/>
+        <location filename="../devicepluginserialportcommander.cpp" line="129"/>
         <source>Error writing to serial port.</source>
         <translation type="unfinished"></translation>
     </message>
