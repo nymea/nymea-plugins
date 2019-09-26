@@ -90,7 +90,7 @@
                             "id": "0c233312-7b8f-4ca3-880d-523cab9b3ccb",
                             "name": "connected",
                             "displayName": "Connected",
-                            "displayNameEvent": "Connected changed",
+                            "displayNameEvent": "Connected or disconnected",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
@@ -134,7 +134,7 @@
                             "id": "4a141674-faa6-4953-8272-5b4a4da84d31",
                             "name": "connected",
                             "displayName": "Connected",
-                            "displayNameEvent": "Connected changed",
+                            "displayNameEvent": "Connected or disconnected",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
@@ -143,8 +143,8 @@
                             "id": "72d7dbba-757c-4b03-a092-1d3f374fa961",
                             "name": "power",
                             "displayName": "Power",
-                            "displayNameEvent": "Power changed",
-                            "displayNameAction": "Set power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
@@ -173,7 +173,7 @@
                             "id": "61b7d8ac-d229-4268-8143-6edb2eca978d",
                             "name": "connected",
                             "displayName": "Connected",
-                            "displayNameEvent": "Connected changed",
+                            "displayNameEvent": "Connected or disconnected",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
@@ -182,8 +182,8 @@
                             "id": "2ee5bfab-271e-4b95-9464-122a5208f1a5",
                             "name": "power",
                             "displayName": "Power",
-                            "displayNameEvent": "Power changed",
-                            "displayNameAction": "Set power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true
