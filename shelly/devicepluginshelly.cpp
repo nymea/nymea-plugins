@@ -67,7 +67,7 @@ void DevicePluginShelly::discoverDevices(DeviceDiscoveryInfo *info)
 //        qCDebug(dcShelly()) << "Have entry" << entry;
         QRegExp namePattern;
         if (info->deviceClassId() == shelly1DeviceClassId) {
-            namePattern = QRegExp("^shelly(1|1pm|plug|plug-s)-[0-9A-Z]+$");
+            namePattern = QRegExp("^shelly(1|1pm)-[0-9A-Z]+$");
         }
         if (!entry.name().contains(namePattern)) {
             continue;
