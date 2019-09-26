@@ -196,6 +196,22 @@ Description: nymea.io plugin for dweet.io
  This package will install the nymea.io plugin for dweet.io
 
 
+Package: nymea-plugin-elgato
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Replaces: guh-plugin-elgato
+Description: nymea.io plugin for elgato
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for elgato
+
+
 Package: nymea-plugin-elro
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -642,38 +658,6 @@ Description: nymea.io plugin for HTTP commander
  This package will install the nymea.io plugin for the HTPP commander
 
 
-Package: nymea-plugin-simulation
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-simulation
-Description: nymea.io plugin for simulated devices
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for simulated devices
-
-
-Package: nymea-plugin-elgato
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-elgato
-Description: nymea.io plugin for elgato
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for elgato
-
-
 Package: nymea-plugin-senic
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -688,6 +672,38 @@ Description: nymea.io plugin for senic
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for senic
+
+
+Package: nymea-plugin-shelly
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Replaces: guh-plugin-simulation
+Description: nymea.io plugin for Shelly devices
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for Shelly devices
+
+
+Package: nymea-plugin-simulation
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Replaces: guh-plugin-simulation
+Description: nymea.io plugin for simulated devices
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for simulated devices
 
 
 Package: nymea-plugin-snapd
