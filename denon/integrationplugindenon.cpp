@@ -61,6 +61,7 @@
 #include <QStringList>
 #include <QJsonDocument>
 #include <QTimer>
+#include <QUrl>
 
 IntegrationPluginDenon::IntegrationPluginDenon()
 {
@@ -303,6 +304,11 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
         Thing *heosThing = myThings().findById(thing->parentId());
         Heos *heos = m_heos.value(heosThing);
         int playerId = thing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
+
+        if (action.actionTypeId() == heosPlayerAlertActionTypeId) {
+            heos->playUrl(playerId, QUrl("https://downloads.nymea.io/notification-sounds/definite.mp3"));
+            return Device::DeviceErrorNoError;
+        }
 
         if (action.actionTypeId() == heosPlayerVolumeActionTypeId) {
             int volume = action.param(heosPlayerVolumeActionVolumeParamTypeId).value().toInt();

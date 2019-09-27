@@ -200,7 +200,7 @@
                     "name": "heosPlayer",
                     "displayName": "Heos player",
                     "createMethods": ["auto"],
-                    "interfaces": ["mediaplayer", "mediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "interfaces": ["mediaplayer", "mediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "alert", "connectable"],
                     "paramTypes":[
                         {
                             "id": "89629008-6ad8-4e92-863d-b86e0e012d0b",
@@ -349,6 +349,11 @@
                         }
                     ],
                     "actionTypes": [
+                        {
+                            "id": "db8e001a-fcae-4c41-9811-325e14c06109",
+                            "name": "alert",
+                            "displayName": "Alert"
+                        },
                         {
                             "id": "a718f7e9-0b54-4403-b661-49f7b0d13085",
                             "name": "skipBack",

@@ -380,6 +380,53 @@ void Heos::browseSource(SOURCE_ID sourceId)
     m_socket->write(cmd);
 }
 
+void Heos::playStation(int playerId, const QString &sourceId, const QString &containerId, const QString &mediaId, const QString &stationName)
+{
+    QUrl url("browse");
+    url.setScheme("heos");
+    url.setPath("play_stream");
+    url.setQuery(QString("pid=%1").arg(playerId));
+    url.setQuery(QString("sid=%1").arg(sourceId));
+    url.setQuery(QString("cid=%1").arg(containerId));
+    url.setQuery(QString("mid=%1").arg(mediaId));
+    url.setQuery(QString("name=%1").arg(stationName));
+    qCDebug(dcDenon) << "playing url:" << url;
+    m_socket->write(url.toEncoded());
+}
+
+void Heos::playPresetStation(int playerId, int presetNumber)
+{
+    QUrl url("browse");
+    url.setScheme("heos");
+    url.setPath("play_preset");
+    url.setQuery(QString("pid=%1").arg(playerId));
+    url.setQuery(QString("preset=%1").arg(presetNumber));
+    qCDebug(dcDenon) << "playing url:" << url;
+    m_socket->write(url.toEncoded());
+}
+
+void Heos::playInputSource(int playerId, const QString &inputName)
+{
+    QUrl url("browse");
+    url.setScheme("heos");
+    url.setPath("play_input");
+    url.setQuery(QString("pid=%1").arg(playerId));
+    url.setQuery(QString("input=%1").arg(inputName));
+    qCDebug(dcDenon) << "playing url:" << url;
+    m_socket->write(url.toEncoded());
+}
+
+void Heos::playUrl(int playerId, const QUrl &mediaUrl)
+{
+    QUrl url("browse");
+    url.setScheme("heos");
+    url.setPath("play_stream");
+    url.setQuery(QString("pid=%1").arg(playerId));
+    url.setQuery(QString("url=%1").arg(mediaUrl.toString()));
+    qCDebug(dcDenon) << "playing url:" << url;
+    m_socket->write(url.toEncoded());
+}
+
 /* This command is used to perform the following actions:
  * Create new group: Creates new group. First player id in the list is group leader.
  * Adds or delete players from the group. First player id should be the group leader id.
@@ -430,6 +477,7 @@ void Heos::readData()
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         if (dataMap.contains("heos")) {
             QString command = dataMap.value("heos").toMap().value("command").toString();
+            bool success = dataMap.value("heos").toMap().value("result").toString().contains("success");
             if (command.contains("register_for_change_events")) {
                 QString enabled = dataMap.value("heos").toMap().value("message").toString();
                 if (enabled.contains("off")) {
@@ -589,6 +637,11 @@ void Heos::readData()
 
                 if (command.contains("player_now_playing_changed")) {
                     getNowPlayingMedia(playerId);
+                }
+                if (command.contains("play_stream")) {
+                    if (success) {
+                        qDebug(dcDenon()) << "Playing Url";
+                    }
                 }
             }
         }

@@ -102,6 +102,11 @@ public:
     void browseSource(SOURCE_ID sourceId);
     //void search();
 
+    //Play commands
+    void playStation(int playerId, const QString &sourceId, const QString &containerId, const QString &mediaId, const QString &stationName);
+    void playPresetStation(int playerId, int presetNumber);
+    void playInputSource(int playerId, const QString &inputName); //Validity of Inputs depends on the type of source HEOS devic
+    void playUrl(int playerId, const QUrl &url);
 
 private:
     bool m_eventRegistered = false;
