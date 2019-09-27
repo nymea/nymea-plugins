@@ -67,6 +67,12 @@ IntegrationPluginDenon::IntegrationPluginDenon()
 {
 }
 
+void IntegrationPluginDenon::init()
+{
+    m_notificationUrl = QUrl(configValue(denonPluginNotificationUrlParamTypeId).toString());
+    connect(this, &DevicePluginDenon::configValueChanged, this, &DevicePluginDenon::onPluginConfigurationChanged);
+}
+
 
 void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
 {
