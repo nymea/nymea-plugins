@@ -69,6 +69,13 @@ void DevicePluginHttpCommander::setupDevice(DeviceSetupInfo *info)
         }
         return info->finish(Device::DeviceErrorNoError);
     }
+
+    if (device->deviceClassId() == httpServerDeviceClassId) {
+        //TODO create a simple server
+        HttpSimpleServer *httpSimpleServer = new HttpSimpleServer();
+        m_httpSimpleServer.insert(device, httpSimpleServer);
+        return info->finish(Device::DeviceErrorNoError);
+    }
     info->finish(Device::DeviceErrorNoError);
 }
 

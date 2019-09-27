@@ -1,7 +1,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *  Copyright (C) 2018 Simon Stürz <simon.stuerz@nymea.io>                 *
+ *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -21,45 +21,49 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINHTTPCOMMANDER_H
-#define DEVICEPLUGINHTTPCOMMANDER_H
+#ifndef HTTPSIMPLESERVER_H
+#define HTTPSIMPLESERVER_H
 
-#include "devices/deviceplugin.h"
-#include "plugintimer.h"
-#include "httpsimpleserver.h"
-#include "httprequest.h"
+#include "typeutils.h"
 
-#include <QNetworkReply>
-#include <QHostInfo>
+#include <QTcpServer>
+#include <QUuid>
+#include <QDateTime>
 
-class DevicePluginHttpCommander : public DevicePlugin
+class Device;
+class DevicePlugin;
+
+class HttpSimpleServer : public QTcpServer
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginhttpcommander.json")
-    Q_INTERFACES(DevicePlugin)
-
 public:
-    explicit DevicePluginHttpCommander();
+    HttpSimpleServer(Device *device, DevicePlugin* parent = nullptr);
+    ~HttpSimpleServer();
+    void incomingConnection(qintptr socket) override;
 
-    void setupDevice(DeviceSetupInfo *info) override;
-    void postSetupDevice(Device *device) override;
-    void deviceRemoved(Device *device) override;
-    void executeAction(DeviceActionInfo *info) override;
+    void actionExecuted(const ActionTypeId &actionTypeId);
 
-private:
-    PluginTimer *m_pluginTimer = nullptr;
-    QHash<Device *, HttpSimpleServer *> m_httpSimpleServer;
-    QHash<QNetworkReply *, Device *> m_httpRequests;
-
-    void makeGetCall(Device *device);
+signals:
+    void setState(const StateTypeId &stateTypeId, const QVariant &value);
+    void triggerEvent(const EventTypeId &eventTypeId);
+    void disappear();
+    void reconfigureAutodevice();
 
 private slots:
-    void onPluginTimer();
+    void readClient();
+    void discardClient();
 
-    void onGetRequestFinished();
-    void onPostRequestFinished();
-    void onPutRequestFinished();
+private:
+    QString generateHeader();
+    QString generateWebPage();
+
+private:
+    bool disabled;
+
+    DevicePlugin *m_plugin;
+    Device *m_device;
+
+    QList<QPair<ActionTypeId, QDateTime> > m_actionList;
 };
 
-#endif // DEVICEPLUGINHTTPCOMMANDER_H
+#endif // HttpSimpleServer_H

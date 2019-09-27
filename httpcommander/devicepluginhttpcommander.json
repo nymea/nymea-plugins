@@ -165,6 +165,59 @@
                             "displayNameEvent": "Response data received"
                         }
                     ]
+                },
+                {
+
+                    "id": "56efcdc3-c769-4e25-8a5b-c0affe68252a",
+                    "name": "httpServer",
+                    "displayName": "HTTP Server",
+                    "createMethods": ["user"],
+                    "interfaces": [ "inputtrigger" ],
+                    "paramTypes": [
+                        {
+                            "id": "438117cb-c2de-49d0-9f91-5988c17225f8",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type": "int",
+                            "defaultValue": "8000"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "86f794c6-31ad-40a8-928f-4b8802506ce1",
+                            "name": "triggered",
+                            "displayName": "Http request received",
+                            "paramTypes": [
+                                {
+                                    "id": "dd3c6033-0483-4237-ac15-7a64ae4dd29c",
+                                    "name": "requestType",
+                                    "displayName": "Request type",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "GET",
+                                        "POST",
+                                        "PUT",
+                                        "DELETE"
+                                    ],
+                                    "defaultValue": "GET"
+                                },
+                                {
+                                    "id": "c936810e-a73d-424f-8981-48baf0a440bb",
+                                    "name": "body",
+                                    "displayName": "Body",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                } ,
+                                {
+                                    "id": "0d4dc8f0-df0d-4fb0-b771-b62dee28a625",
+                                    "name": "path",
+                                    "displayName": "Path",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }

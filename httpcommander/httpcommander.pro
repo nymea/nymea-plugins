@@ -6,10 +6,12 @@ TARGET = $$qtLibraryTarget(nymea_devicepluginhttpcommander)
 
 SOURCES += \
     devicepluginhttpcommander.cpp \
-    httprequest.cpp
+    httprequest.cpp \
+    httpsimpleserver.cpp
 
 HEADERS += \
     devicepluginhttpcommander.h \
-    httprequest.h
+    httprequest.h \
+    httpsimpleserver.h
 
 
