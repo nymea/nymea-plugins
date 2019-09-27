@@ -297,14 +297,15 @@ void Heos::clearQueue(int playerId)
 
 void Heos::moveQueue(int playerId, int sourcQueueId, int destinationQueueId)
 {
-    QUrl url("player");
-    url.setScheme("heos");
-    url.setPath("move_queue_item");
-    url.setQuery(QString("pid=%1").arg(playerId));
-    url.setQuery(QString("sqid=%1").arg(sourcQueueId));
-    url.setQuery(QString("dqid=%1").arg(destinationQueueId));
-    qCDebug(dcDenon) << "moving queue:" << url;
-    m_socket->write(url.toEncoded());
+    QByteArray cmd("heos://player/move_queue_item?");
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("pid", QString::number(playerId));
+    queryParams.addQueryItem("sqid", QString::number(sourcQueueId));
+    queryParams.addQueryItem("dqid", QString::number(destinationQueueId));
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "moving queue:" << cmd;
+    m_socket->write(cmd);
 }
 
 void Heos::checkForFirmwareUpdate(int playerId)
@@ -382,49 +383,53 @@ void Heos::browseSource(SOURCE_ID sourceId)
 
 void Heos::playStation(int playerId, const QString &sourceId, const QString &containerId, const QString &mediaId, const QString &stationName)
 {
-    QUrl url("browse");
-    url.setScheme("heos");
-    url.setPath("play_stream");
-    url.setQuery(QString("pid=%1").arg(playerId));
-    url.setQuery(QString("sid=%1").arg(sourceId));
-    url.setQuery(QString("cid=%1").arg(containerId));
-    url.setQuery(QString("mid=%1").arg(mediaId));
-    url.setQuery(QString("name=%1").arg(stationName));
-    qCDebug(dcDenon) << "playing url:" << url;
-    m_socket->write(url.toEncoded());
+    QByteArray cmd("heos://browse/play_stream?");
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("pid", QString::number(playerId));
+    queryParams.addQueryItem("sid", sourceId);
+    queryParams.addQueryItem("cid", containerId);
+    queryParams.addQueryItem("mid", mediaId);
+    queryParams.addQueryItem("name", stationName);
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "playing station:" << cmd;
+    m_socket->write(cmd);
 }
 
 void Heos::playPresetStation(int playerId, int presetNumber)
 {
-    QUrl url("browse");
-    url.setScheme("heos");
-    url.setPath("play_preset");
-    url.setQuery(QString("pid=%1").arg(playerId));
-    url.setQuery(QString("preset=%1").arg(presetNumber));
-    qCDebug(dcDenon) << "playing url:" << url;
-    m_socket->write(url.toEncoded());
+    QByteArray cmd("heos://browse/play_preset?");
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("pid", QString::number(playerId));
+    queryParams.addQueryItem("preset", QString::number(presetNumber));
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "playing preset station:" << cmd;
+    m_socket->write(cmd);
 }
 
 void Heos::playInputSource(int playerId, const QString &inputName)
 {
-    QUrl url("browse");
-    url.setScheme("heos");
-    url.setPath("play_input");
-    url.setQuery(QString("pid=%1").arg(playerId));
-    url.setQuery(QString("input=%1").arg(inputName));
-    qCDebug(dcDenon) << "playing url:" << url;
-    m_socket->write(url.toEncoded());
+    QByteArray cmd("heos://browse/play_input?");
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("pid", QString::number(playerId));
+    queryParams.addQueryItem("input", inputName);
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "playing input source:" << cmd;
+    m_socket->write(cmd);
 }
 
 void Heos::playUrl(int playerId, const QUrl &mediaUrl)
 {
-    QUrl url("browse");
-    url.setScheme("heos");
-    url.setPath("play_stream");
-    url.setQuery(QString("pid=%1").arg(playerId));
-    url.setQuery(QString("url=%1").arg(mediaUrl.toString()));
-    qCDebug(dcDenon) << "playing url:" << url;
-    m_socket->write(url.toEncoded());
+    QByteArray cmd("heos://browse/play_stream?");
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("pid", QString::number(playerId));
+    queryParams.addQueryItem("url", mediaUrl.toString());
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "playing url:" << cmd;
+    m_socket->write(cmd);
 }
 
 /* This command is used to perform the following actions:

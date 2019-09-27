@@ -2,6 +2,15 @@
     "displayName": "Denon",
     "name": "Denon",
     "id": "cd758269-dbbb-4ef0-80ab-48bd9a8a2765",
+    "paramTypes": [
+        {
+            "id": "5a3cd3eb-8ff5-4110-aef0-7b0608450e60",
+            "name": "notificationUrl",
+            "displayName": "Notification url",
+            "type" : "QString",
+            "defaultValue": "https://downloads.nymea.io/notification-sounds/doorbell.mp3"
+        }
+    ],
     "vendors": [
         {
             "id": "cf0a9644-2c13-4daf-85c1-ad88d6745b42",

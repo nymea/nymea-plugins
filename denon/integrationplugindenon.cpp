@@ -67,6 +67,7 @@ IntegrationPluginDenon::IntegrationPluginDenon()
 {
 }
 
+
 void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
 {
     if (info->thingClassId() == AVRX1000ThingClassId) {
@@ -306,7 +307,7 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
         int playerId = thing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
 
         if (action.actionTypeId() == heosPlayerAlertActionTypeId) {
-            heos->playUrl(playerId, QUrl("https://downloads.nymea.io/notification-sounds/definite.mp3"));
+            heos->playUrl(playerId, m_notificationUrl);
             return Device::DeviceErrorNoError;
         }
 
@@ -737,4 +738,15 @@ void IntegrationPluginDenon::onAvahiServiceEntryAdded(const ZeroConfServiceEntry
 void IntegrationPluginDenon::onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry)
 {
     qCDebug(dcDenon()) << "Avahi service entry removed:" << serviceEntry;
+}
+
+void DevicePluginDenon::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    qCDebug(dcDenon()) << "Plugin configuration changed";
+
+    // Check advanced mode
+    if (paramTypeId == denonPluginNotificationUrlParamTypeId) {
+        qCDebug(dcDenon()) << "Advanced mode" << (value.toBool() ? "enabled." : "disabled.");
+       m_notificationUrl = value.toUrl();
+    }
 }

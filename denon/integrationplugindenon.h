@@ -56,6 +56,7 @@ class IntegrationPluginDenon : public IntegrationPlugin
 public:
     explicit IntegrationPluginDenon();
 
+    void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
@@ -75,6 +76,7 @@ private:
     QHash<int, Thing *> m_playerIds;
     QHash<int, Thing *> m_discoveredPlayerIds;
     QHash<const Action *, int> m_asyncActions;
+    QUrl m_notificationUrl;
 
 
 private slots:
@@ -98,6 +100,8 @@ private slots:
     void onAvrMuteChanged(bool mute);
     void onAvrPowerChanged(bool power);
     void onAvrSurroundModeChanged(const QByteArray &surroundMode);
+
+    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 };
 
 #endif // INTEGRATIONPLUGINDENON_H
