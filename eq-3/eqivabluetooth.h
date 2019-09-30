@@ -40,6 +40,8 @@ public:
 
     quint8 valveOpen() const;
 
+    bool batteryCritical() const;
+
 signals:
     void availableChanged();
     void enabledChanged();
@@ -49,6 +51,7 @@ signals:
     void windowOpenChanged();
     void targetTemperatureChanged();
     void valveOpenChanged();
+    void batteryCriticalChanged();
 
     void commandResult(int id, bool result);
 
@@ -82,6 +85,7 @@ private:
     Mode m_mode = ModeAuto;
     bool m_windowOpen = false;
     quint8 m_valveOpen = 0;
+    bool m_batteryCritical = false;
 
     int m_reconnectAttempt = 0;
 
