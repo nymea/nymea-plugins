@@ -93,6 +93,15 @@ enum SEARCH_CRITERIA {      // criteria id returned by 'get_search_criteria' com
     SEARCH_CRITERIA_STATION
 };
 
+enum MEDIA_TYPE {
+    MEDIA_TYPE_SONG,
+    MEDIA_TYPE_STATION,
+    MEDIA_TYPE_GENRE,
+    MEDIA_TYPE_ARTIST,
+    MEDIA_TYPE_ALBUM,
+    MEDIA_TYPE_CONTAINER
+};
+
 enum SOURCE_ID {
     SOURCE_ID_PANDORA = 1,
     SOURCE_ID_RHAPSODY,
@@ -154,6 +163,16 @@ struct SourceContainersObject {
     int containerId;
     int range;
     int count;
+};
+
+struct MediaObject {
+    MEDIA_TYPE mediaType;
+    bool isContainer;
+    bool isPlayable;
+    QString name;
+    QString imageUrl;
+    QString containerId;
+    QString mediaId;
 };
 
 struct heosPlayer {

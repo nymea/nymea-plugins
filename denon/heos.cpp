@@ -363,21 +363,33 @@ void Heos::getMusicSources()
 void Heos::getSourceInfo(SOURCE_ID sourceId)
 {
     QByteArray cmd = " heos://browse/get_source_info?sid=" + QVariant(sourceId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    qCDebug(dcDenon) << "Get source info:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::getSearchCriteria(SOURCE_ID sourceId)
 {
     QByteArray cmd = "heos://browse/get_search_criteria?sid=" + QVariant(sourceId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    qCDebug(dcDenon) << "Get search criteria:" << cmd;
     m_socket->write(cmd);
 }
 
-void Heos::browseSource(SOURCE_ID sourceId)
+void Heos::browseSource(const QString &sourceId)
 {
-    QByteArray cmd = "heos://browse/browse?sid=" + QVariant(sourceId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Group volume up:" << cmd;
+    QByteArray cmd = "heos://browse/browse?sid=" + sourceId.toUtf8() + "\r\n";
+    qCDebug(dcDenon) << "Browse source:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::browseSourceContainers(const QString &sourceId, const QString &containerId)
+{
+    QByteArray cmd = "heos://browse/browse?";
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("sid", sourceId);
+    queryParams.addQueryItem("cid", containerId);
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "playing station:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -646,6 +658,50 @@ void Heos::readData()
                 if (command.contains("play_stream")) {
                     if (success) {
                         qDebug(dcDenon()) << "Playing Url";
+                    }
+                }
+                if (command.contains("get_music_sources") || command.contains("get_source_info")) {
+                    QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
+                    QList<MusicSourceObject> musicSources;
+                    foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
+                        MusicSourceObject source;
+                        source.name = payloadEntryVariant.toMap().value("name").toString();
+                        source.image_url = payloadEntryVariant.toMap().value("image_url").toString();
+                        source.type = payloadEntryVariant.toMap().value("type").toString();
+                        source.sourceId = payloadEntryVariant.toMap().value("sid").toInt();
+                        source.available = payloadEntryVariant.toMap().value("available").toString().contains("true");
+                        source.serviceUsername = payloadEntryVariant.toMap().value("service_username").toString();
+                        musicSources.append(source);
+                    }
+                    emit musicSourcesReceived(musicSources);
+                }
+                if (command.contains("browse/browse")) {
+                    QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
+                    QList<MusicSourceObject> musicSources;
+                    QList<MediaObject> mediaItems;
+
+                    foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
+                        QString type = payloadEntryVariant.toMap().value("type").toString();
+                       if (type == "source") {
+                           MusicSourceObject source;
+                           source.name = payloadEntryVariant.toMap().value("name").toString();
+                           source.image_url = payloadEntryVariant.toMap().value("image_url").toString();
+                           source.type = payloadEntryVariant.toMap().value("type").toString();
+                           source.sourceId = payloadEntryVariant.toMap().value("sid").toInt();
+                           source.available = payloadEntryVariant.toMap().value("available").toString().contains("true");
+                           source.serviceUsername = payloadEntryVariant.toMap().value("service_username").toString();
+                           musicSources.append(source);
+                        } else if (type == "container" || type == "album" || type == "song") {
+                            MediaObject media;
+                            media.name = payloadEntryVariant.toMap().value("name").toString();
+                            media.imageUrl = payloadEntryVariant.toMap().value("image_url").toString();
+                            mediaItems.append(media);
+                        }
+                       if (!mediaItems.isEmpty())
+                            emit mediaItemsReceived(mediaItems);
+
+                       if (!musicSources.isEmpty())
+                            emit musicSourcesReceived(musicSources);
                     }
                 }
             }

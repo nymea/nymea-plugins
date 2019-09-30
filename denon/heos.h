@@ -34,6 +34,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QTcpSocket>
+#include <QUuid>
 
 #include "heosplayer.h"
 #include "heostypes.h"
@@ -99,7 +100,9 @@ public:
     void getMusicSources();
     void getSourceInfo(SOURCE_ID sourceId);
     void getSearchCriteria(SOURCE_ID sourceId);
-    void browseSource(SOURCE_ID sourceId);
+    void browseSource(const QString &sourceId);
+    void browseSourceContainers(const QString &sourceId, const QString &containerId);
+
     //void search();
 
     //Play commands
@@ -125,6 +128,8 @@ signals:
     void muteStatusReceived(int playerId, bool mute);
     void volumeStatusReceived(int playerId, int volume);
     void nowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
+    void musicSourcesReceived(QList<MusicSourceObject> musicSources);
+    void mediaItemsReceived(QList<MediaObject> mediaItems);
 
 private slots:
     void onConnected();

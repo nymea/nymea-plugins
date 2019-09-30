@@ -63,7 +63,7 @@ public:
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
-    void browseDevice(BrowseResult *result) override;
+    void browseThing(BrowseResult *result) override;
     void browserItem(BrowserItemResult *result) override;
     void executeBrowserItem(BrowserActionInfo *info) override;
     void executeBrowserItemAction(BrowserItemActionInfo *info) override;
@@ -72,8 +72,8 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 
-    QHash<Thing *, AvrConnection*> m_avrConnections;
-    QHash<Thing *, Heos*> m_heos;
+    QHash<ThingId, AvrConnection*> m_avrConnections;
+    QHash<ThingId, Heos*> m_heos;
 
     QHash<AvrConnection*, ThingSetupInfo*> m_asyncAvrSetups;
     QHash<Heos*, ThingSetupInfo*> m_asyncHeosSetups;
@@ -83,7 +83,8 @@ private:
     QHash<const Action *, int> m_asyncActions;
     QUrl m_notificationUrl;
 
-    QHash<int, DeviceActionInfo*> m_pendingActions;
+    QHash<Heos *, BrowseResult*> m_pendingBrowseResult;
+    QHash<int, ThingActionInfo*> m_pendingActions;
     QHash<int, BrowserActionInfo*> m_pendingBrowserActions;
     QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
 
@@ -98,6 +99,9 @@ private slots:
     void onHeosMuteStatusReceived(int playerId, bool mute);
     void onHeosVolumeStatusReceived(int playerId, int volume);
     void onHeosNowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
+    void onHeosMusicSourcesReceived(QList<MusicSourceObject> musicSources);
+    void onHeosMediaItemsReceived(QList<MediaObject> mediaItems);
+
 
     void onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
     void onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry);
