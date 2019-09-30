@@ -756,3 +756,53 @@ void DevicePluginDenon::onPluginConfigurationChanged(const ParamTypeId &paramTyp
        m_notificationUrl = value.toUrl();
     }
 }
+
+
+
+Device::BrowseResult DevicePluginDenon::browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale)
+{
+    Q_UNUSED(locale)
+
+    Heos *heos = m_heos.key(device);
+    if (!heos) {
+        result.status = Device::DeviceErrorHardwareNotAvailable;
+        return result;
+    }
+
+
+    return Device::DeviceErrorNoError;
+}
+
+Device::BrowserItemResult DevicePluginDenon::browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale)
+{
+    Q_UNUSED(locale)
+
+    Heos *heos = m_heos.key(device);
+    if (!heos) {
+        result.status = Device::DeviceErrorHardwareNotAvailable;
+        return result;
+    }
+
+    return heos->browserItem(itemId, result);
+}
+
+Device::DeviceError DevicePluginDenon::executeBrowserItem(Device *device, const BrowserAction &browserAction)
+{
+    Heos *heos = m_heos.key(device);
+    if (!heos) {
+        return Device::DeviceErrorHardwareNotAvailable;
+    }
+
+    return heos->launchBrowserItem(browserAction.itemId());
+}
+
+Device::DeviceError DevicePluginDenon::executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction)
+{
+    Heos *kodi = m_heos.key(device);
+    if (!kodi) {
+        return Device::DeviceErrorHardwareNotAvailable;
+    }
+
+    m_pendingBrowserItemActions.insert(id, browserItemAction.id());
+    return Device::DeviceErrorAsync;
+}
