@@ -63,10 +63,11 @@ public:
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
-    Device::BrowseResult browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale) override;
-    Device::BrowserItemResult browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale) override;
-    Device::DeviceError executeBrowserItem(Device *device, const BrowserAction &browserAction) override;
-    Device::DeviceError executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction) override;
+    void browseDevice(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+    void executeBrowserItemAction(BrowserItemActionInfo *info) override;
+
 private:
     PluginTimer *m_pluginTimer = nullptr;
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
@@ -82,7 +83,9 @@ private:
     QHash<const Action *, int> m_asyncActions;
     QUrl m_notificationUrl;
 
-    QHash<int, ActionId> m_pendingBrowserItemActions;s
+    QHash<int, DeviceActionInfo*> m_pendingActions;
+    QHash<int, BrowserActionInfo*> m_pendingBrowserActions;
+    QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
 
 private slots:
     void onPluginTimer();

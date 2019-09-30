@@ -67,6 +67,7 @@ IntegrationPluginDenon::IntegrationPluginDenon()
 {
 }
 
+
 void IntegrationPluginDenon::init()
 {
     m_notificationUrl = QUrl(configValue(denonPluginNotificationUrlParamTypeId).toString());
@@ -314,7 +315,7 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
 
         if (action.actionTypeId() == heosPlayerAlertActionTypeId) {
             heos->playUrl(playerId, m_notificationUrl);
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
 
         if (action.actionTypeId() == heosPlayerVolumeActionTypeId) {
@@ -753,56 +754,63 @@ void DevicePluginDenon::onPluginConfigurationChanged(const ParamTypeId &paramTyp
     // Check advanced mode
     if (paramTypeId == denonPluginNotificationUrlParamTypeId) {
         qCDebug(dcDenon()) << "Advanced mode" << (value.toBool() ? "enabled." : "disabled.");
-       m_notificationUrl = value.toUrl();
+        m_notificationUrl = value.toUrl();
     }
 }
 
 
 
-Device::BrowseResult DevicePluginDenon::browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale)
+void DevicePluginDenon::browseDevice(BrowseResult *result)
 {
-    Q_UNUSED(locale)
-
-    Heos *heos = m_heos.key(device);
+    Heos *heos = m_heos.value(result->device());
     if (!heos) {
-        result.status = Device::DeviceErrorHardwareNotAvailable;
-        return result;
+        result->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
 
-
-    return Device::DeviceErrorNoError;
+    //heos->browse(result);
 }
 
-Device::BrowserItemResult DevicePluginDenon::browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale)
+void DevicePluginDenon::browserItem(BrowserItemResult *result)
 {
-    Q_UNUSED(locale)
-
-    Heos *heos = m_heos.key(device);
+    Heos *heos = m_heos.value(result->device());
     if (!heos) {
-        result.status = Device::DeviceErrorHardwareNotAvailable;
-        return result;
+        result->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
 
-    return heos->browserItem(itemId, result);
+    return;
 }
 
-Device::DeviceError DevicePluginDenon::executeBrowserItem(Device *device, const BrowserAction &browserAction)
+void DevicePluginDenon::executeBrowserItem(BrowserActionInfo *info)
 {
-    Heos *heos = m_heos.key(device);
+    Heos *heos = m_heos.value(info->device());
     if (!heos) {
-        return Device::DeviceErrorHardwareNotAvailable;
+        info->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
-
-    return heos->launchBrowserItem(browserAction.itemId());
+    /*
+    int id = kodi->launchBrowserItem(info->browserAction().itemId());
+    if (id == -1) {
+        return info->finish(Device::DeviceErrorHardwareFailure);
+    }
+    m_pendingBrowserActions.insert(id, info);
+    connect(info, &QObject::destroyed, this, [this, id](){ m_pendingBrowserActions.remove(id); });*/
 }
 
-Device::DeviceError DevicePluginDenon::executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction)
+void DevicePluginDenon::executeBrowserItemAction(BrowserItemActionInfo *info)
 {
-    Heos *kodi = m_heos.key(device);
+    Heos *kodi = m_heos.value(info->device());
     if (!kodi) {
-        return Device::DeviceErrorHardwareNotAvailable;
+        info->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
 
-    m_pendingBrowserItemActions.insert(id, browserItemAction.id());
-    return Device::DeviceErrorAsync;
+
+    /*int id = kodi->executeBrowserItemAction(info->browserItemAction().itemId(), info->browserItemAction().actionTypeId());
+    if (id == -1) {
+        return info->finish(Device::DeviceErrorHardwareFailure);
+    }
+    m_pendingBrowserItemActions.insert(id, info);
+    connect(info, &QObject::destroyed, this, [this, id](){ m_pendingBrowserItemActions.remove(id); });*/
 }
