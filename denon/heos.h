@@ -108,6 +108,7 @@ public:
     void playPresetStation(int playerId, int presetNumber);
     void playInputSource(int playerId, const QString &inputName); //Validity of Inputs depends on the type of source HEOS devic
     void playUrl(int playerId, const QUrl &url);
+    void addContainerToQueue(int playerId, const QString &sourceId, const QString &containerId, ADD_CRITERIA addCriteria);
 
 private:
     bool m_eventRegistered = false;
@@ -139,10 +140,10 @@ signals:
 
     void sourcesChanged();
     void nowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
-    void musicSourcesReceived(QList<MusicSourceObject> musicSources);
-    void mediaItemsReceived(QList<MediaObject> mediaItems);
 
-    void browseRequestReceived(QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems);
+    void musicSourcesReceived(QList<MusicSourceObject> musicSources); //callback of getMusicSource, not associated to a playerId
+    void browseRequestReceived(const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems); //callback of browseSource
+    void browseErrorReceived(const QString &sourceId, const QString &containerId, int errorId, const QString &errorMessage);
     void userChanged(bool signedIn, const QString &userName);
 
 private slots:

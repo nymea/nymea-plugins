@@ -404,7 +404,7 @@ void Heos::browseSourceContainers(const QString &sourceId, const QString &contai
     queryParams.addQueryItem("cid", containerId);
     cmd.append(queryParams.toString());
     cmd.append("\r\n");
-    qCDebug(dcDenon) << "playing station:" << cmd;
+    qCDebug(dcDenon) << "Browsing container:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -459,7 +459,19 @@ void Heos::playUrl(int playerId, const QUrl &mediaUrl)
     m_socket->write(cmd);
 }
 
-
+void Heos::addContainerToQueue(int playerId, const QString &sourceId, const QString &containerId, ADD_CRITERIA addCriteria)
+{
+    QByteArray cmd("heos://browse/add_to_queue?");
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("pid", QString::number(playerId));
+    queryParams.addQueryItem("sid", sourceId);
+    queryParams.addQueryItem("cid", containerId);
+    queryParams.addQueryItem("aid", QString::number(addCriteria));
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "Adding to queue:" << cmd;
+    m_socket->write(cmd);
+}
 
 void Heos::onConnected()
 {
@@ -498,9 +510,10 @@ void Heos::readData()
         if (dataMap.contains("heos")) {
             QString command = dataMap.value("heos").toMap().value("command").toString();
             QUrlQuery message(dataMap.value("heos").toMap().value("message").toString());
+            bool success = false;
             if(dataMap.value("heos").toMap().contains("result")) {
                 //If the message doesn't contain result it is an event message
-                bool success = dataMap.value("heos").toMap().value("result").toString().contains("success");
+                success = dataMap.value("heos").toMap().value("result").toString().contains("success");
                 if (!success) {
                     qDebug(dcDenon()) << "Command:" << command << "was not successfull. Message:" << message.toString();
                 }
@@ -540,7 +553,8 @@ void Heos::readData()
 
                 }
             }
-            /* 4.2 Player Commands 4.2.1 Get Players
+            /* 4.2 Player Commands
+             *  4.2.1 Get Players
              *  4.2.2 Get Player Info
              *  4.2.3 Get Play State
              *  4.2.4 Set Play State
@@ -734,28 +748,8 @@ void Heos::readData()
                     qDebug(dcDenon()) << "Get music source request response received" << command;
                     QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
                     QList<MusicSourceObject> musicSources;
-
-                    foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
-                        MusicSourceObject source;
-                        source.name = payloadEntryVariant.toMap().value("name").toString();
-                        source.image_url = payloadEntryVariant.toMap().value("image_url").toString();
-                        source.type = payloadEntryVariant.toMap().value("type").toString();
-                        source.sourceId = payloadEntryVariant.toMap().value("sid").toInt();
-                        source.available = payloadEntryVariant.toMap().value("available").toString().contains("true");
-                        source.serviceUsername = payloadEntryVariant.toMap().value("service_username").toString();
-                        musicSources.append(source);
-                    }
-                    emit musicSourcesReceived(musicSources);
-
-                } else if (command.contains("browse/browse")) {
-                    QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
-
-                    QList<MusicSourceObject> musicSources;
-                    QList<MediaObject> mediaItems;
-
-                    foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
-                        QString type = payloadEntryVariant.toMap().value("type").toString();
-                        if (type == "source") {
+                    if (success) {
+                        foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
                             MusicSourceObject source;
                             source.name = payloadEntryVariant.toMap().value("name").toString();
                             source.image_url = payloadEntryVariant.toMap().value("image_url").toString();
@@ -764,14 +758,65 @@ void Heos::readData()
                             source.available = payloadEntryVariant.toMap().value("available").toString().contains("true");
                             source.serviceUsername = payloadEntryVariant.toMap().value("service_username").toString();
                             musicSources.append(source);
-                        } else if (type == "container" || type == "album" || type == "song") {
-                            MediaObject media;
-                            media.name = payloadEntryVariant.toMap().value("name").toString();
-                            media.imageUrl = payloadEntryVariant.toMap().value("image_url").toString();
-                            mediaItems.append(media);
                         }
-                        emit browseRequestReceived(musicSources, mediaItems);
+                        emit musicSourcesReceived(musicSources);
+                    }
 
+                } else if (command.contains("browse/browse")) {
+                    QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
+                    QString sourceId = message.queryItemValue("sid");
+                    QString containerId = message.queryItemValue("cid");
+
+                    if (message.toString().contains("command under process")){
+                        qDebug(dcDenon()) << "Browse command is beeing processed";
+                        return;
+                    }
+                    if (success) {
+                        QList<MusicSourceObject> musicSources;
+                        QList<MediaObject> mediaItems;
+                        foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
+                            QString type = payloadEntryVariant.toMap().value("type").toString();
+                            if (type == "source") {
+                                MusicSourceObject source;
+                                source.name = payloadEntryVariant.toMap().value("name").toString();
+                                source.image_url = payloadEntryVariant.toMap().value("image_url").toString();
+                                source.type = payloadEntryVariant.toMap().value("type").toString();
+                                source.sourceId = payloadEntryVariant.toMap().value("sid").toInt();
+                                qDebug(dcDenon()) << "Source" << source.name << source.type << source.sourceId << payloadEntryVariant.toMap().value("sid");
+                                //source.available = payloadEntryVariant.toMap().value("available").toString().contains("true");
+                                //source.serviceUsername = payloadEntryVariant.toMap().value("service_username").toString();
+                                musicSources.append(source);
+                            } else {
+                                MediaObject media;
+                                qDebug(dcDenon()) << "Media Item" << payloadEntryVariant.toMap().value("mid").toString() << payloadEntryVariant.toMap().value("cid").toString();
+                                media.name = payloadEntryVariant.toMap().value("name").toString();
+                                media.containerId = payloadEntryVariant.toMap().value("cid").toString();
+                                media.mediaId = payloadEntryVariant.toMap().value("mid").toString();
+                                media.imageUrl = payloadEntryVariant.toMap().value("image_url").toString();
+                                media.isPlayable = payloadEntryVariant.toMap().value("playable").toString().contains("yes");
+                                media.isContainer = payloadEntryVariant.toMap().value("container").toString().contains("yes");
+                                if (type == "artist") {
+                                    media.mediaType = MEDIA_TYPE_ARTIST;
+                                } else if (type == "song") {
+                                    media.mediaType = MEDIA_TYPE_SONG;
+                                } else if (type == "genre") {
+                                    media.mediaType = MEDIA_TYPE_GENRE;
+                                } else if (type == "station") {
+                                    media.mediaType = MEDIA_TYPE_STATION;
+                                } else if (type == "album") {
+                                    media.mediaType = MEDIA_TYPE_ALBUM;
+                                } else if (type == "container") {
+                                    media.mediaType = MEDIA_TYPE_CONTAINER;
+                                }
+                                mediaItems.append(media);
+                            }
+                        }
+                        emit browseRequestReceived(sourceId, containerId, musicSources, mediaItems);
+                    }
+                    else {
+                        int errorId = message.queryItemValue("eid").toInt();
+                        QString text = message.queryItemValue("text");
+                        emit browseErrorReceived(sourceId, containerId, errorId, text);
                     }
                 } else if (command.contains("play_preset")) {
 

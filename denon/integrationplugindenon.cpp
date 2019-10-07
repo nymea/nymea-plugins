@@ -211,6 +211,7 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
 
         QHostAddress address(thing->paramValue(heosThingIpParamTypeId).toString());
         Heos *heos = new Heos(address, this);
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
 
         connect(heos, &Heos::connectionStatusChanged, this, &IntegrationPluginDenon::onHeosConnectionChanged);
         connect(heos, &Heos::playerDiscovered, this, &IntegrationPluginDenon::onHeosPlayerDiscovered);
@@ -225,6 +226,22 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
         connect(heos, &Heos::browseRequestReceived, this, &IntegrationPluginDenon::onHeosBrowseRequestReceived);
         m_heos.insert(thing->id(), heos);
 
+=======
+        connect(heos, &Heos::connectionStatusChanged, this, &DevicePluginDenon::onHeosConnectionChanged);
+        connect(heos, &Heos::playersChanged, this, &DevicePluginDenon::onHeosPlayersChanged);
+        connect(heos, &Heos::playerDiscovered, this, &DevicePluginDenon::onHeosPlayerDiscovered);
+        connect(heos, &Heos::playerPlayStateReceived, this, &DevicePluginDenon::onHeosPlayStateReceived);
+        connect(heos, &Heos::playerRepeatModeReceived, this, &DevicePluginDenon::onHeosRepeatModeReceived);
+        connect(heos, &Heos::playerShuffleModeReceived, this, &DevicePluginDenon::onHeosShuffleModeReceived);
+        connect(heos, &Heos::playerMuteStatusReceived, this, &DevicePluginDenon::onHeosMuteStatusReceived);
+        connect(heos, &Heos::playerVolumeReceived, this, &DevicePluginDenon::onHeosVolumeStatusReceived);
+        connect(heos, &Heos::nowPlayingMediaStatusReceived, this, &DevicePluginDenon::onHeosNowPlayingMediaStatusReceived);
+        connect(heos, &Heos::musicSourcesReceived, this, &DevicePluginDenon::onHeosMusicSourcesReceived);
+        connect(heos, &Heos::browseRequestReceived, this, &DevicePluginDenon::onHeosBrowseRequestReceived);
+        connect(heos, &Heos::browseErrorReceived, this, &DevicePluginDenon::onHeosBrowseErrorReceived);
+
+        m_heos.insert(device->id(), heos);
+>>>>>>> improved browsing on TuneIn:denon/deviceplugindenon.cpp
         m_asyncHeosSetups.insert(heos, info);
         // In case the setup is cancelled before we finish it...
         connect(info, &QObject::destroyed, this, [this, info, heos]() { m_asyncHeosSetups.remove(heos); });
@@ -590,8 +607,13 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
     }
 }
 
-void IntegrationPluginDenon::onHeosPlayerDiscovered(HeosPlayer *heosPlayer) {
+void DevicePluginDenon::onHeosPlayersChanged()
+{
+    Heos *heos = static_cast<Heos *>(sender());
+    heos->getPlayers();
+}
 
+void IntegrationPluginDenon::onHeosPlayerDiscovered(HeosPlayer *heosPlayer) {
     Heos *heos = static_cast<Heos *>(sender());
 
     Thing *thing = myThings().findById(m_heos.key(heos));
@@ -756,13 +778,12 @@ void IntegrationPluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, S
 void IntegrationPluginDenon::onHeosMusicSourcesReceived(QList<MusicSourceObject> musicSources)
 {
     Heos *heos = static_cast<Heos *>(sender());
-    if (m_pendingBrowseResult.contains(heos)) {
-        BrowseResult *result = m_pendingBrowseResult.take(heos);
+    if (m_pendingGetSourcesRequest.contains(heos)) {
+        BrowseResult *result = m_pendingGetSourcesRequest.take(heos);
         foreach(MusicSourceObject source, musicSources) {
             BrowserItem item;
             item.setDisplayName(source.name);
-            //item.setDescription("test");
-            item.setId(QString::number(source.sourceId));
+            item.setId("source=" + QString::number(source.sourceId));
             item.setThumbnail(source.image_url);
             item.setExecutable(false);
             item.setBrowsable(true);
@@ -774,24 +795,20 @@ void IntegrationPluginDenon::onHeosMusicSourcesReceived(QList<MusicSourceObject>
 }
 
 void IntegrationPluginDenon::onHeosMediaItemsReceived(QList<MediaObject> mediaItems)
+
+void DevicePluginDenon::onHeosBrowseRequestReceived(const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems)
 {
-    Heos *heos = static_cast<Heos *>(sender());
-    if (m_pendingBrowseResult.contains(heos)) {
-        BrowseResult *result = m_pendingBrowseResult.take(heos);
-        foreach(MediaObject media, mediaItems) {
-            BrowserItem item;
-            item.setDisplayName(media.name);
-            //item.setDescription("test");
-            item.setId(media.mediaId);
-            item.setThumbnail(media.imageUrl);
-            item.setExecutable(media.isPlayable);
-            item.setBrowsable(media.isContainer);
-            result->addItem(item);
-            qDebug(dcDenon()) << "Media received:" << media.name << media.mediaType << media.mediaId << media.imageUrl;
-        }
-        result->finish(Device::DeviceErrorNoError);
+    QString identifier;
+    if (containerId.isEmpty()) {
+        identifier = sourceId;
+    } else {
+        identifier = containerId;
     }
-}*/
+    if (QUrl(identifier).isValid()) {
+        identifier = QUrl::fromPercentEncoding(identifier.toUtf8());
+    }
+}
+
 
 void IntegrationPluginDenon::onHeosBrowseRequestReceived(QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems)
 {
@@ -801,26 +818,49 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(QList<MusicSourceObject
         BrowseResult *result = m_pendingBrowseResult.take(browseRequest);
         foreach(MediaObject media, mediaItems) {
             BrowserItem item;
+            qDebug(dcDenon()) << "Adding Item" << media.name << media.mediaId << media.containerId << media.mediaType;
             item.setDisplayName(media.name);
-            //item.setDescription("test");
-            item.setId(media.mediaId);
+            if (media.mediaType == MEDIA_TYPE_CONTAINER) {
+                item.setId("container=" + media.containerId + "&" + sourceId);
+            } else {
+                item.setId(media.mediaId);
+            }
             item.setThumbnail(media.imageUrl);
             item.setExecutable(media.isPlayable);
             item.setBrowsable(media.isContainer);
+            //item.setActionTypeIds();
             result->addItem(item);
-            qDebug(dcDenon()) << "Media received:" << media.name << media.mediaType << media.mediaId << media.imageUrl;
         }
         foreach(MusicSourceObject source, musicSources) {
             BrowserItem item;
             item.setDisplayName(source.name);
+            qDebug(dcDenon()) << "Adding Item" << source.name << source.sourceId;
             //item.setDescription("test");
-            item.setId(QString::number(source.sourceId));
+            item.setId("source=" + QString::number(source.sourceId));
             item.setThumbnail(source.image_url);
-            item.setExecutable(true);
+            item.setExecutable(false);
             item.setBrowsable(true);
             result->addItem(item);
         }
         result->finish(Device::DeviceErrorNoError);
+    } else {
+        qWarning(dcDenon()) << "Pending browser result doesnt recognize" << identifier << m_pendingBrowseResult.keys();
+    }
+}
+
+void IntegrationPluginDenon::onHeosBrowseErrorReceived(const QString &sourceId, const QString &containerId, int errorId, const QString &errorMessage)
+{
+    QString identifier;
+    if (containerId.isEmpty()) {
+        identifier = sourceId;
+    } else {
+        identifier = containerId;
+    }
+
+    if (m_pendingBrowseResult.contains(identifier)) {
+        BrowseResult *result = m_pendingBrowseResult.take(identifier);
+        qWarning(dcDenon) << "Browse error" << errorMessage << errorId;
+        result->finish(Device::DeviceErrorHardwareFailure);
     }
 }
 
@@ -851,6 +891,7 @@ void IntegrationPluginDenon::onPluginConfigurationChanged(const ParamTypeId &par
     }
 }
 
+
 void IntegrationPluginDenon::browseDevice(BrowseResult *result)
 {
     Heos *heos = m_heos.value(result->device()->parentId());
@@ -858,16 +899,30 @@ void IntegrationPluginDenon::browseDevice(BrowseResult *result)
         result->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
     }
-    qDebug(dcDenon()) << "Browse device" << result->itemId() << result->locale();
 
-    QUuid requestId;
     if (result->itemId().isEmpty()) {
-        requestId = heos->getMusicSources();
-    } else {
-        requestId = heos->browseSource(result->itemId());
+        qDebug(dcDenon()) << "Browse source";
+        heos->getMusicSources();
+        m_pendingGetSourcesRequest.insert(heos, result);
+        //connect(result, &QObject::destroyed, this, [this, result->itemId()](){ m_pendingBrowseResult.remove(result->itemId());});
+    } else if (result->itemId().startsWith("source=")){
+        qDebug(dcDenon()) << "Browse source" << result->itemId();
+        QString id = result->itemId().remove("source=");
+        heos->browseSource(id);
+        m_pendingBrowseResult.insert(id, result);
+        //connect(result, &QObject::destroyed, this, [this, result->itemId()](){ m_pendingBrowseResult.remove(result->itemId());});
+    } else if (result->itemId().startsWith("container=")){
+        qDebug(dcDenon()) << "Browse container" << result->itemId();
+        QStringList values = result->itemId().split("&");
+        if (values.length() == 2) {
+            QString id = values[0].remove("container=");
+            heos->browseSourceContainers(values[1], id);
+            if (QUrl(id).isValid()) {
+                id = QUrl::fromPercentEncoding(id.toUtf8());
+            }
+            m_pendingBrowseResult.insert(id, result);
+        }
     }
-    m_pendingBrowseResult.insert(requestId, result);
-    connect(result, &QObject::destroyed, this, [this, requestId](){ m_pendingBrowseResult.remove(requestId);});
 }
 
 void IntegrationPluginDenon::browserItem(BrowserItemResult *result)
@@ -877,7 +932,6 @@ void IntegrationPluginDenon::browserItem(BrowserItemResult *result)
         result->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
     }
-
     qDebug(dcDenon()) << "Browse item called";
     return;
 }
@@ -889,16 +943,22 @@ void IntegrationPluginDenon::executeBrowserItem(BrowserActionInfo *info)
         info->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
     }
-    qDebug(dcDenon()) << "Execute browse item called";
-    return;
-
-    /*
-    int id = kodi->launchBrowserItem(info->browserAction().itemId());
-    if (id == -1) {
-        return info->finish(Device::DeviceErrorHardwareFailure);
+   /* BrowserAction action = info->browserAction();
+    int playerId = info->device()->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt();
+    if (action.itemId()) {
+        heos->playUrl(playerId, action.itemId());
+    } else {
+        heos->playPresetStation(playerId, presetNumber);
     }
-    m_pendingBrowserActions.insert(id, info);
-    connect(info, &QObject::destroyed, this, [this, id](){ m_pendingBrowserActions.remove(id); });*/
+        heos->playInputSource(playerId, inputName);
+*/
+
+
+
+
+    qDebug(dcDenon()) << "Execute browse item called";
+    info->finish(Device::DeviceErrorNoError);
+    return;
 }
 
 void IntegrationPluginDenon::executeBrowserItemAction(BrowserItemActionInfo *info)
@@ -908,12 +968,6 @@ void IntegrationPluginDenon::executeBrowserItemAction(BrowserItemActionInfo *inf
         info->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
     }
-
-
-    /*int id = kodi->executeBrowserItemAction(info->browserItemAction().itemId(), info->browserItemAction().actionTypeId());
-    if (id == -1) {
-        return info->finish(Device::DeviceErrorHardwareFailure);
-    }
-    m_pendingBrowserItemActions.insert(id, info);
-    connect(info, &QObject::destroyed, this, [this, id](){ m_pendingBrowserItemActions.remove(id); });*/
+    qDebug(dcDenon()) << "Execute browse item action called";
+    return;
 }

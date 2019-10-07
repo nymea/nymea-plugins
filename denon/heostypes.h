@@ -93,6 +93,13 @@ enum SEARCH_CRITERIA {      // criteria id returned by 'get_search_criteria' com
     SEARCH_CRITERIA_STATION
 };
 
+enum ADD_CRITERIA {
+     ADD_CRITERIA_PLAY_NOW = 1,
+     ADD_CRITERIA_PLAY_NEXT,
+     ADD_CRITERIA_ADD_TO_END,
+     ADD_CRITERIA_REPLACE_AND_PLAY
+};
+
 enum MEDIA_TYPE {
     MEDIA_TYPE_SONG,
     MEDIA_TYPE_STATION,
