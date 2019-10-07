@@ -61,9 +61,9 @@ void Heos::connectHeos()
     m_socket->connectToHost(m_hostAddress, 1255);
 }
 
-/*
- *  SYSTEM COMMANDS
- */
+/********************************
+ *        PLAYER COMMANDS
+ ********************************/
 void Heos::registerForChangeEvents(bool state)
 {
     QByteArray query;
@@ -119,11 +119,63 @@ void Heos::prettifyJsonResponse(bool enable)
     m_socket->write(cmd);
 }
 
+/********************************
+ *        PLAYER COMMANDS
+ ********************************/
+void Heos::playNext(int playerId)
+{
+    QByteArray cmd = "heos://player/play_next?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Play next:" << cmd;
+    m_socket->write(cmd);
+}
 
-/*
- *  PLAYER COMMANDS
- */
+void Heos::playPrevious(int playerId)
+{
+    QByteArray cmd = "heos://player/play_previous?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Play previous:" << cmd;
+    m_socket->write(cmd);
+}
 
+void Heos::volumeUp(int playerId, int step)
+{
+    QByteArray cmd = "heos://player/volume_up?pid=" + QVariant(playerId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Volume up:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::volumeDown(int playerId, int step)
+{
+    QByteArray cmd = "heos://player/volume_down?pid=" + QVariant(playerId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Volume down:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::clearQueue(int playerId)
+{
+    QByteArray cmd = "heos://player/clear_queue?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "clear queue:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::moveQueue(int playerId, int sourcQueueId, int destinationQueueId)
+{
+    QByteArray cmd("heos://player/move_queue_item?");
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("pid", QString::number(playerId));
+    queryParams.addQueryItem("sqid", QString::number(sourcQueueId));
+    queryParams.addQueryItem("dqid", QString::number(destinationQueueId));
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "moving queue:" << cmd;
+    m_socket->write(cmd);
+}
+
+void Heos::checkForFirmwareUpdate(int playerId)
+{
+    QByteArray cmd = "heos://player/check_update?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Check firmware update:" << cmd;
+    m_socket->write(cmd);
+}
 void Heos::getNowPlayingMedia(int playerId)
 {
     QByteArray cmd = "heos://player/get_now_playing_media?pid=" + QVariant(playerId).toByteArray() + "\r\n";
@@ -233,9 +285,9 @@ void Heos::getQueue(int playerId)
     m_socket->write(cmd);
 }
 
-/*
- *  GROUP COMMANDS
- */
+/********************************
+ *        GROUP COMMANDS
+ ********************************/
 void Heos::getGroups()
 {
     QByteArray cmd = "heos://group/get_groups\r\n";
@@ -260,60 +312,6 @@ void Heos::getGroupMute(int groupId)
     m_socket->write(cmd);
 }
 
-void Heos::playNext(int playerId)
-{
-    QByteArray cmd = "heos://player/play_next?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Play next:" << cmd;
-    m_socket->write(cmd);
-}
-
-void Heos::playPrevious(int playerId)
-{
-    QByteArray cmd = "heos://player/play_previous?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Play previous:" << cmd;
-    m_socket->write(cmd);
-}
-
-void Heos::volumeUp(int playerId, int step)
-{
-    QByteArray cmd = "heos://player/volume_up?pid=" + QVariant(playerId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Volume up:" << cmd;
-    m_socket->write(cmd);
-}
-
-void Heos::volumeDown(int playerId, int step)
-{
-    QByteArray cmd = "heos://player/volume_down?pid=" + QVariant(playerId).toByteArray() + "&step=" + QVariant(step).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Volume down:" << cmd;
-    m_socket->write(cmd);
-}
-
-void Heos::clearQueue(int playerId)
-{
-    QByteArray cmd = "heos://player/clear_queue?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "clear queue:" << cmd;
-    m_socket->write(cmd);
-}
-
-void Heos::moveQueue(int playerId, int sourcQueueId, int destinationQueueId)
-{
-    QByteArray cmd("heos://player/move_queue_item?");
-    QUrlQuery queryParams;
-    queryParams.addQueryItem("pid", QString::number(playerId));
-    queryParams.addQueryItem("sqid", QString::number(sourcQueueId));
-    queryParams.addQueryItem("dqid", QString::number(destinationQueueId));
-    cmd.append(queryParams.toString());
-    cmd.append("\r\n");
-    qCDebug(dcDenon) << "moving queue:" << cmd;
-    m_socket->write(cmd);
-}
-
-void Heos::checkForFirmwareUpdate(int playerId)
-{
-    QByteArray cmd = "heos://player/check_update?pid=" + QVariant(playerId).toByteArray() + "\r\n";
-    qCDebug(dcDenon) << "Check firmware update:" << cmd;
-    m_socket->write(cmd);
-}
 
 void Heos::setGroupVolume(int groupId, bool volume)
 {
@@ -354,29 +352,46 @@ void Heos::groupVolumeDown(int groupId, int step)
     m_socket->write(cmd);
 }
 
+
+/********************************
+ *       BROWSE COMMANDS
+ ********************************/
 void Heos::getMusicSources()
 {
     QByteArray cmd = "heos://browse/get_music_sources\r\n";
+    qCDebug(dcDenon) << "Get music sources:" << cmd;
     m_socket->write(cmd);
 }
 
-void Heos::getSourceInfo(SOURCE_ID sourceId)
+void Heos::getSourceInfo(const QString &sourceId)
 {
-    QByteArray cmd = " heos://browse/get_source_info?sid=" + QVariant(sourceId).toByteArray() + "\r\n";
+    QByteArray cmd = "heos://browse/get_source_info?";
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("sid", sourceId);
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
     qCDebug(dcDenon) << "Get source info:" << cmd;
     m_socket->write(cmd);
 }
 
-void Heos::getSearchCriteria(SOURCE_ID sourceId)
+void Heos::getSearchCriteria(const QString &sourceId)
 {
-    QByteArray cmd = "heos://browse/get_search_criteria?sid=" + QVariant(sourceId).toByteArray() + "\r\n";
+    QByteArray cmd = "heos://browse/get_search_criteria?";
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("sid", sourceId);
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
     qCDebug(dcDenon) << "Get search criteria:" << cmd;
     m_socket->write(cmd);
 }
 
 void Heos::browseSource(const QString &sourceId)
 {
-    QByteArray cmd = "heos://browse/browse?sid=" + sourceId.toUtf8() + "\r\n";
+    QByteArray cmd = "heos://browse/browse?";
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("sid", sourceId);
+    cmd.append(queryParams.toString());
+    cmd.append("\r\n");
     qCDebug(dcDenon) << "Browse source:" << cmd;
     m_socket->write(cmd);
 }
@@ -444,16 +459,6 @@ void Heos::playUrl(int playerId, const QUrl &mediaUrl)
     m_socket->write(cmd);
 }
 
-/* This command is used to perform the following actions:
- * Create new group: Creates new group. First player id in the list is group leader.
- * Adds or delete players from the group. First player id should be the group leader id.
- * Ungroup all players in the group
- * Ungroup players. Player id (pid) should be the group leader id.
- */
-//void Heos::setGroup()
-//{
-//}
-
 
 
 void Heos::onConnected()
@@ -478,58 +483,109 @@ void Heos::onError(QAbstractSocket::SocketError socketError)
 
 void Heos::readData()
 {
-    int playerId = 0;
+
     QByteArray data;
     QJsonParseError error;
 
     while (m_socket->canReadLine()) {
         data = m_socket->readLine();
-        //qDebug(dcDenon) << data;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcDenon) << "failed to parse json :" << error.errorString();
             return;
         }
-
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         if (dataMap.contains("heos")) {
             QString command = dataMap.value("heos").toMap().value("command").toString();
-            bool success = dataMap.value("heos").toMap().value("result").toString().contains("success");
-            if (command.contains("register_for_change_events")) {
-                QString enabled = dataMap.value("heos").toMap().value("message").toString();
-                if (enabled.contains("off")) {
-                    qDebug(dcDenon) << "Events are disabled";
-                    m_eventRegistered = false;
-                } else {
-                    qDebug(dcDenon) << "Events are enabled";
-                    m_eventRegistered = true;
+            QUrlQuery message(dataMap.value("heos").toMap().value("message").toString());
+            if(dataMap.value("heos").toMap().contains("result")) {
+                //If the message doesn't contain result it is an event message
+                bool success = dataMap.value("heos").toMap().value("result").toString().contains("success");
+                if (!success) {
+                    qDebug(dcDenon()) << "Command:" << command << "was not successfull. Message:" << message.toString();
                 }
-
-            } else if (command.contains("get_players")) {
-                QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
-
-                foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
-                    playerId = payloadEntryVariant.toMap().value("pid").toInt();
-                    if(!m_heosPlayers.contains(playerId)){
-                        QString serialNumber = payloadEntryVariant.toMap().value("serial").toString();
-                        QString name = payloadEntryVariant.toMap().value("name").toString();
-                        HeosPlayer *heosPlayer = new HeosPlayer(playerId, name, serialNumber, this);
-                        m_heosPlayers.insert(playerId, heosPlayer);
-                        emit playerDiscovered(heosPlayer);
+            }
+            /*
+             * 4.1 System Commands
+             *  4.1.1 Register for Change Events
+             *  4.1.2 HEOS Account Check
+             *  4.1.3 HEOS Account Sign In
+             *  4.1.4 HEOS Account Sign Out
+             *  4.1.5 HEOS System Heart Beat
+             *  4.1.6 HEOS Speaker Reboot
+             *  4.1.7 Prettify JSON response
+            */
+            if (command.startsWith("system")) {
+                if (command.contains("register_for_change_events")) {
+                    QString enabled = message.queryItemValue("enabled");
+                    if (enabled.contains("off")) {
+                        qDebug(dcDenon) << "Events are disabled";
+                        m_eventRegistered = false;
+                    } else {
+                        qDebug(dcDenon) << "Events are enabled";
+                        m_eventRegistered = true;
                     }
-                }
 
-            } else {
-                QUrlQuery message(dataMap.value("heos").toMap().value("message").toString());
+                } else if (command.contains("check_account")) {
+
+                } else if (command.contains("sign_in")) {
+
+                } else if (command.contains("sign_out")) {
+
+                } else if (command.contains("heart_beat")) {
+
+                } else if (command.contains("reboot")) {
+
+                } else if (command.contains("prettify_json_response")) {
+
+                }
+            }
+            /* 4.2 Player Commands 4.2.1 Get Players
+             *  4.2.2 Get Player Info
+             *  4.2.3 Get Play State
+             *  4.2.4 Set Play State
+             *  4.2.5 Get Now Playing Media 4.2.6 Get Volume
+             *  4.2.7 Set Volume
+             *  4.2.8 Volume Up
+             *  4.2.9 Volume Down
+             *  4.2.10 Get Mute
+             *  4.2.11 Set Mute
+             *  4.2.12 Toggle Mute
+             *  4.2.13 Get Play Mode
+             *  4.2.14 Set Play Mode
+             *  4.2.15 Get Queue
+             *  4.2.16 Play Queue Item
+             *  4.2.17 Remove Item(s) from Queue 4.2.18 Save Queue as Playlist 4.2.19 Clear Queue
+             *  4.2.20 Move Queue
+             *  4.2.21 Play Next
+             *  4.2.22 Play Previous
+             *  4.2.23 Set QuickSelect [LS AVR Only]
+             *  4.2.24 Play QuickSelect [LS AVR Only]
+             *  4.2.25 Get QuickSelects [LS AVR Only]
+             *  4.2.26 Check for Firmware Update
+             */
+            if (command.startsWith("player")) {
+                int playerId = 0;
                 if (message.hasQueryItem("pid")) {
                     playerId = message.queryItemValue("pid").toInt();
                 }
 
-                if (command.contains("get_player_info")) {
-                    //update heos player info
-                }
+                if (command.contains("get_players")) {
+                    QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
 
-                if (command.contains("get_now_playing_media")) {
+                    foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
+                        playerId = payloadEntryVariant.toMap().value("pid").toInt();
+                        if(!m_heosPlayers.contains(playerId)){
+                            QString serialNumber = payloadEntryVariant.toMap().value("serial").toString();
+                            QString name = payloadEntryVariant.toMap().value("name").toString();
+                            HeosPlayer *heosPlayer = new HeosPlayer(playerId, name, serialNumber, this);
+                            m_heosPlayers.insert(playerId, heosPlayer);
+                            emit playerDiscovered(heosPlayer);
+                        }
+                    }
+                }else if (command.contains("get_player_info")) {
+                    //update heos player info
+                } else if (command.contains("get_now_playing_media")) {
 
                     QString artist = dataMap.value("payload").toMap().value("artist").toString();
                     QString song = dataMap.value("payload").toMap().value("song").toString();
@@ -537,9 +593,7 @@ void Heos::readData()
                     QString album = dataMap.value("payload").toMap().value("album").toString();
                     SOURCE_ID sourceId = SOURCE_ID(dataMap.value("payload").toMap().value("sid").toInt());
                     emit nowPlayingMediaStatusReceived(playerId, sourceId, artist, album, song, artwork);
-                }
-
-                if (command.contains("get_play_state") || command.contains("set_play_state")) {
+                }else if (command.contains("get_play_state") || command.contains("set_play_state")) {
                     if (message.hasQueryItem("state")) {
                         PLAYER_STATE playState =  PLAYER_STATE_STOP;
                         if (message.queryItemValue("state").contains("play")) {
@@ -549,29 +603,23 @@ void Heos::readData()
                         } else if (message.queryItemValue("state").contains("stop")) {
                             playState =  PLAYER_STATE_STOP;
                         }
-                        emit playStateReceived(playerId, playState);
+                        emit playerPlayStateReceived(playerId, playState);
                     }
-                }
-
-                if (command.contains("get_volume") || command.contains("set_volume")) {
+                } else if (command.contains("get_volume") || command.contains("set_volume")) {
                     if (message.hasQueryItem("level")) {
                         int volume = message.queryItemValue("level").toInt();
-                        emit volumeStatusReceived(playerId, volume);
+                        emit playerVolumeReceived(playerId, volume);
                     }
-                }
-
-                if (command.contains("get_mute") || command.contains("set_mute")) {
+                } else if (command.contains("get_mute") || command.contains("set_mute")) {
                     if (message.hasQueryItem("state")) {
                         QString state = message.queryItemValue("state");
                         if (state.contains("on")) {
-                            emit muteStatusReceived(playerId, true);
+                            emit playerMuteStatusReceived(playerId, true);
                         } else {
-                            emit muteStatusReceived(playerId, false);
+                            emit playerMuteStatusReceived(playerId, false);
                         }
                     }
-                }
-
-                if (command.contains("get_play_mode") || command.contains("set_play_mode")) {
+                } else if (command.contains("get_play_mode") || command.contains("set_play_mode")) {
                     if (message.hasQueryItem("shuffle") && message.hasQueryItem("repeat")) {
                         bool shuffle;
                         if (message.queryItemValue("shuffle").contains("on")){
@@ -579,7 +627,7 @@ void Heos::readData()
                         } else {
                             shuffle = false;
                         }
-                        emit shuffleModeReceived(playerId, shuffle);
+                        emit playerShuffleModeReceived(playerId, shuffle);
 
                         REPEAT_MODE repeatMode = REPEAT_MODE_OFF;
                         if (message.queryItemValue("repeat").contains("on_all")){
@@ -589,80 +637,104 @@ void Heos::readData()
                         } else  if (message.queryItemValue("repeat").contains("off")){
                             repeatMode = REPEAT_MODE_OFF;
                         }
-                        emit repeatModeReceived(playerId, repeatMode);
+                        emit playerRepeatModeReceived(playerId, repeatMode);
                     }
+                } else if (command.contains("check_update")) {
+                    QVariantMap payloadVariantMap = jsonDoc.toVariant().toMap().value("payload").toMap();
+                    bool updateExist = payloadVariantMap.value("update").toString().contains("exist");
+                    emit playerUpdateAvailable(playerId, updateExist);
                 }
-
-                if (command.contains("player_state_changed")) {
-                    if (message.hasQueryItem("state")) {
-                        PLAYER_STATE playState = PLAYER_STATE_STOP;
-                        if (message.queryItemValue("state").contains("play")) {
-                            playState = PLAYER_STATE_PLAY;
-                        } else if (message.queryItemValue("state").contains("pause")) {
-                            playState = PLAYER_STATE_PAUSE;
-                        } else if (message.queryItemValue("state").contains("stop")) {
-                            playState = PLAYER_STATE_STOP;
+            }
+            /*
+                                             * 4.3 Group Commands
+                                             *  4.3.1 Get Groups
+                                             *  4.3.2 Get Group Info
+                                             *  4.3.3 Set Group
+                                             *  4.3.4 Get Group Volume
+                                             *  4.3.5 Set Group Volume
+                                             *  4.2.6 Group Volume Up
+                                             *  4.2.7 Group Volume Down
+                                             *  4.3.8 Get Group Mute
+                                             *  4.3.9 Set Group Mute
+                                             *  4.3.10 Toggle Group Mute
+                                             */
+            if (command.startsWith("group")) {
+                int groupId = 0;
+                if (message.hasQueryItem("gid")) {
+                    qDebug(dcDenon) << "Group id" << message.queryItemValue("gid");
+                    groupId = message.queryItemValue("gid").toInt();
+                }
+                if (command.contains("get_groups")) {
+                    QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
+                    QList<GroupObject> groups;
+                    foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
+                        GroupObject group;
+                        group.groupId = payloadEntryVariant.toMap().value("gid").toInt();
+                        group.name = payloadEntryVariant.toMap().value("name").toString();
+                        if (!payloadEntryVariant.toMap().value("players").toList().isEmpty()) {
+                            QVariantList playerlist = payloadEntryVariant.toMap().value("players").toList();
+                            foreach (const QVariant &playerVariant, playerlist) {
+                                PlayerObject player;
+                                player.name = playerVariant.toMap().value("name").toString();
+                                player.playerId = playerVariant.toMap().value("pid").toInt();
+                                group.players.append(player);
+                            }
                         }
-                        emit playStateReceived(playerId, playState);
+                        groups.append(group);
                     }
-                }
+                    emit groupsReceived(groups);
+                } else if (command.contains("get_group_info")) {
 
-                if (command.contains("player_volume_changed")) {
-                    qDebug() << "Volume Changed";
+                } else if (command.contains("set_group")) {
+
+                } else if (command.contains("get_volume") || command.contains("set_volume")) {
+
                     if (message.hasQueryItem("level")) {
                         int volume = message.queryItemValue("level").toInt();
-                        emit volumeStatusReceived(playerId, volume);
+                        emit groupVolumeReceived(groupId, volume);
                     }
-                    if (message.hasQueryItem("mute")) {
-                        bool mute;
-                        if (message.queryItemValue("mute").contains("on")) {
-                            mute = true;
+
+                } else if (command.contains("volume_up") || command.contains("volume_down")) {
+
+                } else if (command.contains("get_mute") || command.contains("set_mute")) {
+
+                    if (message.hasQueryItem("state")) {
+                        QString state = message.queryItemValue("state");
+                        if (state.contains("on")) {
+                            emit playerMuteStatusReceived(groupId, true);
                         } else {
-                            mute = false;
+                            emit playerMuteStatusReceived(groupId, false);
                         }
-                        emit muteStatusReceived(playerId, mute);
                     }
-                }
+                } else if (command.contains("toggle_mute")) {
 
-                if (command.contains("repeat_mode_changed")) {
-
-                    if (message.hasQueryItem("repeat")) {
-                        REPEAT_MODE repeatMode = REPEAT_MODE_OFF;
-                        if (message.queryItemValue("repeat").contains("on_all")){
-                            repeatMode = REPEAT_MODE_ALL;
-                        } else if (message.queryItemValue("repeat").contains("on_one")){
-                            repeatMode = REPEAT_MODE_ONE;
-                        } else  if (message.queryItemValue("repeat").contains("off")){
-                            repeatMode = REPEAT_MODE_OFF;
-                        }
-                        emit repeatModeReceived(playerId, repeatMode);
-                    }
                 }
+            }
 
-                if (command.contains("shuffle_mode_changed")) {
+            /* 4.4 Browse Commands
+                                                  *  4.4.1 Get Music Sources                         - "command": "browse/get_music_sources"
+                                                  *  4.4.2 Get Source Info                           - "command": "browse/get_source_info"
+                                                  *  4.4.3 Browse Source                             - "command": "browse/browse",
+                                                  *  4.4.4 Browse Source Containers                  - "command": "browse/browse",
+                                                  *  4.4.5 Get Source Search Criteria                - "command": "browse/get_search_criteria"
+                                                  *  4.4.6 Search                                    - "command": "browse/search"
+                                                  *  4.4.7 Play Station                              - "command": "browse/play_stream"
+                                                  *  4.4.8 Play Preset Station                       - "command": "browse/play_preset"
+                                                  *  4.4.9 Play Input source                         - "command": "browse/play_input"
+                                                  *  4.4.10 Play URL                                 - "command": "browse/play_stream "
+                                                  *  4.4.11 Add Container to Queue with Options      - "command": "browse/add_to_queue"
+                                                  *  4.4.12 Add Track to Queue with Options          - "command": "browse/add_to_queue"
+                                                  *  4.4.14 Rename HEOS Playlist                     - "command": "browse/rename_playlist"
+                                                  *  4.4.15 Delete HEOS Playlist                     - "command": "browse/delete_playlist "
+                                                  *  4.4.17 Retrieve Album Metadata                  - "command": "browse/retrieve_metadata",
+                                                 */
+            if (command.startsWith("browse") || command.startsWith(" browse")) {
 
-                    if (message.hasQueryItem("shuffle")) {
-                        bool shuffle;
-                        if (message.queryItemValue("shuffle").contains("on")){
-                            shuffle = true;
-                        } else {
-                            shuffle = false;
-                        }
-                        emit shuffleModeReceived(playerId, shuffle);
-                    }
-                }
-
-                if (command.contains("player_now_playing_changed")) {
-                    getNowPlayingMedia(playerId);
-                }
-                if (command.contains("play_stream")) {
-                    if (success) {
-                        qDebug(dcDenon()) << "Playing Url";
-                    }
-                }
                 if (command.contains("get_music_sources") || command.contains("get_source_info")) {
+                    qDebug(dcDenon()) << "Get music source request response received" << command;
                     QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
                     QList<MusicSourceObject> musicSources;
+
                     foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
                         MusicSourceObject source;
                         source.name = payloadEntryVariant.toMap().value("name").toString();
@@ -674,35 +746,203 @@ void Heos::readData()
                         musicSources.append(source);
                     }
                     emit musicSourcesReceived(musicSources);
-                }
-                if (command.contains("browse/browse")) {
+
+                } else if (command.contains("browse/browse")) {
                     QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
+
                     QList<MusicSourceObject> musicSources;
                     QList<MediaObject> mediaItems;
 
                     foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
                         QString type = payloadEntryVariant.toMap().value("type").toString();
-                       if (type == "source") {
-                           MusicSourceObject source;
-                           source.name = payloadEntryVariant.toMap().value("name").toString();
-                           source.image_url = payloadEntryVariant.toMap().value("image_url").toString();
-                           source.type = payloadEntryVariant.toMap().value("type").toString();
-                           source.sourceId = payloadEntryVariant.toMap().value("sid").toInt();
-                           source.available = payloadEntryVariant.toMap().value("available").toString().contains("true");
-                           source.serviceUsername = payloadEntryVariant.toMap().value("service_username").toString();
-                           musicSources.append(source);
+                        if (type == "source") {
+                            MusicSourceObject source;
+                            source.name = payloadEntryVariant.toMap().value("name").toString();
+                            source.image_url = payloadEntryVariant.toMap().value("image_url").toString();
+                            source.type = payloadEntryVariant.toMap().value("type").toString();
+                            source.sourceId = payloadEntryVariant.toMap().value("sid").toInt();
+                            source.available = payloadEntryVariant.toMap().value("available").toString().contains("true");
+                            source.serviceUsername = payloadEntryVariant.toMap().value("service_username").toString();
+                            musicSources.append(source);
                         } else if (type == "container" || type == "album" || type == "song") {
                             MediaObject media;
                             media.name = payloadEntryVariant.toMap().value("name").toString();
                             media.imageUrl = payloadEntryVariant.toMap().value("image_url").toString();
                             mediaItems.append(media);
                         }
-                       if (!mediaItems.isEmpty())
-                            emit mediaItemsReceived(mediaItems);
+                        emit browseRequestReceived(musicSources, mediaItems);
 
-                       if (!musicSources.isEmpty())
-                            emit musicSourcesReceived(musicSources);
                     }
+                } else if (command.contains("play_preset")) {
+
+                } else if (command.contains("play_input")) {
+
+                } else if (command.contains("add_to_queue")) {
+
+                } else if (command.contains("rename_playlist")) {
+
+                } else if (command.contains("delete_playlist")) {
+
+                } else if (command.contains("retrieve_metadata")) {
+
+                }
+            }
+
+            /*
+             * 5. Change Events (Unsolicited Responses) 5.1 Sources Changed
+             * 5.2 Players Changed
+             * 5.3 Group Changed
+             * 5.4 Player State Changed
+             * 5.5 Player Now Playing Changed
+             * 5.6 Player Now Playing Progress
+             * 5.7 Player Playback Error
+             * 5.8 Player Queue Changed
+             * 5.9 Player Volume Changed
+             * 5.10 Player Repeat Mode Changed
+             * 5.11 Player Shuffle Mode Changed
+             * 5.12 Group Volume Changed
+             * 5.13 User Changed
+             */
+            if (command.startsWith("event")) {
+                if (command.contains("sources_changed")) {
+                    emit sourcesChanged();
+
+                } else if (command.contains("players_changed")) {
+                    emit playersChanged();
+
+                } else if (command.contains("groups_changed")) {
+                    emit groupsChanged();
+
+                } else if (command.contains("player_state_changed")) {
+                    qDebug() << "Player state changed";
+                    if (message.hasQueryItem("pid")) {
+                        int playerId = message.queryItemValue("pid").toInt();
+                        if (message.hasQueryItem("state")) {
+                            PLAYER_STATE playState = PLAYER_STATE_STOP;
+                            if (message.queryItemValue("state").contains("play")) {
+                                playState = PLAYER_STATE_PLAY;
+                            } else if (message.queryItemValue("state").contains("pause")) {
+                                playState = PLAYER_STATE_PAUSE;
+                            } else if (message.queryItemValue("state").contains("stop")) {
+                                playState = PLAYER_STATE_STOP;
+                            }
+                            emit playerPlayStateReceived(playerId, playState);
+                        }
+                    }
+                } else if (command.contains("player_now_playing_changed")) {
+                    qDebug() << "Player now playing changed";
+                    if (message.hasQueryItem("pid")) {
+                        int playerId = message.queryItemValue("pid").toInt();
+                        emit playerNowPlayingChanged(playerId);
+                    }
+                } else if (command.contains("player_now_playing_progress")) {
+                    qDebug() << "Player now playing progress";
+                    if (message.hasQueryItem("pid")) {
+                        int playerId = message.queryItemValue("pid").toInt();
+                        int currentPossition = message.queryItemValue("cur_pos").toInt();
+                        int duration = message.queryItemValue("duration").toInt();
+                        emit playerNowPlayingProgressReceived(playerId, currentPossition, duration);
+                    }
+                } else if (command.contains("player_playback_error")) {
+                    qDebug() << "Player playback error";
+                    int playerId = 0;
+                    if (message.hasQueryItem("pid")) {
+                        playerId = message.queryItemValue("pid").toInt();
+                        QString errorMessage = message.queryItemValue("error");
+                        emit playerPlaybackErrorReceived(playerId, errorMessage);
+                    }
+                } else if (command.contains("player_queue_changed")) {
+                    qDebug() << "Player queue Changed";
+                    int playerId = 0;
+                    if (message.hasQueryItem("pid")) {
+                        playerId = message.queryItemValue("pid").toInt();
+                        emit playerQueueChanged(playerId);
+                    }
+                } else if (command.contains("player_volume_changed")) {
+                    qDebug() << "Event player volume Changed";
+                    int playerId = 0;
+                    if (message.hasQueryItem("pid")) {
+                        playerId = message.queryItemValue("pid").toInt();
+
+                        if (message.hasQueryItem("level")) {
+                            int volume = message.queryItemValue("level").toInt();
+                            emit playerVolumeReceived(playerId, volume);
+                        }
+                        if (message.hasQueryItem("mute")) {
+                            bool mute;
+                            if (message.queryItemValue("mute").contains("on")) {
+                                mute = true;
+                            } else {
+                                mute = false;
+                            }
+                            emit playerMuteStatusReceived(playerId, mute);
+                        }
+                    }
+                } else if (command.contains("repeat_mode_changed")) {
+                    qDebug() << "Repeat mode Changed";
+                    int playerId = 0;
+                    if (message.hasQueryItem("pid")) {
+                        playerId = message.queryItemValue("pid").toInt();
+
+                        if (message.hasQueryItem("repeat")) {
+                            REPEAT_MODE repeatMode = REPEAT_MODE_OFF;
+                            if (message.queryItemValue("repeat").contains("on_all")){
+                                repeatMode = REPEAT_MODE_ALL;
+                            } else if (message.queryItemValue("repeat").contains("on_one")){
+                                repeatMode = REPEAT_MODE_ONE;
+                            } else  if (message.queryItemValue("repeat").contains("off")){
+                                repeatMode = REPEAT_MODE_OFF;
+                            }
+                            emit playerRepeatModeReceived(playerId, repeatMode);
+                        }
+                    }
+                } else if (command.contains("shuffle_mode_changed")) {
+                    qDebug() << "Shuffle mode Changed";
+                    int playerId = 0;
+                    if (message.hasQueryItem("pid")) {
+                        playerId = message.queryItemValue("pid").toInt();
+
+                        if (message.hasQueryItem("shuffle")) {
+                            bool shuffle;
+                            if (message.queryItemValue("shuffle").contains("on")){
+                                shuffle = true;
+                            } else {
+                                shuffle = false;
+                            }
+                            emit playerShuffleModeReceived(playerId, shuffle);
+                        }
+                    }
+                } else if (command.contains("group_volume_changed")) {
+
+                    qDebug() << "Event group volume Changed";
+                    int playerId = 0;
+                    if (message.hasQueryItem("gid")) {
+                        playerId = message.queryItemValue("gid").toInt();
+
+                        if (message.hasQueryItem("level")) {
+                            int volume = message.queryItemValue("level").toInt();
+                            emit groupVolumeReceived(playerId, volume);
+                        }
+                        if (message.hasQueryItem("mute")) {
+                            bool mute;
+                            if (message.queryItemValue("mute").contains("on")) {
+                                mute = true;
+                            } else {
+                                mute = false;
+                            }
+                            emit groupMuteStatusReceived(playerId, mute);
+                        }
+                    }
+                } else if (command.contains("user_changed")) {
+                    bool signedIn;
+                    QString username;
+                    if (message.hasQueryItem("signed_out")){
+                        signedIn = false;
+                    } else {
+                        signedIn = true;
+                        username = message.queryItemValue("un");
+                    }
+                    emit userChanged(signedIn, username);
                 }
             }
         }

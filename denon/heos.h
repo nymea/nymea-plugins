@@ -34,7 +34,6 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QTcpSocket>
-#include <QUuid>
 
 #include "heosplayer.h"
 #include "heostypes.h"
@@ -70,12 +69,6 @@ public:
     void getPlayMode(int playerId);
     void getQueue(int playerId);
 
-    //Group Get Calls
-    void getGroups();
-    void getGroupInfo(int groupId);
-    void getGroupVolume(int groupId);
-    void getGroupMute(int groupId);
-
     //Player Set Calls
     void setPlayerState(int playerId, PLAYER_STATE state);
     void setVolume(int playerId, int volume); //Player volume level 0 to 100
@@ -89,6 +82,11 @@ public:
     void moveQueue(int playerId, int sourcQueueId, int destinationQueueId);
     void checkForFirmwareUpdate(int playerId);
 
+    //Group Get Calls
+    void getGroups();
+    void getGroupInfo(int groupId);
+    void getGroupVolume(int groupId);
+    void getGroupMute(int groupId);
     //Group Set Calls
     void setGroupVolume(int groupId, bool volume);
     void setGroupMute(int groupId, bool mute);
@@ -98,8 +96,8 @@ public:
 
     //Browse Get Commands
     void getMusicSources();
-    void getSourceInfo(SOURCE_ID sourceId);
-    void getSearchCriteria(SOURCE_ID sourceId);
+    void getSourceInfo(const QString &sourceId);
+    void getSearchCriteria(const QString &sourceId);
     void browseSource(const QString &sourceId);
     void browseSourceContainers(const QString &sourceId, const QString &containerId);
 
@@ -122,14 +120,30 @@ signals:
     void playerDiscovered(HeosPlayer *heosPlayer);
     void connectionStatusChanged(bool status);
 
-    void playStateReceived(int playerId, PLAYER_STATE state);
-    void shuffleModeReceived(int playerId, bool shuffle);
-    void repeatModeReceived(int playerId, REPEAT_MODE repeatMode);
-    void muteStatusReceived(int playerId, bool mute);
-    void volumeStatusReceived(int playerId, int volume);
+    void playersChanged();
+    void playerQueueChanged(int playerId);
+    void playerPlayStateReceived(int playerId, PLAYER_STATE state);
+    void playerShuffleModeReceived(int playerId, bool shuffle);
+    void playerRepeatModeReceived(int playerId, REPEAT_MODE repeatMode);
+    void playerMuteStatusReceived(int playerId, bool mute);
+    void playerVolumeReceived(int playerId, int volume);
+    void playerUpdateAvailable(int playerId, bool exist); // Callback of Check for Firmware Update
+    void playerPlaybackErrorReceived(int playerId, const QString &message); //Error string represents error type. Controller can directly display the error string to the user.
+    void playerNowPlayingProgressReceived(int playerId, int currentPosition, int duration);
+    void playerNowPlayingChanged(int playerId);
+
+    void groupsReceived(QList<GroupObject> groups);      // Callback of getGroups()
+    void groupVolumeReceived(int groupId, int volume);
+    void groupMuteStatusReceived(int groupId, bool mute);
+    void groupsChanged();
+
+    void sourcesChanged();
     void nowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
     void musicSourcesReceived(QList<MusicSourceObject> musicSources);
     void mediaItemsReceived(QList<MediaObject> mediaItems);
+
+    void browseRequestReceived(QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems);
+    void userChanged(bool signedIn, const QString &userName);
 
 private slots:
     void onConnected();

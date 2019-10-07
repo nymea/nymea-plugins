@@ -155,7 +155,7 @@ struct PlayerObject {
 struct GroupObject {
     QString name;
     int groupId;
-    QList<PLAYER_ROLE> role;
+    QList<PlayerObject> players;
 };
 
 struct SourceContainersObject {

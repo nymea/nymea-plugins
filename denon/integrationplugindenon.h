@@ -45,6 +45,7 @@
 #include <QPointer>
 #include <QHostAddress>
 #include <QNetworkReply>
+#include <QUuid>
 
 class IntegrationPluginDenon : public IntegrationPlugin
 {
@@ -99,9 +100,10 @@ private slots:
     void onHeosMuteStatusReceived(int playerId, bool mute);
     void onHeosVolumeStatusReceived(int playerId, int volume);
     void onHeosNowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
-    void onHeosMusicSourcesReceived(QList<MusicSourceObject> musicSources);
-    void onHeosMediaItemsReceived(QList<MediaObject> mediaItems);
-
+    //void onHeosMusicSourcesReceived(QList<MusicSourceObject> musicSources);
+    //void onHeosMediaItemsReceived(QList<MediaObject> mediaItems);
+    void onHeosBrowseRequestReceived(QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems);
+    void onHeosPlayerNowPlayingChanged(int playerId);
 
     void onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
     void onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry);
