@@ -790,11 +790,16 @@ void Heos::readData()
                                 MediaObject media;
                                 qDebug(dcDenon()) << "Media Item" << payloadEntryVariant.toMap().value("mid").toString() << payloadEntryVariant.toMap().value("cid").toString();
                                 media.name = payloadEntryVariant.toMap().value("name").toString();
-                                media.containerId = payloadEntryVariant.toMap().value("cid").toString();
+                                if (payloadEntryVariant.toMap().contains("cid")) {
+                                    media.containerId = payloadEntryVariant.toMap().value("cid").toString();
+                                } else {
+                                    media.containerId = message.queryItemValue("cid");
+                                }
                                 media.mediaId = payloadEntryVariant.toMap().value("mid").toString();
                                 media.imageUrl = payloadEntryVariant.toMap().value("image_url").toString();
                                 media.isPlayable = payloadEntryVariant.toMap().value("playable").toString().contains("yes");
                                 media.isContainer = payloadEntryVariant.toMap().value("container").toString().contains("yes");
+                                media.sourceId = sourceId;
                                 if (type == "artist") {
                                     media.mediaType = MEDIA_TYPE_ARTIST;
                                 } else if (type == "song") {

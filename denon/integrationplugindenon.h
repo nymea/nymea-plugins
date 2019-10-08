@@ -89,6 +89,7 @@ private:
     QHash<QString, BrowseResult*> m_pendingBrowseResult;    // QString = containerId or sourceId
     QHash<int, BrowserActionInfo*> m_pendingBrowserActions;
     QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
+    QHash<QString, MediaObject> m_mediaObjects;
 
 private slots:
     void onPluginTimer();

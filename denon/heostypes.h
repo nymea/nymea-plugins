@@ -179,6 +179,7 @@ struct MediaObject {
     QString name;
     QString imageUrl;
     QString containerId;
+    QString sourceId;
     QString mediaId;
 };
 

@@ -829,6 +829,7 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(QList<MusicSourceObject
             item.setExecutable(media.isPlayable);
             item.setBrowsable(media.isContainer);
             //item.setActionTypeIds();
+            m_mediaObjects.insert(item.id(), media);
             result->addItem(item);
         }
         foreach(MusicSourceObject source, musicSources) {
@@ -904,23 +905,27 @@ void IntegrationPluginDenon::browseDevice(BrowseResult *result)
         qDebug(dcDenon()) << "Browse source";
         heos->getMusicSources();
         m_pendingGetSourcesRequest.insert(heos, result);
-        //connect(result, &QObject::destroyed, this, [this, result->itemId()](){ m_pendingBrowseResult.remove(result->itemId());});
+        connect(result, &QObject::destroyed, this, [this, heos](){m_pendingGetSourcesRequest.remove(heos);});
+
     } else if (result->itemId().startsWith("source=")){
         qDebug(dcDenon()) << "Browse source" << result->itemId();
         QString id = result->itemId().remove("source=");
         heos->browseSource(id);
         m_pendingBrowseResult.insert(id, result);
         //connect(result, &QObject::destroyed, this, [this, result->itemId()](){ m_pendingBrowseResult.remove(result->itemId());});
+
     } else if (result->itemId().startsWith("container=")){
         qDebug(dcDenon()) << "Browse container" << result->itemId();
         QStringList values = result->itemId().split("&");
         if (values.length() == 2) {
             QString id = values[0].remove("container=");
             heos->browseSourceContainers(values[1], id);
+            // URL encoding is needed because some container ids are a URL and their encoding varies.
             if (QUrl(id).isValid()) {
                 id = QUrl::fromPercentEncoding(id.toUtf8());
             }
             m_pendingBrowseResult.insert(id, result);
+            connect(result, &QObject::destroyed, this, [this, id](){ m_pendingBrowseResult.remove(id);});
         }
     }
 }
@@ -943,20 +948,21 @@ void IntegrationPluginDenon::executeBrowserItem(BrowserActionInfo *info)
         info->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
     }
-   /* BrowserAction action = info->browserAction();
+    BrowserAction action = info->browserAction();
     int playerId = info->device()->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt();
-    if (action.itemId()) {
-        heos->playUrl(playerId, action.itemId());
+    qDebug(dcDenon()) << "Execute browse item called. Player Id:" << playerId << "Item ID" << action.itemId();
+
+    if (m_mediaObjects.contains(action.itemId())) {
+        MediaObject media = m_mediaObjects.value(action.itemId());
+        if (media.mediaType == MEDIA_TYPE_CONTAINER) {
+            heos->addContainerToQueue(playerId, media.sourceId, media.containerId, ADD_CRITERIA_PLAY_NOW);
+        } else if (media.mediaType == MEDIA_TYPE_STATION) {
+            heos->playStation(playerId, media.sourceId, media.containerId, media.mediaId, media.name);
+        }
     } else {
-        heos->playPresetStation(playerId, presetNumber);
+        qWarning(dcDenon()) << "Media item not found" << action.itemId();
     }
-        heos->playInputSource(playerId, inputName);
-*/
 
-
-
-
-    qDebug(dcDenon()) << "Execute browse item called";
     info->finish(Device::DeviceErrorNoError);
     return;
 }
