@@ -1,0 +1,120 @@
+{
+    "displayName": "LukeRoberts",
+    "id": "40f368ee-1815-46fd-9d74-4b8e5b5f21e7",
+    "name": "Luke Roberts",
+    "vendors": [
+        {
+            "displayName": "Luke Roberts",
+            "name": "senic",
+            "id": "4e942850-9553-493c-8a4a-5a468e124099",
+            "deviceClasses": [
+                {
+                    "id": "5de74ba9-4a46-4235-94b4-8aefc1e2b27f",
+                    "name": "Model F",
+                    "displayName": "Model F",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["colorlight", "connectable"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "5cde31de-8c5d-4c10-890e-1dd3b5efcad1",
+                            "name": "mac",
+                            "displayName": "Mac address",
+                            "type": "QString",
+                            "inputType": "MacAddress"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "09b9e571-74a8-4d47-a432-ae9743915d8d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        ,
+                        {
+                            "id": "ac3a55e1-48af-402d-b9ef-6020d4a1cb4f",
+                            "name": "power",
+                            "displayName": "power",
+                            "displayNameEvent": "power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "ce156b88-b142-4516-8110-5fe044ed0ba8",
+                            "name": "colorTemperature",
+                            "displayName": "color temperature",
+                            "displayNameEvent": "color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "minValue": 153,
+                            "maxValue": 500,
+                            "writable": true
+                        },
+                        {
+                            "id": "01844169-43de-42df-9908-f015bb3ea7c2",
+                            "name": "color",
+                            "displayName": "color",
+                            "displayNameEvent": "color changed",
+                            "displayNameAction": "Set color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "70c92741-9c7f-47df-85c1-bdd05cef90b6",
+                            "name": "brightness",
+                            "displayName": "brightness",
+                            "displayNameEvent": "brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+
+
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "24649eb2-47d1-4a2b-8c09-1f074382e2c4",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "8ed643c0-1b8a-4709-8abf-717cf213f4a4",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["•", "←", "↑", "→", "↓"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "a2f4add5-f76a-4dca-ae68-4107533bee0e",
+                            "name": "longPressed",
+                            "displayName": "Button long pressed"
+                        }
+                    ],
+                    "browserItemActionTypes": [
+                        {
+                            "id": "51407fb3-9966-43bf-b3d4-98e1fe6588ec",
+                            "name": "updateScenes",
+                            "displayName": "Update scenes"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
