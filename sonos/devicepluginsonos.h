@@ -40,14 +40,14 @@ public:
     explicit DevicePluginSonos();
     ~DevicePluginSonos() override;
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    DevicePairingInfo pairDevice(DevicePairingInfo &devicePairingInfo) override;
-    DevicePairingInfo confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
 
     void postSetupDevice(Device *device) override;
     void startMonitoringAutoDevices() override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     PluginTimer *m_pluginTimer5sec = nullptr;
@@ -60,7 +60,7 @@ private:
     QByteArray m_sonosConnectionAccessToken;
     QByteArray m_sonosConnectionRefreshToken;
 
-    QHash<QUuid, ActionId> m_pendingActions;
+    QHash<QUuid, QPointer<DeviceActionInfo> > m_pendingActions;
 
 private slots:
     void onConnectionChanged(bool connected);

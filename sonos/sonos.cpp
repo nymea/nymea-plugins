@@ -102,15 +102,15 @@ void Sonos::getHouseholds()
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
 
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
-        if (!data.isObject()) {
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
             qDebug(dcSonos()) << "Household ID: Recieved invalide JSON object";
             return;
         }
         QList<QString> households;
-        QJsonArray jsonArray = data["households"].toArray();
-        foreach (const QJsonValue & value, jsonArray) {
-            QJsonObject obj = value.toObject();
+        foreach (const QVariant &variant, data.toVariant().toMap().value("households").toList()) {
+            QVariantMap obj = variant.toMap();
             qDebug(dcSonos()) << "Household ID received:" << obj["id"].toString();
             households.append(obj["id"].toString());
         }
@@ -182,18 +182,21 @@ void Sonos::getFavorites(const QString &householdId)
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
 
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
-        if (!data.isObject())
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcSonos()) << "Invalid json received from server";
+            return;
+        }
+
+        if (!data.toVariant().toMap().contains("items"))
             return;
 
-        if (!data["items"].isArray())
-            return;
-
-        QJsonArray array = data["items"].toArray();
+        QVariantList array = data.toVariant().toMap().value("items").toList();
         QList<FavouriteObject> favourites
                 ;
-        foreach (const QJsonValue & value, array) {
-            QJsonObject itemObject = value.toObject();
+        foreach (const QVariant &variant, array) {
+            QVariantMap itemObject = variant.toMap();
             qDebug(dcSonos()) << "Item ID received:" << itemObject["id"].toString();
             FavouriteObject favourite;
             favourite.id = itemObject["id"].toString();
@@ -233,17 +236,18 @@ void Sonos::getGroups(const QString &householdId)
         emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
-        if (!data.isObject())
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError)
             return;
 
-        if (!data["groups"].isArray())
+        if (!data.toVariant().toMap().contains("groups"))
             return;
 
-        QJsonArray array = data["groups"].toArray();
+        QVariantList array = data.toVariant().toMap().value("groups").toList();
         QList<GroupObject> groupObjects;
-        foreach (const QJsonValue & value, array) {
-            QJsonObject obj = value.toObject();
+        foreach (const QVariant &value, array) {
+            QVariantMap obj = value.toMap();
             qDebug(dcSonos()) << "Group ID received:" << obj["id"].toString();
             GroupObject group;
             group.groupId = obj["id"].toString();
@@ -281,15 +285,19 @@ void Sonos::getGroupVolume(const QString &groupId)
         emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
-        if (!data.isObject())
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcSonos()) << "JSON Parse error" << error.errorString();
             return;
+        }
 
         VolumeObject volume;
 
-        volume.volume = data["volume"].toInt();
-        volume.muted  = data["muted"].toBool();
-        volume.fixed  = data["fixed"].toBool();
+        QVariantMap variant = data.toVariant().toMap();
+        volume.volume = variant["volume"].toInt();
+        volume.muted  = variant["muted"].toBool();
+        volume.fixed  = variant["fixed"].toBool();
 
         emit volumeReceived(groupId, volume);
     });
@@ -1100,14 +1108,18 @@ void Sonos::getPlayerVolume(const QByteArray &playerId)
         emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
-        if (!data.isObject())
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcSonos()) << "Json parse error" << error.errorString();
             return;
+        }
 
         VolumeObject volume;
-        volume.volume = data["volume"].toInt();
-        volume.muted  = data["muted"].toBool();
-        volume.fixed  = data["fixed"].toBool();
+        QVariantMap variant = data.toVariant().toMap();
+        volume.volume = variant["volume"].toInt();
+        volume.muted  = variant["muted"].toBool();
+        volume.fixed  = variant["fixed"].toBool();
         emit playerVolumeReceived(playerId, volume);
     });
 }
@@ -1261,17 +1273,22 @@ void Sonos::getPlaylist(const QString &householdId, const QString &playlistId)
         emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
-        if (!data.isObject())
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcSonos()) << "Json parse error" << error.errorString();
             return;
+        }
 
-        if (!data["tracks"].isArray())
+        QVariantMap variant = data.toVariant().toMap();
+
+        if (!variant.contains("tracks"))
             return;
 
         PlaylistSummaryObject playlist;
-        QJsonArray array = data["tracks"].toArray();
-        foreach (const QJsonValue & value, array) {
-            QJsonObject itemObject = value.toObject();
+        QVariantList array = variant["tracks"].toList();
+        foreach (const QVariant &value, array) {
+            QVariantMap itemObject = value.toMap();
             qDebug(dcSonos()) << "Item ID received:" << itemObject["id"].toString();
             PlaylistTrackObject track;
             track.name = itemObject["name"].toString();
@@ -1310,17 +1327,20 @@ void Sonos::getPlaylists(const QString &householdId)
         emit authenticationStatusChanged(true);
 
         //qDebug(dcSonos()) << "Received response from Sonos" << reply->readAll();
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
-        if (!data.isObject())
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (!data.isObject()) {
+            qCWarning(dcSonos()) << "Json parse error:" << error.errorString();
+            return;
+        }
+
+        if (!data.toVariant().toMap().contains("playlists"))
             return;
 
-        if (!data["items"].isArray())
-            return;
-
-        QJsonArray array = data["playlists"].toArray();
+        QVariantList array = data.toVariant().toMap().value("playlists").toList();
         QList<PlaylistObject> playlists;
-        foreach (const QJsonValue & value, array) {
-            QJsonObject itemObject = value.toObject();
+        foreach (const QVariant &value, array) {
+            QVariantMap itemObject = value.toMap();
             qDebug(dcSonos()) << "Item ID received:" << itemObject["id"].toString();
             PlaylistObject playlist;
             playlist.id = itemObject["id"].toString();
@@ -1396,10 +1416,14 @@ void Sonos::getPlayerSettings(const QString &playerId)
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
 
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
-        if (!data.isObject())
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcSonos()) << "Json parse error" << error.errorString();
             return;
+        }
 
+        QVariantMap data = jsonDoc.toVariant().toMap();
         PlayerSettingsObject playerSettings;
         playerSettings.monoMode = data["monoMode"].toBool();
         playerSettings.volumeMode = data["volumeMode"].toString();

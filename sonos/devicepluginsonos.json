@@ -13,7 +13,7 @@
                     "id": "22df416d-7732-44f1-b6b9-e41296211178",
                     "name": "sonosConnection",
                     "displayName": "Sonos connection",
-                    "interfaces": ["gateway"],
+                    "interfaces": ["account", "gateway"],
                     "createMethods": ["user"],
                     "setupMethod": "oauth",
                     "paramTypes": [
@@ -40,7 +40,8 @@
                             "name": "userDisplayName",
                             "displayName": "User name",
                             "displayNameEvent": "User name changed",
-                            "type": "QString"
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ]
                 },
