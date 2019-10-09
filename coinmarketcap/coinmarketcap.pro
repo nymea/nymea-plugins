@@ -9,4 +9,3 @@ SOURCES += \
 
 HEADERS += \
     deviceplugincoinmarketcap.h \
-
