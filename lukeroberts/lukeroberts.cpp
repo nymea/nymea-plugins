@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -20,14 +20,14 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "LukeRoberts.h"
+#include "lukeroberts.h"
 #include "extern-plugininfo.h"
 
 #include <QBitArray>
 #include <QtEndian>
 
-static QBluetoothUuid ledMatrinxServiceUuid             = QBluetoothUuid(QUuid("f29b1523-cb19-40f3-be5c-7241ecb82fd1"));
-static QBluetoothUuid ledMatrixCharacteristicUuid       = QBluetoothUuid(QUuid("f29b1524-cb19-40f3-be5c-7241ecb82fd1"));
+static QBluetoothUuid customControlServiceUuid             = QBluetoothUuid(QUuid("​44092840-0567-11E6-B862-0002A5D5C51B"));
+static QBluetoothUuid externalApiEndpointCharacteristicUuid       = QBluetoothUuid(QUuid("44092842-0567-11E6-B862-0002A5D5C51B"));
 
 
 LukeRoberts::LukeRoberts(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
@@ -47,9 +47,9 @@ BluetoothLowEnergyDevice *LukeRoberts::bluetoothDevice()
 void LukeRoberts::printService(QLowEnergyService *service)
 {
     foreach (const QLowEnergyCharacteristic &characteristic, service->characteristics()) {
-        qCDebug(dcSenic()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
+        qCDebug(dcLukeRoberts()) << "    -->" << characteristic.name() << characteristic.uuid().toString() << characteristic.value();
         foreach (const QLowEnergyDescriptor &descriptor, characteristic.descriptors()) {
-            qCDebug(dcSenic()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
+            qCDebug(dcLukeRoberts()) << "        -->" << descriptor.name() << descriptor.uuid().toString() << descriptor.value();
         }
     }
 }
@@ -57,44 +57,33 @@ void LukeRoberts::printService(QLowEnergyService *service)
 
 void LukeRoberts::onConnectedChanged(bool connected)
 {
-    qCDebug(dcSenic()) << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
+    qCDebug(dcLukeRoberts()) << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
 
-    m_longPressTimer->stop();
     emit connectedChanged(connected);
 
     if (!connected) {
         // Clean up services
         m_deviceInfoService->deleteLater();
-        m_batteryService->deleteLater();
-        m_ledMatrixService->deleteLater();
-        m_inputService->deleteLater();
+        m_controlService->deleteLater();
 
         m_deviceInfoService = nullptr;
-        m_batteryService = nullptr;
-        m_ledMatrixService = nullptr;
-        m_inputService = nullptr;
+        m_controlService = nullptr;
     }
 
 }
 
 void LukeRoberts::onServiceDiscoveryFinished()
 {
-    qCDebug(dcSenic()) << "Service scan finised";
+    qCDebug(dcLukeRoberts()) << "Service scan finised";
 
     if (!m_bluetoothDevice->serviceUuids().contains(QBluetoothUuid::DeviceInformation)) {
-        qCWarning(dcSenic()) << "Device Information service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        qCWarning(dcLukeRoberts()) << "Device Information service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         emit deviceInitializationFinished(false);
         return;
     }
 
-    if (!m_bluetoothDevice->serviceUuids().contains(ledMatrinxServiceUuid)) {
-        qCWarning(dcSenic()) << "Led matrix service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
-        emit deviceInitializationFinished(false);
-        return;
-    }
-
-    if (!m_bluetoothDevice->serviceUuids().contains(inputServiceUuid)) {
-        qCWarning(dcSenic()) << "Input service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+    if (!m_bluetoothDevice->serviceUuids().contains(customControlServiceUuid)) {
+        qCWarning(dcLukeRoberts()) << "Input service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         emit deviceInitializationFinished(false);
         return;
     }
@@ -103,7 +92,7 @@ void LukeRoberts::onServiceDiscoveryFinished()
     if (!m_deviceInfoService) {
         m_deviceInfoService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::DeviceInformation, this);
         if (!m_deviceInfoService) {
-            qCWarning(dcSenic()) << "Could not create device info service.";
+            qCWarning(dcLukeRoberts()) << "Could not create device info service.";
             emit deviceInitializationFinished(false);
             return;
         }
@@ -116,18 +105,18 @@ void LukeRoberts::onServiceDiscoveryFinished()
     }
 
     // Custom control service
-    if (!m_ledMatrixService) {
-        m_ledMatrixService = m_bluetoothDevice->controller()->createServiceObject(ledMatrinxServiceUuid, this);
-        if (!m_ledMatrixService) {
-            qCWarning(dcSenic()) << "Could not create led matrix service.";
+    if (!m_controlService) {
+        m_controlService= m_bluetoothDevice->controller()->createServiceObject(customControlServiceUuid, this);
+        if (!m_controlService) {
+            qCWarning(dcLukeRoberts()) << "Could not create led matrix service.";
             emit deviceInitializationFinished(false);
             return;
         }
 
-        connect(m_ledMatrixService, &QLowEnergyService::stateChanged, this, &LukeRoberts::onLedMatrixServiceStateChanged);
+        connect(m_controlService, &QLowEnergyService::stateChanged, this, &LukeRoberts::onControlServiceChanged);
 
-        if (m_ledMatrixService->state() == QLowEnergyService::DiscoveryRequired) {
-            m_ledMatrixService->discoverDetails();
+        if (m_controlService->state() == QLowEnergyService::DiscoveryRequired) {
+            m_controlService->discoverDetails();
         }
     }
     emit deviceInitializationFinished(true);
@@ -139,7 +128,7 @@ void LukeRoberts::onDeviceInfoServiceStateChanged(const QLowEnergyService::Servi
     if (state != QLowEnergyService::ServiceDiscovered)
         return;
 
-    qCDebug(dcSenic()) << "Device info service discovered.";
+    qCDebug(dcLukeRoberts()) << "Device info service discovered.";
 
     printService(m_deviceInfoService);
     QString firmware = QString::fromUtf8(m_deviceInfoService->characteristic(QBluetoothUuid::FirmwareRevisionString).value());
@@ -149,155 +138,32 @@ void LukeRoberts::onDeviceInfoServiceStateChanged(const QLowEnergyService::Servi
     emit deviceInformationChanged(firmware, hardware, software);
 }
 
-void LukeRoberts::onBatteryServiceStateChanged(const QLowEnergyService::ServiceState &state)
+void LukeRoberts::onControlServiceChanged(const QLowEnergyService::ServiceState &state)
 {
     // Only continue if discovered
     if (state != QLowEnergyService::ServiceDiscovered)
         return;
 
-    qCDebug(dcSenic()) << "Battery service discovered.";
+    qCDebug(dcLukeRoberts()) << "Custom control service discovered.";
 
-    printService(m_batteryService);
+    printService(m_controlService);
 
-    m_batteryCharacteristic = m_batteryService->characteristic(QBluetoothUuid::BatteryLevel);
-    if (!m_batteryCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Battery characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
-        return;
-    }
-
-    // Enable notifications
-    QLowEnergyDescriptor notificationDescriptor = m_batteryCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-    m_batteryService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
-
-    uint batteryPercentage = m_batteryCharacteristic.value().toHex().toUInt(nullptr, 16);
-    emit batteryValueChanged(batteryPercentage);
-}
-
-void LukeRoberts::onBatteryCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
-{
-    if (characteristic.uuid() == m_batteryCharacteristic.uuid()) {
-        uint batteryPercentage = value.toHex().toUInt(nullptr, 16);
-        emit batteryValueChanged(batteryPercentage);
-    }
-}
-
-void LukeRoberts::onInputServiceStateChanged(const QLowEnergyService::ServiceState &state)
-{
-    // Only continue if discovered
-    if (state != QLowEnergyService::ServiceDiscovered)
-        return;
-
-    qCDebug(dcSenic()) << "Input service discovered.";
-
-    printService(m_inputService);
-
-    // Button
-    m_inputButtonCharacteristic = m_inputService->characteristic(inputButtonCharacteristicUuid);
-    if (!m_inputButtonCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Input button characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+    // Custom API endpoint
+    m_externalApiEndpoint = m_controlService->characteristic(externalApiEndpointCharacteristicUuid);
+    if (!m_externalApiEndpoint.isValid()) {
+        qCWarning(dcLukeRoberts()) << "Input button characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         return;
     }
     // Enable notifications
-    QLowEnergyDescriptor notificationDescriptor = m_inputButtonCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-    m_inputService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
-
-
-    // Swipe
-    m_inputSwipeCharacteristic = m_inputService->characteristic(inputSwipeCharacteristicUuid);
-    if (!m_inputSwipeCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Input swipe characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
-        return;
-    }
-    // Enable notifications
-    notificationDescriptor = m_inputSwipeCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-    m_inputService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
-
-
-    // Rotation
-    m_inputRotationCharacteristic = m_inputService->characteristic(inputRotationCharacteristicUuid);
-    if (!m_inputRotationCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Input rotation characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
-        return;
-    }
-    // Enable notifications
-    notificationDescriptor = m_inputRotationCharacteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-    m_inputService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
+    QLowEnergyDescriptor notificationDescriptor = m_externalApiEndpoint.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+    m_controlService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 }
 
-void LukeRoberts::onInputCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+void LukeRoberts::onExternalApiEndpointCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
-    if (characteristic.uuid() == m_inputButtonCharacteristic.uuid()) {
-        bool pressed = (bool)value.toHex().toUInt(nullptr, 16);
-        qCDebug(dcSenic()) << "Button:" << (pressed ? "pressed": "released");
-        if (pressed) {
-            m_longPressTimer->start(m_longPressTime);
-        } else {
-            if (m_longPressTimer->isActive()) {
-                m_longPressTimer->stop();
-                emit buttonPressed();
-            }
-            // else the time run out and has the long pressed event emittted
-        }
-        return;
+    if (characteristic.uuid() == m_externalApiEndpoint.uuid()) {
+        qCDebug(dcLukeRoberts()) << "Data received" << value;
     }
 
-    if (characteristic.uuid() == m_inputSwipeCharacteristic.uuid()) {
-        quint8 swipe = (quint8)value.toHex().toUInt(nullptr, 16);
-        switch (swipe) {
-        case 0:
-            qCDebug(dcSenic()) << "Swipe: Left";
-            emit swipeDetected(SwipeDirectionLeft);
-            break;
-        case 1:
-            qCDebug(dcSenic()) << "Swipe: Right";
-            emit swipeDetected(SwipeDirectionRight);
-            break;
-        case 2:
-            qCDebug(dcSenic()) << "Swipe: Up";
-            emit swipeDetected(SwipeDirectionUp);
-            break;
-        case 3:
-            qCDebug(dcSenic()) << "Swipe: Down";
-            emit swipeDetected(SwipeDirectionDown);
-            break;
-        default:
-            break;
-        }
-        return;
-    }
-
-    if (characteristic.uuid() == m_inputRotationCharacteristic.uuid()) {
-        qint16 intValue = qFromLittleEndian<quint16>((uchar *)value.constData());
-        qCDebug(dcSenic()) << "Rotation" << value.toHex() << intValue;
-        int finalValue = m_rotationValue + qRound(intValue / 10.0);
-        if (finalValue <= 0) {
-            m_rotationValue = 0;
-        } else if (finalValue >= 100) {
-            m_rotationValue = 100;
-        } else {
-            m_rotationValue = finalValue;
-        }
-        emit rotationValueChanged(m_rotationValue);
-        return;
-    }
-
-    qCDebug(dcSenic()) << "Service characteristic changed" << characteristic.name() << value.toHex();
-}
-
-void LukeRoberts::onLedMatrixServiceStateChanged(const QLowEnergyService::ServiceState &state)
-{
-    // Only continue if discovered
-    if (state != QLowEnergyService::ServiceDiscovered)
-        return;
-
-    qCDebug(dcSenic()) << "Led matrix service discovered.";
-
-    printService(m_ledMatrixService);
-
-    // Led matrix
-    m_ledMatrixCharacteristic = m_ledMatrixService->characteristic(ledMatrixCharacteristicUuid);
-    if (!m_ledMatrixCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Led matrix characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
-        return;
-    }
+    qCDebug(dcLukeRoberts()) << "Service characteristic changed" << characteristic.name() << value.toHex();
 }

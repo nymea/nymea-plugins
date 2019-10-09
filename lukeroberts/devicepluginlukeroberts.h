@@ -48,7 +48,7 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
-    QHash<Nuimo *, Device *> m_nuimos;
+    QHash<LukeRoberts *, Device *> m_lamps;
     PluginTimer *m_reconnectTimer = nullptr;
     bool m_autoSymbolMode = true;
 

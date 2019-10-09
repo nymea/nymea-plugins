@@ -96,11 +96,8 @@ private slots:
 
     void onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceState &state);
 
-    void onBatteryServiceStateChanged(const QLowEnergyService::ServiceState &state);
-    void onBatteryCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
-
-    void onInputServiceStateChanged(const QLowEnergyService::ServiceState &state);
-    void onInputCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
+    void onControlServiceChanged(const QLowEnergyService::ServiceState &state);
+    void onExternalApiEndpointCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
 };
 
 #endif // NUIMO_H
