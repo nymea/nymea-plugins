@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io         *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -29,18 +29,23 @@ DevicePluginCoinMarketCap::DevicePluginCoinMarketCap()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginCoinMarketCap::setupDevice(Device *device)
+void DevicePluginCoinMarketCap::setupDevice(DeviceSetupInfo *info)
 {
-    if(!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginCoinMarketCap::onPluginTimer);
-    }
+    Device *device = info->device();
 
     if (device->deviceClassId() == currentPricesDeviceClassId) {
         getPriceCall(device);
-        return Device::DeviceSetupStatusSuccess;
+
+        if(!m_pluginTimer) {
+            m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+            connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginCoinMarketCap::onPluginTimer);
+        }
+
+        info->finish(Device::DeviceErrorNoError);
+        return;
     }
-    return Device::DeviceSetupStatusFailure;
+    info->finish(Device::DeviceErrorSetupFailed);
+    return;
 }
 
 void DevicePluginCoinMarketCap::deviceRemoved(Device *device)
@@ -53,6 +58,7 @@ void DevicePluginCoinMarketCap::deviceRemoved(Device *device)
 
     if (myDevices().empty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
     }
 }
 

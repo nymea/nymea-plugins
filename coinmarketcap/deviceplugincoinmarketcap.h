@@ -38,7 +38,7 @@ class DevicePluginCoinMarketCap : public DevicePlugin
 public:
     explicit DevicePluginCoinMarketCap();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
 
 private:
