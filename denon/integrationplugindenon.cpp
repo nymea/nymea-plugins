@@ -28,26 +28,6 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-<<<<<<< HEAD:denon/integrationplugindenon.cpp
-/*!
-    \page denon.html
-    \title Denon
-    \brief Plugin for Denon AV and Heos Devices
-
-    \ingroup plugins
-    \ingroup nymea-plugins
-
-    This plug-in supports the
-    \l {http://www.denon.de/de/product/hometheater/avreceivers/avrx1000}{Denon AV Amplifier AVR-X1000}
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{ThingClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{IntegrationPlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/IntegrationPlugins/denon/IntegrationPlugindenon.json
-*/
 
 #include "integrationplugindenon.h"
 #include "plugininfo.h"
@@ -211,7 +191,7 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
 
         QHostAddress address(thing->paramValue(heosThingIpParamTypeId).toString());
         Heos *heos = new Heos(address, this);
-<<<<<<< HEAD:denon/integrationplugindenon.cpp
+
 
         connect(heos, &Heos::connectionStatusChanged, this, &IntegrationPluginDenon::onHeosConnectionChanged);
         connect(heos, &Heos::playerDiscovered, this, &IntegrationPluginDenon::onHeosPlayerDiscovered);
@@ -224,24 +204,11 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
         connect(heos, &Heos::musicSourcesReceived, this, &IntegrationPluginDenon::onHeosMusicSourcesReceived);
         connect(heos, &Heos::mediaItemsReceived, this, &IntegrationPluginDenon::onHeosMediaItemsReceived);
         connect(heos, &Heos::browseRequestReceived, this, &IntegrationPluginDenon::onHeosBrowseRequestReceived);
+        connect(heos, &Heos::browseErrorReceived, this, &IntegrationPluginDenon::onHeosBrowseErrorReceived);
+        connect(heos, &Heos::playerQueueChanged, this, &IntegrationPluginDenon::onHeosPlayerQueueChanged);
+
         m_heos.insert(thing->id(), heos);
 
-=======
-        connect(heos, &Heos::connectionStatusChanged, this, &DevicePluginDenon::onHeosConnectionChanged);
-        connect(heos, &Heos::playersChanged, this, &DevicePluginDenon::onHeosPlayersChanged);
-        connect(heos, &Heos::playerDiscovered, this, &DevicePluginDenon::onHeosPlayerDiscovered);
-        connect(heos, &Heos::playerPlayStateReceived, this, &DevicePluginDenon::onHeosPlayStateReceived);
-        connect(heos, &Heos::playerRepeatModeReceived, this, &DevicePluginDenon::onHeosRepeatModeReceived);
-        connect(heos, &Heos::playerShuffleModeReceived, this, &DevicePluginDenon::onHeosShuffleModeReceived);
-        connect(heos, &Heos::playerMuteStatusReceived, this, &DevicePluginDenon::onHeosMuteStatusReceived);
-        connect(heos, &Heos::playerVolumeReceived, this, &DevicePluginDenon::onHeosVolumeStatusReceived);
-        connect(heos, &Heos::nowPlayingMediaStatusReceived, this, &DevicePluginDenon::onHeosNowPlayingMediaStatusReceived);
-        connect(heos, &Heos::musicSourcesReceived, this, &DevicePluginDenon::onHeosMusicSourcesReceived);
-        connect(heos, &Heos::browseRequestReceived, this, &DevicePluginDenon::onHeosBrowseRequestReceived);
-        connect(heos, &Heos::browseErrorReceived, this, &DevicePluginDenon::onHeosBrowseErrorReceived);
-
-        m_heos.insert(device->id(), heos);
->>>>>>> improved browsing on TuneIn:denon/deviceplugindenon.cpp
         m_asyncHeosSetups.insert(heos, info);
         // In case the setup is cancelled before we finish it...
         connect(info, &QObject::destroyed, this, [this, info, heos]() { m_asyncHeosSetups.remove(heos); });
@@ -866,6 +833,13 @@ void IntegrationPluginDenon::onHeosBrowseErrorReceived(const QString &sourceId, 
 }
 
 void IntegrationPluginDenon::onHeosPlayerNowPlayingChanged(int playerId)
+{
+    Heos *heos = static_cast<Heos *>(sender());
+    heos->getNowPlayingMedia(playerId);
+}
+
+
+void DevicePluginDenon::onHeosPlayerQueueChanged(int playerId)
 {
     Heos *heos = static_cast<Heos *>(sender());
     heos->getNowPlayingMedia(playerId);

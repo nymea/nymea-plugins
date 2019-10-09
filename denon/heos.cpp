@@ -880,13 +880,13 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("player_now_playing_changed")) {
-                    qDebug() << "Player now playing changed";
+                    qDebug(dcDenon()) << "Player now playing changed";
                     if (message.hasQueryItem("pid")) {
                         int playerId = message.queryItemValue("pid").toInt();
                         emit playerNowPlayingChanged(playerId);
                     }
                 } else if (command.contains("player_now_playing_progress")) {
-                    qDebug() << "Player now playing progress";
+                    qDebug(dcDenon()) << "Player now playing progress";
                     if (message.hasQueryItem("pid")) {
                         int playerId = message.queryItemValue("pid").toInt();
                         int currentPossition = message.queryItemValue("cur_pos").toInt();
@@ -894,7 +894,7 @@ void Heos::readData()
                         emit playerNowPlayingProgressReceived(playerId, currentPossition, duration);
                     }
                 } else if (command.contains("player_playback_error")) {
-                    qDebug() << "Player playback error";
+                    qDebug(dcDenon) << "Player playback error";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
@@ -902,14 +902,14 @@ void Heos::readData()
                         emit playerPlaybackErrorReceived(playerId, errorMessage);
                     }
                 } else if (command.contains("player_queue_changed")) {
-                    qDebug() << "Player queue Changed";
+                    qDebug(dcDenon()) << "Player queue Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
                         emit playerQueueChanged(playerId);
                     }
                 } else if (command.contains("player_volume_changed")) {
-                    qDebug() << "Event player volume Changed";
+                    qDebug(dcDenon()) << "Event player volume Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
@@ -929,7 +929,7 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("repeat_mode_changed")) {
-                    qDebug() << "Repeat mode Changed";
+                    qDebug(dcDenon()) << "Repeat mode Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
@@ -947,7 +947,7 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("shuffle_mode_changed")) {
-                    qDebug() << "Shuffle mode Changed";
+                    qDebug(dcDenon()) << "Shuffle mode Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("pid")) {
                         playerId = message.queryItemValue("pid").toInt();
@@ -963,8 +963,7 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("group_volume_changed")) {
-
-                    qDebug() << "Event group volume Changed";
+                    qDebug(dcDenon()) << "Event group volume Changed";
                     int playerId = 0;
                     if (message.hasQueryItem("gid")) {
                         playerId = message.queryItemValue("gid").toInt();
@@ -984,6 +983,8 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("user_changed")) {
+
+                    qDebug(dcDenon()) << "Event user changed";
                     bool signedIn;
                     QString username;
                     if (message.hasQueryItem("signed_out")){
