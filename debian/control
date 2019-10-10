@@ -91,8 +91,7 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
 Description: nymea.io plugin for bose soundtouch
-
-The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
