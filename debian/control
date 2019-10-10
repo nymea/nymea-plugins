@@ -705,6 +705,22 @@ Description: nymea.io plugin for senic
  This package will install the nymea.io plugin for senic
 
 
+Package: nymea-plugin-sonos
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Replaces: guh-plugin-sonos
+Description: nymea.io plugin for Sonos smart speakers
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for Sonos smart speakers
+
+
 Package: nymea-plugin-snapd
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -821,6 +837,7 @@ Depends: nymea-plugin-awattar,
          nymea-plugin-wemo,
          nymea-plugin-elgato,
          nymea-plugin-senic,
+         nymea-plugin-sonos,
          nymea-plugin-keba,
 Replaces: guh-plugins
 Description: Plugins for nymea IoT server - the default plugin collection
