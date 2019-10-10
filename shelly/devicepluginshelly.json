@@ -1,0 +1,196 @@
+{
+    "name": "shelly",
+    "displayName": "Shelly",
+    "id": "6162773b-0435-408c-a4f8-7860d38031a9",
+    "vendors": [
+        {
+            "name": "shelly",
+            "displayName": "Shelly",
+            "id": "d8e45fc2-90af-492e-8305-50baa1ec4c18",
+            "deviceClasses": [
+                {
+                    "id": "f810b66a-7177-4397-9771-4229abaabbb6",
+                    "name": "shelly1",
+                    "displayName": "Shelly1 / Shelly1PM",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "1d301dc0-5e48-473f-a611-8e407289e545",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "d0e0499e-faa0-432a-a760-c295b0aefed0",
+                            "name": "connectedDevice",
+                            "displayName": "Connected device",
+                            "type": "QString",
+                            "allowedValues": ["None", "Generic", "Light"],
+                            "defaultValue": "Generic"
+                        },
+                        {
+                            "id": "fa1aa0f6-93b2-410d-a2c5-7b2f45eae679",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "d29b8399-bfa6-4146-921d-a1d43ca4e184",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e5d41e05-2296-457e-97d8-98a5ac0de615",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "b4067d54-36c5-4d30-bbc3-c8c712d6fd32",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        }
+                    ]
+                },
+                {
+                    "id": "6de35a17-0f54-4397-894d-4321b64c53d1",
+                    "name": "shellySwitch",
+                    "displayName": "Shelly switch",
+                    "createMethods": ["auto"],
+                    "interfaces": [ "powerswitch", "connectable"],
+                    "settingsTypes": [
+                        {
+                            "id": "ce9f1650-5e12-40f4-97de-27af86afa40b",
+                            "name": "buttonType",
+                            "displayName": "Button type",
+                            "allowedValues": ["momentary", "toggle", "edge", "detached"],
+                            "type": "QString",
+                            "defaultValue": "toggle"
+                        },
+                        {
+                            "id": "f31eb52b-9aaf-409d-8bba-badda7c1a249",
+                            "name": "invertButton",
+                            "displayName": "Invert button",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "0c233312-7b8f-4ca3-880d-523cab9b3ccb",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "20f74d88-0683-4d3a-9513-6b29b5112b7b",
+                            "name": "power",
+                            "displayName": "On/Off",
+                            "displayNameEvent": "On/Off toggled",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "41498655-1943-4b46-ac36-adea7bafab87",
+                            "name": "pressed",
+                            "displayName": "Pressed"
+                        }
+                    ]
+                },
+                {
+                    "id": "512c3c7d-d6a6-4d2a-bccd-83147e5f9a25",
+                    "name": "shellyGeneric",
+                    "displayName": "Shelly connected device",
+                    "createMethods": ["auto"],
+                    "interfaces": ["power", "connectable"],
+                    "settingsTypes": [
+                        {
+                            "id": "7d35aea3-1444-48c8-9732-a41bfc3b9d75",
+                            "name": "defaultState",
+                            "displayName": "Default state",
+                            "allowedValues": ["on", "off", "last", "switch"],
+                            "defaultValue": "off",
+                            "type": "QString"
+                        }
+
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4a141674-faa6-4953-8272-5b4a4da84d31",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "72d7dbba-757c-4b03-a092-1d3f374fa961",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+
+                    ]
+                },
+                {
+                    "id": "62a2d6b8-d70d-45fc-ba8c-1c680282a399",
+                    "name": "shellyLight",
+                    "displayName": "Shelly connected light",
+                    "createMethods": ["auto"],
+                    "interfaces": ["light", "connectable"],
+                    "settingsTypes": [
+                        {
+                            "id": "4fe9ae31-3657-41bf-bd40-a219d58465d3",
+                            "name": "defaultState",
+                            "displayName": "Default state",
+                            "allowedValues": ["on", "off", "last", "switch"],
+                            "defaultValue": "off",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "61b7d8ac-d229-4268-8143-6edb2eca978d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "2ee5bfab-271e-4b95-9464-122a5208f1a5",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
