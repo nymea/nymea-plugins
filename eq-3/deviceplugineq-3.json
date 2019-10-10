@@ -532,7 +532,7 @@
                     "id": "3c51327b-a823-4479-bd4b-f4ba64267ed8",
                     "name": "eqivaBluetooth",
                     "displayName": "Eqiva Bluetooth Smart Radiator Thermostat",
-                    "interfaces": ["heating", "thermostat", "connectable"],
+                    "interfaces": ["heating", "thermostat", "connectable", "battery"],
                     "createMethods": ["discovery"],
                     "setupMethod": "JustAdd",
                     "paramTypes": [
@@ -628,6 +628,14 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "174f6388-0fbe-4d04-82ea-99c63bcf6f5a",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ]
                 }

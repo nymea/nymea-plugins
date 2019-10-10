@@ -86,7 +86,6 @@ void DevicePluginEQ3::discoverDevices(DeviceDiscoveryInfo *info)
         return;
     }
     if (deviceClassId == eqivaBluetoothDeviceClassId) {
-
         EqivaBluetoothDiscovery *eqivaBluetoothDiscovery = new EqivaBluetoothDiscovery(hardwareManager()->bluetoothLowEnergyManager(), this);
 
         // Clean up the discovery when the DiscoveryInfo goes away...
@@ -97,7 +96,7 @@ void DevicePluginEQ3::discoverDevices(DeviceDiscoveryInfo *info)
             qCDebug(dcEQ3()) << "Discovery finished";
 
             foreach (const QString &result, results) {
-                qCDebug(dcEQ3()) << "Discovered device" << result;
+                qCDebug(dcEQ3()) << "Discovered EQ-3 device" << result;
                 DeviceDescriptor descriptor(eqivaBluetoothDeviceClassId, "Eqiva Bluetooth Thermostat", result);
                 ParamList params;
                 params << Param(eqivaBluetoothDeviceMacAddressParamTypeId, result);
@@ -206,6 +205,11 @@ void DevicePluginEQ3::setupDevice(DeviceSetupInfo *info)
         device->setStateValue(eqivaBluetoothValveOpenStateTypeId, eqivaDevice->valveOpen());
         connect(eqivaDevice, &EqivaBluetooth::valveOpenChanged, device, [device, eqivaDevice](){
             device->setStateValue(eqivaBluetoothValveOpenStateTypeId, eqivaDevice->valveOpen());
+        });
+        // Battery critical state
+        device->setStateValue(eqivaBluetoothBatteryCriticalStateTypeId, eqivaDevice->batteryCritical());
+        connect(eqivaDevice, &EqivaBluetooth::batteryCriticalChanged, device, [device, eqivaDevice](){
+            device->setStateValue(eqivaBluetoothBatteryCriticalStateTypeId, eqivaDevice->batteryCritical());
         });
     }
 
@@ -335,6 +339,9 @@ void DevicePluginEQ3::executeAction(DeviceActionInfo *info)
         }
 
         connect(eqivaDevice, &EqivaBluetooth::commandResult, info, [info, commandId](int commandIdResult, bool success){
+            if (!success) {
+                qCWarning(dcEQ3()) << "Error writing characteristic";
+            }
             if (commandId == commandIdResult) {
                 info->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorHardwareFailure);
             }
