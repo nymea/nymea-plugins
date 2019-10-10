@@ -25,6 +25,9 @@
 #include "plugininfo.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergymanager.h"
 
+#include <QColor>
+#include <QRgb>
+
 DevicePluginLukeRoberts::DevicePluginLukeRoberts()
 {
 
@@ -140,7 +143,7 @@ void DevicePluginLukeRoberts::executeAction(DeviceActionInfo *info)
         if (!power) {
             lamp->selectScene(0); //Scene 0 is the off scene
         } else {
-            lamp.
+            lamp->selectScene(0xff); // Scene 0xff is the default scene
         }
 
     } else if (action.actionTypeId() == modelFBrightnessActionTypeId) {
@@ -148,9 +151,12 @@ void DevicePluginLukeRoberts::executeAction(DeviceActionInfo *info)
         lamp->modifyBrightness(brightness);
 
     } else if (action.actionTypeId() == modelFColorActionTypeId) {
+        QColor rgb = QColor::fromRgb(QRgb(action.param(modelFColorActionColorParamTypeId).value().toInt()));
+        lamp->setImmediateLight(0, rgb.saturation(), rgb.hue(), rgb.lightness());
 
     } else if (action.actionTypeId() == modelFColorTemperatureActionTypeId) {
-
+        int kelvin = action.param(modelFColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
+        lamp->modifyColorTemperature(kelvin);
     }
 }
 
@@ -169,6 +175,49 @@ void DevicePluginLukeRoberts::deviceRemoved(Device *device)
     if (myDevices().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
         m_reconnectTimer = nullptr;
+    }
+}
+
+void DevicePluginLukeRoberts::browseDevice(BrowseResult *result)
+{
+    LukeRoberts *lamp = m_lamps.key(result->device());
+    if (!lamp) {
+        result->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
+    }
+    qDebug(dcLukeRoberts()) << "Browse device called";
+    m_pendingBrowseResults.insert(lamp, result);
+    lamp->getSceneList();
+}
+
+void DevicePluginLukeRoberts::browserItem(BrowserItemResult *result)
+{
+    LukeRoberts *lamp = m_lamps.key(result->device());
+    if (!lamp) {
+        result->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
+    }
+    qDebug(dcLukeRoberts()) << "Browse item called";
+
+}
+
+void DevicePluginLukeRoberts::executeBrowserItem(BrowserActionInfo *info)
+{
+    LukeRoberts *lamp = m_lamps.key(info->device());
+    if (!lamp) {
+        info->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
+    }
+    lamp->selectScene(info->browserAction().itemId().toInt());
+    info->finish(Device::DeviceErrorNoError);
+}
+
+void DevicePluginLukeRoberts::executeBrowserItemAction(BrowserItemActionInfo *info)
+{
+    LukeRoberts *lamp = m_lamps.key(info->device());
+    if (!lamp) {
+        info->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
 }
 
@@ -200,6 +249,22 @@ void DevicePluginLukeRoberts::onDeviceInformationChanged(const QString &firmware
     //device->setStateValue(modelFSoftwareRevisionStateTypeId, softwareRevision);
 }
 
+void DevicePluginLukeRoberts::onSceneListReceived(QList<LukeRoberts::Scene> scenes)
+{
+    LukeRoberts *lamp = static_cast<LukeRoberts *>(sender());
+    if (m_pendingBrowseResults.contains(lamp)) {
+        BrowseResult *result = m_pendingBrowseResults.value(lamp);
+        foreach (LukeRoberts::Scene scene, scenes) {
+            BrowserItem item;
+            item.setId(QString::number(scene.id));
+            item.setDisplayName(scene.name);
+            item.setBrowsable(false);
+            item.setExecutable(true);
+            item.setIcon(BrowserItem::BrowserIconApplication);
+            result->addItem(item);
+        }
+    }
+}
 
 void DevicePluginLukeRoberts::onStatusCodeReceived(LukeRoberts::StatusCodes statusCode)
 {

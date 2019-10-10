@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
- *  Copyright (C) 2016-2018 Simon Stürz <simon.stuerz@guh.io>              *
+ *  Copyright (C) 2019 Bernhard Trinens <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -20,8 +20,8 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef NUIMO_H
-#define NUIMO_H
+#ifndef LUKEROBERTS_H
+#define LUKEROBERTS_H
 
 #include <QObject>
 #include <QTimer>
@@ -31,6 +31,22 @@
 #include "typeutils.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
+
+inline QByteArray &operator<<(QByteArray &l, quint8 r)
+{
+    l.append(r);
+    return l;
+}
+
+inline QByteArray &operator<<(QByteArray &l, quint16 r)
+{
+    return l<<quint8(r>>8)<<quint8(r);
+}
+
+inline QByteArray &operator<<(QByteArray &l, quint32 r)
+{
+    return l<<quint16(r>>16)<<quint16(r);
+}
 
 class LukeRoberts : public QObject
 {
@@ -61,7 +77,7 @@ enum Opcode {
 
 struct Scene {
     int8_t id;
-    QString nama;
+    QString name;
 };
     explicit LukeRoberts(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
@@ -88,6 +104,8 @@ private:
     QLowEnergyCharacteristic m_deviceInfoCharacteristic;
     QLowEnergyCharacteristic m_externalApiEndpoint;
 
+    QList<Scene> m_sceneList;
+
     void printService(QLowEnergyService *service);
     void onLongPressTimer();
 
@@ -108,28 +126,4 @@ private slots:
     void onExternalApiEndpointCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
 };
 
-
-QByteArray &operator<<(QByteArray &l, quint8 r)
-{
-    l.append(r);
-    return l;
-}
-
-QByteArray &operator<<(QByteArray &l, qint8 r)
-{
-    l.append(r);
-    return l;
-}
-
-
-QByteArray &operator<<(QByteArray &l, quint16 r)
-{
-    return l<<quint8(r>>8)<<quint8(r);
-}
-
-QByteArray &operator<<(QByteArray &l, quint32 r)
-{
-    return l<<quint16(r>>16)<<quint16(r);
-}
-
-#endif // NUIMO_H
+#endif // LUKEROBERTS_H

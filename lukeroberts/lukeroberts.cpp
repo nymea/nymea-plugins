@@ -62,6 +62,12 @@ void LukeRoberts::queryScene(uint8_t id)
     m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
 }
 
+void LukeRoberts::getSceneList()
+{
+    m_sceneList.clear();
+    queryScene(0); //get first scene
+}
+
 
 /*
  * duration in ms, 0 for infinite
@@ -128,7 +134,7 @@ void LukeRoberts::setNextSceneByBrightness(int8_t direction)
     data.append(0xa0); //Prefix
     data.append(0x02); //Protocol version V2
     data.append(0x06); //Opcode "Next Scene by Brightness"
-    data << direction; //1 selects the next brighter scene and -1 selects the next less bright scene.
+    data.append(direction); //1 selects the next brighter scene and -1 selects the next less bright scene.
     m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
 }
 
@@ -280,6 +286,17 @@ void LukeRoberts::onExternalApiEndpointCharacteristicChanged(const QLowEnergyCha
     if (characteristic.uuid() == m_externalApiEndpoint.uuid()) {
         qCDebug(dcLukeRoberts()) << "Data received" << value;
     }
+    if (value.length() > 4) { //its a scene
+
+
+        if (value.at(2) != 0xff) { //check it we are already at the end of the list
+            queryScene(value.at(2));
+        } else {
+            emit sceneListReceived(m_sceneList);
+        }
+
+    }
+
 
     qCDebug(dcLukeRoberts()) << "Service characteristic changed" << characteristic.name() << value.toHex();
 }

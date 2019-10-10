@@ -47,10 +47,18 @@ public:
 
     void deviceRemoved(Device *device) override;
 
+    void browseDevice(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+    void executeBrowserItemAction(BrowserItemActionInfo *info) override;
 private:
     QHash<LukeRoberts *, Device *> m_lamps;
     PluginTimer *m_reconnectTimer = nullptr;
     bool m_autoSymbolMode = true;
+
+    QHash<LukeRoberts *, BrowseResult *> m_pendingBrowseResults;
+    QHash<int, BrowserActionInfo*> m_pendingBrowserActions;
+    QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
 
 private slots:
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
@@ -59,6 +67,8 @@ private slots:
     void onConnectedChanged(bool connected);
     void onStatusCodeReceived(LukeRoberts::StatusCodes statusCode);
     void onDeviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
+
+    void onSceneListReceived(QList<LukeRoberts::Scene> scenes);
 };
 
 #endif // DEVICEPLUGINLUKEROBERTS_H
