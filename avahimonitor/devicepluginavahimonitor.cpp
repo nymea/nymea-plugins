@@ -32,25 +32,16 @@
 #include <QStringList>
 #include <QNetworkInterface>
 #include <QDateTime>
+#include <QTimer>
 
 DevicePluginAvahiMonitor::DevicePluginAvahiMonitor()
 {
 
 }
 
-Device::DeviceSetupStatus DevicePluginAvahiMonitor::setupDevice(Device *device)
+void DevicePluginAvahiMonitor::setupDevice(DeviceSetupInfo *info)
 {
-    qCDebug(dcAvahiMonitor()) << "Setup" << device->name() << device->params();
-
-    return Device::DeviceSetupStatusSuccess;
-}
-
-Device::DeviceError DevicePluginAvahiMonitor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
-{
-    Q_UNUSED(params)
-
-    if (deviceClassId != avahiDeviceClassId)
-        return Device::DeviceErrorDeviceClassNotFound;
+    qCDebug(dcAvahiMonitor()) << "Setup" << info->device()->name() << info->device()->params();
 
     if (!m_serviceBrowser) {
         m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
@@ -58,32 +49,59 @@ Device::DeviceError DevicePluginAvahiMonitor::discoverDevices(const DeviceClassI
         connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryRemoved, this, &DevicePluginAvahiMonitor::onServiceEntryRemoved);
     }
 
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
-        DeviceDescriptor deviceDescriptor(avahiDeviceClassId, service.name(), service.hostAddress().toString());
-        ParamList params;
-        params.append(Param(avahiDeviceServiceParamTypeId, service.name()));
-        params.append(Param(avahiDeviceHostNameParamTypeId, service.hostName()));
-        deviceDescriptor.setParams(params);
-        foreach (Device *existingDevice, myDevices()) {
-            if (existingDevice->paramValue(avahiDeviceServiceParamTypeId).toString() == service.name() && existingDevice->paramValue(avahiDeviceHostNameParamTypeId).toString() == service.hostName()) {
-                deviceDescriptor.setDeviceId(existingDevice->id());
-                break;
-            }
+    foreach (const ZeroConfServiceEntry &entry, m_serviceBrowser->serviceEntries()) {
+        if (info->device()->paramValue(avahiDeviceServiceParamTypeId).toString() == entry.name() &&
+                info->device()->paramValue(avahiDeviceHostNameParamTypeId).toString() == entry.hostName()) {
+            info->device()->setStateValue(avahiIsPresentStateTypeId, true);
+            info->device()->setStateValue(avahiLastSeenTimeStateTypeId, QDateTime::currentDateTime());
         }
-        deviceDescriptors.append(deviceDescriptor);
     }
 
-    emit devicesDiscovered(avahiDeviceClassId, deviceDescriptors);
+    info->finish(Device::DeviceErrorNoError);
+}
 
-    return Device::DeviceErrorAsync;
+void DevicePluginAvahiMonitor::discoverDevices(DeviceDiscoveryInfo *info)
+{
+    if (info->deviceClassId() != avahiDeviceClassId) {
+        info->finish(Device::DeviceErrorDeviceClassNotFound);
+        return;
+    }
+
+    if (!m_serviceBrowser) {
+        m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
+        connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &DevicePluginAvahiMonitor::onServiceEntryAdded);
+        connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryRemoved, this, &DevicePluginAvahiMonitor::onServiceEntryRemoved);
+    }
+
+    // give it a bit of time to find things
+    QTimer::singleShot(2000, info, [this, info](){
+        QList<DeviceDescriptor> deviceDescriptors;
+        foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
+            DeviceDescriptor deviceDescriptor(avahiDeviceClassId, service.name(), service.serviceType() + " (" + service.hostAddress().toString() + ")");
+            ParamList params;
+            params.append(Param(avahiDeviceServiceParamTypeId, service.name()));
+            params.append(Param(avahiDeviceHostNameParamTypeId, service.hostName()));
+            deviceDescriptor.setParams(params);
+            foreach (Device *existingDevice, myDevices()) {
+                if (existingDevice->paramValue(avahiDeviceServiceParamTypeId).toString() == service.name() && existingDevice->paramValue(avahiDeviceHostNameParamTypeId).toString() == service.hostName()) {
+                    deviceDescriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
+            }
+            deviceDescriptors.append(deviceDescriptor);
+        }
+
+        info->addDeviceDescriptors(deviceDescriptors);
+        info->finish(Device::DeviceErrorNoError);
+    });
 }
 
 void DevicePluginAvahiMonitor::onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
 {
     qCDebug(dcAvahiMonitor()) << "Service entry added:" << serviceEntry;
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name()) {
+        if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name() &&
+                device->paramValue(avahiDeviceHostNameParamTypeId).toString() == serviceEntry.hostName()) {
             device->setStateValue(avahiIsPresentStateTypeId, true);
             device->setStateValue(avahiLastSeenTimeStateTypeId, QDateTime::currentDateTime());
         }
@@ -93,7 +111,8 @@ void DevicePluginAvahiMonitor::onServiceEntryAdded(const ZeroConfServiceEntry &s
 void DevicePluginAvahiMonitor::onServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry)
 {
     foreach (Device *device, myDevices()) {
-        if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name()) {
+        if (device->paramValue(avahiDeviceServiceParamTypeId).toString() == serviceEntry.name() &&
+                device->paramValue(avahiDeviceHostNameParamTypeId).toString() == serviceEntry.hostName()) {
             device->setStateValue(avahiIsPresentStateTypeId, false);
         }
     }

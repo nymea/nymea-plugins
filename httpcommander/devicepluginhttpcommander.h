@@ -40,10 +40,10 @@ class DevicePluginHttpCommander : public DevicePlugin
 public:
     explicit DevicePluginHttpCommander();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    void  postSetupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;

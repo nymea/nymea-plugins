@@ -45,9 +45,9 @@ public:
     ~DevicePluginDweetio();
 
     void init() override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
     void postSetupDevice(Device *device) override;
 
 private:
@@ -55,9 +55,9 @@ private:
     QHash<QNetworkReply *, Device *> m_postReplies;
     QHash<QNetworkReply *, Device *> m_getReplies;
 
-    QHash<QNetworkReply *, ActionId> m_asyncActions;
+    QHash<QNetworkReply *, DeviceActionInfo*> m_asyncActions;
 
-    void postContent(const QString &content, Device *device, const Action &action);
+    void postContent(const QString &content, Device *device, DeviceActionInfo *info);
     void processPostReply(const QVariantMap &data, Device *device);
     void processGetReply(const QVariantMap &data, Device *device);
     void setConnectionStatus(bool status, Device *device);

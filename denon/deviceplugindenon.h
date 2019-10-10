@@ -49,10 +49,10 @@ class DevicePluginDenon : public DevicePlugin
 public:
     explicit DevicePluginDenon();
 
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    void postSetupDevice(Device * device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void postSetupDevice(Device *device) override;
+    void executeAction(DeviceActionInfo *info) override;
     void deviceRemoved(Device *device) override;
 
 private:
@@ -62,8 +62,8 @@ private:
     QHash<Device *, AvrConnection*> m_avrConnections;
     QHash<Device *, Heos*> m_heos;
 
-    QList<AvrConnection *> m_asyncAvrSetups;
-    QList<Heos *> m_asyncHeosSetups;
+    QHash<AvrConnection*, DeviceSetupInfo*> m_asyncAvrSetups;
+    QHash<Heos*, DeviceSetupInfo*> m_asyncHeosSetups;
 
     QHash<int, Device *> m_playerIds;
     QHash<int, Device *> m_discoveredPlayerIds;
@@ -72,7 +72,6 @@ private:
 
 private slots:
     void onPluginTimer();
-    void onUpnpDiscoveryFinished();
 
     void onHeosConnectionChanged(bool status);
     void onHeosPlayerDiscovered(HeosPlayer *heosPlayer);

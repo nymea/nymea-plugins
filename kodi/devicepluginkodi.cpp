@@ -60,8 +60,9 @@ void DevicePluginKodi::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginKodi::onPluginTimer);
 }
 
-Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
+void DevicePluginKodi::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
     qCDebug(dcKodi) << "Setup Kodi device" << device->paramValue(kodiDeviceIpParamTypeId).toString();
     QString ipString = device->paramValue(kodiDeviceIpParamTypeId).toString();
     int port = device->paramValue(kodiDevicePortParamTypeId).toInt();
@@ -74,8 +75,7 @@ Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
     connect(kodi, &Kodi::versionDataReceived, this, &DevicePluginKodi::versionDataReceived);
     connect(kodi, &Kodi::updateDataReceived, this, &DevicePluginKodi::onSetupFinished);
     connect(kodi, &Kodi::playbackStatusChanged, this, &DevicePluginKodi::onPlaybackStatusChanged);
-    connect(kodi, &Kodi::browseResult, this, &DevicePluginKodi::browseRequestFinished);
-    connect(kodi, &Kodi::browserItemResult, this, &DevicePluginKodi::browserItemRequestFinished);
+    connect(kodi, &Kodi::browserItemExecuted, this, &DevicePluginKodi::onBrowserItemExecuted);
     connect(kodi, &Kodi::browserItemActionExecuted, this, &DevicePluginKodi::onBrowserItemActionExecuted);
 
     connect(kodi, &Kodi::activePlayerChanged, device, [device](const QString &playerType){
@@ -133,11 +133,10 @@ Device::DeviceSetupStatus DevicePluginKodi::setupDevice(Device *device)
         }
     });
     m_kodis.insert(kodi, device);
-    m_asyncSetups.append(kodi);
+    m_asyncSetups.insert(kodi, info);
+    connect(info, &QObject::destroyed, this, [this, kodi](){ m_asyncSetups.remove(kodi); });
 
     kodi->connectKodi();
-
-    return Device::DeviceSetupStatusAsync;
 }
 
 void DevicePluginKodi::deviceRemoved(Device *device)
@@ -148,14 +147,17 @@ void DevicePluginKodi::deviceRemoved(Device *device)
     kodi->deleteLater();
 }
 
-Device::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginKodi::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params)
-    Q_UNUSED(deviceClassId)
 
     ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_xbmc-jsonrpc._tcp");
+    connect(info, &QObject::destroyed, serviceBrowser, &QObject::deleteLater);
+
     ZeroConfServiceBrowser *httpServiceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_http._tcp");
-    QTimer::singleShot(5000, this, [this, serviceBrowser, httpServiceBrowser](){
+    connect(info, &QObject::destroyed, httpServiceBrowser, &QObject::deleteLater);
+
+    QTimer::singleShot(5000, info, [this, info, serviceBrowser, httpServiceBrowser](){
+
         QHash<QString, DeviceDescriptor> descriptors;
 
         foreach (const ZeroConfServiceEntry avahiEntry, serviceBrowser->serviceEntries()) {
@@ -213,124 +215,122 @@ Device::DeviceError DevicePluginKodi::discoverDevices(const DeviceClassId &devic
         foreach (const DeviceDescriptor &d, descriptors.values()) {
             qCDebug(dcKodi()) << "Returning descritpor:" << d.params();
         }
-        emit devicesDiscovered(kodiDeviceClassId, descriptors.values());
-        serviceBrowser->deleteLater();
-        httpServiceBrowser->deleteLater();
+        info->addDeviceDescriptors(descriptors.values());
+        info->finish(Device::DeviceErrorNoError);
     });
-
-    return Device::DeviceErrorAsync;
 }
 
-Device::DeviceError DevicePluginKodi::executeAction(Device *device, const Action &action)
+void DevicePluginKodi::executeAction(DeviceActionInfo *info)
 {
-    if (device->deviceClassId() == kodiDeviceClassId) {
-        Kodi *kodi = m_kodis.key(device);
+    Action action = info->action();
+    Device *device = info->device();
+    Kodi *kodi = m_kodis.key(device);
 
-        // check connection state
-        if (!kodi->connected()) {
-            return Device::DeviceErrorHardwareNotAvailable;
-        }
+    // check connection state
+    if (!kodi->connected()) {
+        return info->finish(Device::DeviceErrorHardwareNotAvailable);
+    }
 
-        int commandId = -1;
-        if (action.actionTypeId() == kodiNotifyActionTypeId) {
-            commandId = kodi->showNotification(
-                        action.param(kodiNotifyActionTitleParamTypeId).value().toString(),
-                        action.param(kodiNotifyActionBodyParamTypeId).value().toString(),
-                        8000,
-                        action.param(kodiNotifyActionTypeParamTypeId).value().toString());
-        } else if (action.actionTypeId() == kodiVolumeActionTypeId) {
-            commandId = kodi->setVolume(action.param(kodiVolumeActionVolumeParamTypeId).value().toInt());
-        } else if (action.actionTypeId() == kodiMuteActionTypeId) {
-            commandId = kodi->setMuted(action.param(kodiMuteActionMuteParamTypeId).value().toBool());
-        } else if (action.actionTypeId() == kodiNavigateActionTypeId) {
-            commandId = kodi->navigate(action.param(kodiNavigateActionToParamTypeId).value().toString());
-        } else if (action.actionTypeId() == kodiSystemActionTypeId) {
-            commandId = kodi->systemCommand(action.param(kodiSystemActionSystemCommandParamTypeId).value().toString());
-        } else if(action.actionTypeId() == kodiSkipBackActionTypeId) {
-            commandId = kodi->navigate("skipprevious");
-        } else if(action.actionTypeId() == kodiFastRewindActionTypeId) {
-            commandId = kodi->navigate("rewind");
-        } else if(action.actionTypeId() == kodiStopActionTypeId) {
-            commandId = kodi->navigate("stop");
-        } else if(action.actionTypeId() == kodiPlayActionTypeId) {
-            commandId = kodi->navigate("play");
-        } else if(action.actionTypeId() == kodiPauseActionTypeId) {
-            commandId = kodi->navigate("pause");
-        } else if(action.actionTypeId() == kodiFastForwardActionTypeId) {
-            commandId = kodi->navigate("fastforward");
-        } else if(action.actionTypeId() == kodiSkipNextActionTypeId) {
-            commandId = kodi->navigate("skipnext");
-        } else if (action.actionTypeId() == kodiShuffleActionTypeId) {
-            commandId = kodi->setShuffle(action.param(kodiShuffleActionShuffleParamTypeId).value().toBool());
-        } else if (action.actionTypeId() == kodiRepeatActionTypeId) {
-            QString repeat = action.param(kodiRepeatActionRepeatParamTypeId).value().toString();
-            if (repeat == "One") {
-                commandId = kodi->setRepeat("one");
-            } else if (repeat == "All") {
-                commandId = kodi->setRepeat("all");
-            } else {
-                commandId = kodi->setRepeat("off");
-            }
+    int commandId = -1;
+    if (action.actionTypeId() == kodiNotifyActionTypeId) {
+        commandId = kodi->showNotification(
+                    action.param(kodiNotifyActionTitleParamTypeId).value().toString(),
+                    action.param(kodiNotifyActionBodyParamTypeId).value().toString(),
+                    8000,
+                    action.param(kodiNotifyActionTypeParamTypeId).value().toString());
+    } else if (action.actionTypeId() == kodiVolumeActionTypeId) {
+        commandId = kodi->setVolume(action.param(kodiVolumeActionVolumeParamTypeId).value().toInt());
+    } else if (action.actionTypeId() == kodiMuteActionTypeId) {
+        commandId = kodi->setMuted(action.param(kodiMuteActionMuteParamTypeId).value().toBool());
+    } else if (action.actionTypeId() == kodiNavigateActionTypeId) {
+        commandId = kodi->navigate(action.param(kodiNavigateActionToParamTypeId).value().toString());
+    } else if (action.actionTypeId() == kodiSystemActionTypeId) {
+        commandId = kodi->systemCommand(action.param(kodiSystemActionSystemCommandParamTypeId).value().toString());
+    } else if(action.actionTypeId() == kodiSkipBackActionTypeId) {
+        commandId = kodi->navigate("skipprevious");
+    } else if(action.actionTypeId() == kodiFastRewindActionTypeId) {
+        commandId = kodi->navigate("rewind");
+    } else if(action.actionTypeId() == kodiStopActionTypeId) {
+        commandId = kodi->navigate("stop");
+    } else if(action.actionTypeId() == kodiPlayActionTypeId) {
+        commandId = kodi->navigate("play");
+    } else if(action.actionTypeId() == kodiPauseActionTypeId) {
+        commandId = kodi->navigate("pause");
+    } else if(action.actionTypeId() == kodiFastForwardActionTypeId) {
+        commandId = kodi->navigate("fastforward");
+    } else if(action.actionTypeId() == kodiSkipNextActionTypeId) {
+        commandId = kodi->navigate("skipnext");
+    } else if (action.actionTypeId() == kodiShuffleActionTypeId) {
+        commandId = kodi->setShuffle(action.param(kodiShuffleActionShuffleParamTypeId).value().toBool());
+    } else if (action.actionTypeId() == kodiRepeatActionTypeId) {
+        QString repeat = action.param(kodiRepeatActionRepeatParamTypeId).value().toString();
+        if (repeat == "One") {
+            commandId = kodi->setRepeat("one");
+        } else if (repeat == "All") {
+            commandId = kodi->setRepeat("all");
         } else {
-            qWarning(dcKodi()) << "Unhandled action type" << action.actionTypeId();
-            return Device::DeviceErrorActionTypeNotFound;
+            commandId = kodi->setRepeat("off");
         }
-        m_pendingActions.insert(commandId, action.id());
-        return Device::DeviceErrorAsync;
+    } else {
+        qWarning(dcKodi()) << "Unhandled action type" << action.actionTypeId();
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+
+    m_pendingActions.insert(commandId, info);
+    connect(info, &QObject::destroyed, this, [this, commandId](){ m_pendingActions.remove(commandId); });
 }
 
-Device::BrowseResult DevicePluginKodi::browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale)
+void DevicePluginKodi::browseDevice(BrowseResult *result)
 {
-    Q_UNUSED(locale)
-
-    Kodi *kodi = m_kodis.key(device);
+    Kodi *kodi = m_kodis.key(result->device());
     if (!kodi) {
-        result.status = Device::DeviceErrorHardwareNotAvailable;
-        return result;
+        result->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
 
-    return kodi->browse(itemId, result);
+    kodi->browse(result);
 }
 
-Device::BrowserItemResult DevicePluginKodi::browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale)
+void DevicePluginKodi::browserItem(BrowserItemResult *result)
 {
-    Q_UNUSED(locale)
-
-    Kodi *kodi = m_kodis.key(device);
+    Kodi *kodi = m_kodis.key(result->device());
     if (!kodi) {
-        result.status = Device::DeviceErrorHardwareNotAvailable;
-        return result;
+        result->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
 
-    return kodi->browserItem(itemId, result);
-
+    kodi->browserItem(result);
 }
 
-Device::DeviceError DevicePluginKodi::executeBrowserItem(Device *device, const BrowserAction &browserAction)
+void DevicePluginKodi::executeBrowserItem(BrowserActionInfo *info)
 {
-    Kodi *kodi = m_kodis.key(device);
+    Kodi *kodi = m_kodis.key(info->device());
     if (!kodi) {
-        return Device::DeviceErrorHardwareNotAvailable;
+        info->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
 
-    return kodi->launchBrowserItem(browserAction.itemId());
-}
-
-Device::DeviceError DevicePluginKodi::executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction)
-{
-    Kodi *kodi = m_kodis.key(device);
-    if (!kodi) {
-        return Device::DeviceErrorHardwareNotAvailable;
-    }
-
-    int id = kodi->executeBrowserItemAction(browserItemAction.itemId(), browserItemAction.actionTypeId());
+    int id = kodi->launchBrowserItem(info->browserAction().itemId());
     if (id == -1) {
-        return Device::DeviceErrorHardwareFailure;
+        return info->finish(Device::DeviceErrorHardwareFailure);
     }
-    m_pendingBrowserItemActions.insert(id, browserItemAction.id());
-    return Device::DeviceErrorAsync;
+    m_pendingBrowserActions.insert(id, info);
+    connect(info, &QObject::destroyed, this, [this, id](){ m_pendingBrowserActions.remove(id); });
+}
+
+void DevicePluginKodi::executeBrowserItemAction(BrowserItemActionInfo *info)
+{
+    Kodi *kodi = m_kodis.key(info->device());
+    if (!kodi) {
+        return info->finish(Device::DeviceErrorHardwareNotAvailable);
+    }
+
+    int id = kodi->executeBrowserItemAction(info->browserItemAction().itemId(), info->browserItemAction().actionTypeId());
+    if (id == -1) {
+        return info->finish(Device::DeviceErrorHardwareFailure);
+    }
+    m_pendingBrowserItemActions.insert(id, info);
+    connect(info, &QObject::destroyed, this, [this, id](){ m_pendingBrowserItemActions.remove(id); });
 }
 
 void DevicePluginKodi::onPluginTimer()
@@ -351,7 +351,6 @@ void DevicePluginKodi::onConnectionChanged()
     if (kodi->connected()) {
         // if this is the first setup, check version
         if (m_asyncSetups.contains(kodi)) {
-            m_asyncSetups.removeAll(kodi);
             kodi->checkVersion();
         }
     }
@@ -374,7 +373,15 @@ void DevicePluginKodi::onActionExecuted(int actionId, bool success)
     if (!m_pendingActions.contains(actionId)) {
         return;
     }
-    emit actionExecutionFinished(m_pendingActions.take(actionId), success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
+    m_pendingActions.take(actionId)->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
+}
+
+void DevicePluginKodi::onBrowserItemExecuted(int actionId, bool success)
+{
+    if (!m_pendingBrowserActions.contains(actionId)) {
+        return;
+    }
+    m_pendingBrowserActions.take(actionId)->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
 }
 
 void DevicePluginKodi::onBrowserItemActionExecuted(int actionId, bool success)
@@ -382,13 +389,12 @@ void DevicePluginKodi::onBrowserItemActionExecuted(int actionId, bool success)
     if (!m_pendingBrowserItemActions.contains(actionId)) {
         return;
     }
-    emit browserItemActionExecutionFinished(m_pendingBrowserItemActions.take(actionId), success ? Device::DeviceErrorNoError : Device::DeviceErrorHardwareFailure);
+    m_pendingBrowserItemActions.take(actionId)->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorHardwareFailure);
 }
 
 void DevicePluginKodi::versionDataReceived(const QVariantMap &data)
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
-    Device *device = m_kodis.value(kodi);
 
     QVariantMap version = data.value("version").toMap();
     QString apiVersion = QString("%1.%2.%3").arg(version.value("major").toString()).arg(version.value("minor").toString()).arg(version.value("patch").toString());
@@ -396,7 +402,9 @@ void DevicePluginKodi::versionDataReceived(const QVariantMap &data)
 
     if (version.value("major").toInt() < 6) {
         qCWarning(dcKodi) << "incompatible api version:" << apiVersion;
-        emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+        if (m_asyncSetups.contains(kodi)) {
+            m_asyncSetups.take(kodi)->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("This installation of Kodi is too old. Please upgrade your Kodi system."));
+        }
         return;
     }
     kodi->update();
@@ -405,13 +413,14 @@ void DevicePluginKodi::versionDataReceived(const QVariantMap &data)
 void DevicePluginKodi::onSetupFinished(const QVariantMap &data)
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
-    Device *device = m_kodis.value(kodi);
 
     QVariantMap version = data.value("version").toMap();
     QString kodiVersion = QString("%1.%2 (%3)").arg(version.value("major").toString()).arg(version.value("minor").toString()).arg(version.value("tag").toString());
     qCDebug(dcKodi) << "Version:" << kodiVersion;
 
-    emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+    if (m_asyncSetups.contains(kodi)) {
+        m_asyncSetups.take(kodi)->finish(Device::DeviceErrorNoError);
+    }
 
     kodi->showNotification("nymea", tr("Connected"), 2000, "info");
 }

@@ -120,7 +120,7 @@ private:
 signals:
     void cubeDataAvailable(const QByteArray &data);
     void cubeACK();
-    void cubeConnectionStatusChanged(const bool &connected);
+    void cubeConnectionStatusChanged(bool connected);
 
     // when things are parsed
     void cubeConfigReady();
@@ -130,7 +130,7 @@ signals:
     void wallThermostatDataUpdated();
     void radiatorThermostatDataUpdated();
 
-    void commandActionFinished(const bool &succeeded, const ActionId &actionId);
+    void commandActionFinished(bool succeeded, const ActionId &actionId);
 
 private slots:
     void connectionStateChanged(const QAbstractSocket::SocketState &socketState);

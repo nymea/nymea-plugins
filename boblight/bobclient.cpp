@@ -84,7 +84,8 @@ void BobClient::setPriority(int priority)
 {
     m_priority = priority;
     if (connected()) {
-        qCDebug(dcBoblight) << "setting priority to" << priority << boblight_setpriority(m_boblight, priority);
+        qCDebug(dcBoblight) << "setting priority to" << priority;
+        boblight_setpriority(m_boblight, priority);
     }
     emit priorityChanged(priority);
 }

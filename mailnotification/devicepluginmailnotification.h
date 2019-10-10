@@ -37,16 +37,14 @@ public:
     explicit DevicePluginMailNotification();
     ~DevicePluginMailNotification();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
     void deviceRemoved(Device *device) override;
 
 private:
     QHash <SmtpClient*, Device*> m_clients;
-
-private slots:
-    void testLoginFinished(const bool &success);
-    void sendMailFinished(const bool &success, const ActionId &actionId);
 
 };
 

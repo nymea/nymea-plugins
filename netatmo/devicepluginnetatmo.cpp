@@ -44,8 +44,10 @@ void DevicePluginNetatmo::init()
 
 }
 
-Device::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
+void DevicePluginNetatmo::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     if (device->deviceClassId() == netatmoConnectionDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo connection" << device->name() << device->params();
 
@@ -59,13 +61,30 @@ Device::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
         authentication->setUsername(device->paramValue(netatmoConnectionDeviceUsernameParamTypeId).toString());
         authentication->setPassword(device->paramValue(netatmoConnectionDevicePasswordParamTypeId).toString());
         authentication->setScope("read_station read_thermostat write_thermostat");
-
         m_authentications.insert(authentication, device);
-        m_asyncSetups.append(device);
-        connect(authentication, &OAuth2::authenticationChanged, this, &DevicePluginNetatmo::onAuthenticationChanged);
+
+        // Update device connected state based on OAuth connected state
+        connect(authentication, &OAuth2::authenticationChanged, device, [this, device, authentication](){
+            device->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
+            if (authentication->authenticated()) {
+                refreshData(device, authentication->token());
+            }
+        });
 
         authentication->startAuthentication();
-        return Device::DeviceSetupStatusAsync;
+
+        // Report device setup finished when authentication reports success
+        connect(authentication, &OAuth2::authenticationChanged, info, [info, authentication](){
+            if (!authentication->authenticated()) {
+                authentication->deleteLater();
+                info->finish(Device::DeviceErrorAuthenticationFailure, QT_TR_NOOP("Error logging in to Netatmo server."));
+                return;
+            }
+
+            info->finish(Device::DeviceErrorNoError);
+        });
+
+        return;
 
     } else if (device->deviceClassId() == indoorDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo indoor base station" << device->params();
@@ -76,7 +95,7 @@ Device::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
         m_indoorDevices.insert(indoor, device);
         connect(indoor, SIGNAL(statesChanged()), this, SLOT(onIndoorStatesChanged()));
 
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     } else if (device->deviceClassId() == outdoorDeviceClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo outdoor module" << device->params();
 
@@ -112,9 +131,10 @@ Device::DeviceSetupStatus DevicePluginNetatmo::setupDevice(Device *device)
         m_outdoorDevices.insert(outdoor, device);
         connect(outdoor, SIGNAL(statesChanged()), this, SLOT(onOutdoorStatesChanged()));
 
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
-    return Device::DeviceSetupStatusFailure;
+
+    qCWarning(dcNetatmo()) << "Unhandled device class in setupDevice";
 }
 
 void DevicePluginNetatmo::deviceRemoved(Device *device)
@@ -154,14 +174,6 @@ void DevicePluginNetatmo::postSetupDevice(Device *device)
     }
 }
 
-Device::DeviceError DevicePluginNetatmo::executeAction(Device *device, const Action &action)
-{
-    Q_UNUSED(device)
-    Q_UNUSED(action)
-
-    return Device::DeviceErrorNoError;
-}
-
 void DevicePluginNetatmo::refreshData(Device *device, const QString &token)
 {
     QUrlQuery query;
@@ -197,7 +209,7 @@ void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, Device *co
                         params.append(Param(indoorDeviceMacParamTypeId, deviceMap.value("_id").toString()));
                         descriptor.setParams(params);
                         m_indoorStationInitData.insert(deviceMap.value("_id").toString(), deviceMap);
-                        emit autoDevicesAppeared(indoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
+                        emit autoDevicesAppeared({descriptor});
                     } else {
                         if (m_indoorDevices.values().contains(indoorDevice)) {
                             m_indoorDevices.key(indoorDevice)->updateStates(deviceMap);
@@ -223,7 +235,7 @@ void DevicePluginNetatmo::processRefreshData(const QVariantMap &data, Device *co
                                 params.append(Param(outdoorDeviceBaseStationParamTypeId, deviceMap.value("_id").toString()));
                                 descriptor.setParams(params);
                                 m_outdoorStationInitData.insert(moduleMap.value("_id").toString(), moduleMap);
-                                emit autoDevicesAppeared(outdoorDeviceClassId, QList<DeviceDescriptor>() << descriptor);
+                                emit autoDevicesAppeared({descriptor});
                             } else {
                                 if (m_outdoorDevices.values().contains(outdoorDevice)) {
                                     m_outdoorDevices.key(outdoorDevice)->updateStates(moduleMap);
@@ -304,25 +316,7 @@ void DevicePluginNetatmo::onNetworkReplyFinished()
 
 void DevicePluginNetatmo::onAuthenticationChanged()
 {
-    OAuth2 *authentication = static_cast<OAuth2 *>(sender());
-    Device *device = m_authentications.value(authentication);
-    if (!device)
-        return;
 
-    // Set the available state
-    device->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
-
-    // check if this is was a setup athentication
-    if (m_asyncSetups.contains(device)) {
-        m_asyncSetups.removeAll(device);
-        if (authentication->authenticated()) {
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
-            refreshData(device, authentication->token());
-        } else {
-            authentication->deleteLater();
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
-        }
-    }
 }
 
 void DevicePluginNetatmo::onIndoorStatesChanged()

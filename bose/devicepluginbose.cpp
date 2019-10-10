@@ -42,18 +42,14 @@ void DevicePluginBose::init()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginBose::setupDevice(Device *device)
+void DevicePluginBose::setupDevice(DeviceSetupInfo *info)
 {
-    if (!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
-        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginBose::onPluginTimer);
-    }
 
-    if (device->deviceClassId() == soundtouchDeviceClassId) {
+    if (info->device()->deviceClassId() == soundtouchDeviceClassId) {
 
-        connect(device, &Device::nameChanged, this, &DevicePluginBose::onDeviceNameChanged);
+        connect(info->device(), &Device::nameChanged, this, &DevicePluginBose::onDeviceNameChanged);
 
-        QString ipAddress = device->paramValue(soundtouchDeviceIpParamTypeId).toString();
+        QString ipAddress = info->device()->paramValue(soundtouchDeviceIpParamTypeId).toString();
         SoundTouch *soundTouch = new SoundTouch(hardwareManager()->networkManager(), ipAddress, this);
         connect(soundTouch, &SoundTouch::connectionChanged, this, &DevicePluginBose::onConnectionChanged);
 
@@ -73,11 +69,22 @@ Device::DeviceSetupStatus DevicePluginBose::setupDevice(Device *device)
         soundTouch->getBassCapabilities();
         soundTouch->getZone();
 
-        m_soundTouch.insert(device, soundTouch);
+        m_soundTouch.insert(info->device(), soundTouch);
 
-        return Device::DeviceSetupStatusSuccess;
+        info->finish(Device::DeviceErrorNoError);
+        return;
     }
-    return Device::DeviceSetupStatusFailure;
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
+}
+
+void DevicePluginBose::postSetupDevice(Device *device)
+{
+    Q_UNUSED(device)
+
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginBose::onPluginTimer);
+    }
 }
 
 void DevicePluginBose::deviceRemoved(Device *device)
@@ -92,14 +99,11 @@ void DevicePluginBose::deviceRemoved(Device *device)
     }
 }
 
-Device::DeviceError DevicePluginBose::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginBose::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params)
-    Q_UNUSED(deviceClassId)
-
     ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_soundtouch._tcp");
-    QTimer::singleShot(5000, this, [this, serviceBrowser](){
-        QList<DeviceDescriptor> descriptors;
+
+    QTimer::singleShot(5000, info, [this, serviceBrowser, info](){
         foreach (const ZeroConfServiceEntry avahiEntry, serviceBrowser->serviceEntries()) {
             qCDebug(dcBose) << "Zeroconf entry:" << avahiEntry;
 
@@ -116,48 +120,56 @@ Device::DeviceError DevicePluginBose::discoverDevices(const DeviceClassId &devic
             params << Param(soundtouchDeviceIpParamTypeId, avahiEntry.hostAddress().toString());
             params << Param(soundtouchDevicePlayerIdParamTypeId, playerId);
             descriptor.setParams(params);
-            descriptors << descriptor;
+            info->addDeviceDescriptor(descriptor);
         }
-        emit devicesDiscovered(soundtouchDeviceClassId, descriptors);
         serviceBrowser->deleteLater();
+        info->finish(Device::DeviceErrorNoError);
     });
-
-    return Device::DeviceErrorAsync;
 }
 
-Device::DeviceError DevicePluginBose::executeAction(Device *device, const Action &action)
+void DevicePluginBose::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     if (device->deviceClassId() == soundtouchDeviceClassId) {
         SoundTouch *soundTouch = m_soundTouch.value(device);
 
         if (action.actionTypeId() == soundtouchPowerActionTypeId) {
             //bool power = action.param(soundtouchPowerActionPowerParamTypeId).value().toBool();
             soundTouch->setKey(KEY_VALUE::KEY_VALUE_POWER); //only toggling possible
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
         if (action.actionTypeId() == soundtouchMuteActionTypeId) {
             soundTouch->setKey(KEY_VALUE::KEY_VALUE_MUTE);
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
         if (action.actionTypeId() == soundtouchPlayActionTypeId) {
             soundTouch->setKey(KEY_VALUE::KEY_VALUE_PLAY);
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
         if (action.actionTypeId() == soundtouchPauseActionTypeId) {
             soundTouch->setKey(KEY_VALUE::KEY_VALUE_PAUSE);
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
         if (action.actionTypeId() == soundtouchStopActionTypeId) {
             soundTouch->setKey(KEY_VALUE::KEY_VALUE_STOP);
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
         if (action.actionTypeId() == soundtouchSkipNextActionTypeId) {
             soundTouch->setKey(KEY_VALUE::KEY_VALUE_NEXT_TRACK);
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
         if (action.actionTypeId() == soundtouchSkipBackActionTypeId) {
             soundTouch->setKey(KEY_VALUE::KEY_VALUE_PREV_TRACK);
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
 
         if (action.actionTypeId() == soundtouchShuffleActionTypeId) {
@@ -168,7 +180,8 @@ Device::DeviceError DevicePluginBose::executeAction(Device *device, const Action
             } else {
                 soundTouch->setKey(KEY_VALUE::KEY_VALUE_SHUFFLE_OFF);
             }
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
 
         if (action.actionTypeId() == soundtouchRepeatActionTypeId) {
@@ -181,19 +194,22 @@ Device::DeviceError DevicePluginBose::executeAction(Device *device, const Action
             } else if (repeat == "All") {
                 soundTouch->setKey(KEY_VALUE::KEY_VALUE_REPEAT_ALL);
             }
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
 
         if (action.actionTypeId() == soundtouchVolumeActionTypeId) {
             int volume = action.param(soundtouchVolumeActionVolumeParamTypeId).value().toInt();
             soundTouch->setVolume(volume);
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
 
         if (action.actionTypeId() == soundtouchBassActionTypeId) {
             int bass = action.param(soundtouchBassActionBassParamTypeId).value().toInt();
             soundTouch->setBass(bass);
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
 
         if (action.actionTypeId() == soundtouchPlaybackStatusActionTypeId) {
@@ -205,12 +221,14 @@ Device::DeviceError DevicePluginBose::executeAction(Device *device, const Action
             } else if (status == "Stopped") {
                 soundTouch->setKey(KEY_VALUE::KEY_VALUE_STOP);
             }
-            return Device::DeviceErrorNoError;
+            info->finish(Device::DeviceErrorNoError);
+            return;
         }
 
-        return Device::DeviceErrorActionTypeNotFound;
+        info->finish(Device::DeviceErrorActionTypeNotFound);
+        return;
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginBose::onPluginTimer()

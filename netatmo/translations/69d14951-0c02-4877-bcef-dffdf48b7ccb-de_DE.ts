@@ -2,254 +2,316 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
+    <name>DevicePluginNetatmo</name>
+    <message>
+        <location filename="../devicepluginnetatmo.cpp" line="80"/>
+        <source>Error logging in to Netatmo server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Netatmo</name>
     <message>
-        <location filename="../plugininfo.h" line="90"/>
-        <location filename="../plugininfo.h" line="93"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="89"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="92"/>
         <source>Netatmo</source>
-        <extracomment>The name of the plugin Netatmo (69d14951-0c02-4877-bcef-dffdf48b7ccb)
+        <extracomment>The name of the vendor ({4b46b4ed-5ec9-4aa4-afc3-92d3f80e6351})
 ----------
-The name of the vendor (4b46b4ed-5ec9-4aa4-afc3-92d3f80e6351)</extracomment>
+The name of the plugin Netatmo ({69d14951-0c02-4877-bcef-dffdf48b7ccb})</extracomment>
         <translation>Netatmo</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="96"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="95"/>
         <source>Netatmo Connection</source>
-        <extracomment>The name of the DeviceClass (728d5a67-27a3-400e-b83c-2765f5196f69)</extracomment>
+        <extracomment>The name of the DeviceClass ({728d5a67-27a3-400e-b83c-2765f5196f69})</extracomment>
         <translation>Netatmo Verbindung</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="114"/>
-        <location filename="../plugininfo.h" line="177"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="182"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="185"/>
         <source>name</source>
-        <extracomment>The name of the ParamType (DeviceClass: indoor, Type: device, ID: a97d256c-e159-4aa0-bc71-6bd7cd0688b3)
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, Type: device, ID: {719e1f92-a9c8-42d6-83e1-652a0f182209})
 ----------
-The name of the ParamType (DeviceClass: outdoor, Type: device, ID: a97d256c-e159-4aa0-bc71-6bd7cd0688b3)</extracomment>
+The name of the ParamType (DeviceClass: indoor, Type: device, ID: {a97d256c-e159-4aa0-bc71-6bd7cd0688b3})</extracomment>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="99"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="272"/>
         <source>username</source>
-        <extracomment>The name of the ParamType (DeviceClass: netatmoConnection, Type: device, ID: 763c2c10-dee5-41c8-9f7e-ded741945e73)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: netatmoConnection, Type: device, ID: {763c2c10-dee5-41c8-9f7e-ded741945e73})</extracomment>
         <translation>Benutzername</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="102"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="197"/>
         <source>password</source>
-        <extracomment>The name of the ParamType (DeviceClass: netatmoConnection, Type: device, ID: c0d892d6-f359-4782-9d7d-8f74a3b53e3e)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: netatmoConnection, Type: device, ID: {c0d892d6-f359-4782-9d7d-8f74a3b53e3e})</extracomment>
         <translation>Passwort</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="105"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="107"/>
         <source>available changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: netatmoConnection, StateType: connected, ID: 2f79bc1d-27ed-480a-b583-728363c83ea6)</extracomment>
+        <extracomment>The name of the EventType ({2f79bc1d-27ed-480a-b583-728363c83ea6}) of DeviceClass netatmoConnection</extracomment>
         <translation>Verfügbarkeit geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="108"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="101"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="104"/>
         <source>available</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: netatmoConnection, StateType: connected, ID: 2f79bc1d-27ed-480a-b583-728363c83ea6</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: netatmoConnection, EventType: connected, ID: {2f79bc1d-27ed-480a-b583-728363c83ea6})
+----------
+The name of the StateType ({2f79bc1d-27ed-480a-b583-728363c83ea6}) of DeviceClass netatmoConnection</extracomment>
         <translation>Verfügbar</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="111"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="86"/>
         <source>Indoor Station</source>
-        <extracomment>The name of the DeviceClass (1c809049-04f2-4710-99f5-6ed379a2934f)</extracomment>
+        <extracomment>The name of the DeviceClass ({1c809049-04f2-4710-99f5-6ed379a2934f})</extracomment>
         <translation>Innenstation</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="117"/>
-        <location filename="../plugininfo.h" line="180"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="176"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="179"/>
         <source>mac address</source>
-        <extracomment>The name of the ParamType (DeviceClass: indoor, Type: device, ID: 157d470a-e579-4d0e-b879-6b5bfa8e34ae)
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, Type: device, ID: {73a76c5c-84f5-4e65-8541-457e5aca9bb0})
 ----------
-The name of the ParamType (DeviceClass: outdoor, Type: device, ID: 157d470a-e579-4d0e-b879-6b5bfa8e34ae)</extracomment>
+The name of the ParamType (DeviceClass: indoor, Type: device, ID: {157d470a-e579-4d0e-b879-6b5bfa8e34ae})</extracomment>
         <translation>MAC Adresse</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="120"/>
-        <location filename="../plugininfo.h" line="186"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="170"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="173"/>
         <source>last update changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: updateTime, ID: 50da9f6b-c350-401c-a72e-2e4036f3975d)
+        <extracomment>The name of the EventType ({154aad5c-4998-43c2-b9ee-0b997eb6dd69}) of DeviceClass outdoor
 ----------
-The name of the autocreated EventType (DeviceClass: outdoor, StateType: updateTime, ID: 50da9f6b-c350-401c-a72e-2e4036f3975d)</extracomment>
+The name of the EventType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of DeviceClass indoor</extracomment>
         <translation>Letztes Update geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="123"/>
-        <location filename="../plugininfo.h" line="189"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="158"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="161"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="164"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="167"/>
         <source>last update</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: updateTime, ID: 50da9f6b-c350-401c-a72e-2e4036f3975d
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, EventType: updateTime, ID: {154aad5c-4998-43c2-b9ee-0b997eb6dd69})
 ----------
-The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: updateTime, ID: 50da9f6b-c350-401c-a72e-2e4036f3975d</extracomment>
+The name of the StateType ({154aad5c-4998-43c2-b9ee-0b997eb6dd69}) of DeviceClass outdoor
+----------
+The name of the ParamType (DeviceClass: indoor, EventType: updateTime, ID: {50da9f6b-c350-401c-a72e-2e4036f3975d})
+----------
+The name of the StateType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of DeviceClass indoor</extracomment>
         <translation>Letztes Update</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="126"/>
-        <location filename="../plugininfo.h" line="192"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="230"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="233"/>
         <source>temperature changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: temperature, ID: 3cb25538-e463-40ae-92f9-8f34f0c06b92)
+        <extracomment>The name of the EventType ({f98776bd-887e-4b01-a87f-3d8224180563}) of DeviceClass outdoor
 ----------
-The name of the autocreated EventType (DeviceClass: outdoor, StateType: temperature, ID: 3cb25538-e463-40ae-92f9-8f34f0c06b92)</extracomment>
+The name of the EventType ({3cb25538-e463-40ae-92f9-8f34f0c06b92}) of DeviceClass indoor</extracomment>
         <translation>Temperatur geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="129"/>
-        <location filename="../plugininfo.h" line="195"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="218"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="221"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="224"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="227"/>
         <source>temperature</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: temperature, ID: 3cb25538-e463-40ae-92f9-8f34f0c06b92
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, EventType: temperature, ID: {f98776bd-887e-4b01-a87f-3d8224180563})
 ----------
-The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: temperature, ID: 3cb25538-e463-40ae-92f9-8f34f0c06b92</extracomment>
+The name of the StateType ({f98776bd-887e-4b01-a87f-3d8224180563}) of DeviceClass outdoor
+----------
+The name of the ParamType (DeviceClass: indoor, EventType: temperature, ID: {3cb25538-e463-40ae-92f9-8f34f0c06b92})
+----------
+The name of the StateType ({3cb25538-e463-40ae-92f9-8f34f0c06b92}) of DeviceClass indoor</extracomment>
         <translation>Temperatur</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="132"/>
-        <location filename="../plugininfo.h" line="198"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="266"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="269"/>
         <source>temperature minimum changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: temperatureMin, ID: ae8bb713-8805-4efd-89a1-bca44a1f1690)
+        <extracomment>The name of the EventType ({b71e0c8b-3c94-421e-830e-dab97b6c104e}) of DeviceClass outdoor
 ----------
-The name of the autocreated EventType (DeviceClass: outdoor, StateType: temperatureMin, ID: ae8bb713-8805-4efd-89a1-bca44a1f1690)</extracomment>
+The name of the EventType ({ae8bb713-8805-4efd-89a1-bca44a1f1690}) of DeviceClass indoor</extracomment>
         <translation>Temperatur Minimum geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="135"/>
-        <location filename="../plugininfo.h" line="201"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="254"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="257"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="260"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="263"/>
         <source>temperature minimum</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: temperatureMin, ID: ae8bb713-8805-4efd-89a1-bca44a1f1690
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, EventType: temperatureMin, ID: {b71e0c8b-3c94-421e-830e-dab97b6c104e})
 ----------
-The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: temperatureMin, ID: ae8bb713-8805-4efd-89a1-bca44a1f1690</extracomment>
+The name of the StateType ({b71e0c8b-3c94-421e-830e-dab97b6c104e}) of DeviceClass outdoor
+----------
+The name of the ParamType (DeviceClass: indoor, EventType: temperatureMin, ID: {ae8bb713-8805-4efd-89a1-bca44a1f1690})
+----------
+The name of the StateType ({ae8bb713-8805-4efd-89a1-bca44a1f1690}) of DeviceClass indoor</extracomment>
         <translation>Temperatur Minimum</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="138"/>
-        <location filename="../plugininfo.h" line="204"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="248"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="251"/>
         <source>temperature maximum changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: temperatureMax, ID: dd30507e-037b-4c74-bcca-e04b94c7c5fe)
+        <extracomment>The name of the EventType ({aae071dc-70d5-4a6a-8daa-3dca0d150bd7}) of DeviceClass outdoor
 ----------
-The name of the autocreated EventType (DeviceClass: outdoor, StateType: temperatureMax, ID: dd30507e-037b-4c74-bcca-e04b94c7c5fe)</extracomment>
+The name of the EventType ({dd30507e-037b-4c74-bcca-e04b94c7c5fe}) of DeviceClass indoor</extracomment>
         <translation>Temperatur Maximum geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="141"/>
-        <location filename="../plugininfo.h" line="207"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="236"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="239"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="242"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="245"/>
         <source>temperature maximum</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: temperatureMax, ID: dd30507e-037b-4c74-bcca-e04b94c7c5fe
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, EventType: temperatureMax, ID: {aae071dc-70d5-4a6a-8daa-3dca0d150bd7})
 ----------
-The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: temperatureMax, ID: dd30507e-037b-4c74-bcca-e04b94c7c5fe</extracomment>
+The name of the StateType ({aae071dc-70d5-4a6a-8daa-3dca0d150bd7}) of DeviceClass outdoor
+----------
+The name of the ParamType (DeviceClass: indoor, EventType: temperatureMax, ID: {dd30507e-037b-4c74-bcca-e04b94c7c5fe})
+----------
+The name of the StateType ({dd30507e-037b-4c74-bcca-e04b94c7c5fe}) of DeviceClass indoor</extracomment>
         <translation>Temperatur Maximum</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="171"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="275"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="278"/>
         <source>wifi signal strength</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: wifiStrength, ID: 6ea906d4-5740-454d-a730-6fdb9fa0d624</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: indoor, EventType: wifiStrength, ID: {6ea906d4-5740-454d-a730-6fdb9fa0d624})
+----------
+The name of the StateType ({6ea906d4-5740-454d-a730-6fdb9fa0d624}) of DeviceClass indoor</extracomment>
         <translation>Wi-Fi Signalstärke</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="228"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="128"/>
         <source>battery critical changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: outdoor, StateType: batteryCritical, ID: f8aeb144-014d-4ccb-81db-64ffc70f1c97)</extracomment>
+        <extracomment>The name of the EventType ({f8aeb144-014d-4ccb-81db-64ffc70f1c97}) of DeviceClass outdoor</extracomment>
         <translation>Batterie kritisch geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="231"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="122"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="125"/>
         <source>battery critical</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: batteryCritical, ID: f8aeb144-014d-4ccb-81db-64ffc70f1c97</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, EventType: batteryCritical, ID: {f8aeb144-014d-4ccb-81db-64ffc70f1c97})
+----------
+The name of the StateType ({f8aeb144-014d-4ccb-81db-64ffc70f1c97}) of DeviceClass outdoor</extracomment>
         <translation>Batterie kritisch</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="144"/>
-        <location filename="../plugininfo.h" line="210"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="152"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="155"/>
         <source>humidity changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: humidity, ID: e2db5f01-196a-48d1-8874-6b8cbfe0d8c9)
+        <extracomment>The name of the EventType ({7ba6ddeb-5142-4b87-9729-487fcda394df}) of DeviceClass outdoor
 ----------
-The name of the autocreated EventType (DeviceClass: outdoor, StateType: humidity, ID: e2db5f01-196a-48d1-8874-6b8cbfe0d8c9)</extracomment>
+The name of the EventType ({e2db5f01-196a-48d1-8874-6b8cbfe0d8c9}) of DeviceClass indoor</extracomment>
         <translation>Luftfeuchtigkeit geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="147"/>
-        <location filename="../plugininfo.h" line="213"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="140"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="143"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="146"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="149"/>
         <source>humidity</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: humidity, ID: e2db5f01-196a-48d1-8874-6b8cbfe0d8c9
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, EventType: humidity, ID: {7ba6ddeb-5142-4b87-9729-487fcda394df})
 ----------
-The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: humidity, ID: e2db5f01-196a-48d1-8874-6b8cbfe0d8c9</extracomment>
+The name of the StateType ({7ba6ddeb-5142-4b87-9729-487fcda394df}) of DeviceClass outdoor
+----------
+The name of the ParamType (DeviceClass: indoor, EventType: humidity, ID: {e2db5f01-196a-48d1-8874-6b8cbfe0d8c9})
+----------
+The name of the StateType ({e2db5f01-196a-48d1-8874-6b8cbfe0d8c9}) of DeviceClass indoor</extracomment>
         <translation>Luftfeuchtigkeit</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="150"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="206"/>
         <source>pressure changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: pressure, ID: 03b0a7b7-987d-4d3b-b3f0-21d9f92ad326)</extracomment>
+        <extracomment>The name of the EventType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of DeviceClass indoor</extracomment>
         <translation>Luftdruck geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="153"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="200"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="203"/>
         <source>pressure</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: pressure, ID: 03b0a7b7-987d-4d3b-b3f0-21d9f92ad326</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: indoor, EventType: pressure, ID: {03b0a7b7-987d-4d3b-b3f0-21d9f92ad326})
+----------
+The name of the StateType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of DeviceClass indoor</extracomment>
         <translation>Luftdruck</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="156"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="194"/>
         <source>noise changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: noise, ID: 906cea9d-1daf-4e9c-90b9-e40f43052a34)</extracomment>
+        <extracomment>The name of the EventType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of DeviceClass indoor</extracomment>
         <translation>Geräuschpegel geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="159"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="188"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="191"/>
         <source>noise</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: noise, ID: 906cea9d-1daf-4e9c-90b9-e40f43052a34</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: indoor, EventType: noise, ID: {906cea9d-1daf-4e9c-90b9-e40f43052a34})
+----------
+The name of the StateType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of DeviceClass indoor</extracomment>
         <translation>Geräuschpegel</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="162"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="137"/>
         <source>co2 changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: co2, ID: e5710bd1-79fa-4bd4-9052-8416aae909b9)</extracomment>
+        <extracomment>The name of the EventType ({e5710bd1-79fa-4bd4-9052-8416aae909b9}) of DeviceClass indoor</extracomment>
         <translation>CO2 Wert geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="165"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="131"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="134"/>
         <source>co2</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: indoor, StateType: co2, ID: e5710bd1-79fa-4bd4-9052-8416aae909b9</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: indoor, EventType: co2, ID: {e5710bd1-79fa-4bd4-9052-8416aae909b9})
+----------
+The name of the StateType ({e5710bd1-79fa-4bd4-9052-8416aae909b9}) of DeviceClass indoor</extracomment>
         <translation>CO2 Wert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="168"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="281"/>
         <source>wifi signal strength changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: indoor, StateType: wifiStrength, ID: 6ea906d4-5740-454d-a730-6fdb9fa0d624)</extracomment>
+        <extracomment>The name of the EventType ({6ea906d4-5740-454d-a730-6fdb9fa0d624}) of DeviceClass indoor</extracomment>
         <translation>Wifi Signalstärke geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="174"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="98"/>
         <source>Outdoor Station</source>
-        <extracomment>The name of the DeviceClass (6cc01d62-7317-4ec4-8ac4-a4cab762c179)</extracomment>
+        <extracomment>The name of the DeviceClass ({6cc01d62-7317-4ec4-8ac4-a4cab762c179})</extracomment>
         <translation>Außenstation</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="183"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="110"/>
         <source>base station</source>
-        <extracomment>The name of the ParamType (DeviceClass: outdoor, Type: device, ID: d7a0ec46-760c-4fdc-9753-fe10c86fe1b9)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, Type: device, ID: {d7a0ec46-760c-4fdc-9753-fe10c86fe1b9})</extracomment>
         <translation>Basisstation</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="216"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="215"/>
         <source>signal strength changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: outdoor, StateType: signalStrength, ID: 0faa3d08-9004-46fb-a5aa-a59b75e454cc)</extracomment>
+        <extracomment>The name of the EventType ({0faa3d08-9004-46fb-a5aa-a59b75e454cc}) of DeviceClass outdoor</extracomment>
         <translation>Signalstärke geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="219"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="209"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="212"/>
         <source>signal strength</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: signalStrength, ID: 0faa3d08-9004-46fb-a5aa-a59b75e454cc</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, EventType: signalStrength, ID: {0faa3d08-9004-46fb-a5aa-a59b75e454cc})
+----------
+The name of the StateType ({0faa3d08-9004-46fb-a5aa-a59b75e454cc}) of DeviceClass outdoor</extracomment>
         <translation>Signalstärke</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="222"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="119"/>
         <source>battery changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: outdoor, StateType: batteryLevel, ID: 15d8fae1-ba47-42e1-994d-530e8017c965)</extracomment>
+        <extracomment>The name of the EventType ({15d8fae1-ba47-42e1-994d-530e8017c965}) of DeviceClass outdoor</extracomment>
         <translation>Batteriestatus geändert</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="225"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="113"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="116"/>
         <source>battery</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: outdoor, StateType: batteryLevel, ID: 15d8fae1-ba47-42e1-994d-530e8017c965</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: outdoor, EventType: batteryLevel, ID: {15d8fae1-ba47-42e1-994d-530e8017c965})
+----------
+The name of the StateType ({15d8fae1-ba47-42e1-994d-530e8017c965}) of DeviceClass outdoor</extracomment>
         <translation>Batterie</translation>
     </message>
 </context>

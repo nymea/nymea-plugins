@@ -35,20 +35,18 @@ class DevicePluginTcpCommander : public DevicePlugin
 public:
     explicit DevicePluginTcpCommander();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
 
     void deviceRemoved(Device *device) override;
 
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     QHash<TcpSocket *, Device *> m_tcpSockets;
     QHash<TcpServer *, Device *> m_tcpServer;
-    QHash<ActionId, DeviceId> m_pendingActions;
 
 private slots:
     void onTcpSocketConnectionChanged(bool connected);
-    void onTcpSocketCommandSent(bool successfulle);
 
     void onTcpServerConnectionChanged(bool connected);
     void onTcpServerCommandReceived(QByteArray message);

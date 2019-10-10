@@ -2,326 +2,449 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>DevicePluginKodi</name>
+    <message>
+        <location filename="../devicepluginkodi.cpp" line="406"/>
+        <source>This installation of Kodi is too old. Please upgrade your Kodi system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../devicepluginkodi.cpp" line="425"/>
+        <source>Connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Kodi</name>
     <message>
-        <location filename="../plugininfo.h" line="93"/>
-        <location filename="../plugininfo.h" line="96"/>
-        <location filename="../plugininfo.h" line="99"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="135"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="138"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="141"/>
         <source>Kodi</source>
-        <extracomment>The name of the plugin Kodi (e7186890-99fa-4c5b-8247-09c6d450d490)
+        <extracomment>The name of the DeviceClass ({d09953e3-c5bd-415b-973b-0d0bf2be3f69})
 ----------
-The name of the vendor (447bf3d6-a86e-4636-9db0-8936c0e4d9e9)
+The name of the vendor ({447bf3d6-a86e-4636-9db0-8936c0e4d9e9})
 ----------
-The name of the DeviceClass (d09953e3-c5bd-415b-973b-0d0bf2be3f69)</extracomment>
+The name of the plugin Kodi ({e7186890-99fa-4c5b-8247-09c6d450d490})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="102"/>
-        <source>ip</source>
-        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: 1a897065-57c6-49b3-bac9-1e5db27859e5)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="105"/>
-        <source>port</source>
-        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: 660fb4d7-9479-4c9d-a900-ce221d2b8ae4)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="108"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="210"/>
         <source>connected changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: connected, ID: 09dfbd40-c97c-4a20-9ecd-f80e389a4864)</extracomment>
+        <extracomment>The name of the EventType ({09dfbd40-c97c-4a20-9ecd-f80e389a4864}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="111"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="204"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="207"/>
         <source>connected</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: connected, ID: 09dfbd40-c97c-4a20-9ecd-f80e389a4864</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, EventType: connected, ID: {09dfbd40-c97c-4a20-9ecd-f80e389a4864})
+----------
+The name of the StateType ({09dfbd40-c97c-4a20-9ecd-f80e389a4864}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="114"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="228"/>
         <source>mute changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: mute, ID: bc98cdb0-4d0e-48ca-afc7-922e49bb7813)</extracomment>
+        <extracomment>The name of the EventType ({bc98cdb0-4d0e-48ca-afc7-922e49bb7813}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="117"/>
-        <location filename="../plugininfo.h" line="123"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="219"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="222"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="225"/>
         <source>mute</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: mute, ID: bc98cdb0-4d0e-48ca-afc7-922e49bb7813
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: mute, ID: {bc98cdb0-4d0e-48ca-afc7-922e49bb7813})
 ----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: mute, ID: bc98cdb0-4d0e-48ca-afc7-922e49bb7813)</extracomment>
+The name of the ParamType (DeviceClass: kodi, EventType: mute, ID: {bc98cdb0-4d0e-48ca-afc7-922e49bb7813})
+----------
+The name of the StateType ({bc98cdb0-4d0e-48ca-afc7-922e49bb7813}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="120"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="162"/>
         <source>Set mute</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: mute, ID: bc98cdb0-4d0e-48ca-afc7-922e49bb7813)</extracomment>
+        <extracomment>The name of the ActionType ({bc98cdb0-4d0e-48ca-afc7-922e49bb7813}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="126"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="279"/>
+        <source>title</source>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: notify, ID: {798f720a-cc4f-40e7-91d7-2ef5957ca7ad})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="282"/>
+        <source>to</source>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: navigate, ID: {93861dac-0c24-4a3b-903d-d1be44eae611})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="297"/>
         <source>volume changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: volume, ID: 9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9)</extracomment>
+        <extracomment>The name of the EventType ({9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="129"/>
-        <location filename="../plugininfo.h" line="135"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="288"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="291"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="294"/>
         <source>volume</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: volume, ID: 9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: volume, ID: {9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9})
 ----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: volume, ID: 9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9)</extracomment>
+The name of the ParamType (DeviceClass: kodi, EventType: volume, ID: {9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9})
+----------
+The name of the StateType ({9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="132"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="171"/>
         <source>Set volume</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: volume, ID: 9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9)</extracomment>
+        <extracomment>The name of the ActionType ({9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="138"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="246"/>
         <source>playback status changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: playbackStatus, ID: 2dd512b7-40c2-488e-8d4f-6519edaa6f74)</extracomment>
+        <extracomment>The name of the EventType ({2dd512b7-40c2-488e-8d4f-6519edaa6f74}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="141"/>
-        <location filename="../plugininfo.h" line="147"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="237"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="240"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="243"/>
         <source>playback status</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: playbackStatus, ID: 2dd512b7-40c2-488e-8d4f-6519edaa6f74
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: playbackStatus, ID: {2dd512b7-40c2-488e-8d4f-6519edaa6f74})
 ----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: playbackStatus, ID: 2dd512b7-40c2-488e-8d4f-6519edaa6f74)</extracomment>
+The name of the ParamType (DeviceClass: kodi, EventType: playbackStatus, ID: {2dd512b7-40c2-488e-8d4f-6519edaa6f74})
+----------
+The name of the StateType ({2dd512b7-40c2-488e-8d4f-6519edaa6f74}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="144"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="261"/>
         <source>set playback status</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: playbackStatus, ID: 2dd512b7-40c2-488e-8d4f-6519edaa6f74)</extracomment>
+        <extracomment>The name of the ActionType ({2dd512b7-40c2-488e-8d4f-6519edaa6f74}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="150"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="90"/>
         <source>Active player changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: playerType, ID: 0af58b87-4e45-4f0a-9ef2-0ade74c7c22c)</extracomment>
+        <extracomment>The name of the EventType ({0af58b87-4e45-4f0a-9ef2-0ade74c7c22c}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="153"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="93"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="96"/>
         <source>Active player type</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: playerType, ID: 0af58b87-4e45-4f0a-9ef2-0ade74c7c22c</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, EventType: playerType, ID: {0af58b87-4e45-4f0a-9ef2-0ade74c7c22c})
+----------
+The name of the StateType ({0af58b87-4e45-4f0a-9ef2-0ade74c7c22c}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="156"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="192"/>
         <source>Title changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: title, ID: f2209fec-cceb-46ad-8189-4caf42166e6b)</extracomment>
+        <extracomment>The name of the EventType ({f2209fec-cceb-46ad-8189-4caf42166e6b}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="159"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="186"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="189"/>
         <source>Title</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: title, ID: f2209fec-cceb-46ad-8189-4caf42166e6b</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, EventType: title, ID: {f2209fec-cceb-46ad-8189-4caf42166e6b})
+----------
+The name of the StateType ({f2209fec-cceb-46ad-8189-4caf42166e6b}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="162"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="105"/>
         <source>Artist changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: artist, ID: 8cb920a3-3bf1-4231-92d4-8ac27e7b3d65)</extracomment>
+        <extracomment>The name of the EventType ({8cb920a3-3bf1-4231-92d4-8ac27e7b3d65}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="165"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="99"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="102"/>
         <source>Artist</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: artist, ID: 8cb920a3-3bf1-4231-92d4-8ac27e7b3d65</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, EventType: artist, ID: {8cb920a3-3bf1-4231-92d4-8ac27e7b3d65})
+----------
+The name of the StateType ({8cb920a3-3bf1-4231-92d4-8ac27e7b3d65}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="168"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="126"/>
         <source>Collection changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: collection, ID: ce399eec-9f6a-4903-9916-0e90e38b255e)</extracomment>
+        <extracomment>The name of the EventType ({ce399eec-9f6a-4903-9916-0e90e38b255e}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="171"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="120"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="123"/>
         <source>Collection</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: collection, ID: ce399eec-9f6a-4903-9916-0e90e38b255e</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, EventType: collection, ID: {ce399eec-9f6a-4903-9916-0e90e38b255e})
+----------
+The name of the StateType ({ce399eec-9f6a-4903-9916-0e90e38b255e}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="174"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="114"/>
         <source>Artwork changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: artwork, ID: 44304c82-c2f6-433b-b62b-815382617d0b)</extracomment>
+        <extracomment>The name of the EventType ({44304c82-c2f6-433b-b62b-815382617d0b}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="177"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="108"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="111"/>
         <source>Artwork</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: artwork, ID: 44304c82-c2f6-433b-b62b-815382617d0b</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, EventType: artwork, ID: {44304c82-c2f6-433b-b62b-815382617d0b})
+----------
+The name of the StateType ({44304c82-c2f6-433b-b62b-815382617d0b}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="180"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="183"/>
         <source>Shuffle changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: shuffle, ID: 5913aa2a-629d-4de5-bf44-a4a1f130c118)</extracomment>
+        <extracomment>The name of the EventType ({5913aa2a-629d-4de5-bf44-a4a1f130c118}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="183"/>
-        <location filename="../plugininfo.h" line="189"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="174"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="177"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="180"/>
         <source>Shuffle</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: shuffle, ID: 5913aa2a-629d-4de5-bf44-a4a1f130c118
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: shuffle, ID: {5913aa2a-629d-4de5-bf44-a4a1f130c118})
 ----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: shuffle, ID: 5913aa2a-629d-4de5-bf44-a4a1f130c118)</extracomment>
+The name of the ParamType (DeviceClass: kodi, EventType: shuffle, ID: {5913aa2a-629d-4de5-bf44-a4a1f130c118})
+----------
+The name of the StateType ({5913aa2a-629d-4de5-bf44-a4a1f130c118}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="186"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="168"/>
         <source>Set shuffle</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: shuffle, ID: 5913aa2a-629d-4de5-bf44-a4a1f130c118)</extracomment>
+        <extracomment>The name of the ActionType ({5913aa2a-629d-4de5-bf44-a4a1f130c118}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="192"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="159"/>
         <source>Repeat changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: kodi, StateType: repeat, ID: bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e)</extracomment>
+        <extracomment>The name of the EventType ({bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="195"/>
-        <location filename="../plugininfo.h" line="201"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="117"/>
+        <source>Clean library</source>
+        <extracomment>The name of the Browser Item ActionType ({dbc2c455-ae75-493e-9d8b-659e951b55a1}) of DeviceClass kodi</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="129"/>
+        <source>HTTP port</source>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: {27ea7e46-80f0-49ea-9352-b57c78905c67})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="132"/>
+        <source>IP Address</source>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: {1a897065-57c6-49b3-bac9-1e5db27859e5})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="144"/>
+        <source>Navigate</source>
+        <extracomment>The name of the ActionType ({28060803-aa85-44a4-9dec-ee669dfb629f}) of DeviceClass kodi</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="147"/>
+        <source>Port</source>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: {660fb4d7-9479-4c9d-a900-ce221d2b8ae4})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="150"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="153"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="156"/>
         <source>Repeat</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: kodi, StateType: repeat, ID: bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: repeat, ID: {bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e})
 ----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: kodi, StateType: repeat, ID: bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e)</extracomment>
+The name of the ParamType (DeviceClass: kodi, EventType: repeat, ID: {bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e})
+----------
+The name of the StateType ({bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="198"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="165"/>
         <source>Set repeat</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: kodi, StateType: repeat, ID: bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e)</extracomment>
+        <extracomment>The name of the ActionType ({bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="204"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="195"/>
+        <source>UUID</source>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, Type: device, ID: {692eb6e0-7f4e-4f43-92da-8347372287ce})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="198"/>
+        <source>Update library</source>
+        <extracomment>The name of the Browser Item ActionType ({3fed69c5-dddf-4500-a674-c79015f63974}) of DeviceClass kodi</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="267"/>
         <source>skip back</source>
-        <extracomment>The name of the ActionType a180807d-1265-4831-9d86-a421767418dd of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({a180807d-1265-4831-9d86-a421767418dd}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="207"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="258"/>
         <source>rewind</source>
-        <extracomment>The name of the ActionType 7e70b47b-7e79-4521-be34-04a3c427e5b1 of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({7e70b47b-7e79-4521-be34-04a3c427e5b1}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="210"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="273"/>
         <source>stop</source>
-        <extracomment>The name of the ActionType ae3cbe03-ee3e-410e-abbd-efabc2402198 of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({ae3cbe03-ee3e-410e-abbd-efabc2402198}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="213"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="234"/>
         <source>play</source>
-        <extracomment>The name of the ActionType 4d2ee668-a2e3-4795-8b96-0c800b703b46 of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({4d2ee668-a2e3-4795-8b96-0c800b703b46}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="216"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="231"/>
         <source>pause</source>
-        <extracomment>The name of the ActionType 3cf341cb-fe63-40bc-a450-9678d18e91e3 of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({3cf341cb-fe63-40bc-a450-9678d18e91e3}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="219"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="213"/>
         <source>fastForward</source>
-        <extracomment>The name of the ActionType 6985250e-1188-4e44-b9dd-93303b5738a1 of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({6985250e-1188-4e44-b9dd-93303b5738a1}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="222"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="270"/>
         <source>skipNext</source>
-        <extracomment>The name of the ActionType 85d7126a-b123-4a28-aeb4-d84bcfb4d14f of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({85d7126a-b123-4a28-aeb4-d84bcfb4d14f}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="225"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="264"/>
         <source>show notification</source>
-        <extracomment>The name of the ActionType dc0aa3b5-4eae-4e58-a4ac-d4c124da53f1 of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({dc0aa3b5-4eae-4e58-a4ac-d4c124da53f1}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="228"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="216"/>
         <source>message</source>
-        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: showNotification, ID: 798f720a-cc4f-40e7-91d7-2ef5957ca7ad)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: notify, ID: {c92d79ad-3b74-4cb6-a21b-d6a0a3cfd3e1})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="231"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="285"/>
         <source>type</source>
-        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: showNotification, ID: 86df6a45-ee8a-4e1f-94e2-4081e14eb557)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: notify, ID: {86df6a45-ee8a-4e1f-94e2-4081e14eb557})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="234"/>
-        <source>press button</source>
-        <extracomment>The name of the ActionType 28060803-aa85-44a4-9dec-ee669dfb629f of deviceClass kodi</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="237"/>
-        <source>button</source>
-        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: pressButton, ID: 93861dac-0c24-4a3b-903d-d1be44eae611)</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="240"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="276"/>
         <source>system</source>
-        <extracomment>The name of the ActionType 8d51cd64-ecef-44f8-85b0-697bef252ce5 of deviceClass kodi</extracomment>
+        <extracomment>The name of the ActionType ({8d51cd64-ecef-44f8-85b0-697bef252ce5}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="243"/>
-        <location filename="../plugininfo.h" line="249"/>
-        <location filename="../plugininfo.h" line="255"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="201"/>
         <source>command</source>
-        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: system, ID: 8f3413fb-018e-40d6-903c-c8a915a6f498)
-----------
-The name of the ParamType (DeviceClass: kodi, ActionType: videoLibrary, ID: 3219855b-e043-43aa-91ae-794b474379bf)
-----------
-The name of the ParamType (DeviceClass: kodi, ActionType: audioLibrary, ID: ba89d098-56d7-40a2-b499-c02499c1ec0c)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: kodi, ActionType: system, ID: {8f3413fb-018e-40d6-903c-c8a915a6f498})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="246"/>
-        <source>video library</source>
-        <extracomment>The name of the ActionType 59f7ad10-16eb-40b7-a88b-c8393ae8e413 of deviceClass kodi</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="252"/>
-        <source>audio library</source>
-        <extracomment>The name of the ActionType 3d5120eb-1007-46c3-b76e-d9d4b105b9f2 of deviceClass kodi</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugininfo.h" line="258"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="252"/>
         <source>player play</source>
-        <extracomment>The name of the EventType 2535a1eb-7643-4874-98f6-b027fdff6311 of deviceClass kodi</extracomment>
+        <extracomment>The name of the EventType ({2535a1eb-7643-4874-98f6-b027fdff6311}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="261"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="249"/>
         <source>player pause</source>
-        <extracomment>The name of the EventType 99498b1c-e9c0-480a-9e91-662ee79ba976 of deviceClass kodi</extracomment>
+        <extracomment>The name of the EventType ({99498b1c-e9c0-480a-9e91-662ee79ba976}) of DeviceClass kodi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="264"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/kodi/plugininfo.h" line="255"/>
         <source>player stop</source>
-        <extracomment>The name of the EventType a02ce255-3abb-435d-a92e-7f99c952ecb2 of deviceClass kodi</extracomment>
+        <extracomment>The name of the EventType ({a02ce255-3abb-435d-a92e-7f99c952ecb2}) of DeviceClass kodi</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="54"/>
+        <source>Video library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="61"/>
+        <source>Movies</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="74"/>
+        <source>TV Shows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="87"/>
+        <source>Music Videos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="97"/>
+        <source>Music library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="104"/>
+        <source>Artists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="116"/>
+        <source>Albums</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="128"/>
+        <source>Songs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="142"/>
+        <source>Add-ons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="148"/>
+        <source>Video add-ons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="158"/>
+        <source>Music add-ons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="820"/>
+        <source>%1 seasons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../kodi.cpp" line="853"/>
+        <source>Season %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

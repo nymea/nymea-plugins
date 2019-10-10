@@ -40,8 +40,8 @@ class DevicePluginAvahiMonitor : public DevicePlugin
 public:
     explicit DevicePluginAvahiMonitor();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void setupDevice(DeviceSetupInfo *info) override;
 
 private slots:
     void onServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);

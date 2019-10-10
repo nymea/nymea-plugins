@@ -44,53 +44,46 @@ DevicePluginDaylightSensor::~DevicePluginDaylightSensor()
 
 }
 
-Device::DeviceError DevicePluginDaylightSensor::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginDaylightSensor::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(deviceClassId)
-    Q_UNUSED(params)
-
     QNetworkRequest request(QUrl("http://ip-api.com/json"));
     QNetworkReply* reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, deviceClassId]() {
-        reply->deleteLater();
-        QList<DeviceDescriptor> results;
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, info, [this, reply, info]() {
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDaylightSensor()) << "Error fetching geolocation from ip-api:" << reply->error() << reply->errorString();
-            emit devicesDiscovered(deviceClassId, results);
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Failed to fetch data from the internet."));
             return;
         }
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcDaylightSensor()) << "Failed to parse json from ip-api:" << error.error << error.errorString();
-            emit devicesDiscovered(deviceClassId, results);
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("The server returned unexpected data."));
             return;
         }
         if (!jsonDoc.toVariant().toMap().contains("lat") || !jsonDoc.toVariant().toMap().contains("lon")) {
             qCWarning(dcDaylightSensor()) << "Reply missing geolocation info" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
-            emit devicesDiscovered(deviceClassId, results);
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Failed to fetch data from the internet."));
             return;
         }
         qreal lat = jsonDoc.toVariant().toMap().value("lat").toDouble();
         qreal lon = jsonDoc.toVariant().toMap().value("lon").toDouble();
 
-        DeviceDescriptor descriptor(deviceClassId, tr("Daylight sensor"), jsonDoc.toVariant().toMap().value("city").toString());
+        DeviceDescriptor descriptor(info->deviceClassId(), tr("Daylight sensor"), jsonDoc.toVariant().toMap().value("city").toString());
         ParamList params;
         params.append(Param(daylightSensorDeviceLatitudeParamTypeId, lat));
         params.append(Param(daylightSensorDeviceLongitudeParamTypeId, lon));
         descriptor.setParams(params);
-        results.append(descriptor);
-        emit devicesDiscovered(deviceClassId, results);
+        info->addDeviceDescriptor(descriptor);
+        info->finish(Device::DeviceErrorNoError);
     });
-
-    return Device::DeviceErrorAsync;
 }
 
-Device::DeviceSetupStatus DevicePluginDaylightSensor::setupDevice(Device *device)
+void DevicePluginDaylightSensor::setupDevice(DeviceSetupInfo *info)
 {
-    updateDevice(device);
-
-    return Device::DeviceSetupStatusSuccess;
+    updateDevice(info->device());
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginDaylightSensor::deviceRemoved(Device *device)

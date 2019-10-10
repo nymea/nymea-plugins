@@ -33,9 +33,9 @@ DevicePluginOneWire::DevicePluginOneWire()
 {
 }
 
-Device::DeviceError DevicePluginOneWire::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginOneWire::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params);
+    DeviceClassId deviceClassId = info->deviceClassId();
 
     if (deviceClassId == temperatureSensorDeviceClassId       ||
             deviceClassId == singleChannelSwitchDeviceClassId ||
@@ -44,32 +44,40 @@ Device::DeviceError DevicePluginOneWire::discoverDevices(const DeviceClassId &de
 
         if (myDevices().filterByDeviceClassId(oneWireInterfaceDeviceClassId).isEmpty()) {
             //No one wire interface intitialized
-            return Device::DeviceErrorHardwareNotAvailable;
+            return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("No one wire interface initialized. Please set up a one wire interface first."));
         }
 
         foreach(Device *parentDevice, myDevices().filterByDeviceClassId(oneWireInterfaceDeviceClassId)) {
             if (parentDevice->stateValue(oneWireInterfaceAutoAddStateTypeId).toBool()) {
                 //devices cannot be discovered since auto mode is enabled
-                return Device::DeviceErrorNoError;
+                return info->finish(Device::DeviceErrorNoError);
             } else {
                 if (m_oneWireInterface)
                     m_oneWireInterface->discoverDevices();
             }
         }
-        return Device::DeviceErrorAsync;
+
+        m_runningDiscoveries.append(info);
+        connect(info, &DeviceDiscoveryInfo::destroyed, this, [this, info](){
+            m_runningDiscoveries.removeAll(info);
+        });
+        return;
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+
+    qCWarning(dcOneWire()) << "Discovery called for a deviceclass which does not support discovery? Device class ID:" << info->deviceClassId().toString();
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 
-Device::DeviceSetupStatus DevicePluginOneWire::setupDevice(Device *device)
+void DevicePluginOneWire::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
     if (device->deviceClassId() == oneWireInterfaceDeviceClassId) {
         qCDebug(dcOneWire) << "Setup one wire interface";
 
         if (m_oneWireInterface) {
             qCWarning(dcOneWire) << "One wire interface already set up";
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorDeviceInUse, QT_TR_NOOP("There can only be one One wire interface per system."));
         }
         m_oneWireInterface = new OneWire(this);
         QByteArray initArguments = device->paramValue(oneWireInterfaceDeviceInitArgsParamTypeId).toByteArray();
@@ -77,10 +85,10 @@ Device::DeviceSetupStatus DevicePluginOneWire::setupDevice(Device *device)
         if (!m_oneWireInterface->init(initArguments)){
             m_oneWireInterface->deleteLater();
             m_oneWireInterface = nullptr;
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error initializing one wire interface."));
         }
         connect(m_oneWireInterface, &OneWire::devicesDiscovered, this, &DevicePluginOneWire::onOneWireDevicesDiscovered);
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (device->deviceClassId() == temperatureSensorDeviceClassId) {
@@ -90,7 +98,7 @@ Device::DeviceSetupStatus DevicePluginOneWire::setupDevice(Device *device)
             double temperature = m_oneWireInterface->getTemperature(device->paramValue(temperatureSensorDeviceAddressParamTypeId).toByteArray());
             device->setStateValue(temperatureSensorTemperatureStateTypeId, temperature);
         }
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (device->deviceClassId() == singleChannelSwitchDeviceClassId) {
@@ -99,7 +107,7 @@ Device::DeviceSetupStatus DevicePluginOneWire::setupDevice(Device *device)
             QByteArray address = device->paramValue(singleChannelSwitchDeviceAddressParamTypeId).toByteArray();
             device->setStateValue(singleChannelSwitchDigitalOutputStateTypeId, m_oneWireInterface->getSwitchOutput(address, OneWire::SwitchChannel::PIO_A));
         }
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (device->deviceClassId() == dualChannelSwitchDeviceClassId) {
@@ -109,7 +117,7 @@ Device::DeviceSetupStatus DevicePluginOneWire::setupDevice(Device *device)
             device->setStateValue(dualChannelSwitchDigitalOutput1StateTypeId, m_oneWireInterface->getSwitchOutput(address, OneWire::SwitchChannel::PIO_A));
             device->setStateValue(dualChannelSwitchDigitalOutput2StateTypeId, m_oneWireInterface->getSwitchOutput(address, OneWire::SwitchChannel::PIO_B));
         }
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
 
     if (device->deviceClassId() == eightChannelSwitchDeviceClassId) {
@@ -125,9 +133,9 @@ Device::DeviceSetupStatus DevicePluginOneWire::setupDevice(Device *device)
             device->setStateValue(eightChannelSwitchDigitalOutput7StateTypeId, m_oneWireInterface->getSwitchOutput(address, OneWire::SwitchChannel::PIO_G));
             device->setStateValue(eightChannelSwitchDigitalOutput8StateTypeId, m_oneWireInterface->getSwitchOutput(address, OneWire::SwitchChannel::PIO_H));
         }
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
-    return Device::DeviceSetupStatusFailure;
+    return info->finish(Device::DeviceErrorDeviceNotFound);
 }
 
 void DevicePluginOneWire::postSetupDevice(Device *device)
@@ -140,73 +148,76 @@ void DevicePluginOneWire::postSetupDevice(Device *device)
     }
 }
 
-Device::DeviceError DevicePluginOneWire::executeAction(Device *device, const Action &action)
+void DevicePluginOneWire::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     if (device->deviceClassId() == oneWireInterfaceDeviceClassId) {
         if (action.actionTypeId() == oneWireInterfaceAutoAddActionTypeId){
             device->setStateValue(oneWireInterfaceAutoAddStateTypeId, action.param(oneWireInterfaceAutoAddActionAutoAddParamTypeId).value());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
-        return Device::DeviceErrorActionTypeNotFound;
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
 
     if (device->deviceClassId() == singleChannelSwitchDeviceClassId) {
         if (action.actionTypeId() == singleChannelSwitchDigitalOutputActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(singleChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_A, action.param(singleChannelSwitchDigitalOutputActionDigitalOutputParamTypeId).value().toBool());
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
-        return Device::DeviceErrorActionTypeNotFound;
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
 
     if (device->deviceClassId() == dualChannelSwitchDeviceClassId) {
         if (action.actionTypeId() == dualChannelSwitchDigitalOutput1ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(dualChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_A, action.param(dualChannelSwitchDigitalOutput1ActionDigitalOutput1ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
         if (action.actionTypeId() == dualChannelSwitchDigitalOutput2ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(dualChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_B, action.param(dualChannelSwitchDigitalOutput2ActionDigitalOutput2ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
-        return Device::DeviceErrorActionTypeNotFound;
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
 
     if (device->deviceClassId() == eightChannelSwitchDeviceClassId) {
         if (action.actionTypeId() == eightChannelSwitchDigitalOutput1ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(eightChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_A, action.param(eightChannelSwitchDigitalOutput1ActionDigitalOutput1ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
         if (action.actionTypeId() == eightChannelSwitchDigitalOutput2ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(eightChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_B, action.param(eightChannelSwitchDigitalOutput2ActionDigitalOutput2ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
         if (action.actionTypeId() == eightChannelSwitchDigitalOutput3ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(eightChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_C, action.param(eightChannelSwitchDigitalOutput3ActionDigitalOutput3ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
         if (action.actionTypeId() == eightChannelSwitchDigitalOutput4ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(eightChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_D, action.param(eightChannelSwitchDigitalOutput4ActionDigitalOutput4ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
         if (action.actionTypeId() == eightChannelSwitchDigitalOutput5ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(eightChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_E, action.param(eightChannelSwitchDigitalOutput5ActionDigitalOutput5ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
         if (action.actionTypeId() == eightChannelSwitchDigitalOutput6ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(eightChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_F, action.param(eightChannelSwitchDigitalOutput6ActionDigitalOutput6ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
         if (action.actionTypeId() == eightChannelSwitchDigitalOutput7ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(eightChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_G, action.param(eightChannelSwitchDigitalOutput7ActionDigitalOutput7ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
         if (action.actionTypeId() == eightChannelSwitchDigitalOutput8ActionTypeId){
             m_oneWireInterface->setSwitchOutput(device->paramValue(eightChannelSwitchDeviceAddressParamTypeId).toByteArray(), OneWire::SwitchChannel::PIO_H, action.param(eightChannelSwitchDigitalOutput8ActionDigitalOutput8ParamTypeId).value().toBool());
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
-        return Device::DeviceErrorActionTypeNotFound;
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
-    return Device::DeviceErrorNoError;
+    return info->finish(Device::DeviceErrorNoError);
 }
 
 
@@ -273,10 +284,7 @@ void DevicePluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWireDevic
     foreach(Device *parentDevice, myDevices().filterByDeviceClassId(oneWireInterfaceDeviceClassId)) {
 
         bool autoDiscoverEnabled = parentDevice->stateValue(oneWireInterfaceAutoAddStateTypeId).toBool();
-        QList<DeviceDescriptor> temperatureDeviceDescriptors;
-        QList<DeviceDescriptor> singleChannelSwitchDeviceDescriptors;
-        QList<DeviceDescriptor> dualChannelSwitchDeviceDescriptors;
-        QList<DeviceDescriptor> eightChannelSwitchDeviceDescriptors;
+        DeviceDescriptors descriptors;
         foreach (OneWire::OneWireDevice oneWireDevice, oneWireDevices){
             switch (oneWireDevice.family) {
             //https://github.com/owfs/owfs-doc/wiki/1Wire-Device-List
@@ -295,7 +303,7 @@ void DevicePluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWireDevic
                     }
                 }
                 descriptor.setParams(params);
-                temperatureDeviceDescriptors.append(descriptor);
+                descriptors.append(descriptor);
                 break;
             }
             case 0x05: { //single channel switch
@@ -310,7 +318,7 @@ void DevicePluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWireDevic
                     }
                 }
                 descriptor.setParams(params);
-                singleChannelSwitchDeviceDescriptors.append(descriptor);
+                descriptors.append(descriptor);
                 break;
             }
             case 0x12:
@@ -326,7 +334,7 @@ void DevicePluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWireDevic
                     }
                 }
                 descriptor.setParams(params);
-                dualChannelSwitchDeviceDescriptors.append(descriptor);
+                descriptors.append(descriptor);
                 break;
             }
             case 0x29: { //eight channel switch
@@ -341,7 +349,7 @@ void DevicePluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWireDevic
                     }
                 }
                 descriptor.setParams(params);
-                eightChannelSwitchDeviceDescriptors.append(descriptor);
+                descriptors.append(descriptor);
                 break;
             }
             default:
@@ -351,23 +359,14 @@ void DevicePluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWireDevic
             }
         }
         if (autoDiscoverEnabled) {
-            if (!temperatureDeviceDescriptors.isEmpty())
-                emit autoDevicesAppeared(temperatureSensorDeviceClassId, temperatureDeviceDescriptors);
-            if (!singleChannelSwitchDeviceDescriptors.isEmpty())
-                emit autoDevicesAppeared(singleChannelSwitchDeviceClassId, singleChannelSwitchDeviceDescriptors);
-            if (!dualChannelSwitchDeviceDescriptors.isEmpty())
-                emit autoDevicesAppeared(dualChannelSwitchDeviceClassId, dualChannelSwitchDeviceDescriptors);
-            if (!eightChannelSwitchDeviceDescriptors.isEmpty())
-                emit autoDevicesAppeared(eightChannelSwitchDeviceClassId, eightChannelSwitchDeviceDescriptors);
+            emit autoDevicesAppeared(descriptors);
         } else {
-            if (!temperatureDeviceDescriptors.isEmpty())
-                emit devicesDiscovered(temperatureSensorDeviceClassId, temperatureDeviceDescriptors);
-            if (!singleChannelSwitchDeviceDescriptors.isEmpty())
-                emit devicesDiscovered(singleChannelSwitchDeviceClassId, singleChannelSwitchDeviceDescriptors);
-            if (!dualChannelSwitchDeviceDescriptors.isEmpty())
-                emit devicesDiscovered(dualChannelSwitchDeviceClassId, dualChannelSwitchDeviceDescriptors);
-            if (!eightChannelSwitchDeviceDescriptors.isEmpty())
-                emit devicesDiscovered(eightChannelSwitchDeviceClassId, eightChannelSwitchDeviceDescriptors);
+
+            while (!m_runningDiscoveries.isEmpty()) {
+                DeviceDiscoveryInfo *info = m_runningDiscoveries.takeFirst();
+                info->addDeviceDescriptors(descriptors);
+                info->finish(Device::DeviceErrorNoError);
+            }
         }
         break;
     }

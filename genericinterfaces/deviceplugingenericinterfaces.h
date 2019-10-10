@@ -34,11 +34,8 @@ class DevicePluginGenericInterfaces : public DevicePlugin
 
 public:
     explicit DevicePluginGenericInterfaces();
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-
-public slots:
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
-
+    void setupDevice(DeviceSetupInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
 };
 
 #endif // DEVICEPLUGINGENERICINTERFACES_H

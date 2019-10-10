@@ -39,10 +39,10 @@ class DevicePluginSerialPortCommander : public DevicePlugin
 public:
     explicit DevicePluginSerialPortCommander();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     QTimer *m_reconnectTimer = nullptr;

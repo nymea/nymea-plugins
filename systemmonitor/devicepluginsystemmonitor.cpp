@@ -36,17 +36,13 @@ DevicePluginSystemMonitor::~DevicePluginSystemMonitor()
     }
 }
 
-Device::DeviceSetupStatus DevicePluginSystemMonitor::setupDevice(Device *device)
+void DevicePluginSystemMonitor::setupDevice(DeviceSetupInfo *info)
 {
-    Q_UNUSED(device)
-
     if (!m_refreshTimer) {
         m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
         connect(m_refreshTimer, &PluginTimer::timeout, this, &DevicePluginSystemMonitor::onRefreshTimer);
     }
-
-
-    return Device::DeviceSetupStatusSuccess;
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginSystemMonitor::deviceRemoved(Device *device)

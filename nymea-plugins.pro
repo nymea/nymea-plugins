@@ -6,6 +6,7 @@ PLUGIN_DIRS = \
     awattar             \
     boblight            \
     bose                \
+    coinmarketcap       \
     commandlauncher     \
     conrad              \
     datetime            \
