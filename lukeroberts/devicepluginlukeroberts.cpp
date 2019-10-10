@@ -55,7 +55,7 @@ void DevicePluginLukeRoberts::discoverDevices(DeviceDiscoveryInfo *info)
         }
 
         foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
-            if (deviceInfo.name().contains("Luke")) {
+            if (deviceInfo.name().contains("LRF")) {
                 DeviceDescriptor descriptor(modelFDeviceClassId, "Model F", deviceInfo.name() + " (" + deviceInfo.address().toString() + ")");
                 ParamList params;
 
@@ -135,6 +135,23 @@ void DevicePluginLukeRoberts::executeAction(DeviceActionInfo *info)
         return info->finish(Device::DeviceErrorHardwareNotAvailable);
     }
 
+    if (action.actionTypeId() == modelFPowerActionTypeId) {
+        bool power = action.param(modelFPowerActionPowerParamTypeId).value().toBool();
+        if (!power) {
+            lamp->selectScene(0); //Scene 0 is the off scene
+        } else {
+            lamp.
+        }
+
+    } else if (action.actionTypeId() == modelFBrightnessActionTypeId) {
+        int brightness = action.param(modelFBrightnessActionBrightnessParamTypeId).value().toInt();
+        lamp->modifyBrightness(brightness);
+
+    } else if (action.actionTypeId() == modelFColorActionTypeId) {
+
+    } else if (action.actionTypeId() == modelFColorTemperatureActionTypeId) {
+
+    }
 }
 
 

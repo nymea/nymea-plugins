@@ -43,6 +43,122 @@ BluetoothLowEnergyDevice *LukeRoberts::bluetoothDevice()
     return m_bluetoothDevice;
 }
 
+void LukeRoberts::ping()
+{
+    QByteArray data;
+    data.append(0xa0);
+    data.append(0x02);
+    data.resize(3); //appending 0 not allowed
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
+void LukeRoberts::queryScene(uint8_t id)
+{
+    QByteArray data;
+    data.append(0xa0);
+    data.append(0x01);
+    data.append(0x01);
+    data << id;
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
+
+/*
+ * duration in ms, 0 for infinite
+ * saturation 0 .. 255
+ * hue 0 .. 65535 - kelvin 2700 .. 4000 for white light when ​SS​= 0
+ * brightness 0 .. 255
+*/
+void LukeRoberts::setImmediateLight(uint16_t duration, uint8_t saturation, uint16_t hue, uint8_t brightness)
+{
+    QByteArray data;
+    data.append(0xa0);
+    data.append(0x01);
+    data.append(0x02);
+    data.append(0x02);
+    data << duration;
+    data << saturation;
+    data << hue;
+    data << brightness;
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
+/*
+ * Lowers the brightness of the currently selected light scene.
+ * This modification is reverted when the user selects a different scene via app or Click Detection.
+ */
+void LukeRoberts::modifyBrightness(uint8_t percent)
+{
+    QByteArray data;
+    data.append(0xa0);
+    data.append(0x01);
+    data.append(0x03);
+    data << percent;
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
+void LukeRoberts::modifyColorTemperature(uint16_t kelvin)
+{
+    QByteArray data;
+    data.append(0xa0); //Prefix
+    data.append(0x01); //Protocol version V1
+    data.append(0x04); //Opcode "Color Temperature"
+    data << kelvin;
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
+
+/*
+ * Send 0xFF as ​II​to select the default scene, e.g. the one that would also appear when
+ * powering up the lamp.
+*/
+void LukeRoberts::selectScene(uint8_t id)
+{
+    QByteArray data;
+    data.append(0xa0); //Prefix
+    data.append(0x02); //Protocol version V2
+    data.append(0x05); //Opcode "Select Scene"
+    data << id;
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
+void LukeRoberts::setNextSceneByBrightness(int8_t direction)
+{
+    QByteArray data;
+    data.append(0xa0); //Prefix
+    data.append(0x02); //Protocol version V2
+    data.append(0x06); //Opcode "Next Scene by Brightness"
+    data << direction; //1 selects the next brighter scene and -1 selects the next less bright scene.
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
+/*
+* Increments or decrements the currently visible color temperature in the Downlight part of the selected scene.
+*/
+void LukeRoberts::adjustColorTemperature(uint16_t kelvinIncrement)
+{
+    QByteArray data;
+    data.append(0xa0); //Prefix
+    data.append(0x02); //Protocol version V2
+    data.append(0x07); //Opcode "Adjust Color Temperature"
+    data << kelvinIncrement;
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
+/*
+ * Scales the brightness of the current scene by multiplication.
+ * As opposed to ​03 Modify Brightness​, this command respects the brightness set by previous 03 and 08 commands.
+*/
+void LukeRoberts::setRelativeBrightness(uint8_t percent)
+{
+    QByteArray data;
+    data.append(0xa0); //Prefix
+    data.append(0x02); //Protocol version V2
+    data.append(0x08); //Opcode "Relative Brightness"
+    data << percent;
+    m_controlService->writeCharacteristic(m_externalApiEndpoint, data);
+}
+
 
 void LukeRoberts::printService(QLowEnergyService *service)
 {

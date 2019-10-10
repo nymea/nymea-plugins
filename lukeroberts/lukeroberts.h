@@ -26,9 +26,11 @@
 #include <QObject>
 #include <QTimer>
 #include <QBluetoothUuid>
+#include <QByteArray>
 
 #include "typeutils.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
+
 
 class LukeRoberts : public QObject
 {
@@ -57,9 +59,24 @@ enum Opcode {
     OpcodeRelativeBrightness
 };
 
+struct Scene {
+    int8_t id;
+    QString nama;
+};
     explicit LukeRoberts(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
     BluetoothLowEnergyDevice *bluetoothDevice();
+    void ping();
+    void queryScene(uint8_t id);
+    void getSceneList();
+    void setImmediateLight(uint16_t duration, uint8_t saturation, uint16_t hue, uint8_t brightness);
+    void modifyBrightness(uint8_t percent);
+    void modifyColorTemperature(uint16_t kelvin);
+    void selectScene(uint8_t id);
+    void setNextSceneByBrightness(int8_t direction);
+    void adjustColorTemperature(uint16_t kelvinIncrement);
+    void setRelativeBrightness(uint8_t percent);
+
 
 private:
     BluetoothLowEnergyDevice *m_bluetoothDevice = nullptr;
@@ -71,16 +88,6 @@ private:
     QLowEnergyCharacteristic m_deviceInfoCharacteristic;
     QLowEnergyCharacteristic m_externalApiEndpoint;
 
-    void ping();
-    void queryScene(int id);
-    void immediateLight(int flags, int duration);
-    void brightness(int percent);
-    void colorTemperature(int kelvin);
-    void selectScene(int id);
-    void nextSceneByBrightness();
-    void adjustColorTemperature();
-    void relativeBrightness(int percent);
-
     void printService(QLowEnergyService *service);
     void onLongPressTimer();
 
@@ -89,6 +96,7 @@ signals:
     void deviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
     void deviceInitializationFinished(bool success);
     void statusCodeReveiced(StatusCodes statusCode);
+    void sceneListReceived(QList<Scene> scenes);
 
 private slots:
     void onConnectedChanged(bool connected);
@@ -99,5 +107,29 @@ private slots:
     void onControlServiceChanged(const QLowEnergyService::ServiceState &state);
     void onExternalApiEndpointCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
 };
+
+
+QByteArray &operator<<(QByteArray &l, quint8 r)
+{
+    l.append(r);
+    return l;
+}
+
+QByteArray &operator<<(QByteArray &l, qint8 r)
+{
+    l.append(r);
+    return l;
+}
+
+
+QByteArray &operator<<(QByteArray &l, quint16 r)
+{
+    return l<<quint8(r>>8)<<quint8(r);
+}
+
+QByteArray &operator<<(QByteArray &l, quint32 r)
+{
+    return l<<quint16(r>>16)<<quint16(r);
+}
 
 #endif // NUIMO_H
