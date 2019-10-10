@@ -178,8 +178,7 @@ void DevicePluginSonos::confirmPairing(DevicePairingInfo *info, const QString &u
             return;
         }
         sonos->getAccessTokenFromAuthorizationCode(authorizationCode);
-        connect(sonos, &Sonos::authenticationStatusChanged, info, [this, info](bool authenticated){
-            Sonos *sonos = static_cast<Sonos *>(sender());
+        connect(sonos, &Sonos::authenticationStatusChanged, info, [this, info, sonos](bool authenticated){
             if(!authenticated) {
                 qWarning(dcSonos()) << "Authentication process failed"  << info->deviceName();
                 m_setupSonosConnections.remove(info->deviceId());
