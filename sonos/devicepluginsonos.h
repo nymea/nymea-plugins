@@ -49,11 +49,16 @@ public:
     void deviceRemoved(Device *device) override;
     void executeAction(DeviceActionInfo *info) override;
 
+    void browseDevice(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+    void executeBrowserItemAction(BrowserItemActionInfo *info) override;
+
 private:
     PluginTimer *m_pluginTimer5sec = nullptr;
     PluginTimer *m_pluginTimer60sec = nullptr;
 
-     QHash<DeviceId, Sonos *> m_setupSonosConnections;
+    QHash<DeviceId, Sonos *> m_setupSonosConnections;
     QHash<Device *, Sonos *> m_sonosConnections;
     QList<QByteArray> m_householdIds;
 
@@ -61,6 +66,9 @@ private:
     QByteArray m_sonosConnectionRefreshToken;
 
     QHash<QUuid, QPointer<DeviceActionInfo> > m_pendingActions;
+    QHash<QString, BrowseResult *> m_pendingBrowseResult;
+    QHash<QUuid, BrowserActionInfo  *> m_pendingBrowserExecution;
+
 
 private slots:
     void onConnectionChanged(bool connected);

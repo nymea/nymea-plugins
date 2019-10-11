@@ -48,44 +48,6 @@ void DevicePluginSonos::setupDevice(DeviceSetupInfo *info)
 {
     Device *device = info->device();
 
-    if (!m_pluginTimer5sec) {
-        m_pluginTimer5sec = hardwareManager()->pluginTimerManager()->registerTimer(5);
-        connect(m_pluginTimer5sec, &PluginTimer::timeout, this, [this]() {
-
-            foreach (Device *connectionDevice, myDevices().filterByDeviceClassId(sonosConnectionDeviceClassId)) {
-                Sonos *sonos = m_sonosConnections.value(connectionDevice);
-                if (!sonos) {
-                    qWarning(dcSonos()) << "No sonos connection found to device" << connectionDevice->name();
-                    continue;
-                }
-                foreach (Device *groupDevice, myDevices().filterByParentDeviceId(connectionDevice->id())) {
-                    if (groupDevice->deviceClassId() == sonosGroupDeviceClassId) {
-                        //get playback status of each group
-                        QString groupId = groupDevice->paramValue(sonosGroupDeviceGroupIdParamTypeId).toString();
-                        sonos->getGroupPlaybackStatus(groupId);
-                        sonos->getGroupMetadataStatus(groupId);
-                        sonos->getGroupVolume(groupId);
-                    }
-                }
-            }
-        });
-    }
-
-    if (!m_pluginTimer60sec) {
-        m_pluginTimer60sec = hardwareManager()->pluginTimerManager()->registerTimer(60);
-        connect(m_pluginTimer60sec, &PluginTimer::timeout, this, [this]() {
-            foreach (Device *device, myDevices().filterByDeviceClassId(sonosConnectionDeviceClassId)) {
-                Sonos *sonos = m_sonosConnections.value(device);
-                if (!sonos) {
-                    qWarning(dcSonos()) << "No sonos connection found to device" << device->name();
-                    continue;
-                }
-                //get groups for each household in order to add or remove groups
-                sonos->getHouseholds();
-            }
-        });
-    }
-
     if (device->deviceClassId() == sonosConnectionDeviceClassId) {
         Sonos *sonos;
         if (m_setupSonosConnections.keys().contains(device->id())) {
@@ -126,6 +88,7 @@ void DevicePluginSonos::setupDevice(DeviceSetupInfo *info)
             connect(sonos, &Sonos::volumeReceived, this, &DevicePluginSonos::onVolumeReceived);
             connect(sonos, &Sonos::actionExecuted, this, &DevicePluginSonos::onActionExecuted);
             connect(sonos, &Sonos::authenticationStatusChanged, this, &DevicePluginSonos::onAuthenticationStatusChanged);
+            connect(sonos, &Sonos::favouritesReceived, this, &DevicePluginSonos::onFavouritesReceived);
             sonos->getAccessTokenFromRefreshToken(refreshToken);
             m_sonosConnections.insert(device, sonos);
             return info->finish(Device::DeviceErrorNoError);
@@ -204,6 +167,44 @@ void DevicePluginSonos::confirmPairing(DevicePairingInfo *info, const QString &u
 
 void DevicePluginSonos::postSetupDevice(Device *device)
 {
+    if (!m_pluginTimer5sec) {
+        m_pluginTimer5sec = hardwareManager()->pluginTimerManager()->registerTimer(5);
+        connect(m_pluginTimer5sec, &PluginTimer::timeout, this, [this]() {
+
+            foreach (Device *connectionDevice, myDevices().filterByDeviceClassId(sonosConnectionDeviceClassId)) {
+                Sonos *sonos = m_sonosConnections.value(connectionDevice);
+                if (!sonos) {
+                    qWarning(dcSonos()) << "No sonos connection found to device" << connectionDevice->name();
+                    continue;
+                }
+                foreach (Device *groupDevice, myDevices().filterByParentDeviceId(connectionDevice->id())) {
+                    if (groupDevice->deviceClassId() == sonosGroupDeviceClassId) {
+                        //get playback status of each group
+                        QString groupId = groupDevice->paramValue(sonosGroupDeviceGroupIdParamTypeId).toString();
+                        sonos->getGroupPlaybackStatus(groupId);
+                        sonos->getGroupMetadataStatus(groupId);
+                        sonos->getGroupVolume(groupId);
+                    }
+                }
+            }
+        });
+    }
+
+    if (!m_pluginTimer60sec) {
+        m_pluginTimer60sec = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        connect(m_pluginTimer60sec, &PluginTimer::timeout, this, [this]() {
+            foreach (Device *device, myDevices().filterByDeviceClassId(sonosConnectionDeviceClassId)) {
+                Sonos *sonos = m_sonosConnections.value(device);
+                if (!sonos) {
+                    qWarning(dcSonos()) << "No sonos connection found to device" << device->name();
+                    continue;
+                }
+                //get groups for each household in order to add or remove groups
+                sonos->getHouseholds();
+            }
+        });
+    }
+
     if (device->deviceClassId() == sonosConnectionDeviceClassId) {
         Sonos *sonos = m_sonosConnections.value(device);
         sonos->getHouseholds();
@@ -331,6 +332,55 @@ void DevicePluginSonos::executeAction(DeviceActionInfo *info)
     info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
+void DevicePluginSonos::browseDevice(BrowseResult *result)
+{
+    Device *parentDevice = myDevices().findById(result->device()->parentId());
+    Sonos *sonosConnection = m_sonosConnections.value(parentDevice);
+    if (!sonosConnection)
+        return;
+
+    qDebug(dcSonos()) << "Browse Device" << result->itemId();
+    QString householdId = result->device()->paramValue(sonosGroupDeviceHouseholdIdParamTypeId).toString();
+    if (result->itemId().isEmpty()){
+        BrowserItem item;
+        item.setId("favorites");
+        item.setIcon(BrowserItem::BrowserIconFavorites);
+        item.setExecutable(false);
+        item.setBrowsable(true);
+        item.setDisplayName("Favorites");
+        result->addItem(item);
+        result->finish(Device::DeviceErrorNoError);
+    } else if (result->itemId() == "favorites") {
+        sonosConnection->getFavorites(householdId);
+        m_pendingBrowseResult.insert(householdId, result);
+    } else {
+        //TODO add media browsing
+        result->finish(Device::DeviceErrorItemNotFound);
+    }
+}
+
+void DevicePluginSonos::browserItem(BrowserItemResult *result)
+{
+    Q_UNUSED(result)
+}
+
+void DevicePluginSonos::executeBrowserItem(BrowserActionInfo *info)
+{
+    Device *parentDevice = myDevices().findById(info->device()->parentId());
+    Sonos *sonosConnection = m_sonosConnections.value(parentDevice);
+    if (!sonosConnection)
+        return;
+
+    QString groupId = info->device()->paramValue(sonosGroupDeviceGroupIdParamTypeId).toString();
+    QUuid requestId = sonosConnection->loadFavorite(groupId, info->browserAction().itemId());
+    m_pendingBrowserExecution.insert(requestId, info);
+}
+
+void DevicePluginSonos::executeBrowserItemAction(BrowserItemActionInfo *info)
+{
+    Q_UNUSED(info)
+}
+
 void DevicePluginSonos::onConnectionChanged(bool connected)
 {
     Sonos *sonos = static_cast<Sonos *>(sender());
@@ -366,25 +416,45 @@ void DevicePluginSonos::onHouseholdIdsReceived(QList<QString> householdIds)
     Sonos *sonos = static_cast<Sonos *>(sender());
     foreach(QString householdId, householdIds) {
         sonos->getGroups(householdId);
-        sonos->getFavorites(householdId);
         sonos->getPlaylists(householdId);
     }
 }
 
 void DevicePluginSonos::onFavouritesReceived(const QString &householdId, QList<Sonos::FavouriteObject> favourites)
 {
-    Q_UNUSED(householdId);
-    foreach(Sonos::FavouriteObject favourite, favourites)  {
-        qDebug(dcSonos()) << "Favourite: " << favourite.name << favourite.description;
+    if (m_pendingBrowseResult.contains(householdId)) {
+        BrowseResult *result = m_pendingBrowseResult.take(householdId);
+        if (!result)
+            return;
+
+        foreach(Sonos::FavouriteObject favourite, favourites)  {
+            BrowserItem item;
+            item.setId(favourite.id);
+            item.setExecutable(true);
+            item.setBrowsable(false);
+            if (!favourite.imageUrl.isEmpty()) {
+                 item.setThumbnail(favourite.imageUrl);
+            } else {
+                item.setIcon(BrowserItem::BrowserIconFavorites);
+            }
+            item.setDisplayName(favourite.name);
+            item.setDescription(favourite.description);
+            result->addItem(item);
+            qDebug(dcSonos()) << "Favourite: " << favourite.name << favourite.description;
+        }
+        result->finish(Device::DeviceErrorNoError);
+    } else {
+        qDebug(dcSonos()) << "Received unhandled favourites list";
     }
 }
 
 void DevicePluginSonos::onPlaylistsReceived(const QString &householdId, QList<Sonos::PlaylistObject> playlists)
 {
     Sonos *sonos = static_cast<Sonos *>(sender());
+
     foreach(Sonos::PlaylistObject playlist, playlists)  {
         qDebug(dcSonos()) << "Playlist: " << playlist.name << playlist.type << playlist.trackCount;
-        sonos->getPlaylist(householdId, playlist.id);
+        sonos->getPlaylist(householdId, playlist.id); //Get the playlist details
     }
 }
 
@@ -399,7 +469,6 @@ void DevicePluginSonos::onPlaylistSummaryReceived(const QString &householdId, So
 
 void DevicePluginSonos::onGroupsReceived(const QString &householdId, QList<Sonos::GroupObject> groupObjects)
 {
-    Q_UNUSED(householdId);
     Sonos *sonos = static_cast<Sonos *>(sender());
     Device *parentDevice = m_sonosConnections.key(sonos);
     if (!parentDevice)
@@ -409,12 +478,16 @@ void DevicePluginSonos::onGroupsReceived(const QString &householdId, QList<Sonos
     foreach(Sonos::GroupObject groupObject, groupObjects) {
         Device *groupDevice = myDevices().findByParams(ParamList() << Param(sonosGroupDeviceGroupIdParamTypeId, groupObject.groupId));
         if (groupDevice) {
-            groupDevice->setName(groupObject.displayName);
+            if (groupDevice->name() != groupObject.displayName) {
+                qDebug(dcSonos()) << "Updating group name" << groupDevice->name() << "to" << groupObject.displayName;
+                groupDevice->setName(groupObject.displayName);
+            }
         } else {
             //new device, add to the system
             DeviceDescriptor deviceDescriptor(sonosGroupDeviceClassId, groupObject.displayName, "Sonos Group", parentDevice->id());
             ParamList params;
             params.append(Param(sonosGroupDeviceGroupIdParamTypeId, groupObject.groupId));
+            params.append(Param(sonosGroupDeviceHouseholdIdParamTypeId, householdId));
             deviceDescriptor.setParams(params);
             deviceDescriptors.append(deviceDescriptor);
         }
@@ -478,8 +551,11 @@ void DevicePluginSonos::onMetadataStatusReceived(const QString &groupId, Sonos::
     device->setStateValue(sonosGroupTitleStateTypeId, metaDataStatus.currentItem.track.name);
     device->setStateValue(sonosGroupArtistStateTypeId, metaDataStatus.currentItem.track.artist.name);
     device->setStateValue(sonosGroupCollectionStateTypeId, metaDataStatus.currentItem.track.album.name);
-    //device->setStateValue(sonosGroupArtworkStateTypeId, metaDataStatus.currentItem.track.imageUrl);
-    device->setStateValue(sonosGroupArtworkStateTypeId, metaDataStatus.container.imageUrl);
+    if (!metaDataStatus.currentItem.track.imageUrl.isEmpty()){
+        device->setStateValue(sonosGroupArtworkStateTypeId, metaDataStatus.currentItem.track.imageUrl);
+    } else {
+        device->setStateValue(sonosGroupArtworkStateTypeId, metaDataStatus.container.imageUrl);
+    }
 }
 
 void DevicePluginSonos::onVolumeReceived(const QString &groupId, Sonos::VolumeObject groupVolume)
@@ -500,6 +576,20 @@ void DevicePluginSonos::onActionExecuted(QUuid sonosActionId, bool success)
             qCWarning(dcSonos()) << "DeviceActionInfo has disappeared. Did it time out?";
             return;
         }
+        if (success) {
+            info->finish(Device::DeviceErrorNoError);
+        } else {
+            info->finish(Device::DeviceErrorHardwareFailure);
+        }
+    }
+
+    if (m_pendingBrowserExecution.contains(sonosActionId)) {
+        BrowserActionInfo *info = m_pendingBrowserExecution.value(sonosActionId);
+        if (!info) {
+            qCWarning(dcSonos()) << "BrowseActionInfo has disappeared. Did it time out?";
+            return;
+        }
+
         if (success) {
             info->finish(Device::DeviceErrorNoError);
         } else {

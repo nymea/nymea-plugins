@@ -111,7 +111,7 @@ void Sonos::getHouseholds()
         QList<QString> households;
         foreach (const QVariant &variant, data.toVariant().toMap().value("households").toList()) {
             QVariantMap obj = variant.toMap();
-            qDebug(dcSonos()) << "Household ID received:" << obj["id"].toString();
+            //qDebug(dcSonos()) << "Household ID received:" << obj["id"].toString();
             households.append(obj["id"].toString());
         }
         emit householdIdsReceived(households);
@@ -125,12 +125,14 @@ QUuid Sonos::loadFavorite(const QString &groupId, const QString &favouriteId)
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
     request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
-    request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/favourites"));
+    request.setUrl(QUrl(m_baseControlUrl + "/groups/" + groupId + "/favorites"));
     QUuid actionId = QUuid::createUuid();
 
     QJsonObject object;
-    object.insert("favoriteId", QJsonValue::fromVariant(favouriteId));
+    object.insert("favoriteId", favouriteId);
+    object.insert("playOnCompletion", true);
     QJsonDocument doc(object);
+    qDebug(dcSonos()) << "Sending request" << doc.toJson();
 
     QNetworkReply *reply = m_networkManager->post(request, doc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, this, [reply, actionId, this] {
@@ -193,15 +195,16 @@ void Sonos::getFavorites(const QString &householdId)
             return;
 
         QVariantList array = data.toVariant().toMap().value("items").toList();
-        QList<FavouriteObject> favourites
-                ;
+        //qDebug(dcSonos()) << "Favourites received:" << data.toJson();
+
+        QList<FavouriteObject> favourites;
         foreach (const QVariant &variant, array) {
             QVariantMap itemObject = variant.toMap();
-            qDebug(dcSonos()) << "Item ID received:" << itemObject["id"].toString();
             FavouriteObject favourite;
             favourite.id = itemObject["id"].toString();
             favourite.name = itemObject["name"].toString();
             favourite.description = itemObject["description"].toString();
+            favourite.imageUrl = itemObject["imageUrl"].toString();
             favourites.append(favourite);
         }
         emit favouritesReceived(householdId, favourites);
@@ -248,10 +251,16 @@ void Sonos::getGroups(const QString &householdId)
         QList<GroupObject> groupObjects;
         foreach (const QVariant &value, array) {
             QVariantMap obj = value.toMap();
-            qDebug(dcSonos()) << "Group ID received:" << obj["id"].toString();
+            //qDebug(dcSonos()) << "Group ID received:" << obj["id"].toString();
             GroupObject group;
             group.groupId = obj["id"].toString();
             group.displayName = obj["name"].toString();
+            group.CoordinatorId = obj["coordinatorId"].toString();
+            group.playbackState = obj["playbackState"].toString();
+            QVariantList players = obj.value("playerIds").toList();
+            foreach (const QVariant &value, players) {
+              group.playerIds.append(value.toByteArray());
+            }
             groupObjects.append(group);
         }
         emit groupsReceived(householdId, groupObjects);
@@ -1289,7 +1298,6 @@ void Sonos::getPlaylist(const QString &householdId, const QString &playlistId)
         QVariantList array = variant["tracks"].toList();
         foreach (const QVariant &value, array) {
             QVariantMap itemObject = value.toMap();
-            qDebug(dcSonos()) << "Item ID received:" << itemObject["id"].toString();
             PlaylistTrackObject track;
             track.name = itemObject["name"].toString();
             track.album = itemObject["album"].toString();
@@ -1341,7 +1349,6 @@ void Sonos::getPlaylists(const QString &householdId)
         QList<PlaylistObject> playlists;
         foreach (const QVariant &value, array) {
             QVariantMap itemObject = value.toMap();
-            qDebug(dcSonos()) << "Item ID received:" << itemObject["id"].toString();
             PlaylistObject playlist;
             playlist.id = itemObject["id"].toString();
             playlist.name = itemObject["name"].toString();
