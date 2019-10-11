@@ -304,13 +304,11 @@ void EqivaBluetooth::controllerStateChanged(const QLowEnergyController::Controll
     });
     connect(m_eqivaService, &QLowEnergyService::characteristicChanged, this, &EqivaBluetooth::characteristicChanged);
 
-// Debug
     qCDebug(dcEQ3()) << "Discovering service details";
     m_eqivaService->discoverDetails();
 
 }
 
-// Debug...
 void EqivaBluetooth::serviceStateChanged(QLowEnergyService::ServiceState newState)
 {
     if (newState != QLowEnergyService::ServiceDiscovered) {
@@ -444,7 +442,7 @@ void EqivaBluetooth::sendDate()
     stream << static_cast<quint8>(now.time().second());
 
     // Example: 03130117172315 -> 03YYMMDDHHMMSS
-    qCDebug(dcEQ3()) << "Updating date on device...";
+    qCDebug(dcEQ3()) << m_name << "Updating date on device...";
     enqueue("SetDate", data);
 }
 
@@ -457,6 +455,7 @@ int EqivaBluetooth::enqueue(const QString &name, const QByteArray &data)
     cmd.id = nextId++;
     cmd.data = data;
     m_commandQueue.append(cmd);
+    qCDebug(dcEQ3()) << m_name << "Enqueued command" << cmd.name << "Command queue length:" << m_commandQueue.length();
     processCommandQueue();
     return cmd.id;
 }
