@@ -821,6 +821,7 @@ Depends: nymea-plugin-awattar,
          nymea-plugin-tasmota,
          nymea-plugin-wemo,
          nymea-plugin-elgato,
+         nymea-plugin-shelly,
          nymea-plugin-senic,
          nymea-plugin-keba,
 Replaces: guh-plugins
