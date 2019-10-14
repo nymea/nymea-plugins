@@ -23,9 +23,6 @@
 
 #include "httpsimpleserver.h"
 
-#include "devices/device.h"
-#include "devices/deviceplugin.h"
-#include "types/deviceclass.h"
 #include "types/statetype.h"
 #include "extern-plugininfo.h"
 
@@ -36,16 +33,9 @@
 #include <QRegExp>
 #include <QStringList>
 
-HttpSimpleServer::HttpSimpleServer(Device *device, DevicePlugin *parent):
-    QTcpServer(parent),
-    disabled(false),
-    m_plugin(parent),
-    m_device(device)
+HttpSimpleServer::HttpSimpleServer(QObject *parent):
+    QTcpServer(parent)
 {
-    //QHash<DeviceClassId, ParamTypeId> portMap;
-    //portMap.insert(mockDeviceClassId, mockDeviceHttpportParamTypeId);
-    //portMap.insert(mockDeviceAutoDeviceClassId, mockDeviceAutoDeviceHttpportParamTypeId);
-    //listen(QHostAddress::Any, device->paramValue(portMap.value(device->deviceClassId())).toInt());
 }
 
 HttpSimpleServer::~HttpSimpleServer()
@@ -55,9 +45,6 @@ HttpSimpleServer::~HttpSimpleServer()
 
 void HttpSimpleServer::incomingConnection(qintptr socket)
 {
-    if (disabled)
-        return;
-
     // When a new client connects, the server constructs a QTcpSocket and all
     // communication with the client is done over this QTcpSocket. QTcpSocket
     // works asynchronously, this means that all the communication is done
@@ -69,173 +56,48 @@ void HttpSimpleServer::incomingConnection(qintptr socket)
 
 }
 
-void HttpSimpleServer::actionExecuted(const ActionTypeId &actionTypeId)
-{
-    m_actionList.append(qMakePair<ActionTypeId, QDateTime>(actionTypeId, QDateTime::currentDateTime()));
-}
-
 void HttpSimpleServer::readClient()
 {
-    if (disabled)
-        return;
-
     // This slot is called when the client sent data to the server. The
     // server looks if it was a get request and sends a very simple HTML
     // document back.
-    /*QTcpSocket* socket = (QTcpSocket*)sender();
+    QTcpSocket* socket = (QTcpSocket*)sender();
     if (socket->canReadLine()) {
         QByteArray data = socket->readLine();
         QStringList tokens = QString(data).split(QRegExp("[ \r\n][ \r\n]*"));
         QUrl url("http://foo.bar" + tokens[1]);
         QUrlQuery query(url);
-        if (url.path() == "/setstate") {
-            StateTypeId stateTypeId = StateTypeId(query.queryItems().first().first);
-            QVariant stateValue = query.queryItems().first().second;
-            if (stateTypeId == mockBoolStateTypeId || stateTypeId == mockBatteryCriticalStateTypeId) {
-                stateValue.convert(QVariant::Bool);
-            } else if (stateTypeId == mockIntStateTypeId) {
-                stateValue.convert(QVariant::Int);
-            } else if (stateTypeId == mockDoubleStateTypeId) {
-                stateValue.convert(QVariant::Double);
-            }
-            qCDebug(dcHttpCommander) << "Set state value" << stateValue;
-            emit setState(stateTypeId, stateValue);
-        } else if (url.path() == "/generateevent") {
-            emit triggerEvent(EventTypeId(query.queryItemValue("eventtypeid")));
-        } else if (url.path() == "/actionhistory") {
-            qCDebug(dcHttpCommander) << "Get action history called";
-
-            QTextStream os(socket);
-            os.setAutoDetectUnicode(true);
-            os << generateHeader();
-            for (int i = 0; i < m_actionList.count(); ++i) {
-                os << m_actionList.at(i).first.toString() << '\n';
-                qCDebug(dcHttpCommander) << "    " << m_actionList.at(i).first.toString();
-            }
-            socket->close();
-            return;
-        } else if (url.path() == "/clearactionhistory") {
-            qCDebug(dcHttpCommander) << "Clear action history";
-            m_actionList.clear();
-        } else if (url.path() == "/disappear") {
-            qCDebug(dcHttpCommander) << "Should disappear";
-            emit disappear();
-        } else if (url.path() == "/reconfigureautodevice") {
-            qCDebug(dcHttpCommander) << "Reconfigure auto device";
-            emit reconfigureAutodevice();
-        }
 
         if (tokens[0] == "GET") {
             QTextStream os(socket);
             os.setAutoDetectUnicode(true);
-            os << generateWebPage();
+            os << generateHeader();
             socket->close();
 
             if (socket->state() == QTcpSocket::UnconnectedState)
                 delete socket;
+        } else if (tokens[0] == "PUT") {
+
+        } else if (tokens[0] == "POST") {
+
+        } else if (tokens[0] == "DELETE") {
+
         }
-    }*/
+    }
 }
 
 void HttpSimpleServer::discardClient()
 {
-    QTcpSocket* socket = (QTcpSocket*)sender();
+    QTcpSocket* socket = static_cast<QTcpSocket*>(sender());
     socket->deleteLater();
 }
 
 QString HttpSimpleServer::generateHeader()
 {
     QString contentHeader(
-        "HTTP/1.0 200 Ok\r\n"
-       "Content-Type: text/html; charset=\"utf-8\"\r\n"
-       "\r\n"
-    );
+                "HTTP/1.0 200 Ok\r\n"
+                "Content-Type: text/html; charset=\"utf-8\"\r\n"
+                "\r\n"
+                );
     return contentHeader;
-}
-
-QString HttpSimpleServer::generateWebPage()
-{
-    DeviceClass deviceClass;
-    foreach (const DeviceClass &dc, m_plugin->supportedDevices()) {
-        if (dc.id() == m_device->deviceClassId()) {
-            deviceClass = dc;
-        }
-    }
-    Q_ASSERT(deviceClass.isValid());
-
-    QString body = QString(
-    "<html>"
-        "<body>"
-        "<h1>Mock device Controller</h1>\n"
-        "<hr>"
-                "<h2>Device Information</h2>"
-        "Name: %1<br>"
-        "ID: %2<br>"
-        "DeviceClass ID: %3<br>").arg(m_device->name()).arg(m_device->id().toString()).arg(deviceClass.id().toString());
-
-    body.append("<hr>");
-    body.append("<h2>States</h2>");
-
-    body.append("<table>");
-    for (int i = 0; i < deviceClass.stateTypes().count(); ++i) {
-        body.append("<tr>");
-        body.append("<form action=\"/setstate\" method=\"get\">");
-        StateType stateType = deviceClass.stateTypes().at(i);
-        body.append("<td>" + stateType.name() + "</td>");
-        body.append(QString("<td><input type='input'' name='%1' value='%2'></td>").arg(stateType.id().toString()).arg(m_device->states().at(i).value().toString()));
-        body.append("<td><input type=submit value='Set State'/></td>");
-        body.append("</form>");
-        body.append("</tr>");
-    }
-    body.append("</table>");
-
-    body.append("<hr>");
-    body.append("<h2>Events</h2>");
-
-    body.append("<table>");
-    for (int i = 0; i < deviceClass.eventTypes().count(); ++i) {
-        EventType eventType = deviceClass.eventTypes().at(i);
-        body.append(QString(
-        "<tr>"
-        "<form action=\"/generateevent\" method=\"get\">"
-        "<td>%1<input type='hidden' name='eventtypeid' value='%2'/></td>"
-        "<td>").arg(eventType.name()).arg(eventType.id().toString()));
-        if (!eventType.displayName().endsWith(" changed")) {
-            body.append(QStringLiteral("<input type='submit' value='Generate'/>"));
-        }
-        body.append("</td>"
-        "</form>"
-        "</tr>"
-        );
-    }
-    body.append("</table>");
-
-    body.append("<hr>");
-    body.append("<h2>Actions</h2>");
-
-    body.append("<table border=2px>");
-    body.append("<tr><td>Name</td><td>Type ID</td><td>Timestamp</td></tr>");
-    for (int i = 0; i < m_actionList.count(); ++i) {
-        ActionTypeId actionTypeId = ActionTypeId(m_actionList.at(i).first);
-        QDateTime timestamp = m_actionList.at(i).second;
-        QString actionName;
-        foreach (const ActionType &at, deviceClass.actionTypes()) {
-            if (at.id() == actionTypeId) {
-                actionName = at.name();
-                break;
-            }
-        }
-        body.append(QString(
-        "<tr>"
-        "<td>%1</td>"
-        "<td>%2</td>"
-        "<td>%3</td>"
-        "</tr>"
-        ).arg(actionName).arg(actionTypeId.toString()).arg(timestamp.toString()));
-    }
-    body.append("</table>");
-
-    body.append("</body></html>\n");
-
-    return generateHeader() + body;
 }

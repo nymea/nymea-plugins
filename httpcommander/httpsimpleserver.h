@@ -2,6 +2,7 @@
  *                                                                         *
  *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
  *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -37,17 +38,14 @@ class HttpSimpleServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    HttpSimpleServer(Device *device, DevicePlugin* parent = nullptr);
+    HttpSimpleServer(QObject* parent = nullptr);
     ~HttpSimpleServer();
     void incomingConnection(qintptr socket) override;
 
-    void actionExecuted(const ActionTypeId &actionTypeId);
-
 signals:
-    void setState(const StateTypeId &stateTypeId, const QVariant &value);
-    void triggerEvent(const EventTypeId &eventTypeId);
     void disappear();
     void reconfigureAutodevice();
+    void getRequestReceied(QUrl url);
 
 private slots:
     void readClient();
@@ -55,15 +53,7 @@ private slots:
 
 private:
     QString generateHeader();
-    QString generateWebPage();
 
-private:
-    bool disabled;
-
-    DevicePlugin *m_plugin;
-    Device *m_device;
-
-    QList<QPair<ActionTypeId, QDateTime> > m_actionList;
 };
 
 #endif // HttpSimpleServer_H
