@@ -117,6 +117,15 @@ void DevicePluginFlowercare::setupDevice(DeviceSetupInfo *info)
         connect(m_reconnectTimer, &PluginTimer::timeout, this, &DevicePluginFlowercare::onPluginTimer);
     }
 
+    // Update refresh schedule when the refresh rate setting is changed
+    connect(device, &Device::settingChanged, flowerCare, [this, device] {
+        FlowerCare *flowerCare = m_list.value(device);
+        int refreshInterval = device->setting(flowerCareSettingsRefreshRateParamTypeId).toInt();
+        if (m_refreshMinutes[flowerCare] > refreshInterval) {
+            m_refreshMinutes[flowerCare] = refreshInterval;
+        }
+    });
+
     info->finish(Device::DeviceErrorNoError);
 }
 
@@ -183,5 +192,5 @@ void DevicePluginFlowercare::onSensorDataReceived(quint8 batteryLevel, double de
     device->setStateValue(flowerCareMoistureStateTypeId, moisture);
     device->setStateValue(flowerCareConductivityStateTypeId, fertility);
 
-    m_refreshMinutes[flowerCare] = 20;
+    m_refreshMinutes[flowerCare] = device->setting(flowerCareSettingsRefreshRateParamTypeId).toInt();
 }

@@ -23,6 +23,15 @@
                             "inputType": "MacAddress"
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "e892d118-336e-4495-ae41-0c7cc907efe8",
+                            "name": "refreshRate",
+                            "displayName": "Refresh rate (minutes)",
+                            "type": "uint",
+                            "defaultValue": 20
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "6254103a-ff8b-4f62-afda-6b5be1c933ec",

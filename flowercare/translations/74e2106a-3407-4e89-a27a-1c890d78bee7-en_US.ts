@@ -119,5 +119,10 @@ The name of the StateType ({7e0a3b3d-72f4-4547-bd1e-2711be61c1a7}) of DeviceClas
 The name of the StateType ({f77608b3-8b5b-43a9-aab6-0dc35c694ec3}) of DeviceClass flowerCare</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Refresh rate (minutes)</source>
+        <extracomment>The name of the ParamType (DeviceClass: flowerCare, Type: settings, ID: {e892d118-336e-4495-ae41-0c7cc907efe8})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>
