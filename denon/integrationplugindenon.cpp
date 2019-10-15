@@ -990,6 +990,7 @@ void IntegrationPluginDenon::onHeosGroupsChanged()
 {
     Heos *heos = static_cast<Heos *>(sender());
     heos->getGroups();
+    heos->getPlayers();
 }
 
 void IntegrationPluginDenon::onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
@@ -1035,45 +1036,54 @@ void IntegrationPluginDenon::browseDevice(BrowseResult *result)
         heos->getMusicSources();
         m_pendingGetSourcesRequest.insert(heos, result);
         connect(result, &QObject::destroyed, this, [this, heos](){m_pendingGetSourcesRequest.remove(heos);});
-    } else if (result->itemId().startsWith("type=group")){
-        qDebug(dcDenon()) << "Browse source" << result->itemId();
-        int pid = result->device()->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt();
-        HeosPlayer *browsingPlayer = m_playerBuffer.value(pid);
-        foreach (GroupObject group, m_groupBuffer) {
-            MediaBrowserItem item;
-            item.setBrowsable(true);
-            item.setExecutable(true);
-            item.setIcon(BrowserItem::BrowserIconFolder);
-            item.setDisplayName(group.name);
-            item.setId(result->itemId() + "&" + "group=" + QString::number(group.groupId));
-            // if player is already part of the group set action type id to unjoin
-            if (browsingPlayer->groupId() == group.groupId) {
-                item.setActionTypeIds(QList<ActionTypeId>() << heosPlayerUnjoinBrowserItemActionTypeId);
-            } else {
+    }
+
+    QUrlQuery itemQuery(result->itemId());
+    if (itemQuery.queryItemValue("type") == "group"){
+        if (itemQuery.hasQueryItem("group")) {
+            //TBD list players in groups
+        } else {
+            qDebug(dcDenon()) << "Browse source" << result->itemId();
+            int pid = result->device()->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt();
+            HeosPlayer *browsingPlayer = m_playerBuffer.value(pid);
+            foreach (GroupObject group, m_groupBuffer) {
+                MediaBrowserItem item;
+                item.setBrowsable(false);
+                item.setExecutable(false);
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconNone);
+                item.setIcon(BrowserItem::BrowserIconPackage);
+                item.setDisplayName(group.name);
+                item.setId(result->itemId() + "&" + "group=" + QString::number(group.groupId));
+                // if player is already part of the group set action type id to unjoin
+                if (browsingPlayer->groupId() == group.groupId) {
+                    item.setActionTypeIds(QList<ActionTypeId>() << heosPlayerUnjoinBrowserItemActionTypeId);
+                } else {
+                    item.setActionTypeIds(QList<ActionTypeId>() << heosPlayerJoinBrowserItemActionTypeId);
+                }
+                result->addItem(item);
+            }
+
+            foreach (HeosPlayer *player, m_playerBuffer.values()) {
+                qDebug(dcDenon) << "Adding group item" << player->name();
+                if (browsingPlayer->playerId() == player->playerId()) { //player is the current browsing device
+                    continue;
+                }
+                if (player->groupId() != -1) { // Dont display players that are already assigned to a group
+                    continue;
+                }
+                MediaBrowserItem item;
+                item.setBrowsable(false);
+                item.setExecutable(false);
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconMusicLibrary);
+                item.setIcon(BrowserItem::BrowserIconFile);
+                item.setDisplayName(player->name());
+                item.setId(result->itemId() + "&player=" + QString::number(player->playerId()));
                 item.setActionTypeIds(QList<ActionTypeId>() << heosPlayerJoinBrowserItemActionTypeId);
-            }
-            result->addItem(item);
-        }
+                result->addItem(item);
 
-        foreach (HeosPlayer *player, m_playerBuffer.values()) {
-            qDebug(dcDenon) << "Adding group item" << player->name();
-            if (browsingPlayer->playerId() == player->playerId()) { //player is the current browsing device
-                continue;
             }
-            if (player->groupId() != -1) {// Dont display players that are already assigned to a group
-                continue;
-            }
-            MediaBrowserItem item;
-            item.setBrowsable(true);
-            item.setExecutable(true);
-            item.setIcon(BrowserItem::BrowserIconFile);
-            item.setDisplayName(player->name());
-            item.setId(result->itemId() + "&player=" + QString::number(player->playerId()));
-            item.setActionTypeIds(QList<ActionTypeId>() << heosPlayerJoinBrowserItemActionTypeId);
-            result->addItem(item);
-
+            result->finish(Device::DeviceErrorNoError);
         }
-        result->finish(Device::DeviceErrorNoError);
 
     } else if (result->itemId().startsWith("source=")){
         qDebug(dcDenon()) << "Browse source" << result->itemId();
