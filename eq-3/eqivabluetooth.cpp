@@ -86,6 +86,27 @@ EqivaBluetooth::EqivaBluetooth(BluetoothLowEnergyManager *bluetoothManager, cons
     m_refreshTimer.setInterval(5000);
     m_refreshTimer.setSingleShot(true);
     connect(&m_refreshTimer, &QTimer::timeout, this, &EqivaBluetooth::sendDate);
+
+    m_reconnectTimer.setSingleShot(true);
+    connect(&m_reconnectTimer, &QTimer::timeout, this, [this](){
+        qCDebug(dcEQ3()) << m_name << "Trying to reconnect";
+        m_reconnectAttempt++;
+        m_bluetoothDevice->connectDevice();
+    });
+
+    m_commandTimeout.setInterval(3000);
+    m_commandTimeout.setSingleShot(true);
+    connect(&m_commandTimeout, &QTimer::timeout, this, [this](){
+        // Put current command back to the queue as it didn't succeed
+        qCWarning(dcEQ3()) << m_name << "Command timed out:" << m_currentCommand.id << m_currentCommand.name << "Putting command back to queue";
+        m_commandQueue.prepend(m_currentCommand);
+        m_currentCommand = Command();
+
+        // and reset the connection
+        if (m_bluetoothDevice->connected()) {
+            m_bluetoothDevice->disconnectDevice();
+        }
+    });
 }
 
 EqivaBluetooth::~EqivaBluetooth()
@@ -208,24 +229,19 @@ bool EqivaBluetooth::batteryCritical() const
 
 void EqivaBluetooth::controllerStateChanged(const QLowEnergyController::ControllerState &state)
 {
-    qCDebug(dcEQ3()) << m_name << "Bluetooth device state changed:" << state;
+    if (state == QLowEnergyController::ConnectingState) {
+        // Make sure the reconnect timer is stopped when we're starting a new attempt
+        m_reconnectTimer.stop();
+        return;
+    }
+
     if (state == QLowEnergyController::UnconnectedState) {
         int delay = qMin(m_reconnectAttempt, 30);
         qWarning(dcEQ3()) << m_name << "Eqiva device disconnected. Reconnecting in" << delay << "sec";
         m_available = false;
         emit availableChanged();
 
-        if (m_currentCommand.id != -1) {
-            qCDebug(dcEQ3()) << m_name << "Putting command" << m_currentCommand.id << m_currentCommand.name << "back to queue";
-            m_commandQueue.prepend(m_currentCommand);
-            m_currentCommand = Command();
-        }
-
-        QTimer::singleShot(delay * 1000, this, [this](){
-            qCDebug(dcEQ3()) << m_name << "Trying to reconnect";
-            m_reconnectAttempt++;
-            m_bluetoothDevice->connectDevice();
-        });
+        m_reconnectTimer.start(delay * 1000);
     }
 
     if (state != QLowEnergyController::DiscoveredState) {
@@ -293,7 +309,10 @@ void EqivaBluetooth::controllerStateChanged(const QLowEnergyController::Controll
 
     });
     connect(m_eqivaService, &QLowEnergyService::characteristicWritten, this, [this](const QLowEnergyCharacteristic &info, const QByteArray &value){
-        qCDebug(dcEQ3()) << m_name << "Characteristic written:" << info.name() << info.uuid() << value.toHex();
+        Q_UNUSED(info) // We're only writing one...
+        Q_UNUSED(value)
+        qCDebug(dcEQ3()) << m_name << "Command sent:" << m_currentCommand.id << m_currentCommand.name;
+        m_commandTimeout.stop();
         emit commandResult(m_currentCommand.id, true);
         m_currentCommand.id = -1;
         processCommandQueue();
@@ -333,14 +352,19 @@ void EqivaBluetooth::serviceStateChanged(QLowEnergyService::ServiceState newStat
     // Enable notifications
     QLowEnergyCharacteristic characteristic = m_eqivaService->characteristic(notificationCharacteristicUuid);
     QLowEnergyDescriptor notificationDescriptor = characteristic.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
-    m_eqivaService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0000"));
+//    m_eqivaService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0000"));
     m_eqivaService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 
 }
 
 void EqivaBluetooth::characteristicChanged(const QLowEnergyCharacteristic &info, const QByteArray &value)
 {
-    qCDebug(dcEQ3()) << m_name << "Notification received" << info.uuid() << value.toHex();
+//    qCDebug(dcEQ3()) << m_name << "Notification received" << info.uuid() << value.toHex();
+
+    if (info.uuid() != notificationCharacteristicUuid) {
+        qCWarning(dcEQ3()) << m_name << "Received a notification from a characteristic we did't expect:" << info.uuid() << value.toHex();
+        return;
+    }
     m_refreshTimer.start();
 
     QByteArray data(value);
@@ -442,20 +466,18 @@ void EqivaBluetooth::sendDate()
     stream << static_cast<quint8>(now.time().second());
 
     // Example: 03130117172315 -> 03YYMMDDHHMMSS
-    qCDebug(dcEQ3()) << m_name << "Updating date on device...";
+//    qCDebug(dcEQ3()) << m_name << "Updating date on device...";
     enqueue("SetDate", data);
 }
 
 int EqivaBluetooth::enqueue(const QString &name, const QByteArray &data)
 {
-    static int nextId = 0;
-
     Command cmd;
     cmd.name = name;
-    cmd.id = nextId++;
+    cmd.id = m_nextCommandId++;
     cmd.data = data;
     m_commandQueue.append(cmd);
-    qCDebug(dcEQ3()) << m_name << "Enqueued command" << cmd.name << "Command queue length:" << m_commandQueue.length();
+//    qCDebug(dcEQ3()) << m_name << "Enqueued command" << cmd.name << "Command queue length:" << m_commandQueue.length();
     processCommandQueue();
     return cmd.id;
 }
@@ -468,7 +490,7 @@ void EqivaBluetooth::processCommandQueue()
     }
 
     if (m_commandQueue.isEmpty()) {
-        qCDebug(dcEQ3()) << m_name << "Command queue is empty. Nothing to do...";
+//        qCDebug(dcEQ3()) << m_name << "Command queue is empty. Nothing to do...";
         return;
     }
 
@@ -479,6 +501,7 @@ void EqivaBluetooth::processCommandQueue()
     }
 
     m_currentCommand = m_commandQueue.takeFirst();
+    m_commandTimeout.start();
     qCDebug(dcEQ3()) << m_name << "Sending command" << m_currentCommand.id << m_currentCommand.name << m_currentCommand.data.toHex();
     writeCharacteristic(commandCharacteristicUuid, m_currentCommand.data);
 }
