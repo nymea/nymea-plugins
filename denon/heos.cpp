@@ -53,13 +53,25 @@ Heos::~Heos()
     m_socket->close();
 }
 
-void Heos::connectHeos()
+void Heos::connectDevice()
 {
     if (m_socket->state() == QAbstractSocket::ConnectingState) {
         return;
     }
     m_socket->connectToHost(m_hostAddress, 1255);
 }
+
+bool Heos::connected()
+{
+    return m_socket->isOpen();
+}
+
+
+void Heos::disconnectDevice()
+{
+    m_socket->close();
+}
+
 
 /********************************
  *        PLAYER COMMANDS
@@ -182,14 +194,16 @@ void Heos::getNowPlayingMedia(int playerId)
     m_socket->write(cmd);
 }
 
-HeosPlayer *Heos::getPlayer(int playerId)
-{
-    return m_heosPlayers.value(playerId);
-}
-
 void Heos::getPlayers()
 {
     QByteArray cmd = "heos://player/get_players\r\n";
+    m_socket->write(cmd);
+}
+
+void Heos::getPlayerInfo(int playerId)
+{
+    QByteArray cmd = "heos://player/get_player_info?pid=" + QVariant(playerId).toByteArray() + "\r\n";
+    qCDebug(dcDenon) << "Get player info:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -328,6 +342,19 @@ void Heos::setGroupMute(int groupId, bool mute)
     } else {
         cmd.append("off\r\n");
     }
+    m_socket->write(cmd);
+}
+
+void Heos::setGroup(QList<int> playerIds)
+{
+    QByteArray cmd = "heos://group/set_group?pid=";
+    foreach(int playerId, playerIds) {
+        cmd.append(QVariant(playerId).toByteArray());
+        cmd.append(',');
+    }
+    cmd.resize(cmd.size()-1); //remove last ','
+    cmd.append("\r\n");
+    qCDebug(dcDenon) << "Set group:" << cmd;
     m_socket->write(cmd);
 }
 
@@ -483,7 +510,7 @@ void Heos::onDisconnected()
 {
     qCDebug(dcDenon()) << "Disconnected from" << m_hostAddress.toString() << "try reconnecting in 5 seconds";
     QTimer::singleShot(5000, this, [this](){
-        connectHeos();
+        connectDevice();
     });
     emit connectionStatusChanged(false);
 }
@@ -495,7 +522,6 @@ void Heos::onError(QAbstractSocket::SocketError socketError)
 
 void Heos::readData()
 {
-
     QByteArray data;
     QJsonParseError error;
 
@@ -534,9 +560,11 @@ void Heos::readData()
                     if (enabled.contains("off")) {
                         qDebug(dcDenon) << "Events are disabled";
                         m_eventRegistered = false;
+                        emit systemEventsEnabled(false);
                     } else {
                         qDebug(dcDenon) << "Events are enabled";
                         m_eventRegistered = true;
+                        emit systemEventsEnabled(true);
                     }
 
                 } else if (command.contains("check_account")) {
@@ -551,8 +579,9 @@ void Heos::readData()
 
                 } else if (command.contains("prettify_json_response")) {
 
+                }  else {
+                    qDebug(dcDenon) << "Unhandled Heos system command" << command;
                 }
-            }
             /* 4.2 Player Commands
              *  4.2.1 Get Players
              *  4.2.2 Get Player Info
@@ -578,7 +607,7 @@ void Heos::readData()
              *  4.2.25 Get QuickSelects [LS AVR Only]
              *  4.2.26 Check for Firmware Update
              */
-            if (command.startsWith("player")) {
+           } else if (command.startsWith("player")) {
                 int playerId = 0;
                 if (message.hasQueryItem("pid")) {
                     playerId = message.queryItemValue("pid").toInt();
@@ -586,28 +615,45 @@ void Heos::readData()
 
                 if (command.contains("get_players")) {
                     QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
-
+                    QList<HeosPlayer *> players;
                     foreach (const QVariant &payloadEntryVariant, payloadVariantList) {
-                        playerId = payloadEntryVariant.toMap().value("pid").toInt();
-                        if(!m_heosPlayers.contains(playerId)){
-                            QString serialNumber = payloadEntryVariant.toMap().value("serial").toString();
-                            QString name = payloadEntryVariant.toMap().value("name").toString();
-                            HeosPlayer *heosPlayer = new HeosPlayer(playerId, name, serialNumber, this);
-                            m_heosPlayers.insert(playerId, heosPlayer);
-                            emit playerDiscovered(heosPlayer);
-                        }
+                        HeosPlayer *player = new HeosPlayer(payloadEntryVariant.toMap().value("pid").toInt());
+                        player->setSerialNumber(payloadEntryVariant.toMap().value("serial").toString());
+                        player->setName(payloadEntryVariant.toMap().value("name").toString());
+                        getPlayerInfo(player->playerId());
+                        players.append(player);
                     }
-                }else if (command.contains("get_player_info")) {
+                    emit playersRecieved(players);
+
+                } else if (command.contains("get_player_info")) {
                     //update heos player info
+                    int pid = dataMap.value("payload").toMap().value("pid").toInt();
+                    HeosPlayer *player = new HeosPlayer(pid);
+                    player->setName(dataMap.value("payload").toMap().value("name").toString());
+                    if (dataMap.value("payload").toMap().contains("gid")) {
+                        player->setGroupId(dataMap.value("payload").toMap().value("gid").toInt());
+                    } else {
+                        player->setGroupId(-1); //no group assigned
+                    }
+                    player->setPlayerModel(dataMap.value("payload").toMap().value("model").toString());
+                    player->setPlayerVersion(dataMap.value("payload").toMap().value("version").toString());
+                    player->setLineOut(dataMap.value("payload").toMap().value("lineout").toString());
+                    player->setControl(dataMap.value("payload").toMap().value("control").toString());
+                    player->setSerialNumber(dataMap.value("payload").toMap().value("serial").toString());
+                    player->setNetwork(dataMap.value("payload").toMap().value("network").toString());
+                    emit playerInfoRecieved(player);
+
                 } else if (command.contains("get_now_playing_media")) {
 
                     QString artist = dataMap.value("payload").toMap().value("artist").toString();
                     QString song = dataMap.value("payload").toMap().value("song").toString();
                     QString artwork = dataMap.value("payload").toMap().value("image_url").toString();
                     QString album = dataMap.value("payload").toMap().value("album").toString();
-                    SOURCE_ID sourceId = SOURCE_ID(dataMap.value("payload").toMap().value("sid").toInt());
+                    QString sourceId = dataMap.value("payload").toMap().value("sid").toString();
+                    qDebug(dcDenon) << "Now playing" << playerId << sourceId << artist << album << song;
                     emit nowPlayingMediaStatusReceived(playerId, sourceId, artist, album, song, artwork);
-                }else if (command.contains("get_play_state") || command.contains("set_play_state")) {
+
+                } else if (command.contains("get_play_state") || command.contains("set_play_state")) {
                     if (message.hasQueryItem("state")) {
                         PLAYER_STATE playState =  PLAYER_STATE_STOP;
                         if (message.queryItemValue("state").contains("play")) {
@@ -657,22 +703,23 @@ void Heos::readData()
                     QVariantMap payloadVariantMap = jsonDoc.toVariant().toMap().value("payload").toMap();
                     bool updateExist = payloadVariantMap.value("update").toString().contains("exist");
                     emit playerUpdateAvailable(playerId, updateExist);
+                } else {
+                    qDebug(dcDenon) << "Unhandled Heos group command" << command;
                 }
-            }
             /*
-                                             * 4.3 Group Commands
-                                             *  4.3.1 Get Groups
-                                             *  4.3.2 Get Group Info
-                                             *  4.3.3 Set Group
-                                             *  4.3.4 Get Group Volume
-                                             *  4.3.5 Set Group Volume
-                                             *  4.2.6 Group Volume Up
-                                             *  4.2.7 Group Volume Down
-                                             *  4.3.8 Get Group Mute
-                                             *  4.3.9 Set Group Mute
-                                             *  4.3.10 Toggle Group Mute
-                                             */
-            if (command.startsWith("group")) {
+             * 4.3 Group Commands
+             *  4.3.1 Get Groups
+             *  4.3.2 Get Group Info
+             *  4.3.3 Set Group
+             *  4.3.4 Get Group Volume
+             *  4.3.5 Set Group Volume
+             *  4.2.6 Group Volume Up
+             *  4.2.7 Group Volume Down
+             *  4.3.8 Get Group Mute
+             *  4.3.9 Set Group Mute
+             *  4.3.10 Toggle Group Mute
+             */
+            } else if (command.startsWith("group")) {
                 int groupId = 0;
                 if (message.hasQueryItem("gid")) {
                     qDebug(dcDenon) << "Group id" << message.queryItemValue("gid");
@@ -698,8 +745,32 @@ void Heos::readData()
                     }
                     emit groupsReceived(groups);
                 } else if (command.contains("get_group_info")) {
+                    QVariantMap payloadVariantMap = jsonDoc.toVariant().toMap().value("payload").toMap();
+                    GroupObject group;
+                    group.groupId = payloadVariantMap.value("gid").toInt();
+                    group.name = payloadVariantMap.value("name").toString();
+                    if (!payloadVariantMap.value("players").toList().isEmpty()) {
+                        QVariantList playerlist = payloadVariantMap.value("players").toList();
+                        foreach (const QVariant &playerVariant, playerlist) {
+                            PlayerObject player;
+                            player.name = playerVariant.toMap().value("name").toString();
+                            player.playerId = playerVariant.toMap().value("pid").toInt();
+                            group.players.append(player);
+                        }
+                    }
+                    emit groupInfoReceived(group);
 
                 } else if (command.contains("set_group")) {
+                    if (message.hasQueryItem("gid")) {
+
+                        int groupId = message.queryItemValue("gid").toInt();
+                        QString groupName = message.queryItemValue("name");
+                        emit setGroupReceived(groupId, groupName);
+                    } else {
+                        //No group Id so it must have been an ungoup request
+                        int playerId = message.queryItemValue("pid").toInt();
+                        emit deleteGroupReceived(playerId);
+                    }
 
                 } else if (command.contains("get_volume") || command.contains("set_volume")) {
 
@@ -722,8 +793,10 @@ void Heos::readData()
                     }
                 } else if (command.contains("toggle_mute")) {
 
+                } else {
+                    qDebug(dcDenon) << "Unhandled Heos group command" << command;
                 }
-            }
+
 
             /* 4.4 Browse Commands
                                                   *  4.4.1 Get Music Sources                         - "command": "browse/get_music_sources"
@@ -742,7 +815,7 @@ void Heos::readData()
                                                   *  4.4.15 Delete HEOS Playlist                     - "command": "browse/delete_playlist "
                                                   *  4.4.17 Retrieve Album Metadata                  - "command": "browse/retrieve_metadata",
                                                  */
-            if (command.startsWith("browse") || command.startsWith(" browse")) {
+            } else if (command.startsWith("browse") || command.startsWith(" browse")) {
 
                 if (command.contains("get_music_sources") || command.contains("get_source_info")) {
                     qDebug(dcDenon()) << "Get music source request response received" << command;
@@ -835,8 +908,10 @@ void Heos::readData()
 
                 } else if (command.contains("retrieve_metadata")) {
 
+                } else {
+                    qDebug(dcDenon) << "Unhandled Heos browse command" << command;
                 }
-            }
+
 
             /*
              * 5. Change Events (Unsolicited Responses) 5.1 Sources Changed
@@ -853,7 +928,7 @@ void Heos::readData()
              * 5.12 Group Volume Changed
              * 5.13 User Changed
              */
-            if (command.startsWith("event")) {
+             } else if (command.startsWith("event")) {
                 if (command.contains("sources_changed")) {
                     emit sourcesChanged();
 
@@ -864,7 +939,7 @@ void Heos::readData()
                     emit groupsChanged();
 
                 } else if (command.contains("player_state_changed")) {
-                    qDebug() << "Player state changed";
+                    qDebug(dcDenon()) << "Player state changed";
                     if (message.hasQueryItem("pid")) {
                         int playerId = message.queryItemValue("pid").toInt();
                         if (message.hasQueryItem("state")) {
@@ -880,13 +955,13 @@ void Heos::readData()
                         }
                     }
                 } else if (command.contains("player_now_playing_changed")) {
-                    qDebug(dcDenon()) << "Player now playing changed";
+                    qDebug(dcDenon()) << "Player now playing changed, player id:" << message.queryItemValue("pid").toInt();
                     if (message.hasQueryItem("pid")) {
                         int playerId = message.queryItemValue("pid").toInt();
                         emit playerNowPlayingChanged(playerId);
                     }
                 } else if (command.contains("player_now_playing_progress")) {
-                    qDebug(dcDenon()) << "Player now playing progress";
+                    //qDebug(dcDenon()) << "Player now playing progress";
                     if (message.hasQueryItem("pid")) {
                         int playerId = message.queryItemValue("pid").toInt();
                         int currentPossition = message.queryItemValue("cur_pos").toInt();
@@ -994,7 +1069,11 @@ void Heos::readData()
                         username = message.queryItemValue("un");
                     }
                     emit userChanged(signedIn, username);
+                } else {
+                    qDebug(dcDenon) << "Unhandled Heos event";
                 }
+            } else {
+                qDebug(dcDenon) << "Unhandled Heos category" << command;
             }
         }
     }

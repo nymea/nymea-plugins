@@ -38,6 +38,11 @@
 #include "heosplayer.h"
 #include "heostypes.h"
 
+#include "devices/device.h"
+#include "types/mediabrowseritem.h"
+#include "devices/browseresult.h"
+#include "devices/browseritemresult.h"
+
 class Heos : public QObject
 {
     Q_OBJECT
@@ -46,10 +51,12 @@ public:
     explicit Heos(const QHostAddress &hostAddress, QObject *parent = nullptr);
     ~Heos();
 
-    void connectHeos();
+    void connectDevice();
+    void disconnectDevice();
+    bool connected();
+
     void setAddress(QHostAddress address);
     QHostAddress getAddress();
-    HeosPlayer *getPlayer(int playerId);
 
     // Heos system commands
     void registerForChangeEvents(bool state);   //By default HEOS speaker does not send Change events. Controller needs to send this command with enable=on when it is ready to receive unsolicit responses from CLI. Please refer to "Driver Initialization" section regarding when to register for change events.
@@ -62,6 +69,7 @@ public:
 
     //Player Get Calls
     void getPlayers();                          //get a list of players associated with this heos master
+    void getPlayerInfo(int playerId);
     void getPlayerState(int playerId);
     void getVolume(int playerId);
     void getNowPlayingMedia(int playerId);
@@ -87,9 +95,12 @@ public:
     void getGroupInfo(int groupId);
     void getGroupVolume(int groupId);
     void getGroupMute(int groupId);
+
     //Group Set Calls
     void setGroupVolume(int groupId, bool volume);
     void setGroupMute(int groupId, bool mute);
+    void setGroup(QList<int> playerIds);
+    void deleteGroup(int leadPlayerId);
     void toggleGroupMute(int groupId);
     void groupVolumeUp(int groupId, int step = 5);
     void groupVolumeDown(int groupId, int step = 5);
@@ -100,8 +111,6 @@ public:
     void getSearchCriteria(const QString &sourceId);
     void browseSource(const QString &sourceId);
     void browseSourceContainers(const QString &sourceId, const QString &containerId);
-
-    //void search();
 
     //Play commands
     void playStation(int playerId, const QString &sourceId, const QString &containerId, const QString &mediaId, const QString &stationName);
@@ -114,14 +123,15 @@ private:
     bool m_eventRegistered = false;
     QHostAddress m_hostAddress;
     QTcpSocket *m_socket = nullptr;
-    QHash<int, HeosPlayer*> m_heosPlayers;
     void setConnected(const bool &connected);
 
 signals:
-    void playerDiscovered(HeosPlayer *heosPlayer);
     void connectionStatusChanged(bool status);
+    void systemEventsEnabled(bool status);
 
     void playersChanged();
+    void playersRecieved(QList<HeosPlayer *> heosPlayers);
+    void playerInfoRecieved(HeosPlayer *heosPlayers);
     void playerQueueChanged(int playerId);
     void playerPlayStateReceived(int playerId, PLAYER_STATE state);
     void playerShuffleModeReceived(int playerId, bool shuffle);
@@ -134,12 +144,16 @@ signals:
     void playerNowPlayingChanged(int playerId);
 
     void groupsReceived(QList<GroupObject> groups);      // Callback of getGroups()
+    void groupInfoReceived(GroupObject group);
     void groupVolumeReceived(int groupId, int volume);
     void groupMuteStatusReceived(int groupId, bool mute);
     void groupsChanged();
 
+    void setGroupReceived(int groupId, const QString &groupName);   // Callback of setGroup()
+    void deleteGroupReceived(int leadPlayerId);                     // Callback of deleteGroup();
+
     void sourcesChanged();
-    void nowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
+    void nowPlayingMediaStatusReceived(int playerId, const QString &sourceId, const QString &artist, const QString &album, const QString &song, const QString &artwork);
 
     void musicSourcesReceived(QList<MusicSourceObject> musicSources); //callback of getMusicSource, not associated to a playerId
     void browseRequestReceived(const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems); //callback of browseSource

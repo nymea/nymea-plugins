@@ -37,12 +37,14 @@
 #include "network/upnp/upnpdiscoveryreply.h"
 #include "platform/platformzeroconfcontroller.h"
 #include "network/zeroconf/zeroconfservicebrowser.h"
+#include "types/mediabrowseritem.h"
 
 #include <QDebug>
 #include <QStringList>
 #include <QJsonDocument>
 #include <QTimer>
 #include <QUrl>
+#include <QUrlQuery>
 
 IntegrationPluginDenon::IntegrationPluginDenon()
 {
@@ -184,36 +186,43 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
 
         denonConnection->connectDevice();
         return;
-    }
 
-    if (thing->thingClassId() == heosThingClassId) {
-        qCDebug(dcDenon) << "Setup Denon device" << thing->paramValue(heosThingIpParamTypeId).toString();
+    } else if (device->deviceClassId() == heosDeviceClassId) {
+        qCDebug(dcDenon) << "Setup Denon device" << device->paramValue(heosDeviceIpParamTypeId).toString();
 
-        QHostAddress address(thing->paramValue(heosThingIpParamTypeId).toString());
+        QHostAddress address(device->paramValue(heosDeviceIpParamTypeId).toString());
+        if (address.isNull()) {
+            qCWarning(dcDenon) << "Could not parse ip address" << device->paramValue(heosDeviceIpParamTypeId).toString();
+            info->finish(Device::DeviceErrorInvalidParameter, QT_TR_NOOP("The given IP address is not valid."));
+            return;
+        }
+
         Heos *heos = new Heos(address, this);
-
-
         connect(heos, &Heos::connectionStatusChanged, this, &IntegrationPluginDenon::onHeosConnectionChanged);
-        connect(heos, &Heos::playerDiscovered, this, &IntegrationPluginDenon::onHeosPlayerDiscovered);
-        connect(heos, &Heos::playStateReceived, this, &IntegrationPluginDenon::onHeosPlayStateReceived);
-        connect(heos, &Heos::repeatModeReceived, this, &IntegrationPluginDenon::onHeosRepeatModeReceived);
-        connect(heos, &Heos::shuffleModeReceived, this, &IntegrationPluginDenon::onHeosShuffleModeReceived);
-        connect(heos, &Heos::muteStatusReceived, this, &IntegrationPluginDenon::onHeosMuteStatusReceived);
-        connect(heos, &Heos::volumeStatusReceived, this, &IntegrationPluginDenon::onHeosVolumeStatusReceived);
+        connect(heos, &Heos::playersChanged, this, &IntegrationPluginDenon::onHeosPlayersChanged);
+        connect(heos, &Heos::playersRecieved, this, &IntegrationPluginDenon::onHeosPlayersReceived);
+        connect(heos, &Heos::playerInfoRecieved, this, &IntegrationPluginDenon::onHeosPlayerInfoRecieved);
+        connect(heos, &Heos::playerPlayStateReceived, this, &IntegrationPluginDenon::onHeosPlayStateReceived);
+        connect(heos, &Heos::playerRepeatModeReceived, this, &IntegrationPluginDenon::onHeosRepeatModeReceived);
+        connect(heos, &Heos::playerShuffleModeReceived, this, &IntegrationPluginDenon::onHeosShuffleModeReceived);
+        connect(heos, &Heos::playerMuteStatusReceived, this, &IntegrationPluginDenon::onHeosMuteStatusReceived);
+        connect(heos, &Heos::playerVolumeReceived, this, &IntegrationPluginDenon::onHeosVolumeStatusReceived);
         connect(heos, &Heos::nowPlayingMediaStatusReceived, this, &IntegrationPluginDenon::onHeosNowPlayingMediaStatusReceived);
+        connect(heos, &Heos::playerNowPlayingChanged, this, &IntegrationPluginDenon::onHeosPlayerNowPlayingChanged);
         connect(heos, &Heos::musicSourcesReceived, this, &IntegrationPluginDenon::onHeosMusicSourcesReceived);
-        connect(heos, &Heos::mediaItemsReceived, this, &IntegrationPluginDenon::onHeosMediaItemsReceived);
         connect(heos, &Heos::browseRequestReceived, this, &IntegrationPluginDenon::onHeosBrowseRequestReceived);
         connect(heos, &Heos::browseErrorReceived, this, &IntegrationPluginDenon::onHeosBrowseErrorReceived);
         connect(heos, &Heos::playerQueueChanged, this, &IntegrationPluginDenon::onHeosPlayerQueueChanged);
+        connect(heos, &Heos::groupsReceived, this, &IntegrationPluginDenon::onHeosGroupsReceived);
+        connect(heos, &Heos::groupsChanged, this, &IntegrationPluginDenon::onHeosGroupsChanged);
 
-        m_heos.insert(thing->id(), heos);
+        m_heos.insert(device->id(), heos);
 
         m_asyncHeosSetups.insert(heos, info);
         // In case the setup is cancelled before we finish it...
         connect(info, &QObject::destroyed, this, [this, info, heos]() { m_asyncHeosSetups.remove(heos); });
 
-        heos->connectHeos();
+        heos->connectDevice();
         return;
     }
 
@@ -228,24 +237,24 @@ void IntegrationPluginDenon::thingRemoved(Thing *thing)
 {
     qCDebug(dcDenon) << "Delete " << thing->name();
 
+  AvrConnection *denonConnection = m_avrConnections.take(thing->id());
+
     if (thing->thingClassId() == AVRX1000ThingClassId) {
-        AvrConnection *denonConnection = m_avrConnections.value(thing->id());
-        m_avrConnections.remove(thing->id());
-
-        denonConnection->disconnectDevice();
-        denonConnection->deleteLater();
-    }
-
-    if (thing->thingClassId() == heosThingClassId) {
         if (m_avrConnections.contains(thing->id())) {
             AvrConnection *denonConnection = m_avrConnections.take(thing->id());
             denonConnection->disconnectDevice();
             denonConnection->deleteLater();
         }
+    } else if (thing->thingClassId() == heosThingClassId) {
+        if (m_heos.contains(thing->id())) {
+            Heos *heos = m_heos.take(thing->id());
+            heos->deleteLater();
+        }
     }
 
     if (myThings().empty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
     }
 }
 
@@ -376,7 +385,9 @@ void IntegrationPluginDenon::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == heosThingClassId) {
         Heos *heos = m_heos.value(thing->id());
+        device->setStateValue(heosConnectedStateTypeId, heos->connected());
         heos->getPlayers();
+        heos->getGroups();
     }
 
     if (thing->thingClassId() == heosPlayerThingClassId) {
@@ -547,6 +558,7 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
 {
     Heos *heos = static_cast<Heos *>(sender());
     heos->registerForChangeEvents(true);
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
 
     Thing *thing = myThings().findById(m_heos.key(heos));
     if (!thing)
@@ -563,6 +575,24 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
             }
         }
         thing->setStateValue(heosConnectedStateTypeId, status);
+=======
+    if (status) {
+        // and from the first setup
+        if (m_asyncHeosSetups.contains(heos)) {
+            DeviceSetupInfo *info = m_asyncHeosSetups.take(heos);
+            info->finish(Device::DeviceErrorNoError);
+        }
+    }
+
+    Device *device = myDevices().findById(m_heos.key(heos));
+    if (!device)
+        return;
+
+    if (device->deviceClassId() == heosDeviceClassId) {
+        // if the device is connected
+
+        device->setStateValue(heosConnectedStateTypeId, status);
+>>>>>>> added join/unjoin group:denon/IntegrationPlugindenon.cpp
         // update connection status for all child devices
         foreach (Thing *playerDevice, myThings()) {
             if (playerDevice->thingClassId() == heosPlayerThingClassId) {
@@ -574,23 +604,45 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
     }
 }
 
-void DevicePluginDenon::onHeosPlayersChanged()
+void IntegrationPluginDenon::onHeosPlayersChanged()
 {
     Heos *heos = static_cast<Heos *>(sender());
     heos->getPlayers();
 }
 
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
 void IntegrationPluginDenon::onHeosPlayerDiscovered(HeosPlayer *heosPlayer) {
+=======
+void IntegrationPluginDenon::onHeosPlayersReceived(QList<HeosPlayer *> heosPlayers) {
+
+>>>>>>> added join/unjoin group:denon/IntegrationPlugindenon.cpp
     Heos *heos = static_cast<Heos *>(sender());
 
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
     Thing *thing = myThings().findById(m_heos.key(heos));
 
     foreach (Thing *heosPlayerThing, myThings()) {
         if(heosPlayerThing->thingClassId() == heosPlayerThingClassId) {
             if (heosPlayerThing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt() == heosPlayer->playerId())
                 return;
+=======
+    QList<DeviceDescriptor> heosPlayerDescriptors;
+    foreach (HeosPlayer *player, heosPlayers) {
+        DeviceDescriptor descriptor(heosPlayerDeviceClassId, player->name(), player->playerModel(), device->id());
+        ParamList params;
+        if (!myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, player->playerId()).isEmpty()) {
+            continue;
+>>>>>>> added join/unjoin group:denon/IntegrationPlugindenon.cpp
         }
+        params.append(Param(heosPlayerDeviceModelParamTypeId, player->playerModel()));
+        params.append(Param(heosPlayerDevicePlayerIdParamTypeId, player->playerId()));
+        params.append(Param(heosPlayerDeviceSerialNumberParamTypeId, player->serialNumber()));
+        params.append(Param(heosPlayerDeviceVersionParamTypeId, player->playerVersion()));
+        descriptor.setParams(params);
+        qCDebug(dcDenon) << "Found new heos player" << player->name();
+        heosPlayerDescriptors.append(descriptor);
     }
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
     QList<ThingDescriptor> heosPlayerDescriptors;
     ThingDescriptor descriptor(heosPlayerThingClassId, heosPlayer->name(), heosPlayer->playerModel(), thing->id());
     ParamList params;
@@ -605,6 +657,21 @@ void IntegrationPluginDenon::onHeosPlayerDiscovered(HeosPlayer *heosPlayer) {
 }
 
 void IntegrationPluginDenon::onHeosPlayStateReceived(int playerId, PLAYER_STATE state)
+=======
+
+    //TODO remove devices
+    //TODO remove player from player Buffer
+    autoDevicesAppeared(heosPlayerDescriptors);
+}
+
+void IntegrationPluginDenon::onHeosPlayerInfoRecieved(HeosPlayer *heosPlayer)
+{
+    qDebug(dcDenon()) << "Heos player info received" << heosPlayer->name() << heosPlayer->playerId() << heosPlayer->groupId();
+    m_playerBuffer.insert(heosPlayer->playerId(), heosPlayer);
+}
+
+void IntegrationPluginDenon::onHeosPlayStateReceived(int playerId, PLAYER_STATE state)
+>>>>>>> added join/unjoin group:denon/IntegrationPlugindenon.cpp
 {
     foreach(Thing *thing, myThings().filterByParam(heosPlayerThingPlayerIdParamTypeId, playerId)) {
         if (state == PLAYER_STATE_PAUSE) {
@@ -657,6 +724,7 @@ void IntegrationPluginDenon::onHeosVolumeStatusReceived(int playerId, int volume
     }
 }
 
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
 void IntegrationPluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, SOURCE_ID sourceId, QString artist, QString album, QString song, QString artwork)
 {
     foreach(Thing *thing, myThings().filterByParam(heosPlayerThingPlayerIdParamTypeId, playerId)) {
@@ -739,6 +807,19 @@ void IntegrationPluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, S
         thing->setStateValue(heosPlayerSourceStateTypeId, source);
         break;
     }
+=======
+void IntegrationPluginDenon::onHeosNowPlayingMediaStatusReceived(int playerId, const QString &sourceId, const QString &artist, const QString &album, const QString &song, const QString &artwork)
+{
+    Device *device = myDevices().filterByParam(heosPlayerDevicePlayerIdParamTypeId, playerId).first();
+    if (!device)
+        return;
+
+    device->setStateValue(heosPlayerArtistStateTypeId, artist);
+    device->setStateValue(heosPlayerTitleStateTypeId, song);
+    device->setStateValue(heosPlayerArtworkStateTypeId, artwork);
+    device->setStateValue(heosPlayerCollectionStateTypeId, album);
+    device->setStateValue(heosPlayerSourceStateTypeId, sourceId);
+>>>>>>> added join/unjoin group:denon/IntegrationPlugindenon.cpp
 }
 
 
@@ -748,12 +829,37 @@ void IntegrationPluginDenon::onHeosMusicSourcesReceived(QList<MusicSourceObject>
     if (m_pendingGetSourcesRequest.contains(heos)) {
         BrowseResult *result = m_pendingGetSourcesRequest.take(heos);
         foreach(MusicSourceObject source, musicSources) {
-            BrowserItem item;
+            MediaBrowserItem item;
             item.setDisplayName(source.name);
             item.setId("source=" + QString::number(source.sourceId));
-            item.setThumbnail(source.image_url);
             item.setExecutable(false);
             item.setBrowsable(true);
+            item.setIcon(BrowserItem::BrowserIconMusic);
+            if (source.name == "Amazon") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAmazon);
+            } else if (source.name == "Deezer") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDeezer);
+            } else if (source.name == "Napster") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconNapster);
+            } else if (source.name == "SoundCloud") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconSoundCloud);
+            } else if (source.name == "Tidal") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTidal);
+            } else if (source.name == "TuneIn") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTuneIn);
+            } else if (source.name == "Local Music") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDisk);
+            } else if (source.name == "Playlists") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconPlaylist);
+            } else if (source.name == "History") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRecentlyPlayed);
+            } else if (source.name == "AUX Input") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
+            } else if (source.name == "Favorites") {
+                item.setIcon(BrowserItem::BrowserIconFavorites);
+            } else {
+                item.setThumbnail(source.image_url);
+            }
             result->addItem(item);
             qDebug(dcDenon()) << "Music source received:" << source.name << source.type << source.sourceId << source.image_url;
         }
@@ -763,7 +869,7 @@ void IntegrationPluginDenon::onHeosMusicSourcesReceived(QList<MusicSourceObject>
 
 void IntegrationPluginDenon::onHeosMediaItemsReceived(QList<MediaObject> mediaItems)
 
-void DevicePluginDenon::onHeosBrowseRequestReceived(const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems)
+void IntegrationPluginDenon::onHeosBrowseRequestReceived(const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems)
 {
     QString identifier;
     if (containerId.isEmpty()) {
@@ -784,7 +890,7 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(QList<MusicSourceObject
     if (m_pendingBrowseResult.contains(browseRequest)) {
         BrowseResult *result = m_pendingBrowseResult.take(browseRequest);
         foreach(MediaObject media, mediaItems) {
-            BrowserItem item;
+            MediaBrowserItem item;
             qDebug(dcDenon()) << "Adding Item" << media.name << media.mediaId << media.containerId << media.mediaType;
             item.setDisplayName(media.name);
             if (media.mediaType == MEDIA_TYPE_CONTAINER) {
@@ -800,12 +906,36 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(QList<MusicSourceObject
             result->addItem(item);
         }
         foreach(MusicSourceObject source, musicSources) {
-            BrowserItem item;
+            MediaBrowserItem item;
             item.setDisplayName(source.name);
             qDebug(dcDenon()) << "Adding Item" << source.name << source.sourceId;
-            //item.setDescription("test");
             item.setId("source=" + QString::number(source.sourceId));
-            item.setThumbnail(source.image_url);
+            item.setIcon(BrowserItem::BrowserIconMusic);
+            if (source.name.contains("Amazon")) {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAmazon);
+            } else if (source.name == "Deezer") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDeezer);
+            } else if (source.name == "Napster") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconNapster);
+            } else if (source.name == "SoundCloud") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconSoundCloud);
+            } else if (source.name == "Tidal") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTidal);
+            } else if (source.name == "TuneIn") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTuneIn);
+            } else if (source.name == "Local Music") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDisk);
+            } else if (source.name == "Playlists") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconPlaylist);
+            } else if (source.name == "History") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRecentlyPlayed);
+            } else if (source.name == "AUX Input") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
+            } else if (source.name == "Favorites") {
+                item.setIcon(BrowserItem::BrowserIconFavorites);
+            } else {
+                item.setThumbnail(source.image_url);
+            }
             item.setExecutable(false);
             item.setBrowsable(true);
             result->addItem(item);
@@ -839,13 +969,31 @@ void IntegrationPluginDenon::onHeosPlayerNowPlayingChanged(int playerId)
 }
 
 
-void DevicePluginDenon::onHeosPlayerQueueChanged(int playerId)
+void IntegrationPluginDenon::onHeosPlayerQueueChanged(int playerId)
 {
     Heos *heos = static_cast<Heos *>(sender());
     heos->getNowPlayingMedia(playerId);
 }
 
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
 void IntegrationPluginDenon::onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
+=======
+void IntegrationPluginDenon::onHeosGroupsReceived(QList<GroupObject> groups)
+{
+    m_groupBuffer.clear();
+    foreach(GroupObject group, groups) {
+        m_groupBuffer.insert(group.groupId, group);
+    }
+}
+
+void IntegrationPluginDenon::onHeosGroupsChanged()
+{
+    Heos *heos = static_cast<Heos *>(sender());
+    heos->getGroups();
+}
+
+void IntegrationPluginDenon::onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
+>>>>>>> added join/unjoin group:denon/IntegrationPlugindenon.cpp
 {
     qCDebug(dcDenon()) << "Avahi service entry added:" << serviceEntry;
 }
@@ -877,9 +1025,55 @@ void IntegrationPluginDenon::browseDevice(BrowseResult *result)
 
     if (result->itemId().isEmpty()) {
         qDebug(dcDenon()) << "Browse source";
+        MediaBrowserItem item;
+        item.setId("type=group");
+        item.setIcon(BrowserItem::BrowserIcon::BrowserIconPackage);
+        item.setBrowsable(true);
+        item.setExecutable(false);
+        item.setDisplayName("Groups");
+        result->addItem(item);
         heos->getMusicSources();
         m_pendingGetSourcesRequest.insert(heos, result);
         connect(result, &QObject::destroyed, this, [this, heos](){m_pendingGetSourcesRequest.remove(heos);});
+    } else if (result->itemId().startsWith("type=group")){
+        qDebug(dcDenon()) << "Browse source" << result->itemId();
+        int pid = result->device()->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt();
+        HeosPlayer *browsingPlayer = m_playerBuffer.value(pid);
+        foreach (GroupObject group, m_groupBuffer) {
+            MediaBrowserItem item;
+            item.setBrowsable(true);
+            item.setExecutable(true);
+            item.setIcon(BrowserItem::BrowserIconFolder);
+            item.setDisplayName(group.name);
+            item.setId(result->itemId() + "&" + "group=" + QString::number(group.groupId));
+            // if player is already part of the group set action type id to unjoin
+            if (browsingPlayer->groupId() == group.groupId) {
+                item.setActionTypeIds(QList<ActionTypeId>() << heosPlayerUnjoinBrowserItemActionTypeId);
+            } else {
+                item.setActionTypeIds(QList<ActionTypeId>() << heosPlayerJoinBrowserItemActionTypeId);
+            }
+            result->addItem(item);
+        }
+
+        foreach (HeosPlayer *player, m_playerBuffer.values()) {
+            qDebug(dcDenon) << "Adding group item" << player->name();
+            if (browsingPlayer->playerId() == player->playerId()) { //player is the current browsing device
+                continue;
+            }
+            if (player->groupId() != -1) {// Dont display players that are already assigned to a group
+                continue;
+            }
+            MediaBrowserItem item;
+            item.setBrowsable(true);
+            item.setExecutable(true);
+            item.setIcon(BrowserItem::BrowserIconFile);
+            item.setDisplayName(player->name());
+            item.setId(result->itemId() + "&player=" + QString::number(player->playerId()));
+            item.setActionTypeIds(QList<ActionTypeId>() << heosPlayerJoinBrowserItemActionTypeId);
+            result->addItem(item);
+
+        }
+        result->finish(Device::DeviceErrorNoError);
 
     } else if (result->itemId().startsWith("source=")){
         qDebug(dcDenon()) << "Browse source" << result->itemId();
@@ -943,11 +1137,41 @@ void IntegrationPluginDenon::executeBrowserItem(BrowserActionInfo *info)
 
 void IntegrationPluginDenon::executeBrowserItemAction(BrowserItemActionInfo *info)
 {
-    Heos *kodi = m_heos.value(info->device()->parentId());
-    if (!kodi) {
+    Heos *heos = m_heos.value(info->device()->parentId());
+    if (!heos) {
         info->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
     }
-    qDebug(dcDenon()) << "Execute browse item action called";
+
+    QUrlQuery query(info->browserItemAction().itemId());
+    if (info->browserItemAction().actionTypeId() == heosPlayerJoinBrowserItemActionTypeId) {
+        if (query.hasQueryItem("player")) {
+            QList<int> playerIds;
+            playerIds.append(query.queryItemValue("player").toInt());
+            playerIds.append(info->device()->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt());
+            heos->setGroup(playerIds);
+        } else if(query.hasQueryItem("group")) {
+
+            GroupObject group = m_groupBuffer.value(query.queryItemValue("group").toInt());
+            qDebug(dcDenon()) << "Execute browse item action called, Group:" << query.queryItemValue("group").toInt() << group.name;
+            QList<int> playerIds;
+            foreach(PlayerObject player, group.players) {
+                playerIds.append(player.playerId);
+            }
+            playerIds.append(info->device()->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt());
+            heos->setGroup(playerIds);
+        }
+    } else if (info->browserItemAction().actionTypeId() == heosPlayerUnjoinBrowserItemActionTypeId) {
+        if(query.hasQueryItem("group")) {
+            GroupObject group = m_groupBuffer.value(query.queryItemValue("group").toInt());
+            QList<int> playerIds;
+            foreach(PlayerObject player, group.players) {
+                if (player.playerId != info->device()->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt())
+                    playerIds.append(player.playerId);
+            }
+            heos->setGroup(playerIds);
+        }
+    }
+    info->finish(Device::DeviceErrorNoError);
     return;
 }

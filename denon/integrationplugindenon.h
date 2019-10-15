@@ -91,24 +91,31 @@ private:
     QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
     QHash<QString, MediaObject> m_mediaObjects;
 
+    QHash<int, GroupObject> m_groupBuffer;
+    QHash<int, HeosPlayer *> m_playerBuffer;
+
 private slots:
     void onPluginTimer();
 
     void onHeosConnectionChanged(bool status);
     void onHeosPlayersChanged();
-    void onHeosPlayerDiscovered(HeosPlayer *heosPlayer);
+    void onHeosPlayersReceived(QList<HeosPlayer *> players);
+    void onHeosPlayerInfoRecieved(HeosPlayer *player);
     void onHeosPlayStateReceived(int playerId, PLAYER_STATE state);
     void onHeosShuffleModeReceived(int playerId, bool shuffle);
     void onHeosRepeatModeReceived(int playerId, REPEAT_MODE repeatMode);
     void onHeosMuteStatusReceived(int playerId, bool mute);
     void onHeosVolumeStatusReceived(int playerId, int volume);
-    void onHeosNowPlayingMediaStatusReceived(int playerId, SOURCE_ID source, QString artist, QString album, QString Song, QString artwork);
+    void onHeosNowPlayingMediaStatusReceived(int playerId, const QString &sourceId, const QString &artist, const QString &album, const QString &song, const QString &artwork);
     void onHeosMusicSourcesReceived(QList<MusicSourceObject> musicSources);
-    //void onHeosMediaItemsReceived(QList<MediaObject> mediaItems);
+
     void onHeosBrowseRequestReceived(const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems);
     void onHeosBrowseErrorReceived(const QString &sourceId, const QString &containerId, int errorId, const QString &errorMessage);
     void onHeosPlayerNowPlayingChanged(int playerId);
     void onHeosPlayerQueueChanged(int playerId);
+    void onHeosGroupsReceived(QList<GroupObject> groups);
+    void onHeosGroupsChanged();
+
 
     void onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
     void onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry);
