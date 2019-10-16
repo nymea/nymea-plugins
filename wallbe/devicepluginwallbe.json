@@ -63,7 +63,7 @@
                                 "F - Supply equipment not available"
                             ],
                             "defaultValue": "F - Supply equipment not available",
-                            "displayNameEvent": "ev status changed"
+                            "displayNameEvent": "EV status changed"
                         },
                         {
                             "id": "26793adc-de10-426f-bb17-170c227891b2",
