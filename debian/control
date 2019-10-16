@@ -613,6 +613,22 @@ Description: nymea.io plugin for wakeonlan
  This package will install the nymea.io plugin for wakeonlan
 
 
+Package: nymea-plugin-wallbe
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+         libmodbus,
+Description: nymea.io plugin for wallbe ev charging stations
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for wallbe
+
+
 Package: nymea-plugin-wemo
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -858,6 +874,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-senic,
          nymea-plugin-sonos,
          nymea-plugin-keba,
+         nymea-plugin-wallbe,
 Replaces: guh-plugins
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The

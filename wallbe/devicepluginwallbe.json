@@ -1,0 +1,99 @@
+{
+    "displayName": "wallbe plugin",
+    "name": "Wallbe",
+    "id": "0de5bbd2-0dad-4727-9a17-3ee149106048",
+    "vendors": [
+        {
+            "displayName": "Petring",
+            "name": "petring",
+            "id": "831b4b87-0a6c-4d51-b055-967bb6e5fab5",
+            "deviceClasses": [
+                {
+                    "id": "e66c84f6-b398-47e9-8aeb-33840e7b4492",
+                    "displayName": "Wallbe eco 2.0",
+                    "name": "wallbeEco",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["connectable", "evcharger" ],
+                    "paramTypes": [
+                        {
+                            "id": "95f297a7-56a5-4789-9b14-6735717344b5",
+                            "displayName": "IP address",
+                            "name": "ip",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.0.8"
+                        },
+                        {
+                            "id": "551b03f0-dd70-4463-929b-3668dbd3290f",
+                            "displayName": "MAC address",
+                            "name": "mac",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "39a8e92b-40e5-4648-b5a8-2ffcb5598081",
+                            "displayName": "Connected",
+                            "name": "connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Connected changed"
+                        },
+                        {
+                            "id": "8dc2fef8-d16e-422a-8498-456b818f5752",
+                            "name": "chargeTime",
+                            "displayName": "Charging Time",
+                            "unit": "Minutes",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "displayNameEvent": "Charging time changed"
+                        },
+                        {
+                            "id": "2a95c4fb-9a15-4788-ae09-d34e71314da6",
+                            "name": "evStatus",
+                            "displayName": "EV Status",
+                            "type": "QString",
+                            "possibleValues": [
+                                "A - No Car plugged in",
+                                "B - Supply equipment not yet ready",
+                                "C - Ready to charge",
+                                "D - Ready to charge, ventilation needed",
+                                "E - Short circuit detected",
+                                "F - Supply equipment not available"
+                            ],
+                            "defaultValue": "F - Supply equipment not available",
+                            "displayNameEvent": "ev status changed"
+                        },
+                        {
+                            "id": "26793adc-de10-426f-bb17-170c227891b2",
+                            "name": "power",
+                            "displayName": "Charging",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameAction": "Start charging",
+                            "displayNameEvent": "Charging status changed",
+                            "writable": true
+                        },
+                        {
+                            "id": "60b5b6b8-bcd3-4c3f-8501-f15af94bc8c1",
+                            "name": "chargeCurrent",
+                            "displayName": "Charging current",
+                            "displayNameAction": "Set charging current",
+                            "displayNameEvent": "Charging current changed",
+                            "unit": "Ampere",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "type": "int",
+                            "unit": "Ampere",
+                            "minValue": 6,
+                            "maxValue": 80,
+                            "defaultValue": 6,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
