@@ -23,6 +23,7 @@ PLUGIN_DIRS = \
     genericinterfaces   \
     gpio                \
     httpcommander       \
+    i2ctools            \
     intertechno         \
     keba                \
     kodi                \
