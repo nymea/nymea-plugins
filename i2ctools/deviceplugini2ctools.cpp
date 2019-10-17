@@ -63,16 +63,18 @@ void DevicePluginI2cTools::discoverDevices(DeviceDiscoveryInfo *info)
 
         foreach (int file, m_i2cDeviceFiles) {
             DeviceId parentDeviceId = m_i2cDeviceFiles.key(file);
+            QString interfaceName = myDevices().findById(parentDeviceId)->name();
             QList<int> addresses = scanI2cBus(file, ScanModeAuto, m_fileFuncs.value(file), 0, 254);
             foreach(int address, addresses) {
-                DeviceDescriptor descriptor(i2cReadRegisterDeviceClassId, QString("i2c address %0").arg(address), " ", parentDeviceId);
+                DeviceDescriptor descriptor(i2cReadRegisterDeviceClassId, QString("0x%0").arg(QString::number(address, 16)), "I2C interface: " + interfaceName, parentDeviceId);
                 ParamList params;
                 params.append(Param(i2cReadRegisterDeviceAddressParamTypeId, address));
                 descriptor.setParams(params);
                 info->addDeviceDescriptor(descriptor);
             }
-            return;
         }
+        info->finish(Device::DeviceErrorNoError);
+        return;
     }
     qCWarning(dcI2cTools()) << "Discovery called for a deviceclass which does not support discovery? Device class ID:" << info->deviceClassId().toString();
     info->finish(Device::DeviceErrorDeviceClassNotFound);
@@ -135,10 +137,10 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
         foreach(int address, addresses) {
             state.append("0x");
             state.append(QString::number(address, 16));
-            state.append(",");
+            state.append(", ");
         }
-        if (state.size() > 1) {
-            state.resize(state.size() - 1); //remove last colon
+        if (state.size() > 2) {
+            state.resize(state.size() - 2); //remove last colon
         } else {
             state = "--";
         }
@@ -169,6 +171,7 @@ void DevicePluginI2cTools::deviceRemoved(Device *device)
 {
     if (device->deviceClassId() == i2cInterfaceDeviceClassId) {
         int file = m_i2cDeviceFiles.take(device->id());
+        m_fileFuncs.remove(file);
         close(file);
     }
 
@@ -189,10 +192,10 @@ void DevicePluginI2cTools::onPluginTimer()
         foreach(int address, addresses) {
             state.append("0x");
             state.append(QString::number(address, 16));
-            state.append(",");
+            state.append(", ");
         }
-        if (state.size() > 1) {
-            state.resize(state.size() - 1); //remove last colon
+        if (state.size() > 2) {
+            state.resize(state.size() - 2); //remove last colon
         } else {
             state = "--";
         }

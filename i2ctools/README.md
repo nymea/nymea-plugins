@@ -7,7 +7,7 @@ This plugin allows to detect and monitor I2C busses.
 Discovers the I2C interfaces available in the system.
 Displays the availbale device addresses on the bus.
 
-## I2C Device 
+## I2C Read Register
 
 Requires to have at least one I2C interface set up in nymea.
-Polls a single byte from the given device and register address
+Polls a single word from the given device and register address.
