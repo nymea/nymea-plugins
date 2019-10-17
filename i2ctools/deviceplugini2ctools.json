@@ -1,0 +1,87 @@
+{
+    "displayName": "I2C Tools",
+    "name": "I2cTools",
+    "id": "284d7f44-09aa-444e-afc3-5acee8f2ab43",
+    "vendors": [
+        {
+            "displayName": "nymea",
+            "name": "nymea",
+            "id": "b9167232-2092-4864-9a1c-5a99d9882ca8",
+            "deviceClasses": [
+                {
+                    "id": "468dbda3-4364-4255-8060-25e80ab9fc29",
+                    "name": "i2cInterface",
+                    "displayName": "I2C interface",
+                    "interfaces": ["gateway"],
+                    "createMethods": ["discovery", "user"],
+                    "paramTypes": [
+                        {
+                            "id": "406b9787-62c1-4697-9c97-fe4105f365d8",
+                            "name": "interface",
+                            "displayName": "I2C interface",
+                            "type": "QString",
+                            "defaultValue": "i2c-0"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "a108bdaf-2067-4ec9-bd45-89c5eecb8038",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "6a1a5da4-a8ff-4173-8238-6196aecef545",
+                            "name": "availableDevices",
+                            "displayName": "Available devices",
+                            "displayNameEvent": "Available devices changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        }
+                    ]
+                },
+                {
+                    "id": "f6c2ab46-3a70-4dbd-aae4-62fb7e984514",
+                    "name": "i2cReadRegister",
+                    "displayName": "I2C read register",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "fc0a40ef-6ae1-4adf-9f41-da6dbb37d8b5",
+                            "name": "address",
+                            "displayName": "Address",
+                            "type": "int"
+                        },
+                        {
+                            "id": "27a86394-d89f-4140-966d-ed8d5eb65f64",
+                            "name": "register",
+                            "displayName": "Register",
+                            "type": "int"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "726befc0-37cd-47f1-b983-1b5ee87a5bf7",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "72bf6436-e55e-45c7-b1c7-f459ae587b00",
+                            "name": "value",
+                            "displayName": "Value",
+                            "displayNameEvent": "Value changed",
+                            "defaultValue": 0,
+                            "type": "int"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
