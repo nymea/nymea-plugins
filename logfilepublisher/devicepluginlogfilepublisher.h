@@ -39,23 +39,21 @@ class DevicePluginLogfilePublisher : public DevicePlugin
 
 public:
     explicit DevicePluginLogfilePublisher();
-    ~DevicePluginLogfilePublisher() override;
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
 
-    DevicePairingInfo pairDevice(DevicePairingInfo &devicePairingInfo) override;
-    DevicePairingInfo confirmPairing(DevicePairingInfo &devicePairingInfo, const QString &username, const QString &secret) override;
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
 
-    Device::BrowseResult browseDevice(Device *device, Device::BrowseResult result, const QString &itemId, const QLocale &locale) override;
-    Device::BrowserItemResult browserItem(Device *device, Device::BrowserItemResult result, const QString &itemId, const QLocale &locale) override;
-    Device::DeviceError executeBrowserItem(Device *device, const BrowserAction &browserAction) override;
-    Device::DeviceError executeBrowserItemAction(Device *device, const BrowserItemAction &browserItemAction) override;
+    void browseDevice(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+    void executeBrowserItemAction(BrowserItemActionInfo *info) override;
 
 private:
     FileSystem *m_fileSystem;
-    QHash<Device *, FtpUpload *> *m_ftpUploads;
+    QHash<Device *, FtpUpload *> m_ftpUploads;
 
     QHash<int, ActionId> m_pendingActions;
     QHash<int, ActionId> m_pendingBrowserItemActions;

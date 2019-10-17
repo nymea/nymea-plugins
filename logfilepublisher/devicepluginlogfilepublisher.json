@@ -69,13 +69,6 @@
                             "type": "QString"
                         }
                     ],
-                    "actionTypes": [
-                        {
-                            "id": "289d85c2-b300-476c-a858-027ae12221a5",
-                            "name": "upload",
-                            "displayName": "Upload"
-                        }
-                    ],
                     "eventTypes": [
                         {
                             "id": "4e8fe761-3d99-4d18-8d92-2ca30c6a21ca",
@@ -94,9 +87,9 @@
                     ],
                     "browserItemActionTypes": [
                         {
-                            "id": "72eaef49-67d0-42b9-afe4-7cd272516e00",
-                            "name": "logFile",
-                            "displayName": "Logfile"
+                            "id": "b744ce7c-da0e-4243-a7f2-9fcff91a842c",
+                            "name": "upload",
+                            "displayName": "Upload"
                         }
                     ]
                 }

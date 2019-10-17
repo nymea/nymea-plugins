@@ -1,3 +1,25 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
+ *                                                                         *
+ *  This file is part of nymea.                                            *
+ *                                                                         *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
+ *                                                                         *
+ *  This library is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
+ *                                                                         *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #include "filesystem.h"
 #include "extern-plugininfo.h"
 
@@ -11,11 +33,11 @@ FileSystem::FileSystem(QObject *parent) : QObject(parent)
 
 }
 
-Device::BrowseResult FileSystem::browse(const QString &itemId, Device::BrowseResult &result)
+void FileSystem::browseDevice(BrowseResult *result)
 {
     QDir directory;
-    if (!itemId.isEmpty()) {
-        directory.setPath(itemId);
+    if (!result->itemId().isEmpty()) {
+        directory.setPath(result->itemId());
     } else {
         directory.setPath("/");
     }
@@ -35,45 +57,43 @@ Device::BrowseResult FileSystem::browse(const QString &itemId, Device::BrowseRes
             browserItem.setIcon(BrowserItem::BrowserIconFile);
             browserItem.setBrowsable(false);
             browserItem.setExecutable(item.isReadable());
+            browserItem.setActionTypeIds(QList<ActionTypeId>() << logfilePublisherUploadBrowserItemActionTypeId);
         }
         browserItem.setDescription("Date modified: " + item.lastModified().toString() + " Size: " + QString::number(item.size()/1000) + " kB");
         browserItem.setDisplayName(item.fileName());
-        result.items.append(browserItem);
+        result->addItem(browserItem);
     }
 
-    result.status = Device::DeviceErrorNoError;
-
-    return result;
+    result->finish(Device::DeviceErrorNoError);
+    return;
 }
 
-Device::BrowserItemResult FileSystem::browserItem(const QString &itemId, Device::BrowserItemResult &result)
+void FileSystem::browserItem(BrowserItemResult *result)
 {
-    qCDebug(dcLogfilePublisher) << "Getting details for" << itemId;
-    QString idString = itemId;
+    qCDebug(dcLogfilePublisher) << "Getting details for" << result->itemId();
     QString method;
     QVariantMap params;
 
-    QDir directory(itemId);
+    QDir directory(result->itemId());
     QStringList list = directory.entryList();
 
     foreach (QString item, list) {
         qCDebug(dcLogfilePublisher) << "Found item" << item;
     }
 
-    result.status = Device::DeviceErrorNoError;
-    return result;
+    result->finish(Device::DeviceErrorNoError);
+    return;
 }
 
-Device::DeviceError FileSystem::launchBrowserItem(const QString &itemId)
+void FileSystem::executeBrowserItem(BrowserActionInfo *info)
 {
-    Q_UNUSED(itemId)
-    return Device::DeviceErrorNoError;
+    Q_UNUSED(info)
+    return;
 }
 
-int FileSystem::executeBrowserItemAction(const QString &itemId, const ActionTypeId &actionTypeId)
+void FileSystem::executeBrowserItemAction(BrowserItemActionInfo *info)
 {
-    Q_UNUSED(itemId)
-    Q_UNUSED(actionTypeId)
+    Q_UNUSED(info)
 
-    return 0;
+    return;
 }

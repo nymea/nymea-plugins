@@ -1,9 +1,36 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                                                                         *
+ *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
+ *                                                                         *
+ *  This file is part of nymea.                                            *
+ *                                                                         *
+ *  This library is free software; you can redistribute it and/or          *
+ *  modify it under the terms of the GNU Lesser General Public             *
+ *  License as published by the Free Software Foundation; either           *
+ *  version 2.1 of the License, or (at your option) any later version.     *
+ *                                                                         *
+ *  This library is distributed in the hope that it will be useful,        *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
+ *  Lesser General Public License for more details.                        *
+ *                                                                         *
+ *  You should have received a copy of the GNU Lesser General Public       *
+ *  License along with this library; If not, see                           *
+ *  <http://www.gnu.org/licenses/>.                                        *
+ *                                                                         *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
 #include "types/browseritem.h"
 #include "types/browseritemaction.h"
 #include "devices/device.h"
+
+#include "devices/browseractioninfo.h"
+#include "devices/browseresult.h"
+#include "devices/browseritemactioninfo.h"
+#include "devices/browseritemresult.h"
 
 #include <QObject>
 #include <QtCore/QFileInfo>
@@ -16,10 +43,10 @@ class FileSystem : public QObject
 public:
     explicit FileSystem(QObject *parent = nullptr);
 
-    Device::BrowseResult browse(const QString &itemId, Device::BrowseResult &result);
-    Device::BrowserItemResult browserItem(const QString &itemId, Device::BrowserItemResult &result);
-    Device::DeviceError launchBrowserItem(const QString &itemId);
-    int executeBrowserItemAction(const QString &itemId, const ActionTypeId &actionTypeId);
+    void browseDevice(BrowseResult *result);
+    void browserItem(BrowserItemResult *result);
+    void executeBrowserItem(BrowserActionInfo *info);
+    void executeBrowserItemAction(BrowserItemActionInfo *info);
 
 signals:
 
