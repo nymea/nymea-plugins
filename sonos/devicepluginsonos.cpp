@@ -24,6 +24,8 @@
 #include "devices/device.h"
 #include "network/networkaccessmanager.h"
 #include "plugininfo.h"
+#include "types/mediabrowseritem.h"
+
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -353,6 +355,7 @@ void DevicePluginSonos::browseDevice(BrowseResult *result)
     } else if (result->itemId() == "favorites") {
         sonosConnection->getFavorites(householdId);
         m_pendingBrowseResult.insert(householdId, result);
+        connect(result, &BrowseResult::aborted,[householdId, this](){m_pendingBrowseResult.remove(householdId);});
     } else {
         //TODO add media browsing
         result->finish(Device::DeviceErrorItemNotFound);
@@ -374,11 +377,7 @@ void DevicePluginSonos::executeBrowserItem(BrowserActionInfo *info)
     QString groupId = info->device()->paramValue(sonosGroupDeviceGroupIdParamTypeId).toString();
     QUuid requestId = sonosConnection->loadFavorite(groupId, info->browserAction().itemId());
     m_pendingBrowserExecution.insert(requestId, info);
-}
-
-void DevicePluginSonos::executeBrowserItemAction(BrowserItemActionInfo *info)
-{
-    Q_UNUSED(info)
+    connect(info, &BrowserActionInfo::aborted,[requestId, this](){m_pendingBrowserExecution.remove(requestId);});
 }
 
 void DevicePluginSonos::onConnectionChanged(bool connected)
@@ -428,7 +427,7 @@ void DevicePluginSonos::onFavouritesReceived(const QString &householdId, QList<S
             return;
 
         foreach(Sonos::FavouriteObject favourite, favourites)  {
-            BrowserItem item;
+            MediaBrowserItem item;
             item.setId(favourite.id);
             item.setExecutable(true);
             item.setBrowsable(false);

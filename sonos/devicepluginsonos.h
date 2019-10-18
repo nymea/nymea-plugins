@@ -52,7 +52,6 @@ public:
     void browseDevice(BrowseResult *result) override;
     void browserItem(BrowserItemResult *result) override;
     void executeBrowserItem(BrowserActionInfo *info) override;
-    void executeBrowserItemAction(BrowserItemActionInfo *info) override;
 
 private:
     PluginTimer *m_pluginTimer5sec = nullptr;

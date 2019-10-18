@@ -213,11 +213,6 @@
                         }
                     ],
                     "browserItemActionTypes": [
-                        {
-                            "id": "b056af0f-4d5b-4f75-b0dd-e73246d3a83f",
-                            "name": "updateLibrary",
-                            "displayName": "Update library"
-                        }
                     ]
                 }
             ]
