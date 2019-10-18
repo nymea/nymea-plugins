@@ -90,6 +90,7 @@ void DevicePluginLukeRoberts::setupDevice(DeviceSetupInfo *info)
     BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::RandomAddress);
 
     LukeRoberts *lamp = new LukeRoberts(bluetoothDevice, this);
+    connect(lamp, &LukeRoberts::connectedChanged, this, &DevicePluginLukeRoberts::onConnectedChanged);
     connect(lamp, &LukeRoberts::deviceInformationChanged, this, &DevicePluginLukeRoberts::onDeviceInformationChanged);
 
     m_lamps.insert(lamp, device);

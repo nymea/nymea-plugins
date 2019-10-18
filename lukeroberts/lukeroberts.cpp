@@ -284,6 +284,7 @@ void LukeRoberts::onExternalApiEndpointCharacteristicChanged(const QLowEnergyCha
     if (characteristic.uuid() == m_externalApiEndpoint.uuid()) {
         qCDebug(dcLukeRoberts()) << "Data received" << value;
     }
+
     uint8_t scene = static_cast<uint8_t>(value.at(2));
     if (value.length() > 4) { //its a scene
 
@@ -294,7 +295,6 @@ void LukeRoberts::onExternalApiEndpointCharacteristicChanged(const QLowEnergyCha
         }
 
     }
-
 
     qCDebug(dcLukeRoberts()) << "Service characteristic changed" << characteristic.name() << value.toHex();
 }
