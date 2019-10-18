@@ -66,6 +66,7 @@ private:
 
     QHash<QUuid, QPointer<DeviceActionInfo> > m_pendingActions;
     QHash<QString, BrowseResult *> m_pendingBrowseResult;
+     QHash<QString, BrowserItemResult *> m_pendingBrowserItemResult;
     QHash<QUuid, BrowserActionInfo  *> m_pendingBrowserExecution;
 
 

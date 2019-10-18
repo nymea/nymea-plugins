@@ -81,6 +81,11 @@ void DevicePluginSonos::setupDevice(DeviceSetupInfo *info)
             QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
             pluginStorage()->endGroup();
 
+            if (refreshToken.isEmpty()) {
+                info->finish(Device::DeviceErrorAuthenticationFailure);
+                return;
+            }
+
             sonos = new Sonos(hardwareManager()->networkManager(), "0a8f6d44-d9d1-4474-bcfa-cfb41f8b66e8", "3095ce48-0c5d-47ce-a1f4-6005c7b8fdb5", this);
             connect(sonos, &Sonos::connectionChanged, this, &DevicePluginSonos::onConnectionChanged);
             connect(sonos, &Sonos::householdIdsReceived, this, &DevicePluginSonos::onHouseholdIdsReceived);
@@ -345,14 +350,14 @@ void DevicePluginSonos::browseDevice(BrowseResult *result)
     QString householdId = result->device()->paramValue(sonosGroupDeviceHouseholdIdParamTypeId).toString();
     if (result->itemId().isEmpty()){
         BrowserItem item;
-        item.setId("favorites");
+        item.setId("/favorites");
         item.setIcon(BrowserItem::BrowserIconFavorites);
         item.setExecutable(false);
         item.setBrowsable(true);
         item.setDisplayName("Favorites");
         result->addItem(item);
         result->finish(Device::DeviceErrorNoError);
-    } else if (result->itemId() == "favorites") {
+    } else if (result->itemId() == "/favorites") {
         sonosConnection->getFavorites(householdId);
         m_pendingBrowseResult.insert(householdId, result);
         connect(result, &BrowseResult::aborted,[householdId, this](){m_pendingBrowseResult.remove(householdId);});
@@ -364,7 +369,18 @@ void DevicePluginSonos::browseDevice(BrowseResult *result)
 
 void DevicePluginSonos::browserItem(BrowserItemResult *result)
 {
-    Q_UNUSED(result)
+    Device *parentDevice = myDevices().findById(result->device()->parentId());
+    Sonos *sonosConnection = m_sonosConnections.value(parentDevice);
+    if (!sonosConnection)
+        return;
+
+    qCDebug(dcSonos()) << "Browser Item" << result->itemId();
+    QString householdId = result->device()->paramValue(sonosGroupDeviceHouseholdIdParamTypeId).toString();
+    if (result->itemId().startsWith("/favorites")) {
+        sonosConnection->getFavorites(householdId);
+        m_pendingBrowserItemResult.insert(householdId, result);
+        connect(result, &BrowserItemResult::aborted,[householdId, this](){m_pendingBrowserItemResult.remove(householdId);});
+    }
 }
 
 void DevicePluginSonos::executeBrowserItem(BrowserActionInfo *info)
@@ -375,9 +391,12 @@ void DevicePluginSonos::executeBrowserItem(BrowserActionInfo *info)
         return;
 
     QString groupId = info->device()->paramValue(sonosGroupDeviceGroupIdParamTypeId).toString();
-    QUuid requestId = sonosConnection->loadFavorite(groupId, info->browserAction().itemId());
-    m_pendingBrowserExecution.insert(requestId, info);
-    connect(info, &BrowserActionInfo::aborted,[requestId, this](){m_pendingBrowserExecution.remove(requestId);});
+    if (info->browserAction().itemId().startsWith("/favorites")) {
+        QString favoriteId = info->browserAction().itemId().remove("/favorite/");
+        QUuid requestId = sonosConnection->loadFavorite(groupId, favoriteId);
+        m_pendingBrowserExecution.insert(requestId, info);
+        connect(info, &BrowserActionInfo::aborted,[requestId, this](){m_pendingBrowserExecution.remove(requestId);});
+    }
 }
 
 void DevicePluginSonos::onConnectionChanged(bool connected)
@@ -428,11 +447,11 @@ void DevicePluginSonos::onFavouritesReceived(const QString &householdId, QList<S
 
         foreach(Sonos::FavouriteObject favourite, favourites)  {
             MediaBrowserItem item;
-            item.setId(favourite.id);
+            item.setId(result->itemId() + "/" + favourite.id);
             item.setExecutable(true);
             item.setBrowsable(false);
             if (!favourite.imageUrl.isEmpty()) {
-                 item.setThumbnail(favourite.imageUrl);
+                item.setThumbnail(favourite.imageUrl);
             } else {
                 item.setIcon(BrowserItem::BrowserIconFavorites);
             }
@@ -442,8 +461,30 @@ void DevicePluginSonos::onFavouritesReceived(const QString &householdId, QList<S
             qDebug(dcSonos()) << "Favourite: " << favourite.name << favourite.description;
         }
         result->finish(Device::DeviceErrorNoError);
-    } else {
-        qDebug(dcSonos()) << "Received unhandled favourites list";
+    }
+
+    if (m_pendingBrowserItemResult.contains(householdId)) {
+        BrowserItemResult *result = m_pendingBrowserItemResult.take(householdId);
+        if (!result)
+            return;
+        QString favoriteId = result->itemId().remove("/favorites/");
+
+        foreach(Sonos::FavouriteObject favourite, favourites)  {
+            if (favourite.id == favoriteId) {
+                MediaBrowserItem item;
+                item.setId(result->itemId());
+                item.setExecutable(true);
+                item.setBrowsable(false);
+                if (!favourite.imageUrl.isEmpty()) {
+                    item.setThumbnail(favourite.imageUrl);
+                } else {
+                    item.setIcon(BrowserItem::BrowserIconFavorites);
+                }
+                item.setDisplayName(favourite.name);
+                item.setDescription(favourite.description);
+                result->finish(item);
+            }
+        }
     }
 }
 

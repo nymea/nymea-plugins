@@ -24,8 +24,9 @@
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
-                            "defaultValue": true,
-                            "type": "bool"
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "48b5c1bf-7df0-45d0-9ba3-290fc3acddc3",
