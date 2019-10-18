@@ -44,7 +44,7 @@ void FileSystem::browseDevice(BrowseResult *result)
     QFileInfoList list = directory.entryInfoList();
 
     foreach (QFileInfo item, list) {
-        qCDebug(dcLogfilePublisher) << "Found item" << item;
+        qCDebug(dcFtpFileTransfer) << "Found item" << item;
         BrowserItem browserItem;
         browserItem.setId(item.filePath());
         if (item.isHidden()) {
@@ -57,7 +57,7 @@ void FileSystem::browseDevice(BrowseResult *result)
             browserItem.setIcon(BrowserItem::BrowserIconFile);
             browserItem.setBrowsable(false);
             browserItem.setExecutable(item.isReadable());
-            browserItem.setActionTypeIds(QList<ActionTypeId>() << logfilePublisherUploadBrowserItemActionTypeId);
+            browserItem.setActionTypeIds(QList<ActionTypeId>() <<ftpFileTransferUploadBrowserItemActionTypeId);
         }
         browserItem.setDescription("Date modified: " + item.lastModified().toString() + " Size: " + QString::number(item.size()/1000) + " kB");
         browserItem.setDisplayName(item.fileName());
@@ -70,7 +70,7 @@ void FileSystem::browseDevice(BrowseResult *result)
 
 void FileSystem::browserItem(BrowserItemResult *result)
 {
-    qCDebug(dcLogfilePublisher) << "Getting details for" << result->itemId();
+    qCDebug(dcFtpFileTransfer) << "Getting details for" << result->itemId();
     QString method;
     QVariantMap params;
 
@@ -78,7 +78,7 @@ void FileSystem::browserItem(BrowserItemResult *result)
     QStringList list = directory.entryList();
 
     foreach (QString item, list) {
-        qCDebug(dcLogfilePublisher) << "Found item" << item;
+        qCDebug(dcFtpFileTransfer) << "Found item" << item;
     }
 
     result->finish(Device::DeviceErrorNoError);

@@ -20,8 +20,8 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINLOGFILEPUBLISHER_H
-#define DEVICEPLUGINLOGFILEPUBLISHER_H
+#ifndef DEVICEPLUGINFTPFILETRANSFER_H
+#define DEVICEPLUGINFTPFILETRANSFER_H
 
 #include "devices/deviceplugin.h"
 #include "plugintimer.h"
@@ -31,14 +31,14 @@
 #include <QHash>
 #include <QDebug>
 
-class DevicePluginLogfilePublisher : public DevicePlugin
+class DevicePluginFtpFileTransfer : public DevicePlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginlogfilepublisher.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginftpfiletransfer.json")
     Q_INTERFACES(DevicePlugin)
 
 public:
-    explicit DevicePluginLogfilePublisher();
+    explicit DevicePluginFtpFileTransfer();
 
     void setupDevice(DeviceSetupInfo *info) override;
     void deviceRemoved(Device *device) override;
@@ -64,4 +64,4 @@ private slots:
     void onUploadFinished(bool success);
 };
 
-#endif // DEVICEPLUGINLOGFILEPUBLISHER_H
+#endif // DEVICEPLUGINFTPFILETRANSFER_H

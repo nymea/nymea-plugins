@@ -2,14 +2,14 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginlogfilepublisher)
+TARGET = $$qtLibraryTarget(nymea_devicepluginftpfiletransfer)
 
 SOURCES += \
-    devicepluginlogfilepublisher.cpp \
+    devicepluginftpfiletransfer.cpp \
     filesystem.cpp \
     ftpupload.cpp
 
 HEADERS += \
-    devicepluginlogfilepublisher.h \
+    devicepluginftpfiletransfer.h \
     filesystem.h \
     ftpupload.h

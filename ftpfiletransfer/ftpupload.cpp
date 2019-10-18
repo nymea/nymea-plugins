@@ -65,7 +65,7 @@ void FtpUpload::onFinished()
 
     if (reply->error()) {
         emit uploadFinished(false);
-        qWarning(dcLogfilePublisher()) << "Upload failed:" << reply->errorString();
+        qCWarning(dcFtpFileTransfer()) << "Upload failed:" << reply->errorString();
     } else {
         emit uploadFinished(true);
     }

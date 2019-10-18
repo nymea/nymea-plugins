@@ -1,7 +1,7 @@
 {
     "id": "1eb64356-4019-4982-b7e2-43810a2b27a1",
-    "name": "logfilePublisher",
-    "displayName": "Logfile publisher",
+    "name": "ftpFileTransfer",
+    "displayName": "FTP file transfer",
     "vendors": [
         {
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
@@ -10,8 +10,8 @@
             "deviceClasses": [
                 {
                     "id": "45c44185-28d8-4b5d-abbb-7dd825c8759f",
-                    "name": "logfilePublisher",
-                    "displayName": "Logfile publisher",
+                    "name": "ftpFileTransfer",
+                    "displayName": "FTP file transfer",
                     "interfaces": ["connectable"],
                     "createMethods": ["user"],
                     "setupMethod": "userandpassword",

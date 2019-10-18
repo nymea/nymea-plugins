@@ -21,6 +21,7 @@ PLUGIN_DIRS = \
     fastcom             \
     flowercare          \
     fronius             \
+    ftpfiletransfer     \
     genericelements     \
     genericthings       \
     gpio                \
@@ -30,7 +31,6 @@ PLUGIN_DIRS = \
     kodi                \
     lgsmarttv           \
     lifx                \
-    logfilepublisher    \
     mailnotification    \
     mqttclient          \
     nanoleaf            \

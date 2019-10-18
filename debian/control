@@ -321,8 +321,21 @@ Description: nymea.io plugin for Fronius PV inverters
  allows them to interact.
  With the powerful rule engine you are able to connect any device available
  in the system and create individual scenes and behaviors for your environment.
- .
  This package will install the nymea.io plugin for Fronius
+
+
+Package: nymea-plugin-ftpfiletransfer
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin to transfer any file on the file system to a ftp server
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ This package will install the nymea.io plugin FTP file transfer.
 
 
 Package: nymea-plugin-eq-3
@@ -1101,6 +1114,7 @@ Section: libs
 Architecture: all
 Depends: nymea-plugin-boblight,
          nymea-plugin-commandlauncher,
+         nymea-plugin-ftpfiletransfer,
          nymea-plugin-udpcommander,
          nymea-plugin-tcpcommander,
          nymea-plugin-httpcommander,
