@@ -58,7 +58,7 @@ void DevicePluginLukeRoberts::discoverDevices(DeviceDiscoveryInfo *info)
         }
 
         foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
-            if (deviceInfo.name().contains("LRF")) {
+            if (deviceInfo.serviceUuids().contains(customControlServiceUuid)) {
                 DeviceDescriptor descriptor(modelFDeviceClassId, "Model F", deviceInfo.name() + " (" + deviceInfo.address().toString() + ")");
                 ParamList params;
 
@@ -219,6 +219,12 @@ void DevicePluginLukeRoberts::executeBrowserItemAction(BrowserItemActionInfo *in
         info->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
     }
+}
+
+void DevicePluginLukeRoberts::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
+{
+    Q_UNUSED(paramTypeId)
+    Q_UNUSED(value)
 }
 
 

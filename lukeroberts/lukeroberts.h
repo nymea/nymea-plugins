@@ -31,6 +31,8 @@
 #include "typeutils.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
+static QBluetoothUuid customControlServiceUuid             = QBluetoothUuid(QUuid("​44092840-0567-11E6-B862-0002^"));
+static QBluetoothUuid externalApiEndpointCharacteristicUuid       = QBluetoothUuid(QUuid("44092842-0567-11E6-B862-0002A5D5C51B"));
 
 inline QByteArray &operator<<(QByteArray &l, quint8 r)
 {
