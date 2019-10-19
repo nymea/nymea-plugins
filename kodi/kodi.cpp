@@ -953,11 +953,6 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
         return;
     }
 
-    if (method == "GUI.ShowNotification" || method == "Input.ExecuteAction") {
-        emit actionExecuted(id, !response.contains("error"));
-        return;
-    }
-
     if (method == "VideoLibrary.Scan" || method == "VideoLibrary.Clean" || method == "AudioLibrary.Scan" || method == "AudioLibrary.Clean") {
         emit browserItemActionExecuted(id, !response.contains("error"));
         return;
@@ -965,9 +960,11 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
 
     if (method == "Player.Open") {
         emit browserItemExecuted(id, !response.contains("error"));
+        return;
     }
 
-    qCWarning(dcKodi()) << "unhandled reply" << method << response;
+    // Default
+    emit actionExecuted(id, !response.contains("error"));
 }
 
 void Kodi::updatePlayerProperties()
