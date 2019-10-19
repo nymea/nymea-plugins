@@ -563,24 +563,9 @@ void Kodi::activePlayersChanged(const QVariantList &data)
     }
     m_activePlayer = data.first().toMap().value("playerid").toInt();
     qCDebug(dcKodi) << "Active Player changed:" << m_activePlayer << data.first().toMap().value("type").toString();
-    if (data.first().toMap().contains("type")) {
-        emit activePlayerChanged(data.first().toMap().value("type").toString());
-    } else {
-        // Player map doesn't contain type... sometimes... looks like a kodi bug... Assume 1 is video, 2 is music...
-        switch (m_activePlayer) {
-        case 1:
-            emit activePlayerChanged("video");
-            break;
-        case 2:
-            emit activePlayerChanged("music");
-            break;
-        case 3:
-            emit activePlayerChanged("picture");
-            break;
-        }
-    }
+    emit activePlayerChanged(data.first().toMap().value("type").toString());
 
-    updatePlayerProperties();
+    updateMetadata();
 }
 
 void Kodi::playerPropertiesReceived(const QVariantMap &properties)
@@ -605,6 +590,9 @@ void Kodi::mediaMetaDataReceived(const QVariantMap &data)
     QVariantMap item = data.value("item").toMap();
 
     QString title = item.value("title").toString();
+    if (title.isEmpty()) { // Fall back to label if not title present
+        title = item.value("label").toString();
+    }
     QString artist;
     QString collection;
     if (item.value("type").toString() == "song") {
@@ -648,13 +636,15 @@ void Kodi::processNotification(const QString &method, const QVariantMap &params)
     if (method == "Application.OnVolumeChanged") {
         QVariantMap data = params.value("data").toMap();
         onVolumeChanged(data.value("volume").toInt(), data.value("muted").toBool());
-    } else if (method == "Player.OnPlay" || method == "Player.OnResume") {
+    } else if (method == "Player.OnPlay" || method == "Player.OnResume" || method == "Player.OnAVStart") {
         onPlaybackStatusChanged("Playing");
-        activePlayersChanged(QVariantList() << params.value("data").toMap().value("player"));
+        update();
     } else if (method == "Player.OnPause") {
-        emit playbackStatusChanged("Paused");
+        onPlaybackStatusChanged("Paused");
+        update();
     } else if (method == "Player.OnStop") {
-        activePlayersChanged(QVariantList());
+        onPlaybackStatusChanged("Stopped");
+        update();
     }
 }
 
@@ -681,7 +671,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
 
     if (method == "Player.GetActivePlayers") {
         qCDebug(dcKodi) << "Active players changed" << response;
-        emit activePlayersChanged(response.value("result").toList());
+        activePlayersChanged(response.value("result").toList());
         return;
     }
 
@@ -693,7 +683,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
 
     if (method == "Player.GetItem") {
         qCDebug(dcKodi) << "Played item received" << response;
-        emit mediaMetaDataReceived(response.value("result").toMap());
+        mediaMetaDataReceived(response.value("result").toMap());
         return;
     }
 
