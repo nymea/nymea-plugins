@@ -563,7 +563,22 @@ void Kodi::activePlayersChanged(const QVariantList &data)
     }
     m_activePlayer = data.first().toMap().value("playerid").toInt();
     qCDebug(dcKodi) << "Active Player changed:" << m_activePlayer << data.first().toMap().value("type").toString();
-    emit activePlayerChanged(data.first().toMap().value("type").toString());
+    if (data.first().toMap().contains("type")) {
+        emit activePlayerChanged(data.first().toMap().value("type").toString());
+    } else {
+        // Player map doesn't contain type... sometimes... looks like a kodi bug... Assume 1 is video, 2 is music...
+        switch (m_activePlayer) {
+        case 1:
+            emit activePlayerChanged("video");
+            break;
+        case 2:
+            emit activePlayerChanged("music");
+            break;
+        case 3:
+            emit activePlayerChanged("picture");
+            break;
+        }
+    }
 
     updatePlayerProperties();
 }
@@ -634,13 +649,12 @@ void Kodi::processNotification(const QString &method, const QVariantMap &params)
         QVariantMap data = params.value("data").toMap();
         onVolumeChanged(data.value("volume").toInt(), data.value("muted").toBool());
     } else if (method == "Player.OnPlay" || method == "Player.OnResume") {
-        emit activePlayersChanged(QVariantList() << params.value("data").toMap().value("player"));
         onPlaybackStatusChanged("Playing");
+        activePlayersChanged(QVariantList() << params.value("data").toMap().value("player"));
     } else if (method == "Player.OnPause") {
         emit playbackStatusChanged("Paused");
     } else if (method == "Player.OnStop") {
-        emit playbackStatusChanged("Stopped");
-        emit activePlayersChanged(QVariantList());
+        activePlayersChanged(QVariantList());
     }
 }
 
