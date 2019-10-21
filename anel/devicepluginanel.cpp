@@ -149,16 +149,6 @@ DevicePluginAnel::DevicePluginAnel()
     m_portParamTypeIdMap.insert(netPwrCtlProDeviceClassId, netPwrCtlProDevicePortParamTypeId);
     m_portParamTypeIdMap.insert(netPwrCtlAdvDeviceClassId, netPwrCtlAdvDevicePortParamTypeId);
     m_portParamTypeIdMap.insert(netPwrCtlHutDeviceClassId, netPwrCtlHutDevicePortParamTypeId);
-
-    m_userParamTypeIdMap.insert(netPwrCtlHomeDeviceClassId, netPwrCtlHomeDeviceUsernameParamTypeId);
-    m_userParamTypeIdMap.insert(netPwrCtlProDeviceClassId, netPwrCtlProDeviceUsernameParamTypeId);
-    m_userParamTypeIdMap.insert(netPwrCtlAdvDeviceClassId, netPwrCtlAdvDeviceUsernameParamTypeId);
-    m_userParamTypeIdMap.insert(netPwrCtlHutDeviceClassId, netPwrCtlHutDeviceUsernameParamTypeId);
-
-    m_passParamTypeIdMap.insert(netPwrCtlHomeDeviceClassId, netPwrCtlHomeDevicePasswordParamTypeId);
-    m_passParamTypeIdMap.insert(netPwrCtlProDeviceClassId, netPwrCtlProDevicePasswordParamTypeId);
-    m_passParamTypeIdMap.insert(netPwrCtlAdvDeviceClassId, netPwrCtlAdvDevicePasswordParamTypeId);
-    m_passParamTypeIdMap.insert(netPwrCtlHutDeviceClassId, netPwrCtlHutDevicePasswordParamTypeId);
 }
 
 DevicePluginAnel::~DevicePluginAnel()
@@ -169,11 +159,8 @@ void DevicePluginAnel::init()
 {
 }
 
-Device::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginAnel::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(deviceClassId)
-    Q_UNUSED(params)
-
     QUdpSocket *searchSocket = new QUdpSocket(this);
 
     // Note: This will fail, and it's not a problem, but it is required to force the socket to stick to IPv4...
@@ -184,11 +171,12 @@ Device::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId &devic
     if (len != discoveryString.length()) {
         searchSocket->deleteLater();
         qCWarning(dcAnelElektronik()) << "Error sending discovery";
-        return Device::DeviceErrorHardwareFailure;
+        //: Error discovering devices
+        info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error sending data to the network."));
+        return;
     }
 
-    QTimer::singleShot(2000, this, [this, searchSocket, deviceClassId](){
-        QList<DeviceDescriptor> descriptorList;
+    QTimer::singleShot(2000, info, [this, searchSocket, info](){
         while(searchSocket->hasPendingDatagrams()) {
             char buffer[1024];
             QHostAddress senderAddress;
@@ -206,14 +194,12 @@ Device::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId &devic
             }
             qCDebug(dcAnelElektronik()) << "Found NET-CONTROL:" << senderAddress << parts.at(2) << parts.at(3) << senderAddress.protocol();
 
-            ParamTypeId ipAddressParamTypeId = m_ipAddressParamTypeIdMap.value(deviceClassId);
-            ParamTypeId portParamTypeId = m_portParamTypeIdMap.value(deviceClassId);
-            ParamTypeId userParamTypeId = m_userParamTypeIdMap.value(deviceClassId);
-            ParamTypeId passParamTypeId = m_passParamTypeIdMap.value(deviceClassId);
+            ParamTypeId ipAddressParamTypeId = m_ipAddressParamTypeIdMap.value(info->deviceClassId());
+            ParamTypeId portParamTypeId = m_portParamTypeIdMap.value(info->deviceClassId());
 
             bool existing = false;
             foreach (Device *existingDev, myDevices()) {
-                if (existingDev->deviceClassId() == deviceClassId && existingDev->paramValue(ipAddressParamTypeId).toString() == senderAddress.toString()) {
+                if (existingDev->deviceClassId() == info->deviceClassId() && existingDev->paramValue(ipAddressParamTypeId).toString() == senderAddress.toString()) {
                     existing = true;
                 }
             }
@@ -221,30 +207,60 @@ Device::DeviceError DevicePluginAnel::discoverDevices(const DeviceClassId &devic
                 qCDebug(dcAnelElektronik()) << "Already have device" << senderAddress << "in configured devices. Skipping...";
                 continue;
             }
-            DeviceDescriptor d(deviceClassId, parts.at(2), senderAddress.toString());
+            DeviceDescriptor d(info->deviceClassId(), parts.at(2), senderAddress.toString());
             ParamList params;
             params << Param(ipAddressParamTypeId, senderAddress.toString());
             params << Param(portParamTypeId, parts.at(3).toInt());
-            params << Param(userParamTypeId, "user7");
-            params << Param(passParamTypeId, "anel");
             d.setParams(params);
-            descriptorList << d;
+            info->addDeviceDescriptor(d);
         }
-        emit devicesDiscovered(deviceClassId, descriptorList);
+        info->finish(Device::DeviceErrorNoError);
         searchSocket->deleteLater();
     });
-    return Device::DeviceErrorAsync;
 }
 
-Device::DeviceSetupStatus DevicePluginAnel::setupDevice(Device *device)
+void DevicePluginAnel::startPairing(DevicePairingInfo *info)
 {
+    info->finish(Device::DeviceErrorNoError, QT_TR_NOOP("Please enter the login credentials for your NET-PWRCTRL device."));
+}
+
+void DevicePluginAnel::confirmPairing(DevicePairingInfo *info, const QString &username, const QString &password)
+{
+    QString ipAddress = info->params().paramValue(m_ipAddressParamTypeIdMap.value(info->deviceClassId())).toString();
+    int port = info->params().paramValue(m_portParamTypeIdMap.value(info->deviceClassId())).toInt();
+
+    QNetworkRequest request;
+    request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
+    request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
+    qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << password;
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, info, [this, info, reply, username, password](){
+        if (reply->error() == QNetworkReply::NoError) {
+            pluginStorage()->beginGroup(info->deviceId().toString());
+            pluginStorage()->setValue("username", username);
+            pluginStorage()->setValue("password", password);
+            pluginStorage()->endGroup();
+            info->finish(Device::DeviceErrorNoError);
+        } else {
+            //: Error pairing device
+            info->finish(Device::DeviceErrorAuthenticationFailure, QT_TR_NOOP("Wrong username or password."));
+        }
+    });
+}
+
+void DevicePluginAnel::setupDevice(DeviceSetupInfo *info)
+{
+    Device *device = info->device();
     if (device->deviceClassId() == netPwrCtlHomeDeviceClassId
             || device->deviceClassId() == netPwrCtlProDeviceClassId) {
-        return setupHomeProDevice(device);
+        setupHomeProDevice(info);
+        return;
     }
     if (device->deviceClassId() == netPwrCtlAdvDeviceClassId
             || device->deviceClassId() == netPwrCtlHutDeviceClassId) {
-        return setupAdvDevice(device);
+        setupAdvDevice(info);
+        return;
     }
 
     if (device->deviceClassId() == socketDeviceClassId) {
@@ -253,11 +269,12 @@ Device::DeviceSetupStatus DevicePluginAnel::setupDevice(Device *device)
             m_pollTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
             connect(m_pollTimer, &PluginTimer::timeout, this, &DevicePluginAnel::refreshStates);
         }
-        return Device::DeviceSetupStatusSuccess;
+        info->finish(Device::DeviceErrorNoError);
+        return;
     }
 
     qCWarning(dcAnelElektronik) << "Unhandled DeviceClass in setupDevice" << device->deviceClassId();
-    return Device::DeviceSetupStatusFailure;
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginAnel::deviceRemoved(Device *device)
@@ -269,8 +286,11 @@ void DevicePluginAnel::deviceRemoved(Device *device)
     }
 }
 
-Device::DeviceError DevicePluginAnel::executeAction(Device *device, const Action &action)
+void DevicePluginAnel::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     if (device->deviceClassId() == socketDeviceClassId) {
         if (action.actionTypeId() == socketPowerActionTypeId) {
 
@@ -278,8 +298,11 @@ Device::DeviceError DevicePluginAnel::executeAction(Device *device, const Action
 
             QString ipAddress = parentDevice->paramValue(m_ipAddressParamTypeIdMap.value(parentDevice->deviceClassId())).toString();
             int port = parentDevice->paramValue(m_portParamTypeIdMap.value(parentDevice->deviceClassId())).toInt();
-            QString username = parentDevice->paramValue(m_userParamTypeIdMap.value(parentDevice->deviceClassId())).toString();
-            QString password = parentDevice->paramValue(m_passParamTypeIdMap.value(parentDevice->deviceClassId())).toString();
+
+            pluginStorage()->beginGroup(device->id().toString());
+            QString username = pluginStorage()->value("username").toString();
+            QString password = pluginStorage()->value("password").toString();
+            pluginStorage()->endGroup();
 
             QUrl url(QString("http://%1:%2/ctrl.htm").arg(ipAddress).arg(port));
             QNetworkRequest request(url);
@@ -288,18 +311,19 @@ Device::DeviceError DevicePluginAnel::executeAction(Device *device, const Action
             QByteArray data = QString("F%1=%2").arg(device->paramValue(socketDeviceNumberParamTypeId).toString(), action.param(socketPowerActionPowerParamTypeId).value().toBool() == true ? "1" : "0").toUtf8();
             QNetworkReply *reply = hardwareManager()->networkManager()->post(request, data);
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-            connect(reply, &QNetworkReply::finished, device, [this, reply, action](){
+            connect(reply, &QNetworkReply::finished, info, [reply, info](){
                 if (reply->error() != QNetworkReply::NoError) {
                     qCWarning(dcAnelElektronik()) << "Execute action failed:" << reply->error() << reply->errorString();
-                    emit actionExecutionFinished(action.id(), Device::DeviceErrorHardwareNotAvailable);
+                    info->finish(Device::DeviceErrorHardwareFailure);
+                    return;
                 }
                 qCDebug(dcAnelElektronik()) << "Execute action done.";
-                emit actionExecutionFinished(action.id(), Device::DeviceErrorNoError);
+                info->finish(Device::DeviceErrorNoError);
             });
-            return Device::DeviceErrorAsync;
+            return;
         }
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginAnel::refreshStates()
@@ -326,12 +350,17 @@ void DevicePluginAnel::setConnectedState(Device *device, bool connected)
     }
 }
 
-Device::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *device)
+void DevicePluginAnel::setupHomeProDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     QString ipAddress = device->paramValue(m_ipAddressParamTypeIdMap.value(device->deviceClassId())).toString();
     int port = device->paramValue(m_portParamTypeIdMap.value(device->deviceClassId())).toInt();
-    QString username = device->paramValue(m_userParamTypeIdMap.value(device->deviceClassId())).toString();
-    QString password = device->paramValue(m_passParamTypeIdMap.value(device->deviceClassId())).toString();
+
+    pluginStorage()->beginGroup(device->id().toString());
+    QString username = pluginStorage()->value("username").toString();
+    QString password = pluginStorage()->value("password").toString();
+    pluginStorage()->endGroup();
 
     QNetworkRequest request;
     request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
@@ -339,15 +368,16 @@ Device::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *device)
     qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << password;
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, device, [this, device, reply](){
-        StateTypeId connectedStateTypeId = m_connectedStateTypeIdMap.value(device->deviceClassId());
+    connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
+        StateTypeId connectedStateTypeId = m_connectedStateTypeIdMap.value(info->device()->deviceClassId());
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcAnelElektronik()) << "Error fetching state for" << device->name() << reply->error() << reply->errorString();
-            device->setStateValue(connectedStateTypeId, false);
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+            qCWarning(dcAnelElektronik()) << "Error fetching state for" << info->device()->name() << reply->error() << reply->errorString();
+            info->device()->setStateValue(connectedStateTypeId, false);
+            //: Error setting up device
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("The device rejected our connection. Please check the configured network ports."));
             return;
         }
-        device->setStateValue(connectedStateTypeId, true);
+        info->device()->setStateValue(connectedStateTypeId, true);
 
         QByteArray data = reply->readAll();
 
@@ -356,16 +386,17 @@ Device::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *device)
         int startIndex = parts.indexOf("end") - 58;
         if (startIndex < 0 || !parts.at(startIndex).startsWith("NET-PWRCTRL") || parts.length() < 60) {
             qCWarning(dcAnelElektronik()) << "Bad data from panel:" << data << "Length:" << parts.length();
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+            //: Error setting up device
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Unexpected data received from NET-PWRCTL device. Perhaps it's running an old firmware?"));
             return;
         }
 
         // At this point we're done with gathering information about the panel. Setup defintely succeeded for the gateway device
-        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+        info->finish(Device::DeviceErrorNoError);
 
         // If we haven't set up childs for this gateway yet, let's do it now
         foreach (Device *child, myDevices()) {
-            if (child->parentId() == device->id()) {
+            if (child->parentId() == info->device()->id()) {
                 // Already have childs for this panel. We're done here
                 return;
             }
@@ -383,22 +414,25 @@ Device::DeviceSetupStatus DevicePluginAnel::setupHomeProDevice(Device *device)
         QList<DeviceDescriptor> descriptorList;
         for (int i = 0; i < childs; i++) {
             QString deviceName = parts.at(startIndex + 10 + i);
-            DeviceDescriptor d(socketDeviceClassId, deviceName, device->name(), device->id());
+            DeviceDescriptor d(socketDeviceClassId, deviceName, info->device()->name(), info->device()->id());
             d.setParams(ParamList() << Param(socketDeviceNumberParamTypeId, i));
             descriptorList << d;
         }
-        emit autoDevicesAppeared(socketDeviceClassId, descriptorList);
+        emit autoDevicesAppeared(descriptorList);
     });
-
-    return Device::DeviceSetupStatusAsync;
 }
 
-Device::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device)
+void DevicePluginAnel::setupAdvDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     QString ipAddress = device->paramValue(m_ipAddressParamTypeIdMap.value(device->deviceClassId())).toString();
     int port = device->paramValue(m_portParamTypeIdMap.value(device->deviceClassId())).toInt();
-    QString username = device->paramValue(m_userParamTypeIdMap.value(device->deviceClassId())).toString();
-    QString password = device->paramValue(m_passParamTypeIdMap.value(device->deviceClassId())).toString();
+
+    pluginStorage()->beginGroup(device->id().toString());
+    QString username = pluginStorage()->value("username").toString();
+    QString password = pluginStorage()->value("password").toString();
+    pluginStorage()->endGroup();
 
     QNetworkRequest request;
     request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
@@ -406,15 +440,16 @@ Device::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device)
     qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << password;
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, device, [this, device, reply](){
-        StateTypeId connectedStateTypeId = m_connectedStateTypeIdMap.value(device->deviceClassId());
+    connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
+        StateTypeId connectedStateTypeId = m_connectedStateTypeIdMap.value(info->device()->deviceClassId());
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcAnelElektronik()) << "Error fetching state for" << device->name() << reply->error() << reply->errorString();
-            device->setStateValue(connectedStateTypeId, false);
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+            qCWarning(dcAnelElektronik()) << "Error fetching state for" << info->device()->name() << reply->error() << reply->errorString();
+            info->device()->setStateValue(connectedStateTypeId, false);
+            //: Error setting up device
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("The device rejected our connection. Please check the configured network ports."));
             return;
         }
-        device->setStateValue(connectedStateTypeId, true);
+        info->device()->setStateValue(connectedStateTypeId, true);
 
         QByteArray data = reply->readAll();
 
@@ -423,16 +458,17 @@ Device::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device)
         int startIndex = parts.indexOf("end") - 40;
         if (startIndex < 0 || parts.length() < 58) {
             qCWarning(dcAnelElektronik()) << "Bad data from panel:" << data << "Length:" << parts.length();
-            emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+            //: Error setting up device
+            info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Unexpected data received from NET-PWRCTL device. Perhaps it's running an old firmware?"));
             return;
         }
 
         // At this point we're done with gathering information about the panel. Setup defintely succeeded for the gateway device
-        emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+        info->finish(Device::DeviceErrorNoError);
 
         // If we haven't set up childs for this gateway yet, let's do it now
         foreach (Device *child, myDevices()) {
-            if (child->parentId() == device->id()) {
+            if (child->parentId() == info->device()->id()) {
                 // Already have childs for this panel. We're done here
                 return;
             }
@@ -441,22 +477,23 @@ Device::DeviceSetupStatus DevicePluginAnel::setupAdvDevice(Device *device)
         QList<DeviceDescriptor> descriptorList;
         for (int i = 0; i < 8; i++) {
             QString deviceName = parts.at(startIndex + (i * 5));
-            DeviceDescriptor d(socketDeviceClassId, deviceName, device->name(), device->id());
+            DeviceDescriptor d(socketDeviceClassId, deviceName, info->device()->name(), info->device()->id());
             d.setParams(ParamList() << Param(socketDeviceNumberParamTypeId, i));
             descriptorList << d;
         }
-        emit autoDevicesAppeared(socketDeviceClassId, descriptorList);
+        emit autoDevicesAppeared(descriptorList);
     });
-
-    return Device::DeviceSetupStatusAsync;
 }
 
 void DevicePluginAnel::refreshHomePro(Device *device)
 {
     QString ipAddress = device->paramValue(m_ipAddressParamTypeIdMap.value(device->deviceClassId())).toString();
     int port = device->paramValue(m_portParamTypeIdMap.value(device->deviceClassId())).toInt();
-    QString username = device->paramValue(m_userParamTypeIdMap.value(device->deviceClassId())).toString();
-    QString password = device->paramValue(m_passParamTypeIdMap.value(device->deviceClassId())).toString();
+
+    pluginStorage()->beginGroup(device->id().toString());
+    QString username = pluginStorage()->value("username").toString();
+    QString password = pluginStorage()->value("password").toString();
+    pluginStorage()->endGroup();
 
     QUrl url(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port));
 
@@ -509,8 +546,11 @@ void DevicePluginAnel::refreshAdv(Device *device)
 {
     QString ipAddress = device->paramValue(m_ipAddressParamTypeIdMap.value(device->deviceClassId())).toString();
     int port = device->paramValue(m_portParamTypeIdMap.value(device->deviceClassId())).toInt();
-    QString username = device->paramValue(m_userParamTypeIdMap.value(device->deviceClassId())).toString();
-    QString password = device->paramValue(m_passParamTypeIdMap.value(device->deviceClassId())).toString();
+
+    pluginStorage()->beginGroup(device->id().toString());
+    QString username = pluginStorage()->value("username").toString();
+    QString password = pluginStorage()->value("password").toString();
+    pluginStorage()->endGroup();
 
     QUrl url(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port));
 
@@ -558,8 +598,11 @@ void DevicePluginAnel::refreshAdvTemp(Device *device)
 {
     QString ipAddress = device->paramValue(m_ipAddressParamTypeIdMap.value(device->deviceClassId())).toString();
     int port = device->paramValue(m_portParamTypeIdMap.value(device->deviceClassId())).toInt();
-    QString username = device->paramValue(m_userParamTypeIdMap.value(device->deviceClassId())).toString();
-    QString password = device->paramValue(m_passParamTypeIdMap.value(device->deviceClassId())).toString();
+
+    pluginStorage()->beginGroup(device->id().toString());
+    QString username = pluginStorage()->value("username").toString();
+    QString password = pluginStorage()->value("password").toString();
+    pluginStorage()->endGroup();
 
     QUrl url(QString("http://%1:%2/daten.cfg").arg(ipAddress).arg(port));
 

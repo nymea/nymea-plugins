@@ -31,26 +31,21 @@
 
 DevicePluginNetworkDetector::DevicePluginNetworkDetector()
 {
-    m_discovery = new Discovery(this);
-    connect(m_discovery, &Discovery::finished, this, &DevicePluginNetworkDetector::discoveryFinished);
-
     m_broadcastPing = new BroadcastPing(this);
     connect(m_broadcastPing, &BroadcastPing::finished, this, &DevicePluginNetworkDetector::broadcastPingFinished);
 }
 
 DevicePluginNetworkDetector::~DevicePluginNetworkDetector()
 {
-    if (m_discovery->isRunning()) {
-        m_discovery->abort();
-    }
 }
 
 void DevicePluginNetworkDetector::init()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *device)
+void DevicePluginNetworkDetector::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
     qCDebug(dcNetworkDetector()) << "Setup" << device->name() << device->params();
     DeviceMonitor *monitor = new DeviceMonitor(device->name(),
                                                device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString(),
@@ -80,25 +75,39 @@ Device::DeviceSetupStatus DevicePluginNetworkDetector::setupDevice(Device *devic
         m_broadcastPing->run();
     }
 
-    return Device::DeviceSetupStatusSuccess;
+    info->finish(Device::DeviceErrorNoError);
 }
 
-Device::DeviceError DevicePluginNetworkDetector::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginNetworkDetector::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params)
+    Discovery *discovery = new Discovery(this);
+    discovery->discoverHosts(25);
 
+    // clean up discovery object when this discovery info is deleted
+    connect(info, &DeviceDiscoveryInfo::destroyed, discovery, &Discovery::deleteLater);
 
-    if (deviceClassId != networkDeviceDeviceClassId)
-        return Device::DeviceErrorDeviceClassNotFound;
+    connect(discovery, &Discovery::finished, info, [this, info](const QList<Host> &hosts) {
+        qCDebug(dcNetworkDetector()) << "Discovery finished. Found" << hosts.count() << "devices";
+        foreach (const Host &host, hosts) {
+            DeviceDescriptor descriptor(networkDeviceDeviceClassId, host.hostName().isEmpty() ? host.address() : host.hostName(), host.address() + " (" + host.macAddress() + ")");
 
-    if (m_discovery->isRunning()) {
-        qCWarning(dcNetworkDetector()) << "Network discovery already running";
-        return Device::DeviceErrorDeviceInUse;
-    }
+            foreach (Device *existingDevice, myDevices()) {
+                if (existingDevice->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() == host.macAddress()) {
+                    descriptor.setDeviceId(existingDevice->id());
+                    break;
+                }
+            }
 
-    m_discovery->discoverHosts(25);
+            ParamList params;
+            params << Param(networkDeviceDeviceMacAddressParamTypeId, host.macAddress());
+            params << Param(networkDeviceDeviceAddressParamTypeId, host.address());
+            descriptor.setParams(params);
 
-    return Device::DeviceErrorAsync;
+            info->addDeviceDescriptor(descriptor);
+
+        }
+        info->finish(Device::DeviceErrorNoError);
+    });
 }
 
 void DevicePluginNetworkDetector::deviceRemoved(Device *device)
@@ -119,41 +128,6 @@ void DevicePluginNetworkDetector::broadcastPingFinished()
     foreach (DeviceMonitor *monitor, m_monitors.keys()) {
         monitor->update();
     }
-}
-
-void DevicePluginNetworkDetector::discoveryFinished(const QList<Host> &hosts)
-{
-    qCDebug(dcNetworkDetector()) << "Discovery finished. Found" << hosts.count() << "devices";
-    QList<DeviceDescriptor> discoveredDevices;
-    foreach (const Host &host, hosts) {
-
-        DeviceDescriptor descriptor(networkDeviceDeviceClassId, host.hostName().isEmpty() ? host.address() : host.hostName(), host.address() + " (" + host.macAddress() + ")");
-
-        foreach (Device *existingDevice, myDevices()) {
-            if (existingDevice->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() == host.macAddress()) {
-                descriptor.setDeviceId(existingDevice->id());
-                break;
-            }
-        }
-
-        ParamList paramList;
-        Param macAddress(networkDeviceDeviceMacAddressParamTypeId, host.macAddress());
-        Param address(networkDeviceDeviceAddressParamTypeId, host.address());
-        paramList.append(macAddress);
-        paramList.append(address);
-        descriptor.setParams(paramList);
-
-        foreach (Device *existingDevice, myDevices()) {
-            if (existingDevice->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() == host.macAddress()) {
-                descriptor.setDeviceId(existingDevice->id());
-                break;
-            }
-        }
-
-        discoveredDevices.append(descriptor);
-    }
-
-    emit devicesDiscovered(networkDeviceDeviceClassId, discoveredDevices);
 }
 
 void DevicePluginNetworkDetector::deviceReachableChanged(bool reachable)

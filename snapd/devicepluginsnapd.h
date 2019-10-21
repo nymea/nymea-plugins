@@ -48,8 +48,8 @@ public:
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
 
-	Device::DeviceSetupStatus setupDevice(Device *device) override;    
-	Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     SnapdControl *m_snapdControl = nullptr;

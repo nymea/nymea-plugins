@@ -38,19 +38,22 @@ void DevicePluginRemoteSsh::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginRemoteSsh::onPluginTimeout);
 }
 
-Device::DeviceSetupStatus DevicePluginRemoteSsh::setupDevice(Device *device)
+void DevicePluginRemoteSsh::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     qCDebug(dcRemoteSsh()) << "Setup" << device->name() << device->params();
 
     if (device->deviceClassId() == reverseSshDeviceClassId) {
         m_identityFilePath = QString("%1/.ssh/id_rsa_guh").arg(QDir::homePath());
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
-    return Device::DeviceSetupStatusFailure;
 }
 
-Device::DeviceError DevicePluginRemoteSsh::executeAction(Device *device, const Action &action)
+void DevicePluginRemoteSsh::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
     if (device->deviceClassId() == reverseSshDeviceClassId ) {
 
         if (action.actionTypeId() == reverseSshConnectedActionTypeId) {
@@ -58,27 +61,32 @@ Device::DeviceError DevicePluginRemoteSsh::executeAction(Device *device, const A
             if (action.param(reverseSshConnectedActionConnectedParamTypeId).value().toBool() == true) {
                 QProcess *process = startReverseSSHProcess(device);
                 m_reverseSSHProcess.insert(process, device);
-                m_startingProcess.insert(process, action.id());
-                return Device::DeviceErrorAsync;
+                m_startingProcess.insert(process, info);
+                // in case action call is cancelled, detach result reporting
+                connect(info, &DeviceActionInfo::destroyed, process, [this, process]{
+                    m_startingProcess.remove(process);
+                });
+                return;
             } else {
                 QProcess *process =  m_reverseSSHProcess.key(device);
 
                 // Check if the application is running...
                 if (!process)
-                    return Device::DeviceErrorNoError;
+                    return info->finish(Device::DeviceErrorNoError);
 
                 if (process->state() == QProcess::NotRunning)
-                    return Device::DeviceErrorNoError;
+                    return info->finish(Device::DeviceErrorNoError);
 
                 process->kill();
-                m_killingProcess.insert(process, action.id());
-                return Device::DeviceErrorAsync;
+                m_killingProcess.insert(process, info);
+                // in case action call is cancelled, detach result reporting
+                connect(info, &DeviceActionInfo::destroyed, process, [this, process]{
+                    m_killingProcess.remove(process);
+                });
+                return;
             }
-            return Device::DeviceErrorNoError;
         }
-        return Device::DeviceErrorActionTypeNotFound;
     }
-    return Device::DeviceErrorDeviceClassNotFound;
 }
 
 
@@ -179,8 +187,7 @@ void DevicePluginRemoteSsh::processStateChanged(QProcess::ProcessState state)
     case QProcess::Running:
         device->setStateValue(reverseSshConnectedStateTypeId, true);
         if (m_startingProcess.contains(process)) {
-            emit actionExecutionFinished(m_startingProcess.value(process), Device::DeviceErrorNoError);
-            m_startingProcess.remove(process);
+            m_startingProcess.take(process)->finish(Device::DeviceErrorNoError);
         }
         break;
 
@@ -189,14 +196,12 @@ void DevicePluginRemoteSsh::processStateChanged(QProcess::ProcessState state)
             device->setStateValue(reverseSshConnectedStateTypeId, false);
 
         if (m_startingProcess.contains(process)) {
-            emit actionExecutionFinished(m_startingProcess.value(process), Device::DeviceErrorInvalidParameter);
-            m_startingProcess.remove(process);
+            m_startingProcess.take(process)->finish(Device::DeviceErrorInvalidParameter);
         }
 
         if (m_killingProcess.contains(process)) {
-            emit actionExecutionFinished(m_killingProcess.value(process), Device::DeviceErrorNoError);
+            m_killingProcess.take(process)->finish(Device::DeviceErrorNoError);
             m_reverseSSHProcess.remove(process);
-            m_killingProcess.remove(process);
         }
         break;
     default:

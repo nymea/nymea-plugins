@@ -31,24 +31,29 @@
 #include <QStringList>
 
 
-DevicePluginConrad::DevicePluginConrad()
+DevicePluginConrad::DevicePluginConrad(): DevicePlugin()
 {
 
 }
 
-Device::DeviceSetupStatus DevicePluginConrad::setupDevice(Device *device)
+void DevicePluginConrad::setupDevice(DeviceSetupInfo *info)
 {
-    if (device->deviceClassId() == conradShutterDeviceClassId)
-        return Device::DeviceSetupStatusSuccess;
+    if (info->device()->deviceClassId() == conradShutterDeviceClassId) {
+        info->finish(Device::DeviceErrorNoError);
+        return;
+    }
 
-    return Device::DeviceSetupStatusFailure;
+    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
-Device::DeviceError DevicePluginConrad::executeAction(Device *device, const Action &action)
+void DevicePluginConrad::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
 
     if (!hardwareManager()->radio433()->available()) {
-        return Device::DeviceErrorHardwareNotAvailable;
+        info->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
 
     QList<int> rawData;
@@ -64,7 +69,8 @@ Device::DeviceError DevicePluginConrad::executeAction(Device *device, const Acti
         binCode = "10100000";
         repetitions = 20;
     } else {
-        return Device::DeviceErrorActionTypeNotFound;
+        info->finish(Device::DeviceErrorActionTypeNotFound);
+        return;
     }
 
     // append ID
@@ -103,9 +109,10 @@ Device::DeviceError DevicePluginConrad::executeAction(Device *device, const Acti
         qCDebug(dcConrad) << "Transmitted successfully" << device->name() << action.actionTypeId();
     }else{
         qCWarning(dcConrad) << "Could not transmitt" << pluginName() << device->name() << action.actionTypeId();
-        return Device::DeviceErrorHardwareNotAvailable;
+        info->finish(Device::DeviceErrorHardwareNotAvailable);
+        return;
     }
-    return Device::DeviceErrorNoError;
+    info->finish(Device::DeviceErrorNoError);
 }
 
 void DevicePluginConrad::radioData(const QList<int> &rawData)

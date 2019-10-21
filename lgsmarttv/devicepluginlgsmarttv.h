@@ -40,31 +40,22 @@ public:
     ~DevicePluginLgSmartTv();
 
     void init() override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    void deviceRemoved(Device *device) override;
-    void postSetupDevice(Device *device) override;
 
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
-    Device::DeviceError displayPin(const PairingTransactionId &pairingTransactionId, const DeviceDescriptor &deviceDescriptor) override;
-    Device::DeviceSetupStatus confirmPairing(const PairingTransactionId &pairingTransactionId, const DeviceClassId &deviceClassId, const ParamList &params, const QString &secret) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+
+    void setupDevice(DeviceSetupInfo *info) override;
+    void postSetupDevice(Device *device) override;
+    void deviceRemoved(Device *device) override;
+
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<TvDevice *, Device *> m_tvList;
     QHash<QString, QString> m_tvKeys;
-
-    // first pairing setup
-    QHash<QNetworkReply *, PairingTransactionId> m_setupPairingTv;
-    QHash<QNetworkReply *, PairingTransactionId> m_setupEndPairingTv;
-    QList<QNetworkReply *> m_showPinReply;
-
-    // async setup
-    QHash<QNetworkReply *, Device *> m_asyncSetup;
-    QList<QNetworkReply *> m_deleteTv;
-
-    // action requests
-    QHash<QNetworkReply *, ActionId> m_asyncActions;
 
     // update requests
     QHash<QNetworkReply *, Device *> m_volumeInfoRequests;
@@ -76,7 +67,6 @@ private:
 
 private slots:
     void onPluginTimer();
-    void onUpnpDiscoveryFinished();
     void onNetworkManagerReplyFinished();
     void stateChanged();
 };

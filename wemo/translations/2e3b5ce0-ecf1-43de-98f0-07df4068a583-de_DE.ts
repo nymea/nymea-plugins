@@ -2,74 +2,93 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
+    <name>DevicePluginWemo</name>
+    <message>
+        <location filename="../devicepluginwemo.cpp" line="65"/>
+        <source>An error happened during discovery.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../devicepluginwemo.cpp" line="132"/>
+        <source>Could not connect to wemo switch.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Wemo</name>
     <message>
-        <location filename="../plugininfo.h" line="38"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="64"/>
         <source>Wemo</source>
-        <extracomment>The name of the plugin Wemo (2e3b5ce0-ecf1-43de-98f0-07df4068a583)</extracomment>
+        <extracomment>The name of the plugin Wemo ({2e3b5ce0-ecf1-43de-98f0-07df4068a583})</extracomment>
         <translation>Wemo</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="41"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="34"/>
         <source>Belkin</source>
-        <extracomment>The name of the vendor (b241f7f5-8153-4a72-b260-f62beadc2d19)</extracomment>
+        <extracomment>The name of the vendor ({b241f7f5-8153-4a72-b260-f62beadc2d19})</extracomment>
         <translation>Belkin</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="44"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="61"/>
         <source>WeMo Switch</source>
-        <extracomment>The name of the DeviceClass (69d97d3b-a8e6-42f3-afc0-ca8a53eb7cce)</extracomment>
+        <extracomment>The name of the DeviceClass ({69d97d3b-a8e6-42f3-afc0-ca8a53eb7cce})</extracomment>
         <translation>WeMo Steckdose</translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="47"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="67"/>
         <source>host address</source>
-        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: 84ed399c-edb0-40da-8e2f-86eefc5790eb)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: {84ed399c-edb0-40da-8e2f-86eefc5790eb})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="50"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="70"/>
         <source>port</source>
-        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: 2d30eb6b-08cf-4d34-aeb5-fb441bb2291a)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: {2d30eb6b-08cf-4d34-aeb5-fb441bb2291a})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="53"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="73"/>
         <source>serial number</source>
-        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: 93e1a45a-b8b9-48a7-869e-ad07550a1951)</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, Type: device, ID: {93e1a45a-b8b9-48a7-869e-ad07550a1951})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="56"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="46"/>
         <source>Power changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: wemoSwitch, StateType: power, ID: 7166c4f6-f68c-4188-8f7c-2205d72a5a6d)</extracomment>
+        <extracomment>The name of the EventType ({7166c4f6-f68c-4188-8f7c-2205d72a5a6d}) of DeviceClass wemoSwitch</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="59"/>
-        <location filename="../plugininfo.h" line="65"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="37"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="40"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="43"/>
         <source>Power</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wemoSwitch, StateType: power, ID: 7166c4f6-f68c-4188-8f7c-2205d72a5a6d
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, ActionType: power, ID: {7166c4f6-f68c-4188-8f7c-2205d72a5a6d})
 ----------
-The name of the ParamType for the autocreated ActionType (DeviceClass: wemoSwitch, StateType: power, ID: 7166c4f6-f68c-4188-8f7c-2205d72a5a6d)</extracomment>
+The name of the ParamType (DeviceClass: wemoSwitch, EventType: power, ID: {7166c4f6-f68c-4188-8f7c-2205d72a5a6d})
+----------
+The name of the StateType ({7166c4f6-f68c-4188-8f7c-2205d72a5a6d}) of DeviceClass wemoSwitch</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="68"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="55"/>
         <source>Reachable changed</source>
-        <extracomment>The name of the autocreated EventType (DeviceClass: wemoSwitch, StateType: connected, ID: ec2f5b49-585c-4455-a233-b7aa4c608dbc)</extracomment>
+        <extracomment>The name of the EventType ({ec2f5b49-585c-4455-a233-b7aa4c608dbc}) of DeviceClass wemoSwitch</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="71"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="49"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="52"/>
         <source>Reachable</source>
-        <extracomment>The name of the ParamType for the autocreated EventType (DeviceClass: wemoSwitch, StateType: connected, ID: ec2f5b49-585c-4455-a233-b7aa4c608dbc</extracomment>
+        <extracomment>The name of the ParamType (DeviceClass: wemoSwitch, EventType: connected, ID: {ec2f5b49-585c-4455-a233-b7aa4c608dbc})
+----------
+The name of the StateType ({ec2f5b49-585c-4455-a233-b7aa4c608dbc}) of DeviceClass wemoSwitch</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugininfo.h" line="62"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wemo/plugininfo.h" line="58"/>
         <source>Set power</source>
-        <extracomment>The name of the autocreated ActionType (DeviceClass: wemoSwitch, StateType: power, ID: 7166c4f6-f68c-4188-8f7c-2205d72a5a6d)</extracomment>
+        <extracomment>The name of the ActionType ({7166c4f6-f68c-4188-8f7c-2205d72a5a6d}) of DeviceClass wemoSwitch</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

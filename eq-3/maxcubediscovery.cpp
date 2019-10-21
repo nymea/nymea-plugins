@@ -60,20 +60,18 @@ void MaxCubeDiscovery::readData()
     }
     if(!data.isEmpty() && data.contains("eQ3MaxAp")){
 
-        QString serialNumber = data.mid(8,10);
-        QByteArray rfAddress = data.mid(21,3).toHex();
-        int firmware = data.mid(24,2).toHex().toInt();
-        qint16 port;
+        CubeInfo cube;
+        cube.serialNumber = data.mid(8,10);
+        cube.rfAddress = data.mid(21,3).toHex();
+        cube.firmware = data.mid(24,2).toHex().toInt();
 
         // set port depending on the firmware
-        if(firmware < 109){
-            port= 80;
+        if(cube.firmware < 109){
+            cube.port= 80;
         }else{
-            port = 62910;
+            cube.port = 62910;
         }
 
-        MaxCube *cube = new MaxCube(this, serialNumber, sender, port);
-        cube->setRfAddress(rfAddress);
         m_cubeList.append(cube);
     }
 }

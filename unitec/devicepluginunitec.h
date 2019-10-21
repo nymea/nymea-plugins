@@ -35,10 +35,9 @@ class DevicePluginUnitec : public DevicePlugin
 public:
     explicit DevicePluginUnitec();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void setupDevice(DeviceSetupInfo *info) override;
 
-public slots:
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 };
 

@@ -27,8 +27,10 @@ DevicePluginTcpCommander::DevicePluginTcpCommander()
 }
 
 
-Device::DeviceSetupStatus DevicePluginTcpCommander::setupDevice(Device *device)
+void DevicePluginTcpCommander::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     if (device->deviceClassId() == tcpOutputDeviceClassId) {
 
         quint16 port = device->paramValue(tcpOutputDevicePortParamTypeId).toUInt();
@@ -36,18 +38,18 @@ Device::DeviceSetupStatus DevicePluginTcpCommander::setupDevice(Device *device)
         TcpSocket *tcpSocket = new TcpSocket(address, port, this);
         m_tcpSockets.insert(tcpSocket, device);
         connect(tcpSocket, &TcpSocket::connectionChanged, this, &DevicePluginTcpCommander::onTcpSocketConnectionChanged);
-        connect(tcpSocket, &TcpSocket::commandSent, this, &DevicePluginTcpCommander::onTcpSocketCommandSent);
-        connect(tcpSocket, &TcpSocket::connectionTestFinished, this, [this, device] (bool status) {
 
+        connect(tcpSocket, &TcpSocket::connectionTestFinished, info, [info] (bool status) {
             if (status) {
-               emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+               info->finish(Device::DeviceErrorNoError);
             } else {
-               emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+                info->finish(Device::DeviceErrorSetupFailed, QT_TR_NOOP("Error connecting to remote server."));
             }
         });
-        tcpSocket->connectionTest();
+
         // Test the socket, if a socket can be established the setup process was successfull
-        return Device::DeviceSetupStatusAsync;
+        tcpSocket->connectionTest();
+        return;
     }
 
     if (device->deviceClassId() == tcpInputDeviceClassId) {
@@ -58,30 +60,34 @@ Device::DeviceSetupStatus DevicePluginTcpCommander::setupDevice(Device *device)
             m_tcpServer.insert(tcpServer, device);
             connect(tcpServer, &TcpServer::connectionChanged, this, &DevicePluginTcpCommander::onTcpServerConnectionChanged);
             connect(tcpServer, &TcpServer::commandReceived, this, &DevicePluginTcpCommander::onTcpServerCommandReceived);
-            return Device::DeviceSetupStatusSuccess;
+            return info->finish(Device::DeviceErrorNoError);
         } else {
             tcpServer->deleteLater();
             qDebug(dcTCPCommander()) << "Could not open TCP Server";
+            return info->finish(Device::DeviceErrorSetupFailed, QT_TR_NOOP("Error opening TCP port."));
         }
     }
-    return Device::DeviceSetupStatusFailure;
 }
 
 
-Device::DeviceError DevicePluginTcpCommander::executeAction(Device *device, const Action &action)
+void DevicePluginTcpCommander::executeAction(DeviceActionInfo *info)
 {
-    if (device->deviceClassId() == tcpOutputDeviceClassId) {
+    Device *device = info->device();
+    Action action = info->action();
 
-        if (action.actionTypeId() == tcpOutputTriggerActionTypeId) {
-            TcpSocket *tcpSocket = m_tcpSockets.key(device);
-            QByteArray data = action.param(tcpOutputTriggerActionOutputDataAreaParamTypeId).value().toByteArray();
-            tcpSocket->sendCommand(data);
-            m_pendingActions.insert(action.id(), device->id());
-            return Device::DeviceErrorAsync;
+    Q_ASSERT_X(action.actionTypeId() == tcpOutputTriggerActionTypeId, "TcpCommander", "Invalid action type in executeAction");
+
+    TcpSocket *tcpSocket = m_tcpSockets.key(device);
+    QByteArray data = action.param(tcpOutputTriggerActionOutputDataAreaParamTypeId).value().toByteArray();
+    tcpSocket->sendCommand(data);
+
+    connect(tcpSocket, &TcpSocket::commandSent, info, [info](bool success){
+        if (success) {
+            info->finish(Device::DeviceErrorNoError);
+        } else {
+            info->finish(Device::DeviceErrorHardwareNotAvailable);
         }
-        return Device::DeviceErrorActionTypeNotFound;
-    }
-    return Device::DeviceErrorDeviceClassNotFound;
+    });
 }
 
 
@@ -108,20 +114,6 @@ void DevicePluginTcpCommander::onTcpSocketConnectionChanged(bool connected)
     Device *device = m_tcpSockets.value(tcpSocket);
     if (device->deviceClassId() == tcpOutputDeviceClassId) {
         device->setStateValue(tcpOutputConnectedStateTypeId, connected);
-    }
-}
-
-void DevicePluginTcpCommander::onTcpSocketCommandSent(bool successfull)
-{
-    TcpSocket *tcpSocket = static_cast<TcpSocket *>(sender());
-    Device *device = m_tcpSockets.value(tcpSocket);
-
-    ActionId action = m_pendingActions.key(device->id());
-    m_pendingActions.remove(action);
-    if (successfull) {
-        emit actionExecutionFinished(action, Device::DeviceErrorNoError);
-    } else {
-        emit actionExecutionFinished(action, Device::DeviceErrorHardwareNotAvailable);
     }
 }
 

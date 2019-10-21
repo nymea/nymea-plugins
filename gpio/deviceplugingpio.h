@@ -42,10 +42,10 @@ class DevicePluginGpio : public DevicePlugin
 public:
     explicit DevicePluginGpio();
 
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
     void postSetupDevice(Device *device) override;
 

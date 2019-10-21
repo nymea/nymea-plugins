@@ -395,26 +395,56 @@ void DevicePluginElgato::init()
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginElgato::onPluginTimer);
 }
 
-Device::DeviceError DevicePluginElgato::discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params)
+void DevicePluginElgato::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    Q_UNUSED(params)
+    DeviceClassId deviceClassId = info->deviceClassId();
 
     if (deviceClassId != aveaDeviceClassId)
-        return Device::DeviceErrorDeviceClassNotFound;
+        return info->finish(Device::DeviceErrorDeviceClassNotFound);
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->available())
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
     if (!hardwareManager()->bluetoothLowEnergyManager()->enabled())
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
     BluetoothDiscoveryReply *reply = hardwareManager()->bluetoothLowEnergyManager()->discoverDevices();
-    connect(reply, &BluetoothDiscoveryReply::finished, this, &DevicePluginElgato::onBluetoothDiscoveryFinished);
-    return Device::DeviceErrorAsync;
+    connect(reply, &BluetoothDiscoveryReply::finished, info, [this, info, reply]{
+        reply->deleteLater();
+
+        if (reply->error() != BluetoothDiscoveryReply::BluetoothDiscoveryReplyErrorNoError) {
+            qCWarning(dcElgato()) << "Bluetooth discovery error:" << reply->error();
+            info->finish(Device::DeviceErrorHardwareFailure);
+            return;
+        }
+
+        foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
+            if (deviceInfo.name().contains("Avea")) {
+                if (!verifyExistingDevices(deviceInfo)) {
+                    DeviceDescriptor descriptor(aveaDeviceClassId, "Avea", deviceInfo.address().toString());
+                    ParamList params;
+                    params.append(Param(aveaDeviceNameParamTypeId, deviceInfo.name()));
+                    params.append(Param(aveaDeviceMacAddressParamTypeId, deviceInfo.address().toString()));
+                    descriptor.setParams(params);
+                    foreach (Device *existingDevice, myDevices()) {
+                        if (existingDevice->paramValue(aveaDeviceMacAddressParamTypeId).toString() == deviceInfo.address().toString()) {
+                            descriptor.setDeviceId(existingDevice->id());
+                            break;
+                        }
+                    }
+                    info->addDeviceDescriptor(descriptor);
+                }
+            }
+        }
+
+        info->finish(Device::DeviceErrorNoError);
+    });
 }
 
-Device::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
+void DevicePluginElgato::setupDevice(DeviceSetupInfo *info)
 {
+    Device *device = info->device();
+
     qCDebug(dcElgato()) << "Setup device" << device->name() << device->params();
 
     if (device->deviceClassId() == aveaDeviceClassId) {
@@ -427,9 +457,9 @@ Device::DeviceSetupStatus DevicePluginElgato::setupDevice(Device *device)
         AveaBulb *bulb = new AveaBulb(device, bluetoothDevice, this);
         m_bulbs.insert(device, bulb);
 
-        return Device::DeviceSetupStatusSuccess;
+        return info->finish(Device::DeviceErrorNoError);
     }
-    return Device::DeviceSetupStatusFailure;
+    return info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginElgato::postSetupDevice(Device *device)
@@ -446,8 +476,11 @@ void DevicePluginElgato::postSetupDevice(Device *device)
     bulb->bluetoothDevice()->connectDevice();
 }
 
-Device::DeviceError DevicePluginElgato::executeAction(Device *device, const Action &action)
+void DevicePluginElgato::executeAction(DeviceActionInfo *info)
 {
+    Device *device = info->device();
+    Action action = info->action();
+
     if (device->deviceClassId() == aveaDeviceClassId) {
         AveaBulb *bulb = m_bulbs.value(device);
 
@@ -455,22 +488,22 @@ Device::DeviceError DevicePluginElgato::executeAction(Device *device, const Acti
             bool power = action.param(aveaPowerActionPowerParamTypeId).value().toBool();
             device->setStateValue(aveaPowerStateTypeId, power);
             if (!bulb->setPower(power))
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == aveaBrightnessActionTypeId) {
             int percentage = action.param(aveaBrightnessActionBrightnessParamTypeId).value().toInt();
             if (!bulb->setBrightness(percentage))
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == aveaColorActionTypeId) {
             QColor color = action.param(aveaColorActionColorParamTypeId).value().value<QColor>();
             color.setAlpha(0); // Alpha is white
             if (!bulb->setColor(color))
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == aveaColorTemperatureActionTypeId) {
             int ctValue = action.param(aveaColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
             // normalize from 0 to 347 instead of 153 to 500
@@ -488,45 +521,45 @@ Device::DeviceError DevicePluginElgato::executeAction(Device *device, const Acti
             color.setBlue(blue);
             color.setAlpha(255); // Alpha is white
             if (!bulb->setColor(color)) {
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
             }
             device->setStateValue(aveaColorTemperatureStateTypeId, ctValue);
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == aveaWhiteActionTypeId) {
             int whiteValue = action.param(aveaWhiteActionWhiteParamTypeId).value().toInt();
             if (!bulb->setWhite(whiteValue))
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == aveaGreenActionTypeId) {
             int greenValue = action.param(aveaGreenActionGreenParamTypeId).value().toInt();
             if (!bulb->setGreen(greenValue))
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == aveaRedActionTypeId) {
             int redValue = action.param(aveaRedActionRedParamTypeId).value().toInt();
             if (!bulb->setRed(redValue))
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == aveaBlueActionTypeId) {
             int blueValue = action.param(aveaBlueActionBlueParamTypeId).value().toInt();
             if (!bulb->setBlue(blueValue))
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == aveaFadeActionTypeId) {
             int fadeValue = action.param(aveaFadeActionFadeParamTypeId).value().toInt();
             if (!bulb->setFade(fadeValue))
-                return Device::DeviceErrorHardwareNotAvailable;
+                return info->finish(Device::DeviceErrorHardwareNotAvailable);
 
-            return Device::DeviceErrorNoError;
+            return info->finish(Device::DeviceErrorNoError);
         }
 
-        return Device::DeviceErrorActionTypeNotFound;
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
     }
-    return Device::DeviceErrorDeviceClassNotFound;
+    return info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginElgato::deviceRemoved(Device *device)
@@ -557,40 +590,5 @@ void DevicePluginElgato::onPluginTimer()
             bulb->bluetoothDevice()->connectDevice();
         }
     }
-}
-
-void DevicePluginElgato::onBluetoothDiscoveryFinished()
-{
-    BluetoothDiscoveryReply *reply = static_cast<BluetoothDiscoveryReply *>(sender());
-    if (reply->error() != BluetoothDiscoveryReply::BluetoothDiscoveryReplyErrorNoError) {
-        qCWarning(dcElgato()) << "Bluetooth discovery error:" << reply->error();
-        reply->deleteLater();
-        emit devicesDiscovered(aveaDeviceClassId, QList<DeviceDescriptor>());
-        return;
-    }
-
-    QList<DeviceDescriptor> deviceDescriptors;
-    foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
-        if (deviceInfo.name().contains("Avea")) {
-            if (!verifyExistingDevices(deviceInfo)) {
-                DeviceDescriptor descriptor(aveaDeviceClassId, "Avea", deviceInfo.address().toString());
-                ParamList params;
-                params.append(Param(aveaDeviceNameParamTypeId, deviceInfo.name()));
-                params.append(Param(aveaDeviceMacAddressParamTypeId, deviceInfo.address().toString()));
-                descriptor.setParams(params);
-                foreach (Device *existingDevice, myDevices()) {
-                    if (existingDevice->paramValue(aveaDeviceMacAddressParamTypeId).toString() == deviceInfo.address().toString()) {
-                        descriptor.setDeviceId(existingDevice->id());
-                        break;
-                    }
-                }
-                deviceDescriptors.append(descriptor);
-            }
-        }
-    }
-
-    reply->deleteLater();
-
-    emit devicesDiscovered(aveaDeviceClassId, deviceDescriptors);
 }
 

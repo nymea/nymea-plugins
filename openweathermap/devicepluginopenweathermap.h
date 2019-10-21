@@ -42,38 +42,28 @@ public:
     ~DevicePluginOpenweathermap();
 
     void init() override;
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void setupDevice(DeviceSetupInfo *info) override;
+    void executeAction(DeviceActionInfo *info) override;
 
     void deviceRemoved(Device *device) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QList<QNetworkReply *> m_autodetectionReplies;
-    QList<QNetworkReply *> m_searchReplies;
-    QList<QNetworkReply *> m_searchGeoReplies;
     QHash<QNetworkReply *, Device *> m_weatherReplies;
-
-    // Autodetection data
-    QHostAddress m_wanIp;
-    QString m_country;
-    QString m_cityName;
-    double m_longitude;
-    double m_latitude;
 
     QString m_apiKey;
 
     void update(Device *device);
-    void searchAutodetect();
-    void search(QString searchString);
-    void searchGeoLocation(double lat, double lon);
+    void searchAutodetect(DeviceDiscoveryInfo *info);
+    void search(QString searchString, DeviceDiscoveryInfo *info);
+    void searchGeoLocation(double lat, double lon, const QString &country, DeviceDiscoveryInfo *info);
 
     void processAutodetectResponse(QByteArray data);
     void processSearchResponse(QByteArray data);
     void processGeoSearchResponse(QByteArray data);
 
-    void processSearchResults(const QList<QVariantMap> &cityList);
+    void processSearchResults(const QList<QVariantMap> &cityList, DeviceDiscoveryInfo *info);
     void processWeatherData(const QByteArray &data, Device *device);
 
 private slots:

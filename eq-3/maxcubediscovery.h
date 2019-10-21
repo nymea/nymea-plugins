@@ -34,9 +34,25 @@ class MaxCubeDiscovery : public QObject
 {
     Q_OBJECT
 public:
-    explicit MaxCubeDiscovery(QObject *parent = 0);
+    class CubeInfo {
+    public:
+        QString serialNumber;
+        QHostAddress hostAddress;
+        int port = 0;
+        QByteArray rfAddress;
+        int firmware;
+    };
+
+    explicit MaxCubeDiscovery(QObject *parent = nullptr);
 
     void detectCubes();
+
+private slots:
+    void readData();
+    void discoverTimeout();
+
+signals:
+    void cubesDetected(const QList<CubeInfo> &cubeList);
 
 private:
     QUdpSocket *m_udpSocket;
@@ -44,16 +60,7 @@ private:
 
     quint16 m_port;
 
-    QList<MaxCube*> m_cubeList;
-
-private slots:
-    void readData();
-    void discoverTimeout();
-
-signals:
-    void cubesDetected(const QList<MaxCube*> &cubeList);
-
-public slots:
+    QList<CubeInfo> m_cubeList;
 
 };
 

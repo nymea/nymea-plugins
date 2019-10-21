@@ -32,33 +32,33 @@ DevicePluginUnitec::DevicePluginUnitec()
 {
 }
 
-Device::DeviceSetupStatus DevicePluginUnitec::setupDevice(Device *device)
+void DevicePluginUnitec::setupDevice(DeviceSetupInfo *info)
 {
-    if (device->deviceClassId() != switchDeviceClassId) {
-        return Device::DeviceSetupStatusFailure;
-    }
+    if (!hardwareManager()->radio433()->available())
+        return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("No 433 MHz radio available on this system."));
+
+    Device *device = info->device();
 
     foreach (Device* d, myDevices()) {
         if (d->paramValue(switchDeviceChannelParamTypeId).toString() == device->paramValue(switchDeviceChannelParamTypeId).toString()) {
             qCWarning(dcUnitec) << "Unitec switch with channel " << device->paramValue(switchDeviceChannelParamTypeId).toString() << "already added.";
-            return Device::DeviceSetupStatusFailure;
+            return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("There is already a unitec switch on this channel"));
         }
     }
 
-    return Device::DeviceSetupStatusSuccess;
+    return info->finish(Device::DeviceErrorNoError);
 }
 
-Device::DeviceError DevicePluginUnitec::executeAction(Device *device, const Action &action)
+void DevicePluginUnitec::executeAction(DeviceActionInfo *info)
 {   
     if (!hardwareManager()->radio433()->available())
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("No 433 MHz radio available on this system."));
+
+    Device *device = info->device();
+    Action action = info->action();
 
     QList<int> rawData;
     QByteArray binCode;
-
-    if (action.actionTypeId() != switchPowerActionTypeId) {
-        return Device::DeviceErrorActionTypeNotFound;
-    }
 
     // Bin codes for buttons
     if (device->paramValue(switchDeviceChannelParamTypeId).toString() == "A" && action.param(switchPowerActionPowerParamTypeId).value().toBool() == true) {
@@ -104,8 +104,8 @@ Device::DeviceError DevicePluginUnitec::executeAction(Device *device, const Acti
         qCDebug(dcUnitec) << "transmitted" << pluginName() << device->name() << "power: " << action.param(switchPowerActionPowerParamTypeId).value().toBool();
     }else{
         qCWarning(dcUnitec) << "could not transmitt" << pluginName() << device->name() << "power: " << action.param(switchPowerActionPowerParamTypeId).value().toBool();
-        return Device::DeviceErrorHardwareNotAvailable;
+        return info->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("Error sending data."));
     }
 
-    return Device::DeviceErrorNoError;
+    return info->finish(Device::DeviceErrorNoError);
 }

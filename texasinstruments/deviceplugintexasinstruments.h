@@ -41,11 +41,11 @@ public:
     explicit DevicePluginTexasInstruments(QObject *parent = nullptr);
     ~DevicePluginTexasInstruments() override;
 
-    Device::DeviceError discoverDevices(const DeviceClassId &deviceClassId, const ParamList &params) override;
-    Device::DeviceSetupStatus setupDevice(Device *device) override;
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void setupDevice(DeviceSetupInfo *info) override;
     void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
-    Device::DeviceError executeAction(Device *device, const Action &action) override;
+    void executeAction(DeviceActionInfo *info) override;
 
 private:
     QHash<Device*, SensorTag*> m_sensorTags;
