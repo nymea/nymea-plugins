@@ -23,6 +23,8 @@
 #include "huemotionsensor.h"
 #include "extern-plugininfo.h"
 
+#include <QtMath>
+
 HueMotionSensor::HueMotionSensor(QObject *parent) :
     HueDevice(parent)
 {
@@ -124,7 +126,7 @@ int HueMotionSensor::batteryLevel() const
 
 void HueMotionSensor::updateStates(const QVariantMap &sensorMap)
 {
-    //qCDebug(dcPhilipsHue()) << "Outdoor sensor: Process sensor map" << qUtf8Printable(QJsonDocument::fromVariant(sensorMap).toJson(QJsonDocument::Indented));
+//    qCDebug(dcPhilipsHue()) << "Motion sensor data:" << qUtf8Printable(QJsonDocument::fromVariant(sensorMap).toJson(QJsonDocument::Indented));
 
     // Config
     QVariantMap configMap = sensorMap.value("config").toMap();
@@ -167,11 +169,15 @@ void HueMotionSensor::updateStates(const QVariantMap &sensorMap)
 
     // If light sensor
     if (sensorMap.value("uniqueid").toString() == m_lightSensorUuid) {
-        int lightIntensity = 10^((stateMap.value("lightlevel", 0).toInt()-1)/10000);
-        if (m_lightIntensity != lightIntensity) {
+        // Hue Light level is "10000 * log10(lux) + 1"
+        // => lux = 10^((lightLevel - 1) / 10000)
+        double lightIntensity = qPow(10, (stateMap.value("lightlevel", 0).toDouble()-1)/10000.0);
+        // Round to 2 digits
+        lightIntensity = qRound(lightIntensity * 100) / 100.0;
+        if (!qFuzzyCompare(m_lightIntensity, lightIntensity)) {
             m_lightIntensity = lightIntensity;
+            qCDebug(dcPhilipsHue) << "Motion sensor light intensity changed" << m_lightIntensity;
             emit lightIntensityChanged(m_lightIntensity);
-            qCDebug(dcPhilipsHue) << "Outdoor sensor light intensity changed" << m_lightIntensity;
         }
     }
 }
