@@ -832,7 +832,8 @@ Description: Translation files for nymea plugins - translations
 Package: nymea-plugins
 Section: libs
 Architecture: all
-Depends: nymea-plugin-awattar,
+Depends: nymea-plugin-anel,
+         nymea-plugin-awattar,
          nymea-plugin-bose,
          nymea-plugin-datetime,
          nymea-plugin-daylightsensor,
