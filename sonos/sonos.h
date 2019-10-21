@@ -81,7 +81,7 @@ public:
     /*
     * Describes a Sonos favorite in the household.
     * You can see favorites in the My Sonos tab in the app. The following are not considered  */
-    struct FavouriteObject {
+    struct FavoriteObject {
         QString id;
         QString name;
         QString description;
@@ -216,10 +216,10 @@ public:
     void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
 
     void getHouseholds();
-    void getFavorites(const QString &householdId);
+    QUuid getFavorites(const QString &householdId);
     void getGroups(const QString &householdId);
 
-    QUuid loadFavorite(const QString &groupId, const QString &favouriteId);
+    QUuid loadFavorite(const QString &groupId, const QString &faveriteId);
 
     //Group volume
     void getGroupVolume(const QString &groupId);                             //Get the volume and mute state of a group.
@@ -283,7 +283,7 @@ signals:
     void authenticationStatusChanged(bool authenticated);
 
     void householdIdsReceived(QList<QString> householdIds);
-    void favouritesReceived(const QString &householdId, QList<FavouriteObject> favourites);
+    void favoritesReceived(QUuid requestId, const QString &householdId, QList<FavoriteObject> favorites);
     void playlistsReceived(const QString &householdId, QList<PlaylistObject> playlists);
     void groupsReceived(const QString &householdId, QList<GroupObject> groups);
     void playlistSummaryReceived(const QString &householdId, PlaylistSummaryObject playlistSummary);
@@ -294,6 +294,6 @@ signals:
 
     void playerVolumeReceived(const QString &playerId, VolumeObject playerVolume);
     void playerSettingsRecieved(const QString &playerId, PlayerSettingsObject playerSettings);
-    void actionExecuted(QUuid actionId,bool success);
+    void actionExecuted(QUuid actionId, bool success);
 };
 #endif // SONOS_H

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
  *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io         *
  *                                                                         *
@@ -95,7 +95,7 @@ void DevicePluginSonos::setupDevice(DeviceSetupInfo *info)
             connect(sonos, &Sonos::volumeReceived, this, &DevicePluginSonos::onVolumeReceived);
             connect(sonos, &Sonos::actionExecuted, this, &DevicePluginSonos::onActionExecuted);
             connect(sonos, &Sonos::authenticationStatusChanged, this, &DevicePluginSonos::onAuthenticationStatusChanged);
-            connect(sonos, &Sonos::favouritesReceived, this, &DevicePluginSonos::onFavouritesReceived);
+            connect(sonos, &Sonos::favoritesReceived, this, &DevicePluginSonos::onFavoritesReceived);
             sonos->getAccessTokenFromRefreshToken(refreshToken);
             m_sonosConnections.insert(device, sonos);
             return info->finish(Device::DeviceErrorNoError);
@@ -343,24 +343,26 @@ void DevicePluginSonos::browseDevice(BrowseResult *result)
 {
     Device *parentDevice = myDevices().findById(result->device()->parentId());
     Sonos *sonosConnection = m_sonosConnections.value(parentDevice);
-    if (!sonosConnection)
+    if (!sonosConnection) {
+        result->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
+    }
 
     qDebug(dcSonos()) << "Browse Device" << result->itemId();
     QString householdId = result->device()->paramValue(sonosGroupDeviceHouseholdIdParamTypeId).toString();
     if (result->itemId().isEmpty()){
         BrowserItem item;
-        item.setId("/favorites");
+        item.setId(m_browseFavoritesPrefix);
         item.setIcon(BrowserItem::BrowserIconFavorites);
         item.setExecutable(false);
         item.setBrowsable(true);
         item.setDisplayName("Favorites");
         result->addItem(item);
         result->finish(Device::DeviceErrorNoError);
-    } else if (result->itemId() == "/favorites") {
-        sonosConnection->getFavorites(householdId);
-        m_pendingBrowseResult.insert(householdId, result);
-        connect(result, &BrowseResult::aborted,[householdId, this](){m_pendingBrowseResult.remove(householdId);});
+    } else if (result->itemId() == m_browseFavoritesPrefix) {
+        QUuid requestId = sonosConnection->getFavorites(householdId);
+        m_pendingBrowseResult.insert(requestId, result);
+        connect(result, &BrowseResult::aborted,[requestId, this](){m_pendingBrowseResult.remove(requestId);});
     } else {
         //TODO add media browsing
         result->finish(Device::DeviceErrorItemNotFound);
@@ -371,15 +373,20 @@ void DevicePluginSonos::browserItem(BrowserItemResult *result)
 {
     Device *parentDevice = myDevices().findById(result->device()->parentId());
     Sonos *sonosConnection = m_sonosConnections.value(parentDevice);
-    if (!sonosConnection)
+    if (!sonosConnection) {
+        result->finish(Device::DeviceErrorHardwareNotAvailable);
         return;
+    }
 
     qCDebug(dcSonos()) << "Browser Item" << result->itemId();
     QString householdId = result->device()->paramValue(sonosGroupDeviceHouseholdIdParamTypeId).toString();
-    if (result->itemId().startsWith("/favorites")) {
-        sonosConnection->getFavorites(householdId);
-        m_pendingBrowserItemResult.insert(householdId, result);
-        connect(result, &BrowserItemResult::aborted,[householdId, this](){m_pendingBrowserItemResult.remove(householdId);});
+    if (result->itemId().startsWith(m_browseFavoritesPrefix)) {
+        QUuid requestId = sonosConnection->getFavorites(householdId);
+        m_pendingBrowserItemResult.insert(requestId, result);
+        connect(result, &BrowserItemResult::aborted, [requestId, this](){m_pendingBrowserItemResult.remove(requestId);});
+    } else {
+         //TODO add media browsing
+         result->finish(Device::DeviceErrorItemNotFound);
     }
 }
 
@@ -391,11 +398,15 @@ void DevicePluginSonos::executeBrowserItem(BrowserActionInfo *info)
         return;
 
     QString groupId = info->device()->paramValue(sonosGroupDeviceGroupIdParamTypeId).toString();
-    if (info->browserAction().itemId().startsWith("/favorites")) {
-        QString favoriteId = info->browserAction().itemId().remove("/favorite/");
+    if (info->browserAction().itemId().startsWith(m_browseFavoritesPrefix)) {
+        QString favoriteId = info->browserAction().itemId().remove(m_browseFavoritesPrefix);
+        favoriteId.remove('/');
         QUuid requestId = sonosConnection->loadFavorite(groupId, favoriteId);
         m_pendingBrowserExecution.insert(requestId, info);
         connect(info, &BrowserActionInfo::aborted,[requestId, this](){m_pendingBrowserExecution.remove(requestId);});
+    } else {
+        //TODO add media browsing
+        info->finish(Device::DeviceErrorItemNotFound);
     }
 }
 
@@ -438,51 +449,54 @@ void DevicePluginSonos::onHouseholdIdsReceived(QList<QString> householdIds)
     }
 }
 
-void DevicePluginSonos::onFavouritesReceived(const QString &householdId, QList<Sonos::FavouriteObject> favourites)
+void DevicePluginSonos::onFavoritesReceived(QUuid requestId, const QString &householdId, QList<Sonos::FavoriteObject> favorites)
 {
-    if (m_pendingBrowseResult.contains(householdId)) {
-        BrowseResult *result = m_pendingBrowseResult.take(householdId);
+    Q_UNUSED(householdId)
+
+    if (m_pendingBrowseResult.contains(requestId)) {
+        BrowseResult *result = m_pendingBrowseResult.take(requestId);
         if (!result)
             return;
 
-        foreach(Sonos::FavouriteObject favourite, favourites)  {
+        foreach(Sonos::FavoriteObject favorite, favorites)  {
             MediaBrowserItem item;
-            item.setId(result->itemId() + "/" + favourite.id);
+            item.setId(result->itemId() + "/" + favorite.id);
             item.setExecutable(true);
             item.setBrowsable(false);
-            if (!favourite.imageUrl.isEmpty()) {
-                item.setThumbnail(favourite.imageUrl);
+            if (!favorite.imageUrl.isEmpty()) {
+                item.setThumbnail(favorite.imageUrl);
             } else {
                 item.setIcon(BrowserItem::BrowserIconFavorites);
             }
-            item.setDisplayName(favourite.name);
-            item.setDescription(favourite.description);
+            item.setDisplayName(favorite.name);
+            item.setDescription(favorite.description);
             result->addItem(item);
-            qDebug(dcSonos()) << "Favourite: " << favourite.name << favourite.description;
+            qDebug(dcSonos()) << "Favorite: " << favorite.name << favorite.description;
         }
         result->finish(Device::DeviceErrorNoError);
-    }
 
-    if (m_pendingBrowserItemResult.contains(householdId)) {
-        BrowserItemResult *result = m_pendingBrowserItemResult.take(householdId);
+    } else if (m_pendingBrowserItemResult.contains(requestId)) {
+        BrowserItemResult *result = m_pendingBrowserItemResult.take(requestId);
         if (!result)
             return;
-        QString favoriteId = result->itemId().remove("/favorites/");
+        QString favoriteId = result->itemId().remove(m_browseFavoritesPrefix);
+        favoriteId.remove('/');
 
-        foreach(Sonos::FavouriteObject favourite, favourites)  {
-            if (favourite.id == favoriteId) {
+        foreach(Sonos::FavoriteObject favorite, favorites)  {
+            if (favorite.id == favoriteId) {
                 MediaBrowserItem item;
                 item.setId(result->itemId());
                 item.setExecutable(true);
                 item.setBrowsable(false);
-                if (!favourite.imageUrl.isEmpty()) {
-                    item.setThumbnail(favourite.imageUrl);
+                if (!favorite.imageUrl.isEmpty()) {
+                    item.setThumbnail(favorite.imageUrl);
                 } else {
                     item.setIcon(BrowserItem::BrowserIconFavorites);
                 }
-                item.setDisplayName(favourite.name);
-                item.setDescription(favourite.description);
+                item.setDisplayName(favorite.name);
+                item.setDescription(favorite.description);
                 result->finish(item);
+                return;
             }
         }
     }

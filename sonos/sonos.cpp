@@ -158,15 +158,17 @@ QUuid Sonos::loadFavorite(const QString &groupId, const QString &favouriteId)
     return actionId;
 }
 
-void Sonos::getFavorites(const QString &householdId)
+QUuid Sonos::getFavorites(const QString &householdId)
 {
     QNetworkRequest request;
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken);
     request.setRawHeader("X-Sonos-Api-Key", m_clientKey);
     request.setUrl(QUrl(m_baseControlUrl + "/households/" + householdId + "/favorites"));
+    QUuid requestId = QUuid::createUuid();
+
     QNetworkReply *reply = m_networkManager->get(request);
-    connect(reply, &QNetworkReply::finished, this, [reply, householdId, this] {
+    connect(reply, &QNetworkReply::finished, this, [reply, requestId, householdId, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
@@ -195,20 +197,21 @@ void Sonos::getFavorites(const QString &householdId)
             return;
 
         QVariantList array = data.toVariant().toMap().value("items").toList();
-        //qDebug(dcSonos()) << "Favourites received:" << data.toJson();
+        //qDebug(dcSonos()) << "Favorites received:" << data.toJson();
 
-        QList<FavouriteObject> favourites;
+        QList<FavoriteObject> favorites;
         foreach (const QVariant &variant, array) {
             QVariantMap itemObject = variant.toMap();
-            FavouriteObject favourite;
-            favourite.id = itemObject["id"].toString();
-            favourite.name = itemObject["name"].toString();
-            favourite.description = itemObject["description"].toString();
-            favourite.imageUrl = itemObject["imageUrl"].toString();
-            favourites.append(favourite);
+            FavoriteObject favorite;
+            favorite.id = itemObject["id"].toString();
+            favorite.name = itemObject["name"].toString();
+            favorite.description = itemObject["description"].toString();
+            favorite.imageUrl = itemObject["imageUrl"].toString();
+            favorites.append(favorite);
         }
-        emit favouritesReceived(householdId, favourites);
+        emit favoritesReceived(requestId, householdId, favorites);
     });
+    return requestId;
 }
 
 

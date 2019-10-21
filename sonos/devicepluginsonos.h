@@ -65,17 +65,18 @@ private:
     QByteArray m_sonosConnectionRefreshToken;
 
     QHash<QUuid, QPointer<DeviceActionInfo> > m_pendingActions;
-    QHash<QString, BrowseResult *> m_pendingBrowseResult;
-     QHash<QString, BrowserItemResult *> m_pendingBrowserItemResult;
+    QHash<QUuid, BrowseResult *> m_pendingBrowseResult;
+    QHash<QUuid, BrowserItemResult *> m_pendingBrowserItemResult;
     QHash<QUuid, BrowserActionInfo  *> m_pendingBrowserExecution;
 
+    const QString m_browseFavoritesPrefix = "/favorites";
 
 private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
 
     void onHouseholdIdsReceived(QList<QString> householdIds);
-    void onFavouritesReceived(const QString &householdId, QList<Sonos::FavouriteObject> favourites);
+    void onFavoritesReceived(QUuid requestId, const QString &householdId, QList<Sonos::FavoriteObject> favorites);
     void onPlaylistsReceived(const QString &householdId, QList<Sonos::PlaylistObject> playlists);
     void onPlaylistSummaryReceived(const QString &householdId, Sonos::PlaylistSummaryObject playlistSummary);
 
