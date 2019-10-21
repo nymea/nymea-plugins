@@ -1,6 +1,22 @@
-nymea-plugins (0.16.0) UNRELEASED; urgency=medium
+nymea-plugins (0.16.0) xenial; urgency=medium
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Fri, 20 Sep 2019 12:40:45 +0200
+  [ Bernhard Trinnes ]
+  * New Plugin: CoinMarketCap
+  * New plugin: Sonos
+
+  [ Michael Zanetti ]
+  * All Plugins: Devicemanager api rework
+  * Fix hertz wording
+  * New plugin: Shelly
+  * EQ-3: Some fixes for Eqiva Bluetooth Smart Radiator Thermostats
+  * PhilipsHue: Fix light intensity conversion to lux for the motion
+    sensor
+  * Anel: Add anel plugin to main plugin package
+  * NetworkDetector: Improve packaging and error handling
+  * Nuimo: Make it work with Bluez 5.48 (except battery service)
+  * Kodi: Fix active player not updating properly in some circumstances
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 22 Oct 2019 01:09:57 +0200
 
 nymea-plugins (0.15.2) xenial; urgency=medium
 
