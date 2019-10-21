@@ -63,13 +63,11 @@ private:
 
 private slots:
     void onPluginTimer();
-    void onConnectionChanged();
+    void onConnectionChanged(bool connected);
     void onStateChanged();
     void onActionExecuted(int actionId, bool success);
     void onBrowserItemExecuted(int actionId, bool success);
     void onBrowserItemActionExecuted(int actionId, bool success);
-    void versionDataReceived(const QVariantMap &data);
-    void onSetupFinished(const QVariantMap &data);
 
     void onPlaybackStatusChanged(const QString &playbackStatus);
 };

@@ -33,7 +33,7 @@ Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *par
     m_volume(-1)
 {
     m_connection = new KodiConnection(hostAddress, port, this);
-    connect (m_connection, &KodiConnection::connectionStatusChanged, this, &Kodi::connectionStatusChanged);
+    connect (m_connection, &KodiConnection::connectionStatusChanged, this, &Kodi::onConnectionStatusChanged);
 
     m_jsonHandler = new KodiJsonHandler(m_connection, this);
     connect(m_jsonHandler, &KodiJsonHandler::notificationReceived, this, &Kodi::processNotification);
@@ -532,6 +532,15 @@ int Kodi::executeBrowserItemAction(const QString &itemId, const ActionTypeId &ac
     return m_jsonHandler->sendData(scope + "." + method, QVariantMap());
 }
 
+void Kodi::onConnectionStatusChanged()
+{
+    if (m_connection->connected()) {
+        checkVersion();
+    } else {
+        emit connectionStatusChanged(false);
+    }
+}
+
 void Kodi::onVolumeChanged(const int &volume, const bool &muted)
 {
     if (m_volume != volume || m_muted != muted) {
@@ -636,14 +645,14 @@ void Kodi::processNotification(const QString &method, const QVariantMap &params)
     if (method == "Application.OnVolumeChanged") {
         QVariantMap data = params.value("data").toMap();
         onVolumeChanged(data.value("volume").toInt(), data.value("muted").toBool());
-    } else if (method == "Player.OnPlay" || method == "Player.OnResume" || method == "Player.OnAVStart") {
-        onPlaybackStatusChanged("Playing");
-        update();
-    } else if (method == "Player.OnPause") {
-        onPlaybackStatusChanged("Paused");
-        update();
-    } else if (method == "Player.OnStop") {
-        onPlaybackStatusChanged("Stopped");
+        return;
+    }
+
+    if (method == "Player.OnPlay" ||
+            method == "Player.OnResume" ||
+            method == "Player.OnPause" ||
+            method == "Player.OnStop" ||
+            method == "Player.OnAVChange") {
         update();
     }
 }
@@ -657,27 +666,43 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
         qCWarning(dcKodi) << "got error response for request " << method << ":" << response.value("error").toMap().value("message").toString();
     }
 
+    if (method == "JSONRPC.Version") {
+        qCDebug(dcKodi) << "got version response" << method;
+        QVariantMap data = response.value("result").toMap();
+        QVariantMap version = data.value("version").toMap();
+        QString apiVersion = QString("%1.%2.%3").arg(version.value("major").toString()).arg(version.value("minor").toString()).arg(version.value("patch").toString());
+        qCDebug(dcKodi) << "API Version:" << apiVersion;
+
+        if (version.value("major").toInt() < 6) {
+            qCWarning(dcKodi) << "incompatible api version:" << apiVersion;
+            m_connection->disconnectKodi();
+            emit connectionStatusChanged(false);
+            return;
+        }
+        emit connectionStatusChanged(true);
+
+        update();
+        return;
+    }
+
     if (method == "Application.GetProperties") {
         //qCDebug(dcKodi) << "got update response" << reply.method();
         emit updateDataReceived(response.value("result").toMap());
         return;
     }
 
-    if (method == "JSONRPC.Version") {
-        qCDebug(dcKodi) << "got version response" << method;
-        emit versionDataReceived(response.value("result").toMap());
-        return;
-    }
 
     if (method == "Player.GetActivePlayers") {
         qCDebug(dcKodi) << "Active players changed" << response;
         activePlayersChanged(response.value("result").toList());
+        updatePlayerProperties();
         return;
     }
 
     if (method == "Player.GetProperties") {
         qCDebug(dcKodi) << "Player properties received" << response;
         playerPropertiesReceived(response.value("result").toMap());
+        updateMetadata();
         return;
     }
 
