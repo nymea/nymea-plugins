@@ -16,6 +16,15 @@ DeviceMonitor::DeviceMonitor(const QString &name, const QString &macAddress, con
 
     m_arpingProcess = new QProcess(this);
     m_arpingProcess->setReadChannelMode(QProcess::MergedChannels);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    // Actually we'd need this fix on older platforms too, but it's hard to figure this out without this API...
+    connect(m_arpingProcess, &QProcess::errorOccurred, this, [this](QProcess::ProcessError error) {
+        if (error == QProcess::FailedToStart) {
+            warn(QString("arping process failed to start. Falling back to ping. This plugin might not work properly on this system."));
+            ping();
+        }
+    });
+#endif
     connect(m_arpingProcess, SIGNAL(finished(int)), this, SLOT(arpingFinished(int)));
 
     m_pingProcess = new QProcess(this);

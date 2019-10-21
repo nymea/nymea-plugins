@@ -440,6 +440,7 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          nmap,
          fping,
+         arping,
          nymea-plugins-translations,
 Replaces: guh-plugin-networkdetector
 Description: nymea.io plugin for networkdetector
