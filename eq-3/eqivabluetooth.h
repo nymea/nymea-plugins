@@ -40,6 +40,8 @@ public:
 
     quint8 valveOpen() const;
 
+    bool batteryCritical() const;
+
 signals:
     void availableChanged();
     void enabledChanged();
@@ -49,6 +51,7 @@ signals:
     void windowOpenChanged();
     void targetTemperatureChanged();
     void valveOpenChanged();
+    void batteryCriticalChanged();
 
     void commandResult(int id, bool result);
 
@@ -82,18 +85,21 @@ private:
     Mode m_mode = ModeAuto;
     bool m_windowOpen = false;
     quint8 m_valveOpen = 0;
+    bool m_batteryCritical = false;
 
+    QTimer m_reconnectTimer;
     int m_reconnectAttempt = 0;
 
     struct Command {
         QString name; // For debug prints
         QByteArray data;
-        int id = -1;
+        qint32 id = -1;
     };
     QList<Command> m_commandQueue;
     Command m_currentCommand;
+    QTimer m_commandTimeout;
 
-    int m_nextCommandId = 0;
+    quint16 m_nextCommandId = 0;
 };
 
 class EqivaBluetoothDiscovery: public QObject
