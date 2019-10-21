@@ -305,7 +305,13 @@ void Nuimo::onConnectedChanged(bool connected)
     if (!connected) {
         // Clean up services
         m_deviceInfoService->deleteLater();
-        m_batteryService->deleteLater();
+
+        // FIXME: As of BlueZ 5.48, the Battery service isn't expose in the same way any more.
+        // Until that's fixed m_batteryService might never be initialized
+        if (m_batteryService) {
+            m_batteryService->deleteLater();
+        }
+
         m_ledMatrixService->deleteLater();
         m_inputService->deleteLater();
 
@@ -327,11 +333,13 @@ void Nuimo::onServiceDiscoveryFinished()
         return;
     }
 
-    if (!m_bluetoothDevice->serviceUuids().contains(QBluetoothUuid::BatteryService)) {
-        qCWarning(dcSenic()) << "Battery service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
-        emit deviceInitializationFinished(false);
-        return;
-    }
+    // FIXME: As of BlueZ 5.48, the Battery service isn't expose in the same way any more.
+    // For now we're deactivating this check to make the Nuimo still work despite the broken battery info
+//    if (!m_bluetoothDevice->serviceUuids().contains(QBluetoothUuid::BatteryService)) {
+//        qCWarning(dcSenic()) << "Battery service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+//        emit deviceInitializationFinished(false);
+//        return;
+//    }
 
     if (!m_bluetoothDevice->serviceUuids().contains(ledMatrinxServiceUuid)) {
         qCWarning(dcSenic()) << "Led matrix service not found for device" << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
@@ -366,15 +374,18 @@ void Nuimo::onServiceDiscoveryFinished()
         m_batteryService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::BatteryService, this);
         if (!m_batteryService) {
             qCWarning(dcSenic()) << "Could not create battery service.";
-            emit deviceInitializationFinished(false);
-            return;
-        }
 
-        connect(m_batteryService, &QLowEnergyService::stateChanged, this, &Nuimo::onBatteryServiceStateChanged);
-        connect(m_batteryService, &QLowEnergyService::characteristicChanged, this, &Nuimo::onBatteryCharacteristicChanged);
+            // FIXME: As of BlueZ 5.48, the Battery service isn't expose in the same way any more.
+            // For now we're deactivating this check to make the Nuimo still work despite the broken battery info
+//            emit deviceInitializationFinished(false);
+//            return;
+        } else {
+            connect(m_batteryService, &QLowEnergyService::stateChanged, this, &Nuimo::onBatteryServiceStateChanged);
+            connect(m_batteryService, &QLowEnergyService::characteristicChanged, this, &Nuimo::onBatteryCharacteristicChanged);
 
-        if (m_batteryService->state() == QLowEnergyService::DiscoveryRequired) {
-            m_batteryService->discoverDetails();
+            if (m_batteryService->state() == QLowEnergyService::DiscoveryRequired) {
+                m_batteryService->discoverDetails();
+            }
         }
     }
 
