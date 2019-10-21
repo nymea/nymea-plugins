@@ -72,8 +72,6 @@ void DevicePluginKodi::setupDevice(DeviceSetupInfo *info)
     connect(kodi, &Kodi::connectionStatusChanged, this, &DevicePluginKodi::onConnectionChanged);
     connect(kodi, &Kodi::stateChanged, this, &DevicePluginKodi::onStateChanged);
     connect(kodi, &Kodi::actionExecuted, this, &DevicePluginKodi::onActionExecuted);
-    connect(kodi, &Kodi::versionDataReceived, this, &DevicePluginKodi::versionDataReceived);
-    connect(kodi, &Kodi::updateDataReceived, this, &DevicePluginKodi::onSetupFinished);
     connect(kodi, &Kodi::playbackStatusChanged, this, &DevicePluginKodi::onPlaybackStatusChanged);
     connect(kodi, &Kodi::browserItemExecuted, this, &DevicePluginKodi::onBrowserItemExecuted);
     connect(kodi, &Kodi::browserItemActionExecuted, this, &DevicePluginKodi::onBrowserItemActionExecuted);
@@ -343,17 +341,23 @@ void DevicePluginKodi::onPluginTimer()
     }
 }
 
-void DevicePluginKodi::onConnectionChanged()
+void DevicePluginKodi::onConnectionChanged(bool connected)
 {
     Kodi *kodi = static_cast<Kodi *>(sender());
     Device *device = m_kodis.value(kodi);
 
-    if (kodi->connected()) {
-        // if this is the first setup, check version
-        if (m_asyncSetups.contains(kodi)) {
-            kodi->checkVersion();
+    // Finish setup
+    DeviceSetupInfo *info = m_asyncSetups.value(kodi);
+    if (info) {
+        if (connected) {
+            info->finish(Device::DeviceErrorNoError);
+        } else {
+            //: Error setting up device
+            m_asyncSetups.take(kodi)->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("This installation of Kodi is too old. Please upgrade your Kodi system."));
         }
     }
+
+    kodi->showNotification("nymea", tr("Connected"), 2000, "info");
 
     device->setStateValue(kodiConnectedStateTypeId, kodi->connected());
 }
@@ -390,40 +394,6 @@ void DevicePluginKodi::onBrowserItemActionExecuted(int actionId, bool success)
         return;
     }
     m_pendingBrowserItemActions.take(actionId)->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorHardwareFailure);
-}
-
-void DevicePluginKodi::versionDataReceived(const QVariantMap &data)
-{
-    Kodi *kodi = static_cast<Kodi *>(sender());
-
-    QVariantMap version = data.value("version").toMap();
-    QString apiVersion = QString("%1.%2.%3").arg(version.value("major").toString()).arg(version.value("minor").toString()).arg(version.value("patch").toString());
-    qCDebug(dcKodi) << "API Version:" << apiVersion;
-
-    if (version.value("major").toInt() < 6) {
-        qCWarning(dcKodi) << "incompatible api version:" << apiVersion;
-        if (m_asyncSetups.contains(kodi)) {
-            //: Error setting up device
-            m_asyncSetups.take(kodi)->finish(Device::DeviceErrorHardwareFailure, QT_TR_NOOP("This installation of Kodi is too old. Please upgrade your Kodi system."));
-        }
-        return;
-    }
-    kodi->update();
-}
-
-void DevicePluginKodi::onSetupFinished(const QVariantMap &data)
-{
-    Kodi *kodi = static_cast<Kodi *>(sender());
-
-    QVariantMap version = data.value("version").toMap();
-    QString kodiVersion = QString("%1.%2 (%3)").arg(version.value("major").toString()).arg(version.value("minor").toString()).arg(version.value("tag").toString());
-    qCDebug(dcKodi) << "Version:" << kodiVersion;
-
-    if (m_asyncSetups.contains(kodi)) {
-        m_asyncSetups.take(kodi)->finish(Device::DeviceErrorNoError);
-    }
-
-    kodi->showNotification("nymea", tr("Connected"), 2000, "info");
 }
 
 void DevicePluginKodi::onPlaybackStatusChanged(const QString &playbackStatus)

@@ -74,20 +74,20 @@ public:
     int executeBrowserItemAction(const QString &itemId, const ActionTypeId &actionTypeId);
 
 signals:
-    void connectionStatusChanged();
+    void connectionStatusChanged(bool connected);
     void stateChanged();
     void activePlayerChanged(const QString &playerType);
     void actionExecuted(int actionId, bool success);
     void browserItemExecuted(int actionId, bool success);
     void browserItemActionExecuted(int actionId, bool success);
     void updateDataReceived(const QVariantMap &data);
-    void versionDataReceived(const QVariantMap &data);
     void playbackStatusChanged(const QString &playbackState);
     void mediaMetadataChanged(const QString &title, const QString &artist, const QString &collection, const QString &artwork);
     void shuffleChanged(bool shuffle);
     void repeatChanged(const QString &repeat);
 
 private slots:
+    void onConnectionStatusChanged();
     void onVolumeChanged(const int &volume, const bool &muted);
     void onUpdateFinished(const QVariantMap &data);
     void activePlayersChanged(const QVariantList &data);
