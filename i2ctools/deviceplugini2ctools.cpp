@@ -24,7 +24,6 @@
 #include "devices/device.h"
 #include "plugininfo.h"
 
-#include <QDebug>
 #include <QDir>
 
 extern "C" {
@@ -49,7 +48,7 @@ void DevicePluginI2cTools::discoverDevices(DeviceDiscoveryInfo *info)
 
     if (deviceClassId == i2cInterfaceDeviceClassId) {
         QList<i2c_adap> busses = getI2cBusses();
-        foreach(i2c_adap adapter, busses) {
+        foreach (i2c_adap adapter, busses) {
             DeviceDescriptor descriptor(i2cInterfaceDeviceClassId, QString("i2c-%0").arg(adapter.nr), QString(adapter.algo));
             ParamList params;
             params.append(Param(i2cInterfaceDeviceInterfaceParamTypeId, adapter.nr));
@@ -61,11 +60,11 @@ void DevicePluginI2cTools::discoverDevices(DeviceDiscoveryInfo *info)
     } else if (deviceClassId == i2cReadRegisterDeviceClassId) {
 
 
-        foreach (int file, m_i2cDeviceFiles) {
+        foreach (QFile *file, m_i2cDeviceFiles) {
             DeviceId parentDeviceId = m_i2cDeviceFiles.key(file);
             QString interfaceName = myDevices().findById(parentDeviceId)->name();
-            QList<int> addresses = scanI2cBus(file, ScanModeAuto, m_fileFuncs.value(file), 0, 254);
-            foreach(int address, addresses) {
+            QList<int> addresses = scanI2cBus(file->handle(), ScanModeAuto, m_fileFuncs.value(file), 0, 254);
+            foreach (int address, addresses) {
                 DeviceDescriptor descriptor(i2cReadRegisterDeviceClassId, QString("0x%0").arg(QString::number(address, 16)), "I2C interface: " + interfaceName, parentDeviceId);
                 ParamList params;
                 params.append(Param(i2cReadRegisterDeviceAddressParamTypeId, address));
@@ -86,25 +85,29 @@ void DevicePluginI2cTools::setupDevice(DeviceSetupInfo *info)
     Device *device = info->device();
     if (device->deviceClassId() == i2cInterfaceDeviceClassId) {
         qCDebug(dcI2cTools) << "Setup i2c interface";
-
         unsigned long funcs;
-        int file;
-        char filename[20];
-        file = open_i2c_dev(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toInt(), filename, sizeof(filename), 0);
-        if (file < 0) {
-            qWarning(dcI2cTools()) << "Could not open I2C file";
+
+        QFile *i2cFile = new QFile("/dev/i2c-" + device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString());
+        if (!i2cFile->exists()) {
+            qCWarning(dcI2cTools()) << "Could not open I2C file";
             info->finish(Device::DeviceErrorSetupFailed);
             return;
         }
 
-        if (ioctl(file, I2C_FUNCS, &funcs) < 0) {
-            qWarning(dcI2cTools()) << "Could not get the adapter functionality matrix" << strerror(errno);
-            close(file);
+        if (!i2cFile->open(QFile::ReadWrite)) {
+            qCWarning(dcI2cTools()) << "Could not open the given I2C file descriptor:" << i2cFile->fileName() << i2cFile->errorString();
+            info->finish(Device::DeviceErrorSetupFailed);
+            return;
+        }
+
+        if (ioctl(i2cFile->handle(), I2C_FUNCS, &funcs) < 0) {
+            qCWarning(dcI2cTools()) << "Could not get the adapter functionality matrix" << strerror(errno);
+            i2cFile->close();
             info->finish(Device::DeviceErrorSetupFailed);
             return ;
         }
-        m_i2cDeviceFiles.insert(device->id(), file);
-        m_fileFuncs.insert(file, funcs);
+        m_i2cDeviceFiles.insert(device->id(), i2cFile);
+        m_fileFuncs.insert(i2cFile, funcs);
 
         info->finish(Device::DeviceErrorNoError);
         return;
@@ -124,17 +127,37 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(5 * 60);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this] {
             foreach (Device *device, myDevices().filterByDeviceClassId(i2cInterfaceDeviceClassId)) {
-                Q_UNUSED(device);
+                QFile *i2cFile = m_i2cDeviceFiles.value(device->id());
+                unsigned long funcs = m_fileFuncs.value(i2cFile);
+                QList<int> addresses = scanI2cBus(i2cFile->handle(), ScanModeAuto,funcs, 0, 254);
+                QString state;
+                foreach (int address, addresses) {
+                    state.append("0x");
+                    state.append(QString::number(address, 16));
+                    state.append(", ");
+                }
+                if (state.size() > 2) {
+                    state.resize(state.size() - 2); //remove last colon
+                } else {
+                    state = "--";
+                }
+                device->setStateValue(i2cInterfaceAvailableDevicesStateTypeId, state);
+
+                if(lookup_i2c_bus(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toByteArray()) == -1) {
+                    device->setStateValue(i2cInterfaceConnectedStateTypeId, false);
+                } else {
+                    device->setStateValue(i2cInterfaceConnectedStateTypeId, true);
+                }
             }
         });
     }
 
     if (device->deviceClassId() == i2cInterfaceDeviceClassId) {
-        int file = m_i2cDeviceFiles.value(device->id());
-        unsigned long funcs = m_fileFuncs.value(file);
-        QList<int> addresses = scanI2cBus(file, ScanModeAuto,funcs, 0, 254);
+        QFile *i2cFile = m_i2cDeviceFiles.value(device->id());
+        unsigned long funcs = m_fileFuncs.value(i2cFile);
+        QList<int> addresses = scanI2cBus(i2cFile->handle(), ScanModeAuto,funcs, 0, 254);
         QString state;
-        foreach(int address, addresses) {
+        foreach (int address, addresses) {
             state.append("0x");
             state.append(QString::number(address, 16));
             state.append(", ");
@@ -151,16 +174,17 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
         } else {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, true);
         }
+
     } else if (device->deviceClassId() == i2cReadRegisterDeviceClassId) {
-        int file = m_i2cDeviceFiles.value(device->parentId());
+        QFile *i2cFile = m_i2cDeviceFiles.value(device->parentId());
         int slaveAddress = device->paramValue(i2cReadRegisterDeviceAddressParamTypeId).toInt();
         uint8_t command = device->paramValue(i2cReadRegisterDeviceRegisterParamTypeId).toUInt();
-        if (ioctl(file, I2C_SLAVE, slaveAddress) < 0) {
-            qWarning(dcI2cTools()) << "Could not access slave" << slaveAddress;
+        if (ioctl(i2cFile->handle(), I2C_SLAVE, slaveAddress) < 0) {
+            qCWarning(dcI2cTools()) << "Could not access slave" << slaveAddress;
             device->setStateValue(i2cReadRegisterConnectedStateTypeId, false);
             return;
         }
-        int value = i2c_smbus_read_word_data(file, command);
+        int value = i2c_smbus_read_word_data(i2cFile->handle(), command);
         device->setStateValue(i2cReadRegisterConnectedStateTypeId, true);
         device->setStateValue(i2cReadRegisterValueStateTypeId, value);
     }
@@ -170,9 +194,9 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
 void DevicePluginI2cTools::deviceRemoved(Device *device)
 {
     if (device->deviceClassId() == i2cInterfaceDeviceClassId) {
-        int file = m_i2cDeviceFiles.take(device->id());
-        m_fileFuncs.remove(file);
-        close(file);
+        QFile *i2cFile = m_i2cDeviceFiles.take(device->id());
+        m_fileFuncs.remove(i2cFile);
+        i2cFile->close();
     }
 
     if (myDevices().empty()) {
@@ -184,12 +208,12 @@ void DevicePluginI2cTools::deviceRemoved(Device *device)
 
 void DevicePluginI2cTools::onPluginTimer()
 {
-    foreach(Device *device, myDevices().filterByDeviceClassId(i2cInterfaceDeviceClassId)) {
-        int file = m_i2cDeviceFiles.value(device->id());
-        unsigned long funcs = m_fileFuncs.value(file);
-        QList<int> addresses = scanI2cBus(file, ScanModeAuto,funcs, 0, 254);
+    foreach (Device *device, myDevices().filterByDeviceClassId(i2cInterfaceDeviceClassId)) {
+        QFile *i2cFile = m_i2cDeviceFiles.value(device->id());
+        unsigned long funcs = m_fileFuncs.value(i2cFile);
+        QList<int> addresses = scanI2cBus(i2cFile->handle(), ScanModeAuto,funcs, 0, 254);
         QString state;
-        foreach(int address, addresses) {
+        foreach (int address, addresses) {
             state.append("0x");
             state.append(QString::number(address, 16));
             state.append(", ");
@@ -217,13 +241,13 @@ QList<i2c_adap> DevicePluginI2cTools::getI2cBusses(void)
     QList<i2c_adap> i2cBusses;
 
     adapters = gather_i2c_busses();
-    if (adapters == nullptr) {
-        qWarning(dcI2cTools()) << "Error: Out of memory!";
+    if (!adapters) {
+        qCWarning(dcI2cTools()) << "Error: Out of memory!";
         return i2cBusses;
     }
 
     for (count = 0; adapters[count].name; count++) {
-        qDebug(dcI2cTools()) << "i2c adapter nr:" << adapters[count].nr;
+        qCDebug(dcI2cTools()) << "i2c adapter nr:" << adapters[count].nr;
         i2cBusses.append(adapters[count]);
     }
     free_adapters(adapters);
@@ -232,71 +256,59 @@ QList<i2c_adap> DevicePluginI2cTools::getI2cBusses(void)
 
 QList<int> DevicePluginI2cTools::scanI2cBus(int file, ScanMode mode, unsigned long funcs, int first, int last)
 {
-    int i, j;
     int cmd, res;
-
     QList<int> deviceAddresses;
+    qCDebug(dcI2cTools()) << "Start scanning i2c bus";
 
-    qDebug(dcI2cTools()) << "Start scanning i2c bus";
+    for (int address = 0; address < 128; address++) {
 
-    for (i = 0; i < 128; i += 16) {
-        for(j = 0; j < 16; j++) {
-            fflush(stdout);
+        /* Select detection command for this address */
+        if (mode == ScanModeAuto) {
+            if ((address >= 0x30 && address <= 0x37)
+                    || (address >= 0x50 && address <= 0x5F))
+                cmd = ScanModeRead;
+            else
+                cmd = ScanModeQuick;
+        } else {
+            cmd = mode;
+        }
 
-            /* Select detection command for this address */
-            switch (mode) {
-            default:
-                cmd = mode;
-                break;
-            case ScanModeAuto:
-                if ((i+j >= 0x30 && i+j <= 0x37)
-                        || (i+j >= 0x50 && i+j <= 0x5F))
-                    cmd = ScanModeRead;
-                else
-                    cmd = ScanModeQuick;
-                break;
-            }
+        /* Skip unwanted addresses */
+        if (address < first || address > last
+                || (cmd == ScanModeRead &&
+                    !(funcs & I2C_FUNC_SMBUS_READ_BYTE))
+                || (cmd == ScanModeQuick &&
+                    !(funcs & I2C_FUNC_SMBUS_QUICK))) {
+            continue;
+        }
 
-            /* Skip unwanted addresses */
-            if (i+j < first || i+j > last
-                    || (cmd == ScanModeRead &&
-                        !(funcs & I2C_FUNC_SMBUS_READ_BYTE))
-                    || (cmd == ScanModeQuick &&
-                        !(funcs & I2C_FUNC_SMBUS_QUICK))) {
+        /* Set slave address */
+        if (ioctl(file, I2C_SLAVE, address) < 0) {
+            if (errno == EBUSY) {
+                qCDebug(dcI2cTools()) << "Device found but it seems busy <UU>";
+                continue;
+            } else {
+                qCWarning(dcI2cTools()) << "Error: Could not set address" << strerror(errno);
                 continue;
             }
+        }
 
-            /* Set slave address */
-            if (ioctl(file, I2C_SLAVE, i+j) < 0) {
-                if (errno == EBUSY) {
-                    qDebug(dcI2cTools()) << "Device found but it seems busy <UU>";
-                    continue;
-                } else {
-                    qWarning(dcI2cTools()) << "Error: Could not set address" << strerror(errno);
-                    return deviceAddresses;
-                }
-            }
-
-            /* Probe this address */
-            switch (cmd) {
-            default: /* MODE_QUICK */
-                /* This is known to corrupt the Atmel AT24RF08
-                   EEPROM */
-                res = i2c_smbus_write_quick(file, I2C_SMBUS_WRITE);
-                break;
-            case ScanModeRead:
-                /* This is known to lock SMBus on various
+        /* Probe this address */
+        if(cmd == ScanModeRead) {
+            /* This is known to lock SMBus on various
                    write-only chips (mainly clock chips) */
-                res = i2c_smbus_read_byte(file);
-                break;
-            }
+            res = i2c_smbus_read_byte(file);
+        } else {
+            /* MODE_QUICK */
+            /* This is known to corrupt the Atmel AT24RF08 EEPROM */
+            res = i2c_smbus_write_quick(file, I2C_SMBUS_WRITE);
+        }
 
-            if (res < 0) {
-                //qDebug(dcI2cTools()) << "No device on this address";
-            } else {
-                deviceAddresses.append(i+j);
-                qDebug(dcI2cTools()) << "Found device with address:" << i+j;
-            }
+        if (res < 0) {
+            //qCDebug(dcI2cTools()) << "No device on this address";
+        } else {
+            deviceAddresses.append(address);
+            qCDebug(dcI2cTools()) << "Found device with address:" << address;
         }
     }
     return deviceAddresses;

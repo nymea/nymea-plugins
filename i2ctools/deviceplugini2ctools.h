@@ -26,7 +26,7 @@
 #include "plugintimer.h"
 #include "devices/deviceplugin.h"
 
-#include <QHash>
+#include <QFile>
 
 extern "C" {
 #include "i2cbusses.h"
@@ -43,7 +43,7 @@ public:
         ScanModeAuto  = 0,
         ScanModeQuick = 1,
         ScanModeRead  = 2,
-        ScanModeFunc  =	3
+        ScanModeFunc  = 3
     };
 
     explicit DevicePluginI2cTools();
@@ -56,8 +56,8 @@ public:
 private:
     PluginTimer *m_pluginTimer = nullptr;
 
-    QHash<DeviceId, int> m_i2cDeviceFiles;
-    QHash<int, unsigned long> m_fileFuncs;
+    QHash<DeviceId, QFile *> m_i2cDeviceFiles;
+    QHash<QFile *, unsigned long> m_fileFuncs;
     QList<DeviceDiscoveryInfo*> m_runningDiscoveries;
 
     QList<int> scanI2cBus(int file, ScanMode mode, unsigned long funcs, int first, int last);

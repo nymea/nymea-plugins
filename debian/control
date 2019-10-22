@@ -14,6 +14,7 @@ Build-depends: libboblight-dev,
                qt5-default,
                qtbase5-dev,
                qtconnectivity5-dev,
+               libi2c-dev,
                libow-dev,
                libsodium-dev,
                libudev-dev,
@@ -356,6 +357,21 @@ Description: nymea.io plugin for gpio
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for gpio
+
+
+Package: nymea-plugin-i2ctools
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for i2c tool
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for i2c tools
 
 
 Package: nymea-plugin-intertechno
@@ -1054,6 +1070,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-systemmonitor,
          nymea-plugin-onewire,
          nymea-plugin-dynatrace,
+         nymea-plugin-i2ctool,
 Replaces: guh-plugins-maker
 Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
