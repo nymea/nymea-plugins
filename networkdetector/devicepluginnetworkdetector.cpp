@@ -146,7 +146,7 @@ void DevicePluginNetworkDetector::deviceAddressChanged(const QString &address)
     Device *device = m_monitors.value(monitor);
     if (device->paramValue(networkDeviceDeviceAddressParamTypeId).toString() != address) {
         qCDebug(dcNetworkDetector()) << "Device" << device->name() << device->paramValue(networkDeviceDeviceMacAddressParamTypeId).toString() << "changed IP address to" << address;
-        device->setParamValue(networkDeviceDeviceAddressParamTypeId.toString(), address);
+        device->setParamValue(networkDeviceDeviceAddressParamTypeId, address);
     }
 }
 
