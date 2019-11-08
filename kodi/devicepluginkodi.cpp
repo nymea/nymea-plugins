@@ -357,9 +357,18 @@ void DevicePluginKodi::onConnectionChanged(bool connected)
         }
     }
 
-    kodi->showNotification("nymea", tr("Connected"), 2000, "info");
-
     device->setStateValue(kodiConnectedStateTypeId, kodi->connected());
+
+    if (connected) {
+        kodi->showNotification("nymea", tr("Connected"), 2000, "info");
+    } else {
+        if (!info) {
+            // This isn't a setup, we've been reconnected before, so try reconnecting in 5 secs
+            QTimer::singleShot(5000, kodi, [kodi](){
+                kodi->connectKodi();
+            });
+        }
+    }
 }
 
 void DevicePluginKodi::onStateChanged()
