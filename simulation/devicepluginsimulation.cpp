@@ -61,7 +61,8 @@ void DevicePluginSimulation::setupDevice(DeviceSetupInfo *info)
             device->deviceClassId() == extendedBlindDeviceClassId ||
             device->deviceClassId() == rollerShutterDeviceClassId ||
             device->deviceClassId() == fingerPrintSensorDeviceClassId ||
-            device->deviceClassId() == thermostatDeviceClassId) {
+            device->deviceClassId() == thermostatDeviceClassId ||
+            device->deviceClassId() == barcodeScannerDeviceClassId) {
         m_simulationTimers.insert(device, new QTimer(device));
         connect(m_simulationTimers[device], &QTimer::timeout, this, &DevicePluginSimulation::simulationTimerTimeout);
     }
@@ -704,5 +705,26 @@ void DevicePluginSimulation::simulationTimerTimeout()
     } else if (device->deviceClassId() == thermostatDeviceClassId) {
         device->setStateValue(thermostatBoostStateTypeId, false);
         t->stop();
+    } else if (device->deviceClassId() == barcodeScannerDeviceClassId) {
+        QString code;
+        int codeIndex = device->property("codeIndex").toInt();
+        switch (codeIndex) {
+        case 0:
+            code = "12345";
+            device->setProperty("codeIndex", 1);
+            break;
+        case 1:
+            code = "23456";
+            device->setProperty("codeIndex", 2);
+            break;
+        default:
+            code = "34567";
+            device->setProperty("codeIndex", 0);
+            break;
+        }
+
+        ParamList params = ParamList() << Param(barcodeScannerCodeScannedEventContentParamTypeId, code);
+        Event event(barcodeScannerCodeScannedEventTypeId, device->id(), params);
+        emit emitEvent(event);
     }
 }
