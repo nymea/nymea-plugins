@@ -22,14 +22,15 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef HTTPSIMPLESERVER_H
-#define HTTPSIMPLESERVER_H
+#ifndef HTTPSIMPLESERVER1_H
+#define HTTPSIMPLESERVER1_H
 
 #include "typeutils.h"
 
 #include <QTcpServer>
 #include <QUuid>
 #include <QDateTime>
+#include <QUrl>
 
 class Device;
 class DevicePlugin;
@@ -38,6 +39,7 @@ class HttpSimpleServer : public QTcpServer
 {
     Q_OBJECT
 public:
+
     HttpSimpleServer(QObject* parent = nullptr);
     ~HttpSimpleServer() override;
     void incomingConnection(qintptr socket) override;
@@ -45,7 +47,9 @@ public:
 signals:
     void disappear();
     void reconfigureAutodevice();
-    void getRequestReceied(QUrl url);
+    //void getRequestReceied(QUrl url);
+
+    void requestReceived(const QString &type, const QString &path, const QString &body);
 
 private slots:
     void readClient();

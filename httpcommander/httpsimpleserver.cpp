@@ -36,11 +36,13 @@
 HttpSimpleServer::HttpSimpleServer(QObject *parent):
     QTcpServer(parent)
 {
+    listen(QHostAddress::Any, 7777);
 }
 
 HttpSimpleServer::~HttpSimpleServer()
 {
     close();
+
 }
 
 void HttpSimpleServer::incomingConnection(qintptr socket)
@@ -49,10 +51,10 @@ void HttpSimpleServer::incomingConnection(qintptr socket)
     // communication with the client is done over this QTcpSocket. QTcpSocket
     // works asynchronously, this means that all the communication is done
     // in the two slots readClient() and discardClient().
-    QTcpSocket* s = new QTcpSocket(this);
-    connect(s, SIGNAL(readyRead()), this, SLOT(readClient()));
-    connect(s, SIGNAL(disconnected()), this, SLOT(discardClient()));
-    s->setSocketDescriptor(socket);
+    QTcpSocket* tcpSocket = new QTcpSocket(this);
+    connect(tcpSocket, SIGNAL(readyRead()), this, SLOT(readClient()));
+    connect(tcpSocket, SIGNAL(disconnected()), this, SLOT(discardClient()));
+    tcpSocket->setSocketDescriptor(socket);
 
 }
 
@@ -61,27 +63,56 @@ void HttpSimpleServer::readClient()
     // This slot is called when the client sent data to the server. The
     // server looks if it was a get request and sends a very simple HTML
     // document back.
-    QTcpSocket* socket = static_cast<QTcpSocket*>(sender());
-    if (socket->canReadLine()) {
-        QByteArray data = socket->readLine();
+    QTcpSocket* tcpSocket = static_cast<QTcpSocket*>(sender());
+    if (tcpSocket->canReadLine()) {
+
+        QByteArray data = tcpSocket->readAll();
         QStringList tokens = QString(data).split(QRegExp("[ \r\n][ \r\n]*"));
-        QUrl url("http://foo.bar" + tokens[1]);
-        QUrlQuery query(url);
+        //QUrl url("http://foo.bar" + tokens[1]);
+        //QUrlQuery query(url);
+        qCDebug(dcHttpCommander()) << "Http Request, type" << tokens[0] << "path" << tokens[1] << "body" << tokens.last();
 
         if (tokens[0] == "GET") {
-            QTextStream os(socket);
+            QTextStream os(tcpSocket);
             os.setAutoDetectUnicode(true);
             os << generateHeader();
-            socket->close();
+            tcpSocket->close();
 
-            if (socket->state() == QTcpSocket::UnconnectedState)
-                delete socket;
+            if (tcpSocket->state() == QTcpSocket::UnconnectedState)
+                delete tcpSocket;
+
+            emit requestReceived(tokens[0], tokens[1], tokens.last());
         } else if (tokens[0] == "PUT") {
+            QTextStream os(tcpSocket);
+            os.setAutoDetectUnicode(true);
+            os << generateHeader();
+            tcpSocket->close();
+
+            if (tcpSocket->state() == QTcpSocket::UnconnectedState)
+                delete tcpSocket;
+
+            emit requestReceived(tokens[0], tokens[1], tokens.last());
 
         } else if (tokens[0] == "POST") {
+            QTextStream os(tcpSocket);
+            os.setAutoDetectUnicode(true);
+            os << generateHeader();
+            tcpSocket->close();
+
+            if (tcpSocket->state() == QTcpSocket::UnconnectedState)
+                delete tcpSocket;
+            emit requestReceived(tokens[0], tokens[1], tokens.last());
 
         } else if (tokens[0] == "DELETE") {
+            QTextStream os(tcpSocket);
+            os.setAutoDetectUnicode(true);
+            os << generateHeader();
+            tcpSocket->close();
 
+            if (tcpSocket->state() == QTcpSocket::UnconnectedState)
+                delete tcpSocket;
+
+            emit requestReceived(tokens[0], tokens[1], tokens.last());
         }
     }
 }

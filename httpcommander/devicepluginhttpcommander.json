@@ -182,6 +182,16 @@
                             "defaultValue": "8000"
                         }
                     ],
+                    "stateTypes": [
+                        {
+                            "id": "f4458008-67f2-4ba1-bbca-e85771a30ddc",
+                            "name": "serverAddress",
+                            "displayName": "Server address",
+                            "displayNameEvent": "Server address changed",
+                            "type": "QString",
+                            "defaultValue": "127.0.0.1"
+                        }
+                    ],
                     "eventTypes": [
                         {
                             "id": "86f794c6-31ad-40a8-928f-4b8802506ce1",

@@ -40,6 +40,7 @@ class DevicePluginHttpCommander : public DevicePlugin
     Q_INTERFACES(DevicePlugin)
 
 public:
+
     explicit DevicePluginHttpCommander();
 
     void setupDevice(DeviceSetupInfo *info) override;
@@ -60,6 +61,8 @@ private slots:
     void onGetRequestFinished();
     void onPostRequestFinished();
     void onPutRequestFinished();
+
+    void onHttpSimpleServerRequestReceived(const QString &type, const QString &path, const QString &body);
 };
 
 #endif // DEVICEPLUGINHTTPCOMMANDER_H

@@ -24,6 +24,7 @@
 #include "devicepluginhttpcommander.h"
 #include "network/networkaccessmanager.h"
 #include "plugininfo.h"
+#include <QNetworkInterface>
 
 DevicePluginHttpCommander::DevicePluginHttpCommander()
 {
@@ -71,9 +72,20 @@ void DevicePluginHttpCommander::setupDevice(DeviceSetupInfo *info)
     }
 
     if (device->deviceClassId() == httpServerDeviceClassId) {
-        //TODO create a simple server
+
         HttpSimpleServer *httpSimpleServer = new HttpSimpleServer(this);
+        connect(httpSimpleServer, &HttpSimpleServer::requestReceived, this, &DevicePluginHttpCommander::onHttpSimpleServerRequestReceived);
         m_httpSimpleServer.insert(device, httpSimpleServer);
+
+        QString interfaces;
+        foreach (const QNetworkInterface &interface,  QNetworkInterface::allInterfaces()) {
+            foreach (QNetworkAddressEntry entry, interface.addressEntries()) {
+                if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol && entry.ip().toString() != "127.0.0.1") {
+                    interfaces.append(entry.ip().toString());
+                }
+            }
+        }
+        device->setStateValue(httpServerServerAddressStateTypeId, interfaces);
         return info->finish(Device::DeviceErrorNoError);
     }
     info->finish(Device::DeviceErrorNoError);
@@ -135,7 +147,7 @@ void DevicePluginHttpCommander::makeGetCall(Device *device)
     url.setPort(device->paramValue(httpGetCommanderDevicePortParamTypeId).toInt());
     QNetworkRequest request;
     request.setUrl(url);
-    request.setRawHeader("User-Agent", "nymea 1.0");
+    request.setRawHeader("User-Agent", "nymea http commander");
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, this, &DevicePluginHttpCommander::onGetRequestFinished);
@@ -219,6 +231,20 @@ void DevicePluginHttpCommander::onPutRequestFinished()
         qCWarning(dcHttpCommander()) << "Request error:" << status << reply->errorString();
     }
     reply->deleteLater();
+}
+
+void DevicePluginHttpCommander::onHttpSimpleServerRequestReceived(const QString &type, const QString &path, const QString &body)
+{
+    //qCDebug(dcHttpCommander()) << "Request recieved" << type << body;
+    HttpSimpleServer *httpServer = static_cast<HttpSimpleServer *>(sender());
+    Device *device = m_httpSimpleServer.key(httpServer);
+    Event ev = Event(httpServerTriggeredEventTypeId, device->id());
+    ParamList params;
+    params.append(Param(httpServerTriggeredEventRequestTypeParamTypeId, type));
+    params.append(Param(httpServerTriggeredEventPathParamTypeId, path));
+    params.append(Param(httpServerTriggeredEventBodyParamTypeId, body));
+    ev.setParams(params);
+    emit emitEvent(ev);
 }
 
 
