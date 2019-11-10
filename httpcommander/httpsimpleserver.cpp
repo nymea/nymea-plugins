@@ -61,7 +61,7 @@ void HttpSimpleServer::readClient()
     // This slot is called when the client sent data to the server. The
     // server looks if it was a get request and sends a very simple HTML
     // document back.
-    QTcpSocket* socket = (QTcpSocket*)sender();
+    QTcpSocket* socket = static_cast<QTcpSocket*>(sender());
     if (socket->canReadLine()) {
         QByteArray data = socket->readLine();
         QStringList tokens = QString(data).split(QRegExp("[ \r\n][ \r\n]*"));

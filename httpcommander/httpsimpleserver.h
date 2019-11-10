@@ -39,7 +39,7 @@ class HttpSimpleServer : public QTcpServer
     Q_OBJECT
 public:
     HttpSimpleServer(QObject* parent = nullptr);
-    ~HttpSimpleServer();
+    ~HttpSimpleServer() override;
     void incomingConnection(qintptr socket) override;
 
 signals:

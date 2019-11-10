@@ -72,9 +72,8 @@ void DevicePluginHttpCommander::setupDevice(DeviceSetupInfo *info)
 
     if (device->deviceClassId() == httpServerDeviceClassId) {
         //TODO create a simple server
-        HttpSimpleServer *httpSimpleServer = new HttpSimpleServer(device, this);
-        httpSimpleServer->
-        m_httpSimpleServer.insert(httpSimpleServer);
+        HttpSimpleServer *httpSimpleServer = new HttpSimpleServer(this);
+        m_httpSimpleServer.insert(device, httpSimpleServer);
         return info->finish(Device::DeviceErrorNoError);
     }
     info->finish(Device::DeviceErrorNoError);
