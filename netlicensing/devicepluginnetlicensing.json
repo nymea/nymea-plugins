@@ -1,0 +1,66 @@
+{
+    "displayName": "Netlicensing",
+    "name": "Netlicensing",
+    "id": "03f6ae2e-e1ac-4010-bd6f-c0338e58d7d9",
+    "vendors": [
+        {
+            "displayName": "Netlicensing",
+            "name": "netlicensing",
+            "id": "6289b7c8-aaa2-4325-a8d1-07f9ac9ba954",
+            "deviceClasses": [
+                {
+                    "id": "9207594c-9a59-4902-9e9a-e8db22aa4777",
+                    "name": "netlicenseConnection",
+                    "displayName": "Netlicense Connection",
+                    "interfaces": ["gateway"],
+                    "createMethods": ["user"],
+                    "paramTypes": [
+                        {
+                            "id": "84f7e81a-62d8-4400-8b44-48b58c3a00ca",
+                            "name": "apiKey",
+                            "displayName": "API Key",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8f9c4172-dc97-459f-ac9a-baaafd3c89cc",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connection changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "06573cda-e417-4cd2-9211-be0dafc2f094",
+                    "name": "license",
+                    "displayName": "License",
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "72be35a3-440d-4c66-b7ca-4dd119bd1108",
+                            "name": "name",
+                            "displayName": "name",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d70805c9-71a4-46c9-95cd-3835b041edc5",
+                            "name": "updateTime",
+                            "displayName": "last update",
+                            "displayNameEvent": "last update changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -29,6 +29,7 @@ PLUGIN_DIRS = \
     mailnotification    \
     mqttclient          \
     netatmo             \
+    netlicensing        \
     networkdetector     \
     onewire             \
     openweathermap      \
