@@ -69,6 +69,9 @@ void DevicePluginSimulation::setupDevice(DeviceSetupInfo *info)
     if (device->deviceClassId() == fingerPrintSensorDeviceClassId && device->stateValue(fingerPrintSensorUsersStateTypeId).toStringList().count() > 0) {
         m_simulationTimers.value(device)->start(10000);
     }
+    if (device->deviceClassId() == barcodeScannerDeviceClassId) {
+        m_simulationTimers.value(device)->start(10000);
+    }
     info->finish(Device::DeviceErrorNoError);
 }
 
