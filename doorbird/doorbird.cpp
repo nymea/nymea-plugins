@@ -105,7 +105,7 @@ QUuid Doorbird::lightOn()
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error unlatching DoorBird device"  << reply->error() << reply->errorString();
+            qCWarning(dcDoorBird) << "Error light on"  << reply->error() << reply->errorString();
             emit requestSent(requestId, false);
             return;
         }
@@ -117,7 +117,7 @@ QUuid Doorbird::lightOn()
 
 QUuid Doorbird::liveVideoRequest()
 {
-    QNetworkRequest request(QString("http://%1/bha-api/info.cgi").arg(m_address.toString()));
+    QNetworkRequest request(QString("http://%1/bha-api/video.cgi").arg(m_address.toString()));
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
@@ -125,11 +125,11 @@ QUuid Doorbird::liveVideoRequest()
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error unlatching DoorBird device";
+            qCWarning(dcDoorBird) << "Error live video request" << reply->error() << reply->errorString();
             emit requestSent(requestId, false);
             return;
         }
-        qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+        qCDebug(dcDoorBird) << "DoorBird live video request" ;
         emit requestSent(requestId, true);
     });
     return requestId;
@@ -137,7 +137,7 @@ QUuid Doorbird::liveVideoRequest()
 
 QUuid Doorbird::liveImageRequest()
 {
-    QNetworkRequest request(QString("http://%1/bha-api/light-on.cgi").arg(m_address.toString()));
+    QNetworkRequest request(QString("http://%1/bha-api/image.cgi").arg(m_address.toString()));
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
@@ -145,15 +145,17 @@ QUuid Doorbird::liveImageRequest()
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error unlatching DoorBird device"  << reply->error() << reply->errorString();
+            qCWarning(dcDoorBird) << "Error live image request"  << reply->error() << reply->errorString();
             emit requestSent(requestId, false);
             return;
         }
-        qCDebug(dcDoorBird) << "DoorBird light on:";
-        emit requestSent(requestId, true);
 
-        QImage* image = new QImage();
-        image->loadFromData(reply->readAll());
+        QByteArrayList tokens = reply->readAll().split('\n');
+        QImage image = QImage::fromData(tokens.last());
+        //image.save("testfile");
+        emit liveImageReceived(image);
+        qCDebug(dcDoorBird) << "DoorBird live image request:";
+        emit requestSent(requestId, true);
     });
     return requestId;
 }
@@ -172,11 +174,11 @@ QUuid Doorbird::historyImageRequest(int index)
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error unlatching DoorBird device";
+            qCWarning(dcDoorBird) << "Error history image request" << reply->error() << reply->errorString();
             emit requestSent(requestId, false);
             return;
         }
-        qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+        qCDebug(dcDoorBird) << "DoorBird history image received:";
         emit requestSent(requestId, true);
     });
     return requestId;
@@ -192,11 +194,11 @@ QUuid Doorbird::liveAudioReceive()
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error DoorBird device";
+            qCWarning(dcDoorBird) << "Error live audio receive";
             emit requestSent(requestId, false);
             return;
         }
-        qCDebug(dcDoorBird) << "DoorBird unlatched:" << reply->error() << reply->errorString();
+        qCDebug(dcDoorBird) << "DoorBird live audio receive";
         emit requestSent(requestId, true);
     });
     return requestId;

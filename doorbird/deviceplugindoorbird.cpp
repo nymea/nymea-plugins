@@ -116,6 +116,7 @@ void DevicePluginDoorbird::setupDevice(DeviceSetupInfo *info)
         connect(doorbird, &Doorbird::deviceConnected, this, &DevicePluginDoorbird::onDoorBirdConnected);
         connect(doorbird, &Doorbird::eventReveiced, this, &DevicePluginDoorbird::onDoorBirdEvent);
         connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
+        connect(doorbird, &Doorbird::liveImageReceived, this, &DevicePluginDoorbird::onImageReceived);
         doorbird->connectToEventMonitor();
         m_doorbirdConnections.insert(device, doorbird);
         info->finish(Device::DeviceErrorNoError);
@@ -228,6 +229,15 @@ void DevicePluginDoorbird::onDoorBirdRequestSent(QUuid requestId, bool success)
 
 void DevicePluginDoorbird::onImageReceived(QImage image)
 {
-    Q_UNUSED(image)
-    //QString code =
+    Q_UNUSED(image);
+    Doorbird *doorbird = static_cast<Doorbird *>(sender());
+    Device *device = m_doorbirdConnections.key(doorbird);
+    if (!device)
+        return;
+    //TODO add QR code detection
+    Event event;
+    event.setDeviceId(device->id());
+    event.setEventTypeId(doorBirdQrCodeDetectedEventTypeId);
+    event.setParams(ParamList() << Param(doorBirdQrCodeDetectedEventDataParamTypeId, "image received"));
+    emit emitEvent(event);
 }
