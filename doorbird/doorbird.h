@@ -26,6 +26,7 @@
 #include <QHostAddress>
 #include <QNetworkAccessManager>
 #include <QUuid>
+#include <QImage>
 
 class Doorbird : public QObject
 {
@@ -91,6 +92,8 @@ signals:
 
     void eventReveiced(EventType eventType, bool status);
     void favoritesReceived(QList<FavoriteObject> favourites);
+
+    void liveImageReceived(QImage image);
 
 public slots:
     void onUdpBroadcast(const QByteArray &data);

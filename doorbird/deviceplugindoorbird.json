@@ -91,6 +91,19 @@
                             "id": "9bc89937-a2ab-4e8e-af0e-a9ba41caa89b",
                             "name": "doorbellPressed",
                             "displayName": "Doorbell pressed"
+                        },
+                        {
+                            "id": "224f1be5-17d3-460d-9bb8-a25fcdf28936",
+                            "name": "qrCodeDetected",
+                            "displayName": "QR code detected",
+                            "paramTypes": [
+                                {
+                                        "id": "c53068b9-604e-4dfc-8d23-26e8bab0233c",
+                                        "name": "data",
+                                        "displayName": "Data",
+                                        "type": "QString"
+                                }
+                            ]
                         }
                     ]
                 }
