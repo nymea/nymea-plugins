@@ -1,26 +1,21 @@
 # Kodi
 
-This plugin allows you to controll the media center [Kodi](http://kodi.tv/). If you want to discover
-and control Kodi with nymea, you need to activate the remote access and the UPnP service.
+This plugin allows to integrate nymea with the [Kodi media center](http://kodi.tv/). The minimum requred version of
+Kodi is 13 (Gotham).
 
-## Activate Zeroconf
+## Setup
 
-In order to discover Kodi in the network, you need to activate the zeroconf serive in the Kodi settings:
+Is is required to enable the following settings in Kodi:
 
-### Settings
+Navigate to Settings -> Services -> Control and activate "Alow Remote control via HTTP".
 
-![Settings](https://raw.githubusercontent.com/guh/nymea-plugins/master/kodi/docs/images/kodi_settings.png "Kodi settings)
+If nymea and Kodi are installed on the same system, activate "Allow remote control from applications on this system" or if
+kodi is installed on a different system in the same network, activate "Allow remote control from applications on other systems".
 
-### Settings - Services
+In addition, it is recommended to activate "Announce services to other systems" to allow nymea discovery the kodi setup automatically.
 
-![Services](https://raw.githubusercontent.com/guh/nymea-plugins/master/kodi/docs/images/kodi_services.png "Kodi services)
+Once those settings are activated, the kodi system can be added to nymea.
 
-Activate zeroconf.
-
-## Activate "Remote Control"
-In order to control Kodi over the network with nymea, you need to activate the remote control permissions:
-
-### Settings - Services - Remote Control
-Activate all options.
-
-![Reote](https://raw.githubusercontent.com/guh/nymea-plugins/master/kodi/docs/images/kodi_remote.png "Kodi Remote)
+Note: If ZeroConf cannot be used, the device can be added manually and at least the IP, Port and HTTP Port parameters must be given.
+It is recommended to configure the Kodi system to a static IP if the manual setup with IP is used. When using discovery, nymea
+will re-detect kodi when its IP address changes.

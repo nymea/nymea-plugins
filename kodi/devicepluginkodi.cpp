@@ -52,10 +52,15 @@ DevicePluginKodi::DevicePluginKodi()
 DevicePluginKodi::~DevicePluginKodi()
 {
     hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+    delete m_serviceBrowser;
+    delete m_httpServiceBrowser;
 }
 
 void DevicePluginKodi::init()
 {
+    m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_xbmc-jsonrpc._tcp");
+    m_httpServiceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_http._tcp");
+
     m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
     connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginKodi::onPluginTimer);
 }
@@ -64,9 +69,62 @@ void DevicePluginKodi::setupDevice(DeviceSetupInfo *info)
 {
     Device *device = info->device();
     qCDebug(dcKodi) << "Setup Kodi device" << device->paramValue(kodiDeviceIpParamTypeId).toString();
+
+    QUuid kodiUuid = device->paramValue(kodiDeviceUuidParamTypeId).toUuid();
+
+    // The IP string is optional, we'll try to discover it in any case via zeroconf, however, if it's
+    // set in the params, we'll always fall back to that in case we can't find it on zeroconf.
+
+    // The recommended way is to not store an IP in the settings as with DHCP lease times (or IPv6 privacy
+    // extension address randomization) an IP might expire eventually and it'll stop working.
+
+    // So actually the params should *only* store the UUID, but we'll support manually entering IP, port and http port
+    // for setups that can't use ZeroConf for whatever reason.
+
     QString ipString = device->paramValue(kodiDeviceIpParamTypeId).toString();
     int port = device->paramValue(kodiDevicePortParamTypeId).toInt();
     int httpPort = device->paramValue(kodiDeviceHttpPortParamTypeId).toInt();
+
+    if (!kodiUuid.isNull()) {
+        foreach (const ZeroConfServiceEntry &entry, m_serviceBrowser->serviceEntries()) {
+            QString uuid;
+            foreach (const QString &txt, entry.txt()) {
+                if (txt.startsWith("uuid")) {
+                    uuid = txt.split("=").last();
+                    break;
+                }
+            }
+
+            if (QUuid(uuid) == kodiUuid) {
+                ipString = entry.hostAddress().toString();
+                port = entry.port();
+                break;
+            }
+        }
+        foreach (const ZeroConfServiceEntry avahiEntry, m_httpServiceBrowser->serviceEntries()) {
+            QString uuid;
+            foreach (const QString &txt, avahiEntry.txt()) {
+                if (txt.startsWith("uuid")) {
+                    uuid = txt.split("=").last();
+                    break;
+                }
+            }
+            if (QUuid(uuid) == kodiUuid) {
+                httpPort = avahiEntry.port();
+                break;
+            }
+        }
+    }
+
+    if (ipString.isEmpty()) {
+        // Ok, we could not find an ip on zeroconf... Let's try again in a second while setupInfo hasn't timed out.
+        qCDebug(dcKodi()) << "Device not found via ZeroConf... Waiting for a second for it to appear...";
+        QTimer::singleShot(1000, info, [this, info](){
+            setupDevice(info);
+        });
+        return;
+    }
+
     Kodi *kodi= new Kodi(QHostAddress(ipString), port, httpPort, this);
 
     connect(kodi, &Kodi::connectionStatusChanged, this, &DevicePluginKodi::onConnectionChanged);
@@ -147,18 +205,11 @@ void DevicePluginKodi::deviceRemoved(Device *device)
 
 void DevicePluginKodi::discoverDevices(DeviceDiscoveryInfo *info)
 {
-
-    ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_xbmc-jsonrpc._tcp");
-    connect(info, &QObject::destroyed, serviceBrowser, &QObject::deleteLater);
-
-    ZeroConfServiceBrowser *httpServiceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_http._tcp");
-    connect(info, &QObject::destroyed, httpServiceBrowser, &QObject::deleteLater);
-
-    QTimer::singleShot(5000, info, [this, info, serviceBrowser, httpServiceBrowser](){
+    QTimer::singleShot(5000, info, [this, info](){
 
         QHash<QString, DeviceDescriptor> descriptors;
 
-        foreach (const ZeroConfServiceEntry avahiEntry, serviceBrowser->serviceEntries()) {
+        foreach (const ZeroConfServiceEntry avahiEntry, m_serviceBrowser->serviceEntries()) {
 
             QString uuid;
             foreach (const QString &txt, avahiEntry.txt()) {
@@ -176,9 +227,9 @@ void DevicePluginKodi::discoverDevices(DeviceDiscoveryInfo *info)
             qCDebug(dcKodi) << "Zeroconf entry:" << avahiEntry;
             DeviceDescriptor descriptor(kodiDeviceClassId, avahiEntry.name(), avahiEntry.hostName() + " (" + avahiEntry.hostAddress().toString() + ")");
             ParamList params;
-            params << Param(kodiDeviceIpParamTypeId, avahiEntry.hostAddress().toString());
-            params << Param(kodiDevicePortParamTypeId, avahiEntry.port());
             params << Param(kodiDeviceUuidParamTypeId, uuid);
+//            params << Param(kodiDeviceIpParamTypeId, avahiEntry.hostAddress().toString());
+            params << Param(kodiDevicePortParamTypeId, avahiEntry.port());
             descriptor.setParams(params);
 
             Devices existing = myDevices().filterByParam(kodiDeviceUuidParamTypeId, uuid);
@@ -189,8 +240,8 @@ void DevicePluginKodi::discoverDevices(DeviceDiscoveryInfo *info)
             descriptors.insert(uuid, descriptor);
         }
 
-        foreach (const ZeroConfServiceEntry avahiEntry, httpServiceBrowser->serviceEntries()) {
-//            qCDebug(dcKodi) << "Zeroconf http entry:" << avahiEntry;
+        foreach (const ZeroConfServiceEntry avahiEntry, m_httpServiceBrowser->serviceEntries()) {
+            qCDebug(dcKodi) << "Zeroconf http entry:" << avahiEntry;
             QString uuid;
             foreach (const QString &txt, avahiEntry.txt()) {
                 if (txt.startsWith("uuid")) {
@@ -208,7 +259,6 @@ void DevicePluginKodi::discoverDevices(DeviceDiscoveryInfo *info)
             descriptor.setParams(params);
             descriptors[uuid] = descriptor;
         }
-
 
         foreach (const DeviceDescriptor &d, descriptors.values()) {
             qCDebug(dcKodi()) << "Returning descritpor:" << d.params();
