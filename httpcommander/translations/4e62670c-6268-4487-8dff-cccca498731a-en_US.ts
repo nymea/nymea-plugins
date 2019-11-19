@@ -20,7 +20,9 @@ The name of the ParamType (DeviceClass: httpPostCommander, Type: device, ID: {02
     </message>
     <message>
         <source>Port</source>
-        <extracomment>The name of the ParamType (DeviceClass: httpGetCommander, Type: device, ID: {bee8b151-815a-4159-9d8a-42b76e99b42c})
+        <extracomment>The name of the ParamType (DeviceClass: httpServer, Type: device, ID: {438117cb-c2de-49d0-9f91-5988c17225f8})
+----------
+The name of the ParamType (DeviceClass: httpGetCommander, Type: device, ID: {bee8b151-815a-4159-9d8a-42b76e99b42c})
 ----------
 The name of the ParamType (DeviceClass: httpPutCommander, Type: device, ID: {db994349-1105-4ce5-b6fe-6fd38fbc436a})
 ----------
@@ -126,6 +128,43 @@ The name of the StateType ({8daac0e7-4c2f-4cdf-b528-02cfe04c6b39}) of DeviceClas
     <message>
         <source>HTTP put</source>
         <extracomment>The name of the DeviceClass ({05bf65f5-ff13-43e3-b6ae-77019e79d8a1})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Body</source>
+        <extracomment>The name of the ParamType (DeviceClass: httpServer, EventType: triggered, ID: {c936810e-a73d-424f-8981-48baf0a440bb})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>HTTP Server</source>
+        <extracomment>The name of the DeviceClass ({56efcdc3-c769-4e25-8a5b-c0affe68252a})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Http request received</source>
+        <extracomment>The name of the EventType ({86f794c6-31ad-40a8-928f-4b8802506ce1}) of DeviceClass httpServer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Path</source>
+        <extracomment>The name of the ParamType (DeviceClass: httpServer, EventType: triggered, ID: {0d4dc8f0-df0d-4fb0-b771-b62dee28a625})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Request type</source>
+        <extracomment>The name of the ParamType (DeviceClass: httpServer, EventType: triggered, ID: {dd3c6033-0483-4237-ac15-7a64ae4dd29c})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server address</source>
+        <extracomment>The name of the ParamType (DeviceClass: httpServer, EventType: serverAddress, ID: {f4458008-67f2-4ba1-bbca-e85771a30ddc})
+----------
+The name of the StateType ({f4458008-67f2-4ba1-bbca-e85771a30ddc}) of DeviceClass httpServer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Server address changed</source>
+        <extracomment>The name of the EventType ({f4458008-67f2-4ba1-bbca-e85771a30ddc}) of DeviceClass httpServer</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
