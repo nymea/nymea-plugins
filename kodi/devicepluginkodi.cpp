@@ -142,9 +142,10 @@ void DevicePluginKodi::setupDevice(DeviceSetupInfo *info)
         device->setStateValue(kodiArtistStateTypeId, artist);
         device->setStateValue(kodiCollectionStateTypeId, collection);
 
+        Kodi* kodi = m_kodis.key(device);
 
         QNetworkRequest request;
-        QHostAddress hostAddr(device->paramValue(kodiDeviceIpParamTypeId).toString());
+        QHostAddress hostAddr(kodi->hostAddress().toString());
         QString addr;
         if (hostAddr.protocol() == QAbstractSocket::IPv4Protocol) {
             addr = hostAddr.toString();
