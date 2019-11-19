@@ -21,7 +21,8 @@
                             "name": "ip",
                             "displayName": "IP Address",
                             "type" : "QString",
-                            "inputType": "IPv4Address"
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
                         },
                         {
                             "id": "660fb4d7-9479-4c9d-a900-ce221d2b8ae4",
@@ -50,7 +51,8 @@
                             "displayName": "connected",
                             "displayNameEvent": "connected changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "bc98cdb0-4d0e-48ca-afc7-922e49bb7813",
