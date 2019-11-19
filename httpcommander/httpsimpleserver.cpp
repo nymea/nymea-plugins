@@ -42,7 +42,6 @@ HttpSimpleServer::HttpSimpleServer(QObject *parent):
 HttpSimpleServer::~HttpSimpleServer()
 {
     close();
-
 }
 
 void HttpSimpleServer::incomingConnection(qintptr socket)
@@ -68,42 +67,13 @@ void HttpSimpleServer::readClient()
 
         QByteArray data = tcpSocket->readAll();
         QStringList tokens = QString(data).split(QRegExp("[ \r\n][ \r\n]*"));
-        //QUrl url("http://foo.bar" + tokens[1]);
-        //QUrlQuery query(url);
         qCDebug(dcHttpCommander()) << "Http Request, type" << tokens[0] << "path" << tokens[1] << "body" << tokens.last();
 
-        if (tokens[0] == "GET") {
-            QTextStream os(tcpSocket);
-            os.setAutoDetectUnicode(true);
-            os << generateHeader();
-            tcpSocket->close();
+        if ((tokens[0] == "GET")      ||
+                (tokens[0] == "PUT")  ||
+                (tokens[0] == "POST") ||
+                (tokens[0] == "DELETE")) {
 
-            if (tcpSocket->state() == QTcpSocket::UnconnectedState)
-                delete tcpSocket;
-
-            emit requestReceived(tokens[0], tokens[1], tokens.last());
-        } else if (tokens[0] == "PUT") {
-            QTextStream os(tcpSocket);
-            os.setAutoDetectUnicode(true);
-            os << generateHeader();
-            tcpSocket->close();
-
-            if (tcpSocket->state() == QTcpSocket::UnconnectedState)
-                delete tcpSocket;
-
-            emit requestReceived(tokens[0], tokens[1], tokens.last());
-
-        } else if (tokens[0] == "POST") {
-            QTextStream os(tcpSocket);
-            os.setAutoDetectUnicode(true);
-            os << generateHeader();
-            tcpSocket->close();
-
-            if (tcpSocket->state() == QTcpSocket::UnconnectedState)
-                delete tcpSocket;
-            emit requestReceived(tokens[0], tokens[1], tokens.last());
-
-        } else if (tokens[0] == "DELETE") {
             QTextStream os(tcpSocket);
             os.setAutoDetectUnicode(true);
             os << generateHeader();

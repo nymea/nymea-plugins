@@ -47,7 +47,6 @@ void DevicePluginHttpCommander::setupDevice(DeviceSetupInfo *info)
             //: Error setting up device
             return info->finish(Device::DeviceErrorInvalidParameter, QT_TR_NOOP("The given url is not valid."));
         }
-
         return info->finish(Device::DeviceErrorNoError);
     }
 
