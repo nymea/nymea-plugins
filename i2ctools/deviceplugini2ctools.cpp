@@ -156,16 +156,14 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
         QFile *i2cFile = m_i2cDeviceFiles.value(device->id());
         unsigned long funcs = m_fileFuncs.value(i2cFile);
         QList<int> addresses = scanI2cBus(i2cFile->handle(), ScanModeAuto,funcs, 0, 254);
-        QString state;
+
+        QStringList states;
         foreach (int address, addresses) {
-            state.append("0x");
-            state.append(QString::number(address, 16));
-            state.append(", ");
+          states.append(QString("0x%1").arg(address, 2, 16));
         }
-        if (state.size() > 2) {
-            state.resize(state.size() - 2); //remove last colon
-        } else {
-            state = "--";
+        QString state = states.join(", ");
+        if (state.isEmpty()) {
+          state = "--";
         }
         device->setStateValue(i2cInterfaceAvailableDevicesStateTypeId, state);
 
