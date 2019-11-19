@@ -1,3 +1,8 @@
+nymea-plugins (0.17.0) UNRELEASED; urgency=medium
+
+
+ -- Michael Zanetti <michael.zanetti@guh.io>  Tue, 19 Nov 2019 20:17:07 +0100
+
 nymea-plugins (0.16.0) xenial; urgency=medium
 
   [ Bernhard Trinnes ]
