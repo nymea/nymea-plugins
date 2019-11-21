@@ -27,7 +27,6 @@
 #include "devices/deviceplugin.h"
 #include "plugintimer.h"
 #include "httpsimpleserver.h"
-#include "httprequest.h"
 
 #include <QNetworkReply>
 #include <QHostInfo>
@@ -44,24 +43,13 @@ public:
     explicit DevicePluginHttpCommander();
 
     void setupDevice(DeviceSetupInfo *info) override;
-    void postSetupDevice(Device *device) override;
     void deviceRemoved(Device *device) override;
     void executeAction(DeviceActionInfo *info) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
     QHash<Device *, HttpSimpleServer *> m_httpSimpleServer;
-    QHash<QNetworkReply *, Device *> m_httpRequests;
-
-    void makeGetCall(Device *device);
 
 private slots:
-    void onPluginTimer();
-
-    void onGetRequestFinished();
-    void onPostRequestFinished();
-    void onPutRequestFinished();
-
     void onHttpSimpleServerRequestReceived(const QString &type, const QString &path, const QString &body);
 };
 

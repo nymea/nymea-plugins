@@ -40,7 +40,7 @@ class HttpSimpleServer : public QTcpServer
     Q_OBJECT
 public:
 
-    HttpSimpleServer(QObject* parent = nullptr);
+    HttpSimpleServer(quint16 port, QObject* parent = nullptr);
     ~HttpSimpleServer() override;
     void incomingConnection(qintptr socket) override;
 

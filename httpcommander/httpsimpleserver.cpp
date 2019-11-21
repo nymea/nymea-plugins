@@ -33,10 +33,10 @@
 #include <QRegExp>
 #include <QStringList>
 
-HttpSimpleServer::HttpSimpleServer(QObject *parent):
+HttpSimpleServer::HttpSimpleServer(quint16 port, QObject *parent):
     QTcpServer(parent)
 {
-    listen(QHostAddress::Any, 7777);
+    listen(QHostAddress::Any, port);
 }
 
 HttpSimpleServer::~HttpSimpleServer()
