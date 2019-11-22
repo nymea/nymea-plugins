@@ -8,7 +8,7 @@ information about you accesstoken [here](https://www.awattar.com/api-unser-daten
 
 In following chart you can see an example of the market prices from -12 hours to + 12 hours from the current
 time (0).The green line describes the current market price, the red point line describes the average
-price of this interval and the red line describes the deviation. If the deviation is positiv, the current
+price of this interval and the red line describes the deviation. If the deviation is positive, the current
 price is above the average, if the deviation is negative, the current price is below the average.
 
 * -100 % current price equals lowest price in the interval [-12h < now < + 12h]
