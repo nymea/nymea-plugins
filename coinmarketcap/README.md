@@ -1,6 +1,6 @@
 #CoinMarketCap
 
-The coin market cap plugin gets the latest crypto prices from coin market cap and displays it in your favorite fiat currency.
+The coin market cap plugin gets the latest crypto prices from coin market cap and displays it in your favorite flat currency.
 
 
 Supported cypto currencies:
@@ -16,7 +16,7 @@ Supported cypto currencies:
 * miota - IOTA
 * ans   - NEO
 
-Supported fiat currencies:
+Supported flat currencies:
 
 * EUR
 * USD
