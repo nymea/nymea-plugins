@@ -13,7 +13,7 @@
                     "displayName": "Wallbe eco 2.0",
                     "name": "wallbeEco",
                     "createMethods": ["discovery"],
-                    "interfaces": ["connectable", "evcharger" ],
+                    "interfaces": ["evcharger", "connectable"],
                     "paramTypes": [
                         {
                             "id": "95f297a7-56a5-4789-9b14-6735717344b5",
@@ -55,7 +55,7 @@
                             "displayName": "EV Status",
                             "type": "QString",
                             "possibleValues": [
-                                "A - No Car plugged in",
+                                "A - No car plugged in",
                                 "B - Supply equipment not yet ready",
                                 "C - Ready to charge",
                                 "D - Ready to charge, ventilation needed",

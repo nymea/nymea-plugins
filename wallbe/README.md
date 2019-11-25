@@ -1,6 +1,10 @@
-# Wallb-e
+# Wallbe
 
-Plug-in for the EV-charger wall-be
+Plug-in for the EV-charger wall-be, 
+with network device discovery.
+
+Make sure to enable the Network interface in your Wallbe device,
+have a look in the Wallbe manual or call the Wallbe support.
 
 ## Technical Specification
 

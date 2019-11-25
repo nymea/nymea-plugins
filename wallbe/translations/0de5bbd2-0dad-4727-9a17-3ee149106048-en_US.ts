@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>DevicePluginWallbe</name>
+    <message>
+        <location filename="../devicepluginwallbe.cpp" line="50"/>
+        <source>IP address parameter not valid</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Wallbe</name>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="44"/>
@@ -80,44 +88,44 @@ The name of the StateType ({2a95c4fb-9a15-4788-ae09-d34e71314da6}) of DeviceClas
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="92"/>
+        <source>EV status changed</source>
+        <extracomment>The name of the EventType ({2a95c4fb-9a15-4788-ae09-d34e71314da6}) of DeviceClass wallbeEco</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="95"/>
         <source>IP address</source>
         <extracomment>The name of the ParamType (DeviceClass: wallbeEco, Type: device, ID: {95f297a7-56a5-4789-9b14-6735717344b5})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="95"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="98"/>
         <source>MAC address</source>
         <extracomment>The name of the ParamType (DeviceClass: wallbeEco, Type: device, ID: {551b03f0-dd70-4463-929b-3668dbd3290f})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="98"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="101"/>
         <source>Petring</source>
         <extracomment>The name of the vendor ({831b4b87-0a6c-4d51-b055-967bb6e5fab5})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="101"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="104"/>
         <source>Set charging current</source>
         <extracomment>The name of the ActionType ({60b5b6b8-bcd3-4c3f-8501-f15af94bc8c1}) of DeviceClass wallbeEco</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="104"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="107"/>
         <source>Start charging</source>
         <extracomment>The name of the ActionType ({26793adc-de10-426f-bb17-170c227891b2}) of DeviceClass wallbeEco</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="107"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="110"/>
         <source>Wallbe eco 2.0</source>
         <extracomment>The name of the DeviceClass ({e66c84f6-b398-47e9-8aeb-33840e7b4492})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/wallbe/plugininfo.h" line="110"/>
-        <source>ev status changed</source>
-        <extracomment>The name of the EventType ({2a95c4fb-9a15-4788-ae09-d34e71314da6}) of DeviceClass wallbeEco</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -41,15 +41,11 @@ class DevicePluginWallbe : public DevicePlugin
 public:
     explicit DevicePluginWallbe();
 
-    void init() override;
     void discoverDevices(DeviceDiscoveryInfo *info) override;
     void setupDevice(DeviceSetupInfo *info) override;
     void postSetupDevice(Device *device) override;
     void executeAction(DeviceActionInfo *info) override;
     void deviceRemoved(Device *device) override;
-
-private slots:
-    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
     QHash<Device *, WallBe *> m_connections;

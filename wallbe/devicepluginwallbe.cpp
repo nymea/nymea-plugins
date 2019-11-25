@@ -29,7 +29,6 @@
 
 #include <QDebug>
 #include <QStringList>
-#include <QColor>
 #include <QJsonDocument>
 #include <QNetworkInterface>
 
@@ -37,6 +36,7 @@
 DevicePluginWallbe::DevicePluginWallbe()
 {
 }
+
 
 void DevicePluginWallbe::setupDevice(DeviceSetupInfo *info)
 {
@@ -46,46 +46,49 @@ void DevicePluginWallbe::setupDevice(DeviceSetupInfo *info)
     QHostAddress address(device->paramValue(wallbeEcoDeviceIpParamTypeId).toString());
 
     if (address.isNull()){
-        qCWarning(dcWallbe) << "Address is Null";
-        info->finish(Device::DeviceErrorSetupFailed);
+        qCWarning(dcWallbe) << "IP address is null";
+        info->finish(Device::DeviceErrorSetupFailed, tr("IP address parameter not valid"));
         return;
     }
 
-    // TCP connction to target device
     WallBe *wallbe = new WallBe(address, 502, this);
     m_connections.insert(device, wallbe);
 
     info->finish(Device::DeviceErrorNoError);
-    return;
 }
+
 
 void DevicePluginWallbe::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    if (info->deviceClassId() != wallbeEcoDeviceClassId){
-        info->finish(Device::DeviceErrorDeviceClassNotFound);
+    if (info->deviceClassId() == wallbeEcoDeviceClassId){
+
+        Discover *discover = new Discover(QStringList("-xO" "-p 502"));
+        connect(discover, &Discover::devicesDiscovered, this, [info, this](QList<Host> hosts){
+            foreach (Host host, hosts) {
+                DeviceDescriptor descriptor;
+                foreach(Device *device, myDevices().filterByParam(wallbeEcoDeviceMacParamTypeId, host.macAddress())) {
+                    descriptor.setDeviceId(device->id());
+                    break;
+                }
+                descriptor.setTitle(host.hostName());
+                ParamList params;
+                params.append(Param(wallbeEcoDeviceIpParamTypeId, host.address()));
+                params.append(Param(wallbeEcoDeviceMacParamTypeId, host.macAddress()));
+                descriptor.setParams(params);
+                info->addDeviceDescriptor(descriptor);
+            }
+            info->finish(Device::DeviceErrorNoError);
+        });
         return;
     }
-
-    Discover *discover = new Discover(QStringList("-xO" "-p 502"));
-    connect(discover, &Discover::devicesDiscovered, this, [info, this](QList<Host> hosts){
-        foreach (Host host, hosts) {
-            DeviceDescriptor descriptor;
-            descriptor.setTitle(host.hostName());
-            ParamList params;
-            params.append(Param(wallbeEcoDeviceIpParamTypeId, host.address()));
-            params.append(Param(wallbeEcoDeviceMacParamTypeId, host.macAddress()));
-            descriptor.setParams(params);
-            info->addDeviceDescriptor(descriptor);
-        }
-        info->finish(Device::DeviceErrorNoError);
-    });
-    return; //Async setup method
+    Q_ASSERT_X(false, "discoverDevices", QString("Unhandled deviceClassId: %1").arg(info->deviceClassId().toString()).toUtf8());
 }
+
 
 void DevicePluginWallbe::postSetupDevice(Device *device)
 {
-    qCDebug(dcWallbe) << "post Setup Device";
-    update(device);
+    qCDebug(dcWallbe) << "Post setup device";
+
 
     if (!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(120);
@@ -95,7 +98,13 @@ void DevicePluginWallbe::postSetupDevice(Device *device)
             }
         });
     }
+    if (device->deviceClassId() == wallbeEcoDeviceClassId){
+        update(device);
+        return;
+    }
+    Q_ASSERT_X(false, "postSetupDevice", QString("Unhandled deviceClassId: %1").arg(device->deviceClassId().toString()).toUtf8());
 }
+
 
 void DevicePluginWallbe::executeAction(DeviceActionInfo *info)
 {
@@ -104,6 +113,7 @@ void DevicePluginWallbe::executeAction(DeviceActionInfo *info)
 
     WallBe *wallbe = m_connections.value(device);
     if (!wallbe) {
+        qCWarning(dcWallbe()) << "Wallbe object not available";
         info->finish(Device::DeviceErrorHardwareFailure);
         return;
     }
@@ -124,17 +134,16 @@ void DevicePluginWallbe::executeAction(DeviceActionInfo *info)
 
         } else if(action.actionTypeId() == wallbeEcoChargeCurrentActionTypeId){
 
-            uint16_t current = action.param(wallbeEcoChargeCurrentEventChargeCurrentParamTypeId).value().toInt();
+            uint16_t current = action.param(wallbeEcoChargeCurrentEventChargeCurrentParamTypeId).value().toUInt();
             qCDebug(dcWallbe) << "Charging power set to" << current;
             wallbe->setChargingCurrent(current);
             device->setStateValue(wallbeEcoChargeCurrentStateTypeId, current);
             info->finish(Device::DeviceErrorNoError);
             return;
         }
-        info->finish(Device::DeviceErrorActionTypeNotFound);
-        return;
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled action: %1").arg(action.actionTypeId().toString()).toUtf8());
     }
-    info->finish(Device::DeviceErrorDeviceClassNotFound);
+    Q_ASSERT_X(false, "executeAction", QString("Unhandled deviceClassId: %1").arg(device->deviceClassId().toString()).toUtf8());
 }
 
 
@@ -153,7 +162,6 @@ void DevicePluginWallbe::deviceRemoved(Device *device)
     }
 }
 
-
 void DevicePluginWallbe::update(Device *device)
 {    
     WallBe * wallbe = m_connections.value(device);
@@ -165,7 +173,7 @@ void DevicePluginWallbe::update(Device *device)
     //EV state - 16 bit ASCII (8bit)
     switch (wallbe->getEvStatus()) {
     case 65:
-        device->setStateValue(wallbeEcoEvStatusStateTypeId, "A - No Car plugged in");
+        device->setStateValue(wallbeEcoEvStatusStateTypeId, "A - No car plugged in");
         break;
     case 66:
         device->setStateValue(wallbeEcoEvStatusStateTypeId, "B - Supply equipment not yet ready");
