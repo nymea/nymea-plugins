@@ -28,10 +28,6 @@
 
 #include <QFile>
 
-extern "C" {
-#include "i2cbusses.h"
-}
-
 class DevicePluginI2cTools : public DevicePlugin
 {
     Q_OBJECT
@@ -61,7 +57,7 @@ private:
     QList<DeviceDiscoveryInfo*> m_runningDiscoveries;
 
     QList<int> scanI2cBus(int file, ScanMode mode, unsigned long funcs, int first, int last);
-    QList<i2c_adap> getI2cBusses();
+    QStringList getI2cBusses();
 
 private slots:
     void onPluginTimer();

@@ -27,8 +27,8 @@
                         {
                             "id": "a108bdaf-2067-4ec9-bd45-89c5eecb8038",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -66,8 +66,8 @@
                         {
                             "id": "726befc0-37cd-47f1-b983-1b5ee87a5bf7",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },

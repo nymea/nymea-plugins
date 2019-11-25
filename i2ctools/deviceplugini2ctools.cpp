@@ -23,7 +23,6 @@
 #include "deviceplugini2ctools.h"
 #include "devices/device.h"
 #include "plugininfo.h"
-
 #include <QDir>
 
 extern "C" {
@@ -47,18 +46,17 @@ void DevicePluginI2cTools::discoverDevices(DeviceDiscoveryInfo *info)
     DeviceClassId deviceClassId = info->deviceClassId();
 
     if (deviceClassId == i2cInterfaceDeviceClassId) {
-        QList<i2c_adap> busses = getI2cBusses();
-        foreach (i2c_adap adapter, busses) {
-            DeviceDescriptor descriptor(i2cInterfaceDeviceClassId, QString("i2c-%0").arg(adapter.nr), QString(adapter.algo));
+        QList<QString> busses = getI2cBusses();
+        foreach (QString adapter, busses) {
+            DeviceDescriptor descriptor(i2cInterfaceDeviceClassId, adapter, "");
             ParamList params;
-            params.append(Param(i2cInterfaceDeviceInterfaceParamTypeId, adapter.nr));
+            params.append(Param(i2cInterfaceDeviceInterfaceParamTypeId, adapter));
             descriptor.setParams(params);
             info->addDeviceDescriptor(descriptor);
         }
         info->finish(Device::DeviceErrorNoError);
         return;
     } else if (deviceClassId == i2cReadRegisterDeviceClassId) {
-
 
         foreach (QFile *file, m_i2cDeviceFiles) {
             DeviceId parentDeviceId = m_i2cDeviceFiles.key(file);
@@ -87,7 +85,7 @@ void DevicePluginI2cTools::setupDevice(DeviceSetupInfo *info)
         qCDebug(dcI2cTools) << "Setup i2c interface";
         unsigned long funcs;
 
-        QFile *i2cFile = new QFile("/dev/i2c-" + device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString());
+        QFile *i2cFile = new QFile("/sys/class/i2c-adapter/" + device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString());
         if (!i2cFile->exists()) {
             qCWarning(dcI2cTools()) << "Could not open I2C file";
             info->finish(Device::DeviceErrorSetupFailed);
@@ -130,20 +128,18 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
                 QFile *i2cFile = m_i2cDeviceFiles.value(device->id());
                 unsigned long funcs = m_fileFuncs.value(i2cFile);
                 QList<int> addresses = scanI2cBus(i2cFile->handle(), ScanModeAuto,funcs, 0, 254);
-                QString state;
+                QStringList states;
                 foreach (int address, addresses) {
-                    state.append("0x");
-                    state.append(QString::number(address, 16));
-                    state.append(", ");
+                  states.append(QString("0x%1").arg(address, 2, 16));
                 }
-                if (state.size() > 2) {
-                    state.resize(state.size() - 2); //remove last colon
-                } else {
-                    state = "--";
+                QString state = states.join(", ");
+                if (state.isEmpty()) {
+                  state = "--";
                 }
                 device->setStateValue(i2cInterfaceAvailableDevicesStateTypeId, state);
 
-                if(lookup_i2c_bus(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toByteArray()) == -1) {
+
+                if(!QFile::exists("/sys/class/i2c-adapter/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString()))) {
                     device->setStateValue(i2cInterfaceConnectedStateTypeId, false);
                 } else {
                     device->setStateValue(i2cInterfaceConnectedStateTypeId, true);
@@ -167,7 +163,7 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
         }
         device->setStateValue(i2cInterfaceAvailableDevicesStateTypeId, state);
 
-        if(lookup_i2c_bus(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toByteArray()) == -1) {
+        if(!QFile::exists("/sys/class/i2c-adapter/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toByteArray()))) {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, false);
         } else {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, true);
@@ -210,21 +206,19 @@ void DevicePluginI2cTools::onPluginTimer()
         QFile *i2cFile = m_i2cDeviceFiles.value(device->id());
         unsigned long funcs = m_fileFuncs.value(i2cFile);
         QList<int> addresses = scanI2cBus(i2cFile->handle(), ScanModeAuto,funcs, 0, 254);
-        QString state;
+
+        QStringList states;
         foreach (int address, addresses) {
-            state.append("0x");
-            state.append(QString::number(address, 16));
-            state.append(", ");
+          states.append(QString("0x%1").arg(address, 2, 16));
         }
-        if (state.size() > 2) {
-            state.resize(state.size() - 2); //remove last colon
-        } else {
-            state = "--";
+        QString state = states.join(", ");
+        if (state.isEmpty()) {
+          state = "--";
         }
 
         device->setStateValue(i2cInterfaceAvailableDevicesStateTypeId, state);
 
-        if(lookup_i2c_bus(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toByteArray()) == -1) {
+        if(!QFile::exists("/sys/class/i2c-adapter/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString()))) {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, false);
         } else {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, true);
@@ -232,24 +226,9 @@ void DevicePluginI2cTools::onPluginTimer()
     }
 }
 
-QList<i2c_adap> DevicePluginI2cTools::getI2cBusses(void)
+QStringList DevicePluginI2cTools::getI2cBusses(void)
 {
-    struct i2c_adap *adapters;
-    int count;
-    QList<i2c_adap> i2cBusses;
-
-    adapters = gather_i2c_busses();
-    if (!adapters) {
-        qCWarning(dcI2cTools()) << "Error: Out of memory!";
-        return i2cBusses;
-    }
-
-    for (count = 0; adapters[count].name; count++) {
-        qCDebug(dcI2cTools()) << "i2c adapter nr:" << adapters[count].nr;
-        i2cBusses.append(adapters[count]);
-    }
-    free_adapters(adapters);
-    return i2cBusses;
+    return QDir("/sys/class/i2c-adapter/").entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
 }
 
 QList<int> DevicePluginI2cTools::scanI2cBus(int file, ScanMode mode, unsigned long funcs, int first, int last)
