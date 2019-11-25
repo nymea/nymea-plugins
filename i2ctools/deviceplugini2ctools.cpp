@@ -85,7 +85,7 @@ void DevicePluginI2cTools::setupDevice(DeviceSetupInfo *info)
         qCDebug(dcI2cTools) << "Setup i2c interface";
         unsigned long funcs;
 
-        QFile *i2cFile = new QFile("/sys/class/i2c-adapter/" + device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString());
+        QFile *i2cFile = new QFile("/dev/" + device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString());
         if (!i2cFile->exists()) {
             qCWarning(dcI2cTools()) << "Could not open I2C file";
             info->finish(Device::DeviceErrorSetupFailed);
@@ -139,7 +139,7 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
                 device->setStateValue(i2cInterfaceAvailableDevicesStateTypeId, state);
 
 
-                if(!QFile::exists("/sys/class/i2c-adapter/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString()))) {
+                if(!QFile::exists("/dev/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString()))) {
                     device->setStateValue(i2cInterfaceConnectedStateTypeId, false);
                 } else {
                     device->setStateValue(i2cInterfaceConnectedStateTypeId, true);
@@ -163,7 +163,7 @@ void DevicePluginI2cTools::postSetupDevice(Device *device)
         }
         device->setStateValue(i2cInterfaceAvailableDevicesStateTypeId, state);
 
-        if(!QFile::exists("/sys/class/i2c-adapter/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toByteArray()))) {
+        if(!QFile::exists("/dev/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toByteArray()))) {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, false);
         } else {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, true);
@@ -218,7 +218,7 @@ void DevicePluginI2cTools::onPluginTimer()
 
         device->setStateValue(i2cInterfaceAvailableDevicesStateTypeId, state);
 
-        if(!QFile::exists("/sys/class/i2c-adapter/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString()))) {
+        if(!QFile::exists("/dev/"+(device->paramValue(i2cInterfaceDeviceInterfaceParamTypeId).toString()))) {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, false);
         } else {
             device->setStateValue(i2cInterfaceConnectedStateTypeId, true);
