@@ -15,6 +15,6 @@ will connect to the MQTT broker and appear as connected in nymea.
 ## Plugin properties
 When adding a Tasmota device it will add a new Gateway type device representing the Tasmota device itself. In addition
 to that a power switch device will appear which can be used to control the switches in the Tasmota device. Upon
-device setup, the user can optionally select the type of the connected hardware, (e.g. a light) which causes this
-plugin to create a light device in the system which also controls the switches inside the Tasmota device and nicely
+device setup, the user can optionally select the type of the connected hardware, (e.g. a light, roller shutter or blind) which
+causes this plugin to create an additional device in the system which also controls the switches inside the Tasmota device and nicely
 integrates with the nymea:ux for the given device type.
