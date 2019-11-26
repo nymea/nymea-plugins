@@ -51,10 +51,19 @@ DevicePluginTasmota::DevicePluginTasmota()
     m_channelParamTypeMap[tasmotaLightDeviceClassId] = tasmotaLightDeviceChannelNameParamTypeId;
     m_openingChannelParamTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterDeviceOpeningChannelParamTypeId;
     m_closingChannelParamTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterDeviceClosingChannelParamTypeId;
+    m_openingChannelParamTypeMap[tasmotaBlindsDeviceClassId] = tasmotaBlindsDeviceOpeningChannelParamTypeId;
+    m_closingChannelParamTypeMap[tasmotaBlindsDeviceClassId] = tasmotaBlindsDeviceClosingChannelParamTypeId;
 
     m_powerStateTypeMap[tasmotaSwitchDeviceClassId] = tasmotaSwitchPowerStateTypeId;
     m_powerStateTypeMap[tasmotaLightDeviceClassId] = tasmotaLightPowerStateTypeId;
 
+    m_closableOpenActionTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterOpenActionTypeId;
+    m_closableCloseActionTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterCloseActionTypeId;
+    m_closableStopActionTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterStopActionTypeId;
+
+    m_closableOpenActionTypeMap[tasmotaBlindsDeviceClassId] = tasmotaBlindsOpenActionTypeId;
+    m_closableCloseActionTypeMap[tasmotaBlindsDeviceClassId] = tasmotaBlindsCloseActionTypeId;
+    m_closableStopActionTypeMap[tasmotaBlindsDeviceClassId] = tasmotaBlindsStopActionTypeId;
 
     // Helper maps for all devices
     m_connectedStateTypeMap[sonoff_basicDeviceClassId] = sonoff_basicConnectedStateTypeId;
@@ -64,6 +73,7 @@ DevicePluginTasmota::DevicePluginTasmota()
     m_connectedStateTypeMap[tasmotaSwitchDeviceClassId] = tasmotaSwitchConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaLightDeviceClassId] = tasmotaLightConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaShutterDeviceClassId] = tasmotaShutterConnectedStateTypeId;
+    m_connectedStateTypeMap[tasmotaBlindsDeviceClassId] = tasmotaBlindsConnectedStateTypeId;
 }
 
 DevicePluginTasmota::~DevicePluginTasmota()
@@ -157,6 +167,8 @@ void DevicePluginTasmota::setupDevice(DeviceSetupInfo *info)
             deviceDescriptors.clear();
             int shutterUpChannel = -1;
             int shutterDownChannel = -1;
+            int blindsUpChannel = -1;
+            int blindsDownChannel = -1;
             for (int i = 0; i < m_attachedDeviceParamTypeIdMap.value(info->device()->deviceClassId()).count(); i++) {
                 ParamTypeId attachedDeviceParamTypeId = m_attachedDeviceParamTypeIdMap.value(info->device()->deviceClassId()).at(i);
                 QString deviceType = info->device()->paramValue(attachedDeviceParamTypeId).toString();
@@ -174,18 +186,26 @@ void DevicePluginTasmota::setupDevice(DeviceSetupInfo *info)
                     shutterUpChannel = i+1;
                 } else if (deviceType == "Roller Shutter Down") {
                     shutterDownChannel = i+1;
+                } else if (deviceType == "Blinds Up") {
+                    blindsUpChannel = i+1;
+                } else if (deviceType == "Blinds Down") {
+                    blindsDownChannel = i+1;
                 }
             }
-            if (!deviceDescriptors.isEmpty()) {
-                emit autoDevicesAppeared(deviceDescriptors);
-            }
-            deviceDescriptors.clear();
             if (shutterUpChannel != -1 && shutterDownChannel != -1) {
                 qCDebug(dcTasmota) << "Adding Shutter device";
                 DeviceDescriptor descriptor(tasmotaShutterDeviceClassId, info->device()->name() + " Shutter", QString(), info->device()->id());
                 descriptor.setParams(ParamList()
                                      << Param(tasmotaShutterDeviceOpeningChannelParamTypeId, "POWER" + QString::number(shutterUpChannel))
                                      << Param(tasmotaShutterDeviceClosingChannelParamTypeId, "POWER" + QString::number(shutterDownChannel)));
+                deviceDescriptors << descriptor;
+            }
+            if (blindsUpChannel != -1 && blindsDownChannel != -1) {
+                qCDebug(dcTasmota) << "Adding Blinds device";
+                DeviceDescriptor descriptor(tasmotaBlindsDeviceClassId, info->device()->name() + " Blinds", QString(), info->device()->id());
+                descriptor.setParams(ParamList()
+                                     << Param(tasmotaBlindsDeviceOpeningChannelParamTypeId, "POWER" + QString::number(blindsUpChannel))
+                                     << Param(tasmotaBlindsDeviceClosingChannelParamTypeId, "POWER" + QString::number(blindsDownChannel)));
                 deviceDescriptors << descriptor;
             }
             if (!deviceDescriptors.isEmpty()) {
@@ -234,7 +254,7 @@ void DevicePluginTasmota::executeAction(DeviceActionInfo *info)
         device->setStateValue(m_powerStateTypeMap.value(device->deviceClassId()), action.param(powerActionParamTypeId).value().toBool());
         return info->finish(Device::DeviceErrorNoError);
     }
-    if (device->deviceClassId() == tasmotaShutterDeviceClassId) {
+    if (m_closableStopActionTypeMap.contains(device->deviceClassId())) {
         Device *parentDev = myDevices().findById(device->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDev);
         if (!channel) {
@@ -243,12 +263,12 @@ void DevicePluginTasmota::executeAction(DeviceActionInfo *info)
         }
         ParamTypeId openingChannelParamTypeId = m_openingChannelParamTypeMap.value(device->deviceClassId());
         ParamTypeId closingChannelParamTypeId = m_closingChannelParamTypeMap.value(device->deviceClassId());
-        if (action.actionTypeId() == tasmotaShutterOpenActionTypeId) {
+        if (action.actionTypeId() == m_closableOpenActionTypeMap.value(device->deviceClassId())) {
             qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "OFF";
             channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString().toLower(), "OFF");
             qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "ON";
             channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "ON");
-        } else if (action.actionTypeId() == tasmotaShutterCloseActionTypeId) {
+        } else if (action.actionTypeId() == m_closableCloseActionTypeMap.value(device->deviceClassId())) {
             qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString() << "OFF";
             channel->publish(channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(openingChannelParamTypeId).toString().toLower(), "OFF");
             qCDebug(dcTasmota) << "Publishing:" << channel->topicPrefixList().first() + "/sonoff/cmnd/" + device->paramValue(closingChannelParamTypeId).toString() << "ON";
