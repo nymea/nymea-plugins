@@ -1,7 +1,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                         *
+ *  Copyright (C) 2015 Simon Stürz <simon.stuerz@guh.io>                   *
+ *  Copyright (C) 2014 Michael Zanetti <michael_zanetti@gmx.net>           *
  *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *  Copyright (C) 2018 Simon Stürz <simon.stuerz@nymea.io>                 *
  *                                                                         *
  *  This file is part of nymea.                                            *
  *                                                                         *
@@ -21,36 +22,42 @@
  *                                                                         *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINHTTPCOMMANDER_H
-#define DEVICEPLUGINHTTPCOMMANDER_H
+#ifndef HTTPSIMPLESERVER1_H
+#define HTTPSIMPLESERVER1_H
 
-#include "devices/deviceplugin.h"
-#include "plugintimer.h"
-#include "httpsimpleserver.h"
+#include "typeutils.h"
 
-#include <QNetworkReply>
-#include <QHostInfo>
+#include <QTcpServer>
+#include <QUuid>
+#include <QDateTime>
+#include <QUrl>
 
-class DevicePluginHttpCommander : public DevicePlugin
+class Device;
+class DevicePlugin;
+
+class HttpSimpleServer : public QTcpServer
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginhttpcommander.json")
-    Q_INTERFACES(DevicePlugin)
-
 public:
 
-    explicit DevicePluginHttpCommander();
+    HttpSimpleServer(quint16 port, QObject* parent = nullptr);
+    ~HttpSimpleServer() override;
+    void incomingConnection(qintptr socket) override;
 
-    void setupDevice(DeviceSetupInfo *info) override;
-    void deviceRemoved(Device *device) override;
-    void executeAction(DeviceActionInfo *info) override;
+signals:
+    void disappear();
+    void reconfigureAutodevice();
+    //void getRequestReceied(QUrl url);
 
-private:
-    QHash<Device *, HttpSimpleServer *> m_httpSimpleServer;
+    void requestReceived(const QString &type, const QString &path, const QString &body);
 
 private slots:
-    void onHttpSimpleServerRequestReceived(const QString &type, const QString &path, const QString &body);
+    void readClient();
+    void discardClient();
+
+private:
+    QString generateHeader();
+
 };
 
-#endif // DEVICEPLUGINHTTPCOMMANDER_H
+#endif // HttpSimpleServer_H
