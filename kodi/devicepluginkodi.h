@@ -31,6 +31,8 @@
 #include <QDebug>
 #include <QTcpSocket>
 
+class ZeroConfServiceBrowser;
+
 class DevicePluginKodi : public DevicePlugin
 {
     Q_OBJECT
@@ -56,6 +58,8 @@ private:
     PluginTimer *m_pluginTimer;
     QHash<Kodi*, Device*> m_kodis;
     QHash<Kodi*, DeviceSetupInfo*> m_asyncSetups;
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
+    ZeroConfServiceBrowser *m_httpServiceBrowser = nullptr;
 
     QHash<int, DeviceActionInfo*> m_pendingActions;
     QHash<int, BrowserActionInfo*> m_pendingBrowserActions;
