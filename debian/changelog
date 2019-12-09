@@ -1,7 +1,27 @@
-nymea-plugins (0.17.0) UNRELEASED; urgency=medium
+nymea-plugins (0.17.0) xenial; urgency=medium
 
+  [ Michael Zanetti ]
+  * FlowerCare: Add a refresh rate setting
+  * Packaging: Fix dpkg clean target
+  * Simulation: Add a simulated barcode scanner device
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Tue, 19 Nov 2019 20:17:07 +0100
+  [ Bernhard Trinnes ]
+  * Http commander: Add http server
+
+  [ Michael Zanetti ]
+  * DaylightSensor: Update README.md
+  * dweet.io: Update README
+  * Kodi: Automatically redetect Kodi when its IP address changes
+  * Various Plugins: Spelling fixes in README files
+  * Tasmota: Add Blinds support
+
+  [ Federico Leoni ]
+  * Update Tasmota readme
+
+  [ Michael Zanetti ]
+  * PhilipsHue: Fix the timeout setting
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 09 Dec 2019 10:09:05 +0100
 
 nymea-plugins (0.16.0) xenial; urgency=medium
 
