@@ -1017,6 +1017,28 @@
                             "writable": true
                         }
                     ]
+                },
+                {
+                    "id": "672d68ac-c19b-46b0-be01-4468c36dd3da",
+                    "name": "barcodeScanner",
+                    "displayName": "Barcode Scanner",
+                    "createMethods": ["user"],
+                    "interfaces": ["barcodescanner"],
+                    "eventTypes": [
+                        {
+                            "id": "20910fac-93ff-4679-bec9-786defcd1875",
+                            "name": "codeScanned",
+                            "displayName": "Code scanned",
+                            "paramTypes": [
+                                {
+                                    "id": "d76c1a34-ee9a-4363-80bb-2042639311c7",
+                                    "name": "content",
+                                    "displayName": "Cotent",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }
