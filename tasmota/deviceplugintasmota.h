@@ -60,6 +60,10 @@ private:
     QHash<DeviceClassId, ParamTypeId> m_closingChannelParamTypeMap;
     QHash<DeviceClassId, StateTypeId> m_powerStateTypeMap;
 
+    QHash<DeviceClassId, ActionTypeId> m_closableOpenActionTypeMap;
+    QHash<DeviceClassId, ActionTypeId> m_closableCloseActionTypeMap;
+    QHash<DeviceClassId, ActionTypeId> m_closableStopActionTypeMap;
+
     // Helpers for both devices
     QHash<DeviceClassId, StateTypeId> m_connectedStateTypeMap;
 };

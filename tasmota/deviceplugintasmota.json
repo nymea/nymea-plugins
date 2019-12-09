@@ -60,7 +60,7 @@
                             "name": "attachedDeviceCH1",
                             "displayName": "Connected device 1",
                             "type": "QString",
-                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         },
                         {
@@ -68,7 +68,7 @@
                             "name": "attachedDeviceCH2",
                             "displayName": "Connected device 2",
                             "type": "QString",
-                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         }
                     ],
@@ -102,7 +102,7 @@
                             "name": "attachedDeviceCH1",
                             "displayName": "Connected device 1",
                             "type": "QString",
-                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         },
                         {
@@ -110,7 +110,7 @@
                             "name": "attachedDeviceCH2",
                             "displayName": "Connected device 2",
                             "type": "QString",
-                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         },
                         {
@@ -118,7 +118,7 @@
                             "name": "attachedDeviceCH3",
                             "displayName": "Connected device 3",
                             "type": "QString",
-                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         }
                     ],
@@ -152,7 +152,7 @@
                             "name": "attachedDeviceCH1",
                             "displayName": "Connected device 1",
                             "type": "QString",
-                            "allowedValues": ["None", "Light"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         },
                         {
@@ -160,7 +160,7 @@
                             "name": "attachedDeviceCH2",
                             "displayName": "Connected device 2",
                             "type": "QString",
-                            "allowedValues": ["None", "Light"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         },
                         {
@@ -168,7 +168,7 @@
                             "name": "attachedDeviceCH3",
                             "displayName": "Connected device 3",
                             "type": "QString",
-                            "allowedValues": ["None", "Light"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         },
                         {
@@ -176,7 +176,7 @@
                             "name": "attachedDeviceCH4",
                             "displayName": "Connected device 4",
                             "type": "QString",
-                            "allowedValues": ["None", "Light"],
+                            "allowedValues": ["None", "Light", "Roller Shutter Up", "Roller Shutter Down", "Blinds Up", "Blinds Down"],
                             "defaultValue": "None"
                         }
                     ],
@@ -288,7 +288,7 @@
                             "id": "600c00fd-6a2c-46cd-8031-2d9a1b1bc710",
                             "name": "closingChannel",
                             "displayName": "Closing channel",
-                            "type": "QString"
+                            "type": "int"
                         }
                     ],
                     "stateTypes": [
@@ -314,6 +314,54 @@
                         },
                         {
                             "id": "c9c9c569-e224-4f63-abed-782cba04d61b",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ]
+                },
+                {
+                    "id": "70ae35db-68bf-42d7-872a-85582d27d128",
+                    "name": "tasmotaBlinds",
+                    "displayName": "Tasmota blinds",
+                    "createMethods": ["auto"],
+                    "interfaces": ["blind", "closable", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "d8f26857-6a6c-4aba-8301-dbd3ba68bc28",
+                            "name": "openingChannel",
+                            "displayName": "Opening channel",
+                            "type": "int"
+                        },
+                        {
+                            "id": "32d0a914-e4df-4cac-bf70-304d7130f5f6",
+                            "name": "closingChannel",
+                            "displayName": "Closing channel",
+                            "type": "int"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "686ad054-0ee5-4135-8f2d-dda993532262",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "df8025a0-3553-413b-9986-61248d7a8440",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "b548fde8-1fdc-4605-9507-964076437ffb",
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "f985c1ce-3ddd-415d-a10b-060fc0fa995c",
                             "name": "stop",
                             "displayName": "Stop"
                         }
