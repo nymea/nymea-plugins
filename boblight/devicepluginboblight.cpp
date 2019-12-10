@@ -58,12 +58,12 @@ void DevicePluginBoblight::startMonitoringAutoDevices()
     foreach (Device *device, myDevices()) {
         deviceIds.insert(device->id(), device);
         if (device->deviceClassId() == boblightServerDeviceClassId) {
-            qWarning() << "Device" << device->id() << "is bridge";
+//            qWarning() << "Device" << device->id() << "is bridge";
             if (!parentDevices.contains(device->id())) {
                 parentDevices[device->id()] = 0;
             }
         } else if (device->deviceClassId() == boblightDeviceClassId) {
-            qWarning() << "Device" << device->id() << "is child to bridge" << device->parentId();
+//            qWarning() << "Device" << device->id() << "is child to bridge" << device->parentId();
             parentDevices[device->parentId()] += 1;
         }
     }

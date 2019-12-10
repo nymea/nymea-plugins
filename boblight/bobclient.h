@@ -34,7 +34,7 @@ class BobClient : public QObject
 {
     Q_OBJECT
 public:
-    explicit BobClient(const QString &host = "127.0.0.1", const int &port = 19333, QObject *parent = 0);
+    explicit BobClient(const QString &host = "127.0.0.1", const int &port = 19333, QObject *parent = nullptr);
     ~BobClient();
 
     bool connectToBoblight();
