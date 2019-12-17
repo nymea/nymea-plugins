@@ -14,7 +14,7 @@
                     "displayName": "Tuya cloud login",
                     "createMethods": ["user"],
                     "setupMethod": "userandpassword",
-                    "interfaces": [ ],
+                    "interfaces": [ "account" ],
                     "stateTypes": [
                         {
                             "id": "c844a23a-301b-4e6c-ba18-2926a38e6bf5",
@@ -24,6 +24,22 @@
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
+                        },
+                        {
+                            "id": "33e9d30c-c988-4cd4-8d39-ce84bcfa79c5",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "15bc38a7-0962-4f3b-a0b1-4f164958493b",
+                            "name": "userDisplayName",
+                            "displayName": "Username",
+                            "displayNameEvent": "User changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ]
                 },
