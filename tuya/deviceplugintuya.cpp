@@ -67,6 +67,11 @@ void DevicePluginTuya::setupDevice(DeviceSetupInfo *info)
         if (tokenRefreshTimer->isActive()) {
             qCDebug(dcTuya()) << "Device already set up during pairing.";
             device->setStateValue(tuyaCloudConnectedStateTypeId, true);
+            device->setStateValue(tuyaCloudLoggedInStateTypeId, true);
+            pluginStorage()->beginGroup(device->id().toString());
+            QString username = pluginStorage()->value("username").toString();
+            pluginStorage()->endGroup();
+            device->setStateValue(tuyaCloudUserDisplayNameStateTypeId, username);
             return info->finish(Device::DeviceErrorNoError);
         }
 
@@ -142,7 +147,7 @@ void DevicePluginTuya::confirmPairing(DevicePairingInfo *info, const QString &us
     connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
 
     qCDebug(dcTuya()) << "Pairing Tuya device";
-    connect(reply, &QNetworkReply::finished, info, [this, reply, info](){
+    connect(reply, &QNetworkReply::finished, info, [this, reply, info, username](){
         reply->deleteLater();
         QByteArray data = reply->readAll();
 
@@ -174,6 +179,7 @@ void DevicePluginTuya::confirmPairing(DevicePairingInfo *info, const QString &us
         pluginStorage()->beginGroup(info->deviceId().toString());
         pluginStorage()->setValue("accessToken", result.value("access_token").toString());
         pluginStorage()->setValue("refreshToken", result.value("refresh_token").toString());
+        pluginStorage()->setValue("username", username);
         pluginStorage()->endGroup();
 
         int timeout = result.value("expires_in").toInt();
@@ -239,6 +245,7 @@ void DevicePluginTuya::refreshAccessToken(Device *device)
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcTuya()) << "Error refreshing access token";
             device->setStateValue(tuyaCloudConnectedStateTypeId, false);
+            device->setStateValue(tuyaCloudLoggedInStateTypeId, false);
             emit tokenRefreshed(device, false);
             return;
         }
@@ -249,6 +256,7 @@ void DevicePluginTuya::refreshAccessToken(Device *device)
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcTuya()) << "Failed to parse json reply when refreshing access token" << error.errorString();
             device->setStateValue(tuyaCloudConnectedStateTypeId, false);
+            device->setStateValue(tuyaCloudLoggedInStateTypeId, false);
             emit tokenRefreshed(device, false);
             return;
         }
@@ -256,6 +264,7 @@ void DevicePluginTuya::refreshAccessToken(Device *device)
         if (jsonDoc.toVariant().toMap().isEmpty()) {
             qCWarning(dcTuya()) << "Empty response from Tuya server";
             device->setStateValue(tuyaCloudConnectedStateTypeId, false);
+            device->setStateValue(tuyaCloudLoggedInStateTypeId, false);
             return;
         }
 
@@ -271,6 +280,12 @@ void DevicePluginTuya::refreshAccessToken(Device *device)
         QTimer *t = m_tokenExpiryTimers.value(device->id());
         t->start(tokenExpiry);
         device->setStateValue(tuyaCloudConnectedStateTypeId, true);
+        device->setStateValue(tuyaCloudLoggedInStateTypeId, true);
+
+        pluginStorage()->beginGroup(device->id().toString());
+        QString username = pluginStorage()->value("username").toString();
+        pluginStorage()->endGroup();
+        device->setStateValue(tuyaCloudUserDisplayNameStateTypeId, username);
 
         emit tokenRefreshed(device, true);
     });
