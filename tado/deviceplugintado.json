@@ -98,6 +98,14 @@
                             "writable": true
                         },
                         {
+                            "id": "8b800998-5c2d-4940-9d0e-036979cf49ca",
+                            "name": "tadoMode",
+                            "displayName": "Tado mode",
+                            "displayNameEvent": "Tado mode changed",
+                            "type": "QString",
+                            "defaultValue": "Tado"
+                        },
+                        {
                             "id": "e886377d-34b7-4908-ad0d-ed463fc6181d",
                             "name": "power",
                             "displayName": "Power",

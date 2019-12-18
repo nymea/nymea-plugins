@@ -158,7 +158,11 @@ void DevicePluginTado::executeAction(DeviceActionInfo *info)
             } else if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Off") {
                 tado->setOverlay(homeId, zoneId, false, device->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
             } else {
-                tado->setOverlay(homeId, zoneId, true, device->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
+                if(device->stateValue(zoneTargetTemperatureStateTypeId).toDouble() <= 5.0) {
+                    tado->setOverlay(homeId, zoneId, true, 5);
+                } else {
+                    tado->setOverlay(homeId, zoneId, true, device->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
+                }
             }
             info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == zoneTargetTemperatureActionTypeId) {
@@ -299,10 +303,13 @@ void DevicePluginTado::onZoneStateReceived(const QString &homeId, const QString 
         device->setStateValue(zoneModeStateTypeId, "Tado");
     }
 
-    device->setStateValue(zonePowerStateTypeId, state.power);
+    device->setStateValue(zonePowerStateTypeId, (state.heatingPowerPercentage > 0));
+
+
     device->setStateValue(zoneConnectedStateTypeId, state.connected);
     device->setStateValue(zoneTargetTemperatureStateTypeId, state.settingTemperature);
     device->setStateValue(zoneTemperatureStateTypeId, state.temperature);
     device->setStateValue(zoneHumidityStateTypeId, state.humidity);
     device->setStateValue(zoneWindowOpenStateTypeId, state.windowOpen);
+    device->setStateValue(zoneTadoModeStateTypeId, state.tadoMode);
 }
