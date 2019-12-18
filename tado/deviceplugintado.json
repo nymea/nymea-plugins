@@ -19,8 +19,8 @@
                         {
                             "id": "2f79bc1d-27ed-480a-b583-728363c83ea6",
                             "name": "connected",
-                            "displayName": "available",
-                            "displayNameEvent": "available changed",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -64,14 +64,21 @@
                             "type": "QString",
                             "inputType": "TextLine",
                             "readOnly": true
+                        },
+                        {
+                            "id": "8e86797e-5333-4428-9dba-9ed5ac243b44",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "stateTypes": [
                         {
                             "id": "9f45a703-6a15-447c-a77a-0df731cda48e",
                             "name": "connected",
-                            "displayName": "available",
-                            "displayNameEvent": "available changed",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -82,10 +89,10 @@
                             "displayNameEvent": "Mode changed",
                             "displayNameAction": "Set mode",
                             "type": "QString",
-                            "defaultValue": "Auto",
+                            "defaultValue": "Home",
                             "possibleValues": [
                                 "Manual",
-                                "Auto",
+                                "Home",
                                 "Off"
                             ],
                             "writable": true
@@ -99,10 +106,18 @@
                             "defaultValue": false
                         },
                         {
+                            "id": "c7a04e26-bb22-406e-b117-262bdb8b9c0e",
+                            "name": "windowOpen",
+                            "displayName": "Window open",
+                            "displayNameEvent": "Window open changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
                             "id": "80098178-7d92-43dd-a216-23704cc0eaa2",
                             "name": "temperature",
-                            "displayName": "temperature",
-                            "displayNameEvent": "temperature changed",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -121,8 +136,8 @@
                         {
                             "id": "0faaaff1-2a33-44ec-b68d-d8855f584b02",
                             "name": "humidity",
-                            "displayName": "humidity",
-                            "displayNameEvent": "humidity changed",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
                             "unit": "Percentage",
                             "type": "double",
                             "defaultValue": 0,

@@ -41,7 +41,6 @@ public:
     explicit DevicePluginTado();
     ~DevicePluginTado();
 
-    void init() override;
     void startPairing(DevicePairingInfo *info) override;
     void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
     void setupDevice(DeviceSetupInfo *info) override;

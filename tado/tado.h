@@ -27,6 +27,7 @@
 #include "devices/device.h"
 
 #include <QObject>
+#include <QTimer>
 
 class Tado : public QObject
 {
@@ -50,11 +51,19 @@ public:
     struct ZoneState {
         bool connected;
         bool power;
-        double targetTemperature;
         QString tadoMode;
-        QString type;
+        QString settingType;
+        double settingTemperature;
+        bool settingPower;
         double temperature;
         double humidity;
+        bool windowOpen;
+        double heatingPowerPercentage;
+        QString heatingPowerType;
+        bool overlayIsSet;
+        bool overlaySettingPower;
+        double overlaySettingTemperature;
+        QString overlayType;
     };
 
     struct Home {
@@ -73,6 +82,7 @@ public:
     void getZoneState(const QString &homeId, const QString &zoneId);
 
     void setOverlay(const QString &homeId, const QString &zoneId, const QString &mode, double targetTemperature);
+    void deleteOverlay(const QString &homeId, const QString &zoneId);
 
 private:
     QByteArray m_baseAuthorizationUrl = "https://auth.tado.com/oauth/token";
@@ -83,6 +93,8 @@ private:
     NetworkAccessManager *m_networkManager = nullptr;
     QString m_username;
     QString m_accessToken;
+    QString m_refreshToken;
+    QTimer *m_refreshTimer = nullptr;
 
 signals:
     void connectionChanged(bool connected);
@@ -93,6 +105,8 @@ signals:
     void homesReceived(QList<Home> homes);
     void zonesReceived(const QString &homeId, QList<Zone> zones);
     void zoneStateReceived(const QString &homeId,const QString &zoneId, ZoneState sate);
+private slots:
+    void onRefreshTimer();
 
 };
 

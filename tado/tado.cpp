@@ -33,7 +33,9 @@ Tado::Tado(NetworkAccessManager *networkManager, const QString &username, QObjec
     m_networkManager(networkManager),
     m_username(username)
 {
-
+    m_refreshTimer = new QTimer(this);
+    m_refreshTimer->setSingleShot(true);
+    connect(m_refreshTimer, &QTimer::timeout, this, &Tado::onRefreshTimer);
 }
 
 void Tado::setUsername(const QString &username)
@@ -91,7 +93,9 @@ void Tado::getToken(const QString &password)
         m_accessToken = token.accesToken;
         token.tokenType = obj["token_type"].toString();
         token.refreshToken = obj["refresh_token"].toString();
+        m_refreshToken = token.refreshToken;
         token.expires = obj["expires_in"].toInt();
+        m_refreshTimer->start((token.expires - 10)*1000);
         token.scope = obj["scope"].toString();
         token.jti = obj["jti"].toString();
         emit tokenReceived(token);
@@ -216,30 +220,165 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
             return;
         }
-
         ZoneState state;
         QVariantMap map = data.toVariant().toMap();
-        state.tadoMode = map["tado_mode"].toString();
+        state.tadoMode = map["tadoMode"].toString();
+        state.windowOpen = map["openWindow"].toBool();
 
         QVariantMap settingsMap = map["setting"].toMap();
-        state.type = settingsMap["type"].toString();
-        state.power = (settingsMap["power"].toString() == "ON");
-        state.targetTemperature = settingsMap["temperature"].toMap().value("celsius").toDouble();
+        state.settingType = settingsMap["type"].toString();
+        state.settingPower = (settingsMap["power"].toString() == "ON");
+        state.settingTemperature = settingsMap["temperature"].toMap().value("celsius").toDouble();
 
         state.connected = (map["link"].toMap().value("state").toString() == "ONLINE");
+
+        QVariantMap activityDataMap = map["activityDataPoints"].toMap();
+        state.heatingPowerPercentage = activityDataMap["heatingPower"].toMap().value("percentage").toDouble();
+        state.heatingPowerType = activityDataMap["heatingPower"].toMap().value("type").toString();
 
         QVariantMap dataMap = map["sensorDataPoints"].toMap();
         state.temperature = dataMap["insideTemperature"].toMap().value("celsius").toDouble();
         state.humidity = dataMap["humidity"].toMap().value("percentage").toDouble();
 
+        if (!map["overlay"].toMap().isEmpty()){
+            state.overlayIsSet = true;
+            QVariantMap overlayMap = map["overlay"].toMap();
+            state.overlayType = map["overlayType"].toString();
+            state.overlaySettingPower = (overlayMap["settings"].toMap().value("power").toString() == "ON");
+            state.overlaySettingTemperature = overlayMap["settings"].toMap().value("temperature").toDouble();
+        } else {
+            state.overlayIsSet = false;
+        }
         emit zoneStateReceived(homeId, zoneId, state);
     });
 }
 
 void Tado::setOverlay(const QString &homeId, const QString &zoneId, const QString &mode, double targetTemperature)
 {
-    Q_UNUSED(zoneId);
-    Q_UNUSED(homeId);
     Q_UNUSED(mode);
     Q_UNUSED(targetTemperature);
+
+    QNetworkRequest request;
+    request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json;charset=utf-8");
+    request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
+    QJsonDocument doc;
+    QJsonObject obj;
+    QJsonObject setting;
+    setting.insert("type", "HEATING");
+    setting.insert("power", "ON");
+    QJsonObject temperature;
+    temperature.insert("celsius", targetTemperature);
+    temperature.insert("fahrenheit", (targetTemperature * (9.0/5.0)) + 32.0);
+    setting.insert("temperature", temperature);
+    obj.insert("setting", setting);
+    QJsonObject termination;
+    termination.insert("type", "MANUAL");
+    obj.insert("termination", termination);
+    doc.setObject(obj);
+
+    QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
+    qCDebug(dcTado()) << "Sending request" << request.url() << doc.toJson();
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+        reply->deleteLater();
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
+            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            return;
+        }
+        QVariantMap map = data.toVariant().toMap();
+        qCDebug(dcTado()) << map["type"].toString();
+    });
+}
+
+void Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
+{
+    QNetworkRequest request;
+    request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
+    request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
+    QNetworkReply *reply = m_networkManager->deleteResource(request);
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status < 200 || status > 210 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
+            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+    });
+}
+
+void Tado::onRefreshTimer()
+{
+    QNetworkRequest request;
+    request.setUrl(QUrl(m_baseAuthorizationUrl));
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QByteArray body;
+    body.append("client_id=" + m_clientId);
+    body.append("&client_secret=" + m_clientSecret);
+    body.append("&grant_type=refresh_token");
+    body.append("&refresh_token=" + m_refreshToken);
+    body.append("&scope=home.user");
+
+    QNetworkReply *reply = m_networkManager->post(request, body);
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status == 400 || status == 401) {
+                emit authenticationStatusChanged(false);
+            }
+            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            return;
+        }
+        Token token;
+        QVariantMap obj = data.toVariant().toMap();
+        token.accesToken = obj["access_token"].toString();
+        m_accessToken = token.accesToken;
+        token.tokenType = obj["token_type"].toString();
+        token.refreshToken = obj["refresh_token"].toString();
+        m_refreshToken = token.refreshToken;
+        token.expires = obj["expires_in"].toInt();
+        m_refreshTimer->start((token.expires - 10)*1000);
+        token.scope = obj["scope"].toString();
+        token.jti = obj["jti"].toString();
+        emit tokenReceived(token);
+    });
 }

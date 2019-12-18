@@ -39,11 +39,6 @@ DevicePluginTado::~DevicePluginTado()
 
 }
 
-void DevicePluginTado::init()
-{
-
-}
-
 void DevicePluginTado::startPairing(DevicePairingInfo *info)
 {
     info->finish(Device::DeviceErrorNoError, QT_TR_NOOP("Please enter the login credentials."));
@@ -125,7 +120,7 @@ void DevicePluginTado::deviceRemoved(Device *device)
 void DevicePluginTado::postSetupDevice(Device *device)
 {
     if (!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(600);
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
         connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginTado::onPluginTimer);
     }
 
@@ -148,16 +143,42 @@ void DevicePluginTado::postSetupDevice(Device *device)
 void DevicePluginTado::executeAction(DeviceActionInfo *info)
 {
     Device *device = info->device();
+    Action action = info->action();
 
     if (device->deviceClassId() == zoneDeviceClassId) {
+        Tado *tado = m_tadoAccounts.value(device->parentId());
+        if (!tado)
+            return;
+        QString homeId = device->paramValue(zoneDeviceHomeIdParamTypeId).toString();
+        QString zoneId = device->paramValue(zoneDeviceZoneIdParamTypeId).toString();
+        if (action.actionTypeId() == zoneModeActionTypeId) {
 
+            if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Home") {
+                tado->deleteOverlay(homeId, zoneId);
+            } else {
 
-        info->finish(Device::DeviceErrorNoError);
+            }
+            info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == zoneTargetTemperatureActionTypeId) {
+
+            double temperature = action.param(zoneTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
+            tado->setOverlay(homeId, zoneId, "MANUAL", temperature);
+            info->finish(Device::DeviceErrorNoError);
+        }
     }
 }
 
 void DevicePluginTado::onPluginTimer()
 {
+    foreach (Device *device, myDevices().filterByDeviceClassId(zoneDeviceClassId)) {
+        Tado *tado = m_tadoAccounts.value(device->parentId());
+        if (!tado)
+            continue;
+
+        QString homeId = device->paramValue(zoneDeviceHomeIdParamTypeId).toString();
+        QString zoneId = device->paramValue(zoneDeviceZoneIdParamTypeId).toString();
+        tado->getZoneState(homeId, zoneId);
+    }
 }
 
 void DevicePluginTado::onConnectionChanged(bool connected)
@@ -168,7 +189,9 @@ void DevicePluginTado::onConnectionChanged(bool connected)
         Device *device = myDevices().findById(m_tadoAccounts.key(tado));
         device->setStateValue(tadoConnectionConnectedStateTypeId, connected);
 
-        //TODO set connected state in child devices
+        foreach(Device *zoneDevice, myDevices().filterByParentDeviceId(device->id())) {
+            zoneDevice->setStateValue(zoneConnectedStateTypeId, connected);
+        }
     }
 }
 
@@ -231,10 +254,15 @@ void DevicePluginTado::onZonesReceived(const QString &homeId, QList<Tado::Zone> 
 
         DeviceDescriptors descriptors;
         foreach (Tado::Zone zone, zones) {
+
             DeviceDescriptor descriptor(zoneDeviceClassId, zone.name, "Type:" + zone.type, parentDevice->id());
             ParamList params;
             params.append(Param(zoneDeviceHomeIdParamTypeId, homeId));
             params.append(Param(zoneDeviceZoneIdParamTypeId, zone.id));
+            if (myDevices().findByParams(params))
+                continue;
+
+            params.append(Param(zoneDeviceTypeParamTypeId, zone.type));
             descriptor.setParams(params);
             descriptors.append(descriptor);
         }
@@ -246,18 +274,29 @@ void DevicePluginTado::onZonesReceived(const QString &homeId, QList<Tado::Zone> 
 
 void DevicePluginTado::onZoneStateReceived(const QString &homeId, const QString &zoneId, Tado::ZoneState state)
 {
-    qCDebug(dcTado()) << "Zone state received:";
     Tado *tado = static_cast<Tado*>(sender());
     DeviceId parentId = m_tadoAccounts.key(tado);
     ParamList params;
     params.append(Param(zoneDeviceHomeIdParamTypeId, homeId));
     params.append(Param(zoneDeviceZoneIdParamTypeId, zoneId));
     Device *device = myDevices().filterByParentDeviceId(parentId).findByParams(params);
+    if (!device)
+        return;
 
-    device->setStateValue(zoneModeStateTypeId, state.tadoMode);
+    if (state.overlayIsSet)  {
+        if (state.overlaySettingPower) {
+            device->setStateValue(zoneModeStateTypeId, "Manual");
+        } else {
+            device->setStateValue(zoneModeStateTypeId, "Off");
+        }
+    } else {
+        device->setStateValue(zoneModeStateTypeId, "Home");
+    }
+
     device->setStateValue(zonePowerStateTypeId, state.power);
     device->setStateValue(zoneConnectedStateTypeId, state.connected);
-    device->setStateValue(zoneTargetTemperatureStateTypeId, state.targetTemperature);
+    device->setStateValue(zoneTargetTemperatureStateTypeId, state.settingTemperature);
     device->setStateValue(zoneTemperatureStateTypeId, state.temperature);
     device->setStateValue(zoneHumidityStateTypeId, state.humidity);
+    device->setStateValue(zoneWindowOpenStateTypeId, state.windowOpen);
 }
