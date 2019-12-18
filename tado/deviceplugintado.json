@@ -89,10 +89,10 @@
                             "displayNameEvent": "Mode changed",
                             "displayNameAction": "Set mode",
                             "type": "QString",
-                            "defaultValue": "Home",
+                            "defaultValue": "Tado",
                             "possibleValues": [
                                 "Manual",
-                                "Home",
+                                "Tado",
                                 "Off"
                             ],
                             "writable": true

@@ -81,7 +81,7 @@ public:
     void getZones(const QString &homeId);
     void getZoneState(const QString &homeId, const QString &zoneId);
 
-    void setOverlay(const QString &homeId, const QString &zoneId, const QString &mode, double targetTemperature);
+    void setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature);
     void deleteOverlay(const QString &homeId, const QString &zoneId);
 
 private:

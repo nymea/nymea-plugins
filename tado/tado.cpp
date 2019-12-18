@@ -253,32 +253,36 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
     });
 }
 
-void Tado::setOverlay(const QString &homeId, const QString &zoneId, const QString &mode, double targetTemperature)
+void Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature)
 {
-    Q_UNUSED(mode);
-    Q_UNUSED(targetTemperature);
-
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json;charset=utf-8");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
-    QJsonDocument doc;
+    /*QJsonDocument doc;
     QJsonObject obj;
     QJsonObject setting;
-    setting.insert("type", "HEATING");
     setting.insert("power", "ON");
     QJsonObject temperature;
     temperature.insert("celsius", targetTemperature);
-    temperature.insert("fahrenheit", (targetTemperature * (9.0/5.0)) + 32.0);
+    //temperature.insert("fahrenheit", (targetTemperature * (9.0/5.0)) + 32.0);
+    setting.insert("type", "HEATING");
     setting.insert("temperature", temperature);
     obj.insert("setting", setting);
     QJsonObject termination;
     termination.insert("type", "MANUAL");
     obj.insert("termination", termination);
-    doc.setObject(obj);
+    doc.setObject(obj);*/
 
-    QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
-    qCDebug(dcTado()) << "Sending request" << request.url() << doc.toJson();
+    QByteArray body;
+    QByteArray powerString;
+    if (power)
+       powerString = "ON";
+    else
+       powerString = "OFF";
+
+    body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\""+ powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
+    QNetworkReply *reply = m_networkManager->put(request, body);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
 

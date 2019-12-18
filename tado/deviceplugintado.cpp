@@ -153,16 +153,22 @@ void DevicePluginTado::executeAction(DeviceActionInfo *info)
         QString zoneId = device->paramValue(zoneDeviceZoneIdParamTypeId).toString();
         if (action.actionTypeId() == zoneModeActionTypeId) {
 
-            if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Home") {
+            if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Tado") {
                 tado->deleteOverlay(homeId, zoneId);
+            } else if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Off") {
+                tado->setOverlay(homeId, zoneId, false, device->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
             } else {
-
+                tado->setOverlay(homeId, zoneId, true, device->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
             }
             info->finish(Device::DeviceErrorNoError);
         } else if (action.actionTypeId() == zoneTargetTemperatureActionTypeId) {
 
             double temperature = action.param(zoneTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
-            tado->setOverlay(homeId, zoneId, "MANUAL", temperature);
+            if (temperature <= 0) {
+                tado->setOverlay(homeId, zoneId, false, 0);
+            } else {
+                tado->setOverlay(homeId, zoneId, true, temperature);
+            }
             info->finish(Device::DeviceErrorNoError);
         }
     }
@@ -290,7 +296,7 @@ void DevicePluginTado::onZoneStateReceived(const QString &homeId, const QString 
             device->setStateValue(zoneModeStateTypeId, "Off");
         }
     } else {
-        device->setStateValue(zoneModeStateTypeId, "Home");
+        device->setStateValue(zoneModeStateTypeId, "Tado");
     }
 
     device->setStateValue(zonePowerStateTypeId, state.power);
