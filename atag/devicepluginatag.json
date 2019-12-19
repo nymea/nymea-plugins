@@ -1,0 +1,92 @@
+{
+    "displayName": "Atag",
+    "name": "Atag",
+    "id": "28794612-f80d-4c6e-8cdf-93ad90909b70",
+    "vendors": [
+        {
+            "displayName": "Atag",
+            "name": "atag",
+            "id": "4c8bf4e2-0f96-4876-8738-e40a45efd26b",
+            "deviceClasses": [
+                {
+                    "id": "edc2d27f-5a36-45d3-8250-ba1b3ccfa75e",
+                    "name": "atagOne",
+                    "displayName": "Atag One",
+                    "interfaces": ["thermostat", "temperaturesensor", "connectable"],
+                    "setupMethod": "pushButton",
+                    "createMethods": ["discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "d4b95240-f49e-4d4a-8919-789cf30d4429",
+                            "name":"ipAddress",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "fee2de59-b0b1-4cc0-b7d4-55dd27258ca4",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type": "int",
+                            "defaultValue": 80
+                        },
+                        {
+                            "id": "9064ef2a-f8d2-4335-9bc6-bddf716dc2a3",
+                            "name":"serialnumber",
+                            "displayName": "Serialnumber",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9f45a703-6a15-447c-a77a-0df731cda48e",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "e886377d-34b7-4908-ad0d-ed463fc6181d",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "80098178-7d92-43dd-a216-23704cc0eaa2",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "684fcc62-f12b-4669-988e-4b79f153b0f2",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "writable": true
+                        },
+                        {
+                            "id": "0faaaff1-2a33-44ec-b68d-d8855f584b02",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "unit": "Percentage",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

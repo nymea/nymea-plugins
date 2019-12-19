@@ -2,6 +2,7 @@ TEMPLATE = subdirs
 
 PLUGIN_DIRS = \
     anel                \
+    atag                \
     avahimonitor        \
     awattar             \
     boblight            \
