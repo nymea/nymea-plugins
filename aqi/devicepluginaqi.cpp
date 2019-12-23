@@ -39,9 +39,11 @@ void DevicePluginAqi::setupDevice(DeviceSetupInfo *info)
 {
     if (info->device()->deviceClassId() == airQualityIndexDeviceClassId) {
 
-        if (myDevices().filterByDeviceClassId(info->device()->deviceClassId()).count() > 1) {
-            info->finish(Device::DeviceErrorSetupFailed, tr("Service is already in use"));
-            return;
+        if (!myDevices().filterByDeviceClassId(info->device()->deviceClassId()).isEmpty()) {
+            if (!myDevices().findById(info->device()->id())) {
+                info->finish(Device::DeviceErrorSetupFailed, tr("Service is already in use."));
+                return;
+            }
         }
 
         QUrl url;
@@ -123,7 +125,6 @@ void DevicePluginAqi::getDataByIp()
             qDebug(dcAirQualityIndex()) << "Received invalide JSON object";
             return;
         }
-        qCDebug(dcAirQualityIndex()) << data.toJson();
         QVariantMap city = data.toVariant().toMap().value("data").toMap().value("city").toMap();
         //double lat = city["geo"].toList().takeAt(0).toDouble();
         //double lng = city["geo"].toList().takeAt(1).toDouble();
@@ -140,6 +141,7 @@ void DevicePluginAqi::getDataByIp()
         double o3 = iaqi["o3"].toMap().value("v").toDouble();
         double co = iaqi["co"].toMap().value("v").toDouble();
         double temperature = iaqi["t"].toMap().value("v").toDouble();
+        double windSpeed = iaqi["w"].toMap().value("v").toDouble();
 
         foreach (Device *device, myDevices().filterByDeviceClassId(airQualityIndexDeviceClassId)) {
             device->setStateValue(airQualityIndexStationNameStateTypeId, name);
@@ -153,25 +155,26 @@ void DevicePluginAqi::getDataByIp()
             device->setStateValue(airQualityIndexSo2StateTypeId, so2);
             device->setStateValue(airQualityIndexPm10StateTypeId, pm10);
             device->setStateValue(airQualityIndexPm25StateTypeId, pm25);
+            device->setStateValue(airQualityIndexWindSpeedStateTypeId, windSpeed);
 
             if (pm25 <= 50.00) {
                 device->setStateValue(airQualityIndexAirQualityStateTypeId, "Good");
-                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, "None");
+                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("None"));
             } else if ((pm25 > 50.00) && (pm25 <= 100.00)) {
                 device->setStateValue(airQualityIndexAirQualityStateTypeId, "Moderate");
-                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, "Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion.");
+                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion."));
             } else if ((pm25 > 100.00) && (pm25 <= 150.00)) {
                 device->setStateValue(airQualityIndexAirQualityStateTypeId, "Unhealthy for Sensitive Groups");
-                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, "Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion.");
+                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion."));
             }  else if ((pm25 > 150.00) && (pm25 <= 200.00)) {
                 device->setStateValue(airQualityIndexAirQualityStateTypeId, "Unhealthy");
-                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, "Active children and adults, and people with respiratory disease, such as asthma, should avoid prolonged outdoor exertion; everyone else, especially children, should limit prolonged outdoor exertion");
+                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Active children and adults, and people with respiratory disease, such as asthma, should avoid prolonged outdoor exertion; everyone else, especially children, should limit prolonged outdoor exertion"));
             } else if ((pm25 > 200.00) && (pm25 <= 300.00)) {
                 device->setStateValue(airQualityIndexAirQualityStateTypeId, "Very Unhealthy");
-                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, "Active children and adults, and people with respiratory disease, such as asthma, should avoid all outdoor exertion; everyone else, especially children, should limit outdoor exertion.");
+                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Active children and adults, and people with respiratory disease, such as asthma, should avoid all outdoor exertion; everyone else, especially children, should limit outdoor exertion."));
             } else {
                 device->setStateValue(airQualityIndexAirQualityStateTypeId, "Hazardous");
-                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, "Everyone should avoid all outdoor exertion");
+                device->setStateValue(airQualityIndexCautionaryStatementStateTypeId, tr("Everyone should avoid all outdoor exertion"));
             }
         }
     });

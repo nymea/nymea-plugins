@@ -21,7 +21,7 @@
                     "id": "23ea32c9-38b0-4155-bacc-3afa8c09f6ee",
                     "name": "airQualityIndex",
                     "displayName": "Air quality index",
-                    "interfaces": ["humiditysensor", "pressuresensor", "temperaturesensor", "connectable"],
+                    "interfaces": ["windspeedsensor", "humiditysensor", "pressuresensor", "temperaturesensor", "connectable"],
                     "createMethods": ["user"],
                     "paramTypes": [
                     ],
@@ -145,6 +145,15 @@
                             "displayName": "Pressure",
                             "displayNameEvent": "Pressure changed",
                             "unit": "HectoPascal",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "c4366608-2511-428b-964e-2ad9e37f8f3c",
+                            "name": "windSpeed",
+                            "displayName": "Wind speed",
+                            "displayNameEvent": "Wind speed changed",
+                            "unit": "MeterPerSecond",
                             "type": "double",
                             "defaultValue": 0
                         }

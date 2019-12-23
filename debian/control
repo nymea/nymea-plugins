@@ -976,6 +976,7 @@ Package: nymea-plugins
 Section: libs
 Architecture: all
 Depends: nymea-plugin-anel,
+         nymea-plugin-aqi,
          nymea-plugin-awattar,
          nymea-plugin-bose,
          nymea-plugin-datetime,
