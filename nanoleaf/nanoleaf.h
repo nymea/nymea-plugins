@@ -44,11 +44,15 @@ public:
     void setPort(int port);
     int port();
 
+    void setAuthToken(const QString &token);
+    QString authToken();
+
     //AUTHORIZATION
     void addUser();
     void deleteUser();
 
     //GET ALL PANEL INFORMATION
+    void getControllerInfo();
 
     //STATES
     void getPower();
@@ -66,6 +70,9 @@ public:
 
 
     //EFFECTS
+    void getEffects();
+    void getSelectedEffect();
+    QUuid setEffect(const QString &effect);
 
     //PANEL LAYOUT
 
@@ -86,13 +93,17 @@ private:
 signals:
     void connectionChanged(bool connected);
     void authenticationStatusChanged(bool authenticated);
-    void requestedExecuted(QUuid requestId, bool success);
+    void requestExecuted(QUuid requestId, bool success);
 
+    void authTokenRecieved(const QString &token);
     void powerReceived(bool power);
     void brightnessReceived(int percentage);
-    void colorModeReceived();
-    void hueReceived(QColor color);
+    void colorModeReceived(const QString &colorMode);
+    void hueReceived(int hue);
     void saturationReceived(int percentage);
+    void effectListReceived(const QStringList &effects);
+    void colorTemperatureReceived(int mired);
+    void selectedEffectReceived(const QString &effect);
 };
 
 #endif // NANOLEAF_H

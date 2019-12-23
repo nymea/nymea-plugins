@@ -51,14 +51,39 @@ public:
     void deviceRemoved(Device *device) override;
     void executeAction(DeviceActionInfo *info) override;
 
+    void browseDevice(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
 
 private:
     ZeroConfServiceBrowser *m_zeroconfBrowser = nullptr;
     PluginTimer *m_pluginTimer = nullptr;
     QHash<DeviceId, Nanoleaf*> m_nanoleafConnections;
+    QHash<DeviceId, Nanoleaf*> m_unfinishedNanoleafConnections;
     QHash<QUuid, DeviceActionInfo *> m_asyncActions;
+    QHash<Nanoleaf *, DevicePairingInfo *> m_unfinishedPairing;
+    QHash<Nanoleaf *, DeviceSetupInfo *> m_asyncDeviceSetup;
+
+    QHash<Nanoleaf *, BrowseResult *> m_asyncBrowseResults;
+    QHash<QUuid, BrowserActionInfo *> m_asyncBrowserItem;
+    QHash<DeviceId, int> m_hues;
 
     void getDeviceStates(Nanoleaf *nanoleaf);
+
+public slots:
+    void onAuthTokenReceived(const QString &token);
+    void onAuthenticationStatusChanged(bool authenticated);
+    void onRequestExecuted(QUuid requestId, bool success);
+    void onConnectionChanged(bool connected);
+
+    void onPowerReceived(bool power);
+    void onBrightnessReceived(int percentage);
+    void onColorModeReceived(const QString &colorMode);
+    void onHueReceived(int hue);
+    void onSaturationReceived(int percentage);
+    void onEffectListReceived(const QStringList &effects);
+    void onColorTemperatureReceived(int mired);
+    void onSelectedEffectReceived(const QString &effect);
 };
 
 #endif // DEVICEPLUGINNANOLEAF_H
