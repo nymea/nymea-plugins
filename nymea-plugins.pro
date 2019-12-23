@@ -28,6 +28,7 @@ PLUGIN_DIRS = \
     lgsmarttv           \
     mailnotification    \
     mqttclient          \
+    nanoleaf            \
     netatmo             \
     networkdetector     \
     onewire             \
