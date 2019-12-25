@@ -1,0 +1,102 @@
+{
+    "displayName": "Yeelight",
+    "name": "yeelight",
+    "id": "40012951-be9f-4de6-b6e1-0a7455fdd416",
+    "vendors": [
+        {
+            "name": "Yeelight",
+            "displayName": "Yeelight",
+            "id": "74011456-0a0f-4e43-bd94-bf4bb69593a4",
+            "deviceClasses": [
+                {
+                    "id": "7d801b71-0aee-4b5d-ae62-a950473b20f5",
+                    "name": "colorBulb",
+                    "displayName": "Color bulb",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["colorlight", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "a603ff66-0da8-42e8-942b-1632a22adefb",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "bfe184d2-6e62-4979-8ff2-3fd190903c82",
+                            "name": "id",
+                            "displayName": "Id",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "e80aea31-7ac0-4f71-9650-efb70ea1e768",
+                            "name": "default",
+                            "displayName": "Set default",
+                            "type": "bool"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7cb7d7ae-f281-46c9-83ea-52b1d7e8e2c8",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "759b661e-8726-41c8-9c29-c5885eb19018",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "01f058cc-4bfb-439c-8344-f7ffdd2b2ed0",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature",
+                            "displayNameEvent": "Color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "minValue": 153,
+                            "maxValue": 500,
+                            "writable": true
+                        },
+                        {
+                            "id": "d74cfe47-b6e6-47ae-a8e9-bb99b8ae63fe",
+                            "name": "color",
+                            "displayName": "Color",
+                            "displayNameEvent": "Color changed",
+                            "displayNameAction": "Set color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "a7a16fb8-0e8b-4aa3-977d-3ff7cd65c708",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
