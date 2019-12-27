@@ -80,10 +80,12 @@ public:
     int setBrightness(int percentage, int msFadeTime = 500);
     int setPower(bool power, int msFadeTime = 500);
     int setDefault();
-
+    int startColorFlow();
+    int stopColorFlow();
+    int flash();
+    int flash15s();
 
 private:
-
     QTcpSocket *m_socket = nullptr;
     QHostAddress m_address;
     quint16 m_port;
@@ -97,6 +99,13 @@ signals:
     void connectionChanged(bool connected);
     void requestExecuted(int requestId, bool success);
     void propertyListReceived(QVariantList value);
+
+    /*
+     * Whenever there is state change of smart LED, it will send a notification message
+     * to all connected 3rd party devices. This is to make sure all 3rd party devices
+     * will get the latest state of the smart LED in time without having to poll the status
+     * from time to time.
+     */
     void notificationReveiced(Property property, QVariant value);
 };
 #endif // YEELIGHT_H

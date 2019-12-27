@@ -13,7 +13,7 @@
                     "name": "colorBulb",
                     "displayName": "Color bulb",
                     "createMethods": ["user", "discovery"],
-                    "interfaces": ["colorlight", "connectable"],
+                    "interfaces": ["colorlight", "alert", "connectable"],
                     "paramTypes": [
                         {
                             "id": "a603ff66-0da8-42e8-942b-1632a22adefb",
@@ -43,6 +43,24 @@
                             "id": "e80aea31-7ac0-4f71-9650-efb70ea1e768",
                             "name": "default",
                             "displayName": "Set default"
+                        },
+                        {
+                            "id": "ef558b8b-c4a1-4485-bd89-70749cc185b7",
+                            "name": "alert",
+                            "displayName": "flash",
+                            "paramTypes": [
+                                {
+                                    "id": "944c9ab8-0f46-42f7-b814-8b72f9ca5407",
+                                    "name": "alert",
+                                    "displayName": "alert",
+                                    "type": "QString",
+                                    "defaultValue": "flash",
+                                    "allowedValues": [
+                                        "flash",
+                                        "flash 15 [s]"
+                                    ]
+                                }
+                            ]
                         }
                     ],
                     "stateTypes": [
@@ -98,6 +116,20 @@
                             "defaultValue": 0,
                             "minValue": 0,
                             "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "97082528-392c-4af3-8fe4-ff643045812f",
+                            "name": "effect",
+                            "displayName": "effect",
+                            "displayNameEvent": "effect changed",
+                            "displayNameAction": "Set effect",
+                            "type": "QString",
+                            "defaultValue": "none",
+                            "possibleValues": [
+                                "none",
+                                "color loop"
+                            ],
                             "writable": true
                         },
                         {

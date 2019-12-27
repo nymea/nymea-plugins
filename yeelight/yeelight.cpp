@@ -251,6 +251,75 @@ int Yeelight::setDefault()
     return requestId;
 }
 
+int Yeelight::startColorFlow()
+{
+    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    QJsonDocument doc;
+    QJsonObject obj;
+    obj["id"] = requestId;
+    obj["method"] = "start_cf";
+    QJsonArray params;
+    params.append(0); //0 means infinite loop on the state changing
+    params.append(0); //LED recover to the state before the color flow started
+    params.append("2000, 1, 255, -1, 2000, 1, 16711680, -1, 2000, 1, 65280, -1,"); //Colors
+    obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
+    return requestId;
+}
+
+int Yeelight::stopColorFlow()
+{
+    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    QJsonDocument doc;
+    QJsonObject obj;
+    obj["id"] = requestId;
+    obj["method"] = "stop_cf";
+    QJsonArray params;
+    obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
+    return requestId;
+}
+
+int Yeelight::flash()
+{
+    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    QJsonDocument doc;
+    QJsonObject obj;
+    obj["id"] = requestId;
+    obj["method"] = "start_cf";
+    QJsonArray params;
+    params.append(6);
+    params.append(0); //LED recover to the state before the color flow started
+    params.append("500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0,"); //Colors
+    obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
+    return requestId;
+}
+
+int Yeelight::flash15s()
+{
+    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    QJsonDocument doc;
+    QJsonObject obj;
+    obj["id"] = requestId;
+    obj["method"] = "start_cf";
+    QJsonArray params;
+    params.append(30);
+    params.append(0); //LED recover to the state before the color flow started
+    params.append("500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0"); //Colors
+    obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
+    return requestId;
+}
+
 void Yeelight::onStateChanged(QAbstractSocket::SocketState state)
 {
     switch (state) {
