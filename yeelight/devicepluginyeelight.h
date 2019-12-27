@@ -66,6 +66,12 @@ private slots:
     void onConnectionChanged(bool connected);
     void onRequestExecuted(int requestId, bool success);
     void onPropertyListReceived(QVariantList value);
+
+    void onPowerNotificationReceived(bool status);
+    void onBrightnessNotificationReceived(int percentage);
+    void onColorTemperatureNotificationReceived(int kelvin);
+    void onRgbNotificationReceived(int rgbColor);
+    void onNameNotificationReceived(const QString &name);
 };
 
 #endif // DEVICEPLUGINYEELIGHT_H
