@@ -28,6 +28,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
+#include <QColor>
 #include <QRandomGenerator>
 
 Yeelight::Yeelight(NetworkAccessManager *networkManager, const QHostAddress &address, quint16 port, QObject *parent) :
@@ -38,12 +39,18 @@ Yeelight::Yeelight(NetworkAccessManager *networkManager, const QHostAddress &add
 {
     m_socket = new QTcpSocket(this);
     connect(m_socket, &QTcpSocket::stateChanged, this, &Yeelight::onStateChanged);
+    connect(m_socket, &QTcpSocket::readyRead, this, &Yeelight::onReadyRead);
     m_socket->connectToHost(address, port);
 }
 
-bool Yeelight::connected()
+bool Yeelight::isConnected()
 {
     return m_socket->isOpen();
+}
+
+void Yeelight::connectDevice()
+{
+    m_socket->connectToHost(m_address, m_port);
 }
 
 
@@ -62,7 +69,7 @@ int Yeelight::getParam(QList<Yeelight::Property> properties)
             params.append("ct");
             break;
         case Property::Power:
-            params.append("powr");
+            params.append("power");
             break;
         case Property::Bright:
             params.append("bright");
@@ -132,7 +139,8 @@ int Yeelight::getParam(QList<Yeelight::Property> properties)
 
     obj["params"] = params;
     doc.setObject(obj);
-    m_socket->write(doc.toJson());
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
 
@@ -146,6 +154,9 @@ int Yeelight::setName(const QString &name)
     QJsonArray params;
     params.append(name);
     obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
 
@@ -161,6 +172,9 @@ int Yeelight::setColorTemperature(int mirad, int msFadeTime)
     params.append("smooth");
     params.append(msFadeTime);
     obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
 
@@ -176,6 +190,9 @@ int Yeelight::setRgb(QRgb color, int msFadeTime)
     params.append("smooth");
     params.append(msFadeTime);
     obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
 
@@ -191,6 +208,9 @@ int Yeelight::setBrightness(int percentage, int msFadeTime)
     params.append("smooth");
     params.append(msFadeTime);
     obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
 
@@ -210,6 +230,9 @@ int Yeelight::setPower(bool power, int msFadeTime)
     params.append("smooth");
     params.append(msFadeTime);
     obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
 
@@ -222,6 +245,9 @@ int Yeelight::setDefault()
     obj["method"] = "set_default";
     QJsonArray params;
     obj["params"] = params;
+    doc.setObject(obj);
+    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
 
@@ -229,10 +255,67 @@ void Yeelight::onStateChanged(QAbstractSocket::SocketState state)
 {
     switch (state) {
     case QAbstractSocket::SocketState::ConnectedState:
-
+        emit connectionChanged(true);
         break;
     default:
+        emit connectionChanged(false);
         break;
+    }
+}
+
+void Yeelight::onReadyRead()
+{
+    QByteArray data = m_socket->readAll();
+    qCDebug(dcYeelight()) << "Message received" << data;
+
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
+    if (error.error != QJsonParseError::NoError) {
+        qDebug(dcYeelight()) << "Recieved invalide JSON object";
+        return;
+    }
+    QVariantMap map = doc.toVariant().toMap();
+    if (map.contains("method")) {
+        if (map["method"] == "props") {
+            QVariantMap params = map["params"].toMap();
+            if (params.contains("power")) {
+                emit notificationReveiced(Property::Power, params["power"]);
+            }
+            if (params.contains("bright")) {
+                emit notificationReveiced(Property::Bright, params["bright"]);
+            }
+            if (params.contains("ct")) {
+                emit notificationReveiced(Property::Ct, params["ct"]);
+            }
+            if (params.contains("rgb")) {
+                emit notificationReveiced(Property::Rgb, params["rgb"]);
+            }
+            if (params.contains("hue")) {
+                emit notificationReveiced(Property::Hue, params["hue"]);
+            }
+            if (params.contains("name")) {
+                emit notificationReveiced(Property::Name, params["name"]);
+            }
+            if (params.contains("color_mode")) {
+                emit notificationReveiced(Property::ColorMode, params["color_mode"]);
+            }
+            if (params.contains("sat")) {
+                emit notificationReveiced(Property::Sat, params["sat"]);
+            }
+        }
+    } else {
+        int id = map["id"].toInt();
+        QVariantList result = map["result"].toList();
+        if ((result.length() == 1)) {
+            if (result.first().toString() == "ok") {
+                emit requestExecuted(id, true);
+            } else {
+               //TODO parse error
+              //emit errorReceived()
+            }
+        } else {
+            emit propertyListReceived(result);
+        }
     }
 }
 

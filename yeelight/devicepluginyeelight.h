@@ -43,6 +43,7 @@ public:
 
     void discoverDevices(DeviceDiscoveryInfo *info) override;
     void setupDevice(DeviceSetupInfo *info) override;
+    void postSetupDevice(Device *device) override;
     void executeAction(DeviceActionInfo *info) override;
     void deviceRemoved(Device *device) override;
 
@@ -55,15 +56,16 @@ private:
     };
     QHash<DeviceDiscoveryInfo*, DiscoveryJob*> m_discoveries;
     QList<QString> m_usedInterfaces;
-    QTimer *m_reconnectTimer = nullptr;
+
+    PluginTimer *m_pluginTimer = nullptr;
     QHash<int, DeviceActionInfo *> m_asyncActions;
+    QHash<DeviceId, Yeelight *> m_yeelightConnections;
 
 private slots:
-    void onReadyRead();
-    void onReconnectTimer();
-
-signals:
-
+    void onDeviceNameChanged();
+    void onConnectionChanged(bool connected);
+    void onRequestExecuted(int requestId, bool success);
+    void onPropertyListReceived(QVariantList value);
 };
 
 #endif // DEVICEPLUGINYEELIGHT_H

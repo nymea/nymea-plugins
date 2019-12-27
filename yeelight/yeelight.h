@@ -37,6 +37,12 @@ class Yeelight : public QObject
 {
     Q_OBJECT
 public:
+    enum ColorMode {
+        RGB = 1,
+        Temperature,
+        HSV
+    };
+
     enum Property {
         Power,      //on: smart LED is turned on / off: smart LED is turned off
         Bright,     //Brightness percentage. Range 1 ~ 100
@@ -64,7 +70,8 @@ public:
     };
 
     explicit Yeelight(NetworkAccessManager *networkManager, const QHostAddress &address,  quint16 port = 55443, QObject *parent = nullptr);
-    bool connected();
+    bool isConnected();
+    void connectDevice();
 
     int getParam(QList<Property> properties);
     int setName(const QString &name);
@@ -79,17 +86,17 @@ private:
 
     QTcpSocket *m_socket = nullptr;
     QHostAddress m_address;
-    qint16 m_port;
+    quint16 m_port;
     NetworkAccessManager *m_networkManager = nullptr;
 
 private slots:
-    void onRefreshTimeout();
     void onStateChanged(QAbstractSocket::SocketState state);
+    void onReadyRead();
 
 signals:
     void connectionChanged(bool connected);
-    void authenticationStatusChanged(bool authenticated);
     void requestExecuted(int requestId, bool success);
-    void propertyReceived(Property property, QVariant value);
+    void propertyListReceived(QVariantList value);
+    void notificationReveiced(Property property, QVariant value);
 };
 #endif // YEELIGHT_H

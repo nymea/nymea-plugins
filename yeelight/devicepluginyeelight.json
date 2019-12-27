@@ -24,6 +24,13 @@
                             "readOnly": true
                         },
                         {
+                            "id": "99790910-ce6c-4b14-bb1f-f56133522dce",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
                             "id": "bfe184d2-6e62-4979-8ff2-3fd190903c82",
                             "name": "id",
                             "displayName": "Id",
@@ -35,8 +42,7 @@
                         {
                             "id": "e80aea31-7ac0-4f71-9650-efb70ea1e768",
                             "name": "default",
-                            "displayName": "Set default",
-                            "type": "bool"
+                            "displayName": "Set default"
                         }
                     ],
                     "stateTypes": [
@@ -92,6 +98,16 @@
                             "defaultValue": 0,
                             "minValue": 0,
                             "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "6babaf04-0247-447c-b429-d39f3d330f45",
+                            "name": "colorMode",
+                            "displayName": "Color mode",
+                            "displayNameEvent": "Color mode changed",
+                            "displayNameAction": "Set color mode",
+                            "type": "QString",
+                            "defaultValue": "-",
                             "writable": true
                         }
                     ]
