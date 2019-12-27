@@ -106,6 +106,14 @@ signals:
      * will get the latest state of the smart LED in time without having to poll the status
      * from time to time.
      */
-    void notificationReveiced(Property property, QVariant value);
+    void notificationReceived(Property property, QVariant value);
+    void powerNotificationReceived(bool status);
+    void brightnessNotificationReceived(int percentage);
+    void colorTemperatureNotificationReceived(int kelvin);
+    void rgbNotificationReceived(int rgbColor);
+    void hueNotificationReceived(int hueColor);
+    void nameNotificationReceived(const QString &name);
+    void saturationNotificationReceived(int percentage);
+    //void colorModeNotificationReceived(ColorMode colorMode);
 };
 #endif // YEELIGHT_H

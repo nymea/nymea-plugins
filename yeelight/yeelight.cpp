@@ -173,7 +173,7 @@ int Yeelight::setColorTemperature(int mirad, int msFadeTime)
     params.append(msFadeTime);
     obj["params"] = params;
     doc.setObject(obj);
-    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    //qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
     m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
@@ -209,7 +209,7 @@ int Yeelight::setBrightness(int percentage, int msFadeTime)
     params.append(msFadeTime);
     obj["params"] = params;
     doc.setObject(obj);
-    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    //qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
     m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
@@ -231,7 +231,7 @@ int Yeelight::setPower(bool power, int msFadeTime)
     params.append(msFadeTime);
     obj["params"] = params;
     doc.setObject(obj);
-    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    //qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
     m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
@@ -348,28 +348,28 @@ void Yeelight::onReadyRead()
         if (map["method"] == "props") {
             QVariantMap params = map["params"].toMap();
             if (params.contains("power")) {
-                emit notificationReveiced(Property::Power, params["power"]);
+                emit powerNotificationReceived((params["power"].toString() == "on"));
             }
             if (params.contains("bright")) {
-                emit notificationReveiced(Property::Bright, params["bright"]);
+                emit brightnessNotificationReceived(params["bright"].toInt());
             }
             if (params.contains("ct")) {
-                emit notificationReveiced(Property::Ct, params["ct"]);
+                emit colorTemperatureNotificationReceived(params["ct"].toInt());
             }
             if (params.contains("rgb")) {
-                emit notificationReveiced(Property::Rgb, params["rgb"]);
+                emit rgbNotificationReceived(params["rgb"].toInt());
             }
             if (params.contains("hue")) {
-                emit notificationReveiced(Property::Hue, params["hue"]);
+                emit hueNotificationReceived(params["hue"].toInt());
             }
             if (params.contains("name")) {
-                emit notificationReveiced(Property::Name, params["name"]);
+                emit nameNotificationReceived(params["name"].toString());
             }
             if (params.contains("color_mode")) {
-                emit notificationReveiced(Property::ColorMode, params["color_mode"]);
+                //emit colorModeNotificationReceived(static_cast<ColorMode>((params["color_mode"].toInt())));
             }
             if (params.contains("sat")) {
-                emit notificationReveiced(Property::Sat, params["sat"]);
+                emit saturationNotificationReceived(params["sat"].toInt());
             }
         }
     } else {
@@ -379,7 +379,7 @@ void Yeelight::onReadyRead()
             if (result.first().toString() == "ok") {
                 emit requestExecuted(id, true);
             } else {
-               //TODO parse error
+               //TODO parse error, status code and error string
               //emit errorReceived()
             }
         } else {
