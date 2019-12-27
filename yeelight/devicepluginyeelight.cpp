@@ -36,6 +36,18 @@ DevicePluginYeelight::DevicePluginYeelight()
 
 }
 
+void DevicePluginYeelight::init()
+{
+    m_connectedStateTypeIds.insert(colorBulbDeviceClassId, colorBulbConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(dimmableBulbDeviceClassId, dimmableBulbConnectedStateTypeId);
+
+    m_powerStateTypeIds.insert(colorBulbDeviceClassId, colorBulbPowerStateTypeId);
+    m_powerStateTypeIds.insert(dimmableBulbDeviceClassId, dimmableBulbPowerStateTypeId);
+
+    m_brightnessStateTypeIds.insert(colorBulbDeviceClassId, colorBulbBrightnessStateTypeId);
+    m_brightnessStateTypeIds.insert(dimmableBulbDeviceClassId, dimmableBulbBrightnessStateTypeId);
+}
+
 void DevicePluginYeelight::discoverDevices(DeviceDiscoveryInfo *info)
 {
     if (info->deviceClassId() == colorBulbDeviceClassId) {
@@ -78,7 +90,7 @@ void DevicePluginYeelight::setupDevice(DeviceSetupInfo *info)
         m_yeelightConnections.insert(device->id(), yeelight);
         connect(yeelight, &Yeelight::connectionChanged, this, &DevicePluginYeelight::onConnectionChanged);
         connect(yeelight, &Yeelight::requestExecuted, this, &DevicePluginYeelight::onRequestExecuted);
-        connect(yeelight, &Yeelight::propertyListReceived, this, &DevicePluginYeelight::onPropertyListReceived);
+        connect(yeelight, &Yeelight::colorModeNotificationReceived, this, &DevicePluginYeelight::onColorModeNotificationReceived);
         connect(yeelight, &Yeelight::powerNotificationReceived, this, &DevicePluginYeelight::onPowerNotificationReceived);
         connect(yeelight, &Yeelight::brightnessNotificationReceived, this, &DevicePluginYeelight::onBrightnessNotificationReceived);
         connect(yeelight, &Yeelight::colorTemperatureNotificationReceived, this, &DevicePluginYeelight::onColorTemperatureNotificationReceived);
@@ -99,31 +111,32 @@ void DevicePluginYeelight::postSetupDevice(Device *device)
                 Device *device = myDevices().findById(id);
                 Yeelight *yeelight = m_yeelightConnections.value(id);
                 if (yeelight->isConnected()) {
-                    QList<Yeelight::Property> properties;
+                    QList<Yeelight::YeelightProperty> properties;
                     if (device->deviceClassId() == colorBulbDeviceClassId) {
-                    properties << Yeelight::Property::Name;
-                    properties << Yeelight::Property::Ct;
-                    properties << Yeelight::Property::Rgb;
-                    properties << Yeelight::Property::Power;
-                    properties << Yeelight::Property::Bright;
-                    properties << Yeelight::Property::ColorMode;
+                        properties << Yeelight::YeelightProperty::Name;
+                        properties << Yeelight::YeelightProperty::Ct;
+                        properties << Yeelight::YeelightProperty::Rgb;
+                        properties << Yeelight::YeelightProperty::Power;
+                        properties << Yeelight::YeelightProperty::Bright;
+                        properties << Yeelight::YeelightProperty::ColorMode;
                     } //TODO add white color bulb with other property requests
                     yeelight->getParam(properties);
-                } else {
-                    yeelight->connectDevice();
                 }
             }
         });
     }
+    m_pluginTimer->timeout();
 }
 
 void DevicePluginYeelight::executeAction(DeviceActionInfo *info)
 {
     Device *device = info->device();
     Action action = info->action();
+    Yeelight *yeelight = m_yeelightConnections.value(device->id());
+    if (!yeelight)
+        return info->finish(Device::DeviceErrorHardwareFailure);
 
     if (device->deviceClassId() == colorBulbDeviceClassId) {
-        Yeelight *yeelight = m_yeelightConnections.value(device->id());
 
         if (action.actionTypeId() == colorBulbPowerActionTypeId) {
             bool power = action.param(colorBulbPowerActionPowerParamTypeId).value().toBool();
@@ -131,12 +144,23 @@ void DevicePluginYeelight::executeAction(DeviceActionInfo *info)
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             m_asyncActions.insert(requestId, info);
         } else if (action.actionTypeId() == colorBulbBrightnessActionTypeId) {
-            int brightness = action.param(colorBulbBrightnessActionBrightnessParamTypeId).value().toInt();
+
             if (!device->stateValue(colorBulbPowerStateTypeId).toBool())
                 yeelight->setPower(true);
-            int requestId = yeelight->setBrightness(brightness);
-            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
-            m_asyncActions.insert(requestId, info);
+
+            if (m_pendingBrightnessAction.contains(device->id())) {
+                //Scrap old info and insert new one
+                m_pendingBrightnessAction.insert(device->id(), info);
+            } else {
+                m_pendingBrightnessAction.insert(device->id(), info);
+                    QTimer::singleShot(500, this, [yeelight, info, this]{
+                    int brightness = info->action().param(colorBulbBrightnessActionBrightnessParamTypeId).value().toInt();
+                    m_pendingBrightnessAction.remove(info->device()->id());
+                    int requestId = yeelight->setBrightness(brightness);
+                    connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+                    m_asyncActions.insert(requestId, info);
+                });
+            }
         } else if (action.actionTypeId() == colorBulbColorActionColorParamTypeId) {
             QRgb color = action.param(colorBulbColorActionColorParamTypeId).value().toUInt();
             if (!device->stateValue(colorBulbPowerStateTypeId).toBool())
@@ -180,6 +204,34 @@ void DevicePluginYeelight::executeAction(DeviceActionInfo *info)
         } else {
             qCWarning(dcYeelight()) << "Unhandled action";
         }
+    } else  if (device->deviceClassId() == dimmableBulbDeviceClassId) {
+        if (action.actionTypeId() == dimmableBulbPowerActionTypeId) {
+            bool power = action.param(dimmableBulbPowerActionPowerParamTypeId).value().toBool();
+            int requestId = yeelight->setPower(power);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+        } else if (action.actionTypeId() == dimmableBulbBrightnessActionTypeId) {
+            int brightness = action.param(dimmableBulbBrightnessActionBrightnessParamTypeId).value().toInt();
+            if (!device->stateValue(dimmableBulbPowerStateTypeId).toBool())
+                yeelight->setPower(true);
+            int requestId = yeelight->setBrightness(brightness);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+            m_asyncActions.insert(requestId, info);
+        } else if (action.actionTypeId() == dimmableBulbAlertActionTypeId) {
+            QString alertType = action.param(dimmableBulbAlertActionAlertParamTypeId).value().toString();
+            if (!device->stateValue(dimmableBulbPowerStateTypeId).toBool())
+                yeelight->setPower(true);
+            if (alertType.contains("15")) { //Flash 15 sec
+                int requestId = yeelight->flash15s();
+                connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+                m_asyncActions.insert(requestId, info);
+            } else {
+                int requestId = yeelight->flash();
+                connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+                m_asyncActions.insert(requestId, info);
+            }
+        } else {
+            qCWarning(dcYeelight()) << "Unhandled action";
+        }
     } else {
         qCWarning(dcYeelight()) << "Unhandled device class";
     }
@@ -187,7 +239,7 @@ void DevicePluginYeelight::executeAction(DeviceActionInfo *info)
 
 void DevicePluginYeelight::deviceRemoved(Device *device)
 {
-    if (device->deviceClassId() == colorBulbDeviceClassId){
+    if ((device->deviceClassId() == colorBulbDeviceClassId) || (device->deviceClassId() == dimmableBulbDeviceClassId)){
         Yeelight *yeelight = m_yeelightConnections.take(device->id());
         yeelight->deleteLater();
     }
@@ -207,7 +259,7 @@ void DevicePluginYeelight::onConnectionChanged(bool connected)
     if(!device)
         return;
 
-    device->setStateValue(colorBulbConnectedStateTypeId, connected);
+    device->setStateValue(m_connectedStateTypeIds.value(device->deviceClassId()), connected);
 }
 
 void DevicePluginYeelight::onRequestExecuted(int requestId, bool success)
@@ -222,33 +274,6 @@ void DevicePluginYeelight::onRequestExecuted(int requestId, bool success)
     }
 }
 
-void DevicePluginYeelight::onPropertyListReceived(QVariantList value)
-{
-    Yeelight *yeelight = static_cast<Yeelight *>(sender());
-    Device * device = myDevices().findById(m_yeelightConnections.key(yeelight));
-    if(!device)
-        return;
-
-    /*
-     * properties << Yeelight::Property::Name;
-     * properties << Yeelight::Property::Ct;
-     * properties << Yeelight::Property::Rgb;
-     * properties << Yeelight::Property::Power;
-     * properties << Yeelight::Property::Bright;
-     * properties << Yeelight::Property::ColorMode;
-    */
-
-    if(value.length() < 6)
-        return;
-
-    device->setName(value[0].toString());
-    device->setStateValue(colorBulbColorTemperatureStateTypeId, value[1].toInt());
-    device->setStateValue(colorBulbColorStateTypeId, value[2].toString());
-    device->setStateValue(colorBulbPowerStateTypeId, (value[3].toString() == "on"));
-    device->setStateValue(colorBulbBrightnessStateTypeId, value[4].toInt());
-    device->setStateValue(colorBulbColorModeStateTypeId, value[5].toString());
-}
-
 void DevicePluginYeelight::onPowerNotificationReceived(bool status)
 {
     Yeelight *yeelight = static_cast<Yeelight *>(sender());
@@ -256,7 +281,7 @@ void DevicePluginYeelight::onPowerNotificationReceived(bool status)
     if(!device)
         return;
 
-    device->setStateValue(colorBulbPowerStateTypeId, status);
+    device->setStateValue(m_powerStateTypeIds.value(device->deviceClassId()), status);
 }
 
 void DevicePluginYeelight::onBrightnessNotificationReceived(int percentage)
@@ -266,7 +291,7 @@ void DevicePluginYeelight::onBrightnessNotificationReceived(int percentage)
     if(!device)
         return;
 
-    device->setStateValue(colorBulbBrightnessStateTypeId, percentage);
+    device->setStateValue(m_brightnessStateTypeIds.value(device->deviceClassId()), percentage);
 }
 
 void DevicePluginYeelight::onColorTemperatureNotificationReceived(int kelvin)
@@ -279,7 +304,7 @@ void DevicePluginYeelight::onColorTemperatureNotificationReceived(int kelvin)
     device->setStateValue(colorBulbColorTemperatureStateTypeId, kelvin/11.12); //TODO needs proper conversion
 }
 
-void DevicePluginYeelight::onRgbNotificationReceived(int rgbColor)
+void DevicePluginYeelight::onRgbNotificationReceived(QRgb rgbColor)
 {
     Yeelight *yeelight = static_cast<Yeelight *>(sender());
     Device * device = myDevices().findById(m_yeelightConnections.key(yeelight));
@@ -296,4 +321,24 @@ void DevicePluginYeelight::onNameNotificationReceived(const QString &name)
     if(!device)
         return;
     device->setName(name);
+}
+
+void DevicePluginYeelight::onColorModeNotificationReceived(Yeelight::YeelightColorMode colorMode)
+{
+    Yeelight *yeelight = static_cast<Yeelight *>(sender());
+    Device * device = myDevices().findById(m_yeelightConnections.key(yeelight));
+    if(!device)
+        return;
+
+    switch (colorMode) {
+    case Yeelight::RGB:
+        device->setStateValue(colorBulbColorModeStateTypeId, "RGB");
+        break;
+    case Yeelight::HSV:
+        device->setStateValue(colorBulbColorModeStateTypeId, "HSV");
+        break;
+    case Yeelight::ColorTemperature:
+        device->setStateValue(colorBulbColorModeStateTypeId, "Color temperature");
+        break;
+    }
 }

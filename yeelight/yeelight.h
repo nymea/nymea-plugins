@@ -37,13 +37,13 @@ class Yeelight : public QObject
 {
     Q_OBJECT
 public:
-    enum ColorMode {
+    enum YeelightColorMode {
         RGB = 1,
-        Temperature,
+        ColorTemperature,
         HSV
     };
 
-    enum Property {
+    enum YeelightProperty {
         Power,      //on: smart LED is turned on / off: smart LED is turned off
         Bright,     //Brightness percentage. Range 1 ~ 100
         Ct,         //Color temperature. Range 1700 ~ 6500(k)
@@ -73,7 +73,7 @@ public:
     bool isConnected();
     void connectDevice();
 
-    int getParam(QList<Property> properties);
+    int getParam(QList<YeelightProperty> properties);
     int setName(const QString &name);
     int setColorTemperature(int mirad, int msFadeTime=500);
     int setRgb(QRgb color, int msFadeTime = 500);
@@ -86,19 +86,22 @@ public:
     int flash15s();
 
 private:
+    QTimer *m_reconnectTimer = nullptr;
     QTcpSocket *m_socket = nullptr;
     QHostAddress m_address;
     quint16 m_port;
     NetworkAccessManager *m_networkManager = nullptr;
+    QHash<int, QList<YeelightProperty>> m_propertyRequests;
 
 private slots:
     void onStateChanged(QAbstractSocket::SocketState state);
     void onReadyRead();
+    void onReconnectTimer();
 
 signals:
     void connectionChanged(bool connected);
     void requestExecuted(int requestId, bool success);
-    void propertyListReceived(QVariantList value);
+    void errorReceived(int code, const QString &message);
 
     /*
      * Whenever there is state change of smart LED, it will send a notification message
@@ -106,14 +109,14 @@ signals:
      * will get the latest state of the smart LED in time without having to poll the status
      * from time to time.
      */
-    void notificationReceived(Property property, QVariant value);
+    void notificationReceived(YeelightProperty property, QVariant value);
     void powerNotificationReceived(bool status);
     void brightnessNotificationReceived(int percentage);
     void colorTemperatureNotificationReceived(int kelvin);
-    void rgbNotificationReceived(int rgbColor);
+    void rgbNotificationReceived(QRgb rgbColor);
     void hueNotificationReceived(int hueColor);
     void nameNotificationReceived(const QString &name);
     void saturationNotificationReceived(int percentage);
-    //void colorModeNotificationReceived(ColorMode colorMode);
+    void colorModeNotificationReceived(YeelightColorMode colorMode);
 };
 #endif // YEELIGHT_H

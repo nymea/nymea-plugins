@@ -143,6 +143,95 @@
                             "writable": true
                         }
                     ]
+                },
+                {
+                    "id": "5112eb03-7b5a-44a1-994a-01a70c850555",
+                    "name": "dimmableBulb",
+                    "displayName": "Dimmable bulb",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["dimmablelight", "alert", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "32f4f50c-a3f2-4379-8838-295024d200b4",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "df51023e-7f18-4e11-8c7a-30d153b50952",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "5a526561-588a-49bd-ae2b-ce3c3b4fd04e",
+                            "name": "id",
+                            "displayName": "Id",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a50780d1-259d-4240-8f71-a0bb5c57362b",
+                            "name": "default",
+                            "displayName": "Set default"
+                        },
+                        {
+                            "id": "ba513820-1ace-4ad2-aa84-b7bd01318bc3",
+                            "name": "alert",
+                            "displayName": "flash",
+                            "paramTypes": [
+                                {
+                                    "id": "1c0f4e9e-95fd-4715-8386-9ac28ffa3c6e",
+                                    "name": "alert",
+                                    "displayName": "alert",
+                                    "type": "QString",
+                                    "defaultValue": "flash",
+                                    "allowedValues": [
+                                        "flash",
+                                        "flash 15 [s]"
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "fcfe37cb-4c9d-4af2-9789-56190c9d8d7f",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "0786e242-1257-437c-9327-f202b427ab1b",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "b0db1fd8-cec8-4cd4-acd0-5fc415095e10",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        }
+                    ]
                 }
             ]
         }

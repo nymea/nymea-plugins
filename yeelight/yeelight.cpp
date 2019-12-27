@@ -41,6 +41,10 @@ Yeelight::Yeelight(NetworkAccessManager *networkManager, const QHostAddress &add
     connect(m_socket, &QTcpSocket::stateChanged, this, &Yeelight::onStateChanged);
     connect(m_socket, &QTcpSocket::readyRead, this, &Yeelight::onReadyRead);
     m_socket->connectToHost(address, port);
+
+    m_reconnectTimer = new QTimer(this);
+    m_reconnectTimer->setSingleShot(true);
+    connect(m_reconnectTimer, &QTimer::timeout, this, &Yeelight::onReconnectTimer);
 }
 
 bool Yeelight::isConnected()
@@ -54,7 +58,7 @@ void Yeelight::connectDevice()
 }
 
 
-int Yeelight::getParam(QList<Yeelight::Property> properties)
+int Yeelight::getParam(QList<Yeelight::YeelightProperty> properties)
 {
     int requestId = static_cast<int>(QRandomGenerator::global()->generate());
     QJsonDocument doc;
@@ -62,81 +66,83 @@ int Yeelight::getParam(QList<Yeelight::Property> properties)
     obj["id"] = requestId;
     obj["method"] = "get_prop";
     QJsonArray params;
+    m_propertyRequests.insert(requestId, properties);
 
-    foreach (Property property, properties) {
+    foreach (YeelightProperty property, properties) {
         switch (property) {
-        case Property::Ct:
+        case YeelightProperty::Ct:
             params.append("ct");
             break;
-        case Property::Power:
+        case YeelightProperty::Power:
             params.append("power");
             break;
-        case Property::Bright:
+        case YeelightProperty::Bright:
             params.append("bright");
             break;
-        case Property::Hue:
+        case YeelightProperty::Hue:
             params.append("hue");
             break;
-        case Property::Rgb:
+        case YeelightProperty::Rgb:
             params.append("rgb");
             break;
-        case Property::Sat:
+        case YeelightProperty::Sat:
             params.append("sat");
             break;
-        case Property::Name:
+        case YeelightProperty::Name:
             params.append("name");
             break;
-        case Property::BgCt:
+        case YeelightProperty::BgCt:
             params.append("bg_ct");
             break;
-        case Property::NlBr:
+        case YeelightProperty::NlBr:
             params.append("nl_br");
             break;
-        case Property::BgHue:
+        case YeelightProperty::BgHue:
             params.append("bg_hue");
             break;
-        case Property::BgRgb:
+        case YeelightProperty::BgRgb:
             params.append("bg_rgb");
             break;
-        case Property::BgSat:
+        case YeelightProperty::BgSat:
             params.append("bg_sat");
             break;
-        case Property::BgLmode:
+        case YeelightProperty::BgLmode:
             params.append("bg_lmode");
             break;
-        case Property::BgPower:
+        case YeelightProperty::BgPower:
             params.append("bg_power");
             break;
-        case Property::Flowing:
+        case YeelightProperty::Flowing:
             params.append("flowing");
             break;
-        case Property::MusicOn:
+        case YeelightProperty::MusicOn:
             params.append("music_on");
             break;
-        case Property::BgBright:
+        case YeelightProperty::BgBright:
             params.append("bg_bright");
             break;
-        case Property::DelayOff:
+        case YeelightProperty::DelayOff:
             params.append("delay_off");
             break;
-        case Property::BgFlowing:
+        case YeelightProperty::BgFlowing:
             params.append("bg_flowing");
             break;
-        case Property::ColorMode:
+        case YeelightProperty::ColorMode:
             params.append("color_mode");
             break;
-        case Property::ActiveMode:
+        case YeelightProperty::ActiveMode:
             params.append("active_mode");
             break;
-        case Property::FlowParams:
+        case YeelightProperty::FlowParams:
             params.append("flow_params");
             break;
-        case Property::BgFlowParams:
+        case YeelightProperty::BgFlowParams:
             params.append("bg_flow_params");
             break;
         }
     }
 
+    QTimer::singleShot(10000, this, [requestId, this]{m_propertyRequests.remove(requestId);});
     obj["params"] = params;
     doc.setObject(obj);
     qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
@@ -326,6 +332,10 @@ void Yeelight::onStateChanged(QAbstractSocket::SocketState state)
     case QAbstractSocket::SocketState::ConnectedState:
         emit connectionChanged(true);
         break;
+    case QAbstractSocket::SocketState::UnconnectedState:
+        m_reconnectTimer->start(10 * 1000);
+        emit connectionChanged(false);
+        break;
     default:
         emit connectionChanged(false);
         break;
@@ -344,7 +354,17 @@ void Yeelight::onReadyRead()
         return;
     }
     QVariantMap map = doc.toVariant().toMap();
-    if (map.contains("method")) {
+    if (map.contains("error")) {
+        if(map.contains("id")) {
+            emit requestExecuted(map["id"].toInt(), false);
+        }
+        QVariantMap error = map["error"].toMap();
+        int code = error["code"].toInt();
+        QString message = error["message"].toString();
+        qCWarning(dcYeelight()) << "Error received: Code" << code << message;
+        emit errorReceived(code, message);
+
+    }else if (map.contains("method")) {
         if (map["method"] == "props") {
             QVariantMap params = map["params"].toMap();
             if (params.contains("power")) {
@@ -357,7 +377,7 @@ void Yeelight::onReadyRead()
                 emit colorTemperatureNotificationReceived(params["ct"].toInt());
             }
             if (params.contains("rgb")) {
-                emit rgbNotificationReceived(params["rgb"].toInt());
+                emit rgbNotificationReceived(QRgb(params["rgb"].toInt()));
             }
             if (params.contains("hue")) {
                 emit hueNotificationReceived(params["hue"].toInt());
@@ -366,7 +386,7 @@ void Yeelight::onReadyRead()
                 emit nameNotificationReceived(params["name"].toString());
             }
             if (params.contains("color_mode")) {
-                //emit colorModeNotificationReceived(static_cast<ColorMode>((params["color_mode"].toInt())));
+                emit colorModeNotificationReceived(YeelightColorMode(params["color_mode"].toInt()));
             }
             if (params.contains("sat")) {
                 emit saturationNotificationReceived(params["sat"].toInt());
@@ -378,13 +398,54 @@ void Yeelight::onReadyRead()
         if ((result.length() == 1)) {
             if (result.first().toString() == "ok") {
                 emit requestExecuted(id, true);
-            } else {
-               //TODO parse error, status code and error string
-              //emit errorReceived()
             }
         } else {
-            emit propertyListReceived(result);
+            if (m_propertyRequests.contains(id)) {
+                QList<YeelightProperty> properties = m_propertyRequests.take(id);
+                foreach (YeelightProperty property, properties) {
+                    if (result.isEmpty()){
+                        qCWarning(dcYeelight()) << "Value count does not match properties" << properties.count();
+                        break;
+                    }
+                    QVariant value = result.takeFirst();
+                    switch (property) {
+                    case YeelightProperty::Name:
+                         emit nameNotificationReceived(value.toString());
+                    break;
+                    case YeelightProperty::Ct:
+                         emit colorTemperatureNotificationReceived(value.toInt());
+                    break;
+                    case YeelightProperty::Rgb:
+                         emit rgbNotificationReceived(QRgb(value.toInt()));
+                    break;
+                    case YeelightProperty::Hue:
+                         emit hueNotificationReceived(value.toInt());
+                    break;
+                    case YeelightProperty::Bright:
+                         emit brightnessNotificationReceived(value.toInt());
+                    break;
+                    case YeelightProperty::Power:
+                         emit powerNotificationReceived((value.toString() == "on"));
+                    break;
+                    case YeelightProperty::ColorMode:
+                         emit colorModeNotificationReceived(YeelightColorMode(value.toInt()));
+                    break;
+                    case YeelightProperty::Sat:
+                         emit saturationNotificationReceived(value.toInt());
+                    break;
+                    default:
+                        qCWarning(dcYeelight()) << "Unhandled Yeelight property";
+                    }
+                }
+            }
         }
+    }
+}
+
+void Yeelight::onReconnectTimer()
+{
+    if(!m_socket->isOpen()) {
+        m_socket->connectToHost(m_address, m_port);
     }
 }
 
