@@ -121,16 +121,53 @@ void DevicePluginYeelight::executeAction(DeviceActionInfo *info)
 
         if (action.actionTypeId() == colorBulbPowerActionTypeId) {
             bool power = action.param(colorBulbPowerActionPowerParamTypeId).value().toBool();
-            yeelight->setPower(power);
+            int requestId = yeelight->setPower(power);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+            m_asyncActions.insert(requestId, info);
         } else if (action.actionTypeId() == colorBulbBrightnessActionTypeId) {
             int brightness = action.param(colorBulbBrightnessActionBrightnessParamTypeId).value().toInt();
-            yeelight->setBrightness(brightness);
+            int requestId = yeelight->setBrightness(brightness);
+            //TODO turn on if off
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+            m_asyncActions.insert(requestId, info);
         } else if (action.actionTypeId() == colorBulbColorActionColorParamTypeId) {
             QRgb color = action.param(colorBulbColorActionColorParamTypeId).value().toUInt();
-            yeelight->setRgb(color);
+            int requestId = yeelight->setRgb(color);
+            //TODO turn on if off
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+            m_asyncActions.insert(requestId, info);
         } else if (action.actionTypeId() == colorBulbColorTemperatureActionTypeId) {
             int colorTemperature = action.param(colorBulbColorTemperatureActionColorTemperatureParamTypeId).value().toUInt() * 11.12;
-            yeelight->setColorTemperature(colorTemperature);
+            int requestId = yeelight->setColorTemperature(colorTemperature);
+            //TODO turn on if off
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+            m_asyncActions.insert(requestId, info);
+        } else if (action.actionTypeId() == colorBulbEffectActionTypeId) {
+            QString effect = action.param(colorBulbEffectActionEffectParamTypeId).value().toString();
+            if (effect.contains("non")) {
+                int requestId = yeelight->stopColorFlow();
+                //TODO turn on if off
+                connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+                m_asyncActions.insert(requestId, info);
+            } else {
+                int requestId = yeelight->startColorFlow();
+                //TODO turn on if off
+                connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+                m_asyncActions.insert(requestId, info);
+            }
+        } else if (action.actionTypeId() == colorBulbAlertActionTypeId) {
+            QString alertType = action.param(colorBulbAlertActionAlertParamTypeId).value().toString();
+            if (alertType.contains("15s")) {
+                int requestId = yeelight->flash15s();
+                //TODO turn on if off
+                connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+                m_asyncActions.insert(requestId, info);
+            } else {
+                int requestId = yeelight->flash();
+                //TODO turn on if off
+                connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+                m_asyncActions.insert(requestId, info);
+            }
         }
     }
 }
