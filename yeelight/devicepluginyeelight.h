@@ -41,6 +41,7 @@ class DevicePluginYeelight : public DevicePlugin
 public:
     explicit DevicePluginYeelight();
 
+    void init() override;
     void discoverDevices(DeviceDiscoveryInfo *info) override;
     void setupDevice(DeviceSetupInfo *info) override;
     void postSetupDevice(Device *device) override;
@@ -61,17 +62,23 @@ private:
     QHash<int, DeviceActionInfo *> m_asyncActions;
     QHash<DeviceId, Yeelight *> m_yeelightConnections;
 
+    QHash<DeviceClassId, StateTypeId> m_connectedStateTypeIds;
+    QHash<DeviceClassId, StateTypeId> m_powerStateTypeIds;
+    QHash<DeviceClassId, StateTypeId> m_brightnessStateTypeIds;
+
+    QHash<DeviceId, DeviceActionInfo *> m_pendingBrightnessAction;
+
 private slots:
     void onDeviceNameChanged();
     void onConnectionChanged(bool connected);
     void onRequestExecuted(int requestId, bool success);
-    void onPropertyListReceived(QVariantList value);
 
     void onPowerNotificationReceived(bool status);
     void onBrightnessNotificationReceived(int percentage);
     void onColorTemperatureNotificationReceived(int kelvin);
-    void onRgbNotificationReceived(int rgbColor);
+    void onRgbNotificationReceived(QRgb rgbColor);
     void onNameNotificationReceived(const QString &name);
+    void onColorModeNotificationReceived(Yeelight::YeelightColorMode colorMode);
 };
 
 #endif // DEVICEPLUGINYEELIGHT_H
