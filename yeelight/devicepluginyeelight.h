@@ -28,6 +28,7 @@
 #include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
 #include "yeelight.h"
+#include "ssdp.h"
 
 #include <QTimer>
 
@@ -49,15 +50,7 @@ public:
     void deviceRemoved(Device *device) override;
 
 private:
-    class DiscoveryJob {
-    public:
-        UpnpDiscoveryReply* upnpReply;
-        QNetworkReply* nUpnpReply;
-        DeviceDescriptors results;
-    };
-    QHash<DeviceDiscoveryInfo*, DiscoveryJob*> m_discoveries;
-    QList<QString> m_usedInterfaces;
-
+    Ssdp *m_ssdp = nullptr;
     PluginTimer *m_pluginTimer = nullptr;
     QHash<int, DeviceActionInfo *> m_asyncActions;
     QHash<DeviceId, Yeelight *> m_yeelightConnections;

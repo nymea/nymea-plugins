@@ -145,7 +145,7 @@ int Yeelight::getParam(QList<Yeelight::YeelightProperty> properties)
     QTimer::singleShot(10000, this, [requestId, this]{m_propertyRequests.remove(requestId);});
     obj["params"] = params;
     doc.setObject(obj);
-    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    //qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
     m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
@@ -161,7 +161,7 @@ int Yeelight::setName(const QString &name)
     params.append(name);
     obj["params"] = params;
     doc.setObject(obj);
-    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    //qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
     m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
@@ -192,12 +192,12 @@ int Yeelight::setRgb(QRgb color, int msFadeTime)
     obj["id"] = requestId;
     obj["method"] = "set_rgb";
     QJsonArray params;
-    params.append(QVariant(color).toInt());
+    params.append(static_cast<int>(color & 0x00ffffff));
     params.append("smooth");
     params.append(msFadeTime);
     obj["params"] = params;
     doc.setObject(obj);
-    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    //qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
     m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
@@ -252,7 +252,7 @@ int Yeelight::setDefault()
     QJsonArray params;
     obj["params"] = params;
     doc.setObject(obj);
-    qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
+    //qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
     m_socket->write(doc.toJson() + "\r\n");
     return requestId;
 }
@@ -267,7 +267,7 @@ int Yeelight::startColorFlow()
     QJsonArray params;
     params.append(0); //0 means infinite loop on the state changing
     params.append(0); //LED recover to the state before the color flow started
-    params.append("2000, 1, 255, -1, 2000, 1, 16711680, -1, 2000, 1, 65280, -1,"); //Colors
+    params.append("2000, 1, 255, 50, 2000, 1, 5000, 50, 2000, 1, 6000, 50"); //Colors
     obj["params"] = params;
     doc.setObject(obj);
     qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
@@ -298,9 +298,9 @@ int Yeelight::flash()
     obj["id"] = requestId;
     obj["method"] = "start_cf";
     QJsonArray params;
-    params.append(6);
+    params.append(4 * 3);
     params.append(0); //LED recover to the state before the color flow started
-    params.append("500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0,"); //Colors
+    params.append("50, 2, 6500, 100, 500, 7, 6500, 1, 50, 2, 6500, 1, 500, 7, 6500, 1");
     obj["params"] = params;
     doc.setObject(obj);
     qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
@@ -316,9 +316,9 @@ int Yeelight::flash15s()
     obj["id"] = requestId;
     obj["method"] = "start_cf";
     QJsonArray params;
-    params.append(30);
+    params.append(4 * 15);
     params.append(0); //LED recover to the state before the color flow started
-    params.append("500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0, 500, 2, 4000, 100, 500, 7, 0, 0"); //Colors
+    params.append("50, 2, 6500, 100, 500, 7, 6500, 1, 50, 2, 6500, 1, 500, 7, 6500, 1");
     obj["params"] = params;
     doc.setObject(obj);
     qCDebug(dcYeelight()) << "Sending request" << doc.toJson();
@@ -345,7 +345,7 @@ void Yeelight::onStateChanged(QAbstractSocket::SocketState state)
 void Yeelight::onReadyRead()
 {
     QByteArray data = m_socket->readAll();
-    qCDebug(dcYeelight()) << "Message received" << data;
+    //qCDebug(dcYeelight()) << "Message received" << data;
 
     QJsonParseError error;
     QJsonDocument doc = QJsonDocument::fromJson(data, &error);
@@ -446,6 +446,7 @@ void Yeelight::onReconnectTimer()
 {
     if(!m_socket->isOpen()) {
         m_socket->connectToHost(m_address, m_port);
+        m_reconnectTimer->start(10 * 1000);
     }
 }
 
