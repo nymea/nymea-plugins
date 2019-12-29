@@ -45,6 +45,7 @@ public:
     bool disable();
 private:
     QUdpSocket *m_socket = nullptr;
+    QUdpSocket *m_socket2 = nullptr;
     QHostAddress m_host;
     quint16 m_port;
 
@@ -64,6 +65,7 @@ signals:
 private slots:
     void error(QAbstractSocket::SocketError error);
     void readData();
+    void readData2();
 };
 
 #endif // SSDP_H
