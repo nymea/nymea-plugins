@@ -72,7 +72,6 @@ private:
 
     QHash<Nanoleaf *, BrowseResult *> m_asyncBrowseResults;
     QHash<QUuid, BrowserActionInfo *> m_asyncBrowserItem;
-    QHash<DeviceId, int> m_hues;
 
     Nanoleaf *createNanoleafConnection(const QHostAddress &address, int port);
 
@@ -85,7 +84,8 @@ public slots:
     void onControllerInfoReceived(const Nanoleaf::ControllerInfo &controllerInfo);
     void onPowerReceived(bool power);
     void onBrightnessReceived(int percentage);
-    void onColorModeReceived(const QString &colorMode);
+    void onColorReceived(QColor color);
+    void onColorModeReceived(Nanoleaf::ColorMode colorMode);
     void onHueReceived(int hue);
     void onSaturationReceived(int percentage);
     void onEffectListReceived(const QStringList &effects);

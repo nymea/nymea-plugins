@@ -230,11 +230,6 @@ void DevicePluginNanoleaf::browserItem(BrowserItemResult *result)
 {
     Q_UNUSED(result)
     qCDebug(dcNanoleaf()) << "BrowserItem called";
-    //Device *device = result->device();
-    //Nanoleaf *nanoleaf = m_nanoleafConnections.value(device->id());
-    //nanoleaf->setEffect(info.);
-    //result->
-    //m_asyncBrowseItems.insert(nanoleaf, result);*/
 }
 
 void DevicePluginNanoleaf::executeBrowserItem(BrowserActionInfo *info)
@@ -327,7 +322,7 @@ void DevicePluginNanoleaf::onControllerInfoReceived(const Nanoleaf::ControllerIn
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Controller Info received" << controllerInfo.name << controllerInfo.firmwareVersion;
+    //qCDebug(dcNanoleaf()) << "Controller Info received" << controllerInfo.name << controllerInfo.firmwareVersion;
     device->setParamValue(lightPanelsDeviceFirmwareVersionParamTypeId, controllerInfo.firmwareVersion);
 }
 
@@ -337,7 +332,7 @@ void DevicePluginNanoleaf::onPowerReceived(bool power)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Power received" << power;
+    //qCDebug(dcNanoleaf()) << "Power received" << power;
     device->setStateValue(lightPanelsPowerStateTypeId, power);
 }
 
@@ -347,18 +342,37 @@ void DevicePluginNanoleaf::onBrightnessReceived(int percentage)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Brightness received" << percentage;
+    //qCDebug(dcNanoleaf()) << "Brightness received" << percentage;
     device->setStateValue(lightPanelsBrightnessStateTypeId, percentage);
 }
 
-void DevicePluginNanoleaf::onColorModeReceived(const QString &colorMode)
+void DevicePluginNanoleaf::onColorReceived(QColor color)
 {
     Nanoleaf *nanoleaf = static_cast<Nanoleaf *>(sender());
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Color mode received" << colorMode;
-    device->setStateValue(lightPanelsColorModeStateTypeId, colorMode);
+    //qCDebug(dcNanoleaf()) << "Color received" << color.toRgb();
+    device->setStateValue(lightPanelsColorStateTypeId, color);
+}
+
+void DevicePluginNanoleaf::onColorModeReceived(Nanoleaf::ColorMode colorMode)
+{
+    Nanoleaf *nanoleaf = static_cast<Nanoleaf *>(sender());
+    Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
+    if (!device)
+        return;
+    switch (colorMode) {
+    case Nanoleaf::ColorMode::ColorTemperatureMode:
+        device->setStateValue(lightPanelsColorModeStateTypeId, tr("Color temperature"));
+        break;
+    case Nanoleaf::ColorMode::HueSaturationMode:
+        device->setStateValue(lightPanelsColorModeStateTypeId, tr("Hue/Saturation"));
+        break;
+    case Nanoleaf::ColorMode::EffectMode:
+        device->setStateValue(lightPanelsColorModeStateTypeId, tr("Effect"));
+        break;
+    }
 }
 
 void DevicePluginNanoleaf::onHueReceived(int hue)
@@ -367,9 +381,10 @@ void DevicePluginNanoleaf::onHueReceived(int hue)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Hue received" << hue;
-    m_hues.insert(device->id(), hue);
-    nanoleaf->getSaturation();
+    //qCDebug(dcNanoleaf()) << "Hue received" << hue;
+    QColor color = QColor(device->stateValue(lightPanelsColorStateTypeId).toString());
+    color.setHsv(hue, color.saturation(), color.value());
+    device->setStateValue(lightPanelsColorStateTypeId, color);
 }
 
 void DevicePluginNanoleaf::onSaturationReceived(int saturation)
@@ -378,9 +393,9 @@ void DevicePluginNanoleaf::onSaturationReceived(int saturation)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Saturation received" << saturation;
-    QColor color;
-    color.setHsv(m_hues.value(device->id()), saturation, 100);
+    //qCDebug(dcNanoleaf()) << "Saturation received" << saturation;
+    QColor color = QColor(device->stateValue(lightPanelsColorStateTypeId).toString());
+    color.setHsv(color.hue(), saturation, color.value());
     device->setStateValue(lightPanelsColorStateTypeId, color);
 }
 
@@ -390,7 +405,7 @@ void DevicePluginNanoleaf::onEffectListReceived(const QStringList &effects)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Effect list received" << effects;
+    //qCDebug(dcNanoleaf()) << "Effect list received" << effects;
 
     if (m_asyncBrowseResults.contains(nanoleaf)) {
         BrowseResult *result = m_asyncBrowseResults.take(nanoleaf);
@@ -413,7 +428,7 @@ void DevicePluginNanoleaf::onColorTemperatureReceived(int kelvin)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Color temperature received" << kelvin;
+    //qCDebug(dcNanoleaf()) << "Color temperature received" << kelvin;
     //NOTE: this is just a rough estimation of the mired value
     int mired = static_cast<int>(kelvin/11.12); //FIXME
     device->setStateValue(lightPanelsColorTemperatureStateTypeId, mired);
@@ -425,7 +440,7 @@ void DevicePluginNanoleaf::onSelectedEffectReceived(const QString &effect)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    qCDebug(dcNanoleaf()) << "Selected effect received" << effect;
+    //qCDebug(dcNanoleaf()) << "Selected effect received" << effect;
     device->setStateValue(lightPanelsEffectNameStateTypeId, QString(effect).remove('"').remove('*'));
 }
 

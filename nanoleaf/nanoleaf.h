@@ -50,6 +50,12 @@ public:
       QString model;
     };
 
+    enum ColorMode {
+        EffectMode,
+        HueSaturationMode,
+        ColorTemperatureMode
+    };
+
     enum GestureID {
         SingleTap   = 0,
         DoubleTap   = 1,
@@ -115,10 +121,11 @@ signals:
     void authTokenRecieved(const QString &token);
     void powerReceived(bool power);
     void brightnessReceived(int percentage);
-    void colorModeReceived(const QString &colorMode);
+    void colorModeReceived(ColorMode colorMode);
     void hueReceived(int hue);
     void saturationReceived(int percentage);
     void effectListReceived(const QStringList &effects);
+    void colorReceived(QColor color);
     void colorTemperatureReceived(int kelvin);
     void selectedEffectReceived(const QString &effect);
 

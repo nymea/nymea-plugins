@@ -85,13 +85,13 @@ void Nanoleaf::addUser()
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->post(request, "");
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
@@ -127,12 +127,12 @@ void Nanoleaf::deleteUser()
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->deleteResource(request);
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
         }
@@ -151,7 +151,7 @@ void Nanoleaf::getControllerInfo()
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -184,20 +184,31 @@ void Nanoleaf::getControllerInfo()
             if (state.contains("on")) {
                 emit powerReceived(state["on"].toMap().value("value").toBool());
             }
-            if (state.contains("brightness")) {
-                emit brightnessReceived(state["brightness"].toMap().value("value").toInt());
-            }
-            if (state.contains("hue")) {
-                emit hueReceived(state["hue"].toMap().value("value").toInt());
-            }
-            if (state.contains("sat")) {
-                emit saturationReceived(state["sat"].toMap().value("value").toInt());
+            if (state.contains("hue") &&  state.contains("sat") && state.contains("brightness")) {
+                int brightness = state["brightness"].toMap().value("value").toInt();
+                emit brightnessReceived(brightness);
+                int hue = state["hue"].toMap().value("value").toInt();
+                emit hueReceived(hue);
+                int sat = state["sat"].toMap().value("value").toInt();
+                emit saturationReceived(sat);
+                QColor color;
+                color.setHsv(hue, sat, brightness);
+                emit colorReceived(color);
             }
             if (state.contains("ct")) {
                 emit colorTemperatureReceived(state["ct"].toMap().value("value").toInt());
             }
             if (state.contains("colorMode")) {
-                emit colorModeReceived(state["colorMode"].toString());
+                QString colorModeString = state["colorMode"].toString();
+                if (colorModeString == "effect") {
+                    emit colorModeReceived(ColorMode::EffectMode);
+                } else if (colorModeString == "hs") {
+                    emit colorModeReceived(ColorMode::HueSaturationMode);
+                } else if (colorModeString == "ct") {
+                    emit colorModeReceived(ColorMode::ColorTemperatureMode);
+                } else {
+                    qCWarning(dcNanoleaf()) << "Unrecognized color mode";
+                }
             }
         }
         if (map.contains("effects")) {
@@ -228,12 +239,12 @@ void Nanoleaf::getPower()
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             emit connectionChanged(false);
             return;
@@ -261,12 +272,12 @@ void Nanoleaf::getHue()
     QNetworkRequest request;
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
         }
@@ -297,7 +308,7 @@ void Nanoleaf::getBrightness()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
         }
@@ -328,7 +339,7 @@ void Nanoleaf::getSaturation()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
         }
@@ -359,7 +370,7 @@ void Nanoleaf::getColorTemperature()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             emit connectionChanged(false);
             return;
@@ -391,7 +402,7 @@ void Nanoleaf::getColorMode()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             emit connectionChanged(false);
             return;
@@ -402,9 +413,17 @@ void Nanoleaf::getColorMode()
             qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
-        QString colorMode = data.toVariant().toMap().value("value").toString();
         emit connectionChanged(true);
-        emit colorModeReceived(colorMode);
+        QString colorModeString = data.toVariant().toMap().value("value").toString();
+        if (colorModeString == "effect") {
+            emit colorModeReceived(ColorMode::EffectMode);
+        } else if (colorModeString == "hs") {
+            emit colorModeReceived(ColorMode::HueSaturationMode);
+        } else if (colorModeString == "ct") {
+            emit colorModeReceived(ColorMode::ColorTemperatureMode);
+        } else {
+            qCWarning(dcNanoleaf()) << "Unrecognized color mode";
+        }
     });
 }
 
@@ -435,7 +454,7 @@ void Nanoleaf::registerForEvents()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             emit connectionChanged(false);
             return;
@@ -450,29 +469,39 @@ void Nanoleaf::registerForEvents()
         QVariantList events = data.toVariant().toList();
 
         foreach (QVariant variant, events) {
-        QVariantMap event = variant.toMap();
-        switch (event["attr"].toInt()) {
-        case 1:  //ON
-            emit powerReceived(event["value"].toBool());
-            break;
-        case 2:  //Brightness
-            emit brightnessReceived(event["value"].toInt());
-            break;
-        case 3: //Hue
-            emit hueReceived(event["value"].toInt());
-            break;
-        case 4: //Saturation
-            emit saturationReceived(event["value"].toInt());
-            break;
-        case 5: //Color Temperature
-            emit colorTemperatureReceived(event["value"].toInt());
-            break;
-        case 6: //colorMode
-            emit colorModeReceived(event["value"].toString());
-            break;
-        default:
-            qCWarning(dcNanoleaf()) << "Unrecognised Event received";
-        }
+            QVariantMap event = variant.toMap();
+            switch (event["attr"].toInt()) {
+            case 1:  //ON
+                emit powerReceived(event["value"].toBool());
+                break;
+            case 2:  //Brightness
+                emit brightnessReceived(event["value"].toInt());
+                break;
+            case 3: //Hue
+                emit hueReceived(event["value"].toInt());
+                break;
+            case 4: //Saturation
+                emit saturationReceived(event["value"].toInt());
+                break;
+            case 5: //Color Temperature
+                emit colorTemperatureReceived(event["value"].toInt());
+                break;
+            case 6: { //colorMode
+                QString colorModeString = event["value"].toString();
+                if (colorModeString == "effect") {
+                    emit colorModeReceived(ColorMode::EffectMode);
+                } else if (colorModeString == "hs") {
+                    emit colorModeReceived(ColorMode::HueSaturationMode);
+                } else if (colorModeString == "ct") {
+                    emit colorModeReceived(ColorMode::ColorTemperatureMode);
+                } else {
+                    qCWarning(dcNanoleaf()) << "Unrecognized color mode";
+                }
+                break;
+            }
+            default:
+                qCWarning(dcNanoleaf()) << "Unrecognised Event received";
+            }
 
         }
     });
@@ -497,12 +526,12 @@ QUuid Nanoleaf::setPower(bool power)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
@@ -515,38 +544,8 @@ QUuid Nanoleaf::setPower(bool power)
 
 QUuid Nanoleaf::setColor(QColor color)
 {
-    QUuid requestId = QUuid::createUuid();
-    QUrl url;
-    url.setHost(m_address.toString());
-    url.setPort(m_port);
-    url.setScheme("http");
-    url.setPath(QString("/api/v1/%1/state").arg(m_authToken));
-
-    QVariantMap map;
-    QVariantMap hue;
-    hue["value"] = color.hue();
-    map.insert("hue", hue);
-    QVariantMap sat;
-    sat["value"] = color.saturation();
-    map.insert("sat", sat);
-    QJsonDocument body = QJsonDocument::fromVariant(map);
-
-    QNetworkRequest request;
-    request.setUrl(url);
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
-    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
-            emit requestExecuted(requestId, false);
-            qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
-            return;
-        }
-        emit requestExecuted(requestId, true);
-    });
+    QUuid requestId = setHue(color.hue());
+    setSaturation(static_cast<int>(color.saturation()/2.55)); //QColor saturation is 0-255
     return requestId;
 }
 
@@ -569,12 +568,12 @@ QUuid Nanoleaf::setHue(int hue)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
@@ -603,12 +602,12 @@ QUuid Nanoleaf::setBrightness(int percentage)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
@@ -637,12 +636,12 @@ QUuid Nanoleaf::setSaturation(int percentage)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    qDebug(dcNanoleaf()) << "Sending request" << request.url() << body.toJson();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
@@ -684,7 +683,7 @@ QUuid Nanoleaf::setKelvin(int kelvin)
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
@@ -709,7 +708,7 @@ void Nanoleaf::getEffects()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             emit connectionChanged(false);
             return;
@@ -745,7 +744,7 @@ void Nanoleaf::getSelectedEffect()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             emit connectionChanged(false);
             return;
@@ -778,7 +777,7 @@ QUuid Nanoleaf::setEffect(const QString &effect)
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;
