@@ -1,24 +1,30 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *                                                                         *
- *  This file is part of nymea.                                            *
- *                                                                         *
- *  This library is free software; you can redistribute it and/or          *
- *  modify it under the terms of the GNU Lesser General Public             *
- *  License as published by the Free Software Foundation; either           *
- *  version 2.1 of the License, or (at your option) any later version.     *
- *                                                                         *
- *  This library is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- *  Lesser General Public License for more details.                        *
- *                                                                         *
- *  You should have received a copy of the GNU Lesser General Public       *
- *  License along with this library; If not, see                           *
- *  <http://www.gnu.org/licenses/>.                                        *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by copyright law, and
+* remains the property of nymea GmbH. All rights, including reproduction, publication,
+* editing and translation, are reserved. The use of this project is subject to the terms of a
+* license agreement to be concluded with nymea GmbH in accordance with the terms
+* of use of nymea GmbH, available under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
+* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
+* Lesser General Public License as published by the Free Software Foundation; version 3.
+* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this project.
+* If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under contact@nymea.io
+* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #ifndef TADO_H
 #define TADO_H
@@ -28,6 +34,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QUuid>
 
 class Tado : public QObject
 {
@@ -47,6 +54,15 @@ public:
         QString name;
         QString type;
     };
+
+    struct Overlay {
+      bool power;
+      double temperature;
+      QString zoneType;
+      QString terminationType;
+      QString tadoMode;
+    };
+
 
     struct ZoneState {
         bool connected;
@@ -81,8 +97,8 @@ public:
     void getZones(const QString &homeId);
     void getZoneState(const QString &homeId, const QString &zoneId);
 
-    void setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature);
-    void deleteOverlay(const QString &homeId, const QString &zoneId);
+    QUuid setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature);
+    QUuid deleteOverlay(const QString &homeId, const QString &zoneId);
 
 private:
     QByteArray m_baseAuthorizationUrl = "https://auth.tado.com/oauth/token";
@@ -99,12 +115,14 @@ private:
 signals:
     void connectionChanged(bool connected);
     void authenticationStatusChanged(bool authenticated);
+    void requestExecuted(QUuid requestId, bool success);
 
     void tokenReceived(Token token);
-
     void homesReceived(QList<Home> homes);
     void zonesReceived(const QString &homeId, QList<Zone> zones);
     void zoneStateReceived(const QString &homeId,const QString &zoneId, ZoneState sate);
+    void overlayReceived(const QString &homeId, const QString &zoneId, const Overlay &overlay);
+
 private slots:
     void onRefreshTimer();
 

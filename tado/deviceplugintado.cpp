@@ -1,24 +1,30 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *                                                                         *
- *  This file is part of nymea.                                            *
- *                                                                         *
- *  This library is free software; you can redistribute it and/or          *
- *  modify it under the terms of the GNU Lesser General Public             *
- *  License as published by the Free Software Foundation; either           *
- *  version 2.1 of the License, or (at your option) any later version.     *
- *                                                                         *
- *  This library is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- *  Lesser General Public License for more details.                        *
- *                                                                         *
- *  You should have received a copy of the GNU Lesser General Public       *
- *  License along with this library; If not, see                           *
- *  <http://www.gnu.org/licenses/>.                                        *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by copyright law, and
+* remains the property of nymea GmbH. All rights, including reproduction, publication,
+* editing and translation, are reserved. The use of this project is subject to the terms of a
+* license agreement to be concluded with nymea GmbH in accordance with the terms
+* of use of nymea GmbH, available under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
+* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
+* Lesser General Public License as published by the Free Software Foundation; version 3.
+* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this project.
+* If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under contact@nymea.io
+* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "deviceplugintado.h"
 #include "devices/device.h"
@@ -30,11 +36,6 @@
 #include <QJsonDocument>
 
 DevicePluginTado::DevicePluginTado()
-{
-
-}
-
-DevicePluginTado::~DevicePluginTado()
 {
 
 }
@@ -53,6 +54,7 @@ void DevicePluginTado::confirmPairing(DevicePairingInfo *info, const QString &us
     connect(tado, &Tado::homesReceived, this, &DevicePluginTado::onHomesReceived);
     connect(tado, &Tado::zonesReceived, this, &DevicePluginTado::onZonesReceived);
     connect(tado, &Tado::zoneStateReceived, this, &DevicePluginTado::onZoneStateReceived);
+    connect(tado, &Tado::overlayReceived, this, &DevicePluginTado::onOverlayReceived);
     m_unfinishedTadoAccounts.insert(info->deviceId(), tado);
     m_unfinishedDevicePairings.insert(info->deviceId(), info);
     tado->getToken(password);
@@ -88,6 +90,7 @@ void DevicePluginTado::setupDevice(DeviceSetupInfo *info)
             connect(tado, &Tado::homesReceived, this, &DevicePluginTado::onHomesReceived);
             connect(tado, &Tado::zonesReceived, this, &DevicePluginTado::onZonesReceived);
             connect(tado, &Tado::zoneStateReceived, this, &DevicePluginTado::onZoneStateReceived);
+            connect(tado, &Tado::overlayReceived, this, &DevicePluginTado::onOverlayReceived);
             tado->getToken(password);
             m_tadoAccounts.insert(device->id(), tado);
             m_asyncDeviceSetup.insert(tado, info);
@@ -106,9 +109,6 @@ void DevicePluginTado::deviceRemoved(Device *device)
     if (device->deviceClassId() == tadoConnectionDeviceClassId) {
         Tado *tado = m_tadoAccounts.take(device->id());
         tado->deleteLater();
-
-    } else if (device->deviceClassId() == zoneDeviceClassId) {
-
     }
 
     if (myDevices().isEmpty() && m_pluginTimer) {
@@ -129,7 +129,6 @@ void DevicePluginTado::postSetupDevice(Device *device)
         device->setStateValue(tadoConnectionUserDisplayNameStateTypeId, tado->username());
         device->setStateValue(tadoConnectionLoggedInStateTypeId, true);
         device->setStateValue(tadoConnectionConnectedStateTypeId, true);
-
         tado->getHomes();
 
     } else if (device->deviceClassId() == zoneDeviceClassId) {
@@ -169,7 +168,8 @@ void DevicePluginTado::executeAction(DeviceActionInfo *info)
 
             double temperature = action.param(zoneTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
             if (temperature <= 0) {
-                tado->setOverlay(homeId, zoneId, false, 0);
+                QUuid requestId = tado->setOverlay(homeId, zoneId, false, 0);
+                m_asyncActions.insert(requestId, info);
             } else {
                 tado->setOverlay(homeId, zoneId, true, temperature);
             }
@@ -210,7 +210,8 @@ void DevicePluginTado::onAuthenticationStatusChanged(bool authenticated)
     Tado *tado = static_cast<Tado*>(sender());
 
     if (m_unfinishedTadoAccounts.values().contains(tado) && !authenticated){
-        DeviceId id = m_tadoAccounts.key(tado);
+        DeviceId id = m_unfinishedTadoAccounts.key(tado);
+        m_unfinishedTadoAccounts.remove(id);
         DevicePairingInfo *info = m_unfinishedDevicePairings.take(id);
         info->finish(Device::DeviceErrorSetupFailed);
     }
@@ -237,10 +238,6 @@ void DevicePluginTado::onTokenReceived(Tado::Token token)
         DeviceId id = m_unfinishedTadoAccounts.key(tado);
         DevicePairingInfo *info = m_unfinishedDevicePairings.take(id);
         info->finish(Device::DeviceErrorNoError);
-    }
-
-    if (m_tadoAccounts.values().contains(tado)) {
-
     }
 }
 
@@ -304,12 +301,33 @@ void DevicePluginTado::onZoneStateReceived(const QString &homeId, const QString 
     }
 
     device->setStateValue(zonePowerStateTypeId, (state.heatingPowerPercentage > 0));
-
-
     device->setStateValue(zoneConnectedStateTypeId, state.connected);
     device->setStateValue(zoneTargetTemperatureStateTypeId, state.settingTemperature);
     device->setStateValue(zoneTemperatureStateTypeId, state.temperature);
     device->setStateValue(zoneHumidityStateTypeId, state.humidity);
     device->setStateValue(zoneWindowOpenStateTypeId, state.windowOpen);
     device->setStateValue(zoneTadoModeStateTypeId, state.tadoMode);
+}
+
+void DevicePluginTado::onOverlayReceived(const QString &homeId, const QString &zoneId, const Tado::Overlay &overlay)
+{
+    Tado *tado = static_cast<Tado*>(sender());
+    DeviceId parentId = m_tadoAccounts.key(tado);
+    ParamList params;
+    params.append(Param(zoneDeviceHomeIdParamTypeId, homeId));
+    params.append(Param(zoneDeviceZoneIdParamTypeId, zoneId));
+    Device *device = myDevices().filterByParentDeviceId(parentId).findByParams(params);
+    if (!device)
+        return;
+    device->setStateValue(zoneTargetTemperatureStateTypeId, overlay.temperature);
+
+    if (overlay.tadoMode == "MANUAL")  {
+        if (overlay.power) {
+            device->setStateValue(zoneModeStateTypeId, "Manual");
+        } else {
+            device->setStateValue(zoneModeStateTypeId, "Off");
+        }
+    } else {
+        device->setStateValue(zoneModeStateTypeId, "Tado");
+    }
 }

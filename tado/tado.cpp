@@ -1,24 +1,30 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *                                                                         *
- *  This file is part of nymea.                                            *
- *                                                                         *
- *  This library is free software; you can redistribute it and/or          *
- *  modify it under the terms of the GNU Lesser General Public             *
- *  License as published by the Free Software Foundation; either           *
- *  version 2.1 of the License, or (at your option) any later version.     *
- *                                                                         *
- *  This library is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- *  Lesser General Public License for more details.                        *
- *                                                                         *
- *  You should have received a copy of the GNU Lesser General Public       *
- *  License along with this library; If not, see                           *
- *  <http://www.gnu.org/licenses/>.                                        *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by copyright law, and
+* remains the property of nymea GmbH. All rights, including reproduction, publication,
+* editing and translation, are reserved. The use of this project is subject to the terms of a
+* license agreement to be concluded with nymea GmbH in accordance with the terms
+* of use of nymea GmbH, available under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
+* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
+* Lesser General Public License as published by the Free Software Foundation; version 3.
+* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this project.
+* If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under contact@nymea.io
+* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "tado.h"
 #include "extern-plugininfo.h"
@@ -72,33 +78,47 @@ void Tado::getToken(const QString &password)
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
-            if (status == 400 || status == 401) {
+            if (status == 401) {
                 emit authenticationStatusChanged(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
         emit connectionChanged(true);
-        emit authenticationStatusChanged(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Received invalide JSON object";
             return;
         }
-        Token token;
-        QVariantMap obj = data.toVariant().toMap();
-        token.accesToken = obj["access_token"].toString();
-        m_accessToken = token.accesToken;
-        token.tokenType = obj["token_type"].toString();
-        token.refreshToken = obj["refresh_token"].toString();
-        m_refreshToken = token.refreshToken;
-        token.expires = obj["expires_in"].toInt();
-        m_refreshTimer->start((token.expires - 10)*1000);
-        token.scope = obj["scope"].toString();
-        token.jti = obj["jti"].toString();
-        emit tokenReceived(token);
+        if (data.isObject()) {
+            Token token;
+            QVariantMap obj = data.toVariant().toMap();
+            if (obj.contains("access_token")) {
+                token.accesToken = obj["access_token"].toString();
+                m_accessToken = token.accesToken;
+            } else {
+                qCWarning(dcTado()) << "Received response doesnt contain an access token";
+            }
+
+            token.tokenType = obj["token_type"].toString();
+            token.refreshToken = obj["refresh_token"].toString();
+            m_refreshToken = token.refreshToken;
+            if (obj.contains("expires_in")) {
+                token.expires = obj["expires_in"].toInt();
+                m_refreshTimer->start((token.expires - 10)*1000);
+            } else {
+                  qCWarning(dcTado()) << "Received response doesn't contain an expire time";
+            }
+            token.scope = obj["scope"].toString();
+            token.jti = obj["jti"].toString();
+            emit authenticationStatusChanged(true);
+            emit tokenReceived(token);
+        } else {
+            qCWarning(dcTado()) << "Received response isn't an object" << data.toJson();
+            emit authenticationStatusChanged(false);
+        }
     });
 }
 
@@ -119,12 +139,14 @@ void Tado::getHomes()
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
-            if (status == 400 || status == 401) {
+            if (status == 401) {
                 emit authenticationStatusChanged(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
@@ -163,12 +185,14 @@ void Tado::getZones(const QString &homeId)
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
-            if (status == 400 || status == 401) {
+            if (status == 401) {
                 emit authenticationStatusChanged(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
@@ -207,12 +231,15 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
-            if (status == 400 || status == 401) {
+            if (status == 401) {
                 emit authenticationStatusChanged(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
+
+        emit connectionChanged(true);
+        emit authenticationStatusChanged(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
@@ -220,6 +247,8 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
             return;
         }
+
+        qDebug(dcTado()) << "Get zone stat" << data;
         ZoneState state;
         QVariantMap map = data.toVariant().toMap();
         state.tadoMode = map["tadoMode"].toString();
@@ -244,8 +273,9 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             state.overlayIsSet = true;
             QVariantMap overlayMap = map["overlay"].toMap();
             state.overlayType = map["overlayType"].toString();
-            state.overlaySettingPower = (overlayMap["settings"].toMap().value("power").toString() == "ON");
-            state.overlaySettingTemperature = overlayMap["settings"].toMap().value("temperature").toDouble();
+            qCDebug(dcTado()) << "Overlay power" << overlayMap["setting"].toMap().value("power").toString() << overlayMap["setting"].toMap().value("temperature").toDouble();
+            state.overlaySettingPower = (overlayMap["setting"].toMap().value("power").toString() == "ON");
+            state.overlaySettingTemperature = overlayMap["setting"].toMap().value("temperature").toDouble();
         } else {
             state.overlayIsSet = false;
         }
@@ -253,26 +283,13 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
     });
 }
 
-void Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature)
+QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature)
 {
+    QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json;charset=utf-8");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
-    /*QJsonDocument doc;
-    QJsonObject obj;
-    QJsonObject setting;
-    setting.insert("power", "ON");
-    QJsonObject temperature;
-    temperature.insert("celsius", targetTemperature);
-    //temperature.insert("fahrenheit", (targetTemperature * (9.0/5.0)) + 32.0);
-    setting.insert("type", "HEATING");
-    setting.insert("temperature", temperature);
-    obj.insert("setting", setting);
-    QJsonObject termination;
-    termination.insert("type", "MANUAL");
-    obj.insert("termination", termination);
-    doc.setObject(obj);*/
 
     QByteArray body;
     QByteArray powerString;
@@ -282,23 +299,30 @@ void Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, 
        powerString = "OFF";
 
     body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\""+ powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
+    qCDebug(dcTado()) << "Sending request" << body;
     QNetworkReply *reply = m_networkManager->put(request, body);
-    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+    connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
         reply->deleteLater();
 
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit requestExecuted(requestId, false);
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
-            if (status == 400 || status == 401) {
+            if (status == 401) { //Unauthorized
                 emit authenticationStatusChanged(false);
+            } else if (status == 422) { //Unprocessable Entity
+                qCWarning(dcTado()) << "Unprocessable Entity, probably a value out of range";
+            } else {
+                qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             }
-            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit authenticationStatusChanged(true);
+        emit connectionChanged(true);
+        emit requestExecuted(requestId, true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
@@ -307,32 +331,72 @@ void Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, 
             return;
         }
         QVariantMap map = data.toVariant().toMap();
-        qCDebug(dcTado()) << map["type"].toString();
+
+        Overlay overlay;
+        QVariantMap settingsMap = map["setting"].toMap();
+        overlay.zoneType = settingsMap["type"].toString();
+        overlay.power = (settingsMap["power"].toString() == "ON");
+        overlay.temperature = settingsMap["temperature"].toMap().value("celsius").toDouble();
+        QVariantMap terminationMap = map["termination"].toMap();
+        overlay.terminationType = terminationMap["type"].toString();
+
+        overlay.tadoMode = map["type"].toString();
+        emit overlayReceived(homeId, zoneId, overlay);
     });
+    return requestId;
 }
 
-void Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
+QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
 {
+    QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->deleteResource(request);
-    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+    connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
         if (status < 200 || status > 210 || reply->error() != QNetworkReply::NoError) {
+            emit requestExecuted(requestId ,false);
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
-            if (status == 400 || status == 401) {
+            if (status == 401) { //Unauthorized
                 emit authenticationStatusChanged(false);
+            } else if (status == 422) { //Unprocessable Entity
+                qCWarning(dcTado()) << "Unprocessable Entity, probably a value out of range";
+            } else {
+                qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
+        emit authenticationStatusChanged(true);
+        emit connectionChanged(true);
+        emit requestExecuted(requestId, true);
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            return;
+        }
+        QVariantMap map = data.toVariant().toMap();
+
+        Overlay overlay;
+        QVariantMap settingsMap = map["setting"].toMap();
+        overlay.zoneType = settingsMap["type"].toString();
+        overlay.power = (settingsMap["power"].toString() == "ON");
+        overlay.temperature = settingsMap["temperature"].toMap().value("celsius").toDouble();
+        QVariantMap terminationMap = map["termination"].toMap();
+        overlay.terminationType = terminationMap["type"].toString();
+
+        overlay.tadoMode = map["type"].toString();
+        emit overlayReceived(homeId, zoneId, overlay);
     });
+    return requestId;
 }
 
 void Tado::onRefreshTimer()
