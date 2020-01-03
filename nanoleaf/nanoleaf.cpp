@@ -636,7 +636,7 @@ QUuid Nanoleaf::setSaturation(int percentage)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url() << body.toJson();
+    //qDebug(dcNanoleaf()) << "Sending request" << request.url() << body.toJson();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -653,8 +653,8 @@ QUuid Nanoleaf::setSaturation(int percentage)
 
 QUuid Nanoleaf::setMired(int mired)
 {
-    //NOTE: this is just a rough estimation
-    int kelvin = static_cast<int>(mired * 11.12);
+    //NOTE: this is just a rough conversion between mired and kelvin
+    int kelvin = static_cast<int>((653-mired) * 13);
     QUuid requestId = setKelvin(kelvin);
     return requestId;
 }
@@ -678,7 +678,7 @@ QUuid Nanoleaf::setKelvin(int kelvin)
     request.setUrl(url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_networkManager->put(request, body.toJson());
-    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    qDebug(dcNanoleaf()) << "Sending request" << request.url() << body.toJson();
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();

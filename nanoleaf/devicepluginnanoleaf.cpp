@@ -428,9 +428,11 @@ void DevicePluginNanoleaf::onColorTemperatureReceived(int kelvin)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    //qCDebug(dcNanoleaf()) << "Color temperature received" << kelvin;
+    qCDebug(dcNanoleaf()) << "Color temperature received, Kelvin:" << kelvin << "Mired:" << (653-(kelvin/13));
     //NOTE: this is just a rough estimation of the mired value
-    int mired = static_cast<int>(kelvin/11.12); //FIXME
+    //Mired: 153 - 500
+    //Kelvin: 1200-6500
+    int mired = static_cast<int>(653-(kelvin/13));
     device->setStateValue(lightPanelsColorTemperatureStateTypeId, mired);
 }
 
