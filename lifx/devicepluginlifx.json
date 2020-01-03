@@ -1,0 +1,192 @@
+{
+    "displayName": "LIFX",
+    "name": "Lifx",
+    "id": "4e00ee30-79e2-447b-8dcc-c34470f41992",
+    "vendors": [
+        {
+            "name": "lifx",
+            "displayName": "LIFX",
+            "id": "e5e48c0d-cff7-4c0f-983e-d23bd3e4ba87",
+            "deviceClasses": [
+                {
+                    "id": "12907c9c-e7f0-47f2-bd58-39d52ffdf24e",
+                    "name": "colorBulb",
+                    "displayName": "Color",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["colorlight", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "fd1c4817-5111-433a-b5b9-fd9f49d4975c",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "44c13745-300c-491f-b617-3a8d53472998",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "976ecea0-ac25-47d4-9dc5-362962ddb6c0",
+                            "name": "id",
+                            "displayName": "Id",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "dc4c1640-90f3-4fe0-af9b-db7fa105f18a",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "12de3f8f-2454-4057-aa12-9290296fdbdd",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "dd7d7e70-5552-4531-8789-2d0f750488be",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature",
+                            "displayNameEvent": "Color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "minValue": 153,
+                            "maxValue": 500,
+                            "writable": true
+                        },
+                        {
+                            "id": "a47d8164-5023-4ffb-8298-73293e93e7f6",
+                            "name": "color",
+                            "displayName": "Color",
+                            "displayNameEvent": "Color changed",
+                            "displayNameAction": "Set color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "8bd20350-0e79-45dc-b68a-84da99356863",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "65f88396-2958-480e-b0be-c4695400a343",
+                            "name": "effect",
+                            "displayName": "effect",
+                            "displayNameEvent": "effect changed",
+                            "displayNameAction": "Set effect",
+                            "type": "QString",
+                            "defaultValue": "none",
+                            "possibleValues": [
+                                "none",
+                                "color loop"
+                            ],
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "a5b02af8-7c97-4a78-9c78-bafee7407b5e",
+                    "name": "dimmableBulb",
+                    "displayName": "Day and Dusk",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["colortemperaturelight", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "cc0a765b-a753-4e07-a6e5-47e9272c4346",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "d233d9bf-6662-414d-92f6-dd3e267051b5",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "f157a97b-3fe5-4d9e-b5e3-5636f80d46ed",
+                            "name": "id",
+                            "displayName": "Id",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d33f98ef-5e0f-464c-afed-88b95cc701cd",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "9e1344ea-cd05-4dd8-8948-8d2f5e00e1b0",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "a0a1bdcc-2761-4d90-85d1-5ce887546611",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "95797dee-b836-4047-98d5-afbbce4f8c42",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature",
+                            "displayNameEvent": "Color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "minValue": 153,
+                            "maxValue": 500,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
