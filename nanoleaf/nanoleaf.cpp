@@ -1,24 +1,30 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2020 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *                                                                         *
- *  This file is part of nymea.                                            *
- *                                                                         *
- *  This library is free software; you can redistribute it and/or          *
- *  modify it under the terms of the GNU Lesser General Public             *
- *  License as published by the Free Software Foundation; either           *
- *  version 2.1 of the License, or (at your option) any later version.     *
- *                                                                         *
- *  This library is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- *  Lesser General Public License for more details.                        *
- *                                                                         *
- *  You should have received a copy of the GNU Lesser General Public       *
- *  License along with this library; If not, see                           *
- *  <http://www.gnu.org/licenses/>.                                        *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by copyright law, and
+* remains the property of nymea GmbH. All rights, including reproduction, publication,
+* editing and translation, are reserved. The use of this project is subject to the terms of a
+* license agreement to be concluded with nymea GmbH in accordance with the terms
+* of use of nymea GmbH, available under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
+* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
+* Lesser General Public License as published by the Free Software Foundation; version 3.
+* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this project.
+* If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under contact@nymea.io
+* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "nanoleaf.h"
 #include "extern-plugininfo.h"
@@ -103,7 +109,6 @@ void Nanoleaf::addUser()
             qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
-
         m_authToken = data.toVariant().toMap().value("auth_token").toString();
 
         emit authTokenRecieved(m_authToken);
@@ -151,13 +156,64 @@ void Nanoleaf::getControllerInfo()
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             emit authenticationStatusChanged(false);
             return;
         }
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            return;
+        }
         emit connectionChanged(true);
         emit authenticationStatusChanged(true);
+
+        QVariantMap map = data.toVariant().toMap();
+        ControllerInfo info;
+        info.name = map.value("name").toString();
+        info.serialNumber = map.value("serialNo").toString();
+        info.model = map.value("model").toString();
+        info.manufacturer = map.value("manufacturer").toString();
+        info.firmwareVersion = map.value("firmwareVersion").toString();
+        emit controllerInfoReceived(info);
+
+        if (map.contains("state")) {
+            QVariantMap state = map.value("state").toMap();
+            if (state.contains("on")) {
+                emit powerReceived(state["on"].toMap().value("value").toBool());
+            }
+            if (state.contains("brightness")) {
+                emit brightnessReceived(state["brightness"].toMap().value("value").toInt());
+            }
+            if (state.contains("hue")) {
+                emit hueReceived(state["hue"].toMap().value("value").toInt());
+            }
+            if (state.contains("sat")) {
+                emit saturationReceived(state["sat"].toMap().value("value").toInt());
+            }
+            if (state.contains("ct")) {
+                emit colorTemperatureReceived(state["ct"].toMap().value("value").toInt());
+            }
+            if (state.contains("colorMode")) {
+                emit colorModeReceived(state["colorMode"].toString());
+            }
+        }
+        if (map.contains("effects")) {
+            QVariantMap effects = map.value("effects").toMap();
+            emit selectedEffectReceived(effects.value("select").toString());
+        }
+
+        if (map.contains("panelLayout")) {
+            //QVariantMap panelLayout = map.value("panelLayout").toMap();
+            //emit panelLayoutReceived();
+        }
+
+        if (map.contains("rhythm")) {
+            //QVariantMap rhythm = map.value("rhythm").toMap();
+            //emit rhythmModulReceived(rhythm.value("select").toString());
+        }
     });
 }
 
@@ -314,9 +370,9 @@ void Nanoleaf::getColorTemperature()
             qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
             return;
         }
-        int mired = data.toVariant().toMap().value("value").toInt();
+        int kelvin = data.toVariant().toMap().value("value").toInt();
         emit connectionChanged(true);
-        emit colorTemperatureReceived(mired);
+        emit colorTemperatureReceived(kelvin);
     });
 }
 
@@ -349,6 +405,76 @@ void Nanoleaf::getColorMode()
         QString colorMode = data.toVariant().toMap().value("value").toString();
         emit connectionChanged(true);
         emit colorModeReceived(colorMode);
+    });
+}
+
+void Nanoleaf::registerForEvents()
+{
+    QUrl url;
+    url.setHost(m_address.toString());
+    url.setPort(m_port);
+    url.setScheme("http");
+    url.setPath("/api/v1/"+m_authToken+"/events");
+    QUrlQuery query;
+    query.addQueryItem("id", "1,2,3,4");
+    url.setQuery(query);
+    QNetworkRequest request;
+    request.setUrl(url);
+    QNetworkReply *reply = m_networkManager->get(request);
+
+    connect(reply, &QNetworkReply::readyRead, this, [reply, this] {
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            return;
+        }
+        qCDebug(dcNanoleaf()) << "On event stream" << data.toJson();
+    });
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
+            emit connectionChanged(false);
+            return;
+        }
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcNanoleaf()) << "Recieved invalide JSON object";
+            return;
+        }
+        qCDebug(dcNanoleaf()) << "Event received" << data.toJson();
+        QVariantList events = data.toVariant().toList();
+
+        foreach (QVariant variant, events) {
+        QVariantMap event = variant.toMap();
+        switch (event["attr"].toInt()) {
+        case 1:  //ON
+            emit powerReceived(event["value"].toBool());
+            break;
+        case 2:  //Brightness
+            emit brightnessReceived(event["value"].toInt());
+            break;
+        case 3: //Hue
+            emit hueReceived(event["value"].toInt());
+            break;
+        case 4: //Saturation
+            emit saturationReceived(event["value"].toInt());
+            break;
+        case 5: //Color Temperature
+            emit colorTemperatureReceived(event["value"].toInt());
+            break;
+        case 6: //colorMode
+            emit colorModeReceived(event["value"].toString());
+            break;
+        default:
+            qCWarning(dcNanoleaf()) << "Unrecognised Event received";
+        }
+
+        }
     });
 }
 
@@ -387,10 +513,74 @@ QUuid Nanoleaf::setPower(bool power)
     return requestId;
 }
 
-QUuid Nanoleaf::setHue(QColor color)
+QUuid Nanoleaf::setColor(QColor color)
 {
-    Q_UNUSED(color);
     QUuid requestId = QUuid::createUuid();
+    QUrl url;
+    url.setHost(m_address.toString());
+    url.setPort(m_port);
+    url.setScheme("http");
+    url.setPath(QString("/api/v1/%1/state").arg(m_authToken));
+
+    QVariantMap map;
+    QVariantMap hue;
+    hue["value"] = color.hue();
+    map.insert("hue", hue);
+    QVariantMap sat;
+    sat["value"] = color.saturation();
+    map.insert("sat", sat);
+    QJsonDocument body = QJsonDocument::fromVariant(map);
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = m_networkManager->put(request, body.toJson());
+    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+            emit requestExecuted(requestId, false);
+            qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+        emit requestExecuted(requestId, true);
+    });
+    return requestId;
+}
+
+QUuid Nanoleaf::setHue(int hue)
+{
+    QUuid requestId = QUuid::createUuid();
+    QUrl url;
+    url.setHost(m_address.toString());
+    url.setPort(m_port);
+    url.setScheme("http");
+    url.setPath(QString("/api/v1/%1/state").arg(m_authToken));
+
+    QVariantMap map;
+    QVariantMap hueMap;
+    hueMap["value"] = hue;
+    map.insert("hue", hueMap);
+    QJsonDocument body = QJsonDocument::fromVariant(map);
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = m_networkManager->put(request, body.toJson());
+    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+            emit requestExecuted(requestId, false);
+            qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+        emit requestExecuted(requestId, true);
+    });
     return requestId;
 }
 
@@ -430,7 +620,6 @@ QUuid Nanoleaf::setBrightness(int percentage)
 
 QUuid Nanoleaf::setSaturation(int percentage)
 {
-    Q_UNUSED(percentage);
     QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_address.toString());
@@ -463,10 +652,45 @@ QUuid Nanoleaf::setSaturation(int percentage)
     return requestId;
 }
 
-QUuid Nanoleaf::setColorTemperature(int mired)
+QUuid Nanoleaf::setMired(int mired)
 {
-    Q_UNUSED(mired);
+    //NOTE: this is just a rough estimation
+    int kelvin = static_cast<int>(mired * 11.12);
+    QUuid requestId = setKelvin(kelvin);
+    return requestId;
+}
+
+QUuid Nanoleaf::setKelvin(int kelvin)
+{
     QUuid requestId = QUuid::createUuid();
+    QUrl url;
+    url.setHost(m_address.toString());
+    url.setPort(m_port);
+    url.setScheme("http");
+    url.setPath(QString("/api/v1/%1/state").arg(m_authToken));
+
+    QVariantMap map;
+    QVariantMap value;
+    value["value"] = kelvin;
+    map.insert("ct", value);
+    QJsonDocument body = QJsonDocument::fromVariant(map);
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = m_networkManager->put(request, body.toJson());
+    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        if (status != 204 || reply->error() != QNetworkReply::NoError) {
+            emit requestExecuted(requestId, false);
+            qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+        emit requestExecuted(requestId, true);
+    });
     return requestId;
 }
 
@@ -555,6 +779,41 @@ QUuid Nanoleaf::setEffect(const QString &effect)
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         if (status != 204 || reply->error() != QNetworkReply::NoError) {
+            emit requestExecuted(requestId, false);
+            qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+        emit requestExecuted(requestId, true);
+    });
+    return requestId;
+}
+
+QUuid Nanoleaf::identify()
+{
+    QUuid requestId = QUuid::createUuid();
+    QUrl url;
+    url.setHost(m_address.toString());
+    url.setPort(m_port);
+    url.setScheme("http");
+    url.setPath(QString("/api/v1/%1/identify").arg(m_authToken));
+
+    QNetworkRequest request;
+    request.setUrl(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = m_networkManager->put(request, "");
+    qDebug(dcNanoleaf()) << "Sending request" << request.url();
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status < 200 || status > 204 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            if (status >= 400 && status <= 410) {
+                emit authenticationStatusChanged(false);
+            }
             emit requestExecuted(requestId, false);
             qCWarning(dcNanoleaf()) << "Request error:" << status << reply->errorString();
             return;

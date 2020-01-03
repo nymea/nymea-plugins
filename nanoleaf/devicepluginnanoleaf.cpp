@@ -1,24 +1,30 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2020 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *                                                                         *
- *  This file is part of nymea.                                            *
- *                                                                         *
- *  This library is free software; you can redistribute it and/or          *
- *  modify it under the terms of the GNU Lesser General Public             *
- *  License as published by the Free Software Foundation; either           *
- *  version 2.1 of the License, or (at your option) any later version.     *
- *                                                                         *
- *  This library is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- *  Lesser General Public License for more details.                        *
- *                                                                         *
- *  You should have received a copy of the GNU Lesser General Public       *
- *  License along with this library; If not, see                           *
- *  <http://www.gnu.org/licenses/>.                                        *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by copyright law, and
+* remains the property of nymea GmbH. All rights, including reproduction, publication,
+* editing and translation, are reserved. The use of this project is subject to the terms of a
+* license agreement to be concluded with nymea GmbH in accordance with the terms
+* of use of nymea GmbH, available under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
+* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
+* Lesser General Public License as published by the Free Software Foundation; version 3.
+* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this project.
+* If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under contact@nymea.io
+* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "devicepluginnanoleaf.h"
 #include "plugininfo.h"
@@ -34,12 +40,10 @@ DevicePluginNanoleaf::DevicePluginNanoleaf()
 
 }
 
-
 void DevicePluginNanoleaf::init()
 {
     m_zeroconfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_nanoleafapi._tcp");
 }
-
 
 void DevicePluginNanoleaf::discoverDevices(DeviceDiscoveryInfo *info)
 {
@@ -68,6 +72,7 @@ void DevicePluginNanoleaf::discoverDevices(DeviceDiscoveryInfo *info)
 
         Device *existingDevice = myDevices().findByParams(ParamList() << Param(lightPanelsDeviceSerialNoParamTypeId, serialNo));
         if (existingDevice) {
+            //For device rediscovery
             descriptor.setDeviceId(existingDevice->id());
         }
 
@@ -81,46 +86,29 @@ void DevicePluginNanoleaf::discoverDevices(DeviceDiscoveryInfo *info)
         descriptor.setParams(params);
 
         info->addDeviceDescriptor(descriptor);
-
     }
     info->finish(Device::DeviceErrorNoError);
 }
-
 
 void DevicePluginNanoleaf::startPairing(DevicePairingInfo *info)
 {
     info->finish(Device::DeviceErrorNoError, tr("On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing."));
 }
 
-
 void DevicePluginNanoleaf::confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret)
 {
     Q_UNUSED(username)
     Q_UNUSED(secret)
-    Nanoleaf *nanoleaf = new Nanoleaf(hardwareManager()->networkManager(), QHostAddress(info->params().paramValue(lightPanelsDeviceAddressParamTypeId).toString()), info->params().paramValue(lightPanelsDevicePortParamTypeId).toInt(), this);
-    connect(nanoleaf, &Nanoleaf::authTokenRecieved, this, &DevicePluginNanoleaf::onAuthTokenReceived);
-    connect(nanoleaf, &Nanoleaf::authenticationStatusChanged, this, &DevicePluginNanoleaf::onAuthenticationStatusChanged);
-    connect(nanoleaf, &Nanoleaf::requestExecuted, this, &DevicePluginNanoleaf::onRequestExecuted);
-    connect(nanoleaf, &Nanoleaf::connectionChanged, this, &DevicePluginNanoleaf::onConnectionChanged);
-
-    connect(nanoleaf, &Nanoleaf::brightnessReceived, this, &DevicePluginNanoleaf::onBrightnessReceived);
-    connect(nanoleaf, &Nanoleaf::powerReceived, this, &DevicePluginNanoleaf::onPowerReceived);
-    connect(nanoleaf, &Nanoleaf::colorModeReceived, this, &DevicePluginNanoleaf::onColorModeReceived);
-    connect(nanoleaf, &Nanoleaf::colorTemperatureReceived, this, &DevicePluginNanoleaf::onColorTemperatureReceived);
-    connect(nanoleaf, &Nanoleaf::saturationReceived, this, &DevicePluginNanoleaf::onSaturationReceived);
-    connect(nanoleaf, &Nanoleaf::hueReceived, this, &DevicePluginNanoleaf::onHueReceived);
-    connect(nanoleaf, &Nanoleaf::effectListReceived, this, &DevicePluginNanoleaf::onEffectListReceived);
-    connect(nanoleaf, &Nanoleaf::selectedEffectReceived, this, &DevicePluginNanoleaf::onSelectedEffectReceived);
+    Nanoleaf *nanoleaf = createNanoleafConnection(QHostAddress(info->params().paramValue(lightPanelsDeviceAddressParamTypeId).toString()), info->params().paramValue(lightPanelsDevicePortParamTypeId).toInt());
     nanoleaf->addUser(); //push button pairing
     m_unfinishedNanoleafConnections.insert(info->deviceId(), nanoleaf);
     m_unfinishedPairing.insert(nanoleaf, info);
     connect(info, &DevicePairingInfo::aborted, this, [info, this] {
-            Nanoleaf *nanoleaf = m_unfinishedNanoleafConnections.take(info->deviceId());
-            m_unfinishedPairing.remove(nanoleaf);
-            nanoleaf->deleteLater();
+        Nanoleaf *nanoleaf = m_unfinishedNanoleafConnections.take(info->deviceId());
+        m_unfinishedPairing.remove(nanoleaf);
+        nanoleaf->deleteLater();
     });
 }
-
 
 void DevicePluginNanoleaf::setupDevice(DeviceSetupInfo *info)
 {
@@ -132,29 +120,17 @@ void DevicePluginNanoleaf::setupDevice(DeviceSetupInfo *info)
 
         Nanoleaf *nanoleaf;
         if (m_unfinishedNanoleafConnections.contains(device->id())) {
+            // This setupDevice is called after a discovery
             nanoleaf = m_unfinishedNanoleafConnections.take(device->id());
             m_nanoleafConnections.insert(device->id(), nanoleaf);
             return info->finish(Device::DeviceErrorNoError);
         } else {
+            // This setupDevice is called after a (re)start, with an already added device
             QHostAddress address(device->paramValue(lightPanelsDeviceAddressParamTypeId).toString());
             int port = device->paramValue(lightPanelsDevicePortParamTypeId).toInt();
-            nanoleaf = new Nanoleaf(hardwareManager()->networkManager(), address, port, this);
-            connect(nanoleaf, &Nanoleaf::authTokenRecieved, this, &DevicePluginNanoleaf::onAuthTokenReceived);
-
-            connect(nanoleaf, &Nanoleaf::authenticationStatusChanged, this, &DevicePluginNanoleaf::onAuthenticationStatusChanged);
-            connect(nanoleaf, &Nanoleaf::requestExecuted, this, &DevicePluginNanoleaf::onRequestExecuted);
-            connect(nanoleaf, &Nanoleaf::connectionChanged, this, &DevicePluginNanoleaf::onConnectionChanged);
-
-            connect(nanoleaf, &Nanoleaf::brightnessReceived, this, &DevicePluginNanoleaf::onBrightnessReceived);
-            connect(nanoleaf, &Nanoleaf::powerReceived, this, &DevicePluginNanoleaf::onPowerReceived);
-            connect(nanoleaf, &Nanoleaf::colorModeReceived, this, &DevicePluginNanoleaf::onColorModeReceived);
-            connect(nanoleaf, &Nanoleaf::saturationReceived, this, &DevicePluginNanoleaf::onSaturationReceived);
-            connect(nanoleaf, &Nanoleaf::hueReceived, this, &DevicePluginNanoleaf::onHueReceived);
-            connect(nanoleaf, &Nanoleaf::colorTemperatureReceived, this, &DevicePluginNanoleaf::onColorTemperatureReceived);
-            connect(nanoleaf, &Nanoleaf::effectListReceived, this, &DevicePluginNanoleaf::onEffectListReceived);
-            connect(nanoleaf, &Nanoleaf::selectedEffectReceived, this, &DevicePluginNanoleaf::onSelectedEffectReceived);
+            nanoleaf = createNanoleafConnection(address, port);
             nanoleaf->setAuthToken(token);
-            nanoleaf->getControllerInfo(); //we don't care about the controller info, this is just to check if the device is available
+            nanoleaf->getControllerInfo(); //This is just to check if the device is available
 
             m_nanoleafConnections.insert(device->id(), nanoleaf);
             m_asyncDeviceSetup.insert(nanoleaf, info);
@@ -164,19 +140,21 @@ void DevicePluginNanoleaf::setupDevice(DeviceSetupInfo *info)
     }
 }
 
-
 void DevicePluginNanoleaf::postSetupDevice(Device *device)
 {
     if (device->deviceClassId() == lightPanelsDeviceClassId) {
-        //Nanoleaf *nanoleaf = m_nanoleafConnections.value(device->id());
-        //getDeviceStates(nanoleaf);
+        Nanoleaf *nanoleaf = m_nanoleafConnections.value(device->id());
+        if (!nanoleaf)
+            return;
+         nanoleaf->getControllerInfo();
+         nanoleaf->registerForEvents();
     }
 
     if(!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(5);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this]() {
             foreach (Nanoleaf *nanoleaf, m_nanoleafConnections) {
-                getDeviceStates(nanoleaf);
+                nanoleaf->getControllerInfo();
             }
         });
     }
@@ -204,6 +182,10 @@ void DevicePluginNanoleaf::executeAction(DeviceActionInfo *info)
 
     if (device->deviceClassId() == lightPanelsDeviceClassId) {
         Nanoleaf *nanoleaf = m_nanoleafConnections.value(device->id());
+        if (!nanoleaf) {
+            return info->finish(Device::DeviceErrorHardwareFailure);
+        }
+
         if (action.actionTypeId() == lightPanelsPowerActionTypeId) {
             bool power = action.param(lightPanelsPowerActionPowerParamTypeId).value().toBool();
             QUuid requestId = nanoleaf->setPower(power);
@@ -218,13 +200,17 @@ void DevicePluginNanoleaf::executeAction(DeviceActionInfo *info)
 
         } else if (action.actionTypeId() == lightPanelsColorActionTypeId) {
             QColor color(action.param(lightPanelsColorActionColorParamTypeId).value().toString());
-            QUuid requestId = nanoleaf->setHue(color);
+            QUuid requestId = nanoleaf->setColor(color);
             connect(info, &DeviceActionInfo::aborted,[requestId, this](){m_asyncActions.remove(requestId);});
             m_asyncActions.insert(requestId, info);
 
         } else if (action.actionTypeId() == lightPanelsColorTemperatureActionTypeId) {
             int colorTemperature = action.param(lightPanelsColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
-            QUuid requestId = nanoleaf->setColorTemperature(colorTemperature);
+            QUuid requestId = nanoleaf->setMired(colorTemperature);
+            connect(info, &DeviceActionInfo::aborted,[requestId, this](){m_asyncActions.remove(requestId);});
+            m_asyncActions.insert(requestId, info);
+        } else if (action.actionTypeId() == lightPanelsAlertActionTypeId) {
+            QUuid requestId = nanoleaf->identify();
             connect(info, &DeviceActionInfo::aborted,[requestId, this](){m_asyncActions.remove(requestId);});
             m_asyncActions.insert(requestId, info);
         }
@@ -234,10 +220,10 @@ void DevicePluginNanoleaf::executeAction(DeviceActionInfo *info)
 void DevicePluginNanoleaf::browseDevice(BrowseResult *result)
 {
     Device *device = result->device();
-     Nanoleaf *nanoleaf = m_nanoleafConnections.value(device->id());
-     nanoleaf->getEffects();
-     m_asyncBrowseResults.insert(nanoleaf, result);
-     connect(result, &BrowseResult::aborted, this, [nanoleaf, this]{m_asyncBrowseResults.remove(nanoleaf);});
+    Nanoleaf *nanoleaf = m_nanoleafConnections.value(device->id());
+    nanoleaf->getEffects();
+    m_asyncBrowseResults.insert(nanoleaf, result);
+    connect(result, &BrowseResult::aborted, this, [nanoleaf, this]{m_asyncBrowseResults.remove(nanoleaf);});
 }
 
 void DevicePluginNanoleaf::browserItem(BrowserItemResult *result)
@@ -260,15 +246,24 @@ void DevicePluginNanoleaf::executeBrowserItem(BrowserActionInfo *info)
     connect(info, &BrowserActionInfo::aborted, this, [requestId, this]{m_asyncBrowserItem.remove(requestId);});
 }
 
-
-void DevicePluginNanoleaf::getDeviceStates(Nanoleaf *nanoleaf)
+Nanoleaf *DevicePluginNanoleaf::createNanoleafConnection(const QHostAddress &address, int port)
 {
-    nanoleaf->getPower();
-    nanoleaf->getHue();
-    nanoleaf->getColorMode();
-    nanoleaf->getBrightness();
-    nanoleaf->getColorTemperature();
-    nanoleaf->getSelectedEffect();
+    Nanoleaf *nanoleaf = new Nanoleaf(hardwareManager()->networkManager(), address, port, this);
+    connect(nanoleaf, &Nanoleaf::authTokenRecieved, this, &DevicePluginNanoleaf::onAuthTokenReceived);
+    connect(nanoleaf, &Nanoleaf::authenticationStatusChanged, this, &DevicePluginNanoleaf::onAuthenticationStatusChanged);
+    connect(nanoleaf, &Nanoleaf::requestExecuted, this, &DevicePluginNanoleaf::onRequestExecuted);
+    connect(nanoleaf, &Nanoleaf::connectionChanged, this, &DevicePluginNanoleaf::onConnectionChanged);
+
+    connect(nanoleaf, &Nanoleaf::controllerInfoReceived, this, &DevicePluginNanoleaf::onControllerInfoReceived);
+    connect(nanoleaf, &Nanoleaf::brightnessReceived, this, &DevicePluginNanoleaf::onBrightnessReceived);
+    connect(nanoleaf, &Nanoleaf::powerReceived, this, &DevicePluginNanoleaf::onPowerReceived);
+    connect(nanoleaf, &Nanoleaf::colorModeReceived, this, &DevicePluginNanoleaf::onColorModeReceived);
+    connect(nanoleaf, &Nanoleaf::saturationReceived, this, &DevicePluginNanoleaf::onSaturationReceived);
+    connect(nanoleaf, &Nanoleaf::hueReceived, this, &DevicePluginNanoleaf::onHueReceived);
+    connect(nanoleaf, &Nanoleaf::colorTemperatureReceived, this, &DevicePluginNanoleaf::onColorTemperatureReceived);
+    connect(nanoleaf, &Nanoleaf::effectListReceived, this, &DevicePluginNanoleaf::onEffectListReceived);
+    connect(nanoleaf, &Nanoleaf::selectedEffectReceived, this, &DevicePluginNanoleaf::onSelectedEffectReceived);
+    return nanoleaf;
 }
 
 void DevicePluginNanoleaf::onAuthTokenReceived(const QString &token)
@@ -326,12 +321,23 @@ void DevicePluginNanoleaf::onConnectionChanged(bool connected)
     device->setStateValue(lightPanelsConnectedStateTypeId, connected);
 }
 
+void DevicePluginNanoleaf::onControllerInfoReceived(const Nanoleaf::ControllerInfo &controllerInfo)
+{
+    Nanoleaf *nanoleaf = static_cast<Nanoleaf *>(sender());
+    Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
+    if (!device)
+        return;
+    qCDebug(dcNanoleaf()) << "Controller Info received" << controllerInfo.name << controllerInfo.firmwareVersion;
+    device->setParamValue(lightPanelsDeviceFirmwareVersionParamTypeId, controllerInfo.firmwareVersion);
+}
+
 void DevicePluginNanoleaf::onPowerReceived(bool power)
 {
     Nanoleaf *nanoleaf = static_cast<Nanoleaf *>(sender());
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
+    qCDebug(dcNanoleaf()) << "Power received" << power;
     device->setStateValue(lightPanelsPowerStateTypeId, power);
 }
 
@@ -341,6 +347,7 @@ void DevicePluginNanoleaf::onBrightnessReceived(int percentage)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
+    qCDebug(dcNanoleaf()) << "Brightness received" << percentage;
     device->setStateValue(lightPanelsBrightnessStateTypeId, percentage);
 }
 
@@ -350,6 +357,7 @@ void DevicePluginNanoleaf::onColorModeReceived(const QString &colorMode)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
+    qCDebug(dcNanoleaf()) << "Color mode received" << colorMode;
     device->setStateValue(lightPanelsColorModeStateTypeId, colorMode);
 }
 
@@ -359,6 +367,7 @@ void DevicePluginNanoleaf::onHueReceived(int hue)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
+    qCDebug(dcNanoleaf()) << "Hue received" << hue;
     m_hues.insert(device->id(), hue);
     nanoleaf->getSaturation();
 }
@@ -372,7 +381,6 @@ void DevicePluginNanoleaf::onSaturationReceived(int saturation)
     qCDebug(dcNanoleaf()) << "Saturation received" << saturation;
     QColor color;
     color.setHsv(m_hues.value(device->id()), saturation, 100);
-    //TODO get hue
     device->setStateValue(lightPanelsColorStateTypeId, color);
 }
 
@@ -394,17 +402,20 @@ void DevicePluginNanoleaf::onEffectListReceived(const QStringList &effects)
             item.setDisplayName(effect);
             item.setDisabled(false);
             result->addItem(item);
-       }
+        }
         result->finish(Device::DeviceErrorNoError);
     }
 }
 
-void DevicePluginNanoleaf::onColorTemperatureReceived(int mired)
+void DevicePluginNanoleaf::onColorTemperatureReceived(int kelvin)
 {
     Nanoleaf *nanoleaf = static_cast<Nanoleaf *>(sender());
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
+    qCDebug(dcNanoleaf()) << "Color temperature received" << kelvin;
+    //NOTE: this is just a rough estimation of the mired value
+    int mired = static_cast<int>(kelvin/11.12); //FIXME
     device->setStateValue(lightPanelsColorTemperatureStateTypeId, mired);
 }
 
@@ -414,6 +425,7 @@ void DevicePluginNanoleaf::onSelectedEffectReceived(const QString &effect)
     Device *device = myDevices().findById(m_nanoleafConnections.key(nanoleaf));
     if (!device)
         return;
-    device->setStateValue(lightPanelsEffectNameStateTypeId, effect);
+    qCDebug(dcNanoleaf()) << "Selected effect received" << effect;
+    device->setStateValue(lightPanelsEffectNameStateTypeId, QString(effect).remove('"').remove('*'));
 }
 

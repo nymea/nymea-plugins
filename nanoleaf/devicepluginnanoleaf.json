@@ -12,7 +12,7 @@
                     "id": "d44ee383-9fa5-4751-babd-1129ac20896a",
                     "name": "lightPanels",
                     "displayName": "Light panels",
-                    "interfaces": ["colorlight", "colortemperaturelight", "connectable"],
+                    "interfaces": ["colorlight", "colortemperaturelight", "alert", "connectable"],
                     "createMethods": ["discovery"],
                     "setupMethod": "pushButton",
                     "browsable": true,
@@ -50,6 +50,13 @@
                             "displayName": "Firmware version",
                             "type" : "QString",
                             "readOnly": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "47a6a1a1-fb90-4f24-be8c-b4dba0aaaa84",
+                            "name": "alert",
+                            "displayName": "Alert"
                         }
                     ],
                     "stateTypes": [
@@ -100,7 +107,7 @@
                             "name": "brightness",
                             "displayName": "Brightness",
                             "displayNameEvent": "Brightness changed",
-                            "displayNameAction": "Set brigtness",
+                            "displayNameAction": "Set brightness",
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0,
@@ -113,17 +120,14 @@
                             "name": "colorMode",
                             "displayName": "Color mode",
                             "displayNameEvent": "Color mode changed",
-                            "displayNameAction": "Set color",
                             "type": "QString",
-                            "defaultValue": "Color temperature",
-                            "writable": true
+                            "defaultValue": "Color temperature"
                         },
                         {
                             "id": "57f9831e-1b98-41c1-a21c-6073ff327237",
                             "name": "effectName",
                             "displayName": "Effect name",
                             "displayNameEvent": "Effect name changed",
-                            "displayNameAction": "Set color",
                             "type": "QString",
                             "defaultValue": "-"
                         }
