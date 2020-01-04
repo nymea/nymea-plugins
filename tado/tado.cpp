@@ -68,7 +68,7 @@ void Tado::getToken(const QString &password)
     body.append("&password=" + password);
 
     QNetworkReply *reply = m_networkManager->post(request, body);
-    qCDebug(dcTado()) << "Sending request" << request.url() << body;
+    //qCDebug(dcTado()) << "Sending request" << request.url() << body;
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -129,7 +129,7 @@ void Tado::getHomes()
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
-    qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -161,7 +161,6 @@ void Tado::getHomes()
             Home home;
             home.id = obj["id"].toString();
             home.name = obj["name"].toString();
-
             homes.append(home);
         }
         emit homesReceived(homes);
@@ -175,7 +174,7 @@ void Tado::getZones(const QString &homeId)
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
-    qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
     connect(reply, &QNetworkReply::finished, this, [reply, homeId, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -221,7 +220,7 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
-    qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
     connect(reply, &QNetworkReply::finished, this, [reply, homeId, zoneId, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -247,8 +246,6 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
             return;
         }
-
-        qDebug(dcTado()) << "Get zone stat" << data;
         ZoneState state;
         QVariantMap map = data.toVariant().toMap();
         state.tadoMode = map["tadoMode"].toString();
@@ -258,7 +255,6 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
         state.settingType = settingsMap["type"].toString();
         state.settingPower = (settingsMap["power"].toString() == "ON");
         state.settingTemperature = settingsMap["temperature"].toMap().value("celsius").toDouble();
-
         state.connected = (map["link"].toMap().value("state").toString() == "ONLINE");
 
         QVariantMap activityDataMap = map["activityDataPoints"].toMap();
@@ -273,7 +269,6 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
             state.overlayIsSet = true;
             QVariantMap overlayMap = map["overlay"].toMap();
             state.overlayType = map["overlayType"].toString();
-            qCDebug(dcTado()) << "Overlay power" << overlayMap["setting"].toMap().value("power").toString() << overlayMap["setting"].toMap().value("temperature").toDouble();
             state.overlaySettingPower = (overlayMap["setting"].toMap().value("power").toString() == "ON");
             state.overlaySettingTemperature = overlayMap["setting"].toMap().value("temperature").toDouble();
         } else {
@@ -299,7 +294,7 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
        powerString = "OFF";
 
     body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\""+ powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
-    qCDebug(dcTado()) << "Sending request" << body;
+    //qCDebug(dcTado()) << "Sending request" << body;
     QNetworkReply *reply = m_networkManager->put(request, body);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
         reply->deleteLater();

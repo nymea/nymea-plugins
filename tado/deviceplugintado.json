@@ -139,6 +139,8 @@
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0,
+                            "minValue": 5,
+                            "maxValue": 25,
                             "writable": true
                         },
                         {
