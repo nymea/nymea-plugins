@@ -46,11 +46,11 @@ public:
     void resetLogo();
     void setLogo(QColor led1, QColor led2, QColor led3, QColor led4);
     void initBackgroundColor(bool top, bool bottom);
-    void setBackgroundColor(bool top, bool bottom, QColor color);
+    void setBackgroundColor(bool top, bool initTop, bool bottom, bool initBottom, QColor color); //top and bottom flags are to select the ring, init is to reset a effect
     void setLeds(bool top, int ledIndex, int numOfLeds, QColor color);
-    void startWhirl(bool top, bool bottom, int speed, bool clockwise);
+    void startWhirl(bool top, bool bottom, QColor color, int speed, bool clockwise); //Speed: 0 (no movement) to about 510 (very fast)
     void stopWhirl(bool top, bool bottom);
-    void startMorph(bool top, bool bottom, int speed, bool time);
+    void startMorph(bool top, bool bottom, QColor color, int time, int speed); //time in ms, speed 0-10
     void stopMorph(bool top, bool bottom);
 
 

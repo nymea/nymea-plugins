@@ -98,12 +98,52 @@ void Ufo::initBackgroundColor(bool top, bool bottom)
     url.setScheme("http");
     url.setHost(m_address.toString());
     url.setPath("/api");
+    QUrlQuery query;
     if (top) {
-        url.setQuery("top_init");
+       query.addQueryItem("top_init", "0");
     }
     if (bottom) {
-        url.setQuery("bottom_init");
+       query.addQueryItem("bottom_init", "0");
     }
+    url.setQuery(query);
+    QNetworkRequest request;
+    request.setUrl(url);
+    qCDebug(dcDynatrace()) << "Sending request" << url;
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDynatrace()) << "Request error:" << status << reply->errorString();
+            emit connectionChanged(false);
+            return;
+        }
+        emit connectionChanged(true);
+    });
+}
+
+void Ufo::setBackgroundColor(bool top, bool initTop, bool bottom, bool initBottom, QColor color)
+{
+    QUrl url;
+    url.setScheme("http");
+    url.setHost(m_address.toString());
+    url.setPath("/api");
+    QUrlQuery query;
+    if (initTop){
+        query.addQueryItem("top_init", "0");
+    }
+    if (initBottom){
+        query.addQueryItem("bottom_init", "0");
+    }
+    if (top){
+        query.addQueryItem("top_bg", color.name().remove(0,1));
+    }
+    if (bottom) {
+        query.addQueryItem("bottom_bg", color.name().remove(0,1));
+    }
+    url.setQuery(query);
     QNetworkRequest request;
     request.setUrl(url);
 
@@ -123,7 +163,47 @@ void Ufo::initBackgroundColor(bool top, bool bottom)
     });
 }
 
-void Ufo::setBackgroundColor(bool top, bool bottom, QColor color)
+void Ufo::startWhirl(bool top, bool bottom, QColor color, int speed, bool clockwise)
+{
+    Q_UNUSED(clockwise)
+    QUrl url;
+    url.setScheme("http");
+    url.setHost(m_address.toString());
+    url.setPath("/api");
+    QUrlQuery query;
+    if (top){
+        query.addQueryItem("top_init", "0");
+        query.addQueryItem("top_bg", color.name().remove(0,1));
+        query.addQueryItem("top", "0|8|000000");
+        query.addQueryItem("top_whirl", QString::number(speed));
+    }
+    if (bottom) {
+        query.addQueryItem("bottom_init", "0");
+        query.addQueryItem("bottom_bg", color.name().remove(0,1));
+        query.addQueryItem("bottom", "0|8|000000");
+        query.addQueryItem("bottom_whirl", QString::number(speed));
+    }
+    url.setQuery(query);
+    QNetworkRequest request;
+    request.setUrl(url);
+
+    qCDebug(dcDynatrace()) << "Sending request" << url;
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcDynatrace()) << "Request error:" << status << reply->errorString();
+            emit connectionChanged(false);
+            return;
+        }
+        emit connectionChanged(true);
+    });
+}
+
+void Ufo::startMorph(bool top, bool bottom, QColor color, int time, int speed)
 {
     QUrl url;
     url.setScheme("http");
@@ -133,10 +213,14 @@ void Ufo::setBackgroundColor(bool top, bool bottom, QColor color)
     if (top){
         query.addQueryItem("top_init", "0");
         query.addQueryItem("top_bg", color.name().remove(0,1));
+        query.addQueryItem("top", "0|16|000000");
+        query.addQueryItem("top_morph", QString::number(time)+"|"+QString::number(speed));
     }
     if (bottom) {
         query.addQueryItem("bottom_init", "0");
         query.addQueryItem("bottom_bg", color.name().remove(0,1));
+        query.addQueryItem("bottom", "0|16|000000");
+        query.addQueryItem("bottom_morph", QString::number(time)+"|"+QString::number(speed));
     }
     url.setQuery(query);
     QNetworkRequest request;

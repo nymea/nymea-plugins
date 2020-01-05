@@ -13,7 +13,7 @@
                     "name": "ufo",
                     "displayName": "ufo",
                     "createMethods": ["user", "discovery"],
-                    "interfaces": ["colorlight", "alert", "connectable"],
+                    "interfaces": ["colorlight", "connectable"],
                     "paramTypes": [
                         {
                             "id": "3e14968b-954e-4e85-ae79-3de9ae4fe951",
@@ -29,26 +29,6 @@
                             "displayName": "Id",
                             "type" : "QString",
                             "readOnly": true
-                        }
-                    ],
-                    "actionTypes": [
-                        {
-                            "id": "6efa52d9-527b-4ac7-8885-50f2b1786561",
-                            "name": "alert",
-                            "displayName": "flash",
-                            "paramTypes": [
-                                {
-                                    "id": "e8d854ce-02d0-4ddd-a2bd-0c464cbb9182",
-                                    "name": "alert",
-                                    "displayName": "alert",
-                                    "type": "QString",
-                                    "defaultValue": "flash",
-                                    "allowedValues": [
-                                        "flash",
-                                        "flash 15 [s]"
-                                    ]
-                                }
-                            ]
                         }
                     ],
                     "stateTypes": [
@@ -118,10 +98,10 @@
                         },
                         {
                             "id": "53da0021-974a-434a-94ac-3f187aad1480",
-                            "name": "effect",
-                            "displayName": "Effect",
-                            "displayNameEvent": "Effect changed",
-                            "displayNameAction": "Set effect",
+                            "name": "effectTop",
+                            "displayName": "Effect top",
+                            "displayNameEvent": "Effect top changed",
+                            "displayNameAction": "Set top effect",
                             "type": "QString",
                             "defaultValue": "None",
                             "possibleValues": [
@@ -129,6 +109,51 @@
                                 "Morph",
                                 "Whirl"
                             ],
+                            "writable": true
+                        },
+                        {
+                            "id": "0fab896b-9900-4375-96c0-0d38460cee65",
+                            "name": "effectBottom",
+                            "displayName": "Effect bottom",
+                            "displayNameEvent": "Effect bottom changed",
+                            "displayNameAction": "Set bottom effect",
+                            "type": "QString",
+                            "defaultValue": "None",
+                            "possibleValues": [
+                                "None",
+                                "Morph",
+                                "Whirl"
+                            ],
+                            "writable": true
+                        },
+                        {
+                            "id": "d3eb4a99-20cc-4d47-af7d-33453aca2087",
+                            "name": "logoColor",
+                            "displayName": "Logo color",
+                            "displayNameEvent": "Logo color changed",
+                            "displayNameAction": "Set logo color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "b378290a-468f-45ef-9d65-00546737ce9b",
+                            "name": "topColor",
+                            "displayName": "Top color",
+                            "displayNameEvent": "Top color changed",
+                            "displayNameAction": "Set top color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "ef2a8d5b-82d4-43d5-b9ec-82ef5662b971",
+                            "name": "bottomColor",
+                            "displayName": "Bottom color",
+                            "displayNameEvent": "Bottom color changed",
+                            "displayNameAction": "Set bottom color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
                             "writable": true
                         }
                     ]
