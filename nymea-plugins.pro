@@ -46,6 +46,7 @@ PLUGIN_DIRS = \
     tasmota             \
     tcpcommander        \
     texasinstruments    \
+    tplink              \
     udpcommander        \
     unitec              \
     wakeonlan           \
