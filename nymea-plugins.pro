@@ -30,6 +30,7 @@ PLUGIN_DIRS = \
     mqttclient          \
     netatmo             \
     networkdetector     \
+    nuki                \
     onewire             \
     openuv              \ 
     openweathermap      \
