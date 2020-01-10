@@ -460,6 +460,7 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          libsodium23,
          nymea-plugins-translations,
+Replaces: nymea-nukiplugin
 Description: nymea.io plugin for the nuki smart lock
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
