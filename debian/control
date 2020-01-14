@@ -458,7 +458,6 @@ Package: nymea-plugin-nuki
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libsodium23,
          nymea-plugins-translations,
 Replaces: nymea-nukiplugin
 Description: nymea.io plugin for the nuki smart lock
