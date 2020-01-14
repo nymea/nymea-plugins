@@ -1,24 +1,30 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io         *
- *                                                                         *
- *  This file is part of nymea.                                            *
- *                                                                         *
- *  This library is free software; you can redistribute it and/or          *
- *  modify it under the terms of the GNU Lesser General Public             *
- *  License as published by the Free Software Foundation; either           *
- *  version 2.1 of the License, or (at your option) any later version.     *
- *                                                                         *
- *  This library is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- *  Lesser General Public License for more details.                        *
- *                                                                         *
- *  You should have received a copy of the GNU Lesser General Public       *
- *  License along with this library; If not, see                           *
- *  <http://www.gnu.org/licenses/>.                                        *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by copyright law, and
+* remains the property of nymea GmbH. All rights, including reproduction, publication,
+* editing and translation, are reserved. The use of this project is subject to the terms of a
+* license agreement to be concluded with nymea GmbH in accordance with the terms
+* of use of nymea GmbH, available under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
+* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
+* Lesser General Public License as published by the Free Software Foundation; version 3.
+* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this project.
+* If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under contact@nymea.io
+* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #ifndef DEVICEPLUGINBOSE_H
 #define DEVICEPLUGINBOSE_H
@@ -30,6 +36,7 @@
 
 #include <QHash>
 #include <QDebug>
+#include <QUuid>
 
 class DevicePluginBose : public DevicePlugin
 {
@@ -48,25 +55,32 @@ public:
     void deviceRemoved(Device *device) override;
     void executeAction(DeviceActionInfo *info) override;
 
+    void browseDevice(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+
 private:
     PluginTimer *m_pluginTimer = nullptr;
 
     QHash<Device *, SoundTouch *> m_soundTouch;
-    QHash<int, ActionId> m_pendingActions;
+    QHash<QUuid, DeviceActionInfo *> m_pendingActions;
+    QHash<QUuid, BrowseResult *> m_asyncBrowseResults;
+    QHash<QUuid, BrowserActionInfo *> m_asyncExecuteBroweItems;
 
 private slots:
     void onPluginTimer();
     void onConnectionChanged(bool connected);
     void onDeviceNameChanged();
+    void onRequestExecuted(QUuid requestId, bool success);
 
-   void onInfoObjectReceived(InfoObject infoObject);
-   void onNowPlayingObjectReceived(NowPlayingObject nowPlaying);
-   void onVolumeObjectReceived(VolumeObject volume);
-   void onSourcesObjectReceived(SourcesObject sources);
-   void onBassObjectReceived(BassObject bass);
-   void onBassCapabilitiesObjectReceived(BassCapabilitiesObject bassCapabilities);
-   void onGroupObjectReceived(GroupObject group);
-   void onZoneObjectReceived(ZoneObject zone);
+   void onInfoObjectReceived(QUuid requestId, InfoObject infoObject);
+   void onNowPlayingObjectReceived(QUuid requestId, NowPlayingObject nowPlaying);
+   void onVolumeObjectReceived(QUuid requestId, VolumeObject volume);
+   void onSourcesObjectReceived(QUuid requestId, SourcesObject sources);
+   void onBassObjectReceived(QUuid requestId, BassObject bass);
+   void onBassCapabilitiesObjectReceived(QUuid requestId, BassCapabilitiesObject bassCapabilities);
+   void onGroupObjectReceived(QUuid requestId, GroupObject group);
+   void onZoneObjectReceived(QUuid requestId, ZoneObject zone);
 };
 
 #endif // DEVICEPLUGINBOSE_H
