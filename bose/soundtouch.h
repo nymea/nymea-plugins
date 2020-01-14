@@ -80,7 +80,7 @@ private:
     QString m_ipAddress;
     int m_port = 8090;
     QWebSocket *m_websocket = nullptr;
-    void emitRequestStatus(QUuid requestId, const QByteArray &data); //returns the status, -1 in case of error
+    void emitRequestStatus(QUuid requestId, QNetworkReply *reply); //returns the status, -1 in case of error
     void parseData(QUuid requestId, const QByteArray &data);
 
 signals:
@@ -103,7 +103,6 @@ private slots:
     void onWebsocketConnected();
     void onWebsocketDisconnected();
     void onWebsocketMessageReceived(QString message);
-    void onRestRequestError(QNetworkReply::NetworkError error);
 };
 
 #endif // SOUNDTOUCH_H

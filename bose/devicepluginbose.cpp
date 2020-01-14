@@ -266,6 +266,7 @@ void DevicePluginBose::executeBrowserItem(BrowserActionInfo *info)
     if (device->deviceClassId() == soundtouchDeviceClassId) {
         SoundTouch *soundTouch = m_soundTouch.value(device);
         ContentItemObject contentItem;
+        contentItem.source = info->browserAction().itemId();
         QUuid requestId = soundTouch->setSource(contentItem);
         m_asyncExecuteBroweItems.insert(requestId, info);
         connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBroweItems.remove(requestId);});

@@ -233,15 +233,7 @@ QUuid SoundTouch::setKey(KEY_VALUE keyValue)
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
-            emit requestExecuted(requestId, false);
-            return;
-        }
-
-        //TODO parse error
+        emitRequestStatus(requestId, reply);
     });
 
     if (keyValue == KEY_VALUE_POWER) {
@@ -281,15 +273,7 @@ QUuid SoundTouch::setVolume(int volume)
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
-            emit requestExecuted(requestId, false);
-            return;
-        }
-
-        //TODO parse error
+        emitRequestStatus(requestId, reply);
     });
     return requestId;
 }
@@ -315,15 +299,7 @@ QUuid SoundTouch::setSource(ContentItemObject contentItem)
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
-            emit requestExecuted(requestId, false);
-            return;
-        }
-
-        //TODO parse error
+        emitRequestStatus(requestId, reply);
     });
     return requestId;
 }
@@ -351,15 +327,7 @@ QUuid SoundTouch::setZone(ZoneObject zone)
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
-            emit requestExecuted(requestId, false);
-            return;
-        }
-
-        //TODO parse error
+        emitRequestStatus(requestId, reply);
     });
     return requestId;
 }
@@ -385,18 +353,9 @@ QUuid SoundTouch::addZoneSlave(ZoneObject zone)
     xml.writeEndDocument();
     qDebug(dcBose) << "Sending request" << url << content;
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
-            emit requestExecuted(requestId, false);
-            return;
-        }
-
-        //TODO parse error
+        emitRequestStatus(requestId, reply);
     });
     return requestId;
 }
@@ -424,15 +383,7 @@ QUuid SoundTouch::removeZoneSlave(ZoneObject zone)
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
-            emit requestExecuted(requestId, false);
-            return;
-        }
-
-        //TODO parse error
+        emitRequestStatus(requestId, reply);
     });
     return requestId;
 }
@@ -453,15 +404,7 @@ QUuid SoundTouch::setBass(int volume)
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
-            emit requestExecuted(requestId, false);
-            return;
-        }
-
-        //TODO parse error
+        emitRequestStatus(requestId, reply);
     });
     return requestId;
 }
@@ -482,15 +425,7 @@ QUuid SoundTouch::setName(QString name)
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
-            emit requestExecuted(requestId, false);
-            return;
-        }
-
-        //TODO parse error
+        emitRequestStatus(requestId, reply);
     });
     return requestId;
 }
@@ -518,7 +453,8 @@ QUuid SoundTouch::setSpeaker(PlayInfoObject playInfo)
     qDebug(dcBose) << "Sending request" << url << content;
     QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
     });
     return requestId;
 }
@@ -542,19 +478,10 @@ void SoundTouch::onWebsocketDisconnected()
     });
 }
 
-void SoundTouch::onRestRequestError(QNetworkReply::NetworkError error)
-{
-    Q_UNUSED(error)
-
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    reply->deleteLater();
-
-    qWarning(dcBose) << "Rest Error" << reply->errorString();
-}
-
 void SoundTouch::onWebsocketMessageReceived(QString message)
 {
     qDebug(dcBose) << "Websocket message received:" << message;
+    //TODO as soon as QWebSocket supports sub-protocols
 }
 
 QUuid SoundTouch::sendGetRequest(QString path)
@@ -579,9 +506,14 @@ QUuid SoundTouch::sendGetRequest(QString path)
         } else {
             sendGetRequest(m_getRequestQueue.takeFirst());
         }
-
+        if (reply->error() != QNetworkReply::NoError) {
+            emit requestExecuted(requestId, false);
+            emit connectionChanged(false);
+            return;
+        }
+        emit connectionChanged(true);
         // Check HTTP status code
-        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+        if (status != 200) {
             qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
             emit requestExecuted(requestId, false);
             return;
@@ -594,8 +526,22 @@ QUuid SoundTouch::sendGetRequest(QString path)
     return requestId;
 }
 
-void SoundTouch::emitRequestStatus(QUuid requestId, const QByteArray &data)
+void SoundTouch::emitRequestStatus(QUuid requestId, QNetworkReply *reply)
 {
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    // Check HTTP status code
+    if (reply->error() != QNetworkReply::NoError) {
+        emit connectionChanged(false);
+        emit requestExecuted(requestId, false);
+        qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
+        return;
+    }
+    emit connectionChanged(true);
+    if (status != 200) {
+        emit requestExecuted(requestId, false);
+        return;
+    }
+    QByteArray data = reply->readAll();
     QXmlStreamReader xml;
     xml.addData(data);
 
