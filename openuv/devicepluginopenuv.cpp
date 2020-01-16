@@ -150,9 +150,9 @@ void DevicePluginOpenUv::getUvIndex(Device *device)
         device->setStateValue(openUvUvMaxStateTypeId, result["uv_max"].toDouble());
         device->setStateValue(openUvOzoneStateTypeId, result["ozone"].toDouble());
 
-        device->setStateValue(openUvUvTimeStateTypeId, QDateTime::fromString(result["uv_time"].toString(),Qt::DateFormat::ISODateWithMs).toSecsSinceEpoch());
-        device->setStateValue(openUvOzoneTimeStateTypeId, QDateTime::fromString(result["ozone_time"].toString(),Qt::DateFormat::ISODateWithMs).toSecsSinceEpoch());
-        device->setStateValue(openUvUvMaxTimeStateTypeId, QDateTime::fromString(result["uv_max_time"].toString(),Qt::DateFormat::ISODateWithMs).toSecsSinceEpoch());
+        device->setStateValue(openUvUvTimeStateTypeId, QDateTime::fromString(result["uv_time"].toString(),Qt::DateFormat::ISODate).toMSecsSinceEpoch() / 1000);
+        device->setStateValue(openUvOzoneTimeStateTypeId, QDateTime::fromString(result["ozone_time"].toString(),Qt::DateFormat::ISODate).toMSecsSinceEpoch() / 1000);
+        device->setStateValue(openUvUvMaxTimeStateTypeId, QDateTime::fromString(result["uv_max_time"].toString(),Qt::DateFormat::ISODate).toMSecsSinceEpoch() / 100);
 
         QVariantMap safeExposureTimes = result["safe_exposure_time"].toMap();
         device->setStateValue(openUvSafeExposureTimeSt1StateTypeId, safeExposureTimes["st1"].toInt());
