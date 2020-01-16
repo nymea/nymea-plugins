@@ -90,7 +90,7 @@ void DevicePluginUsbRelay::deviceRemoved(Device *device)
         UsbRelay *relay = m_relayDevices.key(device);
         if (!relay) return;
         m_relayDevices.remove(relay);
-        relay->deleteLater();
+        delete relay;
     }
 }
 
@@ -189,7 +189,7 @@ void DevicePluginUsbRelay::setupDevice(DeviceSetupInfo *info)
         UsbRelay *relay = new UsbRelay(path, relayCount, this);
         m_relayDevices.insert(relay, device);
 
-        connect(relay, &UsbRelay::connectedChanged, [this, device, relay](bool connected) {
+        connect(relay, &UsbRelay::connectedChanged, this, [this, device, relay](bool connected) {
             qCDebug(dcUsbRelay()) << "Device" << device->name() << (connected ? "connected" : "disconnected");
             device->setStateValue(usbRelayConnectorConnectedStateTypeId, connected);
 
@@ -204,7 +204,7 @@ void DevicePluginUsbRelay::setupDevice(DeviceSetupInfo *info)
             }
         });
 
-        connect(relay, &UsbRelay::relayPowerChanged, [this, device](int relayNumber, bool power) {
+        connect(relay, &UsbRelay::relayPowerChanged, this, [this, device](int relayNumber, bool power) {
             Device *relayDevice = getRelayDevice(device, relayNumber);
             if (!relayDevice) {
                 // Note: probably not set up yet
