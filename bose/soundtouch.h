@@ -11,7 +11,6 @@
 * of use of nymea GmbH, available under https://nymea.io/license
 *
 * GNU Lesser General Public License Usage
-* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
 * Alternatively, this project may be redistributed and/or modified under the terms of the GNU
 * Lesser General Public License as published by the Free Software Foundation; version 3.
 * this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;

@@ -11,7 +11,6 @@
 * of use of nymea GmbH, available under https://nymea.io/license
 *
 * GNU Lesser General Public License Usage
-* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
 * Alternatively, this project may be redistributed and/or modified under the terms of the GNU
 * Lesser General Public License as published by the Free Software Foundation; version 3.
 * this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
@@ -30,7 +29,6 @@
 #include "devices/device.h"
 #include "plugininfo.h"
 #include "platform/platformzeroconfcontroller.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
 #include "network/zeroconf/zeroconfserviceentry.h"
 #include "types/mediabrowseritem.h"
 
@@ -45,14 +43,37 @@ DevicePluginBose::~DevicePluginBose()
 {
 }
 
+void DevicePluginBose::init()
+{
+    m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_soundtouch._tcp");
+}
+
 void DevicePluginBose::setupDevice(DeviceSetupInfo *info)
 {
 
     if (info->device()->deviceClassId() == soundtouchDeviceClassId) {
 
-        connect(info->device(), &Device::nameChanged, this, &DevicePluginBose::onDeviceNameChanged);
+        QString ipAddress;
+        QString playerId = info->device()->paramValue(soundtouchDevicePlayerIdParamTypeId).toString();
 
-        QString ipAddress = info->device()->paramValue(soundtouchDeviceIpParamTypeId).toString();
+        foreach (const ZeroConfServiceEntry avahiEntry, m_serviceBrowser->serviceEntries()) {
+            QString discoveredPlayerId = avahiEntry.hostName().split(".").first();
+            if (discoveredPlayerId == playerId) {
+                ipAddress = avahiEntry.hostAddress().toString();
+                break;
+            }
+        }
+
+        if (ipAddress.isEmpty()) {
+            // Ok, we could not find an ip on zeroconf... Let's try again in a second while setupInfo hasn't timed out.
+            qCDebug(dcBose()) << "Device not found via ZeroConf... Waiting for a second for it to appear...";
+            QTimer::singleShot(1000, info, [this, info](){
+                setupDevice(info);
+            });
+            return;
+        }
+
+        info->device()->setParamValue(soundtouchDeviceIpParamTypeId,ipAddress);
         SoundTouch *soundTouch = new SoundTouch(hardwareManager()->networkManager(), ipAddress, this);
         connect(soundTouch, &SoundTouch::connectionChanged, this, &DevicePluginBose::onConnectionChanged);
         connect(soundTouch, &SoundTouch::infoReceived, this, &DevicePluginBose::onInfoObjectReceived);
@@ -75,6 +96,7 @@ void DevicePluginBose::setupDevice(DeviceSetupInfo *info)
 void DevicePluginBose::postSetupDevice(Device *device)
 {
     if (device->deviceClassId() == soundtouchDeviceClassId) {
+        connect(device, &Device::nameChanged, this, &DevicePluginBose::onDeviceNameChanged);
         SoundTouch *soundTouch = m_soundTouch.value(device);
         soundTouch->getInfo();
         soundTouch->getNowPlaying();
@@ -105,10 +127,8 @@ void DevicePluginBose::deviceRemoved(Device *device)
 
 void DevicePluginBose::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_soundtouch._tcp");
-
-    QTimer::singleShot(5000, info, [this, serviceBrowser, info](){
-        foreach (const ZeroConfServiceEntry avahiEntry, serviceBrowser->serviceEntries()) {
+    QTimer::singleShot(5000, info, [this, info](){
+        foreach (const ZeroConfServiceEntry avahiEntry, m_serviceBrowser->serviceEntries()) {
             qCDebug(dcBose) << "Zeroconf entry:" << avahiEntry;
 
             QString playerId = avahiEntry.hostName().split(".").first();
@@ -126,7 +146,6 @@ void DevicePluginBose::discoverDevices(DeviceDiscoveryInfo *info)
             descriptor.setParams(params);
             info->addDeviceDescriptor(descriptor);
         }
-        serviceBrowser->deleteLater();
         info->finish(Device::DeviceErrorNoError);
     });
 }
@@ -254,9 +273,10 @@ void DevicePluginBose::browserItem(BrowserItemResult *result)
 {
     Device *device = result->device();
     if (device->deviceClassId() == soundtouchDeviceClassId) {
-        //SoundTouch *soundTouch = m_soundTouch.value(device);
-        //QUuid requestId = soundTouch->getSources();
-        //m_asyncBrowseResults.insert(requestId, result);
+        SoundTouch *soundTouch = m_soundTouch.value(device);
+        QUuid requestId = soundTouch->getSources();
+        m_asyncBrowseItemResults.insert(requestId, result);
+        connect(result, &BrowserItemResult::aborted, this, [this, requestId]{m_asyncBrowseItemResults.remove(requestId);});
     }
 }
 
@@ -272,8 +292,8 @@ void DevicePluginBose::executeBrowserItem(BrowserActionInfo *info)
                 contentItem.source = source.source;
                 contentItem.sourceAccount = source.sourceAccount;
                 QUuid requestId = soundTouch->setSource(contentItem);
-                m_asyncExecuteBroweItems.insert(requestId, info);
-                connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBroweItems.remove(requestId);});
+                m_asyncExecuteBrowseItems.insert(requestId, info);
+                connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBrowseItems.remove(requestId);});
                 break;
             }
         }
@@ -319,12 +339,17 @@ void DevicePluginBose::onRequestExecuted(QUuid requestId, bool success)
             BrowseResult *result = m_asyncBrowseResults.take(requestId);
             result->finish(Device::DeviceErrorHardwareFailure);
         }
-    } else if (m_asyncExecuteBroweItems.contains(requestId)) {
-        BrowserActionInfo *info = m_asyncExecuteBroweItems.take(requestId);
+    } else if (m_asyncExecuteBrowseItems.contains(requestId)) {
+        BrowserActionInfo *info = m_asyncExecuteBrowseItems.take(requestId);
         if (success) {
             info->finish(Device::DeviceErrorNoError);
         } else {
             info->finish(Device::DeviceErrorHardwareFailure);
+        }
+    } else if (m_asyncBrowseItemResults.contains(requestId)) {
+        if (!success) {
+            BrowserItemResult *result = m_asyncBrowseItemResults.take(requestId);
+            result->finish(Device::DeviceErrorHardwareFailure);
         }
     } else {
         //This request was not an action or browse request
@@ -402,7 +427,7 @@ void DevicePluginBose::onSourcesObjectReceived(QUuid requestId, SourcesObject so
                 MediaBrowserItem item(sourceItem.source, sourceItem.source, false, true);
                 item.setDescription(sourceItem.sourceAccount);
                 item.setIcon(BrowserItem::BrowserIcon::BrowserIconMusic);
-                item.setMediaIcon(MediaBrowserItem::MediaBrowserIcon::MediaBrowserIconRecentlyPlayed);
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIcon::MediaBrowserIconBluetooth);
                 result->addItem(item);
             } else if (sourceItem.source == "AUX") {
                 MediaBrowserItem item(sourceItem.source, sourceItem.source, false, true);
@@ -418,7 +443,15 @@ void DevicePluginBose::onSourcesObjectReceived(QUuid requestId, SourcesObject so
                 result->addItem(item);
             }
         }
-        result->finish(Device::DeviceErrorNoError);
+        return result->finish(Device::DeviceErrorNoError);
+    } else if (m_asyncBrowseItemResults.contains(requestId)) {
+        BrowserItemResult *result = m_asyncBrowseItemResults.value(requestId);
+        foreach (SourceItemObject sourceItem, sources.sourceItems) {
+            if (sourceItem.source == result->itemId()) {
+                return result->finish(Device::DeviceErrorNoError);
+            }
+        }
+        return result->finish(Device::DeviceErrorItemNotFound);
     } else {
         qCWarning(dcBose()) << "Received sources without an associated BrowseResult";
     }

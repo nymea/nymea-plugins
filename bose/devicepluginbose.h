@@ -11,7 +11,6 @@
 * of use of nymea GmbH, available under https://nymea.io/license
 *
 * GNU Lesser General Public License Usage
-* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
 * Alternatively, this project may be redistributed and/or modified under the terms of the GNU
 * Lesser General Public License as published by the Free Software Foundation; version 3.
 * this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
@@ -30,6 +29,7 @@
 #define DEVICEPLUGINBOSE_H
 
 #include "devices/deviceplugin.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
 #include "plugintimer.h"
 #include "soundtouch.h"
 #include "soundtouchtypes.h"
@@ -48,6 +48,7 @@ public:
     explicit DevicePluginBose();
     ~DevicePluginBose() override;
 
+    void init() override;
     void discoverDevices(DeviceDiscoveryInfo *info) override;
     void setupDevice(DeviceSetupInfo *info) override;
     void postSetupDevice(Device *device) override;
@@ -59,12 +60,14 @@ public:
     void executeBrowserItem(BrowserActionInfo *info) override;
 
 private:
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
     PluginTimer *m_pluginTimer = nullptr;
 
     QHash<Device *, SoundTouch *> m_soundTouch;
     QHash<QUuid, DeviceActionInfo *> m_pendingActions;
     QHash<QUuid, BrowseResult *> m_asyncBrowseResults;
-    QHash<QUuid, BrowserActionInfo *> m_asyncExecuteBroweItems;
+    QHash<QUuid, BrowserActionInfo *> m_asyncExecuteBrowseItems;
+    QHash<QUuid, BrowserItemResult *> m_asyncBrowseItemResults;
     QHash<Device *, SourcesObject> m_sourcesObjects;
 
 private slots:
