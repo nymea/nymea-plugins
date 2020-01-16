@@ -48,7 +48,6 @@ public:
     explicit DevicePluginBose();
     ~DevicePluginBose() override;
 
-    void init() override;
     void discoverDevices(DeviceDiscoveryInfo *info) override;
     void setupDevice(DeviceSetupInfo *info) override;
     void postSetupDevice(Device *device) override;
@@ -66,6 +65,7 @@ private:
     QHash<QUuid, DeviceActionInfo *> m_pendingActions;
     QHash<QUuid, BrowseResult *> m_asyncBrowseResults;
     QHash<QUuid, BrowserActionInfo *> m_asyncExecuteBroweItems;
+    QHash<Device *, SourcesObject> m_sourcesObjects;
 
 private slots:
     void onPluginTimer();

@@ -229,8 +229,9 @@ QUuid SoundTouch::setKey(KEY_VALUE keyValue)
     }
     xml.writeEndElement(); //key
     xml.writeEndDocument();
-    //qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -251,7 +252,9 @@ QUuid SoundTouch::setKey(KEY_VALUE keyValue)
         xml.writeCharacters("POWER");
         xml.writeEndElement(); //key
         xml.writeEndDocument();
-        QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+        QNetworkReply *reply = m_networkAccessManager->post(request, content);
         connect(reply, &QNetworkReply::finished, this, [reply] {reply->deleteLater();});
     }
     return requestId;
@@ -269,8 +272,9 @@ QUuid SoundTouch::setVolume(int volume)
     content.append("<volume>");
     content.append(QByteArray::number(volume));
     content.append("</volume>");
-    //qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -294,9 +298,9 @@ QUuid SoundTouch::setSource(ContentItemObject contentItem)
     xml.writeAttribute("sourceAccount", contentItem.sourceAccount);
     xml.writeEndElement(); //ContentItem
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -323,8 +327,9 @@ QUuid SoundTouch::setZone(ZoneObject zone)
     }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -351,8 +356,9 @@ QUuid SoundTouch::addZoneSlave(ZoneObject zone)
     }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -379,8 +385,9 @@ QUuid SoundTouch::removeZoneSlave(ZoneObject zone)
     }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -400,8 +407,9 @@ QUuid SoundTouch::setBass(int volume)
     content.append("<bass>");
     content.append(QByteArray::number(volume));
     content.append("</bass>");
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -421,8 +429,9 @@ QUuid SoundTouch::setName(QString name)
     content.append("<name>");
     content.append(name);
     content.append("</name>");
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -450,8 +459,9 @@ QUuid SoundTouch::setSpeaker(PlayInfoObject playInfo)
     xml.writeTextElement("volume", QString::number(playInfo.volume));
     xml.writeEndElement(); //play_info
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         emitRequestStatus(requestId, reply);
@@ -509,6 +519,7 @@ QUuid SoundTouch::sendGetRequest(QString path)
         if (reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             emit connectionChanged(false);
+            qCWarning(dcBose()) << "Request error" << reply->errorString();
             return;
         }
         emit connectionChanged(true);
@@ -522,7 +533,6 @@ QUuid SoundTouch::sendGetRequest(QString path)
         QByteArray data = reply->readAll();
         parseData(requestId, data);
     });
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRestRequestError(QNetworkReply::NetworkError)));
     return requestId;
 }
 
@@ -542,6 +552,7 @@ void SoundTouch::emitRequestStatus(QUuid requestId, QNetworkReply *reply)
         return;
     }
     QByteArray data = reply->readAll();
+    qCDebug(dcBose()) << "Request status" << data;
     QXmlStreamReader xml;
     xml.addData(data);
 
@@ -732,7 +743,6 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                     xml.skipCurrentElement();
                 }
             }
-
             emit nowPlayingReceived(requestId, nowPlaying);
         } else if (xml.name() == "volume") {
             VolumeObject volumeObject;
@@ -767,10 +777,12 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                     if(xml.attributes().hasAttribute("source")) {
                         //qDebug(dcBose) << "Source" << xml.attributes().value("source").toString();
                         sourceItem.source = xml.attributes().value("source").toString();
-                    } else if(xml.attributes().hasAttribute("sourceAccount")) {
+                    }
+                    if(xml.attributes().hasAttribute("sourceAccount")) {
                         //qDebug(dcBose) << "Source Account" << xml.attributes().value("sourceAccount").toString();
                         sourceItem.sourceAccount = xml.attributes().value("sourceAccount").toString();
-                    } else if(xml.attributes().hasAttribute("status")) {
+                    }
+                    if(xml.attributes().hasAttribute("status")) {
                         QString status = xml.attributes().value("status").toString().toUpper(); //UNAVAILABLE, READY
                         //qDebug(dcBose) << "status" << status;
                         if (status == "READY") {
@@ -778,11 +790,13 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
                         } else {
                             sourceItem.status = SOURCE_STATUS_UNAVAILABLE;
                         }
-                    } else if(xml.attributes().hasAttribute("isLocal")) {
+                    }
+                    if(xml.attributes().hasAttribute("isLocal")) {
                         //qDebug(dcBose) << "is Local" << xml.attributes().value("isLocal").toString();
                         sourceItem.isLocal = ( xml.attributes().value("isLocal").toString().toUpper() == "TRUE" );
-                    } else if(xml.attributes().hasAttribute("multiroomallowed")) {
-                        //Debug(dcBose) << "multiroom allowed" << xml.attributes().value("multiroomallowed").toString();
+                    }
+                    if(xml.attributes().hasAttribute("multiroomallowed")) {
+                        //qCDebug(dcBose) << "multiroom allowed" << xml.attributes().value("multiroomallowed").toString();
                         sourceItem.multiroomallowed = ( xml.attributes().value("multiroomallowed").toString().toUpper() == "TRUE" );
                     }
                     sourceItem.displayName = xml.readElementText();
@@ -812,11 +826,9 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
             emit bassReceived(requestId, bassObject);
         } else if (xml.name() == "bassCapabilities") {
             BassCapabilitiesObject bassCapabilities;
-
             if(xml.attributes().hasAttribute("deviceID")) {
                 bassCapabilities.deviceID = xml.attributes().value("deviceID").toString();
             }
-
             while(xml.readNextStartElement()){
                 if(xml.name() == "bassAvailable"){
                     //qDebug(dcBose) << "BassAvailable" << xml.readElementText();

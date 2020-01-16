@@ -32,6 +32,7 @@
 #include "platform/platformzeroconfcontroller.h"
 #include "network/zeroconf/zeroconfservicebrowser.h"
 #include "network/zeroconf/zeroconfserviceentry.h"
+#include "types/mediabrowseritem.h"
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -41,10 +42,6 @@ DevicePluginBose::DevicePluginBose()
 }
 
 DevicePluginBose::~DevicePluginBose()
-{
-}
-
-void DevicePluginBose::init()
 {
 }
 
@@ -67,11 +64,12 @@ void DevicePluginBose::setupDevice(DeviceSetupInfo *info)
         connect(soundTouch, &SoundTouch::zoneReceived, this, &DevicePluginBose::onZoneObjectReceived);
         connect(soundTouch, &SoundTouch::requestExecuted, this, &DevicePluginBose::onRequestExecuted);
         m_soundTouch.insert(info->device(), soundTouch);
+        return info->finish(Device::DeviceErrorNoError);
 
-        info->finish(Device::DeviceErrorNoError);
-        return;
+    } else {
+        qCWarning(dcBose()) << "DeviceClassId not found" << info->device()->deviceClassId();
+        return info->finish(Device::DeviceErrorDeviceClassNotFound);
     }
-    info->finish(Device::DeviceErrorDeviceClassNotFound);
 }
 
 void DevicePluginBose::postSetupDevice(Device *device)
@@ -81,7 +79,6 @@ void DevicePluginBose::postSetupDevice(Device *device)
         soundTouch->getInfo();
         soundTouch->getNowPlaying();
         soundTouch->getVolume();
-        soundTouch->getSources();
         soundTouch->getBass();
         soundTouch->getBassCapabilities();
         soundTouch->getZone();
@@ -102,6 +99,7 @@ void DevicePluginBose::deviceRemoved(Device *device)
 
     if (m_pluginTimer && myDevices().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
     }
 }
 
@@ -232,11 +230,12 @@ void DevicePluginBose::executeAction(DeviceActionInfo *info)
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
         } else {
-            info->finish(Device::DeviceErrorActionTypeNotFound);
-            return;
+            qCWarning(dcBose()) << "ActionTypeId not found" << action.actionTypeId();
+            return info->finish(Device::DeviceErrorActionTypeNotFound);
         }
     } else {
-        info->finish(Device::DeviceErrorDeviceClassNotFound);
+        qCWarning(dcBose()) << "DeviceClassId not found" << device->deviceClassId();
+        return info->finish(Device::DeviceErrorDeviceClassNotFound);
     }
 }
 
@@ -247,6 +246,7 @@ void DevicePluginBose::browseDevice(BrowseResult *result)
         SoundTouch *soundTouch = m_soundTouch.value(device);
         QUuid requestId = soundTouch->getSources();
         m_asyncBrowseResults.insert(requestId, result);
+        connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
     }
 }
 
@@ -265,11 +265,18 @@ void DevicePluginBose::executeBrowserItem(BrowserActionInfo *info)
     Device *device = info->device();
     if (device->deviceClassId() == soundtouchDeviceClassId) {
         SoundTouch *soundTouch = m_soundTouch.value(device);
-        ContentItemObject contentItem;
-        contentItem.source = info->browserAction().itemId();
-        QUuid requestId = soundTouch->setSource(contentItem);
-        m_asyncExecuteBroweItems.insert(requestId, info);
-        connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBroweItems.remove(requestId);});
+        SourcesObject sources = m_sourcesObjects.value(device);
+        foreach (SourceItemObject source, sources.sourceItems) {
+            if (source.source == info->browserAction().itemId()) {
+                ContentItemObject contentItem;
+                contentItem.source = source.source;
+                contentItem.sourceAccount = source.sourceAccount;
+                QUuid requestId = soundTouch->setSource(contentItem);
+                m_asyncExecuteBroweItems.insert(requestId, info);
+                connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBroweItems.remove(requestId);});
+                break;
+            }
+        }
     }
 }
 
@@ -311,6 +318,13 @@ void DevicePluginBose::onRequestExecuted(QUuid requestId, bool success)
         if (!success) {
             BrowseResult *result = m_asyncBrowseResults.take(requestId);
             result->finish(Device::DeviceErrorHardwareFailure);
+        }
+    } else if (m_asyncExecuteBroweItems.contains(requestId)) {
+        BrowserActionInfo *info = m_asyncExecuteBroweItems.take(requestId);
+        if (success) {
+            info->finish(Device::DeviceErrorNoError);
+        } else {
+            info->finish(Device::DeviceErrorHardwareFailure);
         }
     } else {
         //This request was not an action or browse request
@@ -376,12 +390,33 @@ void DevicePluginBose::onVolumeObjectReceived(QUuid requestId, VolumeObject volu
 
 void DevicePluginBose::onSourcesObjectReceived(QUuid requestId, SourcesObject sources)
 {
+    SoundTouch *soundtouch = static_cast<SoundTouch *>(sender());
+    Device *device = m_soundTouch.key(soundtouch);
+    m_sourcesObjects.insert(device, sources);
+
     if (m_asyncBrowseResults.contains(requestId)) {
         BrowseResult *result = m_asyncBrowseResults.value(requestId);
         foreach (SourceItemObject sourceItem, sources.sourceItems) {
-            qDebug(dcBose()) << "Source:" << sources.deviceId << sourceItem.source << sourceItem.displayName;
-            BrowserItem item("sources"+sourceItem.source, sourceItem.displayName, false, true);
-            result->addItem(item);
+            qDebug(dcBose()) << "Source:" << sourceItem.source;
+            if (sourceItem.source == "BLUETOOTH") {
+                MediaBrowserItem item(sourceItem.source, sourceItem.source, false, true);
+                item.setDescription(sourceItem.sourceAccount);
+                item.setIcon(BrowserItem::BrowserIcon::BrowserIconMusic);
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIcon::MediaBrowserIconRecentlyPlayed);
+                result->addItem(item);
+            } else if (sourceItem.source == "AUX") {
+                MediaBrowserItem item(sourceItem.source, sourceItem.source, false, true);
+                item.setDescription(sourceItem.sourceAccount);
+                item.setIcon(BrowserItem::BrowserIcon::BrowserIconMusic);
+                result->addItem(item);
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIcon::MediaBrowserIconAux);
+            } else if ((sourceItem.source == "SPOTIFY") && (sourceItem.status == SOURCE_STATUS_READY)) {
+                MediaBrowserItem item(sourceItem.source, sourceItem.source, false, true);
+                item.setDescription(sourceItem.sourceAccount);
+                item.setIcon(BrowserItem::BrowserIcon::BrowserIconMusic);
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIcon::MediaBrowserIconSpotify);
+                result->addItem(item);
+            }
         }
         result->finish(Device::DeviceErrorNoError);
     } else {
@@ -415,7 +450,6 @@ void DevicePluginBose::onGroupObjectReceived(QUuid requestId, GroupObject group)
 void DevicePluginBose::onZoneObjectReceived(QUuid requestId, ZoneObject zone)
 {
     Q_UNUSED(requestId);
-    qDebug(dcBose())  << "Zone master" << zone.deviceID;
     foreach (MemberObject member, zone.members) {
         qDebug(dcBose()) << "-> member:" << member.deviceID;
     }
