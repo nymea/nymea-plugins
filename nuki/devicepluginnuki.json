@@ -12,7 +12,7 @@
                     "id": "4a1cc5d9-9b44-4632-8db0-66d64efd4767",
                     "name": "nuki",
                     "displayName": "Smartlock",
-                    "interfaces": [ "connectable", "battery", "smartlock" ],
+                    "interfaces": [ "smartlock", "connectable", "battery" ],
                     "createMethods": [ "discovery" ],
                     "setupMethod": "pushButton",
                     "paramTypes": [
