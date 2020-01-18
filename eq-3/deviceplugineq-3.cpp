@@ -441,7 +441,7 @@ void DevicePluginEQ3::radiatorThermostatFound()
     }
 
     if(!descriptorList.isEmpty()){
-        metaObject()->invokeMethod(this, "autoDevicesAppeared", Qt::QueuedConnection, Q_ARG(DeviceClassId, radiatorThermostateDeviceClassId), Q_ARG(QList<DeviceDescriptor>, descriptorList));
+        emit autoDevicesAppeared(descriptorList);
     }
 }
 
