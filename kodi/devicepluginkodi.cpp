@@ -87,6 +87,10 @@ void DevicePluginKodi::setupDevice(DeviceSetupInfo *info)
 
     if (!kodiUuid.isNull()) {
         foreach (const ZeroConfServiceEntry &entry, m_serviceBrowser->serviceEntries()) {
+            if (entry.hostAddress().protocol() == QAbstractSocket::IPv6Protocol && entry.hostAddress().toString().startsWith("fe80")) {
+                // We don't support link-local ipv6 addresses yet. skip those entries
+                continue;
+            }
             QString uuid;
             foreach (const QString &txt, entry.txt()) {
                 if (txt.startsWith("uuid")) {
@@ -125,6 +129,7 @@ void DevicePluginKodi::setupDevice(DeviceSetupInfo *info)
         return;
     }
 
+    qCDebug(dcKodi()).nospace().noquote() << "Connecting to kodi on " << ipString << ":" << port << " (HTTP Port " << httpPort << ")";
     Kodi *kodi= new Kodi(QHostAddress(ipString), port, httpPort, this);
 
     connect(kodi, &Kodi::connectionStatusChanged, this, &DevicePluginKodi::onConnectionChanged);
