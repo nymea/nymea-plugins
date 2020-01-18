@@ -356,8 +356,7 @@ void DevicePluginTuya::updateChildDevices(Device *device)
 
                 Device *d = myDevices().findByParams(ParamList() << Param(tuyaSwitchDeviceIdParamTypeId, id));
                 if (d) {
-                    qCDebug(dcTuya()) << "Found existing Tuya switch" << id << name;
-                    d->setName(name);
+                    qCDebug(dcTuya()) << "Found existing Tuya switch" << d->name() << id << name << (online ? "online:" : "offline") << (state ? "on": "off");
                     d->setStateValue(tuyaSwitchConnectedStateTypeId, online);
                     d->setStateValue(tuyaSwitchPowerStateTypeId, state);
                 } else {
@@ -371,8 +370,7 @@ void DevicePluginTuya::updateChildDevices(Device *device)
 
                 Device *d = myDevices().findByParams(ParamList() << Param(tuyaClosableDeviceIdParamTypeId, id));
                 if (d) {
-                    qCDebug(dcTuya()) << "Found existing Tuya cover" << id << name;
-                    d->setName(name);
+                    qCDebug(dcTuya()) << "Found existing Tuya cover" << d->name() << id << name << (online ? "online" : "offline");
                     d->setStateValue(tuyaClosableConnectedStateTypeId, online);
                 } else {
                     qCDebug(dcTuya()) << "Found new Tuya cover" << id << name;
@@ -382,6 +380,7 @@ void DevicePluginTuya::updateChildDevices(Device *device)
                 }
             } else {
                 qCWarning(dcTuya()) << "Skipping unsupported device type:" << devType;
+                qCWarning(dcTuya()) << "Please report this including the following data:\n" << qUtf8Printable(QJsonDocument::fromVariant(deviceVariant).toJson());
                 continue;
             }
         }
