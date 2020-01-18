@@ -15,6 +15,8 @@ Build-depends: libboblight-dev,
                qtconnectivity5-dev,
                libow-dev,
                libsodium-dev,
+               libudev-dev,
+               libhidapi-dev,
 Standards-Version: 3.9.3
 
 
@@ -687,6 +689,23 @@ Description: nymea.io plugin for unitec
  This package will install the nymea.io plugin for unitec
 
 
+Package: nymea-plugin-usbrelay
+Architecture: any
+Multi-Arch: same
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libudev1,
+         libhidapi-hidraw0,
+Description: nymea.io plugin for USB relay
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for USB relay
+
 
 Package: nymea-plugin-wakeonlan
 Architecture: any
@@ -970,6 +989,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-tado,
          nymea-plugin-keba,
          nymea-plugin-unifi,
+         nymea-plugin-usbrelay,
 Replaces: guh-plugins
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
