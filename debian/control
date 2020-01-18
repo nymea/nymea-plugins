@@ -14,6 +14,7 @@ Build-depends: libboblight-dev,
                qtbase5-dev,
                qtconnectivity5-dev,
                libow-dev,
+               libsodium-dev,
 Standards-Version: 3.9.3
 
 
@@ -467,6 +468,21 @@ Description: nymea.io plugin for networkdetector
  .
  This package will install the nymea.io plugin for networkdetector
 
+
+Package: nymea-plugin-nuki
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Replaces: nymea-nukiplugin
+Description: nymea.io plugin for the nuki smart lock
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for nuki devices
 
 
 Package: nymea-plugin-onewire
@@ -938,6 +954,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-nanoleaf,
          nymea-plugin-netatmo,
          nymea-plugin-networkdetector,
+         nymea-plugin-nuki,
          nymea-plugin-openuv,
          nymea-plugin-openweathermap,
          nymea-plugin-philipshue,

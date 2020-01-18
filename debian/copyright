@@ -54,6 +54,7 @@ Files: avahimonitor/*
        mailnotification/*
        netatmo/*
        networkdetector/*
+       nuki/*
        osdomotics/*
        senic/*
        udpcommander/*

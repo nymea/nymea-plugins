@@ -31,6 +31,7 @@ PLUGIN_DIRS = \
     nanoleaf            \
     netatmo             \
     networkdetector     \
+    nuki                \
     onewire             \
     openuv              \ 
     openweathermap      \
