@@ -1,0 +1,79 @@
+{
+    "name": "edimax",
+    "displayName": "edimax",
+    "id": "a19c72a3-270d-44fc-870d-c8f18dea762b",
+    "vendors": [
+        {
+            "name": "edimax",
+            "displayName": "Edimax",
+            "id": "1d77e037-58e1-491a-bbfe-d210c0b99ffa",
+            "deviceClasses": [
+                {
+                    "id": "3ac99be7-d3e5-4242-827c-6c375f5caac5",
+                    "name": "wirelessSocket",
+                    "displayName": "Wireless socket",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "powersocket", "extendedsmartmeterconsumer", "connectable" ],
+                    "setupMethod": "userandpassword",
+                    "paramTypes": [
+                        {
+                               "id": "a0538246-a8f8-4654-8585-c5f38795910a",
+                               "name": "host",
+                               "displayName": "Host address",
+                               "type" : "QString",
+                               "inputType": "IPv4Address",
+                               "readOnly": true
+                        },
+                        {
+                            "id": "de5eebe4-8bc6-4de5-a22f-4a36620c2ee8",
+                            "name": "ip",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4fe3aec6-0e7f-4038-b607-c893886ce839",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "ffb7847f-ef3b-4c27-b3fe-868f99ebb09b",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "f44a529d-16bf-41d2-90c4-6b60ead6d690",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "displayNameEvent": "Total energy consumed changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a682eef7-ea93-4a2e-841b-ee6abe958283",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

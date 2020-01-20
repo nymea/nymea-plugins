@@ -13,6 +13,7 @@ PLUGIN_DIRS = \
     daylightsensor      \
     denon               \
     dweetio             \
+    edimax              \ 
     elgato              \
     elro                \
     eq-3                \
