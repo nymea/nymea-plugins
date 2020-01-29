@@ -395,6 +395,7 @@ void DevicePluginEQ3::wallThermostatFound()
         }
         if(!allreadyAdded){
             DeviceDescriptor descriptor(wallThermostateDeviceClassId, wallThermostat->serialNumber());
+            descriptor.setParentDeviceId(m_cubes.value(cube)->id());
             ParamList params;
             params.append(Param(wallThermostateDeviceNameParamTypeId, wallThermostat->deviceName()));
             params.append(Param(wallThermostateDeviceParentParamTypeId, cube->serialNumber()));
@@ -428,6 +429,7 @@ void DevicePluginEQ3::radiatorThermostatFound()
         }
         if(!allreadyAdded){
             DeviceDescriptor descriptor(radiatorThermostateDeviceClassId, radiatorThermostat->serialNumber());
+            descriptor.setParentDeviceId(m_cubes.value(cube)->id());
             ParamList params;
             params.append(Param(radiatorThermostateDeviceNameParamTypeId, radiatorThermostat->deviceName()));
             params.append(Param(radiatorThermostateDeviceParentParamTypeId, cube->serialNumber()));
