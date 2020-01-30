@@ -14,6 +14,7 @@
                     "displayName": "SoundTouch",
                     "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
                     "createMethods": ["discovery"],
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "1a897065-57c6-49b3-bac9-1e5db27859e5",

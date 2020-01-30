@@ -1,24 +1,29 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io         *
- *                                                                         *
- *  This file is part of nymea.                                            *
- *                                                                         *
- *  This library is free software; you can redistribute it and/or          *
- *  modify it under the terms of the GNU Lesser General Public             *
- *  License as published by the Free Software Foundation; either           *
- *  version 2.1 of the License, or (at your option) any later version.     *
- *                                                                         *
- *  This library is distributed in the hope that it will be useful,        *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- *  Lesser General Public License for more details.                        *
- *                                                                         *
- *  You should have received a copy of the GNU Lesser General Public       *
- *  License along with this library; If not, see                           *
- *  <http://www.gnu.org/licenses/>.                                        *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by copyright law, and
+* remains the property of nymea GmbH. All rights, including reproduction, publication,
+* editing and translation, are reserved. The use of this project is subject to the terms of a
+* license agreement to be concluded with nymea GmbH in accordance with the terms
+* of use of nymea GmbH, available under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
+* Lesser General Public License as published by the Free Software Foundation; version 3.
+* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+* See the GNU Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License along with this project.
+* If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under contact@nymea.io
+* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "soundtouch.h"
 #include "hardwaremanager.h"
@@ -30,113 +35,133 @@ SoundTouch::SoundTouch(NetworkAccessManager *networkAccessManager, QString ipAdd
     m_networkAccessManager(networkAccessManager),
     m_ipAddress(ipAddress)
 {
-    m_websocket = new QWebSocket();
-    connect(m_websocket, &QWebSocket::connected, this, &SoundTouch::onWebsocketConnected);
-    connect(m_websocket, &QWebSocket::disconnected, this, &SoundTouch::onWebsocketDisconnected);
-    connect(m_websocket, &QWebSocket::textMessageReceived, this, &SoundTouch::onWebsocketMessageReceived);
-    QUrl url;
-    url.setHost(m_ipAddress);
-    url.setScheme("ws");
-    url.setPort(8080);
-    qDebug(dcBose) << "Connecting websocket to" << url;
+    //THIS CODE IS LEFT INTENTIONALLY
+    //m_websocket = new QWebSocket();
+    //connect(m_websocket, &QWebSocket::connected, this, &SoundTouch::onWebsocketConnected);
+    //connect(m_websocket, &QWebSocket::disconnected, this, &SoundTouch::onWebsocketDisconnected);
+    //connect(m_websocket, &QWebSocket::textMessageReceived, this, &SoundTouch::onWebsocketMessageReceived);
+    //QUrl url;
+    //url.setHost(m_ipAddress);
+    //url.setScheme("ws");
+    //url.setPort(8080);
+    //qDebug(dcBose) << "Connecting websocket to" << url;
     //TODO missing websocket subprotocol "gabbo"
-    //Seems QWebsockets doesn't support subprotocols
-    m_websocket->open(url);
+    //QWebsockets doesn't support subprotocols
+    //m_websocket->open(url);
 }
 
-void SoundTouch::getInfo()
+QUuid SoundTouch::getInfo()
 {
+    QUuid requestId;
     if (!m_getRepliesPending) {
-        sendGetRequest("/info");
+        requestId = sendGetRequest("/info");
     } else {
         if (!m_getRequestQueue.contains("/info"))
             m_getRequestQueue.append("/info");
     }
+    return requestId;
 }
 
-void SoundTouch::getVolume()
+QUuid SoundTouch::getVolume()
 {
+    QUuid requestId;
     if (!m_getRepliesPending) {
-        sendGetRequest("/volume");
+        requestId = sendGetRequest("/volume");
     } else {
         if (!m_getRequestQueue.contains("/volume"))
             m_getRequestQueue.append("/volume");
     }
+    return requestId;
 }
 
-void SoundTouch::getNowPlaying()
+QUuid SoundTouch::getNowPlaying()
 {
+    QUuid requestId;
     if (!m_getRepliesPending) {
-        sendGetRequest("/now_playing");
+        requestId = sendGetRequest("/now_playing");
     } else {
         if (!m_getRequestQueue.contains("/now_playing"))
             m_getRequestQueue.append("/now_playing");
     }
+    return requestId;
 }
 
-void SoundTouch::getBass()
+QUuid SoundTouch::getBass()
 {
+    QUuid requestId;
     if (!m_getRepliesPending) {
-        sendGetRequest("/bass");
+        requestId = sendGetRequest("/bass");
     } else {
         if (!m_getRequestQueue.contains("/bass"))
             m_getRequestQueue.append("/bass");
     }
+    return requestId;
 }
 
-void SoundTouch::getGroup()
+QUuid SoundTouch::getGroup()
 {
+    QUuid requestId;
     if (!m_getRepliesPending) {
-        sendGetRequest("/getGroup");
+        requestId = sendGetRequest("/getGroup");
     } else {
         if (!m_getRequestQueue.contains("/getGroup"))
             m_getRequestQueue.append("/getGroup");
     }
+    return requestId;
 }
 
-void SoundTouch::getSources()
+QUuid SoundTouch::getSources()
 {
+    QUuid requestId;
     if (!m_getRepliesPending) {
-        sendGetRequest("/sources");
+        requestId = sendGetRequest("/sources");
     } else {
         if (!m_getRequestQueue.contains("/sources"))
             m_getRequestQueue.append("/sources");
     }
+    return requestId;
 }
 
-void SoundTouch::getZone()
+QUuid SoundTouch::getZone()
 {
+    QUuid requestId;
     if (!m_getRepliesPending)  {
-        sendGetRequest("/getZone");
+        requestId = sendGetRequest("/getZone");
     } else {
         if (!m_getRequestQueue.contains("/getZone"))
             m_getRequestQueue.append("/getZone");
     }
+    return requestId;
 }
 
-void SoundTouch::getPresets()
+QUuid SoundTouch::getPresets()
 {
+    QUuid requestId;
     if (!m_getRepliesPending)  {
-        sendGetRequest("/presets");
+        requestId = sendGetRequest("/presets");
     } else {
         if (!m_getRequestQueue.contains("/presets"))
             m_getRequestQueue.append("/presets");
     }
+    return requestId;
 }
 
 
-void SoundTouch::getBassCapabilities()
+QUuid SoundTouch::getBassCapabilities()
 {
+    QUuid requestId;
     if (!m_getRepliesPending)  {
-        sendGetRequest("/bassCapabilities");
+        requestId = sendGetRequest("/bassCapabilities");
     } else {
         if (!m_getRequestQueue.contains("/bassCapabilities"))
             m_getRequestQueue.append("/bassCapabilities");
     }
+    return requestId;
 }
 
-void SoundTouch::setKey(KEY_VALUE keyValue)
+QUuid SoundTouch::setKey(KEY_VALUE keyValue)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -199,13 +224,17 @@ void SoundTouch::setKey(KEY_VALUE keyValue)
         break;
     default:
         qWarning(dcBose) << "key not yet implemented";
-        return;
+        return "0";
     }
     xml.writeEndElement(); //key
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
 
     if (keyValue == KEY_VALUE_POWER) {
         QUrl url;
@@ -222,13 +251,17 @@ void SoundTouch::setKey(KEY_VALUE keyValue)
         xml.writeCharacters("POWER");
         xml.writeEndElement(); //key
         xml.writeEndDocument();
-        QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-        connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+        QNetworkRequest request(url);
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+        QNetworkReply *reply = m_networkAccessManager->post(request, content);
+        connect(reply, &QNetworkReply::finished, this, [reply] {reply->deleteLater();});
     }
+    return requestId;
 }
 
-void SoundTouch::setVolume(int volume)
+QUuid SoundTouch::setVolume(int volume)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -238,13 +271,19 @@ void SoundTouch::setVolume(int volume)
     content.append("<volume>");
     content.append(QByteArray::number(volume));
     content.append("</volume>");
-    //qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
+    return requestId;
 }
 
-void SoundTouch::setSource(ContentItemObject contentItem)
+QUuid SoundTouch::setSource(ContentItemObject contentItem)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -258,14 +297,19 @@ void SoundTouch::setSource(ContentItemObject contentItem)
     xml.writeAttribute("sourceAccount", contentItem.sourceAccount);
     xml.writeEndElement(); //ContentItem
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
+    return requestId;
 }
 
-void SoundTouch::setZone(ZoneObject zone)
+QUuid SoundTouch::setZone(ZoneObject zone)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -282,13 +326,19 @@ void SoundTouch::setZone(ZoneObject zone)
     }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
+    return requestId;
 }
 
-void SoundTouch::addZoneSlave(ZoneObject zone)
+QUuid SoundTouch::addZoneSlave(ZoneObject zone)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -305,13 +355,19 @@ void SoundTouch::addZoneSlave(ZoneObject zone)
     }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
+    return requestId;
 }
 
-void SoundTouch::removeZoneSlave(ZoneObject zone)
+QUuid SoundTouch::removeZoneSlave(ZoneObject zone)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -328,13 +384,19 @@ void SoundTouch::removeZoneSlave(ZoneObject zone)
     }
     xml.writeEndElement(); //zone
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
+    return requestId;
 }
 
-void SoundTouch::setBass(int volume)
+QUuid SoundTouch::setBass(int volume)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -344,13 +406,19 @@ void SoundTouch::setBass(int volume)
     content.append("<bass>");
     content.append(QByteArray::number(volume));
     content.append("</bass>");
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
+    return requestId;
 }
 
-void SoundTouch::setName(QString name)
+QUuid SoundTouch::setName(QString name)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -360,13 +428,19 @@ void SoundTouch::setName(QString name)
     content.append("<name>");
     content.append(name);
     content.append("</name>");
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
+    return requestId;
 }
 
-void SoundTouch::setSpeaker(PlayInfoObject playInfo)
+QUuid SoundTouch::setSpeaker(PlayInfoObject playInfo)
 {
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setHost(m_ipAddress);
     url.setScheme("http");
@@ -384,9 +458,14 @@ void SoundTouch::setSpeaker(PlayInfoObject playInfo)
     xml.writeTextElement("volume", QString::number(playInfo.volume));
     xml.writeEndElement(); //play_info
     xml.writeEndDocument();
-    qDebug(dcBose) << "Sending request" << url << content;
-    QNetworkReply *reply = m_networkAccessManager->post(QNetworkRequest(url), content);
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/xml");
+    QNetworkReply *reply = m_networkAccessManager->post(request, content);
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        emitRequestStatus(requestId, reply);
+    });
+    return requestId;
 }
 
 void SoundTouch::onWebsocketConnected()
@@ -408,28 +487,107 @@ void SoundTouch::onWebsocketDisconnected()
     });
 }
 
-void SoundTouch::onRestRequestFinished() {
+void SoundTouch::onWebsocketMessageReceived(QString message)
+{
+    qDebug(dcBose) << "Websocket message received:" << message;
+    //TODO as soon as QWebSocket supports sub-protocols
+}
 
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    reply->deleteLater();
+QUuid SoundTouch::sendGetRequest(QString path)
+{
+    QUuid requestId = QUuid::createUuid();
+    QUrl url;
+    url.setHost(m_ipAddress);
+    url.setScheme("http");
+    url.setPort(m_port);
+    url.setPath(path);
+    //qDebug(dcBose) << "Sending request" << url;
+    QNetworkRequest request = QNetworkRequest(url);
 
+    QNetworkReply *reply = m_networkAccessManager->get(request);
+    m_getRepliesPending = true;
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        if (m_getRequestQueue.isEmpty()) {
+            m_getRepliesPending = false;
+        } else {
+            sendGetRequest(m_getRequestQueue.takeFirst());
+        }
+        if (reply->error() != QNetworkReply::NoError) {
+            emit requestExecuted(requestId, false);
+            emit connectionChanged(false);
+            qCWarning(dcBose()) << "Request error" << reply->errorString();
+            return;
+        }
+        emit connectionChanged(true);
+        // Check HTTP status code
+        if (status != 200) {
+            qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
+            emit requestExecuted(requestId, false);
+            return;
+        }
+        emit requestExecuted(requestId, true);
+        QByteArray data = reply->readAll();
+        parseData(requestId, data);
+    });
+    return requestId;
+}
+
+void SoundTouch::emitRequestStatus(QUuid requestId, QNetworkReply *reply)
+{
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-    if (m_getRequestQueue.isEmpty()) {
-        m_getRepliesPending = false;
-    } else {
-        sendGetRequest(m_getRequestQueue.takeFirst());
-    }
-
     // Check HTTP status code
-    if (status != 200 || reply->error() != QNetworkReply::NoError) {
+    if (reply->error() != QNetworkReply::NoError) {
+        emit connectionChanged(false);
+        emit requestExecuted(requestId, false);
         qCWarning(dcBose()) << "Request error:" << reply->errorString() << "request:"  << reply->url().path();
         return;
     }
-
+    emit connectionChanged(true);
+    if (status != 200) {
+        emit requestExecuted(requestId, false);
+        return;
+    }
     QByteArray data = reply->readAll();
-    //qDebug(dcBose) << data;
+    qCDebug(dcBose()) << "Request status" << data;
+    QXmlStreamReader xml;
+    xml.addData(data);
 
+    if (xml.readNextStartElement()) {
+        if (xml.name() == "status") {
+            //QString status = xml.readElementText();
+            emit requestExecuted(requestId, true);
+        } else if (xml.name() == "errors") {
+            emit requestExecuted(requestId, false);
+            QString deviceId;
+            if(xml.attributes().hasAttribute("deviceID")) {
+                deviceId = xml.attributes().value("deviceID").toString();
+            }
+            while(xml.readNextStartElement()){
+                if(xml.name() == "error"){
+                    ErrorObject error;
+                    error.deviceId = deviceId;
+                    error.error = xml.readElementText();
+                    if(xml.attributes().hasAttribute("value")) {
+                        error.value = xml.attributes().value("value").toInt();
+                    }
+                    if(xml.attributes().hasAttribute("name")) {
+                        error.name = xml.attributes().value("name").toString();
+                    }
+                    if(xml.attributes().hasAttribute("severity")) {
+                        error.severity = xml.attributes().value("severity").toString();
+                    }
+                    emit errorReceived(error);
+                }
+            }
+        }
+    }
+}
+
+void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
+{
     QXmlStreamReader xml;
     xml.addData(data);
 
@@ -482,7 +640,7 @@ void SoundTouch::onRestRequestFinished() {
                     xml.skipCurrentElement();
                 }
             }
-            emit infoReceived(info);
+            emit infoReceived(requestId, info);
         } else if (xml.name() == "nowPlaying") {
             NowPlayingObject nowPlaying;
             if(xml.attributes().hasAttribute("deviceID")) {
@@ -584,8 +742,7 @@ void SoundTouch::onRestRequestFinished() {
                     xml.skipCurrentElement();
                 }
             }
-
-            emit nowPlayingReceived(nowPlaying);
+            emit nowPlayingReceived(requestId, nowPlaying);
         } else if (xml.name() == "volume") {
             VolumeObject volumeObject;
             if(xml.attributes().hasAttribute("deviceID")) {
@@ -606,7 +763,7 @@ void SoundTouch::onRestRequestFinished() {
                     xml.skipCurrentElement();
                 }
             }
-            emit volumeReceived(volumeObject);
+            emit volumeReceived(requestId, volumeObject);
         } else if (xml.name() == "sources") {
             SourcesObject sourcesObject;
             if(xml.attributes().hasAttribute("deviceID")) {
@@ -619,10 +776,12 @@ void SoundTouch::onRestRequestFinished() {
                     if(xml.attributes().hasAttribute("source")) {
                         //qDebug(dcBose) << "Source" << xml.attributes().value("source").toString();
                         sourceItem.source = xml.attributes().value("source").toString();
-                    } else if(xml.attributes().hasAttribute("sourceAccount")) {
+                    }
+                    if(xml.attributes().hasAttribute("sourceAccount")) {
                         //qDebug(dcBose) << "Source Account" << xml.attributes().value("sourceAccount").toString();
                         sourceItem.sourceAccount = xml.attributes().value("sourceAccount").toString();
-                    } else if(xml.attributes().hasAttribute("status")) {
+                    }
+                    if(xml.attributes().hasAttribute("status")) {
                         QString status = xml.attributes().value("status").toString().toUpper(); //UNAVAILABLE, READY
                         //qDebug(dcBose) << "status" << status;
                         if (status == "READY") {
@@ -630,11 +789,13 @@ void SoundTouch::onRestRequestFinished() {
                         } else {
                             sourceItem.status = SOURCE_STATUS_UNAVAILABLE;
                         }
-                    } else if(xml.attributes().hasAttribute("isLocal")) {
+                    }
+                    if(xml.attributes().hasAttribute("isLocal")) {
                         //qDebug(dcBose) << "is Local" << xml.attributes().value("isLocal").toString();
                         sourceItem.isLocal = ( xml.attributes().value("isLocal").toString().toUpper() == "TRUE" );
-                    } else if(xml.attributes().hasAttribute("multiroomallowed")) {
-                        //Debug(dcBose) << "multiroom allowed" << xml.attributes().value("multiroomallowed").toString();
+                    }
+                    if(xml.attributes().hasAttribute("multiroomallowed")) {
+                        //qCDebug(dcBose) << "multiroom allowed" << xml.attributes().value("multiroomallowed").toString();
                         sourceItem.multiroomallowed = ( xml.attributes().value("multiroomallowed").toString().toUpper() == "TRUE" );
                     }
                     sourceItem.displayName = xml.readElementText();
@@ -643,7 +804,7 @@ void SoundTouch::onRestRequestFinished() {
                     xml.skipCurrentElement();
                 }
             }
-            emit sourcesReceived(sourcesObject);
+            emit sourcesReceived(requestId, sourcesObject);
         } else if (xml.name() == "bass") {
             BassObject bassObject;
             if(xml.attributes().hasAttribute("deviceID")) {
@@ -661,14 +822,12 @@ void SoundTouch::onRestRequestFinished() {
                     xml.skipCurrentElement();
                 }
             }
-            emit bassReceived(bassObject);
+            emit bassReceived(requestId, bassObject);
         } else if (xml.name() == "bassCapabilities") {
             BassCapabilitiesObject bassCapabilities;
-
             if(xml.attributes().hasAttribute("deviceID")) {
                 bassCapabilities.deviceID = xml.attributes().value("deviceID").toString();
             }
-
             while(xml.readNextStartElement()){
                 if(xml.name() == "bassAvailable"){
                     //qDebug(dcBose) << "BassAvailable" << xml.readElementText();
@@ -686,7 +845,7 @@ void SoundTouch::onRestRequestFinished() {
                     xml.skipCurrentElement();
                 }
             }
-            emit bassCapabilitiesReceived(bassCapabilities);
+            emit bassCapabilitiesReceived(requestId, bassCapabilities);
         } else if (xml.name() == "presets") {
             PresetObject preset;
             if(xml.attributes().hasAttribute("id")) {
@@ -713,7 +872,7 @@ void SoundTouch::onRestRequestFinished() {
                     xml.skipCurrentElement();
                 }
             }
-            emit presetsReceived(preset);
+            emit presetsReceived(requestId, preset);
 
         } else if (xml.name() == "group") {
             GroupObject group;
@@ -735,7 +894,7 @@ void SoundTouch::onRestRequestFinished() {
                     xml.skipCurrentElement();
                 }
             }
-            emit groupReceived(group);
+            emit groupReceived(requestId, group);
         } else if (xml.name() == "zone") {
             ZoneObject zone;
             if(xml.attributes().hasAttribute("master")) {
@@ -753,43 +912,10 @@ void SoundTouch::onRestRequestFinished() {
                 }
                 zone.members.append(member);
             }
-            emit zoneReceived(zone);
+            emit zoneReceived(requestId, zone);
         }
         else {
             xml.skipCurrentElement();
         }
     }
-}
-
-void SoundTouch::onRestRequestError(QNetworkReply::NetworkError error)
-{
-    Q_UNUSED(error)
-
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    reply->deleteLater();
-
-    qWarning(dcBose) << "Rest Error" << reply->errorString();
-}
-
-
-void SoundTouch::onWebsocketMessageReceived(QString message)
-{
-    qDebug(dcBose) << "Websocket message received:" << message;
-
-}
-
-void SoundTouch::sendGetRequest(QString path)
-{
-    QUrl url;
-    url.setHost(m_ipAddress);
-    url.setScheme("http");
-    url.setPort(m_port);
-    url.setPath(path);
-    //qDebug(dcBose) << "Sending request" << url;
-    QNetworkRequest request = QNetworkRequest(url);
-
-    QNetworkReply *reply = m_networkAccessManager->get(request);
-    m_getRepliesPending = true;
-    connect(reply, &QNetworkReply::finished, this, &SoundTouch::onRestRequestFinished);
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onRestRequestError(QNetworkReply::NetworkError)));
 }
