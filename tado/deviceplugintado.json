@@ -1,0 +1,162 @@
+{
+    "displayName": "Tado",
+    "name": "Tado",
+    "id": "b4f2d2ee-50bb-4786-b7f5-261fed204fa5",
+    "vendors": [
+        {
+            "displayName": "Tado",
+            "name": "tado",
+            "id": "23c8a19f-bd6a-4c90-bcc9-2f0c0d9292c5",
+            "deviceClasses": [
+                {
+                    "id": "69be7d15-5658-4442-872e-42abbd8bff81",
+                    "name": "tadoConnection",
+                    "displayName": "Tado Connection",
+                    "interfaces": ["account"],
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
+                    "stateTypes": [
+                        {
+                            "id": "2f79bc1d-27ed-480a-b583-728363c83ea6",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "2aed240b-8c5c-418b-a9d1-0d75412c1c27",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "33f55afc-a673-47a4-9fb0-75fdac6a66f4",
+                            "name": "userDisplayName",
+                            "displayName": "Username",
+                            "displayNameEvent": "Username changed",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ]
+                },
+                {
+                    "id": "1a7bb944-fb9c-490a-8a4c-794b27282292",
+                    "name": "zone",
+                    "displayName": "Zone",
+                    "interfaces": ["thermostat", "temperaturesensor", "connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "330cad74-6f07-42ad-b226-299927c3c4f0",
+                            "name": "homeId",
+                            "displayName": "Home id",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "cd67476b-978d-4a22-a40e-50cbc941e09e",
+                            "name": "zoneId",
+                            "displayName": "Zone id",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "8e86797e-5333-4428-9dba-9ed5ac243b44",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9f45a703-6a15-447c-a77a-0df731cda48e",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "4cecf87c-8a5d-4bc4-a4ba-d2ee6103714b",
+                            "name": "mode",
+                            "displayName": "Mode",
+                            "displayNameEvent": "Mode changed",
+                            "displayNameAction": "Set mode",
+                            "type": "QString",
+                            "defaultValue": "Tado",
+                            "possibleValues": [
+                                "Manual",
+                                "Tado",
+                                "Off"
+                            ],
+                            "writable": true
+                        },
+                        {
+                            "id": "8b800998-5c2d-4940-9d0e-036979cf49ca",
+                            "name": "tadoMode",
+                            "displayName": "Tado mode",
+                            "displayNameEvent": "Tado mode changed",
+                            "type": "QString",
+                            "defaultValue": "Tado"
+                        },
+                        {
+                            "id": "e886377d-34b7-4908-ad0d-ed463fc6181d",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "c7a04e26-bb22-406e-b117-262bdb8b9c0e",
+                            "name": "windowOpen",
+                            "displayName": "Window open",
+                            "displayNameEvent": "Window open changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "80098178-7d92-43dd-a216-23704cc0eaa2",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "684fcc62-f12b-4669-988e-4b79f153b0f2",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
+                            "unit": "DegreeCelsius",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 5,
+                            "maxValue": 25,
+                            "writable": true
+                        },
+                        {
+                            "id": "0faaaff1-2a33-44ec-b68d-d8855f584b02",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "unit": "Percentage",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
