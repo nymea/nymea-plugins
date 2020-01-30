@@ -59,6 +59,7 @@ Files: avahimonitor/*
        senic/*
        udpcommander/*
        unitec/*
+       usbrelay/*
        wemo/*
 License: LGPL-2.1
 Copyright: 2014-2017, Simon Stürz <simon.stuerz@guh.io>

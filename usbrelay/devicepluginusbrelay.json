@@ -1,0 +1,88 @@
+{
+    "name": "UsbRelay",
+    "displayName": "USB relay",
+    "id": "ed0035d3-561c-498e-bdb2-2b574cbd0a2f",
+    "vendors": [
+        {
+            "displayName": "USB Relay",
+            "name": "usbrelay",
+            "id": "d699b81a-621a-4db6-a137-6adbb5c9c091",
+            "deviceClasses": [
+                {
+                    "name": "usbRelayConnector",
+                    "displayName": "USB Relay Connector",
+                    "id": "f48ff4db-d207-4221-963a-3fcb635102d8",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["Discovery"],
+                    "interfaces": [ "gateway" ],
+                    "paramTypes": [
+                        {
+                            "id": "a9fffbb9-f1c3-439c-9168-8c3fdfab29c8",
+                            "name": "path",
+                            "displayName": "System path",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "406e1396-e3a3-4200-9045-2146381041b3",
+                            "name": "relayCount",
+                            "displayName": "Relay count",
+                            "type": "uint",
+                            "defaultValue": 2
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4cb1cf1f-76fd-4a9c-9397-b5f07b123050",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "name": "usbRelay",
+                    "displayName": "USB Relay",
+                    "id": "6e01190d-ed9e-4dab-97d1-dc357c740db8",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["Auto"],
+                    "interfaces": [ "power", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "48d6e667-643f-4f9f-ae12-5308d23a36d7",
+                            "name": "relayNumber",
+                            "displayName": "Relay number",
+                            "type": "uint",
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "fd5338f8-f02b-4f99-8677-365cfc98221d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b22ec763-cb41-4d1b-846d-7b2cbe5e433d",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+
