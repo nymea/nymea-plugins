@@ -71,7 +71,7 @@ void DevicePluginHttpCommander::executeAction(DeviceActionInfo *info)
             QString method = action.param(httpRequestRequestActionMethodParamTypeId).value().toString();
             QByteArray payload = action.param(httpRequestRequestActionBodyParamTypeId).value().toByteArray();
 
-            QNetworkReply *reply;
+            QNetworkReply *reply = nullptr;
             if (method == "GET") {
                 reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
             } else if (method == "POST") {
@@ -80,6 +80,10 @@ void DevicePluginHttpCommander::executeAction(DeviceActionInfo *info)
                 reply = hardwareManager()->networkManager()->put(QNetworkRequest(url), payload);
             } else if (method == "DELETE") {
                 reply = hardwareManager()->networkManager()->deleteResource(QNetworkRequest(url));
+            } else {
+                qCWarning(dcHttpCommander()) << "Unsupported HTTP method" << method;
+                info->finish(Device::DeviceErrorInvalidParameter);
+                return;
             }
             connect(reply, &QNetworkReply::finished, this, [device, reply, this](){
 
