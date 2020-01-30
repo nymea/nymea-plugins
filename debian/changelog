@@ -1,6 +1,36 @@
-nymea-plugins (0.18.0) UNRELEASED; urgency=medium
+nymea-plugins (0.18.0) xenial; urgency=medium
+  [ Michael Zanetti ]
+  * New Plugin: Tuya cloud
+  * Boblight: Fix behavior if color is changed very fast
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Mon, 06 Jan 2020 17:54:04 +0100
+  [ Bernhard Trinnes ]
+  * New plugin: Tado
+  * New Plugin: Nanoleaf
+
+  [ Michael Zanetti ]
+  * HttpCommander: Build with more strict compiler settings
+
+  [ Bernhard Trinnes ]
+  * New Plug-In: OpenUV
+
+  [ Michael Zanetti ]
+  * New Plugin: tp-link Kasa
+  * TexasInstruments: Fix pressure unit for sensortag
+  * Kodi: Skip link-local IPv6 addresses
+  * New Plugin: UniFi network controller
+
+  [ Simon Stürz ]
+  * New plugin: Nuki
+  * New plugin: USB relay
+
+  [ Michael Zanetti ]
+  * All Plugins: Fix building in sbuild
+  * EQ-3: Fix connection to MAX! cube
+
+  [ Bernhard Trinnes ]
+  * Bose SoundTouch: Fix actions and add source browsing
+
+ -- Jenkins <jenkins@nymea.io>  Sat, 18 Jan 2020 23:58:28 +0100
 
 nymea-plugins (0.17.0) xenial; urgency=medium
 
