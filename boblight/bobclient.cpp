@@ -35,7 +35,7 @@ BobClient::BobClient(const QString &host, const int &port, QObject *parent) :
 {
     m_syncTimer = new QTimer(this);
     m_syncTimer->setSingleShot(false);
-    m_syncTimer->setInterval(50);
+    m_syncTimer->setInterval(25);
 
     connect(m_syncTimer, SIGNAL(timeout()), this, SLOT(sync()));
 }
@@ -103,7 +103,7 @@ BobChannel *BobClient::getChannel(const int &id)
         if (channel->id() == id)
             return channel;
     }
-    return 0;
+    return nullptr;
 }
 
 void BobClient::setColor(int channel, QColor color)
@@ -148,7 +148,7 @@ void BobClient::sync()
         boblight_addpixel(m_boblight, channel->id(), rgb);
     }
 
-    if (!boblight_sendrgb(m_boblight, 1, NULL)) {
+    if (!boblight_sendrgb(m_boblight, 1, nullptr)) {
         qCWarning(dcBoblight) << "Boblight connection error:" << boblight_geterror(m_boblight);
         boblight_destroy(m_boblight);
         qDeleteAll(m_channels);

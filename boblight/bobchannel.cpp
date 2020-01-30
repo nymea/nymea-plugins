@@ -26,7 +26,6 @@ BobChannel::BobChannel(const int &id, QObject *parent) :
 {
     m_animation = new QPropertyAnimation(this, "finalColor", this);
     m_animation->setDuration(500);
-    m_animation->setEasingCurve(QEasingCurve::InOutQuad);
 }
 
 int BobChannel::id() const
@@ -41,13 +40,14 @@ QColor BobChannel::color() const
 
 void BobChannel::setColor(const QColor &color)
 {
-    m_color = color;
-    emit colorChanged();
-
     if (m_animation->state() == QPropertyAnimation::Running) {
         m_animation->stop();
+        m_finalColor = m_color;
     }
 
+    m_color = color;
+    emit colorChanged();
+    
     m_animation->setStartValue(m_finalColor);
     m_animation->setEndValue(color);
     m_animation->start();
