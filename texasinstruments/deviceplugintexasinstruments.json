@@ -68,7 +68,7 @@
                             "displayName": "Barometric pressure",
                             "displayNameEvent": "Barometric pressure changed",
                             "type": "double",
-                            "unit": "HectoPascal",
+                            "unit": "MilliBar",
                             "defaultValue": 0
                         },
                         {
