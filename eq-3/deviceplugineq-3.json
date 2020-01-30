@@ -63,9 +63,9 @@
                 },
                 {
                     "id": "ffbfec5d-06e8-4082-b62b-92cc5c3e8c4e",
-                    "name": "wallThermostate",
+                    "name": "wallThermostat",
                     "displayName": "Max! Wall Thermostat",
-                    "interfaces": ["thermostat", "temperaturesensor", "battery"],
+                    "interfaces": ["heating", "thermostat", "temperaturesensor", "battery", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -74,18 +74,6 @@
                             "displayName": "serial number",
                             "type": "QString",
                             "inputType": "TextLine"
-                        },
-                        {
-                            "id": "8d32b228-8618-483f-bcc3-2d62868d6912",
-                            "name": "name",
-                            "displayName": "name",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "801be701-ea53-4cb2-a933-823f330e7837",
-                            "name": "parent",
-                            "displayName": "parent cube",
-                            "type": "QString"
                         },
                         {
                             "id": "6ba358c1-0c31-4ea4-93fd-544f030582a7",
@@ -200,7 +188,7 @@
                         },
                         {
                             "id": "aff38be8-7ea6-4fd8-b0fa-e987ab05c719",
-                            "name": "linkStatusOK",
+                            "name": "connected",
                             "displayName": "link status ok",
                             "displayNameEvent": "link status changed",
                             "type": "bool",
@@ -255,6 +243,18 @@
                             "type": "double",
                             "unit": "DegreeCelsius",
                             "defaultValue": 0,
+                            "minValue": 4.5,
+                            "maxValue": 30.5,
+                            "writable": true
+                        },
+                        {
+                            "id": "73c5bf9d-030b-4804-b3c9-bf796ab26886",
+                            "name": "power",
+                            "displayName": "On/off",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
                             "writable": true
                         },
                         {
@@ -270,8 +270,9 @@
                 },
                 {
                     "id": "f80d9481-4827-45ee-a013-b97b22412d92",
-                    "name": "radiatorThermostate",
+                    "name": "radiatorThermostat",
                     "displayName": "Max! Radiator Thermostat",
+                    "interfaces": ["heating", "thermostat", "battery", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -280,18 +281,6 @@
                             "displayName": "serial number",
                             "type": "QString",
                             "inputType": "TextLine"
-                        },
-                        {
-                            "id": "e098f95d-cbf8-4d41-bb03-0691a932f8c2",
-                            "name": "name",
-                            "displayName": "name",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "809730b8-06fe-42f0-9775-7d8ae1a1620b",
-                            "name": "parent",
-                            "displayName": "parent cube",
-                            "type": "QString"
                         },
                         {
                             "id": "d74e8fb8-71cc-4bb5-ac0a-04a100458bdb",
@@ -384,7 +373,7 @@
                         },
                         {
                             "id": "2b1beca3-5053-41f5-a826-2a7c1d59da20",
-                            "name": "batteryLow",
+                            "name": "batteryCritical",
                             "displayName": "battery low",
                             "displayNameEvent": "battery low changed",
                             "type": "bool",
@@ -392,7 +381,7 @@
                         },
                         {
                             "id": "bbc03a0b-f4dc-48dc-8924-79028f0357a2",
-                            "name": "linkStatusOk",
+                            "name": "connected",
                             "displayName": "link status ok",
                             "displayNameEvent": "link status changed",
                             "type": "bool",
@@ -440,13 +429,25 @@
                         },
                         {
                             "id": "19d3ce6e-a1bc-4727-8827-62545c82fe13",
-                            "name": "desiredTemperature",
+                            "name": "targetTemperature",
                             "displayName": "desired temperature",
                             "displayNameEvent": "desired temperature changed",
                             "displayNameAction": "Set desired temperature",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0,
+                            "minValue": 4.5,
+                            "maxValue": 30.5,
+                            "writable": true
+                        },
+                        {
+                            "id": "d7927bd5-9ee8-4567-90d2-f951cd1eb628",
+                            "name": "power",
+                            "displayName": "On/off",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
                             "writable": true
                         },
                         {
