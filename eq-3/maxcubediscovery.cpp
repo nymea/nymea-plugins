@@ -61,6 +61,7 @@ void MaxCubeDiscovery::readData()
     if(!data.isEmpty() && data.contains("eQ3MaxAp")){
 
         CubeInfo cube;
+        cube.hostAddress = sender;
         cube.serialNumber = data.mid(8,10);
         cube.rfAddress = data.mid(21,3).toHex();
         cube.firmware = data.mid(24,2).toHex().toInt();
