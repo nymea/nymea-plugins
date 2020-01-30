@@ -52,6 +52,7 @@ PLUGIN_DIRS = \
     tplink              \
     tuya                \
     udpcommander        \
+    unifi               \
     unitec              \
     wakeonlan           \
     wemo                \
