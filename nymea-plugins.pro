@@ -32,6 +32,7 @@ PLUGIN_DIRS = \
     netatmo             \
     networkdetector     \
     onewire             \
+    openuv              \ 
     openweathermap      \
     osdomotics          \
     philipshue          \
