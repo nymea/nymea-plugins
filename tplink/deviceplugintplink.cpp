@@ -343,7 +343,6 @@ void DevicePluginTPLink::connectToDevice(Device *device, const QHostAddress &add
                     // This has quite a bit of jitter... Let's smoothen it while within +/- 0.1W to produce less events in the system
                     double oldValue = device->stateValue(kasaPlugCurrentPowerStateTypeId).toDouble();
                     double newValue = emeterMap.value("get_realtime").toMap().value("power_mw").toDouble() / 1000;
-                    qCDebug(dcTplink()) << "old:" << oldValue << "new" << newValue << "diff" << qAbs(oldValue - newValue);
                     if (qAbs(oldValue - newValue) > 0.1) {
                         device->setStateValue(kasaPlugCurrentPowerStateTypeId, newValue);
                     }
