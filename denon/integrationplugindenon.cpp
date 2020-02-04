@@ -103,9 +103,13 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
             info->finish(Thing::ThingErrorNoError);
         });
         return;
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
     }
 
     if (info->thingClassId() == heosThingClassId) {
+=======
+    } else if (info->deviceClassId() == heosDeviceClassId) {
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
         /*
         * The HEOS products can be discovered using the UPnP SSDP protocol. Through discovery,
         * the IP address of the HEOS products can be retrieved. Once the IP address is retrieved,
@@ -126,12 +130,16 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
             foreach (const UpnpDeviceDescriptor &upnpDevice, reply->deviceDescriptors()) {
                 qCDebug(dcDenon) << "UPnP thing found:" << upnpDevice.modelDescription() << upnpDevice.friendlyName() << upnpDevice.hostAddress().toString() << upnpDevice.modelName() << upnpDevice.manufacturer() << upnpDevice.serialNumber();
 
-                if (upnpDevice.modelName().contains("HEOS")) {
+                if (upnpDevice.modelName().contains("HEOS", Qt::CaseSensitivity::CaseInsensitive)) {
                     QString serialNumber = upnpDevice.serialNumber();
                     if (serialNumber != "0000001") {
                         // child devices have serial number 0000001
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
                         qCDebug(dcDenon) << "UPnP thing found:" << upnpDevice.modelDescription() << upnpDevice.friendlyName() << upnpDevice.hostAddress().toString() << upnpDevice.modelName() << upnpDevice.manufacturer() << upnpDevice.serialNumber();
                         ThingDescriptor descriptor(heosThingClassId, upnpDevice.modelName(), serialNumber);
+=======
+                        DeviceDescriptor descriptor(heosDeviceClassId, upnpDevice.modelName(), serialNumber);
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
                         ParamList params;
                         foreach (Thing *existingThing, myThings()) {
                             if (existingThing->paramValue(heosThingSerialNumberParamTypeId).toString().contains(serialNumber, Qt::CaseSensitivity::CaseInsensitive)) {
@@ -150,8 +158,13 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
             info->finish(Thing::ThingErrorNoError);
         });
         return;
+    } else {
+        info->finish(Device::DeviceErrorDeviceClassNotFound);
     }
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
     info->finish(Thing::ThingErrorThingClassNotFound);
+=======
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
 }
 
 void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
@@ -302,10 +315,15 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
             avrConnection->setSurroundMode(surroundMode);
             return info->finish(Thing::ThingErrorNoError);
         }
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
         return info->finish(Thing::ThingErrorActionTypeNotFound);
     }
 
     if (thing->thingClassId() == heosPlayerThingClassId) {
+=======
+        return info->finish(Device::DeviceErrorActionTypeNotFound);
+    } else if (device->deviceClassId() == heosPlayerDeviceClassId) {
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
 
         Thing *heosThing = myThings().findById(thing->parentId());
         Heos *heos = m_heos.value(heosThing->id());
@@ -314,11 +332,10 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
         if (action.actionTypeId() == heosPlayerAlertActionTypeId) {
             heos->playUrl(playerId, m_notificationUrl);
             return info->finish(Device::DeviceErrorNoError);
-        }
-
-        if (action.actionTypeId() == heosPlayerVolumeActionTypeId) {
+        } else if (action.actionTypeId() == heosPlayerVolumeActionTypeId) {
             int volume = action.param(heosPlayerVolumeActionVolumeParamTypeId).value().toInt();
             heos->setVolume(playerId, volume);
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
             return info->finish(Thing::ThingErrorNoError);
         }
 
@@ -329,6 +346,14 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
         }
 
         if (action.actionTypeId() == heosPlayerPlaybackStatusActionTypeId) {
+=======
+            return info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerMuteActionTypeId) {
+            bool mute = action.param(heosPlayerMuteActionMuteParamTypeId).value().toBool();
+            heos->setMute(playerId, mute);
+            return info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerPlaybackStatusActionTypeId) {
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
             QString playbackStatus = action.param(heosPlayerPlaybackStatusActionPlaybackStatusParamTypeId).value().toString();
             if (playbackStatus == "playing") {
                 heos->setPlayerState(playerId, PLAYER_STATE_PLAY);
@@ -337,10 +362,15 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
             } else if (playbackStatus == "pausing") {
                 heos->setPlayerState(playerId, PLAYER_STATE_PAUSE);
             }
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
             return info->finish(Thing::ThingErrorNoError);
         }
 
         if (action.actionTypeId() == heosPlayerShuffleActionTypeId) {
+=======
+            return info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerShuffleActionTypeId) {
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
             bool shuffle = action.param(heosPlayerShuffleActionShuffleParamTypeId).value().toBool();
             REPEAT_MODE repeatMode = REPEAT_MODE_OFF;
             if (thing->stateValue(heosPlayerRepeatStateTypeId) == "One") {
@@ -349,6 +379,7 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
                 repeatMode = REPEAT_MODE_ALL;
             }
             heos->setPlayMode(playerId, repeatMode, shuffle);
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
             return info->finish(Thing::ThingErrorNoError);
         }
 
@@ -379,6 +410,30 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
         return info->finish(Thing::ThingErrorActionTypeNotFound);
     }
     return info->finish(Thing::ThingErrorThingClassNotFound);
+=======
+            return info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerSkipBackActionTypeId) {
+            heos->playPrevious(playerId);
+            return info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerStopActionTypeId) {
+            heos->setPlayerState(playerId, PLAYER_STATE_STOP);
+            return info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerPlayActionTypeId) {
+            heos->setPlayerState(playerId, PLAYER_STATE_PLAY);
+            return info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerPauseActionTypeId) {
+            heos->setPlayerState(playerId, PLAYER_STATE_PAUSE);
+            return info->finish(Device::DeviceErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerSkipNextActionTypeId) {
+            heos->playNext(playerId);
+            return info->finish(Device::DeviceErrorNoError);
+        } else {
+            return info->finish(Device::DeviceErrorActionTypeNotFound);
+        }
+    } else {
+        return info->finish(Device::DeviceErrorDeviceClassNotFound);
+    }
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
 }
 
 void IntegrationPluginDenon::postSetupThing(Thing *thing)
@@ -388,6 +443,7 @@ void IntegrationPluginDenon::postSetupThing(Thing *thing)
         device->setStateValue(heosConnectedStateTypeId, heos->connected());
         heos->getPlayers();
         heos->getGroups();
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
     }
 
     if (thing->thingClassId() == heosPlayerThingClassId) {
@@ -396,6 +452,13 @@ void IntegrationPluginDenon::postSetupThing(Thing *thing)
         Heos *heos = m_heos.value(heosThing->id());
         int playerId = thing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
 
+=======
+    } else if (device->deviceClassId() == heosPlayerDeviceClassId) {
+        device->setStateValue(heosPlayerConnectedStateTypeId, true);
+        Device *heosDevice = myDevices().findById(device->parentId());
+        Heos *heos = m_heos.value(heosDevice->id());
+        int playerId = device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt();
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
         heos->getPlayerState(playerId);
         heos->getPlayMode(playerId);
         heos->getVolume(playerId);
@@ -429,12 +492,19 @@ void IntegrationPluginDenon::onPluginTimer()
             Heos *heos = m_heos.value(thing->id());
             heos->getPlayers();
             heos->registerForChangeEvents(true);
+<<<<<<< HEAD:denon/integrationplugindenon.cpp
         }
 
         if (thing->thingClassId() == heosPlayerThingClassId) {
             Thing *heosThing = myThings().findById(thing->parentId());
             Heos *heos = m_heos.value(heosThing->id());
             int playerId = thing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
+=======
+        } else if (device->deviceClassId() == heosPlayerDeviceClassId) {
+            Device *heosDevice = myDevices().findById(device->parentId());
+            Heos *heos = m_heos.value(heosDevice->id());
+            int playerId = device->paramValue(heosPlayerDevicePlayerIdParamTypeId).toInt();
+>>>>>>> tryna to fix discovery:denon/deviceplugindenon.cpp
 
             heos->getPlayerState(playerId);
             heos->getPlayMode(playerId);
@@ -589,7 +659,6 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
         return;
 
     if (device->deviceClassId() == heosDeviceClassId) {
-        // if the device is connected
 
         device->setStateValue(heosConnectedStateTypeId, status);
 >>>>>>> added join/unjoin group:denon/IntegrationPlugindenon.cpp
