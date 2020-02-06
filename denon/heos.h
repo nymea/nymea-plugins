@@ -106,18 +106,19 @@ public:
     void groupVolumeDown(int groupId, int step = 5);
 
     //Browse Get Commands
-    void getMusicSources();
-    void getSourceInfo(const QString &sourceId);
-    void getSearchCriteria(const QString &sourceId);
-    void browseSource(const QString &sourceId);
-    void browseSourceContainers(const QString &sourceId, const QString &containerId);
+    quint32 getMusicSources();
+    quint32 getSourceInfo(const QString &sourceId);
+    quint32 getSearchCriteria(const QString &sourceId);
+    quint32 browseSource(const QString &sourceId);
+    quint32 browseSourceContainers(const QString &sourceId, const QString &containerId);
+    quint32 addContainerToQueue(int playerId, const QString &sourceId, const QString &containerId, ADD_CRITERIA addCriteria);
+    // Controllers can add custom argument SEQUENCE=<number> in browse commands to associate command and response.
 
     //Play commands
-    void playStation(int playerId, const QString &sourceId, const QString &containerId, const QString &mediaId, const QString &stationName);
-    void playPresetStation(int playerId, int presetNumber);
-    void playInputSource(int playerId, const QString &inputName); //Validity of Inputs depends on the type of source HEOS devic
-    void playUrl(int playerId, const QUrl &url);
-    void addContainerToQueue(int playerId, const QString &sourceId, const QString &containerId, ADD_CRITERIA addCriteria);
+    quint32 playStation(int playerId, const QString &sourceId, const QString &containerId, const QString &mediaId, const QString &stationName);
+    quint32 playPresetStation(int playerId, int presetNumber);
+    quint32 playInputSource(int playerId, const QString &inputName); //Validity of Inputs depends on the type of source HEOS devie
+    quint32 playUrl(int playerId, const QUrl &url);
 
 private:
     bool m_eventRegistered = false;
@@ -155,8 +156,8 @@ signals:
     void sourcesChanged();
     void nowPlayingMediaStatusReceived(int playerId, const QString &sourceId, const QString &artist, const QString &album, const QString &song, const QString &artwork);
 
-    void musicSourcesReceived(QList<MusicSourceObject> musicSources); //callback of getMusicSource, not associated to a playerId
-    void browseRequestReceived(const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems); //callback of browseSource
+    void musicSourcesReceived(quint32 sequenceNumber, QList<MusicSourceObject> musicSources); //callback of getMusicSource, not associated to a playerId
+    void browseRequestReceived(quint32 sequenceNumber, const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems); //callback of browseSource
     void browseErrorReceived(const QString &sourceId, const QString &containerId, int errorId, const QString &errorMessage);
     void userChanged(bool signedIn, const QString &userName);
 

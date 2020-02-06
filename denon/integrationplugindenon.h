@@ -57,12 +57,24 @@ class IntegrationPluginDenon : public IntegrationPlugin
 public:
     explicit IntegrationPluginDenon();
 
+<<<<<<< HEAD:denon/integrationplugindenon.h
     void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
+=======
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+
+    void startPairing(DevicePairingInfo *info) override;
+    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+
+    void setupDevice(DeviceSetupInfo *info) override;
+    void postSetupDevice(Device *device) override;
+    void executeAction(DeviceActionInfo *info) override;
+    void deviceRemoved(Device *device) override;
+>>>>>>> playing favorites do work now:denon/deviceplugindenon.h
 
     void browseThing(BrowseResult *result) override;
     void browserItem(BrowserItemResult *result) override;
@@ -73,8 +85,15 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 
+<<<<<<< HEAD:denon/integrationplugindenon.h
     QHash<ThingId, AvrConnection*> m_avrConnections;
     QHash<ThingId, Heos*> m_heos;
+=======
+    QHash<DeviceId, AvrConnection*> m_avrConnections;
+    QHash<DeviceId, Heos*> m_heosConnections;
+    QHash<DeviceId, Heos*> m_unfinishedHeosConnections;
+    QHash<Heos *, DevicePairingInfo *> m_unfinishedHeosPairings;
+>>>>>>> playing favorites do work now:denon/deviceplugindenon.h
 
     QHash<AvrConnection*, ThingSetupInfo*> m_asyncAvrSetups;
     QHash<Heos*, ThingSetupInfo*> m_asyncHeosSetups;
@@ -94,6 +113,8 @@ private:
     QHash<int, GroupObject> m_groupBuffer;
     QHash<int, HeosPlayer *> m_playerBuffer;
 
+    Heos *createHeosConnection(const QHostAddress &address);
+
 private slots:
     void onPluginTimer();
 
@@ -107,15 +128,15 @@ private slots:
     void onHeosMuteStatusReceived(int playerId, bool mute);
     void onHeosVolumeStatusReceived(int playerId, int volume);
     void onHeosNowPlayingMediaStatusReceived(int playerId, const QString &sourceId, const QString &artist, const QString &album, const QString &song, const QString &artwork);
-    void onHeosMusicSourcesReceived(QList<MusicSourceObject> musicSources);
+    void onHeosMusicSourcesReceived(quint32 sequenceNumber, QList<MusicSourceObject> musicSources);
 
-    void onHeosBrowseRequestReceived(const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems);
+    void onHeosBrowseRequestReceived(quint32 sequenceNumber, const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems);
     void onHeosBrowseErrorReceived(const QString &sourceId, const QString &containerId, int errorId, const QString &errorMessage);
     void onHeosPlayerNowPlayingChanged(int playerId);
     void onHeosPlayerQueueChanged(int playerId);
     void onHeosGroupsReceived(QList<GroupObject> groups);
     void onHeosGroupsChanged();
-
+    void onHeosUserChanged(bool signedIn, const QString &userName);
 
     void onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
     void onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry);

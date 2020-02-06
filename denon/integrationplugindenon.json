@@ -171,6 +171,7 @@
                     "name": "heos",
                     "displayName": "Heos",
                     "createMethods": ["discovery"],
+                    "setupMethod": "userandpassword",
                     "interfaces": ["gateway"],
                     "paramTypes": [
                         {
@@ -201,6 +202,22 @@
                             "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "ab689a6e-eb71-4a41-a267-ba1afe7e2f56",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "77756132-5fa4-409e-969e-d23bcee72356",
+                            "name": "userDisplayName",
+                            "displayName": "User name",
+                            "displayNameEvent": "User name changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ]
                 },
@@ -367,7 +384,7 @@
                         {
                             "id": "a718f7e9-0b54-4403-b661-49f7b0d13085",
                             "name": "skipBack",
-                            "displayName": "Akip back"
+                            "displayName": "Skip back"
                         },
                         {
                             "id": "c4b29c09-e3b3-4843-b6d9-e032f3fc1d78",
