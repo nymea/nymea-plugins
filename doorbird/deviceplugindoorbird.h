@@ -61,13 +61,17 @@ public:
     void deviceRemoved(Device *device)override;
 
 private:
-    QHash<Device*, Doorbird *> m_doorbirdConnections;
+    QHash<DeviceId, Doorbird *> m_doorbirdConnections;
+    QHash<Doorbird *, DevicePairingInfo *> m_pendingPairings;
+    QHash<Doorbird *, DeviceSetupInfo *> m_pendingDeviceSetups;
+
     QHash<QUuid, DeviceActionInfo *> m_asyncActions;
 
 private slots:
     void onDoorBirdConnected(bool status);
     void onDoorBirdEvent(Doorbird::EventType eventType, bool status);
     void onDoorBirdRequestSent(QUuid requestId, bool success);
+    void onSessionIdReceived(const QString &sessionId);
 };
 
 #endif // DEVICEPLUGINDOORBIRD_H

@@ -41,7 +41,7 @@ class Doorbird : public QObject
 {
     Q_OBJECT
 public:
-    explicit Doorbird(const QHostAddress &address, const QString &username, const QString &password, QObject *parent = nullptr);
+    explicit Doorbird(const QHostAddress &address, QObject *parent = nullptr);
 
     enum EventType {
         Doorbell,
@@ -61,6 +61,9 @@ public:
         int id;
     };
 
+    QHostAddress address();
+    void setAddress(const QHostAddress &address);
+    void initConnection(const QString &username, const QString &password);
     QUuid getSession();
     QUuid openDoor(int value);
     QUuid lightOn();
@@ -90,10 +93,7 @@ private:
     QHostAddress m_address;
     QList<QNetworkReply *> m_networkRequests;
 
-    QString m_username;
-    QString m_password;
-
-    QByteArray sessionId;
+    //QByteArray sessionId;
 
 signals:
     void deviceConnected(bool status);
@@ -102,6 +102,7 @@ signals:
     void eventReveiced(EventType eventType, bool status);
     void favoritesReceived(QList<FavoriteObject> favourites);
 
+    void sessionIdReceived(const QString &sessionId);
     void liveImageReceived(QImage image);
 
 public slots:
