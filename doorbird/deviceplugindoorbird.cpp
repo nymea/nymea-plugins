@@ -1,23 +1,32 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *                                                                         *
- *  Copyright (C) 2019 Bernhard Trinnes <bernhard.trinnes@nymea.io>        *
- *  Copyright (C) 2019 Michael Zanetti <michael.zanetti@nymea.io>          *
- *                                                                         *
- *  This file is part of nymea.                                            *
- *                                                                         *
- *  nymea is free software: you can redistribute it and/or modify          *
- *  it under the terms of the GNU General Public License as published by   *
- *  the Free Software Foundation, version 2 of the License.                *
- *                                                                         *
- *  nymea is distributed in the hope that it will be useful,               *
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the           *
- *  GNU General Public License for more details.                           *
- *                                                                         *
- *  You should have received a copy of the GNU General Public License      *
- *  along with nymea. If not, see <http://www.gnu.org/licenses/>.          *
- *                                                                         *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by
+* copyright law, and remains the property of nymea GmbH. All rights, including
+* reproduction, publication, editing and translation, are reserved. The use of
+* this project is subject to the terms of a license agreement to be concluded
+* with nymea GmbH in accordance with the terms of use of nymea GmbH, available
+* under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* Alternatively, this project may be redistributed and/or modified under the
+* terms of the GNU Lesser General Public License as published by the Free
+* Software Foundation; version 3. This project is distributed in the hope that
+* it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this project. If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under
+* contact@nymea.io or see our FAQ/Licensing Information on
+* https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "deviceplugindoorbird.h"
 #include "plugininfo.h"
@@ -48,7 +57,13 @@ void DevicePluginDoorbird::discoverDevices(DeviceDiscoveryInfo *info)
                     qCDebug(dcDoorBird) << "Found DoorBird device, name: " << serviceEntry.name() << "\n   host address:" << serviceEntry.hostAddress().toString() << "\n    text:" << serviceEntry.txt() << serviceEntry.protocol() << serviceEntry.serviceType();
                     DeviceDescriptor deviceDescriptor(doorBirdDeviceClassId, serviceEntry.name(), serviceEntry.hostAddress().toString());
                     ParamList params;
-                    QString macAddress = serviceEntry.txt().first();
+                    QString macAddress;
+                    if (serviceEntry.txt().first().split("=").length() == 2) {
+                        macAddress = serviceEntry.txt().first().split("=").last();
+                    } else {
+                        qCWarning(dcDoorBird()) << "Could not parse MAC Address" << serviceEntry.txt().first();
+                        return;
+                    }
                     if (!myDevices().filterByParam(doorBirdDeviceSerialnumberParamTypeId, macAddress).isEmpty()) {
                         Device *existingDevice = myDevices().filterByParam(doorBirdDeviceSerialnumberParamTypeId, serviceEntry.hostName()).first();
                         deviceDescriptor.setDeviceId(existingDevice->id());
@@ -116,7 +131,6 @@ void DevicePluginDoorbird::setupDevice(DeviceSetupInfo *info)
         connect(doorbird, &Doorbird::deviceConnected, this, &DevicePluginDoorbird::onDoorBirdConnected);
         connect(doorbird, &Doorbird::eventReveiced, this, &DevicePluginDoorbird::onDoorBirdEvent);
         connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
-        connect(doorbird, &Doorbird::liveImageReceived, this, &DevicePluginDoorbird::onImageReceived);
         doorbird->connectToEventMonitor();
         m_doorbirdConnections.insert(device, doorbird);
         info->finish(Device::DeviceErrorNoError);
@@ -201,9 +215,7 @@ void DevicePluginDoorbird::onDoorBirdEvent(Doorbird::EventType eventType, bool s
         break;
     case Doorbird::EventType::Motion:
         device->setStateValue(doorBirdIsPresentStateTypeId, status);
-        if (status) {
-            doorbird->liveImageRequest();
-        }
+        device->setStateValue(doorBirdLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
         break;
     case Doorbird::EventType::Doorbell:
         if (status) {
@@ -225,19 +237,4 @@ void DevicePluginDoorbird::onDoorBirdRequestSent(QUuid requestId, bool success)
 
     DeviceActionInfo* actionInfo = m_asyncActions.take(requestId);
     actionInfo->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
-}
-
-void DevicePluginDoorbird::onImageReceived(QImage image)
-{
-    Q_UNUSED(image);
-    Doorbird *doorbird = static_cast<Doorbird *>(sender());
-    Device *device = m_doorbirdConnections.key(doorbird);
-    if (!device)
-        return;
-    //TODO add QR code detection
-    Event event;
-    event.setDeviceId(device->id());
-    event.setEventTypeId(doorBirdQrCodeDetectedEventTypeId);
-    event.setParams(ParamList() << Param(doorBirdQrCodeDetectedEventDataParamTypeId, "image received"));
-    emit emitEvent(event);
 }
