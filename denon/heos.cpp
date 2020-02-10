@@ -421,7 +421,7 @@ quint32 Heos::getSearchCriteria(const QString &sourceId)
     cmd.append("\r\n");
     qCDebug(dcDenon) << "Get search criteria:" << cmd;
     m_socket->write(cmd);
-      return sequence;
+    return sequence;
 }
 
 quint32 Heos::browseSource(const QString &sourceId)
@@ -450,7 +450,7 @@ quint32 Heos::browseSourceContainers(const QString &sourceId, const QString &con
     cmd.append("\r\n");
     qCDebug(dcDenon) << "Browsing container:" << cmd;
     m_socket->write(cmd);
-      return sequence;
+    return sequence;
 }
 
 quint32 Heos::playStation(int playerId, const QString &sourceId, const QString &containerId, const QString &mediaId, const QString &stationName)
@@ -459,18 +459,24 @@ quint32 Heos::playStation(int playerId, const QString &sourceId, const QString &
     QByteArray cmd("heos://browse/play_stream?");
     QUrlQuery queryParams;
     queryParams.addQueryItem("pid", QString::number(playerId));
-    queryParams.addQueryItem("sid", sourceId);
+    if (!sourceId.isEmpty()) {
+        queryParams.addQueryItem("sid", sourceId);
+    }
     if (!containerId.isEmpty()) {
         queryParams.addQueryItem("cid", containerId);
     }
-    queryParams.addQueryItem("mid", mediaId);
-    queryParams.addQueryItem("name", stationName);
+    if (!mediaId.isEmpty()) {
+        queryParams.addQueryItem("mid", mediaId);
+    }
+    if (!stationName.isEmpty()) {
+        queryParams.addQueryItem("name", stationName);
+    }
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
     cmd.append(queryParams.toString());
     cmd.append("\r\n");
     qCDebug(dcDenon) << "playing station:" << cmd;
     m_socket->write(cmd);
-      return sequence;
+    return sequence;
 }
 
 quint32 Heos::playPresetStation(int playerId, int presetNumber)
@@ -515,7 +521,7 @@ quint32 Heos::playUrl(int playerId, const QUrl &mediaUrl)
     cmd.append("\r\n");
     qCDebug(dcDenon) << "playing url:" << cmd;
     m_socket->write(cmd);
-      return sequence;
+    return sequence;
 }
 
 quint32 Heos::addContainerToQueue(int playerId, const QString &sourceId, const QString &containerId, ADD_CRITERIA addCriteria)
@@ -638,12 +644,13 @@ void Heos::readData()
                 }  else {
                     qDebug(dcDenon) << "Unhandled Heos system command" << command;
                 }
-            /* 4.2 Player Commands
+                /* 4.2 Player Commands
              *  4.2.1 Get Players
              *  4.2.2 Get Player Info
              *  4.2.3 Get Play State
              *  4.2.4 Set Play State
-             *  4.2.5 Get Now Playing Media 4.2.6 Get Volume
+             *  4.2.5 Get Now Playing Media
+             *  4.2.6 Get Volume
              *  4.2.7 Set Volume
              *  4.2.8 Volume Up
              *  4.2.9 Volume Down
@@ -654,7 +661,9 @@ void Heos::readData()
              *  4.2.14 Set Play Mode
              *  4.2.15 Get Queue
              *  4.2.16 Play Queue Item
-             *  4.2.17 Remove Item(s) from Queue 4.2.18 Save Queue as Playlist 4.2.19 Clear Queue
+             *  4.2.17 Remove Item(s) from Queue
+             *  4.2.18 Save Queue as Playlist
+             *  4.2.19 Clear Queue
              *  4.2.20 Move Queue
              *  4.2.21 Play Next
              *  4.2.22 Play Previous
@@ -663,7 +672,7 @@ void Heos::readData()
              *  4.2.25 Get QuickSelects [LS AVR Only]
              *  4.2.26 Check for Firmware Update
              */
-           } else if (command.startsWith("player")) {
+            } else if (command.startsWith("player")) {
                 int playerId = 0;
                 if (message.hasQueryItem("pid")) {
                     playerId = message.queryItemValue("pid").toInt();
@@ -762,7 +771,7 @@ void Heos::readData()
                 } else {
                     qDebug(dcDenon) << "Unhandled Heos group command" << command;
                 }
-            /*
+                /*
              * 4.3 Group Commands
              *  4.3.1 Get Groups
              *  4.3.2 Get Group Info
@@ -854,7 +863,7 @@ void Heos::readData()
                 }
 
 
-            /* 4.4 Browse Commands
+                /* 4.4 Browse Commands
                                                   *  4.4.1 Get Music Sources                         - "command": "browse/get_music_sources"
                                                   *  4.4.2 Get Source Info                           - "command": "browse/get_source_info"
                                                   *  4.4.3 Browse Source                             - "command": "browse/browse",
@@ -900,8 +909,14 @@ void Heos::readData()
                 } else if (command.contains("browse/browse")) {
                     qDebug(dcDenon()) << "Browse response:"  << jsonDoc.toVariant().toMap().value("payload");
                     QVariantList payloadVariantList = jsonDoc.toVariant().toMap().value("payload").toList();
-                    QString sourceId = message.queryItemValue("sid");
-                    QString containerId = message.queryItemValue("cid");
+                    QString sourceId;
+                    QString containerId;
+                    if (message.hasQueryItem("sid")) {
+                        sourceId = message.queryItemValue("sid");
+                    }
+                    if (message.hasQueryItem("cid")) {
+                        containerId = message.queryItemValue("cid");
+                    }
 
                     if (message.toString().contains("command under process")){
                         qDebug(dcDenon()) << "Browse command is beeing processed";
@@ -962,6 +977,7 @@ void Heos::readData()
                 } else if (command.contains("play_preset")) {
 
                 } else if (command.contains("play_input")) {
+                    qCDebug(dcDenon()) << "Command play input";
 
                 } else if (command.contains("add_to_queue")) {
 
@@ -976,7 +992,7 @@ void Heos::readData()
                 }
 
 
-            /*
+                /*
              * 5. Change Events (Unsolicited Responses) 5.1 Sources Changed
              * 5.2 Players Changed
              * 5.3 Group Changed
@@ -991,7 +1007,7 @@ void Heos::readData()
              * 5.12 Group Volume Changed
              * 5.13 User Changed
              */
-             } else if (command.startsWith("event")) {
+            } else if (command.startsWith("event")) {
                 if (command.contains("sources_changed")) {
                     emit sourcesChanged();
 

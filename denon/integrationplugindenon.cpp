@@ -1032,6 +1032,8 @@ void DevicePluginDenon::onHeosMusicSourcesReceived(quint32 sequenceNumber, QList
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTidal);
             } else if (source.name == "TuneIn") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTuneIn);
+                item.setBrowsable(true);
+                item.setDescription(source.serviceUsername);
             } else if (source.name == "Local Music") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDisk);
             } else if (source.name == "Playlists") {
@@ -1306,7 +1308,7 @@ void IntegrationPluginDenon::browseDevice(BrowseResult *result)
         QString id = result->itemId().remove("source=");
         heos->browseSource(id);
         m_pendingBrowseResult.insert(id, result);
-        //connect(result, &QObject::destroyed, this, [this, result->itemId()](){ m_pendingBrowseResult.remove(result->itemId());});
+        connect(result, &QObject::destroyed, this, [this, id](){ m_pendingBrowseResult.remove(id);});
 
     } else if (result->itemId().startsWith("container=")){
         qDebug(dcDenon()) << "Browse container" << result->itemId();
