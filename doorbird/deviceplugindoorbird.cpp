@@ -58,14 +58,19 @@ void DevicePluginDoorbird::discoverDevices(DeviceDiscoveryInfo *info)
                     DeviceDescriptor deviceDescriptor(doorBirdDeviceClassId, serviceEntry.name(), serviceEntry.hostAddress().toString());
                     ParamList params;
                     QString macAddress;
+                    if (serviceEntry.txt().length() == 0) {
+                        qCWarning(dcDoorBird()) << "Discovery failed, service entry missing";
+                        continue;
+                    }
+
                     if (serviceEntry.txt().first().split("=").length() == 2) {
                         macAddress = serviceEntry.txt().first().split("=").last();
                     } else {
                         qCWarning(dcDoorBird()) << "Could not parse MAC Address" << serviceEntry.txt().first();
-                        return;
+                        continue;
                     }
                     if (!myDevices().filterByParam(doorBirdDeviceSerialnumberParamTypeId, macAddress).isEmpty()) {
-                        Device *existingDevice = myDevices().filterByParam(doorBirdDeviceSerialnumberParamTypeId, serviceEntry.hostName()).first();
+                        Device *existingDevice = myDevices().filterByParam(doorBirdDeviceSerialnumberParamTypeId, macAddress).first();
                         deviceDescriptor.setDeviceId(existingDevice->id());
                     }
                     params.append(Param(doorBirdDeviceSerialnumberParamTypeId, macAddress));
@@ -86,7 +91,6 @@ void DevicePluginDoorbird::discoverDevices(DeviceDiscoveryInfo *info)
 
 void DevicePluginDoorbird::startPairing(DevicePairingInfo *info)
 {
-
     if (info->deviceClassId() == doorBirdDeviceClassId) {
         qCDebug(dcDoorBird()) << "User and password. Login is \"user\" and \"password\".";
         info->finish(Device::DeviceErrorNoError, QT_TR_NOOP("Please enter the user credentials"));
