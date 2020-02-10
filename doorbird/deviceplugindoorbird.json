@@ -66,6 +66,7 @@
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
                             "type": "bool",
+                            "cached": false,
                             "defaultValue": false
                         },
                         {
