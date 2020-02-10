@@ -41,18 +41,30 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-Doorbird::Doorbird(const QHostAddress &address, const QString &username, const QString &password, QObject *parent) :
+Doorbird::Doorbird(const QHostAddress &address, QObject *parent) :
     QObject(parent),
-    m_address(address),
-    m_username(username),
-    m_password(password)
+    m_address(address)
+{
+
+}
+
+QHostAddress Doorbird::address()
+{
+    return m_address;
+}
+
+void Doorbird::setAddress(const QHostAddress &address)
+{
+    m_address = address;
+}
+
+void Doorbird::initConnection(const QString &username, const QString &password)
 {
     m_networkAccessManager = new QNetworkAccessManager(this);
-    connect(m_networkAccessManager, &QNetworkAccessManager::authenticationRequired, this, [this](QNetworkReply *reply, QAuthenticator *authenticator) {
+    connect(m_networkAccessManager, &QNetworkAccessManager::authenticationRequired, this, [username, password, this](QNetworkReply *reply, QAuthenticator *authenticator) {
         Q_UNUSED(reply);
-        qCDebug(dcDoorBird) << "Credentials requested:";
-        authenticator->setUser(m_username);
-        authenticator->setPassword(m_password);
+        authenticator->setUser(username);
+        authenticator->setPassword(password);
     });
 }
 
@@ -67,18 +79,23 @@ QUuid Doorbird::getSession()
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error unlatching DoorBird device";
+            qCWarning(dcDoorBird) << "Error DoorBird device";
             emit requestSent(requestId, false);
             return;
         }
         emit requestSent(requestId, true);
-
         QByteArray data = reply->readAll();
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcDoorBird()) << "Error parsing json:" << data;
             return;
+        }
+        QVariantMap map = jsonDoc.toVariant().toMap().value("BHA").toMap();
+        if (map.contains("SESSIONID")) {
+            QString sessionId = map.value("SESSIONID").toString();
+            qCDebug(dcDoorBird) << "Got sessionId" << sessionId;
+            emit sessionIdReceived(sessionId);
         }
     });
     return requestId;
