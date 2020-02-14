@@ -559,9 +559,6 @@ void DevicePluginBose::onZoneObjectReceived(QUuid requestId, ZoneObject zone)
 
 void DevicePluginBose::onPresetsReceived(QUuid requestId, QList<PresetObject> presets)
 {
-    //SoundTouch *soundtouch = static_cast<SoundTouch *>(sender());
-    //Device *device = m_soundTouch.key(soundtouch);
-
     if (m_asyncBrowseResults.contains(requestId)) {
         BrowseResult *result = m_asyncBrowseResults.take(requestId);
         foreach (PresetObject preset, presets) {
@@ -574,6 +571,12 @@ void DevicePluginBose::onPresetsReceived(QUuid requestId, QList<PresetObject> pr
     }
 
     if (m_asyncBrowseItemResults.contains(requestId)) {
-        //TODO
+        BrowserItemResult *result = m_asyncBrowseItemResults.value(requestId);
+        foreach (PresetObject preset, presets) {
+            if (preset.presetId == result->itemId().split("&").last().toInt()) {
+                return result->finish(Device::DeviceErrorNoError);
+            }
+        }
+        return result->finish(Device::DeviceErrorItemNotFound);
     }
 }
