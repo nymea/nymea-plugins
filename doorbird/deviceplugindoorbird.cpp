@@ -113,7 +113,6 @@ void DevicePluginDoorbird::confirmPairing(DevicePairingInfo *info, const QString
         connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
         connect(doorbird, &Doorbird::sessionIdReceived, this, &DevicePluginDoorbird::onSessionIdReceived);
         doorbird->initConnection(username, password);
-        doorbird->connectToEventMonitor();
         m_doorbirdConnections.insert(info->deviceId(), doorbird);
         m_pendingPairings.insert(doorbird, info);
         doorbird->getSession();
@@ -159,7 +158,6 @@ void DevicePluginDoorbird::setupDevice(DeviceSetupInfo *info)
             connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
             connect(doorbird, &Doorbird::sessionIdReceived, this, &DevicePluginDoorbird::onSessionIdReceived);
             doorbird->initConnection(username, password);
-            doorbird->connectToEventMonitor();
             m_doorbirdConnections.insert(device->id(), doorbird);
             m_pendingDeviceSetups.insert(doorbird, info);
             doorbird->getSession();
@@ -183,6 +181,7 @@ void DevicePluginDoorbird::postSetupDevice(Device *device)
     if (device->deviceClassId() == doorBirdDeviceClassId) {
         device->setStateValue(doorBirdConnectedStateTypeId, true); //since we checked the connection in the deviceSetup
         Doorbird *doorbird =  m_doorbirdConnections.value(device->id());
+        doorbird->connectToEventMonitor();
         doorbird->infoRequest();
         doorbird->listFavorites();
         doorbird->listSchedules();
@@ -269,15 +268,21 @@ void DevicePluginDoorbird::onDoorBirdEvent(Doorbird::EventType eventType, bool s
 void DevicePluginDoorbird::onDoorBirdRequestSent(QUuid requestId, bool success)
 {
     Doorbird *doorbird = static_cast<Doorbird *>(sender());
-    Device *device = myDevices().findById(m_doorbirdConnections.key(doorbird));
-    if (!device)
-        return;
 
-    if (!m_asyncActions.contains(requestId))
-        return;
+    if (m_asyncActions.contains(requestId)) {
+        DeviceActionInfo* actionInfo = m_asyncActions.take(requestId);
+        actionInfo->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
+    }
 
-    DeviceActionInfo* actionInfo = m_asyncActions.take(requestId);
-    actionInfo->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorInvalidParameter);
+    if (m_pendingPairings.contains(doorbird) && !success) {
+        DevicePairingInfo *info = m_pendingPairings.take(doorbird);
+        info->finish(Device::DeviceErrorAuthenticationFailure, tr("Wrong username or password"));
+    }
+
+    if (m_pendingDeviceSetups.contains(doorbird) && !success) {
+        DeviceSetupInfo *info = m_pendingDeviceSetups.take(doorbird);
+        info->finish(Device::DeviceErrorAuthenticationFailure, tr("Wrong username or password"));
+    }
 }
 
 void DevicePluginDoorbird::onSessionIdReceived(const QString &sessionId)

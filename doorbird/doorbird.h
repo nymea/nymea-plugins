@@ -93,6 +93,8 @@ private:
     QHostAddress m_address;
     QList<QNetworkReply *> m_networkRequests;
 
+    QList<QNetworkReply *> m_pendingAuthentications;
+
     //QByteArray sessionId;
 
 signals:
