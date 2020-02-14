@@ -43,7 +43,7 @@ class Doorbird : public QObject
 {
     Q_OBJECT
 public:
-    explicit Doorbird(NetworkAccessManager *networkAccessManager, const QHostAddress &address, QObject *parent = nullptr);
+    explicit Doorbird(const QHostAddress &address, QObject *parent = nullptr);
 
     enum EventType {
         Doorbell,
@@ -89,7 +89,7 @@ public:
     void connectToEventMonitor();
 private:
     QHostAddress m_address;
-    NetworkAccessManager *m_networkAccessManager;
+    QNetworkAccessManager *m_networkAccessManager;
     QByteArray m_readBuffer;
 
 

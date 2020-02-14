@@ -107,7 +107,7 @@ void DevicePluginDoorbird::confirmPairing(DevicePairingInfo *info, const QString
     if (info->deviceClassId() == doorBirdDeviceClassId) {
         QHostAddress address = QHostAddress(info->params().paramValue(doorBirdDeviceAddressParamTypeId).toString());
 
-        Doorbird *doorbird = new Doorbird(hardwareManager()->networkManager(), address, this);
+        Doorbird *doorbird = new Doorbird(address, this);
         connect(doorbird, &Doorbird::deviceConnected, this, &DevicePluginDoorbird::onDoorBirdConnected);
         connect(doorbird, &Doorbird::eventReveiced, this, &DevicePluginDoorbird::onDoorBirdEvent);
         connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
@@ -151,7 +151,7 @@ void DevicePluginDoorbird::setupDevice(DeviceSetupInfo *info)
             pluginStorage()->endGroup();
 
             qCDebug(dcDoorBird()) << "Device setup" << device->name() << username << password;
-            Doorbird *doorbird = new Doorbird(hardwareManager()->networkManager(), address, this);
+            Doorbird *doorbird = new Doorbird(address, this);
             connect(doorbird, &Doorbird::deviceConnected, this, &DevicePluginDoorbird::onDoorBirdConnected);
             connect(doorbird, &Doorbird::eventReveiced, this, &DevicePluginDoorbird::onDoorBirdEvent);
             connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
@@ -253,7 +253,9 @@ void DevicePluginDoorbird::onDoorBirdEvent(Doorbird::EventType eventType, bool s
         break;
     case Doorbird::EventType::Motion:
         device->setStateValue(doorBirdIsPresentStateTypeId, status);
-        device->setStateValue(doorBirdLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
+        if (status) {
+            device->setStateValue(doorBirdLastSeenTimeStateTypeId, QDateTime::currentDateTime().toTime_t());
+        }
         break;
     case Doorbird::EventType::Doorbell:
         if (status) {
