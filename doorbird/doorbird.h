@@ -37,11 +37,13 @@
 #include <QUuid>
 #include <QImage>
 
+#include "network/networkaccessmanager.h"
+
 class Doorbird : public QObject
 {
     Q_OBJECT
 public:
-    explicit Doorbird(const QHostAddress &address, QObject *parent = nullptr);
+    explicit Doorbird(NetworkAccessManager *networkAccessManager, const QHostAddress &address, QObject *parent = nullptr);
 
     enum EventType {
         Doorbell,
@@ -63,8 +65,7 @@ public:
 
     QHostAddress address();
     void setAddress(const QHostAddress &address);
-    void initConnection(const QString &username, const QString &password);
-    QUuid getSession();
+    QUuid getSession(const QString &username, const QString &password);
     QUuid openDoor(int value);
     QUuid lightOn();
     QUuid liveVideoRequest();
@@ -87,15 +88,17 @@ public:
 
     void connectToEventMonitor();
 private:
-    QNetworkAccessManager *m_networkAccessManager;
+    QHostAddress m_address;
+    NetworkAccessManager *m_networkAccessManager;
     QByteArray m_readBuffer;
 
-    QHostAddress m_address;
+
     QList<QNetworkReply *> m_networkRequests;
 
     QList<QNetworkReply *> m_pendingAuthentications;
 
-    //QByteArray sessionId;
+    QString m_username;
+    QString m_password;
 
 signals:
     void deviceConnected(bool status);

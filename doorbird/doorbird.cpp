@@ -41,9 +41,10 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-Doorbird::Doorbird(const QHostAddress &address, QObject *parent) :
+Doorbird::Doorbird(NetworkAccessManager *networkAccessManager, const QHostAddress &address, QObject *parent) :
     QObject(parent),
-    m_address(address)
+    m_address(address),
+    m_networkAccessManager(networkAccessManager)
 {
 
 }
@@ -58,26 +59,15 @@ void Doorbird::setAddress(const QHostAddress &address)
     m_address = address;
 }
 
-void Doorbird::initConnection(const QString &username, const QString &password)
+QUuid Doorbird::getSession(const QString &username, const QString &password)
 {
-    m_networkAccessManager = new QNetworkAccessManager(this);
-    connect(m_networkAccessManager, &QNetworkAccessManager::authenticationRequired, this, [username, password, this] (QNetworkReply *reply, QAuthenticator *authenticator) {
-
-        qCWarning(dcDoorBird()) << "Authenticator" << reply->errorString() << reply->error();
-        if (m_pendingAuthentications.contains(reply)) {
-            m_pendingAuthentications.removeOne(reply);
-            reply->abort();
-        } else {
-            authenticator->setUser(username);
-            authenticator->setPassword(password);
-            m_pendingAuthentications.append(reply);
-        }
-    });
-}
-
-QUuid Doorbird::getSession()
-{
-    QNetworkRequest request(QString("http://%1/bha-api/getsession.cgi").arg(m_address.toString()));
+    QUrl url;
+    url.setHost(m_address.toString());
+    url.setScheme("http");
+    url.setPath("/bha-api/getsession.cgi");
+    url.setUserName(username);
+    url.setPassword(password);
+    QNetworkRequest request(url);
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
