@@ -41,12 +41,11 @@
 #include <QUrl>
 #include <QUrlQuery>
 
-Doorbird::Doorbird(NetworkAccessManager *networkAccessManager, const QHostAddress &address, QObject *parent) :
+Doorbird::Doorbird(const QHostAddress &address, QObject *parent) :
     QObject(parent),
-    m_address(address),
-    m_networkAccessManager(networkAccessManager)
+    m_address(address)
 {
-
+    m_networkAccessManager = new QNetworkAccessManager(this);
 }
 
 QHostAddress Doorbird::address()
