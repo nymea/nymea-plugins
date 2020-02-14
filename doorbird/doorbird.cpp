@@ -61,10 +61,17 @@ void Doorbird::setAddress(const QHostAddress &address)
 void Doorbird::initConnection(const QString &username, const QString &password)
 {
     m_networkAccessManager = new QNetworkAccessManager(this);
-    connect(m_networkAccessManager, &QNetworkAccessManager::authenticationRequired, this, [username, password, this](QNetworkReply *reply, QAuthenticator *authenticator) {
-        Q_UNUSED(reply);
-        authenticator->setUser(username);
-        authenticator->setPassword(password);
+    connect(m_networkAccessManager, &QNetworkAccessManager::authenticationRequired, this, [username, password, this] (QNetworkReply *reply, QAuthenticator *authenticator) {
+
+        qCWarning(dcDoorBird()) << "Authenticator" << reply->errorString() << reply->error();
+        if (m_pendingAuthentications.contains(reply)) {
+            m_pendingAuthentications.removeOne(reply);
+            reply->abort();
+        } else {
+            authenticator->setUser(username);
+            authenticator->setPassword(password);
+            m_pendingAuthentications.append(reply);
+        }
     });
 }
 
@@ -79,7 +86,7 @@ QUuid Doorbird::getSession()
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error DoorBird device";
+            qCWarning(dcDoorBird) << "Error DoorBird device:" << reply->errorString();
             emit requestSent(requestId, false);
             return;
         }
@@ -98,6 +105,7 @@ QUuid Doorbird::getSession()
             emit sessionIdReceived(sessionId);
         }
     });
+
     return requestId;
 }
 
