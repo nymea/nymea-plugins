@@ -87,6 +87,7 @@ private slots:
    void onBassCapabilitiesObjectReceived(QUuid requestId, BassCapabilitiesObject bassCapabilities);
    void onGroupObjectReceived(QUuid requestId, GroupObject group);
    void onZoneObjectReceived(QUuid requestId, ZoneObject zone);
+   void onPresetsReceived(QUuid requestId, QList<PresetObject> presets);
 };
 
 #endif // DEVICEPLUGINBOSE_H

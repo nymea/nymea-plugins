@@ -87,6 +87,7 @@ void DevicePluginBose::setupDevice(DeviceSetupInfo *info)
         connect(soundTouch, &SoundTouch::bassCapabilitiesReceived, this, &DevicePluginBose::onBassCapabilitiesObjectReceived);
         connect(soundTouch, &SoundTouch::zoneReceived, this, &DevicePluginBose::onZoneObjectReceived);
         connect(soundTouch, &SoundTouch::requestExecuted, this, &DevicePluginBose::onRequestExecuted);
+        connect(soundTouch, &SoundTouch::presetsReceived, this, &DevicePluginBose::onPresetsReceived);
         m_soundTouch.insert(info->device(), soundTouch);
         return info->finish(Device::DeviceErrorNoError);
 
@@ -163,37 +164,37 @@ void DevicePluginBose::executeAction(DeviceActionInfo *info)
 
         if (action.actionTypeId() == soundtouchPowerActionTypeId) {
             //bool power = action.param(soundtouchPowerActionPowerParamTypeId).value().toBool();
-            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_POWER); //only toggling possible
+            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_POWER, true); //only toggling possible
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
         } else if (action.actionTypeId() == soundtouchMuteActionTypeId) {
-            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_MUTE); //only toggling possible
+            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_MUTE, true); //only toggling possible
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
         } else if (action.actionTypeId() == soundtouchPlayActionTypeId) {
-            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PLAY);
+            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PLAY, true);
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
         } else if (action.actionTypeId() == soundtouchPauseActionTypeId) {
-            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PAUSE);
+            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PAUSE, true);
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
         } else if (action.actionTypeId() == soundtouchStopActionTypeId) {
-            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_STOP);
+            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_STOP, true);
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
         } else if (action.actionTypeId() == soundtouchSkipNextActionTypeId) {
-            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_NEXT_TRACK);
+            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_NEXT_TRACK, true);
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
         } else if (action.actionTypeId() == soundtouchSkipBackActionTypeId) {
-            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PREV_TRACK);
+            QUuid requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PREV_TRACK, true);
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
@@ -202,9 +203,9 @@ void DevicePluginBose::executeAction(DeviceActionInfo *info)
             QUuid requestId;
             bool shuffle =  action.param(soundtouchShuffleActionShuffleParamTypeId).value().toBool();
             if (shuffle) {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_SHUFFLE_ON);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_SHUFFLE_ON, true);
             } else {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_SHUFFLE_OFF);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_SHUFFLE_OFF, true);
             }
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
@@ -214,11 +215,11 @@ void DevicePluginBose::executeAction(DeviceActionInfo *info)
             QUuid requestId;
             QString repeat =  action.param(soundtouchRepeatActionRepeatParamTypeId).value().toString();
             if (repeat == "None") {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_REPEAT_OFF);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_REPEAT_OFF, true);
             } else if (repeat == "One") {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_REPEAT_ONE);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_REPEAT_ONE, true);
             } else if (repeat == "All") {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_REPEAT_ALL);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_REPEAT_ALL, true);
             }
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
@@ -242,31 +243,31 @@ void DevicePluginBose::executeAction(DeviceActionInfo *info)
             QUuid requestId;
             QString status =  action.param(soundtouchPlaybackStatusActionPlaybackStatusParamTypeId).value().toString();
             if (status == "Playing") {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PLAY);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PLAY, true);
             } else if (status == "Paused") {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PAUSE);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PAUSE, true);
             } else if (status == "Stopped") {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_STOP);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_STOP, true);
             }
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
-        } else if (action.actionTypeId() == soundtouchActivatePresetActionTypeId) {
+        } else if (action.actionTypeId() == soundtouchSavePresetActionTypeId) {
 
             QUuid requestId;
-            QString preset =  action.param(soundtouchActivatePresetActionPresetNumberParamTypeId).value().toString();
+            QString preset =  action.param(soundtouchSavePresetActionPresetNumberParamTypeId).value().toString();
             if (preset.contains("1")) {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_1);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_1, true);
             } else if (preset.contains("2")) {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_2);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_2, true);
             } else if (preset.contains("3")) {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_3);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_3, true);
             } else if (preset.contains("4")) {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_4);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_4, true);
             } else if (preset.contains("5")) {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_5);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_5, true);
             } else if (preset.contains("6")) {
-                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_6);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_6, true);
             } else {
                 qCWarning(dcBose()) << "Unhandled preset number: " << preset;
                 info->finish(Device::DeviceErrorInvalidParameter);
@@ -289,9 +290,18 @@ void DevicePluginBose::browseDevice(BrowseResult *result)
     Device *device = result->device();
     if (device->deviceClassId() == soundtouchDeviceClassId) {
         SoundTouch *soundTouch = m_soundTouch.value(device);
-        QUuid requestId = soundTouch->getSources();
-        m_asyncBrowseResults.insert(requestId, result);
-        connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
+        if (result->itemId() == "presets") {
+            QUuid requestId = soundTouch->getPresets();
+            m_asyncBrowseResults.insert(requestId, result);
+            connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
+        } else {
+            BrowserItem presetItem("presets", "Presets", true, false);
+            presetItem.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
+            QUuid requestId = soundTouch->getSources();
+            result->addItem(presetItem);
+            m_asyncBrowseResults.insert(requestId, result);
+            connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
+        }
     }
 }
 
@@ -300,9 +310,18 @@ void DevicePluginBose::browserItem(BrowserItemResult *result)
     Device *device = result->device();
     if (device->deviceClassId() == soundtouchDeviceClassId) {
         SoundTouch *soundTouch = m_soundTouch.value(device);
-        QUuid requestId = soundTouch->getSources();
-        m_asyncBrowseItemResults.insert(requestId, result);
-        connect(result, &BrowserItemResult::aborted, this, [this, requestId]{m_asyncBrowseItemResults.remove(requestId);});
+
+        if (result->itemId() == "presets") {
+            QUuid requestId = soundTouch->getPresets();
+            m_asyncBrowseItemResults.insert(requestId, result);
+            connect(result, &BrowserItemResult::aborted, this, [this, requestId]{m_asyncBrowseItemResults.remove(requestId);});
+        } else {
+            BrowserItem presetItem("presets", "Presets", true, false);
+            presetItem.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
+            QUuid requestId = soundTouch->getSources();
+            m_asyncBrowseItemResults.insert(requestId, result);
+            connect(result, &BrowserItemResult::aborted, this, [this, requestId]{m_asyncBrowseItemResults.remove(requestId);});
+        }
     }
 }
 
@@ -311,16 +330,40 @@ void DevicePluginBose::executeBrowserItem(BrowserActionInfo *info)
     Device *device = info->device();
     if (device->deviceClassId() == soundtouchDeviceClassId) {
         SoundTouch *soundTouch = m_soundTouch.value(device);
-        SourcesObject sources = m_sourcesObjects.value(device);
-        foreach (SourceItemObject source, sources.sourceItems) {
-            if (source.source == info->browserAction().itemId()) {
-                ContentItemObject contentItem;
-                contentItem.source = source.source;
-                contentItem.sourceAccount = source.sourceAccount;
-                QUuid requestId = soundTouch->setSource(contentItem);
-                m_asyncExecuteBrowseItems.insert(requestId, info);
-                connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBrowseItems.remove(requestId);});
-                break;
+        if (info->browserAction().itemId().startsWith("presets")) {
+            QUuid requestId;
+            int number = info->browserAction().itemId().split("&").last().toInt();
+            if (number == 1) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_1, false);
+            } else if (number == 2) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_2, false);
+            } else if (number == 3) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_3, false);
+            } else if (number == 4) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_4, false);
+            } else if (number == 5) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_5, false);
+            } else if (number == 6) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_6, false);
+            } else {
+                qCWarning(dcBose()) << "Unhandled preset number: " << number;
+                info->finish(Device::DeviceErrorInvalidParameter);
+                return;
+            }
+            m_asyncExecuteBrowseItems.insert(requestId, info);
+            connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBrowseItems.remove(requestId);});
+        } else {
+            SourcesObject sources = m_sourcesObjects.value(device);
+            foreach (SourceItemObject source, sources.sourceItems) {
+                if (source.source == info->browserAction().itemId()) {
+                    ContentItemObject contentItem;
+                    contentItem.source = source.source;
+                    contentItem.sourceAccount = source.sourceAccount;
+                    QUuid requestId = soundTouch->setSource(contentItem);
+                    m_asyncExecuteBrowseItems.insert(requestId, info);
+                    connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBrowseItems.remove(requestId);});
+                    break;
+                }
             }
         }
     }
@@ -511,5 +554,26 @@ void DevicePluginBose::onZoneObjectReceived(QUuid requestId, ZoneObject zone)
     Q_UNUSED(requestId);
     foreach (MemberObject member, zone.members) {
         qDebug(dcBose()) << "-> member:" << member.deviceID;
+    }
+}
+
+void DevicePluginBose::onPresetsReceived(QUuid requestId, QList<PresetObject> presets)
+{
+    //SoundTouch *soundtouch = static_cast<SoundTouch *>(sender());
+    //Device *device = m_soundTouch.key(soundtouch);
+
+    if (m_asyncBrowseResults.contains(requestId)) {
+        BrowseResult *result = m_asyncBrowseResults.take(requestId);
+        foreach (PresetObject preset, presets) {
+            BrowserItem item("presets&"+QString::number(preset.presetId), QString("Preset %1").arg(QString::number(preset.presetId)), false, true);
+            item.setDescription(preset.ContentItem.source+" "+preset.ContentItem.itemName);
+            item.setThumbnail(preset.ContentItem.containerArt);
+            result->addItem(item);
+        }
+        result->finish(Device::DeviceErrorNoError);
+    }
+
+    if (m_asyncBrowseItemResults.contains(requestId)) {
+        //TODO
     }
 }

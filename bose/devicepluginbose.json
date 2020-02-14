@@ -201,12 +201,12 @@
                             "displayName": "Skip Next"
                         },
                         {
-                            "id": "69969904-5bb4-401d-bede-9f31fe52d16a",
-                            "name": "activatePreset",
-                            "displayName": "Activate preset",
+                            "id": "6c47e736-e2e0-47d4-9b96-7f56d2342b4d",
+                            "name": "savePreset",
+                            "displayName": "Save preset",
                             "paramTypes": [
                                 {
-                                    "id": "2a69f545-41a9-4e84-9cc6-65a5a9600b7e",
+                                    "id": "04ac6e10-922d-4774-861f-060897d3a6c0",
                                     "name": "presetNumber",
                                     "displayName": "Preset number",
                                     "type": "QString",

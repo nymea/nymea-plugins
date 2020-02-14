@@ -60,7 +60,7 @@ public:
     QUuid getPresets();          //Get information related to the user's SoundTouch presets.
 
     //ACTIONS
-    QUuid setKey(KEY_VALUE keyValue);                //Start and control playback on a product.
+    QUuid setKey(KEY_VALUE keyValue, bool pressed);  //Start and control playback on a product.
     QUuid setVolume(int volume);                     //Set the volume of a product.
     QUuid setSource(ContentItemObject contentItem);  //Select a product's source.
     QUuid setZone(ZoneObject zone);                  //Create a zone of synced products.
@@ -95,7 +95,7 @@ signals:
     void zoneReceived(QUuid requestId, ZoneObject);
     void bassCapabilitiesReceived(QUuid requestId, BassCapabilitiesObject bassCapabilities);
     void bassReceived(QUuid requestId, BassObject bass);
-    void presetsReceived(QUuid requestId, PresetObject presets);
+    void presetsReceived(QUuid requestId, QList<PresetObject> presets);
     void groupReceived(QUuid requestId, GroupObject group);
 
     void requestExecuted(QUuid requestId, bool success);
