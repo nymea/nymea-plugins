@@ -107,15 +107,14 @@ void DevicePluginDoorbird::confirmPairing(DevicePairingInfo *info, const QString
     if (info->deviceClassId() == doorBirdDeviceClassId) {
         QHostAddress address = QHostAddress(info->params().paramValue(doorBirdDeviceAddressParamTypeId).toString());
 
-        Doorbird *doorbird = new Doorbird(address, this);
+        Doorbird *doorbird = new Doorbird(hardwareManager()->networkManager(), address, this);
         connect(doorbird, &Doorbird::deviceConnected, this, &DevicePluginDoorbird::onDoorBirdConnected);
         connect(doorbird, &Doorbird::eventReveiced, this, &DevicePluginDoorbird::onDoorBirdEvent);
         connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
         connect(doorbird, &Doorbird::sessionIdReceived, this, &DevicePluginDoorbird::onSessionIdReceived);
-        doorbird->initConnection(username, password);
         m_doorbirdConnections.insert(info->deviceId(), doorbird);
         m_pendingPairings.insert(doorbird, info);
-        doorbird->getSession();
+        doorbird->getSession(username, password);
         connect(info, &DevicePairingInfo::aborted, this, [this, info]{
             if (m_pendingPairings.values().contains(info)) {
                 Doorbird *doorbird = m_pendingPairings.key(info);
@@ -152,15 +151,14 @@ void DevicePluginDoorbird::setupDevice(DeviceSetupInfo *info)
             pluginStorage()->endGroup();
 
             qCDebug(dcDoorBird()) << "Device setup" << device->name() << username << password;
-            Doorbird *doorbird = new Doorbird(address, this);
+            Doorbird *doorbird = new Doorbird(hardwareManager()->networkManager(), address, this);
             connect(doorbird, &Doorbird::deviceConnected, this, &DevicePluginDoorbird::onDoorBirdConnected);
             connect(doorbird, &Doorbird::eventReveiced, this, &DevicePluginDoorbird::onDoorBirdEvent);
             connect(doorbird, &Doorbird::requestSent, this, &DevicePluginDoorbird::onDoorBirdRequestSent);
             connect(doorbird, &Doorbird::sessionIdReceived, this, &DevicePluginDoorbird::onSessionIdReceived);
-            doorbird->initConnection(username, password);
             m_doorbirdConnections.insert(device->id(), doorbird);
             m_pendingDeviceSetups.insert(doorbird, info);
-            doorbird->getSession();
+            doorbird->getSession(username, password);
             connect(info, &DeviceSetupInfo::aborted, this, [device, doorbird, this] {
                 if (!doorbird) {
                     doorbird->deleteLater();
