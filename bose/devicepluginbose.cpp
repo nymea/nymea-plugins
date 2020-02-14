@@ -242,15 +242,38 @@ void DevicePluginBose::executeAction(DeviceActionInfo *info)
             QUuid requestId;
             QString status =  action.param(soundtouchPlaybackStatusActionPlaybackStatusParamTypeId).value().toString();
             if (status == "Playing") {
-                soundTouch->setKey(KEY_VALUE::KEY_VALUE_PLAY);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PLAY);
             } else if (status == "Paused") {
-                soundTouch->setKey(KEY_VALUE::KEY_VALUE_PAUSE);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PAUSE);
             } else if (status == "Stopped") {
-                soundTouch->setKey(KEY_VALUE::KEY_VALUE_STOP);
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_STOP);
             }
             m_pendingActions.insert(requestId, info);
             connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
 
+        } else if (action.actionTypeId() == soundtouchActivatePresetActionTypeId) {
+
+            QUuid requestId;
+            QString preset =  action.param(soundtouchActivatePresetActionPresetNumberParamTypeId).value().toString();
+            if (preset.contains("1")) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_1);
+            } else if (preset.contains("2")) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_2);
+            } else if (preset.contains("3")) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_3);
+            } else if (preset.contains("4")) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_4);
+            } else if (preset.contains("5")) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_5);
+            } else if (preset.contains("6")) {
+                requestId = soundTouch->setKey(KEY_VALUE::KEY_VALUE_PRESET_6);
+            } else {
+                qCWarning(dcBose()) << "Unhandled preset number: " << preset;
+                info->finish(Device::DeviceErrorInvalidParameter);
+                return;
+            }
+            m_pendingActions.insert(requestId, info);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
         } else {
             qCWarning(dcBose()) << "ActionTypeId not found" << action.actionTypeId();
             return info->finish(Device::DeviceErrorActionTypeNotFound);
