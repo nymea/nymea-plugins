@@ -96,7 +96,7 @@ void DevicePluginTPLink::discoverDevices(DeviceDiscoveryInfo *info)
                 info->addDeviceDescriptor(descriptor);
 
             } else {
-                qCWarning(dcTplink()) << "Unhandled device type:" << sysInfo.value("type").toString();
+                qCWarning(dcTplink()) << "Unhandled device type:\n" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
             }
 
         }
