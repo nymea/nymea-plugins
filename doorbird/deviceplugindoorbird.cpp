@@ -195,21 +195,25 @@ void DevicePluginDoorbird::executeAction(DeviceActionInfo *info)
     if (device->deviceClassId() == doorBirdDeviceClassId) {
         Doorbird *doorbird = m_doorbirdConnections.value(device->id());
         if (!doorbird) {
+            qCWarning(dcDoorBird()) << "Doorbird object not found" << device->name();
             info->finish(Device::DeviceErrorHardwareFailure);
             return;
         }
         if (action.actionTypeId() == doorBirdOpenDoorActionTypeId) {
             int number = action.param(doorBirdOpenDoorActionNumberParamTypeId).value().toInt();
-            doorbird->openDoor(number);
-            info->finish(Device::DeviceErrorNoError);
+            QUuid requestId = doorbird->openDoor(number);
+            m_asyncActions.insert(requestId, info);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             return;
         } else if (action.actionTypeId() == doorBirdLightOnActionTypeId) {
-            doorbird->lightOn();
-            info->finish(Device::DeviceErrorNoError);
+            QUuid requestId = doorbird->lightOn();
+            m_asyncActions.insert(requestId, info);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             return;
         } else if (action.actionTypeId() == doorBirdRestartActionTypeId) {
-            doorbird->restart();
-            info->finish(Device::DeviceErrorNoError);
+            QUuid requestId = doorbird->restart();
+            m_asyncActions.insert(requestId, info);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             return;
         } else {
             qCWarning(dcDoorBird()) << "Unhandled ActionTypeId:" << action.actionTypeId();
