@@ -75,6 +75,7 @@ private slots:
     void onReportOneReceived(const KeContact::ReportOne &reportOne);
     void onReportTwoReceived(const KeContact::ReportTwo &reportTwo);
     void onReportThreeReceived(const KeContact::ReportThree &reportThree);
+    void onBroadcastReceived(KeContact::BroadcastType type, const QVariant &content);
 };
 
 #endif // INTEGRATIONPLUGINKEBA_H

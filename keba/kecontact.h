@@ -47,20 +47,29 @@ public:
     bool init();
 
     enum State {
-        Starting = 0,
-        NotReady,
-        Ready,
-        Charging,
-        Error,
-        AuthorizationRejected
+        StateStarting = 0,
+        StateNotReady,
+        StateReady,
+        StateCharging,
+        StateError,
+        StateAuthorizationRejected
     };
 
     enum PlugState {
-        Unplugged                                           = 0,
-        PluggedOnChargingStation                            = 1,
-        PluggedOnChargingStationAndPlugLocked               = 3,
-        PluggedOnChargingStationAndPluggedOnEV              = 5,
-        PluggedOnChargingStationAndPlugLockedAndPluggedOnEV = 7
+        PlugStateUnplugged                                           = 0,
+        PlugStatePluggedOnChargingStation                            = 1,
+        PlugStatePluggedOnChargingStationAndPlugLocked               = 3,
+        PlugStatePluggedOnChargingStationAndPluggedOnEV              = 5,
+        PlugStatePluggedOnChargingStationAndPlugLockedAndPluggedOnEV = 7
+    };
+
+    enum BroadcastType {
+        BroadcastTypeState = 0,
+        BroadcastTypePlug,
+        BroadcastTypeInput,
+        BroadcastTypeEnableSys,
+        BroadcastTypeMaxCurr,
+        BroadcastTypeEPres
     };
 
     struct ReportOne {
@@ -139,6 +148,7 @@ signals:
     void reportOneReceived(const ReportOne &reportOne);
     void reportTwoReceived(const ReportTwo &reportTwo);
     void reportThreeReceived(const ReportThree &reportThree);
+    void broadcastReceived(BroadcastType type, const QVariant &content);
 
 private slots:
     void readPendingDatagrams();

@@ -39,7 +39,8 @@
                             "displayName": "Connected",
                             "displayNameEvent": "Connection changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "cached": false
                         },
                         {
                             "id": "83ed0774-2a91-434d-b03c-d920d02f2981",
