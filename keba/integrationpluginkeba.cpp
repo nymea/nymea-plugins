@@ -195,6 +195,7 @@ void DevicePluginKeba::onCommandExecuted(QUuid requestId, bool success)
 
 void DevicePluginKeba::onReportOneReceived(const KeContact::ReportOne &reportOne)
 {
+    Q_UNUSED(reportOne);
     KeContact *keba = static_cast<KeContact *>(sender());
     if (m_asyncSetup.contains(keba)) {
         DeviceSetupInfo *info = m_asyncSetup.value(keba);
@@ -202,13 +203,6 @@ void DevicePluginKeba::onReportOneReceived(const KeContact::ReportOne &reportOne
 
     } else {
         qCDebug(dcKebaKeContact()) << "Report one received without an associated async setup";
-
-        Device *device = myDevices().findById(m_kebaDevices.key(keba));
-        if (!device) {
-            qCWarning(dcKebaKeContact()) << "Could not set serialnumber because of missing device object";
-            return;
-        }
-        device->setParamValue(wallboxDeviceSerialnumberParamTypeId, reportOne.serialNumber);
     }
 }
 
@@ -218,6 +212,8 @@ void DevicePluginKeba::onReportTwoReceived(const KeContact::ReportTwo &reportTwo
     Device *device = myDevices().findById(m_kebaDevices.key(keba));
     if (!device)
         return;
+
+    device->setStateValue(wallboxPowerStateTypeId, reportTwo.enableUser);
 
     switch (reportTwo.state) {
     case KeContact::State::Starting:
@@ -272,7 +268,7 @@ void DevicePluginKeba::onReportThreeReceived(const KeContact::ReportThree &repor
     device->setStateValue(wallboxU1EventTypeId, reportThree.VoltagePhase1);
     device->setStateValue(wallboxU2EventTypeId, reportThree.VoltagePhase2);
     device->setStateValue(wallboxU3EventTypeId, reportThree.VoltagePhase3);
-    device->setStateValue(wallboxPStateTypeId, reportThree.Power);
+    device->setStateValue(wallboxPStateTypeId,  reportThree.Power);
     device->setStateValue(wallboxEPStateTypeId, reportThree.EnergySession);
     device->setStateValue(wallboxTotalEnergyConsumedStateTypeId, reportThree.EnergyTotal);
 }

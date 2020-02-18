@@ -30,14 +30,6 @@
                             "type": "QString",
                             "inputType": "TextLine",
                             "defaultValue":""
-                        },
-                        {
-                            "id": "1a600fb6-08b2-4155-a4ad-ceca1d4fa7e1",
-                            "name": "serialnumber",
-                            "displayName": "Serialnumber",
-                            "type": "QString",
-                            "inputType": "TextLine",
-                            "defaultValue":""
                         }
                     ],
                     "stateTypes": [

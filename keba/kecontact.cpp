@@ -43,9 +43,6 @@ KeContact::KeContact(QHostAddress address, QObject *parent) :
     connect(m_requestTimeoutTimer, &QTimer::timeout, this, [this] {
         //This timer will be started when a request is sent and stopped or resetted when a response has been received
         emit connectionChanged(false);
-        if (!m_pendingRequests.isEmpty()){
-            m_pendingRequests.removeFirst();
-        }
         //Try to send the next command
         handleNextCommandInQueue();
     });
@@ -132,6 +129,12 @@ QUuid KeContact::enableOutput(bool state)
     }
     qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
     sendCommand(datagram);
+    QTimer::singleShot(5000, this, [requestId, this] {
+        if (m_pendingRequests.contains(requestId)) {
+            m_pendingRequests.removeOne(requestId);
+            emit commandExecuted(requestId, false);
+        }
+    });
     return requestId;
 }
 
@@ -145,6 +148,10 @@ QUuid KeContact::setMaxAmpere(int milliAmpere)
     data.append("curr " + QVariant(milliAmpere).toByteArray());
     qCDebug(dcKebaKeContact()) << "send command: " << data;
     sendCommand(data);
+    if (m_pendingRequests.contains(requestId)) {
+        m_pendingRequests.removeOne(requestId);
+        emit commandExecuted(requestId, false);
+    }
     return requestId;
 }
 
@@ -167,6 +174,10 @@ QUuid KeContact::displayMessage(const QByteArray &message)
     data.append("display 0 0 0 0 " + modifiedMessage);
     qCDebug(dcKebaKeContact()) << "send command: " << data;
     sendCommand(data);
+    if (m_pendingRequests.contains(requestId)) {
+        m_pendingRequests.removeOne(requestId);
+        emit commandExecuted(requestId, false);
+    }
     return requestId;
 }
 
