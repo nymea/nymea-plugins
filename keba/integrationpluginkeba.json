@@ -11,20 +11,54 @@
                 {
                     "id": "900dacec-cae7-4a37-95ba-501846368ea2",
                     "name": "wallbox",
-                    "displayName": "Keba KeContact P30",
-                    "createMethods": ["user"],
-                    "interfaces": [],
+                    "displayName": "Keba KeContact",
+                    "createMethods": ["discovery", "user"],
+                    "interfaces": ["extendedevcharger", "smartmeterconsumer", "connectable"],
                     "paramTypes":[
                         {
                             "id": "730cd3d3-5f0e-4028-a8c2-ced7574f13f3",
-                            "name": "ip",
-                            "displayName": "IP Address",
+                            "name": "ipAddress",
+                            "displayName": "IPv4 Address",
                             "type": "QString",
                             "inputType": "IPv4Address",
                             "defaultValue":"0.0.0.0"
+                        },
+                        {
+                            "id": "c2df921d-ff8b-411c-9b1d-04a437d7dfa6",
+                            "name": "macAddress",
+                            "displayName": "MAC Address",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue":""
+                        },
+                        {
+                            "id": "1a600fb6-08b2-4155-a4ad-ceca1d4fa7e1",
+                            "name": "serialnumber",
+                            "displayName": "Serialnumber",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue":""
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "ce813458-d7d8-4f40-9648-dba4c41e92f0",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connection changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "83ed0774-2a91-434d-b03c-d920d02f2981",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set Power",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false
+                        },
                         {
                             "id": "539e5602-6dd9-465d-9705-3bb59bcf8982",
                             "name": "activity",
@@ -52,43 +86,124 @@
                         },
                         {
                             "id": "593656f0-babf-4308-8767-68f34e10fb15",
-                            "name": "maxCurrent",
-                            "displayName": "maximal Current",
-                            "displayNameEvent": "Maximal Current changed",
-                            "displayNameAction": "Set maximal current",
-                            "type": "int",
-                            "unit": "Ampere",
-                            "defaultValue": 6,
-                            "minValue": 6,
-                            "maxValue": 63,
+                            "name": "maxChargingCurrent",
+                            "displayName": "Maximal charging current",
+                            "displayNameEvent": "Maximal charging current changed",
+                            "displayNameAction": "Set maximal charging current",
+                            "type": "uint",
+                            "unit": "MilliAmpere",
+                            "defaultValue": 6000,
+                            "minValue": 6000,
+                            "maxValue": 63000,
                             "writable": true
                         },
-                        {                   
-                            "id": "e8f069ca-7fa7-4568-8d4c-165f6d048720",
-                            "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Power changed",
+                        {
+                            "id": "3c7b83a0-0e42-47bf-9788-dde6aab5ceea",
+                            "name": "maxChargingCurrentPercent",
+                            "displayName": "Maximal charging current in Percent",
+                            "displayNameEvent": "Maximal charging current percentage changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "defaultValue": 100,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "4a2d75d8-a3a0-4b40-9ca7-e8b6f11d0ef9",
+                            "name": "U1",
+                            "displayName": "Voltage phase 1",
+                            "displayNameEvent": "Voltage phase 1 changed",
                             "type": "int",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "c8344ca5-21ac-4cd1-8f4b-e5ed202c5862",
+                            "name": "U2",
+                            "displayName": "Voltage Phase 2",
+                            "displayNameEvent": "Voltage phase 2 changed",
+                            "type": "int",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "5f01e86c-0943-4849-a01a-db441916ebd5",
+                            "name": "U3",
+                            "displayName": "Voltage Phase 3",
+                            "displayNameEvent": "Voltage phase 3 changed",
+                            "type": "int",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "31ec17b0-11e3-4332-92b0-fea821cf024f",
+                            "name": "I1",
+                            "displayName": "Current Phase 1",
+                            "displayNameEvent": "Current phase 1 changed",
+                            "type": "int",
+                            "unit": "MilliAmpere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "cdc7e10a-0d0a-4e93-ad2c-d34ffca45c97",
+                            "name": "I2",
+                            "displayName": "Current Phase 2",
+                            "displayNameEvent": "Current phase 2 changed",
+                            "type": "int",
+                            "unit": "MilliAmpere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "da838dc8-85f0-4e55-b4b5-cb93a43b373d",
+                            "name": "I3",
+                            "displayName": "Current Phase 3",
+                            "displayNameEvent": "Current phase 3 changed",
+                            "type": "int",
+                            "unit": "MilliAmpere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "7af9e93b-099d-4d9d-a480-9c0f66aecd8b",
+                            "name": "P",
+                            "displayName": "Power consumption",
+                            "displayNameEvent": "Power consumtion changed",
+                            "type": "int",
+                            "unit": "MilliWatt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "8e277efe-21ef-4536-bfc0-901b32d44d7c",
+                            "name": "EP",
+                            "displayName": "Present energy",
+                            "displayNameEvent": "Present energy changed",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
-                            "id": "0cd5396a-bc41-4c8f-b037-db10991a76c7",
-                            "name": "outEnable",
-                            "displayName": "Output",
-                            "displayNameEvent": "Output Enable changed",
-                            "displayNameAction": "Set Output",
-                            "type": "bool",
-                            "defaultValue": false,
-                            "writable": true
-                        },
+                            "id": "41e179b3-29a2-43ec-b537-023a527081e8",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "displayNameEvent": "Total energy consumption changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes": [
                         {
-                            "id": "b1a574a6-46b6-44ea-a0bb-9b4de3198967",
-                            "name": "reachable",
-                            "displayName": "reachable",
-                            "displayNameEvent": "Device Reachable changed",
-                            "type": "bool",
-                            "defaultValue": false
+                            "id": "158b1a8f-fde9-4191-bf42-4ece5fe582e6",
+                            "name": "display",
+                            "displayName": "Display",
+                            "paramTypes": [
+                                {
+                                    "id": "4e69a761-f4f1-42d0-83db-380894a86ebc",
+                                    "name": "message",
+                                    "displayName": "Display message",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                }
+                            ]
                         }
                     ]
                 }
@@ -96,3 +211,4 @@
         }
     ]
 }
+

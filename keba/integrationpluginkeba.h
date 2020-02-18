@@ -33,6 +33,9 @@
 
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
+#include "kecontact.h"
+#include "discovery.h"
+#include "host.h"
 
 #include <QHash>
 #include <QNetworkReply>
@@ -46,11 +49,12 @@ class IntegrationPluginKeba : public IntegrationPlugin
     Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit IntegrationPluginKeba();
-    ~IntegrationPluginKeba();
+    explicit DevicePluginKeba();
 
     void init() override;
-    void setupThing(ThingSetupInfo *info) override;
+
+    void discoverDevices(DeviceDiscoveryInfo *info) override;
+    void setupDevice(DeviceSetupInfo *info) override;
 
     void postSetupThing(Thing* thing) override;
     void thingRemoved(Thing* thing) override;
@@ -60,12 +64,17 @@ public:
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QHash<QHostAddress, Thing *> m_kebaDevices;
+    QHash<DeviceId, KeContact *> m_kebaDevices;
+    QHash<KeContact *, DeviceSetupInfo *> m_asyncSetup;
+    QHash<QUuid, DeviceActionInfo *> m_asyncActions;
     QUdpSocket *m_kebaSocket;
 
 private slots:
-    void readPendingDatagrams();
-
+    void onConnectionChanged(bool status);
+    void onCommandExecuted(QUuid requestId, bool success);
+    void onReportOneReceived(const KeContact::ReportOne &reportOne);
+    void onReportTwoReceived(const KeContact::ReportTwo &reportTwo);
+    void onReportThreeReceived(const KeContact::ReportThree &reportThree);
 };
 
 #endif // INTEGRATIONPLUGINKEBA_H

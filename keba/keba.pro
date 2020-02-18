@@ -5,7 +5,13 @@ QT += network
 TARGET = $$qtLibraryTarget(nymea_integrationpluginkeba)
 
 SOURCES += \
-    integrationpluginkeba.cpp \
+    devicepluginkeba.cpp \
+    kecontact.cpp \
+    discovery.cpp \
+    host.cpp \
 
 HEADERS += \
-    integrationpluginkeba.h \
+    devicepluginkeba.h \
+    kecontact.h \
+    discovery.h \
+    host.h \

@@ -42,15 +42,45 @@ IntegrationPluginKeba::IntegrationPluginKeba()
 
 }
 
-IntegrationPluginKeba::~IntegrationPluginKeba()
+void DevicePluginKeba::init()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+
 }
 
-void IntegrationPluginKeba::init()
+void DevicePluginKeba::discoverDevices(DeviceDiscoveryInfo *info)
 {
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginKeba::updateData);
+    if (info->deviceClassId() == wallboxDeviceClassId) {
+        Discovery *discovery = new Discovery(this);
+        discovery->discoverHosts(25);
+
+        // clean up discovery object when this discovery info is deleted
+        connect(info, &DeviceDiscoveryInfo::destroyed, discovery, &Discovery::deleteLater);
+
+        connect(discovery, &Discovery::finished, info, [this, info](const QList<Host> &hosts) {
+            qCDebug(dcKebaKeContact()) << "Discovery finished. Found" << hosts.count() << "devices";
+            foreach (const Host &host, hosts) {
+                if (!host.hostName().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
+                    continue;
+
+                DeviceDescriptor descriptor(wallboxDeviceClassId, host.hostName().isEmpty() ? host.address() : host.hostName(), host.address() + " (" + host.macAddress() + ")");
+
+                foreach (Device *existingDevice, myDevices()) {
+                    if (existingDevice->paramValue(wallboxDeviceMacAddressParamTypeId).toString() == host.macAddress()) {
+                        descriptor.setDeviceId(existingDevice->id());
+                        break;
+                    }
+                }
+                ParamList params;
+                params << Param(wallboxDeviceMacAddressParamTypeId, host.macAddress());
+                params << Param(wallboxDeviceIpAddressParamTypeId, host.address());
+                descriptor.setParams(params);
+                info->addDeviceDescriptor(descriptor);
+            }
+            info->finish(Device::DeviceErrorNoError);
+        });
+    } else {
+        info->finish(Device::DeviceErrorDeviceClassNotFound);
+    }
 }
 
 void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
@@ -59,202 +89,233 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
 
     qCDebug(dcKebaKeContact()) << "Setting up a new thing:" << thing->name() << thing->params();
 
-    if(m_kebaDevices.isEmpty()) {
-        m_kebaSocket = new QUdpSocket(this);
-        if (!m_kebaSocket->bind(QHostAddress::AnyIPv4, 7090)) {
+    if (device->deviceClassId() == wallboxDeviceClassId) {
+
+        QHostAddress address = QHostAddress(device->paramValue(wallboxDeviceIpAddressParamTypeId).toString());
+        KeContact *keba = new KeContact(address, this);
+        connect(keba, &KeContact::connectionChanged, this, &DevicePluginKeba::onConnectionChanged);
+        connect(keba, &KeContact::commandExecuted, this, &DevicePluginKeba::onCommandExecuted);
+        connect(keba, &KeContact::reportOneReceived, this, &DevicePluginKeba::onReportOneReceived);
+        connect(keba, &KeContact::reportTwoReceived, this, &DevicePluginKeba::onReportTwoReceived);
+        connect(keba, &KeContact::reportThreeReceived, this, &DevicePluginKeba::onReportThreeReceived);
+        if (!keba->init()){
             qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
-            delete m_kebaSocket;
-            //: Error setting up thing
-            return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Error opening network port."));
+            keba->deleteLater();
+            return info->finish(Device::DeviceErrorHardwareNotAvailable, QT_TR_NOOP("Error opening network port."));
         }
-        connect(m_kebaSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
-        qCDebug(dcKebaKeContact()) << "Create keba socket";
+
+        DeviceId id = device->id();
+        m_kebaDevices.insert(id, keba);
+        m_asyncSetup.insert(keba, info);
+        keba->getReport1();
+        connect(info, &DeviceSetupInfo::aborted, this, [id, keba, this]{
+            m_asyncSetup.remove(keba);
+            m_kebaDevices.remove(id);
+            keba->deleteLater();
+        });
+    } else {
+        info->finish(Device::DeviceErrorDeviceClassNotFound);
     }
-
-    QHostAddress address = QHostAddress(thing->paramValue(wallboxThingIpParamTypeId).toString());
-
-    //Check if the IP is empty
-    if (address.isNull()) {
-        delete m_kebaSocket;
-        //: Error setting up thing
-        return info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The provided IP adress is not valid."));
-    }
-
-    // check if IP is already added to another keba thing
-    if(m_kebaDevices.keys().contains(address)){
-        //: Error setting up thing
-        return info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("Device with IP adress %1 is already added in the system."));
-    }
-
-    m_kebaDevices.insert(address, thing);
-    info->finish(Thing::ThingErrorNoError);
 }
 
 void IntegrationPluginKeba::postSetupThing(Thing *thing)
 {
-    qCDebug(dcKebaKeContact()) << "Post setup" << thing->name();
-    QByteArray datagram;
-    datagram.append("report 2");
-    m_kebaSocket->writeDatagram(datagram.data(), datagram.size(), QHostAddress(thing->paramValue(wallboxThingIpParamTypeId).toString()), 7090);
+    qCDebug(dcKebaKeContact()) << "Post setup" << device->name();
+    KeContact *keba = m_kebaDevices.value(device->id());
+    if (!keba) {
+        return;
+    }
+    keba->getReport2();
+    keba->getReport3();
+
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &DevicePluginKeba::updateData);
+    }
 }
 
-void IntegrationPluginKeba::thingRemoved(Thing *thing)
-{
-    // Remove devices
-    QHostAddress address = m_kebaDevices.key(thing);
-    m_kebaDevices.remove(address);
+void DevicePluginKeba::deviceRemoved(Device *device)
+{   
+    if (device->deviceClassId() == wallboxDeviceClassId) {
+        m_kebaDevices.remove(device->id());
+    }
 
     if(m_kebaDevices.isEmpty()){
         m_kebaSocket->close();
         m_kebaSocket->deleteLater();
         qCDebug(dcKebaKeContact()) << "clear socket";
     }
+
+    if (myDevices().empty()) {
+        // last device has been removed the plug in timer can be stopped again
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
+    }
 }
 
 void IntegrationPluginKeba::updateData()
 {
-    foreach (QHostAddress address, m_kebaDevices.keys()) {
-        QByteArray datagram;
-        datagram.append("report 2");
-        qCDebug(dcKebaKeContact()) << "datagram : " << datagram;
-        m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), address , 7090);
-        //set reachable false until successful reply from thing
-        m_kebaDevices.value(address)->setStateValue(wallboxReachableStateTypeId,false);
+    foreach (KeContact *keba, m_kebaDevices) {
+        keba->getReport2();
+        keba->getReport3();
     }
 }
 
-void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
+void DevicePluginKeba::onConnectionChanged(bool status)
 {
-    Thing *thing = info->thing();
+    KeContact *keba = static_cast<KeContact *>(sender());
+    Device *device = myDevices().findById(m_kebaDevices.key(keba));
+    if (!device) {
+        qCWarning(dcKebaKeContact()) << "On connection changed: missing device object";
+        return;
+    }
+    device->setStateValue(wallboxConnectedStateTypeId, status);
+    if (!status) {
+        //TODO start rediscovery
+    }
+}
+
+void DevicePluginKeba::onCommandExecuted(QUuid requestId, bool success)
+{
+    if (m_asyncActions.contains(requestId)) {
+        KeContact *keba = static_cast<KeContact *>(sender());
+        Device *device = myDevices().findById(m_kebaDevices.key(keba));
+        if (!device) {
+            qCWarning(dcKebaKeContact()) << "On command executed: missing device object";
+            return;
+        }
+        DeviceActionInfo *info = m_asyncActions.take(requestId);
+        if (success) {
+            info->finish(Device::DeviceErrorNoError);
+        } else {
+            info->finish(Device::DeviceErrorHardwareFailure);
+        }
+    }
+}
+
+void DevicePluginKeba::onReportOneReceived(const KeContact::ReportOne &reportOne)
+{
+    KeContact *keba = static_cast<KeContact *>(sender());
+    if (m_asyncSetup.contains(keba)) {
+        DeviceSetupInfo *info = m_asyncSetup.value(keba);
+        info->finish(Device::DeviceErrorNoError);
+
+    } else {
+        qCDebug(dcKebaKeContact()) << "Report one received without an associated async setup";
+
+        Device *device = myDevices().findById(m_kebaDevices.key(keba));
+        if (!device) {
+            qCWarning(dcKebaKeContact()) << "Could not set serialnumber because of missing device object";
+            return;
+        }
+        device->setParamValue(wallboxDeviceSerialnumberParamTypeId, reportOne.serialNumber);
+    }
+}
+
+void DevicePluginKeba::onReportTwoReceived(const KeContact::ReportTwo &reportTwo)
+{
+    KeContact *keba = static_cast<KeContact *>(sender());
+    Device *device = myDevices().findById(m_kebaDevices.key(keba));
+    if (!device)
+        return;
+
+    switch (reportTwo.state) {
+    case KeContact::State::Starting:
+        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Starting"));
+        break;
+    case KeContact::State::NotReady:
+        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Not ready for charging"));
+        break;
+    case KeContact::State::Ready:
+        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Ready for charging"));
+        break;
+    case KeContact::State::Charging:
+        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Charging"));
+        break;
+    case KeContact::State::Error:
+        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Erro"));
+        break;
+    case KeContact::State::AuthorizationRejected:
+        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Authorization rejected"));
+        break;
+    }
+
+    switch (reportTwo.plugState) {
+    case KeContact::PlugState::Unplugged:
+        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Unplugged"));
+        break;
+    case KeContact::PlugState::PluggedOnChargingStation:
+        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in charging station"));
+        break;
+    case KeContact::PlugState::PluggedOnChargingStationAndPluggedOnEV:
+        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in on EV"));
+        break;
+    case KeContact::PlugState::PluggedOnChargingStationAndPlugLocked:
+        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in and locked"));
+        break;
+    case KeContact::PlugState::PluggedOnChargingStationAndPlugLockedAndPluggedOnEV:
+        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in on EV and locked"));
+        break;
+    }
+}
+
+void DevicePluginKeba::onReportThreeReceived(const KeContact::ReportThree &reportThree)
+{
+    KeContact *keba = static_cast<KeContact *>(sender());
+    Device *device = myDevices().findById(m_kebaDevices.key(keba));
+    if (!device)
+        return;
+
+    device->setStateValue(wallboxI1EventTypeId, reportThree.CurrentPhase1);
+    device->setStateValue(wallboxI2EventTypeId, reportThree.CurrentPhase2);
+    device->setStateValue(wallboxI3EventTypeId, reportThree.CurrentPhase3);
+    device->setStateValue(wallboxU1EventTypeId, reportThree.VoltagePhase1);
+    device->setStateValue(wallboxU2EventTypeId, reportThree.VoltagePhase2);
+    device->setStateValue(wallboxU3EventTypeId, reportThree.VoltagePhase3);
+    device->setStateValue(wallboxPStateTypeId, reportThree.Power);
+    device->setStateValue(wallboxEPStateTypeId, reportThree.EnergySession);
+    device->setStateValue(wallboxTotalEnergyConsumedStateTypeId, reportThree.EnergyTotal);
+}
+
+void DevicePluginKeba::executeAction(DeviceActionInfo *info)
+{
+    Device *device = info->device();
     Action action = info->action();
 
-    qCDebug(dcKebaKeContact()) << "Execute action" << thing->name() << action.actionTypeId().toString();
+    qCDebug(dcKebaKeContact()) << "Execute action" << device->name() << action.actionTypeId().toString();
 
-    if (thing->thingClassId() == wallboxThingClassId) {
+    if (device->deviceClassId() == wallboxDeviceClassId) {
 
         // Print information that we are executing now the update action
         qCDebug(dcKebaKeContact()) << "Execute update action" << action.id();
-
-        if(action.actionTypeId() == wallboxMaxCurrentActionTypeId){
-            // Print information that we are executing now the update action
-            qCDebug(dcKebaKeContact()) << "Update max current to : " << action.param(wallboxMaxCurrentActionMaxCurrentParamTypeId).value().toString();
-            QByteArray datagram;
-            datagram.append("curr " + QVariant(action.param(wallboxMaxCurrentActionMaxCurrentParamTypeId).value().toInt()*1000).toString());
-            qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
-            m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(thing->paramValue(wallboxThingIpParamTypeId).toString()) , 7090);
-        }
-        else if(action.actionTypeId() == wallboxOutEnableActionTypeId){
-            // Print information that we are executing now the update action
-            qCDebug(dcKebaKeContact()) << "output enable : " << action.param(wallboxOutEnableActionOutEnableParamTypeId).value().toString();
-            QByteArray datagram;
-            if(action.param(wallboxOutEnableActionOutEnableParamTypeId).value().toBool()){
-                datagram.append("ena 1");
-            }
-            else{
-                datagram.append("ena 0");
-            }
-            qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
-            m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(thing->paramValue(wallboxThingIpParamTypeId).toString()) , 7090);
+        KeContact *keba = m_kebaDevices.value(device->id());
+        if (!keba) {
+            qCWarning(dcKebaKeContact()) << "Device not properly initialized, Keba object missing";
+            return info->finish(Device::DeviceErrorHardwareNotAvailable);
         }
 
-        return info->finish(Thing::ThingErrorNoError);
-    }
+        if(action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId){
+            int ampere = action.param(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).value().toInt()*1000;
+            QUuid requestId = keba->setMaxAmpere(ampere);
+            m_asyncActions.insert(requestId, info);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this]{m_asyncActions.remove(requestId);});
 
-    info->finish(Thing::ThingErrorThingClassNotFound);
-}
+        } else if(action.actionTypeId() == wallboxPowerActionTypeId){
+            QUuid requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());
+            m_asyncActions.insert(requestId, info);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this]{m_asyncActions.remove(requestId);});
 
-void IntegrationPluginKeba::readPendingDatagrams()
-{
-    QUdpSocket *socket= qobject_cast<QUdpSocket*>(sender());
+        } else if(action.actionTypeId() == wallboxDisplayActionTypeId){
+            QUuid requestId = keba->displayMessage(action.param(wallboxDisplayActionMessageParamTypeId).value().toByteArray());
+            m_asyncActions.insert(requestId, info);
+            connect(info, &DeviceActionInfo::aborted, this, [requestId, this]{m_asyncActions.remove(requestId);});
 
-    QByteArray datagram;
-    QHostAddress sender;
-    quint16 senderPort;
-
-    while (socket->hasPendingDatagrams()) {
-        datagram.resize(socket->pendingDatagramSize());
-        socket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
-
-        qCDebug(dcKebaKeContact()) << " got command from" << sender.toString() << senderPort;
-    }
-
-    if(!m_kebaDevices.keys().contains(sender)){
-        qCDebug(dcKebaKeContact()) << " unknown sender:" << sender.toString() << senderPort;
-        return;
-    }
-
-    // Convert the rawdata to a json document
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(datagram, &error);
-    if (error.error != QJsonParseError::NoError) {
-        qCWarning(dcKebaKeContact()) << "Failed to parse JSON data" << datagram << ":" << error.errorString();
-        return;
-    }
-
-    // print the fetched data in json format to stdout
-    //qCDebug(dcKebaKeContact()) << qUtf8Printable(jsonDoc.toJson());
-
-    QVariantMap data = jsonDoc.toVariant().toMap();
-
-    qCDebug(dcKebaKeContact()) << "IP" << sender << "thing: " << m_kebaDevices.value(sender);
-
-    if(data.contains("ID")){
-        // check if ID matches report 2 or report 3
-        if(data.value("ID").toString() == "2"){
-            //set reachable
-            m_kebaDevices.value(sender)->setStateValue(wallboxReachableStateTypeId,true);
-            //activity state
-            if(data.value("State").toString() == "0"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"starting");
-            }
-            else if(data.value("State").toString() == "1"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"not ready for charging");
-            }
-            else if(data.value("State").toString() == "2"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"ready for charging");
-            }
-            else if(data.value("State").toString() == "3"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"charging");
-            }
-            else if(data.value("State").toString() == "4"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"error");
-            }
-            else if(data.value("State").toString() == "5"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"authorization rejected");
-            }
-            // plug state
-            if(data.value("Plug").toString() == "0"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"unplugged");
-            }
-            else if(data.value("Plug").toString() == "1"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"plugged on charging station");
-            }
-            else if(data.value("Plug").toString() == "3"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"locked plug on charging station");
-            }
-            else if(data.value("Plug").toString() == "5"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"plugged on charging station and vehicle");
-            }
-            else if(data.value("Plug").toString() == "7"){
-                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"locked plug on charging station and vehicle");
-            }
-            //maximum current setting
-            m_kebaDevices.value(sender)->setStateValue(wallboxMaxCurrentStateTypeId,data.value("Curr user").toInt()/1000);
-            //output setting
-            m_kebaDevices.value(sender)->setStateValue(wallboxOutEnableStateTypeId,data.value("Enable user").toBool());
-
-            //request next report
-            QByteArray datagram;
-            datagram.append("report 3");
-            qCDebug(dcKebaKeContact()) << "datagram : " << datagram;
-            socket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(m_kebaDevices.value(sender)->paramValue(wallboxThingIpParamTypeId).toString()) , 7090);
+        } else {
+            qCWarning(dcKebaKeContact()) << "Unhandled ActionTypeId:" << action.actionTypeId();
+            info->finish(Device::DeviceErrorActionTypeNotFound);
         }
-        else if(data.value("ID").toString() == "3"){
-            //power of current charging session
-            m_kebaDevices.value(sender)->setStateValue(wallboxPowerStateTypeId,data.value("E pres").toInt() / 1000);
-            //current phase 1
-            m_kebaDevices.value(sender)->setStateValue(wallboxCurrentStateTypeId,data.value("I1").toInt() * 1000);
-        }
+    } else {
+        qCWarning(dcKebaKeContact()) << "Execute action, unhandled device class" << device->deviceClass();
+        info->finish(Device::DeviceErrorDeviceClassNotFound);
     }
-
 }
