@@ -870,6 +870,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
+         nmap,
 Replaces: guh-plugin-keba
 Description: nymea.io plugin for keba
  The nymea daemon is a plugin based IoT (Internet of Things) server. The

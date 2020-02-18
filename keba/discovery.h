@@ -46,12 +46,10 @@ public:
 
     void discoverHosts(int timeout);
     void abort();
-
     bool isRunning() const;
 
-
 signals:
-    void finished(QList<Host> hosts);
+    void finished(const QList<Host> &hosts);
 
 private:
     QStringList getDefaultTargets();
@@ -71,7 +69,6 @@ private:
     QHash<QProcess*, Host*> m_pendingArpLookups;
     QHash<QString, Host*> m_pendingNameLookups;
     QList<Host*> m_scanResults;
-
 };
 
 #endif // DISCOVERY_H

@@ -51,11 +51,6 @@ KeContact::KeContact(QHostAddress address, QObject *parent) :
 
 KeContact::~KeContact() {
     qCDebug(dcKebaKeContact()) << "Deleting KeContact connection for address" << m_address;
-
-    m_requestTimeoutTimer->deleteLater();
-    m_requestTimeoutTimer->stop();
-    m_udpSocket->close();
-    m_udpSocket->deleteLater();
 }
 
 bool KeContact::init(){

@@ -28,13 +28,12 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "integrationpluginkeba.h"
+#include "devicepluginkeba.h"
+#include "plugininfo.h"
 
 #include <QUrl>
 #include <QUrlQuery>
 #include <QJsonDocument>
-#include <QPointer>
-#include "plugininfo.h"
 #include <QUdpSocket>
 
 IntegrationPluginKeba::IntegrationPluginKeba()
@@ -42,19 +41,11 @@ IntegrationPluginKeba::IntegrationPluginKeba()
 
 }
 
-void DevicePluginKeba::init()
-{
-
-}
-
 void DevicePluginKeba::discoverDevices(DeviceDiscoveryInfo *info)
 {
     if (info->deviceClassId() == wallboxDeviceClassId) {
-        Discovery *discovery = new Discovery(this);
+        Discovery *discovery = new Discovery(info);
         discovery->discoverHosts(25);
-
-        // clean up discovery object when this discovery info is deleted
-        connect(info, &DeviceDiscoveryInfo::destroyed, discovery, &Discovery::deleteLater);
 
         connect(discovery, &Discovery::finished, info, [this, info](const QList<Host> &hosts) {
             qCDebug(dcKebaKeContact()) << "Discovery finished. Found" << hosts.count() << "devices";
@@ -62,7 +53,7 @@ void DevicePluginKeba::discoverDevices(DeviceDiscoveryInfo *info)
                 if (!host.hostName().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
                     continue;
 
-                DeviceDescriptor descriptor(wallboxDeviceClassId, host.hostName().isEmpty() ? host.address() : host.hostName(), host.address() + " (" + host.macAddress() + ")");
+                DeviceDescriptor descriptor(wallboxDeviceClassId, "Wallbox", host.address() + " (" + host.macAddress() + ")");
 
                 foreach (Device *existingDevice, myDevices()) {
                     if (existingDevice->paramValue(wallboxDeviceMacAddressParamTypeId).toString() == host.macAddress()) {
@@ -79,6 +70,7 @@ void DevicePluginKeba::discoverDevices(DeviceDiscoveryInfo *info)
             info->finish(Device::DeviceErrorNoError);
         });
     } else {
+        qCWarning(dcKebaKeContact()) << "Discover device, unhandled device class" << info->deviceClassId();
         info->finish(Device::DeviceErrorDeviceClassNotFound);
     }
 }
@@ -115,6 +107,7 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             keba->deleteLater();
         });
     } else {
+        qCWarning(dcKebaKeContact()) << "setupDevice, unhandled device class" << device->deviceClass();
         info->finish(Device::DeviceErrorDeviceClassNotFound);
     }
 }
@@ -138,13 +131,8 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
 void DevicePluginKeba::deviceRemoved(Device *device)
 {   
     if (device->deviceClassId() == wallboxDeviceClassId) {
-        m_kebaDevices.remove(device->id());
-    }
-
-    if(m_kebaDevices.isEmpty()){
-        m_kebaSocket->close();
-        m_kebaSocket->deleteLater();
-        qCDebug(dcKebaKeContact()) << "clear socket";
+        KeContact *keba = m_kebaDevices.take(device->id());
+        keba->deleteLater();
     }
 
     if (myDevices().empty()) {
@@ -159,6 +147,51 @@ void IntegrationPluginKeba::updateData()
     foreach (KeContact *keba, m_kebaDevices) {
         keba->getReport2();
         keba->getReport3();
+    }
+}
+
+void DevicePluginKeba::setDeviceState(Device *device, KeContact::State state)
+{
+    switch (state) {
+    case KeContact::StateStarting:
+        device->setStateValue(wallboxActivityStateTypeId, "Starting");
+        break;
+    case KeContact::StateNotReady:
+        device->setStateValue(wallboxActivityStateTypeId, "Not ready for charging");
+        break;
+    case KeContact::StateReady:
+        device->setStateValue(wallboxActivityStateTypeId, "Ready for charging");
+        break;
+    case KeContact::StateCharging:
+        device->setStateValue(wallboxActivityStateTypeId, "Charging");
+        break;
+    case KeContact::StateError:
+        device->setStateValue(wallboxActivityStateTypeId, "Error");
+        break;
+    case KeContact::StateAuthorizationRejected:
+        device->setStateValue(wallboxActivityStateTypeId, "Authorization rejected");
+        break;
+    }
+}
+
+void DevicePluginKeba::setDevicePlugState(Device *device, KeContact::PlugState plugState)
+{
+    switch (plugState) {
+    case KeContact::PlugStateUnplugged:
+        device->setStateValue(wallboxPlugStateStateTypeId, "Unplugged");
+        break;
+    case KeContact::PlugStatePluggedOnChargingStation:
+        device->setStateValue(wallboxPlugStateStateTypeId, "Plugged in charging station");
+        break;
+    case KeContact::PlugStatePluggedOnChargingStationAndPluggedOnEV:
+        device->setStateValue(wallboxPlugStateStateTypeId, "Plugged in on EV");
+        break;
+    case KeContact::PlugStatePluggedOnChargingStationAndPlugLocked:
+        device->setStateValue(wallboxPlugStateStateTypeId, "Plugged in and locked");
+        break;
+    case KeContact::PlugStatePluggedOnChargingStationAndPlugLockedAndPluggedOnEV:
+        device->setStateValue(wallboxPlugStateStateTypeId, "Plugged in on EV and locked");
+        break;
     }
 }
 
@@ -217,44 +250,8 @@ void DevicePluginKeba::onReportTwoReceived(const KeContact::ReportTwo &reportTwo
     device->setStateValue(wallboxPowerStateTypeId, reportTwo.enableUser);
     device->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.MaxCurrentPercentage);
 
-    switch (reportTwo.state) {
-    case KeContact::StateStarting:
-        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Starting"));
-        break;
-    case KeContact::StateNotReady:
-        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Not ready for charging"));
-        break;
-    case KeContact::StateReady:
-        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Ready for charging"));
-        break;
-    case KeContact::StateCharging:
-        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Charging"));
-        break;
-    case KeContact::StateError:
-        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Erro"));
-        break;
-    case KeContact::StateAuthorizationRejected:
-        device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Authorization rejected"));
-        break;
-    }
-
-    switch (reportTwo.plugState) {
-    case KeContact::PlugStateUnplugged:
-        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Unplugged"));
-        break;
-    case KeContact::PlugStatePluggedOnChargingStation:
-        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in charging station"));
-        break;
-    case KeContact::PlugStatePluggedOnChargingStationAndPluggedOnEV:
-        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in on EV"));
-        break;
-    case KeContact::PlugStatePluggedOnChargingStationAndPlugLocked:
-        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in and locked"));
-        break;
-    case KeContact::PlugStatePluggedOnChargingStationAndPlugLockedAndPluggedOnEV:
-        device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in on EV and locked"));
-        break;
-    }
+    setDeviceState(device, reportTwo.state);
+    setDevicePlugState(device, reportTwo.plugState);
 }
 
 void DevicePluginKeba::onReportThreeReceived(const KeContact::ReportThree &reportThree)
@@ -284,23 +281,7 @@ void DevicePluginKeba::onBroadcastReceived(KeContact::BroadcastType type, const 
 
     switch (type) {
     case KeContact::BroadcastTypePlug:
-        switch (KeContact::PlugState(content.toInt())) {
-        case KeContact::PlugStateUnplugged:
-            device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Unplugged"));
-            break;
-        case KeContact::PlugStatePluggedOnChargingStation:
-            device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in charging station"));
-            break;
-        case KeContact::PlugStatePluggedOnChargingStationAndPluggedOnEV:
-            device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in on EV"));
-            break;
-        case KeContact::PlugStatePluggedOnChargingStationAndPlugLocked:
-            device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in and locked"));
-            break;
-        case KeContact::PlugStatePluggedOnChargingStationAndPlugLockedAndPluggedOnEV:
-            device->setStateValue(wallboxPlugStateStateTypeId, QT_TR_NOOP("Plugged in on EV and locked"));
-            break;
-        }
+        setDevicePlugState(device, KeContact::PlugState(content.toInt()));
         break;
     case KeContact::BroadcastTypeInput:
         break;
@@ -308,26 +289,7 @@ void DevicePluginKeba::onBroadcastReceived(KeContact::BroadcastType type, const 
         device->setStateValue(wallboxEPStateTypeId, content.toInt());
         break;
     case KeContact::BroadcastTypeState:
-        switch (KeContact::State(content.toInt())) {
-        case KeContact::StateStarting:
-            device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Starting"));
-            break;
-        case KeContact::StateNotReady:
-            device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Not ready for charging"));
-            break;
-        case KeContact::StateReady:
-            device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Ready for charging"));
-            break;
-        case KeContact::StateCharging:
-            device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Charging"));
-            break;
-        case KeContact::StateError:
-            device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Erro"));
-            break;
-        case KeContact::StateAuthorizationRejected:
-            device->setStateValue(wallboxActivityStateTypeId, QT_TR_NOOP("Authorization rejected"));
-            break;
-        }
+        setDeviceState(device, KeContact::State(content.toInt()));
         break;
     case KeContact::BroadcastTypeMaxCurr:
         device->setStateValue(wallboxMaxChargingCurrentStateTypeId, content.toInt());

@@ -62,7 +62,6 @@ void Discovery::discoverHosts(int timeout)
         qCDebug(dcKebaKeContact()) << "Scanning network:" << "nmap" << arguments.join(" ");
         discoveryProcess->start(QStringLiteral("nmap"), arguments);
     }
-
 }
 
 void Discovery::abort()
