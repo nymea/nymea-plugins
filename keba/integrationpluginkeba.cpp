@@ -98,6 +98,7 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         connect(keba, &KeContact::reportOneReceived, this, &DevicePluginKeba::onReportOneReceived);
         connect(keba, &KeContact::reportTwoReceived, this, &DevicePluginKeba::onReportTwoReceived);
         connect(keba, &KeContact::reportThreeReceived, this, &DevicePluginKeba::onReportThreeReceived);
+        connect(keba, &KeContact::broadcastReceived, this, &DevicePluginKeba::onBroadcastReceived);
         if (!keba->init()){
             qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
             keba->deleteLater();
