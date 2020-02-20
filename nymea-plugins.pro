@@ -36,6 +36,7 @@ PLUGIN_DIRS = \
     openuv              \ 
     openweathermap      \
     osdomotics          \
+    piface              \
     philipshue          \
     pushbullet          \
     shelly              \

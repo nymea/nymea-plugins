@@ -1,0 +1,83 @@
+{
+    "displayName": "PiFace",
+    "name": "PiFace",
+    "id": "7b96dcff-6e96-4934-8e9e-87e25075bec1",
+    "vendors": [
+        {
+            "displayName": "element14",
+            "name": "element14",
+            "id": "5343e324-308f-4915-a3ef-b64574432114",
+            "deviceClasses": [
+                {
+                    "id": "",
+                    "displayName": "PiFace digital",
+                    "name": "pifaceDigital",
+                    "createMethods": ["user"],
+                    "interfaces": ["power"],
+                    "paramTypes": [
+
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "06843766-358e-44b0-8d52-2b46ef98459a",
+                            "name": "power",
+                            "displayName": "Power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power"
+                        }
+                    ]
+                },
+                {
+                    "id": "6aff228b-0410-4ef9-9593-51e8639aacea",
+                    "displayName": "GPIO Input",
+                    "name": "gpioInputRpi",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["longpressbutton"],
+                    "paramTypes": [
+                        {
+                            "id": "b45ca4a8-c67a-411c-957c-0e78e1f12c0b",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "efd3df4a-d2b6-44f3-9095-7bba07891735",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "720bb37e-56e6-419e-878e-8c80aaf7ce32",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "57f1b7cc-26c8-434b-ba04-d3077dc886c8",
+                            "name": "pressed",
+                            "displayName": "Pressed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Pressed changed"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "0df945d3-38df-4560-b42a-12b05545904d",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
