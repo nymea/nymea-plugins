@@ -51,8 +51,6 @@ class IntegrationPluginKeba : public IntegrationPlugin
 public:
     explicit DevicePluginKeba();
 
-    void init() override;
-
     void discoverDevices(DeviceDiscoveryInfo *info) override;
     void setupDevice(DeviceSetupInfo *info) override;
 

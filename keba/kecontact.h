@@ -115,25 +115,23 @@ public:
     int serialNumber();
 
     void setAddress(QHostAddress address);
-    bool getDeviceConnectedStatus();
-    bool getDeviceBlockedStatus();
 
     QUuid enableOutput(bool state);
     QUuid setMaxAmpere(int milliAmpere);
+    QUuid unlockCharger();
+    QUuid displayMessage(const QByteArray &message);
+
     void getDeviceInformation();
     void getReport1();
     void getReport2();
     void getReport3();
-    QUuid unlockCharger();
-    QUuid displayMessage(const QByteArray &message);
-
 
 private:
     QUdpSocket *m_udpSocket = nullptr;
     QHostAddress m_address;
     QByteArrayList m_commandList;
     bool m_deviceBlocked = false;
-    bool m_connected = false;
+
     QTimer *m_requestTimeoutTimer = nullptr;
     int m_serialNumber;
     QList<QUuid> m_pendingRequests;
