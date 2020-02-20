@@ -35,6 +35,7 @@
 #include <QUrlQuery>
 #include <QJsonDocument>
 #include <QUdpSocket>
+#include <QTimeZone>
 
 IntegrationPluginKeba::IntegrationPluginKeba()
 {
@@ -148,6 +149,20 @@ void IntegrationPluginKeba::updateData()
         keba->getReport2();
         keba->getReport3();
     }
+
+    foreach (Device *device, myDevices().filterByDeviceClassId(wallboxDeviceClassId)) {
+        if (m_chargingSessionStartTime.contains(device->id())) {
+            QDateTime startTime = m_chargingSessionStartTime.value(device->id());
+
+            QTimeZone tz = QTimeZone(QTimeZone::systemTimeZoneId());
+            QDateTime currentTime = QDateTime::currentDateTime().toTimeZone(tz);
+
+            int minutes = (currentTime.toSecsSinceEpoch() - startTime.toSecsSinceEpoch())/60;
+            device->setStateValue(wallboxSessionTimeStateTypeId, minutes);
+        } else {
+            device->setStateValue(wallboxSessionTimeStateTypeId, 0);
+        }
+    }
 }
 
 void DevicePluginKeba::setDeviceState(Device *device, KeContact::State state)
@@ -171,6 +186,16 @@ void DevicePluginKeba::setDeviceState(Device *device, KeContact::State state)
     case KeContact::StateAuthorizationRejected:
         device->setStateValue(wallboxActivityStateTypeId, "Authorization rejected");
         break;
+    }
+
+    if (state == KeContact::StateCharging) {
+        //Set charging session
+        QTimeZone tz = QTimeZone(QTimeZone::systemTimeZoneId());
+        QDateTime startedChargingSession = QDateTime::currentDateTime().toTimeZone(tz);
+        m_chargingSessionStartTime.insert(device->id(), startedChargingSession);
+    } else {
+        m_chargingSessionStartTime.remove(device->id());
+        device->setStateValue(wallboxSessionTimeStateTypeId, 0);
     }
 }
 
@@ -211,6 +236,7 @@ void DevicePluginKeba::onConnectionChanged(bool status)
 
 void DevicePluginKeba::onCommandExecuted(QUuid requestId, bool success)
 {
+    updateData();
     if (m_asyncActions.contains(requestId)) {
         KeContact *keba = static_cast<KeContact *>(sender());
         Device *device = myDevices().findById(m_kebaDevices.key(keba));
@@ -234,7 +260,6 @@ void DevicePluginKeba::onReportOneReceived(const KeContact::ReportOne &reportOne
     if (m_asyncSetup.contains(keba)) {
         DeviceSetupInfo *info = m_asyncSetup.value(keba);
         info->finish(Device::DeviceErrorNoError);
-
     } else {
         qCDebug(dcKebaKeContact()) << "Report one received without an associated async setup";
     }

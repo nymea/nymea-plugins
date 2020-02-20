@@ -165,6 +165,15 @@
                             "defaultValue": 0
                         },
                         {
+                            "id": "a6f35ea0-aaea-438b-b818-6d161762611e",
+                            "name": "sessionTime",
+                            "displayName": "Session time",
+                            "displayNameEvent": "Session time changed",
+                            "type": "int",
+                            "unit": "Minutes",
+                            "defaultValue": 0
+                        },
+                        {
                             "id": "8e277efe-21ef-4536-bfc0-901b32d44d7c",
                             "name": "EP",
                             "displayName": "Present energy",

@@ -40,6 +40,7 @@
 #include <QHash>
 #include <QNetworkReply>
 #include <QUdpSocket>
+#include <QDateTime>
 
 class IntegrationPluginKeba : public IntegrationPlugin
 {
@@ -65,6 +66,7 @@ private:
     QHash<DeviceId, KeContact *> m_kebaDevices;
     QHash<KeContact *, DeviceSetupInfo *> m_asyncSetup;
     QHash<QUuid, DeviceActionInfo *> m_asyncActions;
+    QHash<DeviceId, QDateTime> m_chargingSessionStartTime;
 
     void setDeviceState(Device *device, KeContact::State state);
     void setDevicePlugState(Device *device, KeContact::PlugState plugState);
