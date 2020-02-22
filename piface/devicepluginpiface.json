@@ -1,25 +1,36 @@
 {
     "displayName": "PiFace",
     "name": "PiFace",
-    "id": "7b96dcff-6e96-4934-8e9e-87e25075bec1",
+    "id": "52a62d41-0244-4aca-9aee-bcaf45c29f18",
     "vendors": [
         {
             "displayName": "element14",
             "name": "element14",
-            "id": "5343e324-308f-4915-a3ef-b64574432114",
+            "id": "48d753e9-0d71-4de1-95c4-baa58ea21ccd",
             "deviceClasses": [
                 {
-                    "id": "",
+                    "id": "a2242a68-84ac-491c-8073-8019cb01702b",
                     "displayName": "PiFace digital",
                     "name": "pifaceDigital",
                     "createMethods": ["user"],
                     "interfaces": ["power"],
                     "paramTypes": [
-
+                        {
+                            "id": "e3b632fd-381e-490a-bdf4-c3c1cd5e0d5e",
+                            "name": "jumper1",
+                            "displayName": "Jumper JP1 on 0",
+                            "type": "bool"
+                        },
+                        {
+                            "id": "70674df2-2340-452a-92a6-0c7950c30ee5",
+                            "name": "jumper2",
+                            "displayName": "Jumper JP2 on 0",
+                            "type": "bool"
+                        }
                     ],
                     "stateTypes": [
                         {
-                            "id": "06843766-358e-44b0-8d52-2b46ef98459a",
+                            "id": "1ec940bc-6ce3-412e-8582-28cc78dff3b4",
                             "name": "power",
                             "displayName": "Power",
                             "type": "bool",
@@ -31,32 +42,18 @@
                     ]
                 },
                 {
-                    "id": "6aff228b-0410-4ef9-9593-51e8639aacea",
-                    "displayName": "GPIO Input",
-                    "name": "gpioInputRpi",
+                    "id": "6dea52aa-95d6-48c2-a72d-6a96ad529c07",
+                    "displayName": "Input",
+                    "name": "gpioInput",
                     "createMethods": ["discovery"],
                     "interfaces": ["longpressbutton"],
                     "paramTypes": [
                         {
-                            "id": "b45ca4a8-c67a-411c-957c-0e78e1f12c0b",
-                            "name": "gpio",
-                            "displayName": "GPIO",
-                            "type": "int",
-                            "defaultValue": -1
-                        },
-                        {
-                            "id": "efd3df4a-d2b6-44f3-9095-7bba07891735",
+                            "id": "1e297b17-5ef3-4b17-9e7f-e2eed1c532dc",
                             "name": "pin",
                             "displayName": "Pin number",
                             "type": "int",
                             "defaultValue": -1
-                        },
-                        {
-                            "id": "720bb37e-56e6-419e-878e-8c80aaf7ce32",
-                            "name": "description",
-                            "displayName": "Description",
-                            "type": "QString",
-                            "defaultValue": "-"
                         }
                     ],
                     "stateTypes": [
@@ -74,6 +71,34 @@
                             "id": "0df945d3-38df-4560-b42a-12b05545904d",
                             "name": "longPressed",
                             "displayName": "Long pressed"
+                        }
+                    ]
+                },
+                {
+                    "id": "24f5cced-49ff-458c-9dc7-ba72fb5ed175",
+                    "displayName": "Output",
+                    "name": "output",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["power"],
+                    "paramTypes": [
+                        {
+                            "id": "a53a1300-290d-43d2-b06d-e31e3ee8b860",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b10db8ab-391f-42a5-8853-3c88ff314556",
+                            "name": "power",
+                            "displayName": "Power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "writable": true
                         }
                     ]
                 }
