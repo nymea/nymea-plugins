@@ -84,6 +84,10 @@ void DevicePluginTPLink::discoverDevices(DeviceDiscoveryInfo *info)
             }
             QVariantMap properties = jsonDoc.toVariant().toMap();
             QVariantMap sysInfo = properties.value("system").toMap().value("get_sysinfo").toMap();
+
+            qCWarning(dcTplink()) << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
+
+            QString deviceType = sysInfo.contains("type") ? sysInfo.value("type").toString() : sysInfo.value("mic_type").toString();
             if (sysInfo.value("type").toString() == "IOT.SMARTPLUGSWITCH") {
 
                 DeviceDescriptor descriptor(kasaPlugDeviceClassId, sysInfo.value("alias").toString(), sysInfo.value("dev_name").toString());
@@ -217,7 +221,7 @@ void DevicePluginTPLink::executeAction(DeviceActionInfo *info)
     systemMap.insert("set_relay_state", powerMap);
     map.insert("system", systemMap);
 
-//    qCDebug(dcTplink()) << "Executing action" << qUtf8Printable(QJsonDocument::fromVariant(map).toJson(QJsonDocument::Compact));
+    qCDebug(dcTplink()) << "Executing action" << qUtf8Printable(QJsonDocument::fromVariant(map).toJson(QJsonDocument::Compact));
 
     QByteArray payload = encryptPayload(QJsonDocument::fromVariant(map).toJson(QJsonDocument::Compact));
     QByteArray data;
@@ -317,7 +321,7 @@ void DevicePluginTPLink::connectToDevice(Device *device, const QHostAddress &add
                 socket->disconnectFromHost();
                 return;
             }
-//            qCDebug(dcTplink()) << "Socket data received" << qUtf8Printable(jsonDoc.toJson());
+            qCDebug(dcTplink()) << "Socket data received" << qUtf8Printable(jsonDoc.toJson());
 
             QVariantMap map = jsonDoc.toVariant().toMap();
             if (map.contains("system")) {
@@ -391,7 +395,7 @@ void DevicePluginTPLink::fetchState(Device *device, DeviceActionInfo *info)
     getRealTime.insert("get_realtime", QVariant());
     map.insert("emeter", getRealTime);
     QByteArray plaintext = QJsonDocument::fromVariant(map).toJson(QJsonDocument::Compact);
-//    qCDebug(dcTplink()) << "Fetching device state";
+    qCDebug(dcTplink()) << "Fetching device state";
     QByteArray payload = encryptPayload(plaintext);
     QByteArray data;
     QDataStream stream(&data, QIODevice::ReadWrite);
