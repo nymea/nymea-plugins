@@ -43,6 +43,25 @@
 
 DevicePluginTPLink::DevicePluginTPLink()
 {
+    m_idParamTypesMap[kasaPlug100DeviceClassId] = kasaPlug100DeviceIdParamTypeId;
+    m_idParamTypesMap[kasaPlug110DeviceClassId] = kasaPlug110DeviceIdParamTypeId;
+    m_idParamTypesMap[kasaSwitch200DeviceClassId] = kasaSwitch200DeviceIdParamTypeId;
+
+    m_connectedStateTypesMap[kasaPlug100DeviceClassId] = kasaPlug100ConnectedStateTypeId;
+    m_connectedStateTypesMap[kasaPlug110DeviceClassId] = kasaPlug110ConnectedStateTypeId;
+    m_connectedStateTypesMap[kasaSwitch200DeviceClassId] = kasaSwitch200ConnectedStateTypeId;
+
+    m_powerStatetTypesMap[kasaPlug100DeviceClassId] = kasaPlug100PowerStateTypeId;
+    m_powerStatetTypesMap[kasaPlug110DeviceClassId] = kasaPlug110PowerStateTypeId;
+    m_powerStatetTypesMap[kasaSwitch200DeviceClassId] = kasaSwitch200PowerStateTypeId;
+
+    m_currentPowerStatetTypesMap[kasaPlug110DeviceClassId] = kasaPlug110CurrentPowerStateTypeId;
+
+    m_totalEnergyConsumedStatetTypesMap[kasaPlug110DeviceClassId] = kasaPlug110TotalEnergyConsumedStateTypeId;
+
+    m_powerActionParamTypesMap[kasaPlug100DeviceClassId] = kasaPlug100PowerActionPowerParamTypeId;
+    m_powerActionParamTypesMap[kasaPlug110DeviceClassId] = kasaPlug110PowerActionPowerParamTypeId;
+    m_powerActionParamTypesMap[kasaSwitch200DeviceClassId] = kasaSwitch200PowerActionPowerParamTypeId;
 }
 
 DevicePluginTPLink::~DevicePluginTPLink()
@@ -87,20 +106,27 @@ void DevicePluginTPLink::discoverDevices(DeviceDiscoveryInfo *info)
 
             qCWarning(dcTplink()) << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
 
-            QString deviceType = sysInfo.contains("type") ? sysInfo.value("type").toString() : sysInfo.value("mic_type").toString();
-            if (sysInfo.value("type").toString() == "IOT.SMARTPLUGSWITCH") {
+            QRegExp modelFilter;
+            if (info->deviceClassId() == kasaPlug100DeviceClassId) {
+                modelFilter = QRegExp("(HS100|HS103|HS105|KP100).*");
+            } else if (info->deviceClassId() == kasaPlug110DeviceClassId) {
+                modelFilter = QRegExp("HS110.*");
+            } else if (info->deviceClassId() == kasaSwitch200DeviceClassId) {
+                modelFilter = QRegExp("HS200.*");
+            }
+            QString model = sysInfo.value("model").toString();
 
-                DeviceDescriptor descriptor(kasaPlugDeviceClassId, sysInfo.value("alias").toString(), sysInfo.value("dev_name").toString());
-                Param idParam = Param(kasaPlugDeviceIdParamTypeId, sysInfo.value("deviceId").toString());
+            if (modelFilter.exactMatch(model)) {
+                DeviceDescriptor descriptor(info->deviceClassId(), sysInfo.value("alias").toString(), sysInfo.value("dev_name").toString());
+                Param idParam = Param(m_idParamTypesMap.value(info->deviceClassId()), sysInfo.value("deviceId").toString());
                 descriptor.setParams(ParamList() << idParam);
                 Device *existingDevice = myDevices().findByParams(ParamList() << idParam);
                 if (existingDevice) {
                     descriptor.setDeviceId(existingDevice->id());
                 }
                 info->addDeviceDescriptor(descriptor);
-
             } else {
-                qCWarning(dcTplink()) << "Unhandled device type:\n" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
+                qCWarning(dcTplink()) << "Ignoring not matching device type:\n" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
             }
 
         }
@@ -141,7 +167,7 @@ void DevicePluginTPLink::setupDevice(DeviceSetupInfo *info)
             }
             QVariantMap properties = jsonDoc.toVariant().toMap();
             QVariantMap sysInfo = properties.value("system").toMap().value("get_sysinfo").toMap();
-            if (info->device()->paramValue(kasaPlugDeviceIdParamTypeId).toString() == sysInfo.value("deviceId").toString()) {
+            if (info->device()->paramValue(m_idParamTypesMap.value(info->device()->deviceClassId())).toString() == sysInfo.value("deviceId").toString()) {
                 qCDebug(dcTplink()) << "Found device at" << senderAddress;
 
                 connectToDevice(info->device(), senderAddress);
@@ -217,7 +243,8 @@ void DevicePluginTPLink::executeAction(DeviceActionInfo *info)
     QVariantMap map;
     QVariantMap systemMap;
     QVariantMap powerMap;
-    powerMap.insert("state", info->action().param(kasaPlugPowerActionPowerParamTypeId).value().toBool() ? 1 : 0);
+    ParamTypeId powerActionParamTypeId = m_powerActionParamTypesMap.value(info->device()->deviceClassId());
+    powerMap.insert("state", info->action().param(powerActionParamTypeId).value().toBool() ? 1 : 0);
     systemMap.insert("set_relay_state", powerMap);
     map.insert("system", systemMap);
 
@@ -281,7 +308,8 @@ void DevicePluginTPLink::connectToDevice(Device *device, const QHostAddress &add
 
     connect(socket, &QTcpSocket::connected, device, [this, device, address] () {
         qCDebug(dcTplink()) << "Connected to device" << address;
-        device->setStateValue(kasaPlugConnectedStateTypeId, true);
+        StateTypeId connectedStateTypeId = m_connectedStateTypesMap.value(device->deviceClassId());
+        device->setStateValue(connectedStateTypeId, true);
         fetchState(device);
     });
 
@@ -337,7 +365,8 @@ void DevicePluginTPLink::connectToDevice(Device *device, const QHostAddress &add
                 }
                 if (systemMap.contains("get_sysinfo")) {
                     int relayState = systemMap.value("get_sysinfo").toMap().value("relay_state").toInt();
-                    device->setStateValue(kasaPlugPowerStateTypeId, relayState == 1 ? true : false);
+                    StateTypeId powerStateTypeId = m_powerStatetTypesMap.value(device->deviceClassId());
+                    device->setStateValue(powerStateTypeId, relayState == 1 ? true : false);
 
                     QString alias = systemMap.value("get_sysinfo").toMap().value("alias").toString();
                     if (device->name() != alias) {
@@ -353,12 +382,14 @@ void DevicePluginTPLink::connectToDevice(Device *device, const QHostAddress &add
                 QVariantMap emeterMap = map.value("emeter").toMap();
                 if (emeterMap.contains("get_realtime")) {
                     // This has quite a bit of jitter... Let's smoothen it while within +/- 0.1W to produce less events in the system
-                    double oldValue = device->stateValue(kasaPlugCurrentPowerStateTypeId).toDouble();
+                    StateTypeId currentPowerStateTypeId = m_currentPowerStatetTypesMap.value(device->deviceClassId());
+                    double oldValue = device->stateValue(currentPowerStateTypeId).toDouble();
                     double newValue = emeterMap.value("get_realtime").toMap().value("power_mw").toDouble() / 1000;
                     if (qAbs(oldValue - newValue) > 0.1) {
-                        device->setStateValue(kasaPlugCurrentPowerStateTypeId, newValue);
+                        device->setStateValue(currentPowerStateTypeId, newValue);
                     }
-                    device->setStateValue(kasaPlugTotalEnergyConsumedStateTypeId, emeterMap.value("get_realtime").toMap().value("total_wh").toDouble() / 1000);
+                    StateTypeId totalEnergyConsumedStateTypeId = m_totalEnergyConsumedStatetTypesMap.value(device->deviceClassId());
+                    device->setStateValue(totalEnergyConsumedStateTypeId, emeterMap.value("get_realtime").toMap().value("total_wh").toDouble() / 1000);
                 }
             }
 
@@ -373,7 +404,8 @@ void DevicePluginTPLink::connectToDevice(Device *device, const QHostAddress &add
             // Putting active job back to queue
             m_jobQueue[device].prepend(m_pendingJobs.take(device));
         }
-        device->setStateValue(kasaPlugConnectedStateTypeId, false);
+        StateTypeId connectedStateTypeId = m_connectedStateTypesMap.value(device->deviceClassId());
+        device->setStateValue(connectedStateTypeId, false);
         QTimer::singleShot(500, device, [this, device, address]() {connectToDevice(device, address);});
     });
 
