@@ -85,6 +85,13 @@ private:
     QHash<Device*, QByteArray> m_inputBuffers;
 
     PluginTimer *m_timer = nullptr;
+
+    QHash<DeviceClassId, ParamTypeId> m_idParamTypesMap;
+    QHash<DeviceClassId, StateTypeId> m_connectedStateTypesMap;
+    QHash<DeviceClassId, StateTypeId> m_powerStatetTypesMap;
+    QHash<DeviceClassId, StateTypeId> m_currentPowerStatetTypesMap;
+    QHash<DeviceClassId, StateTypeId> m_totalEnergyConsumedStatetTypesMap;
+    QHash<DeviceClassId, ParamTypeId> m_powerActionParamTypesMap;
 };
 
 #endif // DEVICEPLUGINANEL_H
