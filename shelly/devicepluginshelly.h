@@ -71,10 +71,50 @@ private:
 
     QHash<Device*, MqttChannel*> m_mqttChannels;
 
+    QHash<DeviceClassId, ParamTypeId> m_idParamTypeMap;
+    QHash<DeviceClassId, ParamTypeId> m_usernameParamTypeMap;
+    QHash<DeviceClassId, ParamTypeId> m_passwordParamTypeMap;
+    QHash<DeviceClassId, ParamTypeId> m_connectedDeviceParamTypeMap;
+    QHash<DeviceClassId, ParamTypeId> m_connectedDevice2ParamTypeMap;
+    QHash<DeviceClassId, ParamTypeId> m_channelParamTypeMap;
+
     QHash<DeviceClassId, StateTypeId> m_connectedStateTypesMap;
     QHash<DeviceClassId, StateTypeId> m_powerStateTypeMap;
+    QHash<DeviceClassId, StateTypeId> m_currentPowerStateTypeMap;
+    QHash<DeviceClassId, StateTypeId> m_totalEnergyConsumedStateTypeMap;
+    QHash<DeviceClassId, StateTypeId> m_colorStateTypeMap;
+    QHash<DeviceClassId, StateTypeId> m_colorTemperatureStateTypeMap;
+    QHash<DeviceClassId, StateTypeId> m_brightnessStateTypeMap;
+
+    QHash<ActionTypeId, DeviceClassId> m_rebootActionTypeMap;
+    // Relay based power actions
     QHash<ActionTypeId, DeviceClassId> m_powerActionTypesMap;
     QHash<ActionTypeId, ParamTypeId> m_powerActionParamTypesMap;
+
+    // Color JSON based power actions
+    QHash<ActionTypeId, DeviceClassId> m_colorPowerActionTypesMap;
+    QHash<ActionTypeId, ParamTypeId> m_colorPowerActionParamTypesMap;
+    // Color actions
+    QHash<ActionTypeId, DeviceClassId> m_colorActionTypesMap;
+    QHash<ActionTypeId, ParamTypeId> m_colorActionParamTypesMap;
+    // Color JSON brightness actions
+    QHash<ActionTypeId, DeviceClassId> m_colorBrightnessActionTypesMap;
+    QHash<ActionTypeId, ParamTypeId> m_colorBrightnessActionParamTypesMap;
+    // Color temp
+    QHash<ActionTypeId, DeviceClassId> m_colorTemperatureActionTypesMap;
+    QHash<ActionTypeId, ParamTypeId> m_colorTemperatureActionParamTypesMap;
+
+    // Dimmable based power actions
+    QHash<ActionTypeId, DeviceClassId> m_dimmablePowerActionTypesMap;
+    QHash<ActionTypeId, ParamTypeId> m_dimmablePowerActionParamTypesMap;
+    // Dimmable based brightness actions
+    QHash<ActionTypeId, DeviceClassId> m_dimmableBrightnessActionTypesMap;
+    QHash<ActionTypeId, ParamTypeId> m_dimmableBrightnessActionParamTypesMap;
+
+    // Roller shutter actions
+    QHash<ActionTypeId, DeviceClassId> m_rollerOpenActionTypeMap;
+    QHash<ActionTypeId, DeviceClassId> m_rollerCloseActionTypeMap;
+    QHash<ActionTypeId, DeviceClassId> m_rollerStopActionTypeMap;
 };
 
 #endif // DEVICEPLUGINSHELLY_H
