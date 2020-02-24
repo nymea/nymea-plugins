@@ -199,6 +199,28 @@
                             "id": "85d7126a-b123-4a28-aeb4-d84bcfb4d14f",
                             "name": "skipNext",
                             "displayName": "Skip Next"
+                        },
+                        {
+                            "id": "6c47e736-e2e0-47d4-9b96-7f56d2342b4d",
+                            "name": "savePreset",
+                            "displayName": "Save preset",
+                            "paramTypes": [
+                                {
+                                    "id": "04ac6e10-922d-4774-861f-060897d3a6c0",
+                                    "name": "presetNumber",
+                                    "displayName": "Preset number",
+                                    "type": "QString",
+                                    "defaultValue": "Preset 1",
+                                    "allowedValues": [
+                                        "Preset 1",
+                                        "Preset 2",
+                                        "Preset 3",
+                                        "Preset 4",
+                                        "Preset 5",
+                                        "Preset 6"
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }

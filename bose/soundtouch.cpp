@@ -162,7 +162,7 @@ QUuid SoundTouch::getBassCapabilities()
     return requestId;
 }
 
-QUuid SoundTouch::setKey(KEY_VALUE keyValue)
+QUuid SoundTouch::setKey(KEY_VALUE keyValue, bool pressed)
 {
     QUuid requestId = QUuid::createUuid();
     QUrl url;
@@ -174,7 +174,12 @@ QUuid SoundTouch::setKey(KEY_VALUE keyValue)
     QXmlStreamWriter xml(&content);
     xml.writeStartDocument("1.0");
     xml.writeStartElement("key");
-    xml.writeAttribute("state", "press");
+    if (pressed) {
+        xml.writeAttribute("state", "press");
+    } else {
+        xml.writeAttribute("state", "release");
+    }
+
     xml.writeAttribute("sender", "Gabbo");
     switch (keyValue){
     case KEY_VALUE_PLAY:
@@ -225,6 +230,24 @@ QUuid SoundTouch::setKey(KEY_VALUE keyValue)
     case KEY_VALUE_SHUFFLE_OFF:
         xml.writeCharacters("SHUFFLE_OFF");
         break;
+    case KEY_VALUE_PRESET_1:
+        xml.writeCharacters("PRESET_1");
+        break;
+    case KEY_VALUE_PRESET_2:
+        xml.writeCharacters("PRESET_2");
+        break;
+    case KEY_VALUE_PRESET_3:
+        xml.writeCharacters("PRESET_3");
+        break;
+    case KEY_VALUE_PRESET_4:
+        xml.writeCharacters("PRESET_4");
+        break;
+    case KEY_VALUE_PRESET_5:
+        xml.writeCharacters("PRESET_5");
+        break;
+    case KEY_VALUE_PRESET_6:
+        xml.writeCharacters("PRESET_6");
+        break;
     default:
         qWarning(dcBose) << "key not yet implemented";
         return "0";
@@ -239,7 +262,8 @@ QUuid SoundTouch::setKey(KEY_VALUE keyValue)
         emitRequestStatus(requestId, reply);
     });
 
-    if (keyValue == KEY_VALUE_POWER) {
+    //Power button needs to be released immediatelly after beeing pressed
+    if (keyValue == KEY_VALUE_POWER && pressed) {
         QUrl url;
         url.setHost(m_ipAddress);
         url.setScheme("http");
@@ -261,6 +285,7 @@ QUuid SoundTouch::setKey(KEY_VALUE keyValue)
     }
     return requestId;
 }
+
 
 QUuid SoundTouch::setVolume(int volume)
 {
@@ -850,32 +875,57 @@ void SoundTouch::parseData(QUuid requestId, const QByteArray &data)
             }
             emit bassCapabilitiesReceived(requestId, bassCapabilities);
         } else if (xml.name() == "presets") {
-            PresetObject preset;
-            if(xml.attributes().hasAttribute("id")) {
-                preset.presetId = xml.attributes().value("id").toInt();
-            }
-            if(xml.attributes().hasAttribute("createdOn")) {
-                preset.createdOn= xml.attributes().value("createdOn").toULong();
-            }
-            if(xml.attributes().hasAttribute("updatedOn")) {
-                preset.updatedOn = xml.attributes().value("updatedOn").toULong();
-            }
+            QList<PresetObject> presets;
+            qDebug(dcBose) << "Presets";
             while(xml.readNextStartElement()){
-                if(xml.name() == "ContentItem"){
-                    if(xml.attributes().hasAttribute("source")) {
-                        preset.ContentItem.source = xml.attributes().value("source").toString();
+                if(xml.name() == "preset"){
+                    PresetObject preset;
+                    if(xml.attributes().hasAttribute("id")) {
+                        preset.presetId = xml.attributes().value("id").toInt();
                     }
-                    if(xml.attributes().hasAttribute("location")) {
-                        preset.ContentItem.location = xml.attributes().value("location").toString();
+                    if(xml.attributes().hasAttribute("createdOn")) {
+                        preset.createdOn= xml.attributes().value("createdOn").toULong();
                     }
-                    if(xml.attributes().hasAttribute("sourceAccount")) {
-                        preset.ContentItem.sourceAccount = xml.attributes().value("sourceAccount").toString();
+                    if(xml.attributes().hasAttribute("updatedOn")) {
+                        preset.updatedOn = xml.attributes().value("updatedOn").toULong();
                     }
-                }else {
+                    qDebug(dcBose) << "Preset" << preset.presetId;
+                    while(xml.readNextStartElement()){
+
+                        if (xml.name() == "ContentItem") {
+                            if(xml.attributes().hasAttribute("source")) {
+                                preset.ContentItem.source = xml.attributes().value("source").toString();
+                            }
+                            if(xml.attributes().hasAttribute("location")) {
+                                preset.ContentItem.location = xml.attributes().value("location").toString();
+                            }
+                            if(xml.attributes().hasAttribute("sourceAccount")) {
+                                preset.ContentItem.sourceAccount = xml.attributes().value("sourceAccount").toString();
+                            }
+
+                            while(xml.readNextStartElement()){
+                                 if (xml.name() == "itemName") {
+                                    preset.ContentItem.itemName = xml.readElementText();
+                                 } else if (xml.name() == "containerArt"){
+                                    preset.ContentItem.containerArt = xml.readElementText();
+                                } else {
+                                     qCWarning(dcBose()) << "Presets: unhandled XML element" << xml.name();
+                                     xml.skipCurrentElement();
+                                }
+                            }
+
+                        } else {
+                            qCWarning(dcBose()) << "Presets: unhandled XML element" << xml.name();
+                            xml.skipCurrentElement();
+                        }
+                    }
+                    presets.append(preset);
+                } else {
+                    qCWarning(dcBose()) << "Presets: unhandled XML element" << xml.name();
                     xml.skipCurrentElement();
                 }
             }
-            emit presetsReceived(requestId, preset);
+            emit presetsReceived(requestId, presets);
 
         } else if (xml.name() == "group") {
             GroupObject group;
