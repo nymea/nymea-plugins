@@ -1,7 +1,15 @@
-nymea-plugins (0.19.0) UNRELEASED; urgency=medium
+nymea-plugins (0.19.0) xenial; urgency=medium
 
+  [ Michael Zanetti ]
+  * Shelly: Add 2.5, 1PM, Dimmer, RGBW2 and Plug/PlugS
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Mon, 24 Feb 2020 01:46:44 +0100
+  [ Bernhard Trinnes ]
+  * Bose: Add support for presets
+
+  [ Michael Zanetti ]
+  * TP-Link: Add support for HS100, HS103, HS105, HS200 and KP100
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 25 Feb 2020 00:09:40 +0100
 
 nymea-plugins (0.18.1) xenial; urgency=medium
 
