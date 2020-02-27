@@ -13,38 +13,28 @@
                     "displayName": "PiFace digital",
                     "name": "pifaceDigital",
                     "createMethods": ["user"],
-                    "interfaces": ["power"],
+                    "interfaces": [],
                     "paramTypes": [
                         {
                             "id": "e3b632fd-381e-490a-bdf4-c3c1cd5e0d5e",
                             "name": "jumper1",
                             "displayName": "Jumper JP1 on 0",
+                            "defaultValue": false,
                             "type": "bool"
                         },
                         {
                             "id": "70674df2-2340-452a-92a6-0c7950c30ee5",
                             "name": "jumper2",
                             "displayName": "Jumper JP2 on 0",
-                            "type": "bool"
-                        }
-                    ],
-                    "stateTypes": [
-                        {
-                            "id": "1ec940bc-6ce3-412e-8582-28cc78dff3b4",
-                            "name": "power",
-                            "displayName": "Power",
-                            "type": "bool",
                             "defaultValue": false,
-                            "writable": true,
-                            "displayNameEvent": "Power changed",
-                            "displayNameAction": "Set power"
+                            "type": "bool"
                         }
                     ]
                 },
                 {
                     "id": "6dea52aa-95d6-48c2-a72d-6a96ad529c07",
                     "displayName": "Input",
-                    "name": "gpioInput",
+                    "name": "input",
                     "createMethods": ["discovery"],
                     "interfaces": ["longpressbutton"],
                     "paramTypes": [
@@ -53,7 +43,7 @@
                             "name": "pin",
                             "displayName": "Pin number",
                             "type": "int",
-                            "defaultValue": -1
+                            "defaultValue": 0
                         }
                     ],
                     "stateTypes": [

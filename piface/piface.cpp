@@ -53,9 +53,9 @@ void PiFace::setBusAddress(int busAddress)
 int PiFace::openPort()
 {
     // open
-    QFile file(("/dev/spidev0.0");
+    QFile file("/dev/spidev0.0");
 
-    if (!file.open(QIODevice::ReadWrite) {
+    if (!file.open(QIODevice::ReadWrite)) {
         qCWarning(dcPiFace()) << "Could not open SPI device";
         return -1;
     }
@@ -63,30 +63,31 @@ int PiFace::openPort()
     // initialise
     const uint8_t spiMode = 0;
     if (ioctl(file.handle(), SPI_IOC_WR_MODE, &spiMode) < 0) {
-        qCWarning(dcPiFace()) << "Could not set SPI mode");
+        qCWarning(dcPiFace()) << "Could not set SPI mode";
         file.close();
         return -1;
     }
     const uint8_t spiBitsPerWord = 8;
     if (ioctl(file.handle(), SPI_IOC_WR_BITS_PER_WORD, &spiBitsPerWord) < 0) {
-        qCWarning(dcPiFace()) << "Could not set SPI bits per word");
+        qCWarning(dcPiFace()) << "Could not set SPI bits per word";
         file.close();
         return -1;
     }
     const uint32_t spiSpeed = 10000000;
     if (ioctl(file.handle(), SPI_IOC_WR_MAX_SPEED_HZ, &spiSpeed) < 0) {
-        qCWarning(dcPiFace()) << "Could not set SPI speed");
+        qCWarning(dcPiFace()) << "Could not set SPI speed";
         file.close();
         return -1;
     }
     return 0;
 }
 
-void PiFace::closePort()
+int PiFace::closePort()
 {
     if (m_fd.isOpen()) {
         m_fd.close();
     }
+    return -1;
 }
 
 quint8 PiFace::readRegister(quint8 registerAddress)
@@ -116,5 +117,5 @@ quint8 PiFace::readRegister(quint8 registerAddress)
 
 quint8 PiFace::getControlByte(Command command)
 {
-    return 0x40 | ((m_busAddress << 1) & 0xE) | (command &= 1);
+    return (0x40 | ((m_busAddress << 1) & 0xE) | (command & 0x01));
 }

@@ -42,19 +42,46 @@ void DevicePluginPiFace::discoverDevices(DeviceDiscoveryInfo *info)
 {
     DeviceClassId deviceClassId = info->deviceClassId();
 
-    if(myDevices().filterByDeviceClassId(pifaceDeviceClassId)) {
-        qCDebug(dcPiFace()) << "not discoverin IO, parent device is not setup";
-        info->finish(Device::DeviceErrorHardwareNotAvailable), tr("Please add first the PiFace device");
+    if(myDevices().filterByDeviceClassId(pifaceDigitalDeviceClassId).isEmpty()) {
+        qCDebug(dcPiFace()) << "not discovering IOs, parent device is not setup";
+        info->finish(Device::DeviceErrorHardwareNotAvailable, tr("Please add first the PiFace device"));
     }
 
     if (deviceClassId == inputDeviceClassId) {
 
         QList<int> usedPins;
-        foreach (Device *device, myDevices().findById(inputDeviceClassId)) {
+        foreach (Device *device, myDevices().filterByDeviceClassId(deviceClassId)) {
+            usedPins.append(device->paramValue(inputDevicePinParamTypeId).toInt());
+        }
 
+        for(int i=0; i<=8; i++) {
+            if (usedPins.contains(i))
+                continue;
+
+            DeviceDescriptor descriptor(deviceClassId, "Input " + QString::number(i), "", myDevices().filterByDeviceClassId(pifaceDigitalDeviceClassId).first()->id());
+            ParamList params;
+            params << Param(inputDevicePinParamTypeId, i);
+            descriptor.setParams(params);
+            info->addDeviceDescriptor(descriptor);
         }
 
     } else if (deviceClassId == outputDeviceClassId) {
+
+        QList<int> usedPins;
+        foreach (Device *device, myDevices().filterByDeviceClassId(deviceClassId)) {
+            usedPins.append(device->paramValue(inputDevicePinParamTypeId).toInt());
+        }
+
+        for(int i=0; i<=8; i++) {
+            if (usedPins.contains(i))
+                continue;
+
+            DeviceDescriptor descriptor(deviceClassId, "Output " + QString::number(i), "", myDevices().filterByDeviceClassId(pifaceDigitalDeviceClassId).first()->id());
+            ParamList params;
+            params << Param(outputDevicePinParamTypeId, i);
+            descriptor.setParams(params);
+            info->addDeviceDescriptor(descriptor);
+        }
 
     } else {
         qCWarning(dcPiFace()) << "";
@@ -66,10 +93,10 @@ void DevicePluginPiFace::setupDevice(DeviceSetupInfo *info)
 {
     Device *device = info->device();
 
-    if (device->deviceClassId() == pifaceDeviceClassId) {
+    if (device->deviceClassId() == pifaceDigitalDeviceClassId) {
         //TODO check if there is already a piface device
         int busAddress = device->paramValue(piface).toBool();
-        m_piface = new PiFace(this);
+        m_piface = new PiFace(busAddress, this);
 
     } else if (device->deviceClassId() == inputDeviceClassId || device->deviceClassId() == outputDeviceClassId) {
         info->finish(Device::DeviceErrorNoError);
@@ -83,6 +110,9 @@ void DevicePluginPiFace::setupDevice(DeviceSetupInfo *info)
 
 void DevicePluginPiFace::deviceRemoved(Device *device)
 {
-    Q_UNUSED(device)
+    if (myDevices().isEmpty()) {
+        m_piface->deleteLater();
+        m_piface = nullptr;
+    }
 }
 

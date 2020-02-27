@@ -77,6 +77,7 @@ private:
     int m_busAddress;
     QFile m_fd;
     quint8 getControlByte(Command command);
+    quint8 readRegister(quint8 registerAddress);
 };
 
 #endif // PIFACE_H

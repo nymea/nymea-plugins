@@ -60,6 +60,8 @@ private:
     QHash<DeviceId, int> m_counterValues;
     QHash<Device *, QTimer *> m_longPressTimers;
 
+    Piface *m_piface = nullptr;
+
 private slots:
     void onGpioValueChanged(const bool &value);
     void onLongPressedTimeout();
