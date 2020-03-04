@@ -32,7 +32,7 @@
 #define TADO_H
 
 #include "network/networkaccessmanager.h"
-#include "devices/device.h"
+#include "integrations/thing.h"
 
 #include <QObject>
 #include <QTimer>

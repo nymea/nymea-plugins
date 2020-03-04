@@ -1,16 +1,16 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginlgsmarttv)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginlgsmarttv)
 
 QT+= network xml
 
 SOURCES += \
-    devicepluginlgsmarttv.cpp \
+    integrationpluginlgsmarttv.cpp \
     tvdevice.cpp \
     tveventhandler.cpp
 
 HEADERS += \
-    devicepluginlgsmarttv.h \
+    integrationpluginlgsmarttv.h \
     tvdevice.h \
     tveventhandler.h
 

@@ -1,13 +1,13 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginpushbullet)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginpushbullet)
 
 QT+= network
 
 SOURCES += \
-    devicepluginpushbullet.cpp
+    integrationpluginpushbullet.cpp
 
 HEADERS += \
-    devicepluginpushbullet.h
+    integrationpluginpushbullet.h
 
 

@@ -50,7 +50,7 @@ RawHidDeviceWatcher::RawHidDeviceWatcher(QObject *parent) : QObject(parent)
 
     // Set monitor filter to USB subsystem
     if (udev_monitor_filter_add_match_subsystem_devtype(m_monitor, "hidraw", nullptr) < 0) {
-        qCWarning(dcUsbRelay()) << "Could not set seubsystem device type filter to usb_device.";
+        qCWarning(dcUsbRelay()) << "Could not set seubsystem thing type filter to usb_device.";
         udev_monitor_unref(m_monitor);
         m_monitor = nullptr;
         udev_unref(m_udev);
@@ -73,7 +73,7 @@ RawHidDeviceWatcher::RawHidDeviceWatcher(QObject *parent) : QObject(parent)
     struct udev_list_entry *devices, *dev_list_entry;
     enumerate = udev_enumerate_new(m_udev);
     if (!enumerate) {
-        qCWarning(dcUsbRelay()) << "Could not create udev enumerate for initial device reading.";
+        qCWarning(dcUsbRelay()) << "Could not create udev enumerate for initial thing reading.";
         udev_monitor_unref(m_monitor);
         m_monitor = nullptr;
         udev_unref(m_udev);
@@ -96,13 +96,13 @@ RawHidDeviceWatcher::RawHidDeviceWatcher(QObject *parent) : QObject(parent)
     }
 
     udev_list_entry_foreach(dev_list_entry, devices) {
-        struct udev_device *device;
+        struct udev_device *thing;
         const char *path;
         path = udev_list_entry_get_name(dev_list_entry);
-        device = udev_device_new_from_syspath(m_udev, path);
+        thing = udev_device_new_from_syspath(m_udev, path);
 
-        QString devicePath = QString::fromLatin1(udev_device_get_property_value(device,"DEVNAME"));
-        udev_device_unref(device);
+        QString devicePath = QString::fromLatin1(udev_device_get_property_value(thing,"DEVNAME"));
+        udev_device_unref(thing);
 
         qCDebug(dcUsbRelay()) << "[+]" << devicePath;
         m_devicePaths.append(devicePath);
@@ -117,18 +117,18 @@ RawHidDeviceWatcher::RawHidDeviceWatcher(QObject *parent) : QObject(parent)
 
         Q_UNUSED(socket)
 
-        // Create udev device
-        udev_device *device = udev_monitor_receive_device(m_monitor);
-        if (!device) {
-            qCWarning(dcUsbRelay()) << "Got socket sotification but could not read device information.";
+        // Create udev thing
+        udev_device *thing = udev_monitor_receive_device(m_monitor);
+        if (!thing) {
+            qCWarning(dcUsbRelay()) << "Got socket sotification but could not read thing information.";
             return;
         }
 
-        QString actionString = QString::fromLatin1(udev_device_get_action(device));
-        QString devicePath = QString::fromLatin1(udev_device_get_property_value(device,"DEVNAME"));
+        QString actionString = QString::fromLatin1(udev_device_get_action(thing));
+        QString devicePath = QString::fromLatin1(udev_device_get_property_value(thing,"DEVNAME"));
 
-        // Clean udev device
-        udev_device_unref(device);
+        // Clean udev thing
+        udev_device_unref(thing);
 
         if (actionString.isEmpty())
             return;
@@ -152,7 +152,7 @@ RawHidDeviceWatcher::RawHidDeviceWatcher(QObject *parent) : QObject(parent)
     });
 
     m_notifier->setEnabled(true);
-    qCDebug(dcUsbRelay()) << "Usb device watcher initialized successfully.";
+    qCDebug(dcUsbRelay()) << "Usb thing watcher initialized successfully.";
 }
 
 RawHidDeviceWatcher::~RawHidDeviceWatcher()

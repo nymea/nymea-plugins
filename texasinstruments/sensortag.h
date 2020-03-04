@@ -33,7 +33,7 @@
 
 #include <QObject>
 
-#include "devices/device.h"
+#include "integrations/thing.h"
 #include "extern-plugininfo.h"
 #include "sensordataprocessor.h"
 
@@ -93,9 +93,9 @@ public:
     };
     Q_ENUM(SensorMode)
 
-    explicit SensorTag(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
+    explicit SensorTag(Thing *thing, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
-    Device *device();
+    Thing *thing();
     BluetoothLowEnergyDevice *bluetoothDevice();
 
     // Configurations
@@ -119,7 +119,7 @@ public:
     void buzzerImpulse();
 
 private:
-    Device *m_device;
+    Thing *m_thing;
     BluetoothLowEnergyDevice *m_bluetoothDevice;
 
     // Services

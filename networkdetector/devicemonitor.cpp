@@ -127,7 +127,7 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                 needsPing = false;
                 break;
             } else {
-                // ARP claims the device to be stale... Flagging device to require a ping.
+                // ARP claims the thing to be stale... Flagging thing to require a ping.
                 log("Device found in ARP cache but is marked as " + parts.last() + " (Cache IP: " + entryIP + ")");
 
                 int usedIndex = parts.indexOf("used");
@@ -141,7 +141,7 @@ void DeviceMonitor::arpLookupFinished(int exitCode)
                 }
             }
         } else if (entryIP == m_ipAddress) {
-            warn("There seems to be a device with our IP but different MAC. Resetting IP config.");
+            warn("There seems to be a thing with our IP but different MAC. Resetting IP config.");
             if (mostRecentIP == m_ipAddress) {
                 mostRecentIP.clear();
             }
@@ -196,7 +196,7 @@ void DeviceMonitor::arping()
 void DeviceMonitor::arpingFinished(int exitCode)
 {
     if (exitCode == 0) {
-        // we were able to ping the device
+        // we were able to ping the thing
         log("ARP Ping successful.");
         if (!m_reachable) {
             m_reachable = true;
@@ -224,7 +224,7 @@ void DeviceMonitor::pingFinished(int exitCode)
 
 {
     if (exitCode == 0) {
-        // we were able to ping the device
+        // we were able to ping the thing
         log("ICMP Ping successful.");
         if (!m_reachable) {
             m_reachable = true;
@@ -235,7 +235,7 @@ void DeviceMonitor::pingFinished(int exitCode)
     } else {
         log("ICMP Ping failed. Last seen: " + m_lastSeenTime.toString() + ", grace period: " + QString::number(m_gracePeriod) + " (until " + m_lastSeenTime.addSecs(60 * m_gracePeriod).toString() + ")");
         if (m_reachable && m_lastSeenTime.addSecs(m_gracePeriod * 60) < QDateTime::currentDateTime()) {
-            log("Exceeded grace period of " + QString::number(m_gracePeriod) + " minutes. Marking device as offline.");
+            log("Exceeded grace period of " + QString::number(m_gracePeriod) + " minutes. Marking thing as offline.");
             m_reachable = false;
             emit reachableChanged(false);
         }

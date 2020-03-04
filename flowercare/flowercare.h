@@ -51,7 +51,7 @@ class FlowerCare : public QObject
 {
     Q_OBJECT
 public:
-    explicit FlowerCare(BluetoothLowEnergyDevice* device, QObject *parent = nullptr);
+    explicit FlowerCare(BluetoothLowEnergyDevice* thing, QObject *parent = nullptr);
 
     void refreshData();
 

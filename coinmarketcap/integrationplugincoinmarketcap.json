@@ -1,0 +1,140 @@
+{
+    "displayName": "Coin market cap",
+    "name": "coinMarketCap",
+    "id": "532757cf-fc6f-4ce5-ae5b-e6f5bdb67fb4",
+    "vendors": [
+        {
+            "displayName": "Coin Market Cap",
+            "name": "coinMarketCap",
+            "id": "28eeecbd-4178-45aa-81a6-fd95851444fd",
+            "thingClasses": [
+                {
+                    "id": "f5b794f7-7e2a-4409-8445-23ead80f2a8f",
+                    "name": "currentPrices",
+                    "displayName": "Crypto Prices",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "92747d75-d18a-4915-bd48-0edd5cc5f19a",
+                            "name": "fiat",
+                            "displayName": "Fiat Currency",
+                            "type": "QString",
+                            "allowedValues": [
+                                "USD",
+                                "AUD",
+                                "BRL",
+                                "CAD",
+                                "CHF",
+                                "CNY",
+                                "EUR",
+                                "GBP",
+                                "HKD",
+                                "IDR",
+                                "INR",
+                                "JPY",
+                                "KRW",
+                                "MXN",
+                                "RUB"
+                            ],
+                            "defaultValue": "EUR"
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "19f079f0-1654-44c3-ab10-e7d7f9742e09",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Connection status changed"
+                        },
+                        {
+                            "id": "721c91c8-8eb1-402e-8bfc-8e2d496be032",
+                            "name": "btc",
+                            "displayName": "Bitcoin",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "bitcoin value changed"
+                        },
+                        {
+                            "id": "5c58bb9f-dcdf-47c9-a0b7-f0ffc968f824",
+                            "name": "eth",
+                            "displayName": "Ethereum",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "ethereum value changed"
+                        },
+                        {
+                            "id": "d8517cf8-2ebd-4be3-8573-00b595cc2ab5",
+                            "name": "xrp",
+                            "displayName": "Ripple",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "ripple value changed"
+                        },
+                        {
+                            "id": "cc5b4fe5-aa43-43b3-952f-90c0e3e20740",
+                            "name": "bch",
+                            "displayName": "Bitcoin Cash",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "bitcoin cash value changed"
+                        },
+                        {
+                            "id": "f591f699-ae68-4f64-a221-254f836a31d3",
+                            "name": "ltc",
+                            "displayName": "Litecoin",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "Litecoin value changed"
+                        },
+                        {
+                            "id": "adecda44-fade-4dba-8b41-cfb07579dea9",
+                            "name": "xem",
+                            "displayName": "NEM",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "NEM cash value changed"
+                        },
+                        {
+                            "id": "fc9a61b7-c3df-4f13-ba31-d7743f3d2dc2",
+                            "name": "etc",
+                            "displayName": "Ethereum Classic",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "etherium classic value changed"
+                        },
+                        {
+                            "id": "0b602f14-1596-4091-a0ab-6c5efa087a3f",
+                            "name": "dash",
+                            "displayName": "Dash",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "Dash value changed"
+                        },
+                        {
+                            "id": "2c6e341f-5940-40bb-b495-89c3ecaaf9e7",
+                            "name": "miota",
+                            "displayName": "IOTA",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "IOTA value changed"
+                        },
+                        {
+                            "id": "7583c720-1786-4c32-9552-e731578ff113",
+                            "name": "ans",
+                            "displayName": "NEO",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "displayNameEvent": "NEO value changed"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+

@@ -93,12 +93,12 @@ bool OneWire::discoverDevices()
         if (family != 0) {
             member.remove(member.indexOf('/'), 1);
             QByteArray type;
-            OneWireDevice device;
-            device.family = family;
-            device.address = member;
-            device.id = member.split('.').last();
-            device.type = getValue(member, "type");
-            oneWireDevices.append(device);
+            OneWireDevice thing;
+            thing.family = family;
+            thing.address = member;
+            thing.id = member.split('.').last();
+            thing.type = getValue(member, "type");
+            oneWireDevices.append(thing);
         }
     }
     if(!oneWireDevices.isEmpty()) {

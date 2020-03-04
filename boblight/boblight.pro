@@ -4,16 +4,16 @@ QT += dbus bluetooth concurrent
 
 CONFIG += c++11
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginboblight)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginboblight)
 LIBS += -lboblight
 
 SOURCES += \
-    devicepluginboblight.cpp \
+    integrationpluginboblight.cpp \
     bobclient.cpp \
     bobchannel.cpp
 
 HEADERS += \
-    devicepluginboblight.h \
+    integrationpluginboblight.h \
     bobclient.h \
     bobchannel.h
 

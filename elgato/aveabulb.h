@@ -36,7 +36,7 @@
 #include <QColor>
 
 #include "typeutils.h"
-#include "devices/device.h"
+#include "integrations/thing.h"
 #include "hardware/bluetoothlowenergy/bluetoothlowenergydevice.h"
 
 static QBluetoothUuid colorServiceUuid  = QBluetoothUuid(QUuid("f815e810-456c-6761-746f-4d756e696368"));
@@ -55,9 +55,9 @@ public:
     };
     Q_ENUM(ColorMessage)
 
-    explicit AveaBulb(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
+    explicit AveaBulb(Thing *thing, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
 
-    Device *device();
+    Thing *thing();
     BluetoothLowEnergyDevice *bluetoothDevice();
 
     bool setPower(bool power);
@@ -75,7 +75,7 @@ public:
     bool syncColor();
 
 private:
-    Device *m_device = nullptr;
+    Thing *m_thing = nullptr;
     BluetoothLowEnergyDevice *m_bluetoothDevice = nullptr;
 
     QString m_bulbName;

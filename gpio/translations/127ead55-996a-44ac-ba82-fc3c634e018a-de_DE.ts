@@ -4,48 +4,48 @@
 <context>
     <name>DevicePluginGpio</name>
     <message>
-        <location filename="../deviceplugingpio.cpp" line="41"/>
+        <location filename="../integrationplugingpio.cpp" line="49"/>
         <source>No GPIOs found on this system.</source>
-        <extracomment>Error setting up GPIO device</extracomment>
+        <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../deviceplugingpio.cpp" line="59"/>
+        <location filename="../integrationplugingpio.cpp" line="67"/>
         <source>Exporting GPIO failed.</source>
-        <extracomment>Error setting up GPIO device</extracomment>
+        <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../deviceplugingpio.cpp" line="65"/>
+        <location filename="../integrationplugingpio.cpp" line="73"/>
         <source>Configuring output GPIO failed.</source>
-        <extracomment>Error setting up GPIO device</extracomment>
+        <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../deviceplugingpio.cpp" line="71"/>
-        <location filename="../deviceplugingpio.cpp" line="334"/>
-        <location filename="../deviceplugingpio.cpp" line="354"/>
+        <location filename="../integrationplugingpio.cpp" line="79"/>
+        <location filename="../integrationplugingpio.cpp" line="342"/>
+        <location filename="../integrationplugingpio.cpp" line="362"/>
         <source>Setting GPIO value failed.</source>
-        <extracomment>Error setting up GPIO device
+        <extracomment>Error setting up GPIO thing
 ----------
 Error executing GPIO action</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../deviceplugingpio.cpp" line="99"/>
-        <location filename="../deviceplugingpio.cpp" line="129"/>
+        <location filename="../integrationplugingpio.cpp" line="107"/>
+        <location filename="../integrationplugingpio.cpp" line="137"/>
         <source>Enabling GPIO monitor failed.</source>
-        <extracomment>Error setting up GPIO device</extracomment>
+        <extracomment>Error setting up GPIO thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../deviceplugingpio.cpp" line="156"/>
+        <location filename="../integrationplugingpio.cpp" line="164"/>
         <source>No GPIOs available on this system.</source>
         <extracomment>Error discovering GPIO devices</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../deviceplugingpio.cpp" line="318"/>
+        <location filename="../integrationplugingpio.cpp" line="326"/>
         <source>GPIO not found</source>
         <extracomment>Error executing GPIO action</extracomment>
         <translation type="unfinished"></translation>
@@ -69,9 +69,9 @@ Error executing GPIO action</extracomment>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="141"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="144"/>
         <source>GPIO Output</source>
-        <extracomment>The name of the DeviceClass ({75d54a59-f9b0-4bc4-a86c-6b1fc47e0663})
+        <extracomment>The name of the ThingClass ({75d54a59-f9b0-4bc4-a86c-6b1fc47e0663})
 ----------
-The name of the DeviceClass ({3885c520-e202-4435-88f6-3c35c362b2e6})</extracomment>
+The name of the ThingClass ({3885c520-e202-4435-88f6-3c35c362b2e6})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -82,26 +82,26 @@ The name of the DeviceClass ({3885c520-e202-4435-88f6-3c35c362b2e6})</extracomme
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="87"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="90"/>
         <source>Counter</source>
-        <extracomment>The name of the ParamType (DeviceClass: counterBbb, EventType: counter, ID: {fb5181d0-644b-4ab7-afa0-b7ddc8951526})
+        <extracomment>The name of the ParamType (ThingClass: counterBbb, EventType: counter, ID: {fb5181d0-644b-4ab7-afa0-b7ddc8951526})
 ----------
-The name of the StateType ({fb5181d0-644b-4ab7-afa0-b7ddc8951526}) of DeviceClass counterBbb
+The name of the StateType ({fb5181d0-644b-4ab7-afa0-b7ddc8951526}) of ThingClass counterBbb
 ----------
-The name of the DeviceClass ({3e311ef1-60c4-4b0e-a2fb-186bff9bd792})
+The name of the ThingClass ({3e311ef1-60c4-4b0e-a2fb-186bff9bd792})
 ----------
-The name of the ParamType (DeviceClass: counterRpi, EventType: counter, ID: {891bc1ce-2f9b-4518-aed9-90e78bc2409e})
+The name of the ParamType (ThingClass: counterRpi, EventType: counter, ID: {891bc1ce-2f9b-4518-aed9-90e78bc2409e})
 ----------
-The name of the StateType ({891bc1ce-2f9b-4518-aed9-90e78bc2409e}) of DeviceClass counterRpi
+The name of the StateType ({891bc1ce-2f9b-4518-aed9-90e78bc2409e}) of ThingClass counterRpi
 ----------
-The name of the DeviceClass ({75b13371-a064-47a7-bb82-e9d93a5b5027})</extracomment>
+The name of the ThingClass ({75b13371-a064-47a7-bb82-e9d93a5b5027})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="93"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="96"/>
         <source>Counter changed</source>
-        <extracomment>The name of the EventType ({fb5181d0-644b-4ab7-afa0-b7ddc8951526}) of DeviceClass counterBbb
+        <extracomment>The name of the EventType ({fb5181d0-644b-4ab7-afa0-b7ddc8951526}) of ThingClass counterBbb
 ----------
-The name of the EventType ({891bc1ce-2f9b-4518-aed9-90e78bc2409e}) of DeviceClass counterRpi</extracomment>
+The name of the EventType ({891bc1ce-2f9b-4518-aed9-90e78bc2409e}) of ThingClass counterRpi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -112,32 +112,32 @@ The name of the EventType ({891bc1ce-2f9b-4518-aed9-90e78bc2409e}) of DeviceClas
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="129"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="132"/>
         <source>GPIO</source>
-        <extracomment>The name of the ParamType (DeviceClass: counterBbb, Type: device, ID: {68bc0f3b-18c3-4a60-a2df-85bc0605caec})
+        <extracomment>The name of the ParamType (ThingClass: counterBbb, Type: thing, ID: {68bc0f3b-18c3-4a60-a2df-85bc0605caec})
 ----------
-The name of the ParamType (DeviceClass: gpioInputBbb, Type: device, ID: {20773255-4576-4c8e-8c8b-051902919761})
+The name of the ParamType (ThingClass: gpioInputBbb, Type: thing, ID: {20773255-4576-4c8e-8c8b-051902919761})
 ----------
-The name of the ParamType (DeviceClass: gpioOutputBbb, Type: device, ID: {62a9596d-fc7d-4554-9f45-9803635da619})
+The name of the ParamType (ThingClass: gpioOutputBbb, Type: thing, ID: {62a9596d-fc7d-4554-9f45-9803635da619})
 ----------
-The name of the ParamType (DeviceClass: counterRpi, Type: device, ID: {a6feb722-1dc9-4262-96b0-96489507508f})
+The name of the ParamType (ThingClass: counterRpi, Type: thing, ID: {a6feb722-1dc9-4262-96b0-96489507508f})
 ----------
-The name of the ParamType (DeviceClass: gpioInputRpi, Type: device, ID: {b45ca4a8-c67a-411c-957c-0e78e1f12c0b})
+The name of the ParamType (ThingClass: gpioInputRpi, Type: thing, ID: {b45ca4a8-c67a-411c-957c-0e78e1f12c0b})
 ----------
-The name of the ParamType (DeviceClass: gpioOutputRpi, Type: device, ID: {9eda783f-6d9f-4d39-986d-d2cbfff5a7dd})</extracomment>
+The name of the ParamType (ThingClass: gpioOutputRpi, Type: thing, ID: {9eda783f-6d9f-4d39-986d-d2cbfff5a7dd})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="150"/>
         <source>Long press time</source>
-        <extracomment>The name of the ParamType (DeviceClass: gpioController, Type: plugin, ID: {bfb31f88-b481-49e1-9a0a-41b156b64efe})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: gpioController, Type: plugin, ID: {bfb31f88-b481-49e1-9a0a-41b156b64efe})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="153"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="156"/>
         <source>Long pressed</source>
-        <extracomment>The name of the EventType ({6b439e89-2cac-482a-b012-452c7c665acb}) of DeviceClass gpioInputBbb
+        <extracomment>The name of the EventType ({6b439e89-2cac-482a-b012-452c7c665acb}) of ThingClass gpioInputBbb
 ----------
-The name of the EventType ({0df945d3-38df-4560-b42a-12b05545904d}) of DeviceClass gpioInputRpi</extracomment>
+The name of the EventType ({0df945d3-38df-4560-b42a-12b05545904d}) of ThingClass gpioInputRpi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -148,17 +148,17 @@ The name of the EventType ({0df945d3-38df-4560-b42a-12b05545904d}) of DeviceClas
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="171"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="174"/>
         <source>Pin number</source>
-        <extracomment>The name of the ParamType (DeviceClass: counterBbb, Type: device, ID: {f9da4a22-b010-4823-9b1c-d1f422c3ad2b})
+        <extracomment>The name of the ParamType (ThingClass: counterBbb, Type: thing, ID: {f9da4a22-b010-4823-9b1c-d1f422c3ad2b})
 ----------
-The name of the ParamType (DeviceClass: gpioInputBbb, Type: device, ID: {f383bf1d-3ac0-4808-a82c-18748baf085d})
+The name of the ParamType (ThingClass: gpioInputBbb, Type: thing, ID: {f383bf1d-3ac0-4808-a82c-18748baf085d})
 ----------
-The name of the ParamType (DeviceClass: gpioOutputBbb, Type: device, ID: {14f65be0-ee84-42e4-8fcb-d98a9926a247})
+The name of the ParamType (ThingClass: gpioOutputBbb, Type: thing, ID: {14f65be0-ee84-42e4-8fcb-d98a9926a247})
 ----------
-The name of the ParamType (DeviceClass: counterRpi, Type: device, ID: {b2c194bd-1aef-4851-a290-dd45269cc592})
+The name of the ParamType (ThingClass: counterRpi, Type: thing, ID: {b2c194bd-1aef-4851-a290-dd45269cc592})
 ----------
-The name of the ParamType (DeviceClass: gpioInputRpi, Type: device, ID: {efd3df4a-d2b6-44f3-9095-7bba07891735})
+The name of the ParamType (ThingClass: gpioInputRpi, Type: thing, ID: {efd3df4a-d2b6-44f3-9095-7bba07891735})
 ----------
-The name of the ParamType (DeviceClass: gpioOutputRpi, Type: device, ID: {2204d278-7bc7-407f-ac82-ce3ae1d5779c})</extracomment>
+The name of the ParamType (ThingClass: gpioOutputRpi, Type: thing, ID: {2204d278-7bc7-407f-ac82-ce3ae1d5779c})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -169,26 +169,26 @@ The name of the ParamType (DeviceClass: gpioOutputRpi, Type: device, ID: {2204d2
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="111"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="114"/>
         <source>Description</source>
-        <extracomment>The name of the ParamType (DeviceClass: counterBbb, Type: device, ID: {cba6a527-9f5c-4c05-8602-60e0c920fd26})
+        <extracomment>The name of the ParamType (ThingClass: counterBbb, Type: thing, ID: {cba6a527-9f5c-4c05-8602-60e0c920fd26})
 ----------
-The name of the ParamType (DeviceClass: gpioInputBbb, Type: device, ID: {da746cde-2380-4ee5-bf2c-017249fcdeef})
+The name of the ParamType (ThingClass: gpioInputBbb, Type: thing, ID: {da746cde-2380-4ee5-bf2c-017249fcdeef})
 ----------
-The name of the ParamType (DeviceClass: gpioOutputBbb, Type: device, ID: {760aa4ed-d933-4188-aec8-16285d763aa5})
+The name of the ParamType (ThingClass: gpioOutputBbb, Type: thing, ID: {760aa4ed-d933-4188-aec8-16285d763aa5})
 ----------
-The name of the ParamType (DeviceClass: counterRpi, Type: device, ID: {f7b82516-ed2c-4d73-86fa-957b8b6737e4})
+The name of the ParamType (ThingClass: counterRpi, Type: thing, ID: {f7b82516-ed2c-4d73-86fa-957b8b6737e4})
 ----------
-The name of the ParamType (DeviceClass: gpioInputRpi, Type: device, ID: {720bb37e-56e6-419e-878e-8c80aaf7ce32})
+The name of the ParamType (ThingClass: gpioInputRpi, Type: thing, ID: {720bb37e-56e6-419e-878e-8c80aaf7ce32})
 ----------
-The name of the ParamType (DeviceClass: gpioOutputRpi, Type: device, ID: {504798eb-1faa-4703-a57a-2778e4bf9a67})</extracomment>
+The name of the ParamType (ThingClass: gpioOutputRpi, Type: thing, ID: {504798eb-1faa-4703-a57a-2778e4bf9a67})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="195"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="198"/>
         <source>Power changed</source>
-        <extracomment>The name of the EventType ({82b567c6-a33c-484e-b5e7-e04795498d00}) of DeviceClass gpioOutputBbb
+        <extracomment>The name of the EventType ({82b567c6-a33c-484e-b5e7-e04795498d00}) of ThingClass gpioOutputBbb
 ----------
-The name of the EventType ({06843766-358e-44b0-8d52-2b46ef98459a}) of DeviceClass gpioOutputRpi</extracomment>
+The name of the EventType ({06843766-358e-44b0-8d52-2b46ef98459a}) of ThingClass gpioOutputRpi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -199,44 +199,44 @@ The name of the EventType ({06843766-358e-44b0-8d52-2b46ef98459a}) of DeviceClas
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="189"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="192"/>
         <source>Power</source>
-        <extracomment>The name of the ParamType (DeviceClass: gpioOutputBbb, ActionType: power, ID: {82b567c6-a33c-484e-b5e7-e04795498d00})
+        <extracomment>The name of the ParamType (ThingClass: gpioOutputBbb, ActionType: power, ID: {82b567c6-a33c-484e-b5e7-e04795498d00})
 ----------
-The name of the ParamType (DeviceClass: gpioOutputBbb, EventType: power, ID: {82b567c6-a33c-484e-b5e7-e04795498d00})
+The name of the ParamType (ThingClass: gpioOutputBbb, EventType: power, ID: {82b567c6-a33c-484e-b5e7-e04795498d00})
 ----------
-The name of the StateType ({82b567c6-a33c-484e-b5e7-e04795498d00}) of DeviceClass gpioOutputBbb
+The name of the StateType ({82b567c6-a33c-484e-b5e7-e04795498d00}) of ThingClass gpioOutputBbb
 ----------
-The name of the ParamType (DeviceClass: gpioOutputRpi, ActionType: power, ID: {06843766-358e-44b0-8d52-2b46ef98459a})
+The name of the ParamType (ThingClass: gpioOutputRpi, ActionType: power, ID: {06843766-358e-44b0-8d52-2b46ef98459a})
 ----------
-The name of the ParamType (DeviceClass: gpioOutputRpi, EventType: power, ID: {06843766-358e-44b0-8d52-2b46ef98459a})
+The name of the ParamType (ThingClass: gpioOutputRpi, EventType: power, ID: {06843766-358e-44b0-8d52-2b46ef98459a})
 ----------
-The name of the StateType ({06843766-358e-44b0-8d52-2b46ef98459a}) of DeviceClass gpioOutputRpi</extracomment>
+The name of the StateType ({06843766-358e-44b0-8d52-2b46ef98459a}) of ThingClass gpioOutputRpi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="135"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="138"/>
         <source>GPIO Input</source>
-        <extracomment>The name of the DeviceClass ({ffd2aa29-55cc-4824-ba95-c311784f7824})
+        <extracomment>The name of the ThingClass ({ffd2aa29-55cc-4824-ba95-c311784f7824})
 ----------
-The name of the DeviceClass ({6aff228b-0410-4ef9-9593-51e8639aacea})</extracomment>
+The name of the ThingClass ({6aff228b-0410-4ef9-9593-51e8639aacea})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="222"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="225"/>
         <source>Set power</source>
-        <extracomment>The name of the ActionType ({82b567c6-a33c-484e-b5e7-e04795498d00}) of DeviceClass gpioOutputBbb
+        <extracomment>The name of the ActionType ({82b567c6-a33c-484e-b5e7-e04795498d00}) of ThingClass gpioOutputBbb
 ----------
-The name of the ActionType ({06843766-358e-44b0-8d52-2b46ef98459a}) of DeviceClass gpioOutputRpi</extracomment>
+The name of the ActionType ({06843766-358e-44b0-8d52-2b46ef98459a}) of ThingClass gpioOutputRpi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="213"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="216"/>
         <source>Pressed changed</source>
-        <extracomment>The name of the EventType ({22440876-417a-4d57-8e01-efe26ef9f235}) of DeviceClass gpioInputBbb
+        <extracomment>The name of the EventType ({22440876-417a-4d57-8e01-efe26ef9f235}) of ThingClass gpioInputBbb
 ----------
-The name of the EventType ({57f1b7cc-26c8-434b-ba04-d3077dc886c8}) of DeviceClass gpioInputRpi</extracomment>
+The name of the EventType ({57f1b7cc-26c8-434b-ba04-d3077dc886c8}) of ThingClass gpioInputRpi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -245,13 +245,13 @@ The name of the EventType ({57f1b7cc-26c8-434b-ba04-d3077dc886c8}) of DeviceClas
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="207"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="210"/>
         <source>Pressed</source>
-        <extracomment>The name of the ParamType (DeviceClass: gpioInputBbb, EventType: pressed, ID: {22440876-417a-4d57-8e01-efe26ef9f235})
+        <extracomment>The name of the ParamType (ThingClass: gpioInputBbb, EventType: pressed, ID: {22440876-417a-4d57-8e01-efe26ef9f235})
 ----------
-The name of the StateType ({22440876-417a-4d57-8e01-efe26ef9f235}) of DeviceClass gpioInputBbb
+The name of the StateType ({22440876-417a-4d57-8e01-efe26ef9f235}) of ThingClass gpioInputBbb
 ----------
-The name of the ParamType (DeviceClass: gpioInputRpi, EventType: pressed, ID: {57f1b7cc-26c8-434b-ba04-d3077dc886c8})
+The name of the ParamType (ThingClass: gpioInputRpi, EventType: pressed, ID: {57f1b7cc-26c8-434b-ba04-d3077dc886c8})
 ----------
-The name of the StateType ({57f1b7cc-26c8-434b-ba04-d3077dc886c8}) of DeviceClass gpioInputRpi</extracomment>
+The name of the StateType ({57f1b7cc-26c8-434b-ba04-d3077dc886c8}) of ThingClass gpioInputRpi</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>

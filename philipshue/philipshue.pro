@@ -1,11 +1,11 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginphilipshue)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginphilipshue)
 
 QT += network
 
 SOURCES += \
-    devicepluginphilipshue.cpp \
+    integrationpluginphilipshue.cpp \
     #huebridgeconnection.cpp \
     #light.cpp \
     huebridge.cpp \
@@ -15,7 +15,7 @@ SOURCES += \
     huedevice.cpp
 
 HEADERS += \
-    devicepluginphilipshue.h \
+    integrationpluginphilipshue.h \
     #huebridgeconnection.h \
     #light.h \
     #lightinterface.h \

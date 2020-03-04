@@ -36,9 +36,9 @@
 #include <QJsonDocument>
 #include <QJsonParseError>
 
-SnapdControl::SnapdControl(Device *device, QObject *parent) :
+SnapdControl::SnapdControl(Thing *thing, QObject *parent) :
     QObject(parent),
-    m_device(device),
+    m_device(thing),
     m_snapdSocketPath("/run/snapd.socket")
 {
     // If a change is one of following kind, the plugin will recognize it as update running
@@ -51,7 +51,7 @@ SnapdControl::SnapdControl(Device *device, QObject *parent) :
     connect(m_snapConnection, &SnapdConnection::connectedChanged, this, &SnapdControl::onConnectedChanged);
 }
 
-Device *SnapdControl::device()
+Thing *SnapdControl::thing()
 {
     return m_device;
 }
@@ -161,10 +161,10 @@ bool SnapdControl::validAsyncResponse(const QVariantMap &responseMap)
 void SnapdControl::onConnectedChanged(const bool &connected)
 {
     if (connected) {
-        device()->setStateValue(snapdControlSnapdAvailableStateTypeId, true);
+        thing()->setStateValue(snapdControlSnapdAvailableStateTypeId, true);
         update();
     } else {
-        device()->setStateValue(snapdControlSnapdAvailableStateTypeId, false);
+        thing()->setStateValue(snapdControlSnapdAvailableStateTypeId, false);
     }
 }
 
@@ -182,8 +182,8 @@ void SnapdControl::onLoadSystemInfoFinished()
     QDateTime nextRefreshTime = QDateTime::fromString(result.value("refresh").toMap().value("next").toString(), Qt::ISODate);
 
     // Set update time information
-    device()->setStateValue(snapdControlLastUpdateTimeStateTypeId, lastRefreshTime.toTime_t());
-    device()->setStateValue(snapdControlNextUpdateTimeStateTypeId, nextRefreshTime.toTime_t());
+    thing()->setStateValue(snapdControlLastUpdateTimeStateTypeId, lastRefreshTime.toTime_t());
+    thing()->setStateValue(snapdControlNextUpdateTimeStateTypeId, nextRefreshTime.toTime_t());
 
     // Check if we are working on refresh timer or refresh schedule
     if (result.value("refresh").toMap().contains("schedule")) {
@@ -233,8 +233,8 @@ void SnapdControl::onLoadRunningChangesFinished()
     // If there are no running changes, update is not running
     if (changes.isEmpty()) {
         // Update not running any more
-        device()->setStateValue(snapdControlUpdateRunningStateTypeId, false);
-        device()->setStateValue(snapdControlStatusStateTypeId, "-");
+        thing()->setStateValue(snapdControlUpdateRunningStateTypeId, false);
+        thing()->setStateValue(snapdControlStatusStateTypeId, "-");
         return;
     }
 
@@ -264,14 +264,14 @@ void SnapdControl::onLoadRunningChangesFinished()
         }
     }
 
-    device()->setStateValue(snapdControlUpdateRunningStateTypeId, updateRunning);
-    device()->setStateValue(snapdControlStatusStateTypeId, updateStatus);
+    thing()->setStateValue(snapdControlUpdateRunningStateTypeId, updateRunning);
+    thing()->setStateValue(snapdControlStatusStateTypeId, updateStatus);
 
     // If currently an update is running, lets force update available to false if set to true
     // keep this below the setStateValue for updateRunning or we might have intermediate states indicating
     // no update running and none available
-    if (updateRunning && device()->stateValue(snapdControlUpdateAvailableStateTypeId).toBool()) {
-        device()->setStateValue(snapdControlUpdateAvailableStateTypeId, false);
+    if (updateRunning && thing()->stateValue(snapdControlUpdateAvailableStateTypeId).toBool()) {
+        thing()->setStateValue(snapdControlUpdateAvailableStateTypeId, false);
     }
 
 }
@@ -343,7 +343,7 @@ void SnapdControl::onCheckForUpdatesFinished()
     qCDebug(dcSnapd()) << "Check for available snap updates finished.";
     if (reply->dataMap().value("result").toList().isEmpty()) {
         qCDebug(dcSnapd()) << "There are no snap updates available.";
-        device()->setStateValue(snapdControlUpdateAvailableStateTypeId, false);
+        thing()->setStateValue(snapdControlUpdateAvailableStateTypeId, false);
     } else {
         // Print available snap updates
         qCDebug(dcSnapd()) << "Following snaps can be updated:";
@@ -352,7 +352,7 @@ void SnapdControl::onCheckForUpdatesFinished()
             qCDebug(dcSnapd()) << "    -->" << resultMap.value("name").toString() << resultMap.value("version").toString();
         }
 
-        device()->setStateValue(snapdControlUpdateAvailableStateTypeId, true);
+        thing()->setStateValue(snapdControlUpdateAvailableStateTypeId, true);
     }
 
     reply->deleteLater();
@@ -413,7 +413,7 @@ void SnapdControl::update()
         return;
 
     // Update information
-    if (device()->stateValue(snapdControlUpdateRunningStateTypeId).toBool()) {
+    if (thing()->stateValue(snapdControlUpdateRunningStateTypeId).toBool()) {
         // Note: if an update is running, just load the changes to save system resources
         loadRunningChanges();
     } else {

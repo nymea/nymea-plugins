@@ -72,7 +72,7 @@ public:
 
 private:
     QUuid sendGetRequest(QString path);
-    //Get calls are getting queued to don't overstrain the device
+    //Get calls are getting queued to don't overstrain the thing
     //Post calls must be sent immediately
     //If an get call of the same URL is already in the queu the new one will be ignored
     QList<QString> m_getRequestQueue;

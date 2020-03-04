@@ -34,9 +34,9 @@
 
 #include <QDataStream>
 
-FlowerCare::FlowerCare(BluetoothLowEnergyDevice *device, QObject *parent):
+FlowerCare::FlowerCare(BluetoothLowEnergyDevice *thing, QObject *parent):
     QObject(parent),
-    m_bluetoothDevice(device)
+    m_bluetoothDevice(thing)
 {
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::connectedChanged, this, &FlowerCare::onConnectedChanged);
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::servicesDiscoveryFinished, this, &FlowerCare::onServiceDiscoveryFinished);

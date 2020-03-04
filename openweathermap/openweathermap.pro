@@ -1,13 +1,13 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginopenweathermap)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginopenweathermap)
 
 QT+= network
 
 SOURCES += \
-    devicepluginopenweathermap.cpp \
+    integrationpluginopenweathermap.cpp \
 
 HEADERS += \
-    devicepluginopenweathermap.h \
+    integrationpluginopenweathermap.h \
 
 

@@ -2,12 +2,12 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginmqttclient)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginmqttclient)
 
 SOURCES += \
-    devicepluginmqttclient.cpp
+    integrationpluginmqttclient.cpp
 
 HEADERS += \
-    devicepluginmqttclient.h
+    integrationpluginmqttclient.h
 
 

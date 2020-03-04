@@ -1,14 +1,14 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginwemo)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginwemo)
 
 QT+= network
 
 SOURCES += \
-    devicepluginwemo.cpp
+    integrationpluginwemo.cpp
 
 HEADERS += \
-    devicepluginwemo.h
+    integrationpluginwemo.h
 
 
 

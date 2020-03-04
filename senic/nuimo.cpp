@@ -365,7 +365,7 @@ void Nuimo::onServiceDiscoveryFinished()
     if (!m_deviceInfoService) {
         m_deviceInfoService = m_bluetoothDevice->controller()->createServiceObject(QBluetoothUuid::DeviceInformation, this);
         if (!m_deviceInfoService) {
-            qCWarning(dcSenic()) << "Could not create device info service.";
+            qCWarning(dcSenic()) << "Could not create thing info service.";
             emit deviceInitializationFinished(false);
             return;
         }
@@ -460,7 +460,7 @@ void Nuimo::onBatteryServiceStateChanged(const QLowEnergyService::ServiceState &
 
     m_batteryCharacteristic = m_batteryService->characteristic(QBluetoothUuid::BatteryLevel);
     if (!m_batteryCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Battery characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        qCWarning(dcSenic()) << "Battery characteristc not found for thing " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         return;
     }
 
@@ -493,7 +493,7 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
     // Button
     m_inputButtonCharacteristic = m_inputService->characteristic(inputButtonCharacteristicUuid);
     if (!m_inputButtonCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Input button characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        qCWarning(dcSenic()) << "Input button characteristc not found for thing " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         return;
     }
     // Enable notifications
@@ -504,7 +504,7 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
     // Swipe
     m_inputSwipeCharacteristic = m_inputService->characteristic(inputSwipeCharacteristicUuid);
     if (!m_inputSwipeCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Input swipe characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        qCWarning(dcSenic()) << "Input swipe characteristc not found for thing " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         return;
     }
     // Enable notifications
@@ -515,7 +515,7 @@ void Nuimo::onInputServiceStateChanged(const QLowEnergyService::ServiceState &st
     // Rotation
     m_inputRotationCharacteristic = m_inputService->characteristic(inputRotationCharacteristicUuid);
     if (!m_inputRotationCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Input rotation characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        qCWarning(dcSenic()) << "Input rotation characteristc not found for thing " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         return;
     }
     // Enable notifications
@@ -596,7 +596,7 @@ void Nuimo::onLedMatrixServiceStateChanged(const QLowEnergyService::ServiceState
     // Led matrix
     m_ledMatrixCharacteristic = m_ledMatrixService->characteristic(ledMatrixCharacteristicUuid);
     if (!m_ledMatrixCharacteristic.isValid()) {
-        qCWarning(dcSenic()) << "Led matrix characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        qCWarning(dcSenic()) << "Led matrix characteristc not found for thing " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         return;
     }
 }

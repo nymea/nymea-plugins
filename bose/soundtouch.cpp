@@ -30,7 +30,7 @@
 
 #include "soundtouch.h"
 #include "hardwaremanager.h"
-#include "devices/device.h"
+#include "integrations/thing.h"
 #include "network/networkaccessmanager.h"
 
 SoundTouch::SoundTouch(NetworkAccessManager *networkAccessManager, QString ipAddress, QObject *parent) :

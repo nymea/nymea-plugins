@@ -70,7 +70,7 @@ enum ART_STATUS {	//The state of an image
     ART_STATUS_IMAGE_PRESENT
 };
 
-enum KEY_VALUE {	//An enumeration of virtual device buttons that may be pressed
+enum KEY_VALUE {	//An enumeration of virtual thing buttons that may be pressed
     KEY_VALUE_PLAY,
     KEY_VALUE_PAUSE,
     KEY_VALUE_PLAY_PAUSE,
@@ -249,10 +249,10 @@ struct GroupObject {
 struct PlayInfoObject {
     QString appKey;     //Element. An authorization key used to identify the client application. Apply for an app key by creating an app here.
     QString url;        //Element. A fully qualified, web hosted stream URL. The URL should include the 'http://' prefix as well as a stream suffix ('mp3', ...) for proper playback.
-    QString services;   //Element. This indicates the service providing the notification. This text will appear on the device display (when available) and the SoundTouch application screen.
-    QString reason;     //Element. This indicates the reason for the notification. This text will appear on the device display (when available) and the SoundTouch application screen. If a reason string is not provided, the field with be blank.
-    QString message;    //Element. This indicates further details about the notification. This text will appear on the device display (when available) and the SoundTouch application screen. If a message string is not provided, the field with be blank.
-    int volume;         //Element. This indicates the desired volume level while playing the notification. The value represents a percentage (0 to 100) of the full audible range of the speaker device. A value less than 10 or greater than 70 will result in an error and not play the notification. Upon completion of the notification, the speaker volume will return to its original value. If not present, the notification will play at the existing volume level.
+    QString services;   //Element. This indicates the service providing the notification. This text will appear on the thing display (when available) and the SoundTouch application screen.
+    QString reason;     //Element. This indicates the reason for the notification. This text will appear on the thing display (when available) and the SoundTouch application screen. If a reason string is not provided, the field with be blank.
+    QString message;    //Element. This indicates further details about the notification. This text will appear on the thing display (when available) and the SoundTouch application screen. If a message string is not provided, the field with be blank.
+    int volume;         //Element. This indicates the desired volume level while playing the notification. The value represents a percentage (0 to 100) of the full audible range of the speaker thing. A value less than 10 or greater than 70 will result in an error and not play the notification. Upon completion of the notification, the speaker volume will return to its original value. If not present, the notification will play at the existing volume level.
 };
 
 struct ErrorObject{

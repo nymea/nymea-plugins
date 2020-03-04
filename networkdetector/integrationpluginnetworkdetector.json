@@ -1,0 +1,65 @@
+{
+    "name": "NetworkDetector",
+    "displayName": "Network Detector",
+    "id": "8e0f791e-b273-4267-8605-b7c2f55a68ab",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "id": "bd216356-f1ec-4324-9785-6982d2174e17",
+                    "name": "networkDevice",
+                    "displayName": "Network Device",
+                    "interfaces": [ "presencesensor" ],
+                    "createMethods": ["user", "discovery"],
+                    "paramTypes": [
+                        {
+                            "id": "c6707093-3b51-469d-9fc0-f167bff2a987",
+                            "name": "address",
+                            "displayName": "address",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "18fd3b05-478a-49cf-b8ae-3c6a98675ccc",
+                            "name": "macAddress",
+                            "displayName": "hardware address",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "6c1ec0c8-6a02-4b3c-9064-ee33cfd61fbe",
+                            "name": "gracePeriod",
+                            "displayName": "Grace period (Minutes)",
+                            "type": "uint",
+                            "defaultValue": 5
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "cb43e1b5-4f61-4538-bfa2-c33055c542cf",
+                            "name": "isPresent",
+                            "displayName": "Device is present",
+                            "displayNameEvent": "Device is present changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b51d54c9-cce1-43f0-a35d-52fc2d8d302c",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

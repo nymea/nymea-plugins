@@ -82,7 +82,7 @@ bool UsbRelay::relayPower(int relayNumber) const
 bool UsbRelay::setRelayPower(int relayNumber, bool power)
 {
     if (!m_connected) {
-        qCWarning(dcUsbRelay()) << "Could not set power of relay" << relayNumber << "because the device is not connected.";
+        qCWarning(dcUsbRelay()) << "Could not set power of relay" << relayNumber << "because the thing is not connected.";
         return false;
     }
 
@@ -101,10 +101,10 @@ void UsbRelay::setConnected(bool connected)
 
     qCDebug(dcUsbRelay()) << m_path << (connected ? "connected" : "disconnected");
     if (connected) {
-        // Initialize the device
+        // Initialize the thing
         m_hidDevice = hid_open_path(m_path.toLatin1().data());
         if (!m_hidDevice) {
-            qCWarning(dcUsbRelay()) << "Could nor open HID device for" << m_path;
+            qCWarning(dcUsbRelay()) << "Could nor open HID thing for" << m_path;
             m_connected = false;
             emit connectedChanged(m_connected);
         }
@@ -141,7 +141,7 @@ void UsbRelay::readStatus()
     buf[0] = 0x01;
     int ret = hid_get_feature_report(m_hidDevice, buf, sizeof(buf));
     if (ret < 0) {
-        qCWarning(dcUsbRelay()) << "Could not create HID device for reading" << m_path;
+        qCWarning(dcUsbRelay()) << "Could not create HID thing for reading" << m_path;
         hid_close(m_hidDevice);
         m_hidDevice = nullptr;
 

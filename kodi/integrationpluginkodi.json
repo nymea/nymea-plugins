@@ -1,0 +1,301 @@
+{
+    "id": "e7186890-99fa-4c5b-8247-09c6d450d490",
+    "name": "Kodi",
+    "displayName": "Kodi",
+    "vendors": [
+        {
+            "id": "447bf3d6-a86e-4636-9db0-8936c0e4d9e9",
+            "name": "kodi",
+            "displayName": "Kodi",
+            "thingClasses": [
+                {
+                    "id": "d09953e3-c5bd-415b-973b-0d0bf2be3f69",
+                    "name": "kodi",
+                    "displayName": "Kodi",
+                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "notifications", "extendednavigationpad", "connectable"],
+                    "createMethods": ["user", "discovery"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "1a897065-57c6-49b3-bac9-1e5db27859e5",
+                            "name": "ip",
+                            "displayName": "IP Address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "660fb4d7-9479-4c9d-a900-ce221d2b8ae4",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int"
+                        },
+                        {
+                            "id": "27ea7e46-80f0-49ea-9352-b57c78905c67",
+                            "name": "httpPort",
+                            "displayName": "HTTP port",
+                            "type" : "int",
+                            "defaultValue": 8080
+                        },
+                        {
+                            "id": "692eb6e0-7f4e-4f43-92da-8347372287ce",
+                            "name": "uuid",
+                            "displayName": "UUID",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "09dfbd40-c97c-4a20-9ecd-f80e389a4864",
+                            "name": "connected",
+                            "displayName": "connected",
+                            "displayNameEvent": "connected changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "bc98cdb0-4d0e-48ca-afc7-922e49bb7813",
+                            "name": "mute",
+                            "displayName": "mute",
+                            "displayNameEvent": "mute changed",
+                            "displayNameAction": "Set mute",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9",
+                            "name": "volume",
+                            "displayName": "volume",
+                            "displayNameEvent": "volume changed",
+                            "displayNameAction": "Set volume",
+                            "unit": "Percentage",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 50,
+                            "writable": true
+                        },
+                        {
+                            "id": "2dd512b7-40c2-488e-8d4f-6519edaa6f74",
+                            "name": "playbackStatus",
+                            "displayName": "playback status",
+                            "type": "QString",
+                            "possibleValues": ["Playing", "Paused", "Stopped"],
+                            "defaultValue": "Stopped",
+                            "displayNameEvent": "playback status changed",
+                            "displayNameAction": "set playback status",
+                            "writable": true
+                        },
+                        {
+                            "id": "0af58b87-4e45-4f0a-9ef2-0ade74c7c22c",
+                            "type": "QString",
+                            "name": "playerType",
+                            "displayName": "Active player type",
+                            "possibleValues": ["audio", "video"],
+                            "displayNameEvent": "Active player changed",
+                            "defaultValue": "audio"
+                        },
+                        {
+                            "id": "f2209fec-cceb-46ad-8189-4caf42166e6b",
+                            "type": "QString",
+                            "name": "title",
+                            "displayName": "Title",
+                            "displayNameEvent": "Title changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "8cb920a3-3bf1-4231-92d4-8ac27e7b3d65",
+                            "type": "QString",
+                            "name": "artist",
+                            "displayName": "Artist",
+                            "displayNameEvent": "Artist changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "ce399eec-9f6a-4903-9916-0e90e38b255e",
+                            "type": "QString",
+                            "name": "collection",
+                            "displayName": "Collection",
+                            "displayNameEvent": "Collection changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "44304c82-c2f6-433b-b62b-815382617d0b",
+                            "type": "QString",
+                            "name": "artwork",
+                            "displayName": "Artwork",
+                            "displayNameEvent": "Artwork changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "5913aa2a-629d-4de5-bf44-a4a1f130c118",
+                            "type": "bool",
+                            "name": "shuffle",
+                            "displayName": "Shuffle",
+                            "displayNameEvent": "Shuffle changed",
+                            "displayNameAction": "Set shuffle",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e",
+                            "type": "QString",
+                            "name": "repeat",
+                            "displayName": "Repeat",
+                            "displayNameEvent": "Repeat changed",
+                            "displayNameAction": "Set repeat",
+                            "possibleValues": ["None", "One", "All"],
+                            "defaultValue": "None",
+                            "writable": true
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "2535a1eb-7643-4874-98f6-b027fdff6311",
+                            "name": "onPlayerPlay",
+                            "displayName": "player play"
+                        },
+                        {
+                            "id": "99498b1c-e9c0-480a-9e91-662ee79ba976",
+                            "name": "onPlayerPause",
+                            "displayName": "player pause"
+                        },
+                        {
+                            "id": "a02ce255-3abb-435d-a92e-7f99c952ecb2",
+                            "name": "onPlayerStop",
+                            "displayName": "player stop"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a180807d-1265-4831-9d86-a421767418dd",
+                            "name": "skipBack",
+                            "displayName": "skip back"
+                        },
+                        {
+                            "id": "7e70b47b-7e79-4521-be34-04a3c427e5b1",
+                            "name": "fastRewind",
+                            "displayName": "rewind"
+                        },
+                        {
+                            "id": "ae3cbe03-ee3e-410e-abbd-efabc2402198",
+                            "name": "stop",
+                            "displayName": "stop"
+                        },
+                        {
+                            "id": "4d2ee668-a2e3-4795-8b96-0c800b703b46",
+                            "name": "play",
+                            "displayName": "play"
+                        },
+                        {
+                            "id": "3cf341cb-fe63-40bc-a450-9678d18e91e3",
+                            "name": "pause",
+                            "displayName": "pause"
+                        },
+                        {
+                            "id": "6985250e-1188-4e44-b9dd-93303b5738a1",
+                            "name": "fastForward",
+                            "displayName": "fastForward"
+                        },
+                        {
+                            "id": "85d7126a-b123-4a28-aeb4-d84bcfb4d14f",
+                            "name": "skipNext",
+                            "displayName": "skipNext"
+                        },
+                        {
+                            "id": "dc0aa3b5-4eae-4e58-a4ac-d4c124da53f1",
+                            "name": "notify",
+                            "displayName": "show notification",
+                            "paramTypes": [
+                                {
+                                    "id": "798f720a-cc4f-40e7-91d7-2ef5957ca7ad",
+                                    "name": "title",
+                                    "displayName": "title",
+                                    "type": "QString",
+                                    "inputType": "TextLine"
+                                },
+                                {
+                                    "id": "c92d79ad-3b74-4cb6-a21b-d6a0a3cfd3e1",
+                                    "name": "body",
+                                    "displayName": "message",
+                                    "type": "QString",
+                                    "inputType": "TextLine"
+                                },
+                                {
+                                    "id": "86df6a45-ee8a-4e1f-94e2-4081e14eb557",
+                                    "name": "type",
+                                    "displayName": "type",
+                                    "type": "QString",
+                                    "defaultValue": "info",
+                                    "allowedValues": [
+                                        "info",
+                                        "warning",
+                                        "error"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "28060803-aa85-44a4-9dec-ee669dfb629f",
+                            "name": "navigate",
+                            "displayName": "Navigate",
+                            "paramTypes": [
+                                {
+                                    "id": "93861dac-0c24-4a3b-903d-d1be44eae611",
+                                    "name": "to",
+                                    "displayName": "to",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "up",
+                                        "down",
+                                        "left",
+                                        "right",
+                                        "enter",
+                                        "back",
+                                        "menu",
+                                        "info",
+                                        "home"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "8d51cd64-ecef-44f8-85b0-697bef252ce5",
+                            "name": "system",
+                            "displayName": "system",
+                            "paramTypes": [
+                                {
+                                    "id": "8f3413fb-018e-40d6-903c-c8a915a6f498",
+                                    "name": "systemCommand",
+                                    "displayName": "command",
+                                    "type": "QString",
+                                    "defaultValue": "shutdown",
+                                    "allowedValues": [
+                                        "hibernate",
+                                        "reboot",
+                                        "shutdown",
+                                        "suspend"
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "browserItemActionTypes": [
+                        {
+                            "id": "3fed69c5-dddf-4500-a674-c79015f63974",
+                            "name": "updateLibrary",
+                            "displayName": "Update library"
+                        },
+                        {
+                            "id": "dbc2c455-ae75-493e-9d8b-659e951b55a1",
+                            "name": "cleanLibrary",
+                            "displayName": "Clean library"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -57,7 +57,7 @@ public:
     void getUserAccount();                      //returns current user name in its message field if the user is currently singed in.
     void setUserAccount(QString userName, QString password);
     void logoutUserAccount();
-    void rebootSpeaker();                       //Using this command controllers can reboot HEOS device. This command can only be used to reboot the HEOS device to which the controller is connected through CLI port.
+    void rebootSpeaker();                       //Using this command controllers can reboot HEOS thing. This command can only be used to reboot the HEOS thing to which the controller is connected through CLI port.
     void prettifyJsonResponse(bool enable);     //Helper command to prettify JSON response when user is running CLI controller through telnet.
 
     //Player Get Calls

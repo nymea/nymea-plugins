@@ -1,0 +1,260 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+* Copyright 2013 - 2020, nymea GmbH
+* Contact: contact@nymea.io
+*
+* This file is part of nymea.
+* This project including source code and documentation is protected by
+* copyright law, and remains the property of nymea GmbH. All rights, including
+* reproduction, publication, editing and translation, are reserved. The use of
+* this project is subject to the terms of a license agreement to be concluded
+* with nymea GmbH in accordance with the terms of use of nymea GmbH, available
+* under https://nymea.io/license
+*
+* GNU Lesser General Public License Usage
+* Alternatively, this project may be redistributed and/or modified under the
+* terms of the GNU Lesser General Public License as published by the Free
+* Software Foundation; version 3. This project is distributed in the hope that
+* it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public License
+* along with this project. If not, see <https://www.gnu.org/licenses/>.
+*
+* For any further details and any questions please contact us under
+* contact@nymea.io or see our FAQ/Licensing Information on
+* https://nymea.io/license/faq
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#include "integrationpluginkeba.h"
+
+#include <QUrl>
+#include <QUrlQuery>
+#include <QJsonDocument>
+#include <QPointer>
+#include "plugininfo.h"
+#include <QUdpSocket>
+
+IntegrationPluginKeba::IntegrationPluginKeba()
+{
+
+}
+
+IntegrationPluginKeba::~IntegrationPluginKeba()
+{
+    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+}
+
+void IntegrationPluginKeba::init()
+{
+    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+    connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginKeba::updateData);
+}
+
+void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
+{
+    Thing *thing = info->thing();
+
+    qCDebug(dcKebaKeContact()) << "Setting up a new thing:" << thing->name() << thing->params();
+
+    if(m_kebaDevices.isEmpty()) {
+        m_kebaSocket = new QUdpSocket(this);
+        if (!m_kebaSocket->bind(QHostAddress::AnyIPv4, 7090)) {
+            qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
+            delete m_kebaSocket;
+            //: Error setting up thing
+            return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Error opening network port."));
+        }
+        connect(m_kebaSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
+        qCDebug(dcKebaKeContact()) << "Create keba socket";
+    }
+
+    QHostAddress address = QHostAddress(thing->paramValue(wallboxThingIpParamTypeId).toString());
+
+    //Check if the IP is empty
+    if (address.isNull()) {
+        delete m_kebaSocket;
+        //: Error setting up thing
+        return info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The provided IP adress is not valid."));
+    }
+
+    // check if IP is already added to another keba thing
+    if(m_kebaDevices.keys().contains(address)){
+        //: Error setting up thing
+        return info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("Device with IP adress %1 is already added in the system."));
+    }
+
+    m_kebaDevices.insert(address, thing);
+    info->finish(Thing::ThingErrorNoError);
+}
+
+void IntegrationPluginKeba::postSetupThing(Thing *thing)
+{
+    qCDebug(dcKebaKeContact()) << "Post setup" << thing->name();
+    QByteArray datagram;
+    datagram.append("report 2");
+    m_kebaSocket->writeDatagram(datagram.data(), datagram.size(), QHostAddress(thing->paramValue(wallboxThingIpParamTypeId).toString()), 7090);
+}
+
+void IntegrationPluginKeba::thingRemoved(Thing *thing)
+{
+    // Remove devices
+    QHostAddress address = m_kebaDevices.key(thing);
+    m_kebaDevices.remove(address);
+
+    if(m_kebaDevices.isEmpty()){
+        m_kebaSocket->close();
+        m_kebaSocket->deleteLater();
+        qCDebug(dcKebaKeContact()) << "clear socket";
+    }
+}
+
+void IntegrationPluginKeba::updateData()
+{
+    foreach (QHostAddress address, m_kebaDevices.keys()) {
+        QByteArray datagram;
+        datagram.append("report 2");
+        qCDebug(dcKebaKeContact()) << "datagram : " << datagram;
+        m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), address , 7090);
+        //set reachable false until successful reply from thing
+        m_kebaDevices.value(address)->setStateValue(wallboxReachableStateTypeId,false);
+    }
+}
+
+void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
+{
+    Thing *thing = info->thing();
+    Action action = info->action();
+
+    qCDebug(dcKebaKeContact()) << "Execute action" << thing->name() << action.actionTypeId().toString();
+
+    if (thing->thingClassId() == wallboxThingClassId) {
+
+        // Print information that we are executing now the update action
+        qCDebug(dcKebaKeContact()) << "Execute update action" << action.id();
+
+        if(action.actionTypeId() == wallboxMaxCurrentActionTypeId){
+            // Print information that we are executing now the update action
+            qCDebug(dcKebaKeContact()) << "Update max current to : " << action.param(wallboxMaxCurrentActionMaxCurrentParamTypeId).value().toString();
+            QByteArray datagram;
+            datagram.append("curr " + QVariant(action.param(wallboxMaxCurrentActionMaxCurrentParamTypeId).value().toInt()*1000).toString());
+            qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
+            m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(thing->paramValue(wallboxThingIpParamTypeId).toString()) , 7090);
+        }
+        else if(action.actionTypeId() == wallboxOutEnableActionTypeId){
+            // Print information that we are executing now the update action
+            qCDebug(dcKebaKeContact()) << "output enable : " << action.param(wallboxOutEnableActionOutEnableParamTypeId).value().toString();
+            QByteArray datagram;
+            if(action.param(wallboxOutEnableActionOutEnableParamTypeId).value().toBool()){
+                datagram.append("ena 1");
+            }
+            else{
+                datagram.append("ena 0");
+            }
+            qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
+            m_kebaSocket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(thing->paramValue(wallboxThingIpParamTypeId).toString()) , 7090);
+        }
+
+        return info->finish(Thing::ThingErrorNoError);
+    }
+
+    info->finish(Thing::ThingErrorThingClassNotFound);
+}
+
+void IntegrationPluginKeba::readPendingDatagrams()
+{
+    QUdpSocket *socket= qobject_cast<QUdpSocket*>(sender());
+
+    QByteArray datagram;
+    QHostAddress sender;
+    quint16 senderPort;
+
+    while (socket->hasPendingDatagrams()) {
+        datagram.resize(socket->pendingDatagramSize());
+        socket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+
+        qCDebug(dcKebaKeContact()) << " got command from" << sender.toString() << senderPort;
+    }
+
+    if(!m_kebaDevices.keys().contains(sender)){
+        qCDebug(dcKebaKeContact()) << " unknown sender:" << sender.toString() << senderPort;
+        return;
+    }
+
+    // Convert the rawdata to a json document
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(datagram, &error);
+    if (error.error != QJsonParseError::NoError) {
+        qCWarning(dcKebaKeContact()) << "Failed to parse JSON data" << datagram << ":" << error.errorString();
+        return;
+    }
+
+    // print the fetched data in json format to stdout
+    //qCDebug(dcKebaKeContact()) << qUtf8Printable(jsonDoc.toJson());
+
+    QVariantMap data = jsonDoc.toVariant().toMap();
+
+    qCDebug(dcKebaKeContact()) << "IP" << sender << "thing: " << m_kebaDevices.value(sender);
+
+    if(data.contains("ID")){
+        // check if ID matches report 2 or report 3
+        if(data.value("ID").toString() == "2"){
+            //set reachable
+            m_kebaDevices.value(sender)->setStateValue(wallboxReachableStateTypeId,true);
+            //activity state
+            if(data.value("State").toString() == "0"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"starting");
+            }
+            else if(data.value("State").toString() == "1"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"not ready for charging");
+            }
+            else if(data.value("State").toString() == "2"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"ready for charging");
+            }
+            else if(data.value("State").toString() == "3"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"charging");
+            }
+            else if(data.value("State").toString() == "4"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"error");
+            }
+            else if(data.value("State").toString() == "5"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxActivityStateTypeId,"authorization rejected");
+            }
+            // plug state
+            if(data.value("Plug").toString() == "0"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"unplugged");
+            }
+            else if(data.value("Plug").toString() == "1"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"plugged on charging station");
+            }
+            else if(data.value("Plug").toString() == "3"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"locked plug on charging station");
+            }
+            else if(data.value("Plug").toString() == "5"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"plugged on charging station and vehicle");
+            }
+            else if(data.value("Plug").toString() == "7"){
+                m_kebaDevices.value(sender)->setStateValue(wallboxPlugStateStateTypeId,"locked plug on charging station and vehicle");
+            }
+            //maximum current setting
+            m_kebaDevices.value(sender)->setStateValue(wallboxMaxCurrentStateTypeId,data.value("Curr user").toInt()/1000);
+            //output setting
+            m_kebaDevices.value(sender)->setStateValue(wallboxOutEnableStateTypeId,data.value("Enable user").toBool());
+
+            //request next report
+            QByteArray datagram;
+            datagram.append("report 3");
+            qCDebug(dcKebaKeContact()) << "datagram : " << datagram;
+            socket->writeDatagram(datagram.data(),datagram.size(), QHostAddress(m_kebaDevices.value(sender)->paramValue(wallboxThingIpParamTypeId).toString()) , 7090);
+        }
+        else if(data.value("ID").toString() == "3"){
+            //power of current charging session
+            m_kebaDevices.value(sender)->setStateValue(wallboxPowerStateTypeId,data.value("E pres").toInt() / 1000);
+            //current phase 1
+            m_kebaDevices.value(sender)->setStateValue(wallboxCurrentStateTypeId,data.value("I1").toInt() * 1000);
+        }
+    }
+
+}

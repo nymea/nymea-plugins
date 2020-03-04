@@ -1,0 +1,98 @@
+{
+    "displayName": "Keba KeContact",
+    "name": "KebaKeContact",
+    "id": "9142b09f-30a9-43d0-9ede-2f8debe075ac",
+    "vendors": [
+        {
+            "id": "f7cda40b-829a-4675-abaa-485697430f5f",
+            "displayName": "Keba",
+            "name": "keba",
+            "thingClasses": [
+                {
+                    "id": "900dacec-cae7-4a37-95ba-501846368ea2",
+                    "name": "wallbox",
+                    "displayName": "Keba KeContact P30",
+                    "createMethods": ["user"],
+                    "interfaces": [],
+                    "paramTypes":[
+                        {
+                            "id": "730cd3d3-5f0e-4028-a8c2-ced7574f13f3",
+                            "name": "ip",
+                            "displayName": "IP Address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue":"0.0.0.0"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "539e5602-6dd9-465d-9705-3bb59bcf8982",
+                            "name": "activity",
+                            "displayName": "Activity",
+                            "displayNameEvent": "Activity changed",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        },
+                        {
+                            "id": "3b4d29f3-3101-47ad-90fd-269b6348783b",
+                            "name": "plugState",
+                            "displayName": "Plug State",
+                            "displayNameEvent": "Plug State changed",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        },
+                        {
+                            "id": "a29c1748-fe97-4830-a56e-e1cc4e618385",
+                            "name": "current",
+                            "displayName": "Current",
+                            "displayNameEvent": "Current changed",
+                            "type": "int",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "593656f0-babf-4308-8767-68f34e10fb15",
+                            "name": "maxCurrent",
+                            "displayName": "maximal Current",
+                            "displayNameEvent": "Maximal Current changed",
+                            "displayNameAction": "Set maximal current",
+                            "type": "int",
+                            "unit": "Ampere",
+                            "defaultValue": 6,
+                            "minValue": 6,
+                            "maxValue": 63,
+                            "writable": true
+                        },
+                        {                   
+                            "id": "e8f069ca-7fa7-4568-8d4c-165f6d048720",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "type": "int",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "0cd5396a-bc41-4c8f-b037-db10991a76c7",
+                            "name": "outEnable",
+                            "displayName": "Output",
+                            "displayNameEvent": "Output Enable changed",
+                            "displayNameAction": "Set Output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "b1a574a6-46b6-44ea-a0bb-9b4de3198967",
+                            "name": "reachable",
+                            "displayName": "reachable",
+                            "displayNameEvent": "Device Reachable changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

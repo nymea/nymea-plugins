@@ -39,7 +39,7 @@
 #include <QStringList>
 #include <QLoggingCategory>
 
-//#include "devices/deviceplugin.h"
+//#include "integrations/integrationplugin.h"
 
 Q_DECLARE_LOGGING_CATEGORY(dcSmtpClient)
 

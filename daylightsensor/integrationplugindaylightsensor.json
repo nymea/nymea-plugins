@@ -1,0 +1,66 @@
+{
+    "displayName": "Daylight sensor",
+    "name": "daylightSensor",
+    "id": "4b7d63a7-fc39-4a50-a459-457fa7653089",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "id": "1d43d0ed-efe2-46ab-a567-af632e550931",
+                    "name": "daylightSensor",
+                    "displayName": "Daylight sensor",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["daylightsensor"],
+                    "paramTypes": [
+                        {
+                            "id": "124b2574-8f57-4c62-bc55-40e467d4aea3",
+                            "name": "latitude",
+                            "displayName": "Latitude",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "581c6914-8dbf-4882-a38c-453b808db374",
+                            "name": "longitude",
+                            "displayName": "Longitude",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "6e7bc630-a19c-41ec-b6a3-2e0cbcc4fadf",
+                            "name": "daylight",
+                            "displayName": "Daylight",
+                            "displayNameEvent": "Daylight changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d7c1f356-1efe-4ab7-ad4b-e7ab12cb53b7",
+                            "name": "sunriseTime",
+                            "displayName": "Sunrise time",
+                            "displayNameEvent": "Sunrise time changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "6d064789-b9c3-44c8-a5ea-b722fc2f56b7",
+                            "name": "sunsetTime",
+                            "displayName": "Sunset time",
+                            "displayNameEvent": "Sunset time changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -2,12 +2,12 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginosdomotics)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginosdomotics)
 
 SOURCES += \
-    devicepluginosdomotics.cpp
+    integrationpluginosdomotics.cpp
 
 HEADERS += \
-    devicepluginosdomotics.h
+    integrationpluginosdomotics.h
 
 

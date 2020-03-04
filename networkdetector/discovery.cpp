@@ -265,7 +265,7 @@ void Discovery::finishDiscovery()
     qDeleteAll(m_scanResults);
     m_scanResults.clear();
 
-    qCDebug(dcNetworkDetector()) << "Emitting device discovered for" << hosts.count() << "devices";
+    qCDebug(dcNetworkDetector()) << "Emitting thing discovered for" << hosts.count() << "devices";
     m_timeoutTimer.stop();
     emit finished(hosts);
 }

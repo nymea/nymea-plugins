@@ -3,9 +3,9 @@ include(../plugins.pri)
 QT += network
 
 HEADERS += \
-    devicepluginunifi.h \
+    integrationpluginunifi.h \
 
 SOURCES += \
-    devicepluginunifi.cpp \
+    integrationpluginunifi.cpp \
 
 

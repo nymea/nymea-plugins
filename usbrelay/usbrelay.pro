@@ -3,12 +3,12 @@ include(../plugins.pri)
 PKGCONFIG += hidapi-hidraw libudev
 
 SOURCES += \
-    devicepluginusbrelay.cpp \
+    integrationpluginusbrelay.cpp \
     rawhiddevicewatcher.cpp \
     usbrelay.cpp
 
 HEADERS += \
-    devicepluginusbrelay.h \
+    integrationpluginusbrelay.h \
     rawhiddevicewatcher.h \
     usbrelay.h
 

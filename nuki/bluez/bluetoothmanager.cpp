@@ -146,7 +146,7 @@ void BluetoothManager::processInterfaceList(const QDBusObjectPath &objectPath, c
     foreach (const QString &interface, interfaceList.keys()) {
         if (interface == orgBluezDevice1) {
             QVariantMap properties = interfaceList.value(interface);
-            // Find adapter for this device and add the device internally
+            // Find adapter for this thing and add the thing internally
             if (properties.contains("Adapter")) {
                 QDBusObjectPath adapterObjectPath = qvariant_cast<QDBusObjectPath>(properties.value("Adapter"));
                 BluetoothAdapter *adapter = findAdapter(adapterObjectPath);
@@ -161,12 +161,12 @@ void BluetoothManager::processInterfaceList(const QDBusObjectPath &objectPath, c
     foreach (const QString &interface, interfaceList.keys()) {
         if (interface == orgBluezGattService1) {
             QVariantMap properties = interfaceList.value(interface);
-            // Find device for this service and add the service internally
+            // Find thing for this service and add the service internally
             if (properties.contains("Device")) {
                 QDBusObjectPath deviceObjectPath = qvariant_cast<QDBusObjectPath>(properties.value("Device"));
-                BluetoothDevice *device = findDevice(deviceObjectPath);
-                if (device)
-                    device->addServiceInternally(objectPath, properties);
+                BluetoothDevice *thing = findDevice(deviceObjectPath);
+                if (thing)
+                    thing->addServiceInternally(objectPath, properties);
 
             }
         }
@@ -229,9 +229,9 @@ BluetoothAdapter *BluetoothManager::findAdapter(const QDBusObjectPath &objectPat
 BluetoothDevice *BluetoothManager::findDevice(const QDBusObjectPath &objectPath)
 {
     foreach (BluetoothAdapter *adapter, m_adapters) {
-        foreach (BluetoothDevice *device, adapter->devices()) {
-            if (device->m_path == objectPath) {
-                return device;
+        foreach (BluetoothDevice *thing, adapter->devices()) {
+            if (thing->m_path == objectPath) {
+                return thing;
             }
         }
     }
@@ -242,9 +242,9 @@ BluetoothDevice *BluetoothManager::findDevice(const QDBusObjectPath &objectPath)
 BluetoothGattService *BluetoothManager::findService(const QDBusObjectPath &objectPath)
 {
     foreach (BluetoothAdapter *adapter, m_adapters) {
-        foreach (BluetoothDevice *device, adapter->devices()) {
-            if (device->hasService(objectPath)) {
-                return device->getService(objectPath);
+        foreach (BluetoothDevice *thing, adapter->devices()) {
+            if (thing->hasService(objectPath)) {
+                return thing->getService(objectPath);
             }
         }
     }
@@ -255,8 +255,8 @@ BluetoothGattService *BluetoothManager::findService(const QDBusObjectPath &objec
 BluetoothGattCharacteristic *BluetoothManager::findCharacteristic(const QDBusObjectPath &objectPath)
 {
     foreach (BluetoothAdapter *adapter, m_adapters) {
-        foreach (BluetoothDevice *device, adapter->devices()) {
-            foreach (BluetoothGattService *service, device->services()) {
+        foreach (BluetoothDevice *thing, adapter->devices()) {
+            foreach (BluetoothGattService *service, thing->services()) {
                 if (service->hasCharacteristic(objectPath)) {
                     return service->getCharacteristic(objectPath);
                 }
@@ -303,7 +303,7 @@ void BluetoothManager::onInterfaceRemoved(const QDBusObjectPath &objectPath, con
 
     // Device removed
     if (interfaces.contains(orgBluezDevice1)) {
-        // Find adapter for this device
+        // Find adapter for this thing
         foreach (BluetoothAdapter *adapter, m_adapters) {
             if (adapter->hasDevice(objectPath)) {
                 adapter->removeDeviceInternally(objectPath);

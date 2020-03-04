@@ -34,7 +34,7 @@
 #include <QFile>
 #include <QObject>
 
-#include "devices/device.h"
+#include "integrations/thing.h"
 #include "extern-plugininfo.h"
 
 #include "sensorfilter.h"
@@ -43,7 +43,7 @@ class SensorDataProcessor : public QObject
 {
     Q_OBJECT
 public:
-    explicit SensorDataProcessor(Device *device, QObject *parent = nullptr);
+    explicit SensorDataProcessor(Thing *thing, QObject *parent = nullptr);
     ~SensorDataProcessor();
 
     void setAccelerometerRange(int accelerometerRange);
@@ -62,7 +62,7 @@ public:
     void reset();
 
 private:
-    Device *m_device = nullptr;
+    Thing *m_thing = nullptr;
     double m_lastAccelerometerVectorLenght = -99999;
 
     int m_accelerometerRange = 16;

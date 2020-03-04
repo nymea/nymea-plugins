@@ -1,0 +1,96 @@
+{
+    "displayName": "aWATTar",
+    "name": "awattar",
+    "id": "9c261c33-d44e-461e-8ec1-68803cb73f12",
+    "paramTypes": [
+        {
+            "id": "cf13eebf-f188-447a-afcb-bbd330983060",
+            "name": "rpl",
+            "displayName": "RPL address",
+            "type": "QString",
+            "inputType": "TextLine",
+            "defaultValue": "fdaa:e9b8:d03a::ff:fe00:1"
+        }
+    ],
+    "vendors": [
+        {
+            "displayName": "aWATTar",
+            "name": "awattar",
+            "id": "acd47238-bbbc-4eaf-b484-38c52cfa4866",
+            "thingClasses": [
+                {
+                    "id": "29cd8265-d8bb-4cf9-9080-bfc2cf9787bc",
+                    "displayName": "aWATTar",
+                    "name": "awattar",
+                    "createMethods": ["user"],
+                    "setupMethod": "displaypin",
+                    "interfaces": ["connectable"],
+                    "stateTypes": [
+                        {
+                            "id": "470b9b88-17f3-42e3-9250-cc181984eafe",
+                            "name": "connected",
+                            "displayName": "Online",
+                            "displayNameEvent": "Online changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "eab37309-3dd8-46a0-94d4-bd05b5bb0430",
+                            "name": "currentMarketPrice",
+                            "displayName": "current market price",
+                            "displayNameEvent": "current market price changed",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "38b86cee-9588-4269-a585-128907929dc2",
+                            "name": "averageDeviation",
+                            "displayName": "average deviation",
+                            "displayNameEvent": "average deviation changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "d5a8a176-aca0-45b1-b043-95c43750f383",
+                            "name": "validUntil",
+                            "displayName": "valid until",
+                            "displayNameEvent": "valid until changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "55d6d7a8-446f-48ae-8014-1225810d03ee",
+                            "name": "averagePrice",
+                            "displayName": "average market price [+/- 12 h]",
+                            "displayNameEvent": "average market price [+/- 12 h] changed",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e7af5bdc-48d7-4e96-b877-331da4dcfae5",
+                            "name": "lowestPrice",
+                            "displayName": "lowest market price [+/- 12 h]",
+                            "displayNameEvent": "lowest market price [+/- 12 h] changed",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "0c171c42-b070-453e-8a63-df9aebfa8533",
+                            "name": "highestPrice",
+                            "displayName": "highest market price [+/- 12 h]",
+                            "displayNameEvent": "highest market price [+/- 12 h] changed",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

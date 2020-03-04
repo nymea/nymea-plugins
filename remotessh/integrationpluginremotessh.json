@@ -1,0 +1,92 @@
+{
+    "id": "cd75d899-3f53-43fa-9ee8-f6b36646a27d",
+    "name": "RemoteSsh",
+    "displayName": "Remote SSH",
+    "vendors": [
+        {
+            "id": "e87ad7b1-1705-46b1-a962-282126646b4d",
+            "name": "remoteAccess",
+            "displayName": "Remote Access",
+            "thingClasses": [
+                {
+                    "id": "a4f12741-4f30-40ca-a319-7f15e9c0c43a",
+                    "name": "reverseSsh",
+                    "displayName": "Reverse SSH",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "92747d75-d18a-4915-bd48-0edd5cc5f19a",
+                            "name": "address",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "127.0.0.1"
+                        },
+                        {
+                            "id": "7f7aa198-c719-415e-b31c-7a676b9d8e01",
+                            "name": "localPort",
+                            "displayName": "Local Port",
+                            "type": "int",
+                            "defaultValue": 22
+                        },
+                        {
+                            "id": "988aec42-1026-4aef-85d1-329ee1a34208",
+                            "name": "remotePort",
+                            "displayName": "Remote Port",
+                            "type": "int",
+                            "defaultValue": 2022
+                        },
+                        {
+                            "id": "c675f7ea-f94a-46e9-bf0f-92682182d6dd",
+                            "name": "user",
+                            "displayName": "User Name",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": "Enter your user"
+                        },
+                        {
+                            "id": "d8cc7177-bf35-4394-ab7b-881184bd8c8b",
+                            "name": "password",
+                            "displayName": "Password",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": "Enter your password"
+                        }
+                    ],
+                    "stateTypes":[
+                        {
+                            "id": "19f079f0-1654-44c3-ab10-e7d7f9742e09",
+                            "name": "reachable",
+                            "displayName": "Server Reachable",
+                            "displayNameEvent": "reachable status changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "1ae425b2-d642-42ca-be41-4d06dff5c5cd",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Connected changed",
+                            "displayNameAction": "Connect to Server",
+                            "writable": true
+                        },
+                        {
+                            "id": "d8bb619e-6602-4c89-8654-85e111520561",
+                            "name": "sshKey",
+                            "displayName": "SSH public key",
+                            "displayNameEvent": "SSH key changed",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+

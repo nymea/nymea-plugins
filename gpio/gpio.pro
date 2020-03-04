@@ -1,13 +1,13 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugingpio)
+TARGET = $$qtLibraryTarget(nymea_integrationplugingpio)
 
 SOURCES += \
-    deviceplugingpio.cpp \
+    integrationplugingpio.cpp \
     gpiodescriptor.cpp
 
 HEADERS += \
-    deviceplugingpio.h \
+    integrationplugingpio.h \
     gpiodescriptor.h
 
 

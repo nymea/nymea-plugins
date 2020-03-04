@@ -1,13 +1,13 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginwakeonlan)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginwakeonlan)
 
 QT += network
 
 SOURCES += \
-    devicepluginwakeonlan.cpp
+    integrationpluginwakeonlan.cpp
 
 HEADERS += \
-    devicepluginwakeonlan.h
+    integrationpluginwakeonlan.h
 
 

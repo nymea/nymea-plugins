@@ -4,10 +4,10 @@ QT += network
 
 PKGCONFIG += nymea-mqtt
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugintuya)
+TARGET = $$qtLibraryTarget(nymea_integrationplugintuya)
 
 SOURCES += \
-    deviceplugintuya.cpp \
+    integrationplugintuya.cpp \
 
 HEADERS += \
-    deviceplugintuya.h \
+    integrationplugintuya.h \

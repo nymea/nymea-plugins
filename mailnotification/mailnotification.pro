@@ -1,15 +1,15 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginmailnotification)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginmailnotification)
 
 QT+= network
 
 SOURCES += \
-    devicepluginmailnotification.cpp \
+    integrationpluginmailnotification.cpp \
     smtpclient.cpp
 
 HEADERS += \
-    devicepluginmailnotification.h \
+    integrationpluginmailnotification.h \
     smtpclient.h
 
 

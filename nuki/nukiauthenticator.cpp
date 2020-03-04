@@ -55,7 +55,7 @@ NukiAuthenticator::NukiAuthenticator(const QBluetoothHostInfo &hostInfo, Bluetoo
     m_debug = true;
 #endif
 
-    // Check if we have authentication data for this device and set initial state
+    // Check if we have authentication data for this thing and set initial state
     loadData();
     if (isValid()) {
         setState(AuthenticationStateAuthenticated);

@@ -38,7 +38,7 @@
 #include <QColor>
 
 #include "network/networkaccessmanager.h"
-#include "devices/device.h"
+#include "integrations/thing.h"
 
 class Nanoleaf : public QObject
 {

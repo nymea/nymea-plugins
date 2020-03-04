@@ -2,17 +2,17 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginnetworkdetector)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginnetworkdetector)
 
 SOURCES += \
-    devicepluginnetworkdetector.cpp \
+    integrationpluginnetworkdetector.cpp \
     host.cpp \
     discovery.cpp \
     devicemonitor.cpp \
     broadcastping.cpp
 
 HEADERS += \
-    devicepluginnetworkdetector.h \
+    integrationpluginnetworkdetector.h \
     host.h \
     discovery.h \
     devicemonitor.h \

@@ -1,0 +1,196 @@
+{
+    "name": "mqttclient",
+    "displayName": "MQTT client",
+    "id": "27c58205-07c8-4482-85ad-b435387803a5",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "id": "19117099-a5ef-44a1-b2bb-2efafe00f197",
+                    "name": "internalMqttClient",
+                    "displayName": "Internal MQTT client",
+                    "interfaces": ["inputtrigger", "outputtrigger"],
+                    "createMethods": ["user"],
+                    "paramTypes": [
+                        {
+                            "id": "4e91772a-82d8-498f-8b62-bba90a682e76",
+                            "name": "topicFilter",
+                            "displayName": "Subscription topic filter",
+                            "type": "QString",
+                            "defaultValue": "#"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "d4ea2a70-da5a-49e0-9f30-aac1334b6a02",
+                            "name": "triggered",
+                            "displayName": "Publish received",
+                            "paramTypes": [
+                                {
+                                    "id": "27ec8baf-0c13-4d0a-aaee-313582592695",
+                                    "name": "topic",
+                                    "displayName": "Topic",
+                                    "type": "QString"
+                                },
+                                {
+                                    "id": "8af98566-79d9-4e65-b1dc-9067e4f93af1",
+                                    "name": "data",
+                                    "displayName": "Playload",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "2f90ff12-dd67-4ddf-815d-330b4e2d56bf",
+                            "name": "trigger",
+                            "displayName": "Publish",
+                            "paramTypes": [
+                                {
+                                    "id": "bed321c2-a8c4-4420-b831-c4faa8501115",
+                                    "name": "topic",
+                                    "displayName": "Topic",
+                                    "type": "QString",
+                                    "defaultValue": "/"
+                                },
+                                {
+                                    "id": "5bff6492-e6c7-4e50-a1c1-69881250561d",
+                                    "name": "data",
+                                    "displayName": "Payload",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "b019b678-aaf1-46d0-a0f8-af2131f14e55",
+                                    "name": "qos",
+                                    "displayName": "QoS",
+                                    "type": "int",
+                                    "minValue": 0,
+                                    "maxValue": 2,
+                                    "defaultValue": 0
+                                },
+                                {
+                                    "id": "c2c6386e-5b7d-4a2a-a8e8-e9c259ba926b",
+                                    "name": "retain",
+                                    "displayName": "Retain message",
+                                    "type": "bool",
+                                    "defaultValue": false
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "e325b581-8d7f-446e-b761-67554c5aacd4",
+                    "name": "mqttClient",
+                    "displayName": "MQTT client",
+                    "interfaces": ["inputtrigger", "outputtrigger"],
+                    "createMethods": ["user"],
+                    "paramTypes": [
+                        {
+                            "id": "a9a97dd6-9f80-43eb-a956-f5f3e4c6e3e2",
+                            "name": "serverAddress",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "91973ede-b64e-4cae-ae67-6087df79eeb4",
+                            "name": "serverPort",
+                            "displayName": "Port",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 65535,
+                            "defaultValue": 1883
+                        },
+                        {
+                            "id": "ae19fcc2-80ae-4d3f-8bac-4cf0db98d9e7",
+                            "name": "username",
+                            "displayName": "Username",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "d8211599-52f7-46f6-a741-a7204b987309",
+                            "name": "password",
+                            "displayName": "Password",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "53e2715a-e72f-445a-ae6b-2ac4e6031114",
+                            "name": "topicFilter",
+                            "displayName": "Subscription topic filter",
+                            "type": "QString",
+                            "defaultValue": "#"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "243ec6ee-a72e-47e0-91dd-b9b918c43072",
+                            "name": "triggered",
+                            "displayName": "Publish received",
+                            "paramTypes": [
+                                {
+                                    "id": "bd83c7ec-3a14-46c6-a064-25757ceb0207",
+                                    "name": "topic",
+                                    "displayName": "Topic",
+                                    "type": "QString"
+                                },
+                                {
+                                    "id": "a947a277-a17a-4cb2-addb-f8ecec1cc63c",
+                                    "name": "data",
+                                    "displayName": "Playload",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "39df4723-c888-4a3f-a151-9408699a9d25",
+                            "name": "trigger",
+                            "displayName": "Publish",
+                            "paramTypes": [
+                                {
+                                    "id": "193655ec-1714-4ea0-b8ee-f1dc312f15d3",
+                                    "name": "topic",
+                                    "displayName": "Topic",
+                                    "type": "QString",
+                                    "defaultValue": "/"
+                                },
+                                {
+                                    "id": "a0e8989b-2797-4447-8d67-408382bfebae",
+                                    "name": "data",
+                                    "displayName": "Payload",
+                                    "type": "QString",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "4d2130be-8123-4103-b0bb-43ba876e147f",
+                                    "name": "qos",
+                                    "displayName": "QoS",
+                                    "type": "int",
+                                    "minValue": 0,
+                                    "maxValue": 2,
+                                    "defaultValue": 0
+                                },
+                                {
+                                    "id": "097774cc-7947-4eb1-bd30-ec4566afa628",
+                                    "name": "retain",
+                                    "displayName": "Retain message",
+                                    "type": "bool",
+                                    "defaultValue": false
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

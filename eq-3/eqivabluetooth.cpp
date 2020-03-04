@@ -210,7 +210,7 @@ int EqivaBluetooth::setTargetTemperature(qreal targetTemperature)
     if (targetTemperature == 4.5) {
         stream << static_cast<quint8>(4.5 * 2); // 4.5 degrees is off
     } else {
-        stream << static_cast<quint8>(targetTemperature * 2); // Temperature *2 (device only supports .5 precision)
+        stream << static_cast<quint8>(targetTemperature * 2); // Temperature *2 (thing only supports .5 precision)
         m_cachedTargetTemp = targetTemperature;
     }
     return enqueue("SetTargetTemperature", data);
@@ -271,7 +271,7 @@ void EqivaBluetooth::controllerStateChanged(const QLowEnergyController::Controll
 
     if (state == QLowEnergyController::UnconnectedState) {
         int delay = qMin(m_reconnectAttempt, 30);
-        qWarning(dcEQ3()) << m_name << "Eqiva device disconnected. Reconnecting in" << delay << "sec";
+        qWarning(dcEQ3()) << m_name << "Eqiva thing disconnected. Reconnecting in" << delay << "sec";
         m_available = false;
         emit availableChanged();
 
@@ -468,7 +468,7 @@ void EqivaBluetooth::characteristicChanged(const QLowEnergyCharacteristic &info,
     } else if (header == profileReadReply) {
         // Profile read not implemented...
     } else {
-        qCWarning(dcEQ3()) << m_name << "Unhandled notification from device:" << value.toHex();
+        qCWarning(dcEQ3()) << m_name << "Unhandled notification from thing:" << value.toHex();
     }
 
 }

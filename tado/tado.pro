@@ -2,13 +2,13 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugintado)
+TARGET = $$qtLibraryTarget(nymea_integrationplugintado)
 
 SOURCES += \
-    deviceplugintado.cpp \
+    integrationplugintado.cpp \
     tado.cpp
 
 HEADERS += \
-    deviceplugintado.h \
+    integrationplugintado.h \
     tado.h
 

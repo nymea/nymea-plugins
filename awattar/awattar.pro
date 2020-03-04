@@ -2,14 +2,14 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginawattar)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginawattar)
 
 SOURCES += \
-    devicepluginawattar.cpp \
+    integrationpluginawattar.cpp \
     heatpump.cpp
 
 HEADERS += \
-    devicepluginawattar.h \
+    integrationpluginawattar.h \
     heatpump.h
 
 
