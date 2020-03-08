@@ -1,1 +1,1 @@
-usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_devicepluginmailnotification.so
+usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_integrationpluginmailnotification.so

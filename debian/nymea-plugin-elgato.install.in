@@ -1,1 +1,1 @@
-usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_devicepluginelgato.so
+usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_integrationpluginelgato.so
