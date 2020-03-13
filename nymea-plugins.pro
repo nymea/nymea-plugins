@@ -4,6 +4,7 @@ PLUGIN_DIRS = \
     anel                \
     avahimonitor        \
     awattar             \
+    bluos               \
     boblight            \
     bose                \
     coinmarketcap       \
