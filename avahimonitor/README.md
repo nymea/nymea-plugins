@@ -3,8 +3,8 @@ id: AvahiMonitor
 title: Avahi Monitor
 ---
 
-This integration allows nymea to discover and monitor zeroconf services in the local area network. 
-Avahi is a free zeroconf implementation and is utilised by nymea. Inside nymea:app an added Avahi thing will appear as a presence sensor.
+This integration plug-in allows nymea to discover and monitor zeroconf services in the local area network. 
+Avahi is a free zeroconf implementation and is utilised by nymea. In nymea:app an added Avahi thing will appear as a presence sensor.
 
 ## Supported Things
 
