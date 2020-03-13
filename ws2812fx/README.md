@@ -24,6 +24,7 @@ over USB to the nymea device.
 * Arduino compatible hardware
 * Flashed with the WS2812FX serial_control firmware
 * Device connected over USB to the host system
+* The package “nymea-plugin-ws2812fx” must be installed
 
 ## More
 
