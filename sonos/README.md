@@ -3,7 +3,7 @@ id: sonos
 title: Sonos
 ---
 
-This plug-in allows to connect to Sonos speakers. 
+This plug-in allows to connect to Sonos speakers.
 
 ## Supported Things
 
