@@ -1,7 +1,4 @@
----
-id: CommandLauncher
-title: Application and script launcher
----
+# Application and script launcher
 
 This plugin allows you to execute system commands and start bash scripts.
 

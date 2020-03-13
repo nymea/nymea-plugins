@@ -1,7 +1,4 @@
----
-id: bose
-title: Bose SoundTouch
----
+# Bose SoundTouch
 
 This integration plug-in controls Bose SoundTouch speakers throught the local API.
 

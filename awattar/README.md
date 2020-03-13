@@ -1,4 +1,4 @@
-# aWattar
+# aWATTar
 
 This integration allows to receive the current energy market price from [aWATTar GmbH](https://www.awattar.com/). aWattar is currently available in Austria and Germany.
 

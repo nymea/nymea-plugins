@@ -1,7 +1,4 @@
----
-id: anelElektronik
-title: Anel-Elektronik AG
----
+# Anel-Elektronik AG
 
 This integration allows nymea to control ANEL Elektronik NET-PwrCtrl power sockets.
 Once a NET-PwrCtl device is added, the associated sockets appear as child devices. Deleting the NET-PwerCtl device will also remove the associated sockets. This means each socket can be named and will appear as an individual socket inside the nymea:app.

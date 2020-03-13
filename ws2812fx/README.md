@@ -1,7 +1,4 @@
----
-id: WS2812FX
-title: WS2812FX
----
+# WS2812FX
 
 Plug-In for the WS2812FX project, a WS2812 effect library for Arduino and ESP8266.
 Flash your microcontroller with the provided "serial_control" example. Connect the microcontroller

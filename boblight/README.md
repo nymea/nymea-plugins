@@ -1,7 +1,4 @@
----
-id: boblight
-title: Boblight
----
+# Boblight
 
 This plugin allows to communicate with a [Boblight server](https://code.google.com/p/boblight/)
 

@@ -1,7 +1,4 @@
----
-id: sonos
-title: Sonos
----
+# Sonos
 
 This plug-in allows to connect to Sonos speakers.
 
