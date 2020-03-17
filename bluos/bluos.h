@@ -80,6 +80,7 @@ public:
       RepeatMode Repeat;
       bool Shuffle;
       QUrl Image;
+      QString Group;
     };
 
     struct Preset {
@@ -142,6 +143,8 @@ signals:
 
     void statusReceived(const StatusResponse &status);
     void volumeReceived(int volume, bool mute);
+    void shuffleStateReceived(bool state);
+    void repeatModeReceived(RepeatMode mode);
 
     void presetsReceived(QUuid requestId, const QList<Preset> &presets);
     void sourcesReceived(QUuid requestId, const QList<Source> &sources);

@@ -47,11 +47,6 @@ IntegrationPluginBluOS::IntegrationPluginBluOS()
 
 }
 
-IntegrationPluginBluOS::~IntegrationPluginBluOS()
-{
-
-}
-
 void IntegrationPluginBluOS::init()
 {
     m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_musc._tcp");
@@ -99,13 +94,14 @@ void IntegrationPluginBluOS::setupThing(ThingSetupInfo *info)
         connect(bluos, &BluOS::volumeReceived, this, &IntegrationPluginBluOS::onVolumeReceived);
         connect(bluos, &BluOS::presetsReceived, this, &IntegrationPluginBluOS::onPresetsReceived);
         connect(bluos, &BluOS::sourcesReceived, this, &IntegrationPluginBluOS::onSourcesReceived);
+        connect(bluos, &BluOS::shuffleStateReceived, this, &IntegrationPluginBluOS::onShuffleStateReceived);
+        connect(bluos, &BluOS::repeatModeReceived, this, &IntegrationPluginBluOS::onRepeatModeReceived);
 
         m_asyncSetup.insert(bluos, info);
         bluos->getStatus();
         // In case the setup is cancelled before we finish it...
         connect(info, &QObject::destroyed, this, [this, bluos]() {
             m_asyncSetup.remove(bluos);
-
         });
         return;
     } else {
@@ -242,10 +238,10 @@ void IntegrationPluginBluOS::browseThing(BrowseResult *result)
             presetItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconMusicLibrary);
             result->addItem(presetItem);
 
-            MediaBrowserItem groupingItem("grouping", "Grouping", true, false);
-            groupingItem.setIcon(BrowserItem::BrowserIcon::BrowserIconApplication);
-            groupingItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconNetwork);
-            result->addItem(groupingItem);
+            // MediaBrowserItem groupingItem("grouping", "Grouping", true, false);
+            // groupingItem.setIcon(BrowserItem::BrowserIcon::BrowserIconApplication);
+            // groupingItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconNetwork);
+            // result->addItem(groupingItem);
 
             QUuid requestId = bluos->getSources();
             m_asyncBrowseResults.insert(requestId, result);
@@ -364,6 +360,7 @@ void IntegrationPluginBluOS::onStatusResponseReceived(const BluOS::StatusRespons
         thing->setStateValue(bluosPlayerRepeatStateTypeId, "None");
         break;
     }
+    thing->setStateValue(bluosPlayerGroupStateTypeId, status.Group);
 }
 
 void IntegrationPluginBluOS::onActionExecuted(QUuid requestId, bool success)
@@ -395,6 +392,35 @@ void IntegrationPluginBluOS::onVolumeReceived(int volume, bool mute)
         return;
     thing->setStateValue(bluosPlayerMuteStateTypeId, mute);
     thing->setStateValue(bluosPlayerVolumeStateTypeId, volume);
+}
+
+void IntegrationPluginBluOS::onShuffleStateReceived(bool state)
+{
+    BluOS *bluos = static_cast<BluOS*>(sender());
+    Thing *thing = myThings().findById(m_bluos.key(bluos));
+    if (!thing)
+        return;
+   thing->setStateValue(bluosPlayerShuffleStateTypeId, state);
+}
+
+void IntegrationPluginBluOS::onRepeatModeReceived(BluOS::RepeatMode mode)
+{
+    BluOS *bluos = static_cast<BluOS*>(sender());
+    Thing *thing = myThings().findById(m_bluos.key(bluos));
+    if (!thing)
+        return;
+    switch (mode) {
+    case BluOS::RepeatMode::All:
+        thing->setStateValue(bluosPlayerRepeatStateTypeId, "All");
+        break;
+    case BluOS::RepeatMode::One:
+        thing->setStateValue(bluosPlayerRepeatStateTypeId, "One");
+        break;
+    case BluOS::RepeatMode::None:
+        thing->setStateValue(bluosPlayerRepeatStateTypeId, "None");
+        break;
+    }
+
 }
 
 void IntegrationPluginBluOS::onPresetsReceived(QUuid requestId, const QList<BluOS::Preset> &presets)
@@ -444,6 +470,7 @@ void IntegrationPluginBluOS::onSourcesReceived(QUuid requestId, const QList<BluO
             if (source.Text == "Bluetooth") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconBluetooth);
             } else if (source.Text == "Spotify") {
+                item.setExecutable(false);
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconSpotify);
                 item.setDescription("Open the Spotify App for browsing");
             } else if (source.Text == "TuneIn") {

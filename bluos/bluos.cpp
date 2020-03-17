@@ -220,6 +220,19 @@ QUuid BluOS::setShuffle(bool shuffle)
         }
         emit connectionChanged(true);
         emit actionExecuted(requestId, true);
+
+        QXmlStreamReader xml;
+        xml.addData(reply->readAll());
+        if (xml.hasError()) {
+            qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
+            return;
+        }
+        if (xml.readNextStartElement()) {
+            if (xml.attributes().hasAttribute("shuffle")) {
+                bool shuffle = RepeatMode(xml.attributes().value("shuffle").toInt());
+                emit shuffleStateReceived(shuffle);
+            }
+        }
     });
     return requestId;
 }
@@ -254,6 +267,21 @@ QUuid BluOS::setRepeat(RepeatMode repeatMode)
         }
         emit connectionChanged(true);
         emit actionExecuted(requestId, true);
+
+        QXmlStreamReader xml;
+        xml.addData(reply->readAll());
+        if (xml.hasError()) {
+            qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
+            return;
+        }
+        if (xml.readNextStartElement()) {
+            if (xml.name() == "playlist") {
+                if (xml.attributes().hasAttribute("repeat")) {
+                    RepeatMode mode = RepeatMode(xml.attributes().value("repeat").toInt());
+                    emit repeatModeReceived(mode);
+                }
+            }
+        }
     });
     return requestId;
 }
@@ -652,6 +680,8 @@ bool BluOS::parseState(const QByteArray &state)
                     statusResponse.Image = xml.readElementText();
                 } else if(xml.name() == "title1") {
                     statusResponse.Title = xml.readElementText();
+                } else if(xml.name() == "group") {
+                    statusResponse.Group = xml.readElementText();
                 } else {
                     xml.skipCurrentElement();
                 }

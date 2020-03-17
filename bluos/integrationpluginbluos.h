@@ -52,7 +52,6 @@ class IntegrationPluginBluOS: public IntegrationPlugin
 
 public:
     explicit IntegrationPluginBluOS();
-    ~IntegrationPluginBluOS();
 
     void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
@@ -83,6 +82,8 @@ private slots:
     void onStatusResponseReceived(const BluOS::StatusResponse &status);
     void onActionExecuted(QUuid actionId, bool success);
     void onVolumeReceived(int volume, bool mute);
+    void onShuffleStateReceived(bool state);
+    void onRepeatModeReceived(BluOS::RepeatMode mode);
 
     void onPresetsReceived(QUuid requestId, const QList<BluOS::Preset> &presets);
     void onSourcesReceived(QUuid requestId, const QList<BluOS::Source> &sources);
