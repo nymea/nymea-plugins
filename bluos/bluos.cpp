@@ -78,7 +78,7 @@ QUuid BluOS::getStatus()
         }
         emit connectionChanged(true);
         QByteArray data = reply->readAll();
-        qCDebug(dcBluOS()) << "Get Status:" << data;
+        //qCDebug(dcBluOS()) << "Get Status:" << data;
         parseState(data);
     });
     return requestId;
@@ -283,8 +283,9 @@ QUuid BluOS::listPresets()
         }
         emit connectionChanged(true);
 
+        QByteArray data = reply->readAll();
         QXmlStreamReader xml;
-        xml.addData(reply->readAll());
+        xml.addData(data);
         if (xml.hasError()) {
             qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
             return;
@@ -298,12 +299,13 @@ QUuid BluOS::listPresets()
                         if (xml.attributes().hasAttribute("id")) {
                             preset.Id = xml.attributes().value("id").toInt();
                         }
-                         if (xml.attributes().hasAttribute("name")) {
-                             preset.Name = xml.attributes().value("name").toString();
-                         }
-                         if (xml.attributes().hasAttribute("url")) {
+                        if (xml.attributes().hasAttribute("name")) {
+                            preset.Name = xml.attributes().value("name").toString();
+                        }
+                        if (xml.attributes().hasAttribute("url")) {
                             preset.Url = xml.attributes().value("url").toString();
-                         }
+                        }
+                        qCDebug(dcBluOS()) << "Preset text" << xml.readElementText(); //apparently the text must be read so the xml parser recognises the next element
                         presetList.append(preset);
                     } else {
                         xml.skipCurrentElement();
@@ -325,12 +327,13 @@ QUuid BluOS::loadPreset(int preset)
     url.setScheme("http");
     url.setHost(m_hostAddress.toString());
     url.setPort(m_port);
-    url.setPath("/Presets");
+    url.setPath("/Preset");
     QUrlQuery query;
     query.addQueryItem("id", QString::number(preset));
     url.setQuery(query);
+    qCDebug(dcBluOS()) << "Loading preset" << url.toString();
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
-    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
@@ -339,11 +342,12 @@ QUuid BluOS::loadPreset(int preset)
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
-
+            emit actionExecuted(requestId, false);
             qCWarning(dcBluOS()) << "Request error:" << status << reply->errorString();
             return;
         }
         emit connectionChanged(true);
+        emit actionExecuted(requestId, true);
     });
     return requestId;
 }
@@ -358,7 +362,7 @@ QUuid BluOS::getSources()
     url.setPort(m_port);
     url.setPath("/Browse");
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
-    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
@@ -367,11 +371,110 @@ QUuid BluOS::getSources()
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 emit connectionChanged(false);
             }
-
             qCWarning(dcBluOS()) << "Request error:" << status << reply->errorString();
             return;
         }
         emit connectionChanged(true);
+        QByteArray data = reply->readAll();
+        qCDebug(dcBluOS()) << "Sources: " << data;
+        QXmlStreamReader xml;
+        xml.addData(data);
+        if (xml.hasError()) {
+            qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
+            return;
+        }
+        QList<Source> sourceList;
+        if (xml.readNextStartElement()) {
+            if (xml.name() == "browse") {
+                while(xml.readNextStartElement()){
+                    if(xml.name() == "item"){
+                        Source source;
+                        if (xml.attributes().hasAttribute("text")) {
+                            source.Text = xml.attributes().value("text").toString();
+                        }
+                        if (xml.attributes().hasAttribute("type")) {
+                            source.Type = xml.attributes().value("type").toString();
+                        }
+                        if (xml.attributes().hasAttribute("browseKey")) {
+                            source.BrowseKey = xml.attributes().value("browseKey").toString();
+                        }
+                        if (xml.attributes().hasAttribute("image")) {
+                            source.Image = xml.attributes().value("image").toString();
+                        }
+                        qCDebug(dcBluOS()) << "Source text" << xml.readElementText();
+                        sourceList.append(source);
+                    } else {
+                        xml.skipCurrentElement();
+                    }
+                }
+            }
+        }
+        emit sourcesReceived(requestId, sourceList);
+    });
+    return requestId;
+}
+
+QUuid BluOS::browseSource(const QString &key)
+{
+    QUuid requestId = QUuid::createUuid();
+
+    QUrl url;
+    url.setScheme("http");
+    url.setHost(m_hostAddress.toString());
+    url.setPort(m_port);
+    url.setPath("/Browse");
+    QUrlQuery query;
+    query.addQueryItem("key", key);
+    url.setQuery(query);
+    QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+            qCWarning(dcBluOS()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+        emit connectionChanged(true);
+        QByteArray data = reply->readAll();
+        qCDebug(dcBluOS()) << "Browse result: " << data;
+        QXmlStreamReader xml;
+        xml.addData(data);
+        if (xml.hasError()) {
+            qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
+            return;
+        }
+        QList<Source> sourceList;
+        if (xml.readNextStartElement()) {
+            if (xml.name() == "browse") {
+                while(xml.readNextStartElement()){
+                    if(xml.name() == "item"){
+                        Source source;
+                        if (xml.attributes().hasAttribute("text")) {
+                            source.Text = xml.attributes().value("text").toString();
+                        }
+                        if (xml.attributes().hasAttribute("type")) {
+                            source.Type = xml.attributes().value("type").toString();
+                        }
+                        if (xml.attributes().hasAttribute("browseKey")) {
+                            source.BrowseKey = xml.attributes().value("browseKey").toString();
+                        }
+                        if (xml.attributes().hasAttribute("image")) {
+                            source.Image = xml.attributes().value("image").toString();
+                        }
+                        qCDebug(dcBluOS()) << "Source text" << xml.readElementText();
+                        sourceList.append(source);
+                    } else {
+                        xml.skipCurrentElement();
+                    }
+                }
+            }
+        }
+        emit sourcesReceived(requestId, sourceList);
     });
     return requestId;
 }

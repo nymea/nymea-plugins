@@ -122,6 +122,7 @@ public:
     
     // Content Browsing
     QUuid getSources();
+    QUuid browseSource(const QString &key);
     
     // Player Grouping
     QUuid addGroupPlayer(QHostAddress address, int port); //adds player as slave
@@ -144,5 +145,6 @@ signals:
 
     void presetsReceived(QUuid requestId, const QList<Preset> &presets);
     void sourcesReceived(QUuid requestId, const QList<Source> &sources);
+    void browseResultReceived(QUuid requestId, const QList<Source> &sources);
 };
 #endif // BLUOS_H

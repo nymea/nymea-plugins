@@ -232,18 +232,26 @@ void IntegrationPluginBluOS::browseThing(BrowseResult *result)
             QUuid requestId = bluos->listPresets();
             m_asyncBrowseResults.insert(requestId, result);
             connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
-        } else {
+        } else if (result->itemId() == "grouping") {
+            //TODO avahi discovery
+            // m_asyncBrowseResults.insert(requestId, result);
+            //connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
+        } else if (result->itemId().isEmpty()) {
             MediaBrowserItem presetItem("presets", "Presets", true, false);
             presetItem.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
             presetItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconMusicLibrary);
             result->addItem(presetItem);
 
             MediaBrowserItem groupingItem("grouping", "Grouping", true, false);
-            presetItem.setIcon(BrowserItem::BrowserIcon::BrowserIconApplication);
-            presetItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconNetwork);
-            result->addItem(presetItem);
+            groupingItem.setIcon(BrowserItem::BrowserIcon::BrowserIconApplication);
+            groupingItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconNetwork);
+            result->addItem(groupingItem);
 
             QUuid requestId = bluos->getSources();
+            m_asyncBrowseResults.insert(requestId, result);
+            connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
+        } else {
+            QUuid requestId = bluos->browseSource(result->itemId());
             m_asyncBrowseResults.insert(requestId, result);
             connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
         }
@@ -274,7 +282,24 @@ void IntegrationPluginBluOS::browserItem(BrowserItemResult *result)
 
 void IntegrationPluginBluOS::executeBrowserItem(BrowserActionInfo *info)
 {
-    Q_UNUSED(info)
+    Thing *thing = info->thing();
+    if (thing->thingClassId() == bluosPlayerThingClassId) {
+        BluOS *bluos = m_bluos.value(thing->id());
+        if (!bluos)
+            return;
+
+        if (info->browserAction().itemId().startsWith("presets")) {
+            QUuid requestId;
+            int presetId = info->browserAction().itemId().split("&").last().toInt();
+            requestId = bluos->loadPreset(presetId);
+            m_asyncExecuteBrowseItems.insert(requestId, info);
+            connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBrowseItems.remove(requestId);});
+        } else  if (info->browserAction().itemId().startsWith("grouping")) {
+            //TODO Grouping
+        } else {
+            //TODO Sources
+        }
+    }
 }
 
 void IntegrationPluginBluOS::onConnectionChanged(bool connected)
@@ -351,6 +376,15 @@ void IntegrationPluginBluOS::onActionExecuted(QUuid requestId, bool success)
             info->finish(Thing::ThingErrorHardwareNotAvailable);
         }
     }
+    if (m_asyncExecuteBrowseItems.contains(requestId)) {
+        BrowserActionInfo *info = m_asyncExecuteBrowseItems.take(requestId);
+        if (success) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            info->finish(Thing::ThingErrorHardwareFailure);
+        }
+        m_pluginTimer->timeout(); // get a status update
+    }
 }
 
 void IntegrationPluginBluOS::onVolumeReceived(int volume, bool mute)
@@ -369,10 +403,10 @@ void IntegrationPluginBluOS::onPresetsReceived(QUuid requestId, const QList<BluO
     Thing *thing = myThings().findById(m_bluos.key(bluos));
     if (!thing)
         return;
-    Q_UNUSED(presets)
     if (m_asyncBrowseResults.contains(requestId)) {
         BrowseResult *result = m_asyncBrowseResults.take(requestId);
         foreach(BluOS::Preset preset, presets) {
+            qCDebug(dcBluOS()) << "Preset added" << preset.Name << preset.Id << preset.Url;
             BrowserItem item("presets&"+QString::number(preset.Id), preset.Name, false, true);
             item.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
             result->addItem(item);
@@ -394,9 +428,63 @@ void IntegrationPluginBluOS::onSourcesReceived(QUuid requestId, const QList<BluO
     if (m_asyncBrowseResults.contains(requestId)) {
         BrowseResult *result = m_asyncBrowseResults.take(requestId);
         foreach(BluOS::Source source, sources) {
-            BrowserItem item(source.BrowseKey, source.Text, false, true);
-            item.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
-            //TODO set media icons
+            qCDebug(dcBluOS()) << "Source added" << source.Text << source.BrowseKey << source.Type;
+            MediaBrowserItem item;
+            item.setDisplayName(source.Text);
+            if (source.BrowseKey.isEmpty()) {
+                item.setBrowsable(false);
+                item.setExecutable(true);
+                item.setId(source.Text);
+            } else {
+                item.setBrowsable(true);
+                item.setExecutable(false);
+                item.setId(source.BrowseKey);
+            }
+            item.setIcon(BrowserItem::BrowserIconMusic);
+            if (source.Text == "Bluetooth") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconBluetooth);
+            } else if (source.Text == "Spotify") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconSpotify);
+                item.setDescription("Open the Spotify App for browsing");
+            } else if (source.Text == "TuneIn") {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTuneIn);
+            } else if (source.Text.contains("Aux")) {
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
+            } else if (source.Text == "Radio Paradise") {
+                //item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRadioParadise);
+            }
+            result->addItem(item);
+        }
+        result->finish(Thing::ThingErrorNoError);
+    }
+    if (m_asyncBrowseItemResults.contains(requestId)) {
+        BrowserItemResult *result = m_asyncBrowseItemResults.take(requestId);
+        Q_UNUSED(result)
+    }
+}
+
+void IntegrationPluginBluOS::onBrowseResultReceived(QUuid requestId, const QList<BluOS::Source> &sources)
+{
+    BluOS *bluos = static_cast<BluOS*>(sender());
+    Thing *thing = myThings().findById(m_bluos.key(bluos));
+    if (!thing)
+        return;
+    if (m_asyncBrowseResults.contains(requestId)) {
+        BrowseResult *result = m_asyncBrowseResults.take(requestId);
+        foreach(BluOS::Source source, sources) {
+            qCDebug(dcBluOS()) << "Source added" << source.Text << source.BrowseKey << source.Type;
+            MediaBrowserItem item;
+            item.setDisplayName(source.Text);
+            if (source.BrowseKey.isEmpty()) {
+                item.setBrowsable(false);
+                item.setExecutable(true);
+                item.setId(source.Text);
+            } else {
+                item.setBrowsable(true);
+                item.setExecutable(false);
+                item.setId(source.BrowseKey);
+            }
+            item.setIcon(BrowserItem::BrowserIconMusic);
             result->addItem(item);
         }
         result->finish(Thing::ThingErrorNoError);

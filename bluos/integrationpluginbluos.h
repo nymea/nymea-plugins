@@ -86,6 +86,6 @@ private slots:
 
     void onPresetsReceived(QUuid requestId, const QList<BluOS::Preset> &presets);
     void onSourcesReceived(QUuid requestId, const QList<BluOS::Source> &sources);
+    void onBrowseResultReceived(QUuid requestId, const QList<BluOS::Source> &sources);
 };
-
 #endif // INTEGRATIONPLUGINBLUOS_H
