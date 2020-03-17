@@ -58,25 +58,42 @@ public:
         None
     };
 
+    enum PlaybackState {
+        Playing,
+        Paused,
+        Stopped,
+        Connecting,
+        Streaming
+    };
+
     struct StatusResponse {
       QString Album;
       QString Artist;
       QString Name;
+      QString Title;
       QString Service;
       QUrl ServiceIcon;
-      QString PlaybackState;
+      PlaybackState State;
       QUrl StationUrl;
       int Volume;
       bool Mute;
       RepeatMode Repeat;
       bool Shuffle;
+      QUrl Image;
     };
 
     struct Preset {
-        int Prid;
-        QString name;
+        QString Name;
         int Id;
-        QString url;
+        QString Url;
+    };
+
+    struct Source {
+        //<item image="/images/ci_myplaylists.png" browseKey="playlists" text="Playlists" type="link"/>
+        QString Image;
+        QString BrowseKey;
+        QString Text;
+        QString Type;
     };
 
     explicit BluOS(NetworkAccessManager *networkManager, QHostAddress hostAddress, int port, QObject *parent = nullptr);
@@ -104,6 +121,7 @@ public:
     QUuid loadPreset(int preset); //1 for next preset, -1 for previous preset
     
     // Content Browsing
+    QUuid getSources();
     
     // Player Grouping
     QUuid addGroupPlayer(QHostAddress address, int port); //adds player as slave
@@ -115,13 +133,16 @@ private:
     NetworkAccessManager *m_networkManager = nullptr;
 
     QUuid playBackControl(PlaybackCommand command);
+    bool parseState(const QByteArray &state);
 
 signals:
     void connectionChanged(bool connected);
     void actionExecuted(QUuid actionId, bool success);
 
-    void presetsReceived(const QList<Preset> &presets);
     void statusReceived(const StatusResponse &status);
     void volumeReceived(int volume, bool mute);
+
+    void presetsReceived(QUuid requestId, const QList<Preset> &presets);
+    void sourcesReceived(QUuid requestId, const QList<Source> &sources);
 };
 #endif // BLUOS_H

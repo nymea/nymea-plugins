@@ -36,6 +36,7 @@
 #include "integrations/integrationplugin.h"
 #include "platform/platformzeroconfcontroller.h"
 #include "network/zeroconf/zeroconfservicebrowser.h"
+#include "plugintimer.h"
 
 #include <QUdpSocket>
 #include <QNetworkAccessManager>
@@ -82,6 +83,9 @@ private slots:
     void onStatusResponseReceived(const BluOS::StatusResponse &status);
     void onActionExecuted(QUuid actionId, bool success);
     void onVolumeReceived(int volume, bool mute);
+
+    void onPresetsReceived(QUuid requestId, const QList<BluOS::Preset> &presets);
+    void onSourcesReceived(QUuid requestId, const QList<BluOS::Source> &sources);
 };
 
 #endif // INTEGRATIONPLUGINBLUOS_H

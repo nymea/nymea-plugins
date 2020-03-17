@@ -33,7 +33,8 @@
 #include "plugininfo.h"
 #include "integrations/thing.h"
 #include "network/networkaccessmanager.h"
-
+#include "types/mediabrowseritem.h"
+#include "types/browseritem.h"
 
 #include <QDebug>
 #include <QStringList>
@@ -95,6 +96,9 @@ void IntegrationPluginBluOS::setupThing(ThingSetupInfo *info)
         connect(bluos, &BluOS::connectionChanged, this, &IntegrationPluginBluOS::onConnectionChanged);
         connect(bluos, &BluOS::statusReceived, this, &IntegrationPluginBluOS::onStatusResponseReceived);
         connect(bluos, &BluOS::actionExecuted, this, &IntegrationPluginBluOS::onActionExecuted);
+        connect(bluos, &BluOS::volumeReceived, this, &IntegrationPluginBluOS::onVolumeReceived);
+        connect(bluos, &BluOS::presetsReceived, this, &IntegrationPluginBluOS::onPresetsReceived);
+        connect(bluos, &BluOS::sourcesReceived, this, &IntegrationPluginBluOS::onSourcesReceived);
 
         m_asyncSetup.insert(bluos, info);
         bluos->getStatus();
@@ -114,8 +118,12 @@ void IntegrationPluginBluOS::postSetupThing(Thing *thing)
     Q_UNUSED(thing);
 
     if (!m_pluginTimer) {
-        //m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(2);
-        //connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginBluOS::onPluginTimer);
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_pluginTimer, &PluginTimer::timeout, [this] {
+            foreach(BluOS *bluos, m_bluos) {
+                bluos->getStatus();
+            }
+        });
     }
 }
 
@@ -148,6 +156,8 @@ void IntegrationPluginBluOS::executeAction(ThingActionInfo *info)
                 requestId = bluos->pause();
             } else if (playbakStatus == "Stopped") {
                 requestId = bluos->stop();
+            } else {
+                qCWarning(dcBluOS()) << "Unhandled Playback mode";
             }
             m_asyncActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
@@ -183,7 +193,7 @@ void IntegrationPluginBluOS::executeAction(ThingActionInfo *info)
             connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == bluosPlayerShuffleActionTypeId) {
             bool shuffle = action.param(bluosPlayerShuffleActionShuffleParamTypeId).value().toBool();
-            QUuid requestId = bluos->setMute(shuffle);
+            QUuid requestId = bluos->setShuffle(shuffle);
             m_asyncActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
         }  else if (action.actionTypeId() == bluosPlayerRepeatActionTypeId) {
@@ -195,6 +205,8 @@ void IntegrationPluginBluOS::executeAction(ThingActionInfo *info)
                 requestId = bluos->setRepeat(BluOS::RepeatMode::All);
             } else if (repeat == "None") {
                 requestId = bluos->setRepeat(BluOS::RepeatMode::None);
+            } else {
+                qCWarning(dcBluOS()) << "Unhandled Repeat Mode";
             }
             m_asyncActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
@@ -210,12 +222,54 @@ void IntegrationPluginBluOS::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginBluOS::browseThing(BrowseResult *result)
 {
-    Q_UNUSED(result)
+    Thing *thing = result->thing();
+    if (thing->thingClassId() == bluosPlayerThingClassId) {
+        BluOS *bluos = m_bluos.value(thing->id());
+        if (!bluos) {
+            return;
+        }
+        if (result->itemId() == "presets") {
+            QUuid requestId = bluos->listPresets();
+            m_asyncBrowseResults.insert(requestId, result);
+            connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
+        } else {
+            MediaBrowserItem presetItem("presets", "Presets", true, false);
+            presetItem.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
+            presetItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconMusicLibrary);
+            result->addItem(presetItem);
+
+            MediaBrowserItem groupingItem("grouping", "Grouping", true, false);
+            presetItem.setIcon(BrowserItem::BrowserIcon::BrowserIconApplication);
+            presetItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconNetwork);
+            result->addItem(presetItem);
+
+            QUuid requestId = bluos->getSources();
+            m_asyncBrowseResults.insert(requestId, result);
+            connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
+        }
+    }
 }
 
 void IntegrationPluginBluOS::browserItem(BrowserItemResult *result)
 {
-    Q_UNUSED(result)
+    Thing *thing = result->thing();
+    if (thing->thingClassId() == bluosPlayerThingClassId) {
+        BluOS *bluos = m_bluos.value(thing->id());
+        if (!bluos) {
+            return;
+        }
+        if (result->itemId() == "presets") {
+            QUuid requestId = bluos->listPresets();
+            m_asyncBrowseItemResults.insert(requestId, result);
+            connect(result, &BrowserItemResult::aborted, this, [this, requestId]{m_asyncBrowseItemResults.remove(requestId);});
+        } else {
+            BrowserItem presetItem("presets", "Presets", true, false);
+            presetItem.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
+            QUuid requestId = bluos->getSources();
+            m_asyncBrowseItemResults.insert(requestId, result);
+            connect(result, &BrowserItemResult::aborted, this, [this, requestId]{m_asyncBrowseItemResults.remove(requestId);});
+        }
+    }
 }
 
 void IntegrationPluginBluOS::executeBrowserItem(BrowserActionInfo *info)
@@ -231,9 +285,10 @@ void IntegrationPluginBluOS::onConnectionChanged(bool connected)
         ThingSetupInfo *info = m_asyncSetup.take(bluos);
         if (connected) {
             m_bluos.insert(info->thing()->id(), bluos);
+            info->thing()->setStateValue(bluosPlayerConnectedStateTypeId, true);
             info->finish(Thing::ThingErrorNoError);
         } else {
-            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            info->finish(Thing::ThingErrorSetupFailed);
         }
     } else {
         Thing *thing = myThings().findById(m_bluos.key(bluos));
@@ -251,23 +306,38 @@ void IntegrationPluginBluOS::onStatusResponseReceived(const BluOS::StatusRespons
         return;
     thing->setStateValue(bluosPlayerArtistStateTypeId, status.Artist);
     thing->setStateValue(bluosPlayerCollectionStateTypeId, status.Album);
-    thing->setStateValue(bluosPlayerTitleStateTypeId, status.Name);
+    thing->setStateValue(bluosPlayerTitleStateTypeId, status.Title);
     thing->setStateValue(bluosPlayerSourceStateTypeId, status.Service);
-    thing->setStateValue(bluosPlayerArtworkStateTypeId, status.ServiceIcon);
-    thing->setStateValue(bluosPlayerPlaybackStatusStateTypeId, status.PlaybackState);
+    thing->setStateValue(bluosPlayerArtworkStateTypeId, status.Image);
+    switch (status.State) {
+    case BluOS::PlaybackState::Playing:
+    case BluOS::PlaybackState::Streaming:
+        thing->setStateValue(bluosPlayerPlaybackStatusStateTypeId, "Playing");
+        break;
+    case BluOS::PlaybackState::Paused:
+        thing->setStateValue(bluosPlayerPlaybackStatusStateTypeId, "Paused");
+        break;
+    case BluOS::PlaybackState::Stopped:
+        thing->setStateValue(bluosPlayerPlaybackStatusStateTypeId, "Stopped");
+        break;
+    default:
+        thing->setStateValue(bluosPlayerPlaybackStatusStateTypeId, "Stopped");
+        break;
+    }
+
     thing->setStateValue(bluosPlayerMuteStateTypeId, status.Mute);
     thing->setStateValue(bluosPlayerVolumeStateTypeId, status.Volume);
     thing->setStateValue(bluosPlayerShuffleStateTypeId, status.Shuffle);
     switch (status.Repeat) {
-        case BluOS::RepeatMode::All:
+    case BluOS::RepeatMode::All:
         thing->setStateValue(bluosPlayerRepeatStateTypeId, "All");
         break;
     case BluOS::RepeatMode::One:
         thing->setStateValue(bluosPlayerRepeatStateTypeId, "One");
-    break;
+        break;
     case BluOS::RepeatMode::None:
         thing->setStateValue(bluosPlayerRepeatStateTypeId, "None");
-    break;
+        break;
     }
 }
 
@@ -291,4 +361,44 @@ void IntegrationPluginBluOS::onVolumeReceived(int volume, bool mute)
         return;
     thing->setStateValue(bluosPlayerMuteStateTypeId, mute);
     thing->setStateValue(bluosPlayerVolumeStateTypeId, volume);
+}
+
+void IntegrationPluginBluOS::onPresetsReceived(QUuid requestId, const QList<BluOS::Preset> &presets)
+{
+    BluOS *bluos = static_cast<BluOS*>(sender());
+    Thing *thing = myThings().findById(m_bluos.key(bluos));
+    if (!thing)
+        return;
+    Q_UNUSED(presets)
+    if (m_asyncBrowseResults.contains(requestId)) {
+        BrowseResult *result = m_asyncBrowseResults.take(requestId);
+        foreach(BluOS::Preset preset, presets) {
+            BrowserItem item("presets&"+QString::number(preset.Id), preset.Name, false, true);
+            item.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
+            result->addItem(item);
+        }
+        result->finish(Thing::ThingErrorNoError);
+    }
+    if (m_asyncBrowseItemResults.contains(requestId)) {
+        BrowserItemResult *result = m_asyncBrowseItemResults.take(requestId);
+        Q_UNUSED(result)
+    }
+}
+
+void IntegrationPluginBluOS::onSourcesReceived(QUuid requestId, const QList<BluOS::Source> &sources)
+{
+    BluOS *bluos = static_cast<BluOS*>(sender());
+    Thing *thing = myThings().findById(m_bluos.key(bluos));
+    if (!thing)
+        return;
+    if (m_asyncBrowseResults.contains(requestId)) {
+        BrowseResult *result = m_asyncBrowseResults.take(requestId);
+        foreach(BluOS::Source source, sources) {
+            BrowserItem item(source.BrowseKey, source.Text, false, true);
+            item.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
+            //TODO set media icons
+            result->addItem(item);
+        }
+        result->finish(Thing::ThingErrorNoError);
+    }
 }

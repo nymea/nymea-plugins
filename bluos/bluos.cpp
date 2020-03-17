@@ -77,44 +77,9 @@ QUuid BluOS::getStatus()
             return;
         }
         emit connectionChanged(true);
-        QXmlStreamReader xml;
-        xml.addData(reply->readAll());
-        if (xml.hasError()) {
-            qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
-        }
-
-        StatusResponse statusResponse;
-        if (xml.readNextStartElement()) {
-            if (xml.name() == "status") {
-                while(xml.readNextStartElement()){
-                    if(xml.name() == "artist"){
-                    } else if(xml.name() == "artist"){
-                        statusResponse.Artist = xml.readElementText();
-                    } else if(xml.name() == "album"){
-                        statusResponse.Album = xml.readElementText();
-                    } else if(xml.name() == "name"){
-                        statusResponse.Name = xml.readElementText();
-                    } else if(xml.name() == "service"){
-                        statusResponse.Service = xml.readElementText();
-                    } else if(xml.name() == "serviceIcon"){
-                        statusResponse.ServiceIcon = xml.readElementText();
-                    } else if(xml.name() == "shuffle"){
-                        statusResponse.Shuffle = xml.readElementText().toInt();
-                    } else if(xml.name() == "repeat"){
-                        statusResponse.Shuffle = xml.readElementText().toInt();
-                    } else if(xml.name() == "state"){
-                        statusResponse.PlaybackState = xml.readElementText().toInt();
-                    } else if(xml.name() == "volume"){
-                        statusResponse.Volume = xml.readElementText().toInt();
-                    } else if(xml.name() == "mute"){
-                        statusResponse.Mute = xml.readElementText().toInt();
-                    }  else {
-                        xml.skipCurrentElement();
-                    }
-                }
-            }
-        }
-        emit statusReceived(statusResponse);
+        QByteArray data = reply->readAll();
+        qCDebug(dcBluOS()) << "Get Status:" << data;
+        parseState(data);
     });
     return requestId;
 }
@@ -303,6 +268,68 @@ QUuid BluOS::listPresets()
     url.setPort(m_port);
     url.setPath("/Presets");
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
+        reply->deleteLater();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+                emit connectionChanged(false);
+            }
+
+            qCWarning(dcBluOS()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+        emit connectionChanged(true);
+
+        QXmlStreamReader xml;
+        xml.addData(reply->readAll());
+        if (xml.hasError()) {
+            qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
+            return;
+        }
+        QList<Preset> presetList;
+        if (xml.readNextStartElement()) {
+            if (xml.name() == "presets") {
+                while(xml.readNextStartElement()){
+                    if(xml.name() == "preset"){
+                        Preset preset;
+                        if (xml.attributes().hasAttribute("id")) {
+                            preset.Id = xml.attributes().value("id").toInt();
+                        }
+                         if (xml.attributes().hasAttribute("name")) {
+                             preset.Name = xml.attributes().value("name").toString();
+                         }
+                         if (xml.attributes().hasAttribute("url")) {
+                            preset.Url = xml.attributes().value("url").toString();
+                         }
+                        presetList.append(preset);
+                    } else {
+                        xml.skipCurrentElement();
+                    }
+                }
+            }
+        }
+        emit presetsReceived(requestId, presetList);
+    });
+
+    return requestId;
+}
+
+QUuid BluOS::loadPreset(int preset)
+{
+    QUuid requestId = QUuid::createUuid();
+
+    QUrl url;
+    url.setScheme("http");
+    url.setHost(m_hostAddress.toString());
+    url.setPort(m_port);
+    url.setPath("/Presets");
+    QUrlQuery query;
+    query.addQueryItem("id", QString::number(preset));
+    url.setQuery(query);
+    QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -318,23 +345,18 @@ QUuid BluOS::listPresets()
         }
         emit connectionChanged(true);
     });
-
     return requestId;
 }
 
-QUuid BluOS::loadPreset(int preset)
+QUuid BluOS::getSources()
 {
-    Q_UNUSED(preset)
     QUuid requestId = QUuid::createUuid();
 
     QUrl url;
     url.setScheme("http");
     url.setHost(m_hostAddress.toString());
     url.setPort(m_port);
-    url.setPath("/Presets");
-    QUrlQuery query;
-    query.addQueryItem("id", QString::number(preset));
-    url.setQuery(query);
+    url.setPath("/Browse");
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
         reply->deleteLater();
@@ -470,12 +492,69 @@ QUuid BluOS::playBackControl(BluOS::PlaybackCommand command)
         }
         emit connectionChanged(true);
 
-        QXmlStreamReader xml;
-        xml.addData(reply->readAll());
-        if (xml.hasError()) {
-            qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
-        }
-        emit actionExecuted(requestId, true);
+        QByteArray data = reply->readAll();
+        parseState(data);
     });
     return requestId;
+}
+
+bool BluOS::parseState(const QByteArray &state)
+{
+    QXmlStreamReader xml;
+    xml.addData(state);
+    if (xml.hasError()) {
+        qCDebug(dcBluOS()) << "XML Error:" << xml.errorString();
+        return false;
+    }
+
+    StatusResponse statusResponse;
+    if (xml.readNextStartElement()) {
+        if (xml.name() == "status") {
+            while(xml.readNextStartElement()){
+                if(xml.name() == "artist"){
+                    statusResponse.Artist = xml.readElementText();
+                } else if(xml.name() == "album"){
+                    statusResponse.Album = xml.readElementText();
+                } else if(xml.name() == "name"){
+                    statusResponse.Name = xml.readElementText();
+                } else if(xml.name() == "service"){
+                    statusResponse.Service = xml.readElementText();
+                } else if(xml.name() == "serviceIcon"){
+                    statusResponse.ServiceIcon = xml.readElementText();
+                } else if(xml.name() == "shuffle"){
+                    statusResponse.Shuffle = xml.readElementText().toInt();
+                } else if(xml.name() == "repeat"){
+                    statusResponse.Shuffle = xml.readElementText().toInt();
+                } else if(xml.name() == "state"){
+                    QString playback = xml.readElementText();
+                    if (playback == "play") {
+                        statusResponse.State = PlaybackState::Playing;
+                    } else if (playback == "pause") {
+                        statusResponse.State = PlaybackState::Paused;
+                    } else if (playback == "stop") {
+                        statusResponse.State = PlaybackState::Stopped;
+                    } else if (playback == "connecting") {
+                        statusResponse.State = PlaybackState::Connecting;
+                    } else if (playback == "stream") {
+                        statusResponse.State = PlaybackState::Streaming;
+                    }  else {
+                        statusResponse.State = PlaybackState::Stopped;
+                        qCWarning(dcBluOS()) << "State response, unhandled playback mode" << playback;
+                    }
+                } else if(xml.name() == "volume"){
+                    statusResponse.Volume = xml.readElementText().toInt();
+                } else if(xml.name() == "mute"){
+                    statusResponse.Mute = xml.readElementText().toInt();
+                } else if(xml.name() == "image") {
+                    statusResponse.Image = xml.readElementText();
+                } else if(xml.name() == "title1") {
+                    statusResponse.Title = xml.readElementText();
+                } else {
+                    xml.skipCurrentElement();
+                }
+            }
+        }
+    }
+    emit statusReceived(statusResponse);
+    return true;
 }
