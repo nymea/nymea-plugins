@@ -68,6 +68,7 @@ private slots:
 
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
+    void onRequestExecuted(QUuid requestId, bool success);
     void onTokenReceived(Tado::Token token);
     void onHomesReceived(QList<Tado::Home> homes);
     void onZonesReceived(const QString &homeId, QList<Tado::Zone> zones);
