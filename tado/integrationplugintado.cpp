@@ -191,6 +191,7 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
             connect(info, &ThingActionInfo::aborted, [requestId, this] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == zonePowerActionTypeId) {
             bool power = action.param(zonePowerActionPowerParamTypeId).value().toBool();
+            thing->setStateValue(zonePowerStateTypeId, power); // the actual power set response might be slow
             QUuid requestId;
             double temperature = thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble();
             if (!power) {
