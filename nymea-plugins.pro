@@ -42,6 +42,7 @@ PLUGIN_DIRS = \
     osdomotics          \
     philipshue          \
     pushbullet          \
+    pushnotifications   \
     shelly              \
     solarlog            \
     systemmonitor       \
