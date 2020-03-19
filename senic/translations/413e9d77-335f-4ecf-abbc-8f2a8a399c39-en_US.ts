@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginSenic</name>
+    <name>IntegrationPluginSenic</name>
     <message>
         <location filename="../integrationpluginsenic.cpp" line="52"/>
         <source>Bluetooth is not available on this system.</source>

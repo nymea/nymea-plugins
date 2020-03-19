@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginOpenUv</name>
+    <name>IntegrationPluginOpenUv</name>
     <message>
         <location filename="../integrationpluginopenuv.cpp" line="65"/>
         <source>Failed to fetch data from the internet.</source>

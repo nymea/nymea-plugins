@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="da">
 <context>
-    <name>DevicePluginPhilipsHue</name>
+    <name>IntegrationPluginPhilipsHue</name>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="220"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>

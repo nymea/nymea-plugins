@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginTPLink</name>
+    <name>IntegrationPluginTPLink</name>
     <message>
         <location filename="../integrationplugintplink.cpp" line="88"/>
         <source>An error happened sending the discovery to the network.</source>

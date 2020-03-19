@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginAwattar</name>
+    <name>IntegrationPluginAwattar</name>
     <message>
         <location filename="../integrationpluginawattar.cpp" line="51"/>
         <source>Please enter your token for awattar.com</source>

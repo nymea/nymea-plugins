@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginOpenweathermap</name>
+    <name>IntegrationPluginOpenweathermap</name>
     <message>
         <location filename="../integrationpluginopenweathermap.cpp" line="149"/>
         <source>Error detecting current location.</source>

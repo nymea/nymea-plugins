@@ -2,11 +2,11 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginPhilipsHue</name>
+    <name>IntegrationPluginPhilipsHue</name>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="220"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
-        <translation>Bitte drücke den Knopf auf der Hue Bridge innerhalb von 30 Sekunden bevor Du fortfährst</translation>
+        <translation type="unfinished">Bitte drücke den Knopf auf der Hue Bridge innerhalb von 30 Sekunden bevor Du fortfährst</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="249"/>
@@ -16,43 +16,43 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="542"/>
         <source>Error connecting to hue bridge.</source>
-        <translation>Fehler beim Verbinden zur Hue Bridge.</translation>
+        <translation type="unfinished">Fehler beim Verbinden zur Hue Bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="552"/>
         <location filename="../integrationpluginphilipshue.cpp" line="815"/>
         <source>Received unexpected data from hue bridge.</source>
-        <translation>Unerwartete Daten von Hue Brige empfangen.</translation>
+        <translation type="unfinished">Unerwartete Daten von Hue Brige empfangen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="563"/>
         <source>An error happened pairing the hue bridge.</source>
-        <translation>Ein Fehler ist beim Pairen der Hue Bridge aufgetreten.</translation>
+        <translation type="unfinished">Ein Fehler ist beim Pairen der Hue Bridge aufgetreten.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="571"/>
         <source>The hue bridge has rejected the connection request.</source>
-        <translation>Die Hue Bridge hat unsere Verbindungsanfrage abegelehnt.</translation>
+        <translation type="unfinished">Die Hue Bridge hat unsere Verbindungsanfrage abegelehnt.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="805"/>
         <source>Error sending command to hue bridge.</source>
-        <translation>Fehler beim Senden der Kommandso zur Hue Bridge.</translation>
+        <translation type="unfinished">Fehler beim Senden der Kommandso zur Hue Bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="825"/>
         <source>An unexpected error happened when sending the command to the hue bridge.</source>
-        <translation>Ein unerwarteter Fehler ist beim Senden von Befehlen zur Hue Bridge aufgetreten.</translation>
+        <translation type="unfinished">Ein unerwarteter Fehler ist beim Senden von Befehlen zur Hue Bridge aufgetreten.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1301"/>
         <source>Philips Hue Motion sensor</source>
-        <translation>Philips Hue Bewegungsmelder</translation>
+        <translation type="unfinished">Philips Hue Bewegungsmelder</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1315"/>
         <source>Philips Hue Outdoor sensor</source>
-        <translation>Philips Hue Aussensensor</translation>
+        <translation type="unfinished">Philips Hue Aussensensor</translation>
     </message>
 </context>
 <context>

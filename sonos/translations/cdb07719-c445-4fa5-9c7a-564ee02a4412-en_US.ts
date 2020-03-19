@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginSonos</name>
+    <name>IntegrationPluginSonos</name>
     <message>
         <location filename="../integrationpluginsonos.cpp" line="164"/>
         <source>Authentication failed. Please try again.</source>

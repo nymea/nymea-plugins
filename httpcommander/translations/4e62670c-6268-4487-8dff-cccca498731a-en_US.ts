@@ -2,14 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginHttpCommander</name>
-    <message>
-        <source>The given url is not valid.</source>
-        <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>HttpCommander</name>
     <message>
         <source>Address</source>
@@ -97,6 +89,14 @@ The name of the ParamType (ThingClass: httpRequest, ActionType: request, ID: {36
     <message>
         <source>Request</source>
         <extracomment>The name of the ActionType ({5a97ca56-b334-411b-adba-116496ffe83d}) of ThingClass httpRequest</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IntegrationPluginHttpCommander</name>
+    <message>
+        <source>The given url is not valid.</source>
+        <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

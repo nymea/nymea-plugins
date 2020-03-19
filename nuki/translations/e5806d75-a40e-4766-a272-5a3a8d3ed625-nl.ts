@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="nl">
 <context>
-    <name>DevicePluginNuki</name>
+    <name>IntegrationPluginNuki</name>
     <message>
         <source>Device is already in use.</source>
         <translation type="unfinished"></translation>
@@ -12,12 +12,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Please press the Nuki button for 5 seconds in order to activate the pairing mode before you continue.</source>
-        <translation type="unfinished">Houd, alvorens verder te gaan, de Nuki-knop 5 seconden ingedrukt om de koppelmodus te activeren.</translation>
-    </message>
-    <message>
         <source>Bluetooth thing not found.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Please press the Nuki button for 5 seconds in order to activate the pairing mode before you continue.</source>
+        <translation type="unfinished">Houd, alvorens verder te gaan, de Nuki-knop 5 seconden ingedrukt om de koppelmodus te activeren.</translation>
     </message>
 </context>
 <context>

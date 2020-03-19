@@ -2,17 +2,17 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginDaylightSensor</name>
-    <message>
-        <source>Daylight sensor</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <name>IntegrationPluginDaylightSensor</name>
     <message>
         <source>Failed to fetch data from the internet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>The server returned unexpected data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Daylight sensor</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

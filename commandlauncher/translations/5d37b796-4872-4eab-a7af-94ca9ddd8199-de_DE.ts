@@ -86,7 +86,7 @@ The name of the StateType ({f52eb984-432c-43b6-88f1-15edb026725f}) of ThingClass
     </message>
 </context>
 <context>
-    <name>DevicePluginCommandLauncher</name>
+    <name>IntegrattionPluginCommandLauncher</name>
     <message>
         <location filename="../integrationplugincommandlauncher.cpp" line="59"/>
         <source>The script &quot;%1&quot; does not exist.</source>

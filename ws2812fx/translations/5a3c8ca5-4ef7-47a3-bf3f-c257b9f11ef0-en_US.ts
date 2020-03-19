@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginWs2812fx</name>
+    <name>IntegrationPluginWs2812fx</name>
     <message>
         <location filename="../integrationpluginws2812fx.cpp" line="62"/>
         <source>This serial port is already used.</source>

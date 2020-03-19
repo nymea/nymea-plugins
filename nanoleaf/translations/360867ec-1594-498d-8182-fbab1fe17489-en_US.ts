@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginNanoleaf</name>
+    <name>IntegrationPluginNanoleaf</name>
     <message>
         <location filename="../integrationpluginnanoleaf.cpp" line="97"/>
         <source>On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.</source>

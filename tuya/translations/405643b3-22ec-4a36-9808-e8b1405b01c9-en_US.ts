@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginTuya</name>
+    <name>IntegrationPluginTuya</name>
     <message>
         <location filename="../integrationplugintuya.cpp" line="93"/>
         <source>Error authenticating to Tuya thing.</source>

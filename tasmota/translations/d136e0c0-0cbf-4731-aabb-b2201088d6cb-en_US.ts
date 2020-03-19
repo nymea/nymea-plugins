@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginTasmota</name>
+    <name>IntegrationPluginTasmota</name>
     <message>
         <source>The given IP address is not valid.</source>
         <extracomment>Error setting up thing</extracomment>

@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginUsbRelay</name>
+    <name>IntegrationPluginUsbRelay</name>
     <message>
         <location filename="../integrationpluginusbrelay.cpp" line="110"/>
         <source>Cannot discover USB devices. HID initialisation failed on this system.</source>

@@ -482,7 +482,7 @@ The name of the ActionType ({773636b9-304d-463a-8755-fc7488dc0ff3}) of ThingClas
     </message>
 </context>
 <context>
-    <name>DevicePluginDenon</name>
+    <name>IntegrationPluginDenon</name>
     <message>
         <location filename="../integrationplugindenon.cpp" line="74"/>
         <source>Device discovery is not available.</source>

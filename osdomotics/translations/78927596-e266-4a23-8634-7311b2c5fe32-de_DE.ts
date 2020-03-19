@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginOsdomotics</name>
+    <name>IntegrationPluginOsdomotics</name>
     <message>
         <location filename="../integrationpluginosdomotics.cpp" line="89"/>
         <source>The given RPL address is not valid.</source>

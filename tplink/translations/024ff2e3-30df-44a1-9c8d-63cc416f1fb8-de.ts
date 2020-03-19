@@ -2,26 +2,26 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>DevicePluginTPLink</name>
+    <name>IntegrationPluginTPLink</name>
     <message>
         <location filename="../integrationplugintplink.cpp" line="88"/>
         <source>An error happened sending the discovery to the network.</source>
-        <translation>Beim Durchsuchen des Netzwerks ist ein Fehler aufgetreten.</translation>
+        <translation type="unfinished">Beim Durchsuchen des Netzwerks ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
         <location filename="../integrationplugintplink.cpp" line="151"/>
         <source>An error happened finding the device in the network.</source>
-        <translation>Beim Suchen des Geräts ist ein Fehler aufgetreten.</translation>
+        <translation type="unfinished">Beim Suchen des Geräts ist ein Fehler aufgetreten.</translation>
     </message>
     <message>
         <location filename="../integrationplugintplink.cpp" line="188"/>
         <source>The device could not be found on the network.</source>
-        <translation>Das Gerät konnte nicht im Netzwerk gefunden werden.</translation>
+        <translation type="unfinished">Das Gerät konnte nicht im Netzwerk gefunden werden.</translation>
     </message>
     <message>
         <location filename="../integrationplugintplink.cpp" line="471"/>
         <source>Error sending command to the network.</source>
-        <translation>Der Befehl konnte nicht ins Netzwerk gesendet werden.</translation>
+        <translation type="unfinished">Der Befehl konnte nicht ins Netzwerk gesendet werden.</translation>
     </message>
 </context>
 <context>

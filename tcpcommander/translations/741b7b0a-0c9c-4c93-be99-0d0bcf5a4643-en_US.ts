@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginTcpCommander</name>
+    <name>IntegrationPluginTcpCommander</name>
     <message>
         <location filename="../integrationplugintcpcommander.cpp" line="56"/>
         <source>Error connecting to remote server.</source>

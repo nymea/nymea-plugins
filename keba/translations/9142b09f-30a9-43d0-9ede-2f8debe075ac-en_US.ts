@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginKeba</name>
+    <name>IntegrationPluginKeba</name>
     <message>
         <location filename="../integrationpluginkeba.cpp" line="68"/>
         <source>Error opening network port.</source>

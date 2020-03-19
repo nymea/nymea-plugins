@@ -2,14 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginEQ3</name>
-    <message>
-        <location filename="../integrationplugineq-3.cpp" line="127"/>
-        <source>Bluetooth discovery failed. Is Bluetooth available and enabled?</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>EQ3</name>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/eq-3/plugininfo.h" line="554"/>
@@ -909,6 +901,14 @@ The name of the StateType ({ffaff87b-b741-4db8-9875-3380af4f1885}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/eq-3/plugininfo.h" line="800"/>
         <source>valve position changed</source>
         <extracomment>The name of the EventType ({72956000-0203-4c32-a6b6-3bb7e46c03ca}) of ThingClass radiatorThermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IntegrationPluginEQ3</name>
+    <message>
+        <location filename="../integrationplugineq-3.cpp" line="127"/>
+        <source>Bluetooth discovery failed. Is Bluetooth available and enabled?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginUnitec</name>
+    <name>IntegrationPluginUnitec</name>
     <message>
         <location filename="../integrationpluginunitec.cpp" line="46"/>
         <location filename="../integrationpluginunitec.cpp" line="63"/>

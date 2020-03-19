@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginTexasInstruments</name>
+    <name>IntegrationPluginTexasInstruments</name>
     <message>
         <source>Bluetooth is not available on this system.</source>
         <translation type="unfinished"></translation>
