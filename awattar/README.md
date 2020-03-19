@@ -1,8 +1,14 @@
 # aWATTar
 
-This plugin allows to receive the current energy market price from the [aWATTar GmbH](https://www.awattar.com/).
-In order to use this plugin you need to enter the access token from your energy provider. You can find more
-information about you accesstoken [here](https://www.awattar.com/api-unser-datenfeed).
+This plugin allows to receive the current energy market price from the aWATTar GmbH.
+
+* [aWATTar Austria](https://www.awattar.com)
+* [aWATTar Germany](https://www.awattar.de)
+
+The Austrian edition of aWATTar requires to enter the access token from your energy provider.
+You can find more information about you accesstoken [here](https://www.awattar.com/api-unser-datenfeed).
+
+The German servers do not require a token at this point.
 
 ## Available data
 
@@ -17,11 +23,3 @@ price is above the average, if the deviation is negative, the current price is b
 
 ![aWATTar graph](https://raw.githubusercontent.com/guh/nymea-plugins/master/awattar/docs/images/awattar-graph.png "aWATTar graph")
  
-# Heat pump
-
-Information about the smart grid modes can be found [here](https://www.waermepumpe.de/sg-ready/).
-
-In order to interact with the heat pump (SG-ready), this plugin creates a CoAP connection to the server running on the
-6LoWPAN bridge. The server IPv6 can be configured in the plugin configuration. Once the connection is established, the
-plugin searches for 6LoWPAN neighbors in the network.
-

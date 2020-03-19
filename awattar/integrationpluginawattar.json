@@ -20,8 +20,8 @@
             "thingClasses": [
                 {
                     "id": "29cd8265-d8bb-4cf9-9080-bfc2cf9787bc",
-                    "displayName": "aWATTar",
-                    "name": "awattar",
+                    "displayName": "aWATTar AT",
+                    "name": "awattarAT",
                     "createMethods": ["user"],
                     "setupMethod": "displaypin",
                     "interfaces": ["connectable"],
@@ -32,7 +32,8 @@
                             "displayName": "Online",
                             "displayNameEvent": "Online changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "cached": false
                         },
                         {
                             "id": "eab37309-3dd8-46a0-94d4-bd05b5bb0430",
@@ -81,6 +82,79 @@
                         },
                         {
                             "id": "0c171c42-b070-453e-8a63-df9aebfa8533",
+                            "name": "highestPrice",
+                            "displayName": "highest market price [+/- 12 h]",
+                            "displayNameEvent": "highest market price [+/- 12 h] changed",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "id": "61973ead-98a4-4064-8fc3-532b4ecb9f78",
+                    "displayName": "aWATTar DE",
+                    "name": "awattarDE",
+                    "createMethods": ["user"],
+                    "setupMethod": "justAdd",
+                    "interfaces": ["connectable"],
+                    "stateTypes": [
+                        {
+                            "id": "2646b541-1ce0-4656-b253-2f98608072b3",
+                            "name": "connected",
+                            "displayName": "Online",
+                            "displayNameEvent": "Online changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "048566fe-d49d-4cc7-b93b-520f727f600a",
+                            "name": "currentMarketPrice",
+                            "displayName": "current market price",
+                            "displayNameEvent": "current market price changed",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "f5ffd03d-e21f-4a27-bc69-f1aed426281c",
+                            "name": "averageDeviation",
+                            "displayName": "average deviation",
+                            "displayNameEvent": "average deviation changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a1d9fb61-4907-4c2d-9bd8-b8cbcfe7f3e3",
+                            "name": "validUntil",
+                            "displayName": "valid until",
+                            "displayNameEvent": "valid until changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "90571d1e-42c1-4a55-b70d-4781fab02313",
+                            "name": "averagePrice",
+                            "displayName": "average market price [+/- 12 h]",
+                            "displayNameEvent": "average market price [+/- 12 h] changed",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "9e4dd133-ecfc-4239-9536-b5ec502cb194",
+                            "name": "lowestPrice",
+                            "displayName": "lowest market price [+/- 12 h]",
+                            "displayNameEvent": "lowest market price [+/- 12 h] changed",
+                            "type": "double",
+                            "unit": "EuroCentPerKiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "c97662ed-0e61-4c0e-acca-6792a1c27213",
                             "name": "highestPrice",
                             "displayName": "highest market price [+/- 12 h]",
                             "displayNameEvent": "highest market price [+/- 12 h] changed",

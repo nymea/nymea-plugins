@@ -40,6 +40,29 @@
 
 IntegrationPluginAwattar::IntegrationPluginAwattar()
 {
+    m_serverUrls[awattarATThingClassId] = "https://api.awattar.com/v1/marketdata";
+    m_serverUrls[awattarDEThingClassId] = "https://api.awattar.de/v1/marketdata";
+
+    m_connectedStateTypeIds[awattarATThingClassId] = awattarATConnectedStateTypeId;
+    m_connectedStateTypeIds[awattarDEThingClassId] = awattarDEConnectedStateTypeId;
+
+    m_currentMarketPriceStateTypeIds[awattarATThingClassId] = awattarATCurrentMarketPriceStateTypeId;
+    m_currentMarketPriceStateTypeIds[awattarDEThingClassId] = awattarDECurrentMarketPriceStateTypeId;
+
+    m_validUntilStateTypeIds[awattarATThingClassId] = awattarATValidUntilStateTypeId;
+    m_validUntilStateTypeIds[awattarDEThingClassId] = awattarDEValidUntilStateTypeId;
+
+    m_averagePriceStateTypeIds[awattarATThingClassId] = awattarATAveragePriceStateTypeId;
+    m_averagePriceStateTypeIds[awattarDEThingClassId] = awattarDEAveragePriceStateTypeId;
+
+    m_lowestPriceStateTypeIds[awattarATThingClassId] = awattarATLowestPriceStateTypeId;
+    m_lowestPriceStateTypeIds[awattarDEThingClassId] = awattarDELowestPriceStateTypeId;
+
+    m_highestPriceStateTypeIds[awattarATThingClassId] = awattarATHighestPriceStateTypeId;
+    m_highestPriceStateTypeIds[awattarDEThingClassId] = awattarDEHighestPriceStateTypeId;
+
+    m_averageDeviationStateTypeIds[awattarATThingClassId] = awattarATAverageDeviationStateTypeId;
+    m_averageDeviationStateTypeIds[awattarDEThingClassId] = awattarDEAverageDeviationStateTypeId;
 }
 
 IntegrationPluginAwattar::~IntegrationPluginAwattar()
@@ -116,7 +139,7 @@ void IntegrationPluginAwattar::requestPriceData(Thing* thing, ThingSetupInfo *se
 
     QByteArray data = QString(token + ":").toUtf8().toBase64();
     QString header = "Basic " + data;
-    QNetworkRequest request(QUrl("https://api.awattar.com/v1/marketdata"));
+    QNetworkRequest request(QUrl(m_serverUrls.value(thing->thingClassId())));
     request.setRawHeader("Authorization", header.toLocal8Bit());
     request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
@@ -130,7 +153,7 @@ void IntegrationPluginAwattar::requestPriceData(Thing* thing, ThingSetupInfo *se
             if (setup) {
                 setup->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error getting data from server."));
             } else {
-                thing->setStateValue(awattarConnectedStateTypeId, false);
+                thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), false);
             }
             return;
         }
@@ -142,7 +165,7 @@ void IntegrationPluginAwattar::requestPriceData(Thing* thing, ThingSetupInfo *se
             if (setup) {
                 setup->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("The server returned unexpected data."));
             } else {
-                thing->setStateValue(awattarConnectedStateTypeId, false);
+                thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), false);
             }
             return;
         }
@@ -151,7 +174,7 @@ void IntegrationPluginAwattar::requestPriceData(Thing* thing, ThingSetupInfo *se
             setup->finish(Thing::ThingErrorNoError);
         }
 
-        thing->setStateValue(awattarConnectedStateTypeId, true);
+        thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), true);
 
         processPriceData(thing, jsonDoc.toVariant().toMap());
     });
@@ -200,8 +223,8 @@ void IntegrationPluginAwattar::processPriceData(Thing *thing, const QVariantMap 
             if (price < minPrice)
                 minPrice = price;
 
-            thing->setStateValue(awattarCurrentMarketPriceStateTypeId, currentPrice / 10.0);
-            thing->setStateValue(awattarValidUntilStateTypeId, endTime.toLocalTime().toTime_t());
+            thing->setStateValue(m_currentMarketPriceStateTypeIds.value(thing->thingClassId()), currentPrice / 10.0);
+            thing->setStateValue(m_validUntilStateTypeIds.value(thing->thingClassId()), endTime.toLocalTime().toTime_t());
         }
     }
 
@@ -214,9 +237,9 @@ void IntegrationPluginAwattar::processPriceData(Thing *thing, const QVariantMap 
         deviation = qRound(-100 * (averagePrice - currentPrice) / (maxPrice - averagePrice));
     }
 
-    thing->setStateValue(awattarAveragePriceStateTypeId, averagePrice / 10.0);
-    thing->setStateValue(awattarLowestPriceStateTypeId, minPrice / 10.0);
-    thing->setStateValue(awattarHighestPriceStateTypeId, maxPrice / 10.0);
-    thing->setStateValue(awattarAverageDeviationStateTypeId, deviation);
+    thing->setStateValue(m_averagePriceStateTypeIds.value(thing->thingClassId()), averagePrice / 10.0);
+    thing->setStateValue(m_lowestPriceStateTypeIds.value(thing->thingClassId()), minPrice / 10.0);
+    thing->setStateValue(m_highestPriceStateTypeIds.value(thing->thingClassId()), maxPrice / 10.0);
+    thing->setStateValue(m_averageDeviationStateTypeIds.value(thing->thingClassId()), deviation);
 }
 
