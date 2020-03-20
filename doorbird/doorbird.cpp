@@ -75,7 +75,7 @@ QUuid Doorbird::getSession(const QString &username, const QString &password)
         reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
-            qCWarning(dcDoorBird) << "Error DoorBird device:" << reply->errorString();
+            qCWarning(dcDoorBird) << "Error DoorBird thing:" << reply->errorString();
             emit requestSent(requestId, false);
             return;
         }

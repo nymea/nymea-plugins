@@ -2,12 +2,12 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugindoorbird)
+TARGET = $$qtLibraryTarget(nymea_integrationplugindoorbird)
 
 SOURCES += \
-    deviceplugindoorbird.cpp \
+    integrationplugindoorbird.cpp \
     doorbird.cpp \
 
 HEADERS += \
-    deviceplugindoorbird.h \
+    integrationplugindoorbird.h \
     doorbird.h \
