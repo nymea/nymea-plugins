@@ -38,6 +38,7 @@
                             "displayName": "Reachable",
                             "displayNameEvent": "Reachable changed",
                             "defaultValue": false,
+                            "cached": false,
                             "type": "bool"
                         },
                         {
