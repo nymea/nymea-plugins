@@ -7,7 +7,7 @@
             "name": "Dynatrace",
             "displayName": "Dynatrace",
             "id": "31b402be-1562-4335-aa83-d1c1166db570",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "6271f010-0b0a-4f29-b894-0611bb5f3dcc",
                     "name": "ufo",

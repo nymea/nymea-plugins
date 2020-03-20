@@ -2,12 +2,12 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugindynatrace)
+TARGET = $$qtLibraryTarget(nymea_integrationplugindynatrace)
 
 SOURCES += \
-    deviceplugindynatrace.cpp \
+    integrationplugindynatrace.cpp \
     ufo.cpp
 
 HEADERS += \
-    deviceplugindynatrace.h \
+    integrationplugindynatrace.h \
     ufo.h

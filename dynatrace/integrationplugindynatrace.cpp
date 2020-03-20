@@ -26,8 +26,7 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "deviceplugindynatrace.h"
-#include "devices/device.h"
+#include "integrationplugindynatrace.h"
 #include "plugininfo.h"
 #include "network/networkaccessmanager.h"
 
@@ -36,16 +35,16 @@
 #include <QJsonDocument>
 #include <QHostInfo>
 
-DevicePluginDynatrace::DevicePluginDynatrace()
+IntegrationPluginDynatrace::IntegrationPluginDynatrace()
 {
 
 }
 
-void DevicePluginDynatrace::discoverDevices(DeviceDiscoveryInfo *info)
+void IntegrationPluginDynatrace::discoverThings(ThingDiscoveryInfo *info)
 {
-    if (info->deviceClassId() == ufoDeviceClassId) {
+    if (info->thingClassId() == ufoThingClassId) {
 
-        QHostInfo::lookupHost("ufo.home", this, [info, this](const QHostInfo &host){
+        QHostInfo::lookupHost("ufo.home", this, [info](const QHostInfo &host){
             if (host.error() != QHostInfo::NoError) {
                 qCDebug(dcDynatrace()) << "Lookup failed:" << host.errorString();
             }
@@ -53,30 +52,30 @@ void DevicePluginDynatrace::discoverDevices(DeviceDiscoveryInfo *info)
             foreach (QHostAddress address, host.addresses()) {
                 qCDebug(dcDynatrace()) << "Found IP address" << address.toString();
 
-                DeviceDescriptor descriptor(ufoDeviceClassId, "Ufo", address.toString());
+                ThingDescriptor descriptor(ufoThingClassId, "Ufo", address.toString());
                 ParamList params;
 
-                /*Device *existingDevice = myDevices().findByParams(ParamList() << Param(ufoDeviceIdParamTypeId, ""));
-                if (existingDevice) {
-                    //For device re-discovery
-                    descriptor.setDeviceId(existingDevice->id());
+                /*Thing *existingThing = myThings().findByParams(ParamList() << Param(ufoThingIdParamTypeId, ""));
+                if (existingThing) {
+                    //For Thing re-discovery
+                    descriptor.setThingId(existingthing->id());
                 }*/
-                params << Param(ufoDeviceHostParamTypeId, address.toString());
+                params << Param(ufoThingHostParamTypeId, address.toString());
                 descriptor.setParams(params);
-                info->addDeviceDescriptor(descriptor);
+                info->addThingDescriptor(descriptor);
             }
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         });
     }
 }
 
-void DevicePluginDynatrace::setupDevice(DeviceSetupInfo *info)
+void IntegrationPluginDynatrace::setupThing(ThingSetupInfo *info)
 {
 
-    if (info->device()->deviceClassId() == ufoDeviceClassId) {
-        QHostAddress address = QHostAddress(info->device()->paramValue(ufoDeviceHostParamTypeId).toString());
-        QString id = info->device()->paramValue(ufoDeviceIdParamTypeId).toString();
-        if(id.isEmpty()) { //Probably a manual device setup
+    if (info->thing()->thingClassId() == ufoThingClassId) {
+        QHostAddress address = QHostAddress(info->thing()->paramValue(ufoThingHostParamTypeId).toString());
+        QString id = info->thing()->paramValue(ufoThingIdParamTypeId).toString();
+        if(id.isEmpty()) { //Probably a manual Thing setup
             QUrl url;
             url.setScheme("http");
             url.setHost(address.toString());
@@ -84,37 +83,37 @@ void DevicePluginDynatrace::setupDevice(DeviceSetupInfo *info)
             QNetworkRequest request;
             request.setUrl(url);
             QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-            connect(reply, &QNetworkReply::finished, this, [info, reply, this] {
+            connect(reply, &QNetworkReply::finished, this, [info, reply] {
                 reply->deleteLater();
 
                 QJsonParseError error;
                 QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
                 if (error.error != QJsonParseError::NoError) {
-                    info->finish(Device::DeviceErrorSetupFailed, error.errorString());
+                    info->finish(Thing::ThingErrorSetupFailed, error.errorString());
                 }
                 QString id = data.toVariant().toMap().value("ufoid").toString();
-                info->device()->setParamValue(ufoDeviceIdParamTypeId, id);
-                info->finish(Device::DeviceErrorNoError);
+                info->thing()->setParamValue(ufoThingIdParamTypeId, id);
+                info->finish(Thing::ThingErrorNoError);
             });
         } else {
-            // Discovery device setup or devices setup caused by nymea restart
-            info->finish(Device::DeviceErrorNoError);
+            // Discovery Thing setup or Things setup caused by nymea restart
+            info->finish(Thing::ThingErrorNoError);
         }
     }
 }
 
-void DevicePluginDynatrace::postSetupDevice(Device *device)
+void IntegrationPluginDynatrace::postSetupThing(Thing *thing)
 {
-    if (device->deviceClassId() == ufoDeviceClassId) {
-        device->setStateValue(ufoConnectedStateTypeId, true); //FIXME
-        device->setStateValue(ufoPowerStateTypeId, false);
-        device->setStateValue(ufoLogoStateTypeId, false);
-        device->setStateValue(ufoEffectTopStateTypeId, "None");
-        device->setStateValue(ufoEffectBottomStateTypeId, "None");
+    if (thing->thingClassId() == ufoThingClassId) {
+        thing->setStateValue(ufoConnectedStateTypeId, true); //FIXME
+        thing->setStateValue(ufoPowerStateTypeId, false);
+        thing->setStateValue(ufoLogoStateTypeId, false);
+        thing->setStateValue(ufoEffectTopStateTypeId, "None");
+        thing->setStateValue(ufoEffectBottomStateTypeId, "None");
 
-        QHostAddress address = QHostAddress(device->paramValue(ufoDeviceHostParamTypeId).toString());
+        QHostAddress address = QHostAddress(thing->paramValue(ufoThingHostParamTypeId).toString());
         Ufo *ufo = new Ufo(hardwareManager()->networkManager(), address, this);
-        m_ufoConnections.insert(device->id(), ufo);
+        m_ufoConnections.insert(thing->id(), ufo);
         // Set all off
         ufo->setLogo(QColor(Qt::black), QColor(Qt::black), QColor(Qt::black), QColor(Qt::black));
         ufo->setBackgroundColor(true, true, true, true, QColor(Qt::black));
@@ -123,101 +122,101 @@ void DevicePluginDynatrace::postSetupDevice(Device *device)
     if(!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this]() {
-            //TODO check if device is reachable
+            //TODO check if Thing is reachable
         });
     }
 }
 
-void DevicePluginDynatrace::executeAction(DeviceActionInfo *info)
+void IntegrationPluginDynatrace::executeAction(ThingActionInfo *info)
 {
-    Device *device = info->device();
+    Thing *thing = info->thing();
     Action action = info->action();
 
-    if (device->deviceClassId() == ufoDeviceClassId) {
-        Ufo *ufo = m_ufoConnections.value(device->id());
+    if (thing->thingClassId() == ufoThingClassId) {
+        Ufo *ufo = m_ufoConnections.value(thing->id());
         if (!ufo)
             return;
         if (action.actionTypeId() == ufoLogoActionTypeId) {
             bool power = action.param(ufoLogoActionLogoParamTypeId).value().toBool();
-            device->setStateValue(ufoLogoStateTypeId, power);
+            thing->setStateValue(ufoLogoStateTypeId, power);
             if (power) {
-                int brightness = device->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
-                QColor color = QColor(device->stateValue(ufoLogoColorStateTypeId).toString());
+                int brightness = thing->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
+                QColor color = QColor(thing->stateValue(ufoLogoColorStateTypeId).toString());
                 color.setHsv(color.hue(), color.saturation(), brightness*2.55);
                 ufo->setLogo(color, color, color, color);
             } else {
                 ufo->setLogo(QColor(Qt::black), QColor(Qt::black), QColor(Qt::black), QColor(Qt::black));
             }
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
 
         } else if (action.actionTypeId() == ufoPowerActionTypeId) {
             bool power = action.param(ufoPowerActionPowerParamTypeId).value().toBool();
-            device->setStateValue(ufoPowerStateTypeId, power);
+            thing->setStateValue(ufoPowerStateTypeId, power);
             if (power) {
-                int brightness = device->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
-                QColor color = QColor(device->stateValue(ufoColorStateTypeId).toString());
+                int brightness = thing->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
+                QColor color = QColor(thing->stateValue(ufoColorStateTypeId).toString());
                 color.setHsv(color.hue(), color.saturation(), brightness*2.55);
-                device->setStateValue(ufoLogoStateTypeId, true);
+                thing->setStateValue(ufoLogoStateTypeId, true);
                 ufo->setLogo(color, color, color, color);
                 ufo->setBackgroundColor(true, true, true, true, color);
-                device->setStateValue(ufoEffectTopStateTypeId, "None");
-                device->setStateValue(ufoEffectBottomStateTypeId, "None");
-                device->setStateValue(ufoLogoColorStateTypeId, color);
-                device->setStateValue(ufoTopColorStateTypeId, color);
-                device->setStateValue(ufoBottomColorStateTypeId, color);
+                thing->setStateValue(ufoEffectTopStateTypeId, "None");
+                thing->setStateValue(ufoEffectBottomStateTypeId, "None");
+                thing->setStateValue(ufoLogoColorStateTypeId, color);
+                thing->setStateValue(ufoTopColorStateTypeId, color);
+                thing->setStateValue(ufoBottomColorStateTypeId, color);
             } else {
                 ufo->setLogo(QColor(Qt::black), QColor(Qt::black), QColor(Qt::black), QColor(Qt::black));
-                device->setStateValue(ufoLogoStateTypeId, false);
+                thing->setStateValue(ufoLogoStateTypeId, false);
                 ufo->setBackgroundColor(true, true, true, true, QColor(Qt::black));
-                device->setStateValue(ufoEffectTopStateTypeId, "None");
-                device->setStateValue(ufoEffectBottomStateTypeId, "None");
+                thing->setStateValue(ufoEffectTopStateTypeId, "None");
+                thing->setStateValue(ufoEffectBottomStateTypeId, "None");
             }
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
 
         } else if (action.actionTypeId() == ufoBrightnessActionTypeId) {
             int brightness = action.param(ufoBrightnessActionBrightnessParamTypeId).value().toInt();
-            device->setStateValue(ufoBrightnessStateTypeId, brightness);
-            QColor color = QColor(device->stateValue(ufoColorStateTypeId).toString());
+            thing->setStateValue(ufoBrightnessStateTypeId, brightness);
+            QColor color = QColor(thing->stateValue(ufoColorStateTypeId).toString());
             color.setHsv(color.hue(), color.saturation(), brightness*2.55);
-            if (device->stateValue(ufoLogoStateTypeId).toBool()) {
+            if (thing->stateValue(ufoLogoStateTypeId).toBool()) {
                 ufo->setLogo(color, color, color, color);
             }
             ufo->setBackgroundColor(true, false, true, false, color);
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == ufoColorActionTypeId) {
             QColor color = QColor(action.param(ufoColorActionColorParamTypeId).value().toString());
-            int brightness = device->stateValue(ufoBrightnessStateTypeId).toInt();
-            device->setStateValue(ufoColorStateTypeId, color);
-            device->setStateValue(ufoLogoColorStateTypeId, color);
-            device->setStateValue(ufoTopColorStateTypeId, color);
-            device->setStateValue(ufoBottomColorStateTypeId, color);
+            int brightness = thing->stateValue(ufoBrightnessStateTypeId).toInt();
+            thing->setStateValue(ufoColorStateTypeId, color);
+            thing->setStateValue(ufoLogoColorStateTypeId, color);
+            thing->setStateValue(ufoTopColorStateTypeId, color);
+            thing->setStateValue(ufoBottomColorStateTypeId, color);
             color.setHsv(color.hue(), color.saturation(), brightness*2.55);
-            if (device->stateValue(ufoLogoStateTypeId).toBool()) {
+            if (thing->stateValue(ufoLogoStateTypeId).toBool()) {
                 ufo->setLogo(color, color, color, color);
             }
             ufo->setBackgroundColor(true, false, true, false, color);
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == ufoColorTemperatureActionTypeId) {
-            int mired= device->stateValue(ufoColorTemperatureActionColorTemperatureParamTypeId).toInt();
-            device->setStateValue(ufoColorTemperatureStateTypeId, mired);
-            int brightness = device->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
+            int mired= thing->stateValue(ufoColorTemperatureActionColorTemperatureParamTypeId).toInt();
+            thing->setStateValue(ufoColorTemperatureStateTypeId, mired);
+            int brightness = thing->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
             QColor color(Qt::white);
             color.setBlue(static_cast<int>((mired-153)*0.73));
             color.setHsv(color.hue(), color.saturation(), brightness*2.55);
-            if (device->stateValue(ufoLogoStateTypeId).toBool()) {
+            if (thing->stateValue(ufoLogoStateTypeId).toBool()) {
                 ufo->setLogo(color, color, color, color);
             }
-            device->setStateValue(ufoColorStateTypeId, color);
-            device->setStateValue(ufoLogoColorStateTypeId, color);
-            device->setStateValue(ufoTopColorStateTypeId, color);
-            device->setStateValue(ufoBottomColorStateTypeId, color);
+            thing->setStateValue(ufoColorStateTypeId, color);
+            thing->setStateValue(ufoLogoColorStateTypeId, color);
+            thing->setStateValue(ufoTopColorStateTypeId, color);
+            thing->setStateValue(ufoBottomColorStateTypeId, color);
             ufo->setBackgroundColor(true, false, true, false, color);
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
 
         } else if (action.actionTypeId() == ufoEffectTopActionTypeId) {
             QString effect = action.param(ufoEffectTopActionEffectTopParamTypeId).value().toString();
-            int brightness = device->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
-            QColor color = QColor(device->stateValue(ufoColorStateTypeId).toString());
+            int brightness = thing->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
+            QColor color = QColor(thing->stateValue(ufoColorStateTypeId).toString());
             color.setHsv(color.hue(), color.saturation(), brightness*2.55);
             if (effect == "None") {
                 ufo->setBackgroundColor(true, true, false, false, color);
@@ -226,11 +225,11 @@ void DevicePluginDynatrace::executeAction(DeviceActionInfo *info)
             } else if (effect == "Morph") {
                 ufo->startMorph(true, false, color, 250, 8);
             }
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == ufoEffectBottomActionTypeId) {
             QString effect = action.param(ufoEffectBottomActionEffectBottomParamTypeId).value().toString();
-            int brightness = device->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
-            QColor color = QColor(device->stateValue(ufoColorStateTypeId).toString());
+            int brightness = thing->stateValue(ufoBrightnessActionBrightnessParamTypeId).toInt();
+            QColor color = QColor(thing->stateValue(ufoColorStateTypeId).toString());
             color.setHsv(color.hue(), color.saturation(), brightness*2.55);
             if (effect == "None") {
                 ufo->setBackgroundColor(false, false, true, true, color);
@@ -239,57 +238,57 @@ void DevicePluginDynatrace::executeAction(DeviceActionInfo *info)
             } else if (effect == "Morph") {
                 ufo->startMorph(false, true, color, 250, 8);
             }
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == ufoLogoColorActionTypeId) {
             QColor color = QColor(action.param(ufoLogoColorActionLogoColorParamTypeId).value().toString());
-            int brightness = device->stateValue(ufoBrightnessStateTypeId).toInt();
-            device->setStateValue(ufoLogoColorStateTypeId, color);
-            device->setStateValue(ufoLogoStateTypeId, true);
+            int brightness = thing->stateValue(ufoBrightnessStateTypeId).toInt();
+            thing->setStateValue(ufoLogoColorStateTypeId, color);
+            thing->setStateValue(ufoLogoStateTypeId, true);
             color.setHsv(color.hue(), color.saturation(), brightness*2.55);
             ufo->setLogo(color, color, color, color);
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == ufoTopColorActionTypeId) {
             QColor color = QColor(action.param(ufoTopColorActionTopColorParamTypeId).value().toString());
-            int brightness = device->stateValue(ufoBrightnessStateTypeId).toInt();
-            device->setStateValue(ufoTopColorStateTypeId, color);
-            device->setStateValue(ufoPowerStateTypeId, true);
+            int brightness = thing->stateValue(ufoBrightnessStateTypeId).toInt();
+            thing->setStateValue(ufoTopColorStateTypeId, color);
+            thing->setStateValue(ufoPowerStateTypeId, true);
             color.setHsv(color.hue(), color.saturation(), brightness*2.55);
             ufo->setBackgroundColor(true, false, false, false, color);
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == ufoBottomColorActionTypeId) {
             QColor color = QColor(action.param(ufoBottomColorActionBottomColorParamTypeId).value().toString());
-            int brightness = device->stateValue(ufoBrightnessStateTypeId).toInt();
-            device->setStateValue(ufoBottomColorStateTypeId, color);
-            device->setStateValue(ufoPowerStateTypeId, true);
+            int brightness = thing->stateValue(ufoBrightnessStateTypeId).toInt();
+            thing->setStateValue(ufoBottomColorStateTypeId, color);
+            thing->setStateValue(ufoPowerStateTypeId, true);
             color.setHsv(color.hue(), color.saturation(), brightness*2.55);
             ufo->setBackgroundColor(false, false, true, false, color);
-            info->finish(Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else {
             qCWarning(dcDynatrace()) << "Execute action: Unhandled actionTypeId";
-            info->finish(Device::DeviceErrorHardwareFailure);
+            info->finish(Thing::ThingErrorHardwareFailure);
         }
     } else {
-        qCWarning(dcDynatrace()) << "Execute action: Unhandled deviceClass";
-        info->finish(Device::DeviceErrorHardwareFailure);
+        qCWarning(dcDynatrace()) << "Execute action: Unhandled ThingClass";
+        info->finish(Thing::ThingErrorHardwareFailure);
     }
 }
 
-void DevicePluginDynatrace::deviceRemoved(Device *device)
+void IntegrationPluginDynatrace::thingRemoved(Thing *thing)
 {
-    if (device->deviceClassId() == ufoDeviceClassId) {
-        if (m_ufoConnections.contains(device->id())){
-            Ufo *ufo = m_ufoConnections.take(device->id());
+    if (thing->thingClassId() == ufoThingClassId) {
+        if (m_ufoConnections.contains(thing->id())){
+            Ufo *ufo = m_ufoConnections.take(thing->id());
             ufo->deleteLater();
         }
     }
 
-    if (myDevices().isEmpty() && m_pluginTimer) {
+    if (myThings().isEmpty() && m_pluginTimer) {
         m_pluginTimer->deleteLater();
         m_pluginTimer = nullptr;
     }
 }
 
-void DevicePluginDynatrace::getId(const QHostAddress &address)
+void IntegrationPluginDynatrace::getId(const QHostAddress &address)
 {
     QUrl url;
     url.setScheme("http");
@@ -308,13 +307,13 @@ void DevicePluginDynatrace::getId(const QHostAddress &address)
 
         QString id = data.toVariant().toMap().value("ufoid").toString();
         if (m_asyncSetup.contains(reply->url().host())) {
-            DeviceSetupInfo *info = m_asyncSetup.value(reply->url().host());
-            info->finish(Device::DeviceErrorNoError);
+            ThingSetupInfo *info = m_asyncSetup.value(reply->url().host());
+            info->finish(Thing::ThingErrorNoError);
         }
     });
 }
 
-void DevicePluginDynatrace::onConnectionChanged(bool connected)
+void IntegrationPluginDynatrace::onConnectionChanged(bool connected)
 {
     Q_UNUSED(connected)
 }

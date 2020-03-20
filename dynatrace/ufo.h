@@ -30,7 +30,7 @@
 #define DYNATRACE_UFO_H
 
 #include "network/networkaccessmanager.h"
-#include "devices/device.h"
+#include "integrations/integrationplugin.h"
 
 #include <QObject>
 #include <QTimer>

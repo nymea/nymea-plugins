@@ -26,36 +26,36 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINDYNATRACE_H
-#define DEVICEPLUGINDYNATRACE_H
+#ifndef INTEGRATIONPLUGINDYNATRACE_H
+#define INTEGRATIONPLUGINDYNATRACE_H
 
 #include "plugintimer.h"
-#include "devices/deviceplugin.h"
+#include "integrations/integrationplugin.h"
 #include "network/oauth2.h"
 #include "ufo.h"
 
 #include <QHash>
 #include <QTimer>
 
-class DevicePluginDynatrace : public DevicePlugin
+class IntegrationPluginDynatrace : public IntegrationPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "deviceplugindynatrace.json")
-    Q_INTERFACES(DevicePlugin)
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugindynatrace.json")
+    Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit DevicePluginDynatrace();
-    void discoverDevices(DeviceDiscoveryInfo *info) override;
-    void setupDevice(DeviceSetupInfo *info) override;
-    void postSetupDevice(Device *device) override;
-    void executeAction(DeviceActionInfo *info) override;
-    void deviceRemoved(Device *device) override;
+    explicit IntegrationPluginDynatrace();
+    void discoverThings(ThingDiscoveryInfo *info) override;
+    void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
+    void executeAction(ThingActionInfo *info) override;
+    void thingRemoved(Thing *thing) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QHash<DeviceId, Ufo *> m_ufoConnections;
-    QHash<QUuid, DeviceActionInfo *> m_asyncActions;
-    QHash<QString, DeviceSetupInfo *> m_asyncSetup;
+    QHash<ThingId, Ufo *> m_ufoConnections;
+    QHash<QUuid, ThingActionInfo *> m_asyncActions;
+    QHash<QString, ThingSetupInfo *> m_asyncSetup;
 
     void getId(const QHostAddress &address);
 
@@ -63,4 +63,4 @@ private slots:
     void onConnectionChanged(bool connected);
 };
 
-#endif // DEVICEPLUGINDYNATRACE_H
+#endif // INTEGRATIONPLUGINDYNATRACE_H
