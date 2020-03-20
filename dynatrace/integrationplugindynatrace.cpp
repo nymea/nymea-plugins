@@ -1,30 +1,32 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
 * Copyright 2013 - 2020, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
-* This project including source code and documentation is protected by copyright law, and
-* remains the property of nymea GmbH. All rights, including reproduction, publication,
-* editing and translation, are reserved. The use of this project is subject to the terms of a
-* license agreement to be concluded with nymea GmbH in accordance with the terms
-* of use of nymea GmbH, available under https://nymea.io/license
+* This project including source code and documentation is protected by
+* copyright law, and remains the property of nymea GmbH. All rights, including
+* reproduction, publication, editing and translation, are reserved. The use of
+* this project is subject to the terms of a license agreement to be concluded
+* with nymea GmbH in accordance with the terms of use of nymea GmbH, available
+* under https://nymea.io/license
 *
 * GNU Lesser General Public License Usage
-* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
-* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
-* Lesser General Public License as published by the Free Software Foundation; version 3.
-* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
+* Alternatively, this project may be redistributed and/or modified under the
+* terms of the GNU Lesser General Public License as published by the Free
+* Software Foundation; version 3. This project is distributed in the hope that
+* it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
 *
-* You should have received a copy of the GNU Lesser General Public License along with this project.
-* If not, see <https://www.gnu.org/licenses/>.
+* You should have received a copy of the GNU Lesser General Public License
+* along with this project. If not, see <https://www.gnu.org/licenses/>.
 *
-* For any further details and any questions please contact us under contact@nymea.io
-* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+* For any further details and any questions please contact us under
+* contact@nymea.io or see our FAQ/Licensing Information on
+* https://nymea.io/license/faq
 *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationplugindynatrace.h"
 #include "plugininfo.h"
@@ -54,7 +56,7 @@ void IntegrationPluginDynatrace::discoverThings(ThingDiscoveryInfo *info)
 
                 ThingDescriptor descriptor(ufoThingClassId, "Ufo", address.toString());
                 ParamList params;
-
+                //FIXME Rediscovery
                 /*Thing *existingThing = myThings().findByParams(ParamList() << Param(ufoThingIdParamTypeId, ""));
                 if (existingThing) {
                     //For Thing re-discovery
@@ -99,13 +101,16 @@ void IntegrationPluginDynatrace::setupThing(ThingSetupInfo *info)
             // Discovery Thing setup or Things setup caused by nymea restart
             info->finish(Thing::ThingErrorNoError);
         }
+    } else {
+        qCWarning(dcDynatrace()) << "Setup thing: Unhandled ThingClassId" << info->thing()->thingClassId();
+        info->finish(Thing::ThingErrorSetupFailed);
     }
 }
 
 void IntegrationPluginDynatrace::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == ufoThingClassId) {
-        thing->setStateValue(ufoConnectedStateTypeId, true); //FIXME
+        thing->setStateValue(ufoConnectedStateTypeId, true);
         thing->setStateValue(ufoPowerStateTypeId, false);
         thing->setStateValue(ufoLogoStateTypeId, false);
         thing->setStateValue(ufoEffectTopStateTypeId, "None");
@@ -113,6 +118,7 @@ void IntegrationPluginDynatrace::postSetupThing(Thing *thing)
 
         QHostAddress address = QHostAddress(thing->paramValue(ufoThingHostParamTypeId).toString());
         Ufo *ufo = new Ufo(hardwareManager()->networkManager(), address, this);
+        connect(ufo, &Ufo::connectionChanged, this, &IntegrationPluginDynatrace::onConnectionChanged);
         m_ufoConnections.insert(thing->id(), ufo);
         // Set all off
         ufo->setLogo(QColor(Qt::black), QColor(Qt::black), QColor(Qt::black), QColor(Qt::black));
@@ -122,7 +128,9 @@ void IntegrationPluginDynatrace::postSetupThing(Thing *thing)
     if(!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this]() {
-            //TODO check if Thing is reachable
+            foreach (Ufo *ufo, m_ufoConnections.values()) {
+                ufo->getId();
+            }
         });
     }
 }
@@ -315,5 +323,9 @@ void IntegrationPluginDynatrace::getId(const QHostAddress &address)
 
 void IntegrationPluginDynatrace::onConnectionChanged(bool connected)
 {
-    Q_UNUSED(connected)
+    Ufo *ufo = static_cast<Ufo *>(sender());
+    Thing *thing = myThings().findById(m_ufoConnections.key(ufo));
+    if (!thing)
+        return;
+    thing->setStateValue(ufoConnectedStateTypeId, connected);
 }
