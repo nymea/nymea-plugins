@@ -7,7 +7,7 @@
             "name": "doorBird",
             "displayName": "DoorBird",
             "id": "2da07435-571e-4956-a387-6caa51d6e845",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "0485eb61-2a22-42ba-9dd2-a5961485bf08",
                     "name": "doorBird",

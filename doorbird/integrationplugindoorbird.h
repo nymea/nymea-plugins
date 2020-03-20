@@ -28,44 +28,43 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINDOORBIRD_H
-#define DEVICEPLUGINDOORBIRD_H
+#ifndef INTEGRATIONPLUGINDOORBIRD_H
+#define INTEGRATIONPLUGINDOORBIRD_H
 
 #include <QImage>
 
-#include "devices/deviceplugin.h"
-#include "devices/devicemanager.h"
+#include "integrations/integrationplugin.h"
 #include "doorbird.h"
 
 class QNetworkAccessManager;
 class QNetworkReply;
 
-class DevicePluginDoorbird: public DevicePlugin
+class IntegrationPluginDoorbird: public IntegrationPlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "deviceplugindoorbird.json")
-    Q_INTERFACES(DevicePlugin)
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugindoorbird.json")
+    Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit DevicePluginDoorbird();
+    explicit IntegrationPluginDoorbird();
 
-    void discoverDevices(DeviceDiscoveryInfo *info) override;
-    void setupDevice(DeviceSetupInfo *info) override;
-    void postSetupDevice(Device *device) override;
-    void executeAction(DeviceActionInfo *info) override;
+    void discoverThings(ThingDiscoveryInfo *info) override;
+    void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
+    void executeAction(ThingActionInfo *info) override;
 
-    void startPairing(DevicePairingInfo *info) override;
-    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
 
-    void deviceRemoved(Device *device)override;
+    void thingRemoved(Thing *thing)override;
 
 private:
-    QHash<DeviceId, Doorbird *> m_doorbirdConnections;
-    QHash<Doorbird *, DevicePairingInfo *> m_pendingPairings;
-    QHash<Doorbird *, DeviceSetupInfo *> m_pendingDeviceSetups;
+    QHash<ThingId, Doorbird *> m_doorbirdConnections;
+    QHash<Doorbird *, ThingPairingInfo *> m_pendingPairings;
+    QHash<Doorbird *, ThingSetupInfo *> m_pendingThingSetups;
 
-    QHash<QUuid, DeviceActionInfo *> m_asyncActions;
+    QHash<QUuid, ThingActionInfo *> m_asyncActions;
 
 private slots:
     void onDoorBirdConnected(bool status);
@@ -74,4 +73,4 @@ private slots:
     void onSessionIdReceived(const QString &sessionId);
 };
 
-#endif // DEVICEPLUGINDOORBIRD_H
+#endif // INTEGRATIONPLUGINDOORBIRD_H
