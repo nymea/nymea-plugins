@@ -229,9 +229,19 @@ void IntegrationPluginBluOS::browseThing(BrowseResult *result)
             m_asyncBrowseResults.insert(requestId, result);
             connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
         } else if (result->itemId() == "grouping") {
-            //TODO avahi discovery
-            // m_asyncBrowseResults.insert(requestId, result);
-            //connect(result, &BrowseResult::aborted, this, [this, requestId]{m_asyncBrowseResults.remove(requestId);});
+            foreach (const ZeroConfServiceEntry avahiEntry, m_serviceBrowser->serviceEntries()) {
+                qCDebug(dcBluOS()) << "Zeroconf entry:" << avahiEntry;
+
+                QString playerId = avahiEntry.hostName().split(".").first();
+                if (thing->paramValue(bluosPlayerThingSerialNumberParamTypeId).toString() == playerId) {
+                    continue;
+                }
+                MediaBrowserItem groupingItem("grouping&"+avahiEntry.hostAddress().toString()+"&"+avahiEntry.port(), avahiEntry.name(), true, false);
+                groupingItem.setDescription(avahiEntry.hostAddress().toString());
+                groupingItem.setMediaIcon(MediaBrowserItem::MediaBrowserIconNetwork);
+                groupingItem.setIcon(BrowserItem::BrowserIconMusic);
+                result->addItem(groupingItem);
+            }
         } else if (result->itemId().isEmpty()) {
             MediaBrowserItem presetItem("presets", "Presets", true, false);
             presetItem.setIcon(BrowserItem::BrowserIcon::BrowserIconFavorites);
