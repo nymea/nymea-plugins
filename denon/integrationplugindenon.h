@@ -56,25 +56,17 @@ class IntegrationPluginDenon : public IntegrationPlugin
 
 public:
     explicit IntegrationPluginDenon();
-
-<<<<<<< HEAD:denon/integrationplugindenon.h
     void init() override;
+
     void discoverThings(ThingDiscoveryInfo *info) override;
+
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
-=======
-    void discoverDevices(DeviceDiscoveryInfo *info) override;
-
-    void startPairing(DevicePairingInfo *info) override;
-    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
-
-    void setupDevice(DeviceSetupInfo *info) override;
-    void postSetupDevice(Device *device) override;
-    void executeAction(DeviceActionInfo *info) override;
-    void deviceRemoved(Device *device) override;
->>>>>>> playing favorites do work now:denon/deviceplugindenon.h
 
     void browseThing(BrowseResult *result) override;
     void browserItem(BrowserItemResult *result) override;
@@ -85,15 +77,10 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 
-<<<<<<< HEAD:denon/integrationplugindenon.h
     QHash<ThingId, AvrConnection*> m_avrConnections;
-    QHash<ThingId, Heos*> m_heos;
-=======
-    QHash<DeviceId, AvrConnection*> m_avrConnections;
-    QHash<DeviceId, Heos*> m_heosConnections;
-    QHash<DeviceId, Heos*> m_unfinishedHeosConnections;
-    QHash<Heos *, DevicePairingInfo *> m_unfinishedHeosPairings;
->>>>>>> playing favorites do work now:denon/deviceplugindenon.h
+    QHash<ThingId, Heos*> m_heosConnections;
+    QHash<ThingId, Heos*> m_unfinishedHeosConnections;
+    QHash<Heos *, ThingPairingInfo *> m_unfinishedHeosPairings;
 
     QHash<AvrConnection*, ThingSetupInfo*> m_asyncAvrSetups;
     QHash<Heos*, ThingSetupInfo*> m_asyncHeosSetups;
@@ -104,6 +91,7 @@ private:
     QUrl m_notificationUrl;
 
     QHash<int, ThingActionInfo*> m_pendingActions;
+
     QHash<Heos*, BrowseResult*> m_pendingGetSourcesRequest;
     QHash<QString, BrowseResult*> m_pendingBrowseResult;    // QString = containerId or sourceId
     QHash<int, BrowserActionInfo*> m_pendingBrowserActions;

@@ -38,10 +38,10 @@
 #include "heosplayer.h"
 #include "heostypes.h"
 
-#include "devices/device.h"
+#include "integrations/thing.h"
 #include "types/mediabrowseritem.h"
-#include "devices/browseresult.h"
-#include "devices/browseritemresult.h"
+#include "integrations/browseresult.h"
+#include "integrations/browseritemresult.h"
 
 class Heos : public QObject
 {
