@@ -41,7 +41,7 @@ FileSystem::FileSystem(QObject *parent) : QObject(parent)
 
 }
 
-void FileSystem::browseDevice(BrowseResult *result)
+void FileSystem::browseThing(BrowseResult *result)
 {
     QDir directory;
     if (!result->itemId().isEmpty()) {
@@ -52,7 +52,7 @@ void FileSystem::browseDevice(BrowseResult *result)
     QFileInfoList list = directory.entryInfoList();
 
     foreach (QFileInfo item, list) {
-        qCDebug(dcFtpFileTransfer) << "Found item" << item;
+        qCDebug(dcFtpFileTransfer()) << "Found item" << item.path();
         BrowserItem browserItem;
         browserItem.setId(item.filePath());
         if (item.isHidden()) {
@@ -72,7 +72,7 @@ void FileSystem::browseDevice(BrowseResult *result)
         result->addItem(browserItem);
     }
 
-    result->finish(Device::DeviceErrorNoError);
+    result->finish(Thing::ThingErrorNoError);
     return;
 }
 
@@ -89,7 +89,7 @@ void FileSystem::browserItem(BrowserItemResult *result)
         qCDebug(dcFtpFileTransfer) << "Found item" << item;
     }
 
-    result->finish(Device::DeviceErrorNoError);
+    result->finish(Thing::ThingErrorNoError);
     return;
 }
 

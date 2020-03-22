@@ -33,12 +33,12 @@
 
 #include "types/browseritem.h"
 #include "types/browseritemaction.h"
-#include "devices/device.h"
+#include "integrations/integrationplugin.h"
 
-#include "devices/browseractioninfo.h"
-#include "devices/browseresult.h"
-#include "devices/browseritemactioninfo.h"
-#include "devices/browseritemresult.h"
+#include "integrations/browseractioninfo.h"
+#include "integrations/browseresult.h"
+#include "integrations/browseritemactioninfo.h"
+#include "integrations/browseritemresult.h"
 
 #include <QObject>
 #include <QtCore/QFileInfo>
@@ -51,7 +51,7 @@ class FileSystem : public QObject
 public:
     explicit FileSystem(QObject *parent = nullptr);
 
-    void browseDevice(BrowseResult *result);
+    void browseThing(BrowseResult *result);
     void browserItem(BrowserItemResult *result);
     void executeBrowserItem(BrowserActionInfo *info);
     void executeBrowserItemAction(BrowserItemActionInfo *info);

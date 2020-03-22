@@ -28,138 +28,138 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "devicepluginftpfiletransfer.h"
-#include "devices/device.h"
+#include "integrationpluginftpfiletransfer.h"
+#include "integrations/integrationplugin.h"
 #include "plugininfo.h"
 
 #include <QHostInfo>
 
-DevicePluginFtpFileTransfer::DevicePluginFtpFileTransfer()
+IntegrationPluginFtpFileTransfer::IntegrationPluginFtpFileTransfer()
 {
 
 }
 
-void DevicePluginFtpFileTransfer::setupDevice(DeviceSetupInfo *info)
+void IntegrationPluginFtpFileTransfer::setupThing(ThingSetupInfo *info)
 {
-    Device *device = info->device();
+    Thing *thing = info->thing();
 
-    if (device->deviceClassId() == ftpFileTransferDeviceClassId) {
+    if (thing->thingClassId() == ftpFileTransferThingClassId) {
         if (!m_fileSystem) {
             m_fileSystem = new FileSystem(this);
         }
 
-        pluginStorage()->beginGroup(device->id().toString());
+        pluginStorage()->beginGroup(thing->id().toString());
         QString username = pluginStorage()->value("username").toString();
         QString password = pluginStorage()->value("password").toString();
         pluginStorage()->endGroup();
 
-        QHostAddress address = QHostAddress(device->paramValue(ftpFileTransferDeviceIpParamTypeId).toString());
-        int port = device->paramValue(ftpFileTransferDevicePortParamTypeId).toInt();
+        QHostAddress address = QHostAddress(thing->paramValue(ftpFileTransferThingIpParamTypeId).toString());
+        int port = thing->paramValue(ftpFileTransferThingPortParamTypeId).toInt();
 
         FtpUpload *ftpUpload = new FtpUpload(address, port, username, password, this);
 
-        m_ftpUploads.insert(device, ftpUpload);
-        info->finish(Device::DeviceErrorNoError);
+        m_ftpUploads.insert(thing, ftpUpload);
+        info->finish(Thing::ThingErrorNoError);
         return;
     }
-    qCWarning(dcFtpFileTransfer()) << "Device class not found";
+    qCWarning(dcFtpFileTransfer()) << "Thing class not found";
     return;
 }
 
-void DevicePluginFtpFileTransfer::deviceRemoved(Device *device)
+void IntegrationPluginFtpFileTransfer::thingRemoved(Thing *thing)
 {
-    if (device->deviceClassId() == ftpFileTransferDeviceClassId) {
-        FtpUpload *ftpUpload = m_ftpUploads.take(device);
+    if (thing->thingClassId() == ftpFileTransferThingClassId) {
+        FtpUpload *ftpUpload = m_ftpUploads.take(thing);
         if (ftpUpload)
             ftpUpload->deleteLater();
     }
-    if (myDevices().isEmpty()) {
+    if (myThings().isEmpty()) {
         m_fileSystem->deleteLater();
     }
 }
 
 
-void DevicePluginFtpFileTransfer::startPairing(DevicePairingInfo *info)
+void IntegrationPluginFtpFileTransfer::startPairing(ThingPairingInfo *info)
 {
-    if (info->deviceClassId() == ftpFileTransferDeviceClassId) {
-        info->finish(Device::DeviceErrorNoError, QT_TR_NOOP("Please enter the user credentials"));
+    if (info->thingClassId() == ftpFileTransferThingClassId) {
+        info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the user credentials"));
         return;
     }
 }
 
-void DevicePluginFtpFileTransfer::confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret)
+void IntegrationPluginFtpFileTransfer::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
 {
-    if (info->deviceClassId() == ftpFileTransferDeviceClassId) {
-        pluginStorage()->beginGroup(info->deviceId().toString());
+    if (info->thingClassId() == ftpFileTransferThingClassId) {
+        pluginStorage()->beginGroup(info->thingId().toString());
         pluginStorage()->setValue("username", username);
         pluginStorage()->setValue("password", secret);
         pluginStorage()->endGroup();
 
-        info->finish(Device::DeviceErrorNoError);
+        info->finish(Thing::ThingErrorNoError);
     } else {
-        info->finish(Device::DeviceErrorDeviceClassNotFound);
+        info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
 
-void DevicePluginFtpFileTransfer::browseDevice(BrowseResult *result)
+void IntegrationPluginFtpFileTransfer::browseThing(BrowseResult *result)
 {
     qCDebug(dcFtpFileTransfer()) << "Browse device called" << result->itemId();
-    m_fileSystem->browseDevice(result);
+    m_fileSystem->browseThing(result);
     return;
 }
 
-void DevicePluginFtpFileTransfer::browserItem(BrowserItemResult *result)
+void IntegrationPluginFtpFileTransfer::browserItem(BrowserItemResult *result)
 {
     qCDebug(dcFtpFileTransfer()) << "Browse Item called" << result->itemId();
     m_fileSystem->browserItem(result);
     return;
 }
 
-void DevicePluginFtpFileTransfer::executeBrowserItem(BrowserActionInfo *info)
+void IntegrationPluginFtpFileTransfer::executeBrowserItem(BrowserActionInfo *info)
 {
     qCDebug(dcFtpFileTransfer()) << "Execute browser Item called" << info->browserAction().itemId();
 
-    info->finish(Device::DeviceErrorNoError);
+    info->finish(Thing::ThingErrorNoError);
     return;
 }
 
-void DevicePluginFtpFileTransfer::executeBrowserItemAction(BrowserItemActionInfo *info)
+void IntegrationPluginFtpFileTransfer::executeBrowserItemAction(BrowserItemActionInfo *info)
 {
     qCDebug(dcFtpFileTransfer()) << "Execute browser Item action called" << info->browserItemAction().itemId();
 
     if (info->browserItemAction().actionTypeId() == ftpFileTransferUploadBrowserItemActionTypeId) {
-        FtpUpload *ftpUpload = m_ftpUploads.value(info->device());
+        FtpUpload *ftpUpload = m_ftpUploads.value(info->thing());
         if (!ftpUpload)
             return;
         ftpUpload->uploadFile(info->browserItemAction().itemId(), "");
-        info->finish(Device::DeviceErrorNoError);
+        info->finish(Thing::ThingErrorNoError);
     }
     return;
 }
 
-void DevicePluginFtpFileTransfer::onConnectionChanged()
+void IntegrationPluginFtpFileTransfer::onConnectionChanged()
 {
 
 }
 
-void DevicePluginFtpFileTransfer::onUploadProgress(int percentage)
+void IntegrationPluginFtpFileTransfer::onUploadProgress(int percentage)
 {
     FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
-    Device *device = m_ftpUploads.key(ftpUpload);
-    if (!device) {
+    Thing *thing = m_ftpUploads.key(ftpUpload);
+    if (!thing) {
         return;
     }
-    device->setStateValue(ftpFileTransferUploadProgressStateTypeId, percentage);
-    device->setStateValue(ftpFileTransferUploadInProgressStateTypeId, true);
+    thing->setStateValue(ftpFileTransferUploadProgressStateTypeId, percentage);
+    thing->setStateValue(ftpFileTransferUploadInProgressStateTypeId, true);
 }
 
-void DevicePluginFtpFileTransfer::onUploadFinished(bool success)
+void IntegrationPluginFtpFileTransfer::onUploadFinished(bool success)
 {
     Q_UNUSED(success);
     FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
-    Device *device = m_ftpUploads.key(ftpUpload);
-    if (!device) {
+    Thing *thing = m_ftpUploads.key(ftpUpload);
+    if (!thing) {
         return;
     }
-    device->setStateValue(ftpFileTransferUploadInProgressStateTypeId, false);
+    thing->setStateValue(ftpFileTransferUploadInProgressStateTypeId, false);
 }

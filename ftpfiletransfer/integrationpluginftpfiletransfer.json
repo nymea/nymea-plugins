@@ -7,7 +7,7 @@
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "name": "nymea",
             "displayName": "nymea",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "45c44185-28d8-4b5d-abbb-7dd825c8759f",
                     "name": "ftpFileTransfer",
@@ -39,6 +39,7 @@
                             "displayName": "connected",
                             "displayNameEvent": "connected changed",
                             "defaultValue": false,
+                            "cached": false,
                             "type": "bool"
                         },
                         {

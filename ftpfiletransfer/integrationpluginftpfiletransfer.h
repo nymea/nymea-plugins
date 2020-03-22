@@ -28,10 +28,10 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef DEVICEPLUGINFTPFILETRANSFER_H
-#define DEVICEPLUGINFTPFILETRANSFER_H
+#ifndef INTEGRATIONPLUGINFTPFILETRANSFER_H
+#define INTEGRTAIONPLUGINFTPFILETRANSFER_H
 
-#include "devices/deviceplugin.h"
+#include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 #include "filesystem.h"
 #include "ftpupload.h"
@@ -39,29 +39,29 @@
 #include <QHash>
 #include <QDebug>
 
-class DevicePluginFtpFileTransfer : public DevicePlugin
+class IntegrationPluginFtpFileTransfer : public IntegrationPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "devicepluginftpfiletransfer.json")
-    Q_INTERFACES(DevicePlugin)
+    Q_PLUGIN_METADATA(IID "io.nymea.DevicePlugin" FILE "integrationpluginftpfiletransfer.json")
+    Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit DevicePluginFtpFileTransfer();
+    explicit IntegrationPluginFtpFileTransfer();
 
-    void setupDevice(DeviceSetupInfo *info) override;
-    void deviceRemoved(Device *device) override;
+    void setupThing(ThingSetupInfo *info) override;
+    void thingRemoved(Thing *thing) override;
 
-    void startPairing(DevicePairingInfo *info) override;
-    void confirmPairing(DevicePairingInfo *info, const QString &username, const QString &secret) override;
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
 
-    void browseDevice(BrowseResult *result) override;
+    void browseThing(BrowseResult *result) override;
     void browserItem(BrowserItemResult *result) override;
     void executeBrowserItem(BrowserActionInfo *info) override;
     void executeBrowserItemAction(BrowserItemActionInfo *info) override;
 
 private:
     FileSystem *m_fileSystem;
-    QHash<Device *, FtpUpload *> m_ftpUploads;
+    QHash<Thing *, FtpUpload *> m_ftpUploads;
 
     QHash<int, ActionId> m_pendingActions;
     QHash<int, ActionId> m_pendingBrowserItemActions;
@@ -72,4 +72,4 @@ private slots:
     void onUploadFinished(bool success);
 };
 
-#endif // DEVICEPLUGINFTPFILETRANSFER_H
+#endif // INTEGRATIONPLUGINFTPFILETRANSFER_H
