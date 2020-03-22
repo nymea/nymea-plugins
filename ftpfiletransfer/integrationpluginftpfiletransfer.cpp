@@ -139,7 +139,13 @@ void IntegrationPluginFtpFileTransfer::executeBrowserItemAction(BrowserItemActio
 
 void IntegrationPluginFtpFileTransfer::onConnectionChanged()
 {
-
+    FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
+    Thing *thing = m_ftpUploads.key(ftpUpload);
+    if (!thing) {
+        return;
+    }
+    Q_UNUSED(thing);
+    //thing->setStateValue(ftpFileTransferUploadProgressStateTypeId, );
 }
 
 void IntegrationPluginFtpFileTransfer::onUploadProgress(int percentage)
