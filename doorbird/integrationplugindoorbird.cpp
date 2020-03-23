@@ -85,7 +85,7 @@ void IntegrationPluginDoorbird::discoverThings(ThingDiscoveryInfo *info)
         return;
     } else {
         qCWarning(dcDoorBird()) << "Cannot discover for ThingClassId" << info->thingClassId();
-        info->finish(Thing::ThingErrorThingNotFound);
+        info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
 
@@ -97,7 +97,7 @@ void IntegrationPluginDoorbird::startPairing(ThingPairingInfo *info)
         return;
     } else {
         qCWarning(dcDoorBird()) << "StartPairing unhandled ThingClassId" << info->thingClassId();
-        info->finish(Thing::ThingErrorCreationMethodNotSupported);
+        info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
 
