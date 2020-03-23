@@ -1,36 +1,38 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
 * Copyright 2013 - 2020, nymea GmbH
 * Contact: contact@nymea.io
 *
 * This file is part of nymea.
-* This project including source code and documentation is protected by copyright law, and
-* remains the property of nymea GmbH. All rights, including reproduction, publication,
-* editing and translation, are reserved. The use of this project is subject to the terms of a
-* license agreement to be concluded with nymea GmbH in accordance with the terms
-* of use of nymea GmbH, available under https://nymea.io/license
+* This project including source code and documentation is protected by
+* copyright law, and remains the property of nymea GmbH. All rights, including
+* reproduction, publication, editing and translation, are reserved. The use of
+* this project is subject to the terms of a license agreement to be concluded
+* with nymea GmbH in accordance with the terms of use of nymea GmbH, available
+* under https://nymea.io/license
 *
 * GNU Lesser General Public License Usage
-* This project may also contain libraries licensed under the open source software license GNU GPL v.3.
-* Alternatively, this project may be redistributed and/or modified under the terms of the GNU
-* Lesser General Public License as published by the Free Software Foundation; version 3.
-* this project is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
+* Alternatively, this project may be redistributed and/or modified under the
+* terms of the GNU Lesser General Public License as published by the Free
+* Software Foundation; version 3. This project is distributed in the hope that
+* it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
 *
-* You should have received a copy of the GNU Lesser General Public License along with this project.
-* If not, see <https://www.gnu.org/licenses/>.
+* You should have received a copy of the GNU Lesser General Public License
+* along with this project. If not, see <https://www.gnu.org/licenses/>.
 *
-* For any further details and any questions please contact us under contact@nymea.io
-* or see our FAQ/Licensing Information on https://nymea.io/license/faq
+* For any further details and any questions please contact us under
+* contact@nymea.io or see our FAQ/Licensing Information on
+* https://nymea.io/license/faq
 *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 
 #include "lifx.h"
 #include "extern-plugininfo.h"
 
 #include <QColor>
-#include <QRandomGenerator>
 
 Lifx::Lifx(QObject *parent) :
     QObject(parent)
@@ -92,7 +94,7 @@ int Lifx::setColorTemperature(int mirad, int msFadeTime)
 {
     Q_UNUSED(mirad)
     Q_UNUSED(msFadeTime)
-    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    int requestId = qrand();
 
     return requestId;
 }
@@ -101,7 +103,7 @@ int Lifx::setColor(QColor color, int msFadeTime)
 {
     Q_UNUSED(color)
     Q_UNUSED(msFadeTime)
-    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    int requestId = qrand();
 
     return requestId;
 }
@@ -110,7 +112,7 @@ int Lifx::setBrightness(int percentage, int msFadeTime)
 {
     Q_UNUSED(percentage)
     Q_UNUSED(msFadeTime)
-    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    int requestId = qrand();
     Message message;
     sendMessage(message);
     return requestId;
@@ -120,21 +122,21 @@ int Lifx::setPower(bool power, int msFadeTime)
 {
     Q_UNUSED(power)
     Q_UNUSED(msFadeTime)
-    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    int requestId = qrand();
 
     return requestId;
 }
 
 int Lifx::flash()
 {
-    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    int requestId = qrand();
 
     return requestId;
 }
 
 int Lifx::flash15s()
 {
-    int requestId = static_cast<int>(QRandomGenerator::global()->generate());
+    int requestId = qrand();
 
     return requestId;
 }

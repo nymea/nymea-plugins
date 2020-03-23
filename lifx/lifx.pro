@@ -1,14 +1,14 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginlifx)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginlifx)
 
 QT += network
 
 SOURCES += \
-    devicepluginlifx.cpp \
+    integrationpluginlifx.cpp \
     lifx.cpp \
 
 HEADERS += \
-    devicepluginlifx.h \
+    integrationpluginlifx.h \
     lifx.h \
 

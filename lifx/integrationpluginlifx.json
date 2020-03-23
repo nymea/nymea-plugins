@@ -7,7 +7,7 @@
             "name": "lifx",
             "displayName": "LIFX",
             "id": "e5e48c0d-cff7-4c0f-983e-d23bd3e4ba87",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "12907c9c-e7f0-47f2-bd58-39d52ffdf24e",
                     "name": "colorBulb",
