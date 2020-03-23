@@ -2,14 +2,14 @@ include(../plugins.pri)
 
 QT += bluetooth
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginlukeroberts)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginlukeroberts)
 
 SOURCES += \
-    devicepluginlukeroberts.cpp \
+    integrationpluginlukeroberts.cpp \
     lukeroberts.cpp
 
 HEADERS += \
-    devicepluginlukeroberts.h \
+    integrationpluginlukeroberts.h \
     lukeroberts.h
 
 
