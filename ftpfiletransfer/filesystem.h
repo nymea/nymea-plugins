@@ -53,12 +53,6 @@ public:
 
     void browseThing(BrowseResult *result);
     void browserItem(BrowserItemResult *result);
-    void executeBrowserItem(BrowserActionInfo *info);
-    void executeBrowserItemAction(BrowserItemActionInfo *info);
-
-signals:
-
-public slots:
 };
 
 #endif // FILESYSTEM_H

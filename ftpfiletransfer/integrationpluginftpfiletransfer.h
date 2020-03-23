@@ -56,20 +56,21 @@ public:
 
     void browseThing(BrowseResult *result) override;
     void browserItem(BrowserItemResult *result) override;
-    void executeBrowserItem(BrowserActionInfo *info) override;
     void executeBrowserItemAction(BrowserItemActionInfo *info) override;
 
 private:
     FileSystem *m_fileSystem;
     QHash<Thing *, FtpUpload *> m_ftpUploads;
 
+    QHash<FtpUpload *, ThingSetupInfo *> m_asyncSetups;
     QHash<int, ActionId> m_pendingActions;
     QHash<int, ActionId> m_pendingBrowserItemActions;
 
 private slots:
-    void onConnectionChanged();
+    void onConnectionChanged(bool connected);
     void onUploadProgress(int percentage);
     void onUploadFinished(bool success);
+    void onFtpUploadConnectionTestFinished(bool success);
 };
 
 #endif // INTEGRATIONPLUGINFTPFILETRANSFER_H

@@ -52,16 +52,18 @@ void FileSystem::browseThing(BrowseResult *result)
     QFileInfoList list = directory.entryInfoList();
 
     foreach (QFileInfo item, list) {
-        qCDebug(dcFtpFileTransfer()) << "Found item" << item.path();
         BrowserItem browserItem;
-        browserItem.setId(item.filePath());
         if (item.isHidden()) {
             continue;
         }
         if (item.isDir()) {
+            qCDebug(dcFtpFileTransfer()) << "Found dir" << item.filePath();
+            browserItem.setId(item.filePath());
             browserItem.setIcon(BrowserItem::BrowserIconFolder);
             browserItem.setBrowsable(true);
         } else {
+            qCDebug(dcFtpFileTransfer()) << "Found file" << item.filePath();
+             browserItem.setId(item.filePath());
             browserItem.setIcon(BrowserItem::BrowserIconFile);
             browserItem.setBrowsable(false);
             browserItem.setExecutable(item.isReadable());
@@ -71,37 +73,18 @@ void FileSystem::browseThing(BrowseResult *result)
         browserItem.setDisplayName(item.fileName());
         result->addItem(browserItem);
     }
-
-    result->finish(Thing::ThingErrorNoError);
-    return;
+    return result->finish(Thing::ThingErrorNoError);
 }
 
 void FileSystem::browserItem(BrowserItemResult *result)
 {
     qCDebug(dcFtpFileTransfer) << "Getting details for" << result->itemId();
-    QString method;
-    QVariantMap params;
 
-    QDir directory(result->itemId());
-    QStringList list = directory.entryList();
-
-    foreach (QString item, list) {
-        qCDebug(dcFtpFileTransfer) << "Found item" << item;
+    QFileInfo info(result->itemId());
+    if (info.isReadable()) {
+        result->finish(Thing::ThingErrorNoError);
+    } else {
+        qCWarning(dcFtpFileTransfer()) << "browseItem: itemId not found" << result->itemId();
+        result->finish(Thing::ThingErrorItemNotFound);
     }
-
-    result->finish(Thing::ThingErrorNoError);
-    return;
-}
-
-void FileSystem::executeBrowserItem(BrowserActionInfo *info)
-{
-    Q_UNUSED(info)
-    return;
-}
-
-void FileSystem::executeBrowserItemAction(BrowserItemActionInfo *info)
-{
-    Q_UNUSED(info)
-
-    return;
 }

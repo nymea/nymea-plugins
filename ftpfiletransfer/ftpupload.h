@@ -31,6 +31,8 @@
 #ifndef FTPUPLOAD_H
 #define FTPUPLOAD_H
 
+#include "network/networkaccessmanager.h"
+
 #include <QObject>
 #include <QFile>
 #include <QFileInfo>
@@ -43,14 +45,15 @@ class FtpUpload : public QObject
 {
     Q_OBJECT
 public:
-    explicit FtpUpload(const QHostAddress &address, int port, const QString &username, const QString &password, QObject *parent = nullptr);
+    explicit FtpUpload(NetworkAccessManager *networkmanager, const QHostAddress &address, int port, const QString &username, const QString &password, QObject *parent = nullptr);
 
     void setLoginCredentials(const QString &username, const QString &password);
+    void testConnection();
     void setFtpServer(const QHostAddress &address);
     void uploadFile(const QString &fileName, const QString &targetName);
 
 private:
-    QNetworkAccessManager *m_networkAccessManager;
+    NetworkAccessManager *m_networkAccessManager;
     QHash<QNetworkReply *, QFile *> m_fileUploads;
     QHostAddress m_serverAddress;
     int m_port;
@@ -58,6 +61,8 @@ private:
     QString m_password;
 
 signals:
+    void testFinished(bool success);
+    void connectionChanged(bool connected);
     void uploadProgress(int percentage);
     void uploadFinished(bool success);
 

@@ -54,16 +54,32 @@ void IntegrationPluginFtpFileTransfer::setupThing(ThingSetupInfo *info)
         pluginStorage()->endGroup();
 
         QHostAddress address = QHostAddress(thing->paramValue(ftpFileTransferThingIpParamTypeId).toString());
+        if (address.isNull()) {
+            qCWarning(dcFtpFileTransfer()) << "Invalid IP address";
+            return info->finish(Thing::ThingErrorSetupFailed);
+        }
         int port = thing->paramValue(ftpFileTransferThingPortParamTypeId).toInt();
 
-        FtpUpload *ftpUpload = new FtpUpload(address, port, username, password, this);
+        FtpUpload *ftpUpload = new FtpUpload(hardwareManager()->networkManager(), address, port, username, password, this);
+        connect(ftpUpload, &FtpUpload::testFinished, this, &IntegrationPluginFtpFileTransfer::onFtpUploadConnectionTestFinished);
+        connect(ftpUpload, &FtpUpload::uploadProgress, this, &IntegrationPluginFtpFileTransfer::onUploadFinished);
+        connect(ftpUpload, &FtpUpload::uploadFinished, this, &IntegrationPluginFtpFileTransfer::onUploadProgress);
 
         m_ftpUploads.insert(thing, ftpUpload);
-        info->finish(Thing::ThingErrorNoError);
-        return;
+        m_asyncSetups.insert(ftpUpload, info);
+        ftpUpload->testConnection();
+
+        connect(info, &ThingSetupInfo::aborted, this, [thing, ftpUpload, this]{
+            m_asyncSetups.remove(ftpUpload);
+
+            if (m_ftpUploads.contains(thing)) {
+                m_ftpUploads.take(thing)->deleteLater();
+            }
+        });
+    } else {
+        qCWarning(dcFtpFileTransfer()) << "setupThing; Thing class not found" << thing->thingClassId();
+        info->finish(Thing::ThingErrorSetupFailed);
     }
-    qCWarning(dcFtpFileTransfer()) << "Thing class not found";
-    return;
 }
 
 void IntegrationPluginFtpFileTransfer::thingRemoved(Thing *thing)
@@ -75,6 +91,7 @@ void IntegrationPluginFtpFileTransfer::thingRemoved(Thing *thing)
     }
     if (myThings().isEmpty()) {
         m_fileSystem->deleteLater();
+        m_fileSystem = nullptr;
     }
 }
 
@@ -105,22 +122,12 @@ void IntegrationPluginFtpFileTransfer::browseThing(BrowseResult *result)
 {
     qCDebug(dcFtpFileTransfer()) << "Browse device called" << result->itemId();
     m_fileSystem->browseThing(result);
-    return;
 }
 
 void IntegrationPluginFtpFileTransfer::browserItem(BrowserItemResult *result)
 {
     qCDebug(dcFtpFileTransfer()) << "Browse Item called" << result->itemId();
     m_fileSystem->browserItem(result);
-    return;
-}
-
-void IntegrationPluginFtpFileTransfer::executeBrowserItem(BrowserActionInfo *info)
-{
-    qCDebug(dcFtpFileTransfer()) << "Execute browser Item called" << info->browserAction().itemId();
-
-    info->finish(Thing::ThingErrorNoError);
-    return;
 }
 
 void IntegrationPluginFtpFileTransfer::executeBrowserItemAction(BrowserItemActionInfo *info)
@@ -129,23 +136,26 @@ void IntegrationPluginFtpFileTransfer::executeBrowserItemAction(BrowserItemActio
 
     if (info->browserItemAction().actionTypeId() == ftpFileTransferUploadBrowserItemActionTypeId) {
         FtpUpload *ftpUpload = m_ftpUploads.value(info->thing());
-        if (!ftpUpload)
-            return;
-        ftpUpload->uploadFile(info->browserItemAction().itemId(), "");
+        if (!ftpUpload) {
+            qCWarning(dcFtpFileTransfer()) << "executeBrowseItemAction FtpUpload object not found";
+            return info->finish(Thing::ThingErrorHardwareNotAvailable);
+        }
+        ftpUpload->uploadFile(info->browserItemAction().itemId(), info->browserItemAction().itemId().split("/").last());
         info->finish(Thing::ThingErrorNoError);
+    } else {
+        qCWarning(dcFtpFileTransfer()) << "executeBrowseItemAction: actionTypeId not found" << info->browserItemAction().actionTypeId();
+        info->finish(Thing::ThingErrorActionTypeNotFound);
     }
-    return;
 }
 
-void IntegrationPluginFtpFileTransfer::onConnectionChanged()
+void IntegrationPluginFtpFileTransfer::onConnectionChanged(bool connected)
 {
     FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
     Thing *thing = m_ftpUploads.key(ftpUpload);
     if (!thing) {
         return;
     }
-    Q_UNUSED(thing);
-    //thing->setStateValue(ftpFileTransferUploadProgressStateTypeId, );
+    thing->setStateValue(ftpFileTransferConnectedStateTypeId, connected);
 }
 
 void IntegrationPluginFtpFileTransfer::onUploadProgress(int percentage)
@@ -161,11 +171,26 @@ void IntegrationPluginFtpFileTransfer::onUploadProgress(int percentage)
 
 void IntegrationPluginFtpFileTransfer::onUploadFinished(bool success)
 {
-    Q_UNUSED(success);
     FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
     Thing *thing = m_ftpUploads.key(ftpUpload);
     if (!thing) {
         return;
     }
     thing->setStateValue(ftpFileTransferUploadInProgressStateTypeId, false);
+    emitEvent(Event(ftpFileTransferUploadFinishedEventTypeId, thing->id(), ParamList() << Param(ftpFileTransferUploadFinishedEventSuccessParamTypeId, success)));
+}
+
+void IntegrationPluginFtpFileTransfer::onFtpUploadConnectionTestFinished(bool success)
+{
+    FtpUpload *ftpUpload = static_cast<FtpUpload *>(sender());
+    if (m_asyncSetups.contains(ftpUpload)) {
+        ThingSetupInfo *info = m_asyncSetups.take(ftpUpload);
+        if (success) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            info->finish(Thing::ThingErrorSetupFailed);
+            m_ftpUploads.remove(m_ftpUploads.key(ftpUpload));
+            ftpUpload->deleteLater();
+        }
+    }
 }

@@ -33,49 +33,68 @@
 
 #include <QDateTime>
 
-FtpUpload::FtpUpload(const QHostAddress &address, int port, const QString &username, const QString &password, QObject *parent) :
+FtpUpload::FtpUpload(NetworkAccessManager *networkManager, const QHostAddress &address, int port, const QString &username, const QString &password, QObject *parent) :
     QObject(parent),
+    m_networkAccessManager(networkManager),
     m_serverAddress(address),
     m_port(port),
     m_username(username),
     m_password(password)
 {
-    m_networkAccessManager = new QNetworkAccessManager(this);
+    qCDebug(dcFtpFileTransfer()) << "FtpUpload Init" << address.toString() << port << username << password;
 }
+
+void FtpUpload::testConnection()
+{
+    emit testFinished(true);
+}
+
+
 
 void FtpUpload::uploadFile(const QString &fileName, const QString &targetName)
 {
-    QFile *file = new QFile(fileName);
-
-    QFileInfo fileInfo(*file);
-    QUrl url(m_serverAddress.toString() + targetName);
+    QUrl url;
+    url.setHost(m_serverAddress.toString());
+    url.setPath("/"+targetName);
     url.setScheme("ftp");
     url.setUserName(m_username);
     url.setPassword(m_password);
     url.setPort(m_port);
+    qCDebug(dcFtpFileTransfer()) << "uploadFile request" << targetName << fileName << url ;
 
+    Q_UNUSED(fileName);
+    /*QFile *file = new QFile(fileName);
+    QFileInfo fileInfo(*file);
     if (file->open(QIODevice::ReadOnly)) {
         // Start upload
         QNetworkReply *reply = m_networkAccessManager->put(QNetworkRequest(url), file);
+        m_fileUploads.insert(reply, file);
         // And connect to the progress upload signal
         connect(reply, &QNetworkReply::uploadProgress, this, &FtpUpload::onUploadProgress);
         connect(reply, &QNetworkReply::finished, this, &FtpUpload::onFinished);
-    }
+    }*/
 }
 
 void FtpUpload::onFinished()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
     reply->deleteLater();
-    QFile *file = m_fileUploads.take(reply);
-    file->close();
-    file->deleteLater();
 
-    if (reply->error()) {
-        emit uploadFinished(false);
-        qCWarning(dcFtpFileTransfer()) << "Upload failed:" << reply->errorString();
-    } else {
-        emit uploadFinished(true);
+    if (m_fileUploads.contains(reply)) {
+        QFile *file = m_fileUploads.take(reply);
+        if (!file) {
+            qCWarning(dcFtpFileTransfer()) << "ftpUpload::onFinished - QFile object not found";
+            return;
+        }
+        file->close();
+        file->deleteLater();
+
+        if (reply->error()) {
+            emit uploadFinished(false);
+            qCWarning(dcFtpFileTransfer()) << "Upload failed:" << reply->errorString();
+        } else {
+            emit uploadFinished(true);
+        }
     }
 }
 
