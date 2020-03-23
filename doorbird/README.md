@@ -12,10 +12,12 @@ This plugin integrates DoorBird video doorbells into nymea. All the communicatio
 	* Switching door relays
 	* No internet connection required
 
+NOTE: This plug-in does not handle any video- or audio stream.
+
 ## Requirements
 
 * The DoorBird device must be in the same local area network as nymea.
-* The router must not block avahi/zeroconf multicast messages.
+* The router must not block ZeroConf/mDNS multicast messages.
 * TCP Sockets on port 80 must not be blocked by the router.
 * The user must have the permission to act as DoorBird API-operator.
 	* You can check the permissions in the DoorBird app.
@@ -23,4 +25,4 @@ This plugin integrates DoorBird video doorbells into nymea. All the communicatio
 
 ## More
 
-https://www.doorbird.com/
+https://www.doorbird.com
