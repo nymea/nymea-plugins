@@ -7,7 +7,7 @@
             "displayName": "Atag",
             "name": "atag",
             "id": "4c8bf4e2-0f96-4876-8738-e40a45efd26b",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "edc2d27f-5a36-45d3-8250-ba1b3ccfa75e",
                     "name": "atagOne",
@@ -43,7 +43,8 @@
                             "displayName": "Available",
                             "displayNameEvent": "Available changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "cached": false
                         },
                         {
                             "id": "e886377d-34b7-4908-ad0d-ed463fc6181d",
@@ -71,6 +72,8 @@
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 30,
                             "writable": true
                         },
                         {

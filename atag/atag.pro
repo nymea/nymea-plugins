@@ -2,12 +2,12 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginatag)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginatag)
 
 SOURCES += \
-    devicepluginatag.cpp \
+    integrationpluginatag.cpp \
     atag.cpp \
 
 HEADERS += \
-    devicepluginatag.h \
+    integrationpluginatag.h \
     atag.h \
