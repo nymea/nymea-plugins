@@ -16,7 +16,7 @@
             "name": "airQualityIndex",
             "displayName": "Air Quality Index",
             "id": "6c8e2ded-0a33-4e77-b76c-ea02168741ec",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "23ea32c9-38b0-4155-bacc-3afa8c09f6ee",
                     "name": "airQualityIndex",
@@ -144,7 +144,7 @@
                             "name": "pressure",
                             "displayName": "Pressure",
                             "displayNameEvent": "Pressure changed",
-                            "unit": "HectoPascal",
+                            "unit": "MilliBar",
                             "type": "double",
                             "defaultValue": 0
                         },
