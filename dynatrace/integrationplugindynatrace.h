@@ -38,6 +38,7 @@
 
 #include <QHash>
 #include <QTimer>
+#include <QHostInfo>
 
 class IntegrationPluginDynatrace : public IntegrationPlugin
 {
@@ -63,6 +64,9 @@ private:
 
 private slots:
     void onConnectionChanged(bool connected);
+
+private slots:
+    void resolveIds(ThingDiscoveryInfo *info, const QHostInfo &host);
 };
 
 #endif // INTEGRATIONPLUGINDYNATRACE_H

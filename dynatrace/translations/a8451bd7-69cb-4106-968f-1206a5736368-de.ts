@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="de">
 <context>
     <name>IntegrationPluginDynatrace</name>
     <message>
         <location filename="../integrationplugindynatrace.cpp" line="50"/>
         <source>An error happened discovering the UFO in the network.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ein Netzwerkfehler ist beim Auffinden des UFOs aufgetreten.</translation>
     </message>
 </context>
 <context>
@@ -21,13 +21,13 @@
 The name of the ParamType (ThingClass: ufo, EventType: brightness, ID: {1adb2df8-7ba1-48b8-b0da-d67085efe041})
 ----------
 The name of the StateType ({1adb2df8-7ba1-48b8-b0da-d67085efe041}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Helligkeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="99"/>
         <source>Brightness changed</source>
         <extracomment>The name of the EventType ({1adb2df8-7ba1-48b8-b0da-d67085efe041}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Helligkeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="102"/>
@@ -39,13 +39,13 @@ The name of the StateType ({1adb2df8-7ba1-48b8-b0da-d67085efe041}) of ThingClass
 The name of the ParamType (ThingClass: ufo, EventType: color, ID: {9535fd99-05c6-449f-80a2-8daf61d9b9b0})
 ----------
 The name of the StateType ({9535fd99-05c6-449f-80a2-8daf61d9b9b0}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="111"/>
         <source>Color changed</source>
         <extracomment>The name of the EventType ({9535fd99-05c6-449f-80a2-8daf61d9b9b0}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="114"/>
@@ -57,13 +57,13 @@ The name of the StateType ({9535fd99-05c6-449f-80a2-8daf61d9b9b0}) of ThingClass
 The name of the ParamType (ThingClass: ufo, EventType: colorTemperature, ID: {60fa917b-8702-4ff2-90b8-9c8c616bb21f})
 ----------
 The name of the StateType ({60fa917b-8702-4ff2-90b8-9c8c616bb21f}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbtemperatur</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="123"/>
         <source>Color temperature changed</source>
         <extracomment>The name of the EventType ({60fa917b-8702-4ff2-90b8-9c8c616bb21f}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbtemperatur geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="126"/>
@@ -72,7 +72,7 @@ The name of the StateType ({60fa917b-8702-4ff2-90b8-9c8c616bb21f}) of ThingClass
         <extracomment>The name of the vendor ({31b402be-1562-4335-aa83-d1c1166db570})
 ----------
 The name of the plugin dynatrace ({a8451bd7-69cb-4106-968f-1206a5736368})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Dynatrace</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="78"/>
@@ -84,13 +84,13 @@ The name of the plugin dynatrace ({a8451bd7-69cb-4106-968f-1206a5736368})</extra
 The name of the ParamType (ThingClass: ufo, EventType: bottomColor, ID: {ef2a8d5b-82d4-43d5-b9ec-82ef5662b971})
 ----------
 The name of the StateType ({ef2a8d5b-82d4-43d5-b9ec-82ef5662b971}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe unten</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="87"/>
         <source>Bottom color changed</source>
         <extracomment>The name of the EventType ({ef2a8d5b-82d4-43d5-b9ec-82ef5662b971}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe unten geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="132"/>
@@ -102,13 +102,13 @@ The name of the StateType ({ef2a8d5b-82d4-43d5-b9ec-82ef5662b971}) of ThingClass
 The name of the ParamType (ThingClass: ufo, EventType: effectBottom, ID: {0fab896b-9900-4375-96c0-0d38460cee65})
 ----------
 The name of the StateType ({0fab896b-9900-4375-96c0-0d38460cee65}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Effekt unten</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="141"/>
         <source>Effect bottom changed</source>
         <extracomment>The name of the EventType ({0fab896b-9900-4375-96c0-0d38460cee65}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Effekt unten geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="144"/>
@@ -120,25 +120,25 @@ The name of the StateType ({0fab896b-9900-4375-96c0-0d38460cee65}) of ThingClass
 The name of the ParamType (ThingClass: ufo, EventType: effectTop, ID: {53da0021-974a-434a-94ac-3f187aad1480})
 ----------
 The name of the StateType ({53da0021-974a-434a-94ac-3f187aad1480}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Effekt oben</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="153"/>
         <source>Effect top changed</source>
         <extracomment>The name of the EventType ({53da0021-974a-434a-94ac-3f187aad1480}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Effekt oben geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="156"/>
         <source>Host address</source>
         <extracomment>The name of the ParamType (ThingClass: ufo, Type: thing, ID: {3e14968b-954e-4e85-ae79-3de9ae4fe951})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>IP Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="159"/>
         <source>Id</source>
         <extracomment>The name of the ParamType (ThingClass: ufo, Type: thing, ID: {142c25c0-03e3-478e-b5c3-3d072f668cc4})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="162"/>
@@ -150,13 +150,13 @@ The name of the StateType ({53da0021-974a-434a-94ac-3f187aad1480}) of ThingClass
 The name of the ParamType (ThingClass: ufo, EventType: logo, ID: {a9c123e2-db78-40d3-a422-7e4817d50984})
 ----------
 The name of the StateType ({a9c123e2-db78-40d3-a422-7e4817d50984}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Logo</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="171"/>
         <source>Logo changed</source>
         <extracomment>The name of the EventType ({a9c123e2-db78-40d3-a422-7e4817d50984}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Logo geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="174"/>
@@ -168,13 +168,13 @@ The name of the StateType ({a9c123e2-db78-40d3-a422-7e4817d50984}) of ThingClass
 The name of the ParamType (ThingClass: ufo, EventType: logoColor, ID: {d3eb4a99-20cc-4d47-af7d-33453aca2087})
 ----------
 The name of the StateType ({d3eb4a99-20cc-4d47-af7d-33453aca2087}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Logo-Farbe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="183"/>
         <source>Logo color changed</source>
         <extracomment>The name of the EventType ({d3eb4a99-20cc-4d47-af7d-33453aca2087}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Logo-Farbe geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="186"/>
@@ -186,13 +186,13 @@ The name of the StateType ({d3eb4a99-20cc-4d47-af7d-33453aca2087}) of ThingClass
 The name of the ParamType (ThingClass: ufo, EventType: power, ID: {14ac8d16-72be-4530-a2ce-dd5589ce8dd7})
 ----------
 The name of the StateType ({14ac8d16-72be-4530-a2ce-dd5589ce8dd7}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeschaltet</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="195"/>
         <source>Power changed</source>
         <extracomment>The name of the EventType ({14ac8d16-72be-4530-a2ce-dd5589ce8dd7}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ein- oder ausgeschaltet</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="198"/>
@@ -201,55 +201,55 @@ The name of the StateType ({14ac8d16-72be-4530-a2ce-dd5589ce8dd7}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: ufo, EventType: connected, ID: {1a439907-e810-4dea-b357-dd32281896e7})
 ----------
 The name of the StateType ({1a439907-e810-4dea-b357-dd32281896e7}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Erreichbar</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="204"/>
         <source>Reachable changed</source>
         <extracomment>The name of the EventType ({1a439907-e810-4dea-b357-dd32281896e7}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Erreichbarkeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="207"/>
         <source>Set bottom color</source>
         <extracomment>The name of the ActionType ({ef2a8d5b-82d4-43d5-b9ec-82ef5662b971}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Farbe unten</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="210"/>
         <source>Set bottom effect</source>
         <extracomment>The name of the ActionType ({0fab896b-9900-4375-96c0-0d38460cee65}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Farbe oben</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="213"/>
         <source>Set brigtness</source>
         <extracomment>The name of the ActionType ({1adb2df8-7ba1-48b8-b0da-d67085efe041}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Helligkeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="216"/>
         <source>Set color</source>
         <extracomment>The name of the ActionType ({9535fd99-05c6-449f-80a2-8daf61d9b9b0}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Farbe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="219"/>
         <source>Set color temperature</source>
         <extracomment>The name of the ActionType ({60fa917b-8702-4ff2-90b8-9c8c616bb21f}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Farbtemperatur</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="231"/>
         <source>Set top color</source>
         <extracomment>The name of the ActionType ({b378290a-468f-45ef-9d65-00546737ce9b}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Farbe oben</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="234"/>
         <source>Set top effect</source>
         <extracomment>The name of the ActionType ({53da0021-974a-434a-94ac-3f187aad1480}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Effekt oben</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="237"/>
@@ -261,37 +261,37 @@ The name of the StateType ({1a439907-e810-4dea-b357-dd32281896e7}) of ThingClass
 The name of the ParamType (ThingClass: ufo, EventType: topColor, ID: {b378290a-468f-45ef-9d65-00546737ce9b})
 ----------
 The name of the StateType ({b378290a-468f-45ef-9d65-00546737ce9b}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe oben</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="246"/>
         <source>Top color changed</source>
         <extracomment>The name of the EventType ({b378290a-468f-45ef-9d65-00546737ce9b}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbe oben geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="249"/>
         <source>UFO</source>
         <extracomment>The name of the ThingClass ({6271f010-0b0a-4f29-b894-0611bb5f3dcc})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>UFO</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="222"/>
         <source>Set logo</source>
         <extracomment>The name of the ActionType ({a9c123e2-db78-40d3-a422-7e4817d50984}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Logo</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="225"/>
         <source>Set logo color</source>
         <extracomment>The name of the ActionType ({d3eb4a99-20cc-4d47-af7d-33453aca2087}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Logo-Farbe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/dynatrace/plugininfo.h" line="228"/>
         <source>Set power</source>
         <extracomment>The name of the ActionType ({14ac8d16-72be-4530-a2ce-dd5589ce8dd7}) of ThingClass ufo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ein- oder ausschalten</translation>
     </message>
 </context>
 </TS>

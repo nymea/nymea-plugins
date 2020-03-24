@@ -36,44 +36,78 @@
 #include <QUrlQuery>
 #include <QJsonDocument>
 #include <QHostInfo>
+#include <QMetaObject>
 
 IntegrationPluginDynatrace::IntegrationPluginDynatrace()
 {
-
 }
 
 void IntegrationPluginDynatrace::discoverThings(ThingDiscoveryInfo *info)
 {
-    if (info->thingClassId() == ufoThingClassId) {
+    QHostInfo::lookupHost("ufo.home", info, [this, info](const QHostInfo &host){
+        if (host.error() != QHostInfo::NoError) {
+            qCDebug(dcDynatrace()) << "Lookup failed:" << host.errorString();
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened discovering the UFO in the network."));
+            return;
+        }
 
-        QHostInfo::lookupHost("ufo.home", this, [info](const QHostInfo &host){
-            if (host.error() != QHostInfo::NoError) {
-                qCDebug(dcDynatrace()) << "Lookup failed:" << host.errorString();
-            }
+        // NOTE: QHostInfo::lookupHost apparently calls back from a different thread which breaks
+        // QNetworkAccessManager... Decouple it here with a QueuedConnection
+        QMetaObject::invokeMethod(this, "resolveIds", Qt::QueuedConnection, Q_ARG(ThingDiscoveryInfo*, info), Q_ARG(QHostInfo, host));
+    });
+}
 
-            foreach (QHostAddress address, host.addresses()) {
-                qCDebug(dcDynatrace()) << "Found IP address" << address.toString();
+void IntegrationPluginDynatrace::resolveIds(ThingDiscoveryInfo *info, const QHostInfo &host)
+{
+    QList<QNetworkReply*> *pendingInfoRequests = new QList<QNetworkReply*>();
 
-                ThingDescriptor descriptor(ufoThingClassId, "Ufo", address.toString());
+    foreach (QHostAddress address, host.addresses()) {
+        qCDebug(dcDynatrace()) << "Found IP address" << address.toString();
+
+        QNetworkRequest infoRequest("http://" + address.toString() + "/info");
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(infoRequest);
+
+        pendingInfoRequests->append(reply);
+
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [this, info, reply, address, pendingInfoRequests](){
+            pendingInfoRequests->removeAll(reply);
+
+            QJsonParseError error;
+            QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+            if (error.error == QJsonParseError::NoError) {
+                QString id = data.toVariant().toMap().value("ufoid").toString();
+
+                ThingDescriptor descriptor(ufoThingClassId, "UFO", address.toString());
                 ParamList params;
-                //FIXME Rediscovery
-                /*Thing *existingThing = myThings().findByParams(ParamList() << Param(ufoThingIdParamTypeId, ""));
-                if (existingThing) {
-                    //For Thing re-discovery
-                    descriptor.setThingId(existingthing->id());
-                }*/
+                params << Param(ufoThingIdParamTypeId, id);
                 params << Param(ufoThingHostParamTypeId, address.toString());
                 descriptor.setParams(params);
+
+                Things existingUfos = myThings().filterByParam(ufoThingIdParamTypeId, id);
+                if (!existingUfos.isEmpty()) {
+                    descriptor.setThingId(existingUfos.first()->id());
+                }
+
                 info->addThingDescriptor(descriptor);
             }
-            info->finish(Thing::ThingErrorNoError);
+
+            if (pendingInfoRequests->isEmpty()) {
+                delete pendingInfoRequests;
+                info->finish(Thing::ThingErrorNoError);
+            }
+
         });
     }
+
+    // In case we abort, make sure to clean up stuff
+    connect(info, &ThingDiscoveryInfo::aborted, this, [pendingInfoRequests](){
+        delete pendingInfoRequests;
+    });
 }
 
 void IntegrationPluginDynatrace::setupThing(ThingSetupInfo *info)
 {
-
     if (info->thing()->thingClassId() == ufoThingClassId) {
         QHostAddress address = QHostAddress(info->thing()->paramValue(ufoThingHostParamTypeId).toString());
         QString id = info->thing()->paramValue(ufoThingIdParamTypeId).toString();
