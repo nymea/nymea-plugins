@@ -34,7 +34,7 @@ inform you what precautions should be taken.
 
 * Valid "Air Quality Index" API Key
 * The package "nymea-plugin-airqualityindex" must be installed
-* Intenet connection
+* Internet connection
 
 ## More
 

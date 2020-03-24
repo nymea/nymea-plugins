@@ -88,6 +88,7 @@ void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
     }
     QUuid requestId = m_aqiConnection->getDataByIp();
     m_asyncDiscovery.insert(requestId, info);
+    connect(info, &ThingDiscoveryInfo::aborted, [=] {m_asyncDiscovery.remove(requestId);});
 }
 
 void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
@@ -123,8 +124,6 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
     }
 }
 
-
-
 void IntegrationPluginAqi::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == airQualityIndexThingClassId) {
@@ -144,13 +143,9 @@ void IntegrationPluginAqi::postSetupThing(Thing *thing)
     }
 }
 
-
 void IntegrationPluginAqi::thingRemoved(Thing *thing)
 {
-    if (thing->thingClassId() == airQualityIndexThingClassId) {
-
-    }
-
+    Q_UNUSED(thing)
     if (myThings().empty()) {
         if (!m_pluginTimer) {
             hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
@@ -162,7 +157,6 @@ void IntegrationPluginAqi::thingRemoved(Thing *thing)
         }
     }
 }
-
 
 void IntegrationPluginAqi::onAirQualityDataReceived(QUuid requestId, AirQualityIndex::AirQualityData data)
 {
