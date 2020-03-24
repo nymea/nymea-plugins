@@ -34,8 +34,6 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 
-#include "heatpump.h"
-
 #include <QHash>
 #include <QDebug>
 #include <QTimer>

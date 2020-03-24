@@ -121,6 +121,7 @@ void IntegrationPluginAwattar::thingRemoved(Thing *thing)
     Q_UNUSED(thing)
     if (m_pluginTimer && myThings().isEmpty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
     }
 }
 

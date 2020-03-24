@@ -2,16 +2,6 @@
     "displayName": "aWATTar",
     "name": "awattar",
     "id": "9c261c33-d44e-461e-8ec1-68803cb73f12",
-    "paramTypes": [
-        {
-            "id": "cf13eebf-f188-447a-afcb-bbd330983060",
-            "name": "rpl",
-            "displayName": "RPL address",
-            "type": "QString",
-            "inputType": "TextLine",
-            "defaultValue": "fdaa:e9b8:d03a::ff:fe00:1"
-        }
-    ],
     "vendors": [
         {
             "displayName": "aWATTar",
@@ -38,8 +28,8 @@
                         {
                             "id": "eab37309-3dd8-46a0-94d4-bd05b5bb0430",
                             "name": "currentMarketPrice",
-                            "displayName": "current market price",
-                            "displayNameEvent": "current market price changed",
+                            "displayName": "Current market price",
+                            "displayNameEvent": "Current market price changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
@@ -47,8 +37,8 @@
                         {
                             "id": "38b86cee-9588-4269-a585-128907929dc2",
                             "name": "averageDeviation",
-                            "displayName": "average deviation",
-                            "displayNameEvent": "average deviation changed",
+                            "displayName": "Average deviation",
+                            "displayNameEvent": "Average deviation changed",
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0
@@ -56,8 +46,8 @@
                         {
                             "id": "d5a8a176-aca0-45b1-b043-95c43750f383",
                             "name": "validUntil",
-                            "displayName": "valid until",
-                            "displayNameEvent": "valid until changed",
+                            "displayName": "Valid until",
+                            "displayNameEvent": "Valid until changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0
@@ -65,8 +55,8 @@
                         {
                             "id": "55d6d7a8-446f-48ae-8014-1225810d03ee",
                             "name": "averagePrice",
-                            "displayName": "average market price [+/- 12 h]",
-                            "displayNameEvent": "average market price [+/- 12 h] changed",
+                            "displayName": "Average market price [+/- 12 h]",
+                            "displayNameEvent": "Average market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
@@ -74,8 +64,8 @@
                         {
                             "id": "e7af5bdc-48d7-4e96-b877-331da4dcfae5",
                             "name": "lowestPrice",
-                            "displayName": "lowest market price [+/- 12 h]",
-                            "displayNameEvent": "lowest market price [+/- 12 h] changed",
+                            "displayName": "Lowest market price [+/- 12 h]",
+                            "displayNameEvent": "Lowest market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
@@ -83,8 +73,8 @@
                         {
                             "id": "0c171c42-b070-453e-8a63-df9aebfa8533",
                             "name": "highestPrice",
-                            "displayName": "highest market price [+/- 12 h]",
-                            "displayNameEvent": "highest market price [+/- 12 h] changed",
+                            "displayName": "Highest market price [+/- 12 h]",
+                            "displayNameEvent": "Highest market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
@@ -111,8 +101,8 @@
                         {
                             "id": "048566fe-d49d-4cc7-b93b-520f727f600a",
                             "name": "currentMarketPrice",
-                            "displayName": "current market price",
-                            "displayNameEvent": "current market price changed",
+                            "displayName": "Current market price",
+                            "displayNameEvent": "Current market price changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
@@ -120,8 +110,8 @@
                         {
                             "id": "f5ffd03d-e21f-4a27-bc69-f1aed426281c",
                             "name": "averageDeviation",
-                            "displayName": "average deviation",
-                            "displayNameEvent": "average deviation changed",
+                            "displayName": "Average deviation",
+                            "displayNameEvent": "Average deviation changed",
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0
@@ -129,8 +119,8 @@
                         {
                             "id": "a1d9fb61-4907-4c2d-9bd8-b8cbcfe7f3e3",
                             "name": "validUntil",
-                            "displayName": "valid until",
-                            "displayNameEvent": "valid until changed",
+                            "displayName": "Valid until",
+                            "displayNameEvent": "Valid until changed",
                             "unit": "UnixTime",
                             "type": "int",
                             "defaultValue": 0
@@ -138,8 +128,8 @@
                         {
                             "id": "90571d1e-42c1-4a55-b70d-4781fab02313",
                             "name": "averagePrice",
-                            "displayName": "average market price [+/- 12 h]",
-                            "displayNameEvent": "average market price [+/- 12 h] changed",
+                            "displayName": "Average market price [+/- 12 h]",
+                            "displayNameEvent": "Average market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
@@ -147,8 +137,8 @@
                         {
                             "id": "9e4dd133-ecfc-4239-9536-b5ec502cb194",
                             "name": "lowestPrice",
-                            "displayName": "lowest market price [+/- 12 h]",
-                            "displayNameEvent": "lowest market price [+/- 12 h] changed",
+                            "displayName": "Lowest market price [+/- 12 h]",
+                            "displayNameEvent": "Lowest market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0
@@ -156,8 +146,8 @@
                         {
                             "id": "c97662ed-0e61-4c0e-acca-6792a1c27213",
                             "name": "highestPrice",
-                            "displayName": "highest market price [+/- 12 h]",
-                            "displayNameEvent": "highest market price [+/- 12 h] changed",
+                            "displayName": "Highest market price [+/- 12 h]",
+                            "displayNameEvent": "Highest market price [+/- 12 h] changed",
                             "type": "double",
                             "unit": "EuroCentPerKiloWattHour",
                             "defaultValue": 0

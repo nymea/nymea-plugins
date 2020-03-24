@@ -5,11 +5,9 @@ QT += network
 TARGET = $$qtLibraryTarget(nymea_integrationpluginawattar)
 
 SOURCES += \
-    integrationpluginawattar.cpp \
-    heatpump.cpp
+    integrationpluginawattar.cpp
 
 HEADERS += \
-    integrationpluginawattar.h \
-    heatpump.h
+    integrationpluginawattar.h
 
 
