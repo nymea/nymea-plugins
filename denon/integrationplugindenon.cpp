@@ -425,16 +425,16 @@ void IntegrationPluginDenon::onPluginTimer()
             heos->getPlayers();
             heos->registerForChangeEvents(true);
         } else if (thing->thingClassId() == heosPlayerThingClassId) {
-            Thing *heosThing = myThings().findById(thing->parentId());
-            Heos *heos = m_heosConnections.value(heosThing->id());
-            int playerId = thing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
+            //Thing *heosThing = myThings().findById(thing->parentId());
+            //Heos *heos = m_heosConnections.value(heosThing->id());
+            //int playerId = thing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
 
             //TODO check if event stream is sufficent and remove polling
-            heos->getPlayerState(playerId);
-            heos->getPlayMode(playerId);
-            heos->getVolume(playerId);
-            heos->getMute(playerId);
-            heos->getNowPlayingMedia(playerId);
+            //heos->getPlayerState(playerId);
+            //heos->getPlayMode(playerId);
+            //heos->getVolume(playerId);
+            //heos->getMute(playerId);
+            //heos->getNowPlayingMedia(playerId);
         }
     }
 }
@@ -600,10 +600,20 @@ void IntegrationPluginDenon::onHeosPlayersReceived(QList<HeosPlayer *> heosPlaye
         heosPlayerDescriptors.append(descriptor);
     }
 
-    //TODO remove things
-    //autoThingDisappeared();
-    //TODO remove player from player Buffer
-    autoThingsAppeared(heosPlayerDescriptors);
+    foreach(Thing *existingThing, myThings().filterByParentId(thing->id())) {
+        bool playerAvailable = false;
+        int playerId = existingThing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
+        foreach (HeosPlayer *player, heosPlayers) {
+            if (player->playerId() == playerId) {
+                playerAvailable = true;
+                break;
+            }
+        }
+        if (!playerAvailable) {
+            autoThingDisappeared(existingThing->id());
+            m_playerBuffer.remove(playerId);
+        }
+    }
 }
 
 void IntegrationPluginDenon::onHeosPlayerInfoRecieved(HeosPlayer *heosPlayer)
@@ -698,32 +708,41 @@ void IntegrationPluginDenon::onHeosMusicSourcesReceived(quint32 sequenceNumber, 
             item.setIcon(BrowserItem::BrowserIconMusic);
             if (source.name == "Amazon") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAmazon);
+                //result->addItem(item);
             } else if (source.name == "Deezer") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDeezer);
+                //result->addItem(item);
             } else if (source.name == "Napster") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconNapster);
+                //result->addItem(item);
             } else if (source.name == "SoundCloud") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconSoundCloud);
+                //result->addItem(item);
             } else if (source.name == "Tidal") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTidal);
+                //result->addItem(item);
             } else if (source.name == "TuneIn") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTuneIn);
                 item.setBrowsable(true);
                 item.setDescription(source.serviceUsername);
+                result->addItem(item);
             } else if (source.name == "Local Music") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDisk);
+                //result->addItem(item);
             } else if (source.name == "Playlists") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconPlaylist);
             } else if (source.name == "History") {
+                //result->addItem(item);
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRecentlyPlayed);
             } else if (source.name == "AUX Input") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
+                //result->addItem(item);
             } else if (source.name == "Favorites") {
                 item.setIcon(BrowserItem::BrowserIconFavorites);
+                result->addItem(item);
             } else {
                 item.setThumbnail(source.image_url);
             }
-            result->addItem(item);
             qDebug(dcDenon()) << "Music source received:" << source.name << source.type << source.sourceId << source.image_url;
         }
         result->finish(Thing::ThingErrorNoError);
@@ -767,34 +786,44 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(quint32 sequenceNumber,
             qDebug(dcDenon()) << "Adding Item" << source.name << source.sourceId;
             item.setId("source=" + QString::number(source.sourceId));
             item.setIcon(BrowserItem::BrowserIconMusic);
+            item.setExecutable(false);
+            item.setBrowsable(true);
             if (source.name.contains("Amazon")) {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAmazon);
+                //result->addItem(item);
             } else if (source.name == "Deezer") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDeezer);
+                //result->addItem(item);
             } else if (source.name == "Napster") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconNapster);
+                //result->addItem(item);
             } else if (source.name == "SoundCloud") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconSoundCloud);
+                //result->addItem(item);
             } else if (source.name == "Tidal") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTidal);
+                //result->addItem(item);
             } else if (source.name == "TuneIn") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTuneIn);
+                result->addItem(item);
             } else if (source.name == "Local Music") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconDisk);
+                //result->addItem(item);
             } else if (source.name == "Playlists") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconPlaylist);
+                //result->addItem(item);
             } else if (source.name == "History") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRecentlyPlayed);
+                //result->addItem(item);
             } else if (source.name == "AUX Input") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
+                //result->addItem(item);
             } else if (source.name == "Favorites") {
                 item.setIcon(BrowserItem::BrowserIconFavorites);
+                result->addItem(item);
             } else {
                 item.setThumbnail(source.image_url);
             }
-            item.setExecutable(false);
-            item.setBrowsable(true);
-            result->addItem(item);
         }
         result->finish(Thing::ThingErrorNoError);
     } else {
