@@ -166,6 +166,8 @@ private slots:
     void onDisconnected();
     void onError(QAbstractSocket::SocketError socketError);
     void readData();
+
+    quint32 createRandomNumber();
 };
 
 

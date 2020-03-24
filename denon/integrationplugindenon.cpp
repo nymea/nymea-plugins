@@ -160,7 +160,7 @@ void IntegrationPluginDenon::confirmPairing(ThingPairingInfo *info, const QStrin
     if (info->thingClassId() == heosThingClassId) {
 
         if (username.isEmpty()) { //thing connection will be setup without an user account
-            info->finish(Thing::ThingErrorNoError);
+            return info->finish(Thing::ThingErrorNoError);
         }
 
         QHostAddress address(info->params().paramValue(heosThingIpParamTypeId).toString());
@@ -599,6 +599,8 @@ void IntegrationPluginDenon::onHeosPlayersReceived(QList<HeosPlayer *> heosPlaye
         qCDebug(dcDenon) << "Found new heos player" << player->name();
         heosPlayerDescriptors.append(descriptor);
     }
+    if (!heosPlayerDescriptors.isEmpty())
+        autoThingsAppeared(heosPlayerDescriptors);
 
     foreach(Thing *existingThing, myThings().filterByParentId(thing->id())) {
         bool playerAvailable = false;
@@ -692,6 +694,11 @@ void IntegrationPluginDenon::onHeosMusicSourcesReceived(quint32 sequenceNumber, 
 {
     Q_UNUSED(sequenceNumber)
     Heos *heos = static_cast<Heos *>(sender());
+    Thing *thing = myThings().findById(m_heosConnections.key(heos));
+    if (!thing) {
+        return;
+    }
+    bool loggedIn = thing->stateValue(heosLoggedInStateTypeId).toBool();
     if (m_pendingGetSourcesRequest.contains(heos)) {
         BrowseResult *result = m_pendingGetSourcesRequest.take(heos);
         foreach(MusicSourceObject source, musicSources) {
@@ -732,13 +739,25 @@ void IntegrationPluginDenon::onHeosMusicSourcesReceived(quint32 sequenceNumber, 
             } else if (source.name == "Playlists") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconPlaylist);
             } else if (source.name == "History") {
-                //result->addItem(item);
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRecentlyPlayed);
+                item.setBrowsable(loggedIn);
+                if (!loggedIn) {
+                    item.setDescription("Login required");
+                } else {
+                    item.setDescription(source.serviceUsername);
+                }
+                result->addItem(item);
             } else if (source.name == "AUX Input") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
                 //result->addItem(item);
             } else if (source.name == "Favorites") {
                 item.setIcon(BrowserItem::BrowserIconFavorites);
+                item.setBrowsable(loggedIn);
+                if (!loggedIn) {
+                    item.setDescription("Login required");
+                } else {
+                    item.setDescription(source.serviceUsername);
+                }
                 result->addItem(item);
             } else {
                 item.setThumbnail(source.image_url);
@@ -752,6 +771,13 @@ void IntegrationPluginDenon::onHeosMusicSourcesReceived(quint32 sequenceNumber, 
 void IntegrationPluginDenon::onHeosBrowseRequestReceived(quint32 sequenceNumber, const QString &sourceId, const QString &containerId, QList<MusicSourceObject> musicSources, QList<MediaObject> mediaItems)
 {
     Q_UNUSED(sequenceNumber)
+    Heos *heos = static_cast<Heos *>(sender());
+    Thing *thing = myThings().findById(m_heosConnections.key(heos));
+    if (!thing) {
+        return;
+    }
+    bool loggedIn = thing->stateValue(heosLoggedInStateTypeId).toBool();
+
     QString identifier;
     if (containerId.isEmpty()) {
         identifier = sourceId;
@@ -814,12 +840,19 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(quint32 sequenceNumber,
                 //result->addItem(item);
             } else if (source.name == "History") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRecentlyPlayed);
-                //result->addItem(item);
+                item.setBrowsable(loggedIn);
+                if (!loggedIn) {
+                    item.setDescription("Login required");
+                }
             } else if (source.name == "AUX Input") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
                 //result->addItem(item);
             } else if (source.name == "Favorites") {
                 item.setIcon(BrowserItem::BrowserIconFavorites);
+                item.setBrowsable(loggedIn);
+                if (!loggedIn) {
+                    item.setDescription("Login required");
+                }
                 result->addItem(item);
             } else {
                 item.setThumbnail(source.image_url);

@@ -36,6 +36,9 @@
 #include <QJsonDocument>
 #include <QUrlQuery>
 #include <QTimer>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandromGenerator>
+#endif
 
 Heos::Heos(const QHostAddress &hostAddress, QObject *parent) :
     QObject(parent),
@@ -386,7 +389,7 @@ void Heos::groupVolumeDown(int groupId, int step)
  ********************************/
 quint32 Heos::getMusicSources()
 {
-    quint32 sequence = qrand();;
+    quint32 sequence = createRandomNumber();
     QByteArray cmd = "heos://browse/get_music_sources?";
     QUrlQuery queryParams;
     queryParams.addQueryItem("SEQUENCE", QString::number(sequence));
@@ -399,7 +402,7 @@ quint32 Heos::getMusicSources()
 
 quint32 Heos::getSourceInfo(const QString &sourceId)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();
     QByteArray cmd = "heos://browse/get_source_info?";
     QUrlQuery queryParams;
     queryParams.addQueryItem("sid", sourceId);
@@ -413,7 +416,7 @@ quint32 Heos::getSourceInfo(const QString &sourceId)
 
 quint32 Heos::getSearchCriteria(const QString &sourceId)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();;
     QByteArray cmd = "heos://browse/get_search_criteria?";
     QUrlQuery queryParams;
     queryParams.addQueryItem("sid", sourceId);
@@ -426,7 +429,7 @@ quint32 Heos::getSearchCriteria(const QString &sourceId)
 
 quint32 Heos::browseSource(const QString &sourceId)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();
     QByteArray cmd = "heos://browse/browse?";
     QUrlQuery queryParams;
     queryParams.addQueryItem("sid", sourceId);
@@ -440,7 +443,7 @@ quint32 Heos::browseSource(const QString &sourceId)
 
 quint32 Heos::browseSourceContainers(const QString &sourceId, const QString &containerId)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();;
     QByteArray cmd = "heos://browse/browse?";
     QUrlQuery queryParams;
     queryParams.addQueryItem("sid", sourceId);
@@ -455,7 +458,7 @@ quint32 Heos::browseSourceContainers(const QString &sourceId, const QString &con
 
 quint32 Heos::playStation(int playerId, const QString &sourceId, const QString &containerId, const QString &mediaId, const QString &stationName)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();;
     QByteArray cmd("heos://browse/play_stream?");
     QUrlQuery queryParams;
     queryParams.addQueryItem("pid", QString::number(playerId));
@@ -481,7 +484,7 @@ quint32 Heos::playStation(int playerId, const QString &sourceId, const QString &
 
 quint32 Heos::playPresetStation(int playerId, int presetNumber)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();
     QByteArray cmd("heos://browse/play_preset?");
     QUrlQuery queryParams;
     queryParams.addQueryItem("pid", QString::number(playerId));
@@ -496,7 +499,7 @@ quint32 Heos::playPresetStation(int playerId, int presetNumber)
 
 quint32 Heos::playInputSource(int playerId, const QString &inputName)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();
     QByteArray cmd("heos://browse/play_input?");
     QUrlQuery queryParams;
     queryParams.addQueryItem("pid", QString::number(playerId));
@@ -511,7 +514,7 @@ quint32 Heos::playInputSource(int playerId, const QString &inputName)
 
 quint32 Heos::playUrl(int playerId, const QUrl &mediaUrl)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();
     QByteArray cmd("heos://browse/play_stream?");
     QUrlQuery queryParams;
     queryParams.addQueryItem("pid", QString::number(playerId));
@@ -526,7 +529,7 @@ quint32 Heos::playUrl(int playerId, const QUrl &mediaUrl)
 
 quint32 Heos::addContainerToQueue(int playerId, const QString &sourceId, const QString &containerId, ADD_CRITERIA addCriteria)
 {
-    quint32 sequence = qrand();
+    quint32 sequence = createRandomNumber();
     QByteArray cmd("heos://browse/add_to_queue?");
     QUrlQuery queryParams;
     queryParams.addQueryItem("pid", QString::number(playerId));
@@ -568,6 +571,7 @@ void Heos::readData()
 
     while (m_socket->canReadLine()) {
         data = m_socket->readLine();
+         qDebug(dcDenon) << "Read data" << data;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcDenon) << "failed to parse json :" << error.errorString();
@@ -1157,3 +1161,14 @@ void Heos::readData()
         }
     }
 }
+
+quint32 Heos::createRandomNumber()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+    return QRandomGenerator::global()->generate();
+#else
+    return qrand();
+#endif
+}
+
+

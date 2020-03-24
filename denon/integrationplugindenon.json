@@ -42,16 +42,17 @@
                         {
                             "id": "fc1dee8b-8fcc-4ec2-8fe6-6be4f5f47a5c",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "displayName": "power",
                             "id": "1cdb6b54-6831-4900-95b2-c78f64497701",
                             "name": "power",
-                            "displayNameEvent": "power changed",
+                            "displayNameEvent": "Power changed",
                             "displayNameAction": "Set power",
                             "type": "bool",
                             "defaultValue": false,
@@ -201,15 +202,17 @@
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "ab689a6e-eb71-4a41-a267-ba1afe7e2f56",
                             "name": "loggedIn",
                             "displayName": "Logged in",
                             "displayNameEvent": "Logged in changed",
-                            "defaultValue": true,
-                            "type": "bool"
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "77756132-5fa4-409e-969e-d23bcee72356",
