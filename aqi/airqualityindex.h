@@ -28,48 +28,64 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINAQI_H
-#define INTEGRATIONPLUGINAQI_H
+#ifndef AIRQUALITYINDEX_H
+#define AIRQUALITYINDEX_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
 #include "network/networkaccessmanager.h"
-#include "airqualityindex.h"
 
-#include <QTimer>
-#include <QUrl>
-#include <QHostAddress>
+#include <QObject>
+#include <QUuid>
+#include <QTime>
 
-class IntegrationPluginAqi : public IntegrationPlugin
+class AirQualityIndex : public QObject
 {
     Q_OBJECT
-
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginaqi.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginAqi();
+    struct AirQualityData {
+        double humidity;
+        double pressure;
+        int pm25;
+        int pm10;
+        double so2;
+        double no2;
+        double o3;
+        double co;
+        double temperature;
+        double windSpeed;
+    };
 
-    void startPairing(ThingPairingInfo *info) override;
-    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
-    void discoverThings(ThingDiscoveryInfo *info) override;
-    void setupThing(ThingSetupInfo *info) override;
-    void thingRemoved(Thing *thing) override;
-    void postSetupThing(Thing *thing) override;
+    struct GeoData {
+      double latitude;
+      double longitude;
+    };
+
+    struct Station {
+        int idx;
+        int aqi;
+        QTime measurementTime;
+        QString timezone;
+        QString name;
+        GeoData location;
+        QUrl url;
+    };
+
+    explicit AirQualityIndex(NetworkAccessManager *networkAccessManager, const QString &apiKey, QObject *parent = nullptr);
+    void setApiKey(const QString &apiKey);
+    QUuid searchByName(const QString &name);
+    QUuid getDataByIp();
+    QUuid getDataByGeolocation(const QString &lat, const QString &lng);
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
-    AirQualityIndex *m_aqiConnection = nullptr;
+    NetworkAccessManager *m_networkAccessManager;
+    QString m_baseUrl = "https://api.waqi.info";
+    QString m_apiKey;
 
-    QHash<QUuid, ThingDiscoveryInfo *> m_asyncDiscovery;
-    QHash<QUuid, ThingSetupInfo *> m_asyncSetups;
-    QHash<QUuid, ThingId> m_asyncRequests;
+    void parseData(QUuid requestId, const QByteArray &data);
 
-private slots:
-    void onPluginTimer();
-    void onRequestExecuted(QUuid requestId, bool success);
-    void onAirQualityDataReceived(QUuid requestId, AirQualityIndex::AirQualityData data);
-    void onAirQualityStationsReceived(QUuid requestId, QList<AirQualityIndex::Station> stations);
+signals:
+    void stationsReceived(QUuid requestId, QList<Station> stations);
+    void requestExecuted(QUuid requestId, bool success);
+    void dataReceived(QUuid requestId, const AirQualityData &data);
 };
 
-#endif // INTEGRATIONPLUGINAQI_H
+#endif // AIRQUALITYINDEX_H
