@@ -1035,6 +1035,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-serialportcommander,
          nymea-plugin-systemmonitor,
          nymea-plugin-onewire,
+         nymea-plugin-ufo,
 Replaces: guh-plugins-maker
 Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
