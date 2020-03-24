@@ -50,10 +50,10 @@ class IntegrationPluginKeba : public IntegrationPlugin
     Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit DevicePluginKeba();
+    explicit IntegrationPluginKeba();
 
-    void discoverDevices(DeviceDiscoveryInfo *info) override;
-    void setupDevice(DeviceSetupInfo *info) override;
+    void discoverThings(ThingDiscoveryInfo *info) override;
+    void setupThing(ThingSetupInfo *info) override;
 
     void postSetupThing(Thing* thing) override;
     void thingRemoved(Thing* thing) override;
@@ -63,13 +63,13 @@ public:
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    QHash<DeviceId, KeContact *> m_kebaDevices;
-    QHash<KeContact *, DeviceSetupInfo *> m_asyncSetup;
-    QHash<QUuid, DeviceActionInfo *> m_asyncActions;
-    QHash<DeviceId, QDateTime> m_chargingSessionStartTime;
+    QHash<ThingId, KeContact *> m_kebaDevices;
+    QHash<KeContact *, ThingSetupInfo *> m_asyncSetup;
+    QHash<QUuid, ThingActionInfo *> m_asyncActions;
+    QHash<ThingId, QDateTime> m_chargingSessionStartTime;
 
-    void setDeviceState(Device *device, KeContact::State state);
-    void setDevicePlugState(Device *device, KeContact::PlugState plugState);
+    void setDeviceState(Thing *device, KeContact::State state);
+    void setDevicePlugState(Thing *device, KeContact::PlugState plugState);
 
 private slots:
     void onConnectionChanged(bool status);
