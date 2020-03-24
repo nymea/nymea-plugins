@@ -55,7 +55,7 @@ QUuid AirQualityIndex::searchByName(const QString &name)
     if (m_apiKey.isEmpty())
         qCWarning(dcAirQualityIndex()) << "API key is not set";
 
-    QUuid requestId;
+    QUuid requestId = QUuid::createUuid();;
     QUrl url;
     url.setUrl(m_baseUrl);
     url.setPath("/search/");
@@ -118,7 +118,7 @@ QUuid AirQualityIndex::getDataByIp()
     if (m_apiKey.isEmpty())
         qCWarning(dcAirQualityIndex()) << "API key is not set";
 
-    QUuid requestId;
+    QUuid requestId = QUuid::createUuid();;
     QUrl url;
     url.setUrl(m_baseUrl);
     url.setPath("/feed/here/");
@@ -153,7 +153,7 @@ QUuid AirQualityIndex::getDataByGeolocation(const QString &lat, const QString &l
     if (m_apiKey.isEmpty())
         qCWarning(dcAirQualityIndex()) << "API key is not set";
 
-    QUuid requestId;
+    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setUrl(m_baseUrl);
     url.setPath("/feed/geo:"+lat+";"+lng+"/");

@@ -45,27 +45,27 @@ void IntegrationPluginAqi::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginAqi::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
 {
-        Q_UNUSED(username)
+    Q_UNUSED(username)
 
-      QNetworkRequest request(QUrl("https://api.waqi.info/feed/here/?token="+secret));
-      QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-      connect(reply, &QNetworkReply::finished, info, [this, reply, info, secret](){
-          reply->deleteLater();
+    QNetworkRequest request(QUrl("https://api.waqi.info/feed/here/?token="+secret));
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, info, [this, reply, info, secret](){
+        reply->deleteLater();
 
-          int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-          // check HTTP status code
-          if (status != 200) {
-              //: Error setting up device with invalid token
-              info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("This token is not valid."));
-              return;
-          }
+        // check HTTP status code
+        if (status != 200) {
+            //: Error setting up device with invalid token
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("This token is not valid."));
+            return;
+        }
 
-          pluginStorage()->beginGroup(info->thingId().toString());
-          pluginStorage()->setValue("apiKey", secret);
-          pluginStorage()->endGroup();
-          info->finish(Thing::ThingErrorNoError);
-      });
+        pluginStorage()->beginGroup(info->thingId().toString());
+        pluginStorage()->setValue("apiKey", secret);
+        pluginStorage()->endGroup();
+        info->finish(Thing::ThingErrorNoError);
+    });
 }
 
 void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
@@ -78,8 +78,10 @@ void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
         connect(m_aqiConnection, &AirQualityIndex::stationsReceived, this, &IntegrationPluginAqi::onAirQualityStationsReceived);
 
         connect(info, &ThingDiscoveryInfo::aborted, [this] {
-            m_aqiConnection->deleteLater();
-            m_aqiConnection = nullptr;
+            if (myThings().filterByThingClassId(airQualityIndexThingClassId).isEmpty()) {
+                m_aqiConnection->deleteLater();
+                m_aqiConnection = nullptr;
+            }
         });
     } else {
         qCDebug(dcAirQualityIndex()) << "AQI connection alread created";
@@ -107,8 +109,10 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
 
             connect(info, &ThingSetupInfo::aborted, [requestId, this] {
                 m_asyncSetups.remove(requestId);
-                //m_aqiConnection->deleteLater();
-                //m_aqiConnection = nullptr;
+                if (myThings().filterByThingClassId(airQualityIndexThingClassId).isEmpty()) {
+                    m_aqiConnection->deleteLater();
+                    m_aqiConnection = nullptr;
+                }
             });
         } else {
             info->finish(Thing::ThingErrorNoError);
@@ -118,6 +122,7 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
         info->finish(Thing::ThingErrorSetupFailed);
     }
 }
+
 
 
 void IntegrationPluginAqi::postSetupThing(Thing *thing)
@@ -162,7 +167,7 @@ void IntegrationPluginAqi::thingRemoved(Thing *thing)
 void IntegrationPluginAqi::onAirQualityDataReceived(QUuid requestId, AirQualityIndex::AirQualityData data)
 {
     if (m_asyncSetups.contains(requestId)) {
-        ThingSetupInfo *info = m_asyncSetups.value(requestId);
+        ThingSetupInfo *info = m_asyncSetups.take(requestId);
         return info->finish(Thing::ThingErrorNoError);
     }
 
@@ -171,7 +176,6 @@ void IntegrationPluginAqi::onAirQualityDataReceived(QUuid requestId, AirQualityI
         if (!thing)
             return;
 
-        //thing->setStateValue(airQualityIndexStationNameStateTypeId, data);
         thing->setStateValue(airQualityIndexConnectedStateTypeId, true);
         thing->setStateValue(airQualityIndexCoStateTypeId, data.co);
         thing->setStateValue(airQualityIndexHumidityStateTypeId, data.humidity);
@@ -221,11 +225,14 @@ void IntegrationPluginAqi::onAirQualityStationsReceived(QUuid requestId, QList<A
         info->finish(Thing::ThingErrorNoError);
     }
 
+
     if (m_asyncRequests.contains(requestId)) {
-        Thing *thing = myThings().findById(m_asyncRequests.take(requestId));
+        Thing * thing = myThings().findById(m_asyncRequests.take(requestId));
         if (!thing)
             return;
-        thing->setStateValue(airQualityIndexConnectedStateTypeId, true);
+        if (stations.length() != 0) {
+            thing->setStateValue(airQualityIndexStationNameStateTypeId, stations.first().name);
+        }
     }
 }
 
