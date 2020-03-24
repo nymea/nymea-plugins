@@ -62,8 +62,11 @@ void FtpUpload::uploadFile(const QString &fileName, const QString &targetName)
     url.setPort(m_port);
     qCDebug(dcFtpFileTransfer()) << "uploadFile request" << targetName << fileName << url ;
 
-    Q_UNUSED(fileName);
-    /*QFile *file = new QFile(fileName);
+    QFile *file = new QFile(fileName);
+    if (!file->open(QIODevice::ReadOnly)) {
+        qCWarning(dcFtpFileTransfer()) << "Can't read" << fileName;
+        return;
+    }
     QFileInfo fileInfo(*file);
     if (file->open(QIODevice::ReadOnly)) {
         // Start upload
@@ -72,7 +75,7 @@ void FtpUpload::uploadFile(const QString &fileName, const QString &targetName)
         // And connect to the progress upload signal
         connect(reply, &QNetworkReply::uploadProgress, this, &FtpUpload::onUploadProgress);
         connect(reply, &QNetworkReply::finished, this, &FtpUpload::onFinished);
-    }*/
+    }
 }
 
 void FtpUpload::onFinished()

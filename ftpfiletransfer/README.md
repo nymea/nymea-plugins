@@ -6,8 +6,15 @@ upload logfiles or simply to share any file on the file system.
 
 ## Supported Things
 
+* FTP file transfer
+	* SFTP support with username and password
+	* Browse system files
+	* See upload progress
+
 ## Requirements
+
+* The package "nymea-plugin-ftpfiletransfer" must be installed.
 
 ## More
 
-
+https://en.wikipedia.org/wiki/File_Transfer_Protocol
