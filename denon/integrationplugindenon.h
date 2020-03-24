@@ -126,8 +126,6 @@ private slots:
     void onHeosGroupsChanged();
     void onHeosUserChanged(bool signedIn, const QString &userName);
 
-    void onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry);
-    void onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry);
     void onAvrConnectionChanged(bool status);
     void onAvrSocketError();
     void onAvrVolumeChanged(int volume);

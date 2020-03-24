@@ -571,7 +571,6 @@ void Heos::readData()
 
     while (m_socket->canReadLine()) {
         data = m_socket->readLine();
-         qDebug(dcDenon) << "Read data" << data;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcDenon) << "failed to parse json :" << error.errorString();
@@ -586,7 +585,10 @@ void Heos::readData()
                 //If the message doesn't contain result it is an event message
                 success = dataMap.value("heos").toMap().value("result").toString().contains("success");
                 if (!success) {
-                    qDebug(dcDenon()) << "Command:" << command << "was not successfull. Message:" << message.toString();
+                    qCWarning(dcDenon()) << "Command:" << command << "was not successfull. Message:" << message.toString();
+                    if (command == "system/sign_in") {
+                        emit userChanged(false, "");
+                    }
                 }
             }
             /*
@@ -630,9 +632,9 @@ void Heos::readData()
                     qDebug(dcDenon()) << "System command sign_in:" << message.toString();
 
                     if (message.hasQueryItem("signed_in")) {
-                        bool signedIn = true;
                         QString username = message.queryItemValue("un");
-                        emit userChanged(signedIn, username);
+                        emit userChanged(true, username);
+
                     } // otherwise it will be command under process and we will wait for the event
                 } else if (command.contains("sign_out")) {
 

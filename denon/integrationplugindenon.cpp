@@ -65,9 +65,7 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
         }
 
         if (!m_serviceBrowser) {
-            m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
-            connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, &IntegrationPluginDenon::onAvahiServiceEntryAdded);
-            connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryRemoved, this, &IntegrationPluginDenon::onAvahiServiceEntryRemoved);
+            m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();;
         }
 
         QTimer::singleShot(2000, info, [this, info](){
@@ -172,7 +170,7 @@ void IntegrationPluginDenon::confirmPairing(ThingPairingInfo *info, const QStrin
             heos->deleteLater();
         });
         heos->connectDevice();
-        heos->setUserAccount(username, password);;
+        heos->setUserAccount(username, password);
 
         pluginStorage()->beginGroup(info->thingId().toString());
         pluginStorage()->setValue("username", username);
@@ -208,7 +206,6 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
         m_asyncAvrSetups.insert(denonConnection, info);
         // In case the setup is cancelled before we finish it...
         connect(info, &QObject::destroyed, this, [this, denonConnection]() { m_asyncAvrSetups.remove(denonConnection); });
-
         denonConnection->connectDevice();
         return;
     } else if (thing->thingClassId() == heosThingClassId) {
@@ -224,23 +221,16 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
         Heos *heos;
         if (m_unfinishedHeosConnections.contains(thing->id())) {
             heos = m_unfinishedHeosConnections.take(thing->id());
+            m_heosConnections.insert(thing->id(), heos);
             info->finish(Thing::ThingErrorNoError);
         } else {
             heos = createHeosConnection(address);
+            m_heosConnections.insert(thing->id(), heos);
             m_asyncHeosSetups.insert(heos, info);
             // In case the setup is cancelled before we finish it...
-            connect(info, &QObject::destroyed, this, [this, heos]() { m_asyncHeosSetups.remove(heos); });
+            connect(info, &QObject::destroyed, this, [=]() {m_asyncHeosSetups.remove(heos);});
             heos->connectDevice();
-            pluginStorage()->beginGroup(thing->id().toString());
-            if (pluginStorage()->contains("username")) {
-                QString username = pluginStorage()->value("username").toString();
-                QString password = pluginStorage()->value("password").toString();
-                heos->setUserAccount(username, password);
-            }
-            pluginStorage()->endGroup();
         }
-        m_heosConnections.insert(thing->id(), heos);
-
         return;
     } else if (thing->thingClassId() == heosPlayerThingClassId) {
         info->finish(Thing::ThingErrorNoError);
@@ -265,7 +255,6 @@ void IntegrationPluginDenon::thingRemoved(Thing *thing)
             Heos *heos = m_heosConnections.take(thing->id());
             heos->deleteLater();
         }
-
         pluginStorage()->remove(thing->id().toString());
     }
 
@@ -385,8 +374,18 @@ void IntegrationPluginDenon::postSetupThing(Thing *thing)
     if (thing->thingClassId() == heosThingClassId) {
         Heos *heos = m_heosConnections.value(thing->id());
         thing->setStateValue(heosConnectedStateTypeId, heos->connected());
+        if (pluginStorage()->childGroups().contains(thing->id().toString())) {
+            pluginStorage()->beginGroup(thing->id().toString());
+            QString username = pluginStorage()->value("username").toString();
+            QString password = pluginStorage()->value("password").toString();
+            pluginStorage()->endGroup();
+            heos->setUserAccount(username, password);
+        } else {
+            qCWarning(dcDenon()) << "Plugin storage doesn't contain this deviceId";
+        }
         heos->getPlayers();
         heos->getGroups();
+
     } else if (thing->thingClassId() == heosPlayerThingClassId) {
         thing->setStateValue(heosPlayerConnectedStateTypeId, true);
         Thing *heosThing = myThings().findById(thing->parentId());
@@ -547,7 +546,6 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
     Heos *heos = static_cast<Heos *>(sender());
     heos->registerForChangeEvents(true);
     if (status) {
-
         if (m_asyncHeosSetups.contains(heos)) {
             ThingSetupInfo *info = m_asyncHeosSetups.take(heos);
             info->finish(Thing::ThingErrorNoError);
@@ -637,7 +635,6 @@ void IntegrationPluginDenon::onHeosPlayStateReceived(int playerId, PLAYER_STATE 
         break;
     }
 }
-
 
 void IntegrationPluginDenon::onHeosRepeatModeReceived(int playerId, REPEAT_MODE repeatMode)
 {
@@ -792,6 +789,7 @@ void IntegrationPluginDenon::onHeosBrowseRequestReceived(quint32 sequenceNumber,
         BrowseResult *result = m_pendingBrowseResult.take(identifier);
         foreach(MediaObject media, mediaItems) {
             MediaBrowserItem item;
+            item.setIcon(BrowserItem::BrowserIconMusic);
             qDebug(dcDenon()) << "Adding Item" << media.name << media.mediaId << media.containerId << media.mediaType;
             item.setDisplayName(media.name);
             if (media.mediaType == MEDIA_TYPE_CONTAINER) {
@@ -911,6 +909,8 @@ void IntegrationPluginDenon::onHeosUserChanged(bool signedIn, const QString &use
 {
     Q_UNUSED(userName)
     Heos *heos = static_cast<Heos *>(sender());
+
+    //This is to check if the credentials are correct
     if (m_unfinishedHeosPairings.contains(heos)) {
         ThingPairingInfo *info = m_unfinishedHeosPairings.take(heos);
         if (signedIn) {
@@ -920,23 +920,13 @@ void IntegrationPluginDenon::onHeosUserChanged(bool signedIn, const QString &use
             m_unfinishedHeosConnections.remove(info->thingId());
             heos->deleteLater();
         }
-    }
-
-    if (m_heosConnections.values().contains(heos)) {
+    } else if (m_heosConnections.values().contains(heos)) {
         Thing *thing = myThings().findById(m_heosConnections.key(heos));
         thing->setStateValue(heosLoggedInStateTypeId, signedIn);
         thing->setStateValue(heosUserDisplayNameStateTypeId, userName);
+    } else {
+        qCDebug(dcDenon()) << "Unhandled user changed event" << signedIn << userName;
     }
-}
-
-void IntegrationPluginDenon::onAvahiServiceEntryAdded(const ZeroConfServiceEntry &serviceEntry)
-{
-    qCDebug(dcDenon()) << "Avahi service entry added:" << serviceEntry;
-}
-
-void IntegrationPluginDenon::onAvahiServiceEntryRemoved(const ZeroConfServiceEntry &serviceEntry)
-{
-    qCDebug(dcDenon()) << "Avahi service entry removed:" << serviceEntry;
 }
 
 void IntegrationPluginDenon::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
