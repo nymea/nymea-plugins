@@ -157,7 +157,7 @@ void IntegrationPluginKeba::updateData()
             QTimeZone tz = QTimeZone(QTimeZone::systemTimeZoneId());
             QDateTime currentTime = QDateTime::currentDateTime().toTimeZone(tz);
 
-            int minutes = (currentTime.toSecsSinceEpoch() - startTime.toSecsSinceEpoch())/60;
+            int minutes = (currentTime.toMSecsSinceEpoch()) - startTime.toMSecsSinceEpoch())/60000;
             device->setStateValue(wallboxSessionTimeStateTypeId, minutes);
         } else {
             device->setStateValue(wallboxSessionTimeStateTypeId, 0);
