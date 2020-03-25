@@ -554,6 +554,20 @@ void IntegrationPluginDenon::onHeosConnectionChanged(bool status)
 
     if (thing->thingClassId() == heosThingClassId) {
 
+        if (pluginStorage()->childGroups().contains(thing->id().toString())) {
+            pluginStorage()->beginGroup(thing->id().toString());
+            QString username = pluginStorage()->value("username").toString();
+            QString password = pluginStorage()->value("password").toString();
+            pluginStorage()->endGroup();
+            heos->setUserAccount(username, password);
+        } else {
+            qCWarning(dcDenon()) << "Plugin storage doesn't contain this deviceId";
+        }
+
+        if (!status) {
+            thing->setStateValue(heosLoggedInStateTypeId, false);
+            thing->setStateValue(heosUserDisplayNameStateTypeId, "");
+        }
         thing->setStateValue(heosConnectedStateTypeId, status);
         // update connection status for all child things
         foreach (Thing *playerThing, myThings().filterByParentId(thing->id())) {

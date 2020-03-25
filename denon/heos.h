@@ -124,6 +124,7 @@ private:
     bool m_eventRegistered = false;
     QHostAddress m_hostAddress;
     QTcpSocket *m_socket = nullptr;
+    QTimer *m_reconnectTimer = nullptr;
     void setConnected(const bool &connected);
 
 signals:
@@ -162,8 +163,7 @@ signals:
     void userChanged(bool signedIn, const QString &userName);
 
 private slots:
-    void onConnected();
-    void onDisconnected();
+    void onStateChanged(QAbstractSocket::SocketState state);
     void onError(QAbstractSocket::SocketError socketError);
     void readData();
 
