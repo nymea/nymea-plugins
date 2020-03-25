@@ -311,9 +311,8 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
         return info->finish(Thing::ThingErrorActionTypeNotFound);
     } else if (thing->thingClassId() == heosThingClassId) {
 
-        Thing *heosThing = myThings().findById(thing->parentId());
-        Heos *heos = m_heosConnections.value(heosThing->id());
-        if (action.actionTypeId() == heosPlayerAlertActionTypeId) {
+        Heos *heos = m_heosConnections.value(thing->id());
+        if (action.actionTypeId() == heosRebootActionTypeId) {
             heos->rebootSpeaker();
             return info->finish(Thing::ThingErrorNoError);
         }

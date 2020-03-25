@@ -37,7 +37,7 @@
 #include <QUrlQuery>
 #include <QTimer>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-#include <QRandromGenerator>
+#include <QRandomGenerator>
 #endif
 
 Heos::Heos(const QHostAddress &hostAddress, QObject *parent) :
