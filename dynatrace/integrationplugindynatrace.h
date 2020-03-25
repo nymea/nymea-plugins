@@ -54,19 +54,20 @@ public:
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
+
+private slots:
+    void onConnectionChanged(bool connected);
+
+    void resolveIds(const QHostInfo &host);
+
 private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<ThingId, Ufo *> m_ufoConnections;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
     QHash<QString, ThingSetupInfo *> m_asyncSetup;
+    QList<ThingDiscoveryInfo *> m_asyncDiscoveries;
 
     void getId(const QHostAddress &address);
-
-private slots:
-    void onConnectionChanged(bool connected);
-
-private slots:
-    void resolveIds(ThingDiscoveryInfo *info, const QHostInfo &host);
 };
 
 #endif // INTEGRATIONPLUGINDYNATRACE_H

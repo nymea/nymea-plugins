@@ -44,21 +44,28 @@ IntegrationPluginDynatrace::IntegrationPluginDynatrace()
 
 void IntegrationPluginDynatrace::discoverThings(ThingDiscoveryInfo *info)
 {
-    QHostInfo::lookupHost("ufo.home", info, [this, info](const QHostInfo &host){
-        if (host.error() != QHostInfo::NoError) {
-            qCDebug(dcDynatrace()) << "Lookup failed:" << host.errorString();
-            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened discovering the UFO in the network."));
-            return;
-        }
+    m_asyncDiscoveries.append(info);
 
-        // NOTE: QHostInfo::lookupHost apparently calls back from a different thread which breaks
-        // QNetworkAccessManager... Decouple it here with a QueuedConnection
-        QMetaObject::invokeMethod(this, "resolveIds", Qt::QueuedConnection, Q_ARG(ThingDiscoveryInfo*, info), Q_ARG(QHostInfo, host));
-    });
+    // NOTE: QHostInfo::lookupHost will call in from another thread using the Funtor syntax!
+    // https://bugreports.qt.io/browse/QTBUG-83073
+    // Using the old school syntax...
+    QHostInfo::lookupHost("ufo.home", this, SLOT(resolveIds(const QHostInfo &)));
 }
 
-void IntegrationPluginDynatrace::resolveIds(ThingDiscoveryInfo *info, const QHostInfo &host)
+void IntegrationPluginDynatrace::resolveIds(const QHostInfo &host)
 {
+    if (m_asyncDiscoveries.isEmpty()) {
+        qCWarning(dcDynatrace()) << "Discvery result came in but request has vanished...";
+        return;
+    }
+
+    ThingDiscoveryInfo *info = m_asyncDiscoveries.takeFirst();
+    if (host.error() != QHostInfo::NoError) {
+        qCDebug(dcDynatrace()) << "Lookup failed:" << host.errorString();
+        info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened discovering the UFO in the network."));
+        return;
+    }
+
     QList<QNetworkReply*> *pendingInfoRequests = new QList<QNetworkReply*>();
 
     foreach (QHostAddress address, host.addresses()) {
