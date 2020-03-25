@@ -65,7 +65,7 @@ private:
     QHash<ThingId, Ufo *> m_ufoConnections;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
     QHash<QString, ThingSetupInfo *> m_asyncSetup;
-    QList<ThingDiscoveryInfo *> m_asyncDiscoveries;
+    QHash<int, ThingDiscoveryInfo *> m_asyncDiscoveries;
 
     void getId(const QHostAddress &address);
 };

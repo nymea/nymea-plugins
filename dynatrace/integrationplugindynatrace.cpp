@@ -44,22 +44,23 @@ IntegrationPluginDynatrace::IntegrationPluginDynatrace()
 
 void IntegrationPluginDynatrace::discoverThings(ThingDiscoveryInfo *info)
 {
-    m_asyncDiscoveries.append(info);
-
     // NOTE: QHostInfo::lookupHost will call in from another thread using the Funtor syntax!
     // https://bugreports.qt.io/browse/QTBUG-83073
     // Using the old school syntax...
-    QHostInfo::lookupHost("ufo.home", this, SLOT(resolveIds(const QHostInfo &)));
+    int id = QHostInfo::lookupHost("ufo.home", this, SLOT(resolveIds(const QHostInfo &)));
+    m_asyncDiscoveries.insert(id, info);
 }
 
 void IntegrationPluginDynatrace::resolveIds(const QHostInfo &host)
 {
-    if (m_asyncDiscoveries.isEmpty()) {
+    int id = host.lookupId();
+
+    if (!m_asyncDiscoveries.contains(id)) {
         qCWarning(dcDynatrace()) << "Discvery result came in but request has vanished...";
         return;
     }
 
-    ThingDiscoveryInfo *info = m_asyncDiscoveries.takeFirst();
+    ThingDiscoveryInfo *info = m_asyncDiscoveries.take(id);
     if (host.error() != QHostInfo::NoError) {
         qCDebug(dcDynatrace()) << "Lookup failed:" << host.errorString();
         info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("An error happened discovering the UFO in the network."));
