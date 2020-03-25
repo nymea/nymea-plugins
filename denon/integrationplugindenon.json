@@ -222,6 +222,13 @@
                             "type": "QString",
                             "defaultValue": ""
                         }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "4f8b7fe8-7a18-483a-859d-ed5acb0b9a20",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        }
                     ]
                 },
                 {

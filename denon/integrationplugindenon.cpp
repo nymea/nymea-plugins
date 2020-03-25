@@ -309,6 +309,14 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
             return info->finish(Thing::ThingErrorNoError);
         }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
+    } else if (thing->thingClassId() == heosThingClassId) {
+
+        Thing *heosThing = myThings().findById(thing->parentId());
+        Heos *heos = m_heosConnections.value(heosThing->id());
+        if (action.actionTypeId() == heosPlayerAlertActionTypeId) {
+            heos->rebootSpeaker();
+            return info->finish(Thing::ThingErrorNoError);
+        }
     } else if (thing->thingClassId() == heosPlayerThingClassId) {
 
         Thing *heosThing = myThings().findById(thing->parentId());
@@ -1039,8 +1047,10 @@ void IntegrationPluginDenon::browserItem(BrowserItemResult *result)
         result->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }
-    qDebug(dcDenon()) << "Browse item called";
-    return;
+    qDebug(dcDenon()) << "Browse item called" << result->itemId();
+    
+    BrowserItem item(result->itemId());
+    return result->finish(Thing::ThingErrorNoError);
 }
 
 void IntegrationPluginDenon::executeBrowserItem(BrowserActionInfo *info)
