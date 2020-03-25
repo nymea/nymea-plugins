@@ -431,17 +431,6 @@ void IntegrationPluginDenon::onPluginTimer()
             Heos *heos = m_heosConnections.value(thing->id());
             heos->getPlayers();
             heos->registerForChangeEvents(true);
-        } else if (thing->thingClassId() == heosPlayerThingClassId) {
-            //Thing *heosThing = myThings().findById(thing->parentId());
-            //Heos *heos = m_heosConnections.value(heosThing->id());
-            //int playerId = thing->paramValue(heosPlayerThingPlayerIdParamTypeId).toInt();
-
-            //TODO check if event stream is sufficent and remove polling
-            //heos->getPlayerState(playerId);
-            //heos->getPlayMode(playerId);
-            //heos->getVolume(playerId);
-            //heos->getMute(playerId);
-            //heos->getNowPlayingMedia(playerId);
         }
     }
 }
@@ -882,7 +871,7 @@ void IntegrationPluginDenon::onHeosBrowseErrorReceived(const QString &sourceId, 
     if (m_pendingBrowseResult.contains(identifier)) {
         BrowseResult *result = m_pendingBrowseResult.take(identifier);
         qWarning(dcDenon) << "Browse error" << errorMessage << errorId;
-        result->finish(Thing::ThingErrorHardwareFailure);
+        result->finish(Thing::ThingErrorHardwareFailure, errorMessage);
     }
 }
 
