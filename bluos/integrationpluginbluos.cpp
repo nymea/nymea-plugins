@@ -479,18 +479,23 @@ void IntegrationPluginBluOS::onSourcesReceived(QUuid requestId, const QList<BluO
             item.setIcon(BrowserItem::BrowserIconMusic);
             if (source.Text == "Bluetooth") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconBluetooth);
+                //result->addItem(item);
             } else if (source.Text == "Spotify") {
                 item.setExecutable(false);
+                item.setBrowsable(false);
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconSpotify);
                 item.setDescription("Open the Spotify App for browsing");
+                result->addItem(item);
             } else if (source.Text == "TuneIn") {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconTuneIn);
+                result->addItem(item);
             } else if (source.Text.contains("Aux")) {
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
+                result->addItem(item);
             } else if (source.Text == "Radio Paradise") {
-                //item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRadioParadise);
+                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRadioParadise);
+                //result->addItem(item);
             }
-            result->addItem(item);
         }
         result->finish(Thing::ThingErrorNoError);
     }
