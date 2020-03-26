@@ -1051,8 +1051,15 @@ void IntegrationPluginDenon::browserItem(BrowserItemResult *result)
     }
     qDebug(dcDenon()) << "Browse item called" << result->itemId();
     
-    BrowserItem item(result->itemId());
-    return result->finish(Thing::ThingErrorNoError);
+    result->item().setDisplayName("Test name");
+    if (m_mediaObjects.contains(result->itemId())) {
+        qCDebug(dcDenon()) << "Media Object found" << m_mediaObjects.value(result->itemId()).name;
+        BrowserItem item(result->itemId(), m_mediaObjects.value(result->itemId()).name, false, true);
+        result->finish(item);
+    } else {
+        qCWarning(dcDenon()) << "Media Object not found for itemId" << result->itemId();
+        result->finish(Thing::ThingErrorItemNotFound, "Item not found");
+    }
 }
 
 void IntegrationPluginDenon::executeBrowserItem(BrowserActionInfo *info)
