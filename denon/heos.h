@@ -34,6 +34,7 @@
 #include <QObject>
 #include <QHostAddress>
 #include <QTcpSocket>
+#include <QTimer>
 
 #include "heosplayer.h"
 #include "heostypes.h"
