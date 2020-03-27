@@ -647,6 +647,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     }
 
     MqttChannel *channel = hardwareManager()->mqttProvider()->createChannel(shellyId, QHostAddress(address), {"shellies"});
+    m_mqttChannels.insert(info->thing(), channel);
+
     if (!channel) {
         qCWarning(dcShelly()) << "Failed to create MQTT channel.";
         return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error creating MQTT channel. Please check MQTT server settings."));
@@ -680,12 +682,14 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     qCDebug(dcShelly()) << "Connecting to" << url.toString();
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(info, &ThingSetupInfo::aborted, channel, [this, channel](){
+    connect(info, &ThingSetupInfo::aborted, channel, [this, channel, thing](){
         hardwareManager()->mqttProvider()->releaseChannel(channel);
+        m_mqttChannels.remove(thing);
     });
     connect(reply, &QNetworkReply::finished, info, [this, info, reply, channel, address](){
         if (reply->error() != QNetworkReply::NoError) {
             hardwareManager()->mqttProvider()->releaseChannel(channel);
+            m_mqttChannels.remove(info->thing());
             qCWarning(dcShelly()) << "Error fetching thing settings" << reply->error() << reply->errorString();
             if (reply->error() == QNetworkReply::AuthenticationRequiredError) {
                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Username and password not set correctly."));
@@ -701,11 +705,10 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             qCWarning(dcShelly()) << "Error parsing settings reply" << error.errorString() << "\n" << data;
             info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Unexpected data received from Shelly device."));
             hardwareManager()->mqttProvider()->releaseChannel(channel);
+            m_mqttChannels.remove(info->thing());
             return;
         }
         qCDebug(dcShelly()) << "Settings data" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
-
-        m_mqttChannels.insert(info->thing(), channel);
 
         ThingDescriptors autoChilds;
 
