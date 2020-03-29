@@ -82,19 +82,17 @@ void IntegrationPluginFlowercare::discoverThings(ThingDiscoveryInfo *info)
         foreach (const QBluetoothDeviceInfo &deviceInfo, reply->discoveredDevices()) {
             qCDebug(dcFlowerCare()) << "Discovered device" << deviceInfo.name();
             if (deviceInfo.name().contains("Flower care")) {
-                if (!verifyExistingDevices(deviceInfo)) {
-                    ThingDescriptor descriptor(flowerCareThingClassId, deviceInfo.name(), deviceInfo.address().toString());
-                    ParamList params;
-                    params << Param(flowerCareThingMacParamTypeId, deviceInfo.address().toString());
-                    descriptor.setParams(params);
-                    foreach (Thing *existingThing, myThings()) {
-                        if (existingThing->paramValue(flowerCareThingMacParamTypeId).toString() == deviceInfo.address().toString()) {
-                            descriptor.setThingId(existingThing->id());
-                            break;
-                        }
+                ThingDescriptor descriptor(flowerCareThingClassId, deviceInfo.name(), deviceInfo.address().toString());
+                ParamList params;
+                params << Param(flowerCareThingMacParamTypeId, deviceInfo.address().toString());
+                descriptor.setParams(params);
+                foreach (Thing *existingThing, myThings()) {
+                    if (existingThing->paramValue(flowerCareThingMacParamTypeId).toString() == deviceInfo.address().toString()) {
+                        descriptor.setThingId(existingThing->id());
+                        break;
                     }
-                    info->addThingDescriptor(descriptor);
                 }
+                info->addThingDescriptor(descriptor);
             }
         }
 
@@ -156,16 +154,6 @@ void IntegrationPluginFlowercare::thingRemoved(Thing *thing)
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
         m_reconnectTimer = nullptr;
     }
-}
-
-bool IntegrationPluginFlowercare::verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo)
-{
-    foreach (Thing *thing, m_list.keys()) {
-        if (thing->paramValue(flowerCareThingMacParamTypeId).toString() == deviceInfo.address().toString())
-            return true;
-    }
-
-    return false;
 }
 
 void IntegrationPluginFlowercare::onPluginTimer()
