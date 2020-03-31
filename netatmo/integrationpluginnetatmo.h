@@ -51,6 +51,8 @@ public:
     ~IntegrationPluginNetatmo();
 
     void init() override;
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
     void postSetupThing(Thing *thing) override;

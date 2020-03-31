@@ -52,6 +52,31 @@ void IntegrationPluginNetatmo::init()
 
 }
 
+void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
+{
+    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Netatmo account."));
+}
+
+void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
+{
+    OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
+    authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
+    authentication->setUsername(username);
+    authentication->setPassword(password);
+    authentication->setScope("read_station read_thermostat write_thermostat");
+
+    // Update thing connected state based on OAuth connected state
+    connect(authentication, &OAuth2::authenticationChanged, info, [info, authentication](){
+        if (authentication->authenticated()) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            info->finish(Thing::ThingErrorAuthenticationFailure, "Wrong username of password");
+        }
+    });
+    authentication->startAuthentication();
+    connect(info, &QObject::destroyed, authentication, &OAuth2::deleteLater);
+}
+
 void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
@@ -64,10 +89,26 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
             connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginNetatmo::onPluginTimer);
         }
 
+        QString username;
+        QString password;
+
+        ParamTypeId usernameParamTypeId = ParamTypeId("763c2c10-dee5-41c8-9f7e-ded741945e73");
+        ParamTypeId passwordParamTypeId = ParamTypeId("c0d892d6-f359-4782-9d7d-8f74a3b53e3e");
+
+        if (pluginStorage()->childGroups().contains(thing->id().toString())) {
+            pluginStorage()->beginGroup(thing->id().toString());
+            username = pluginStorage()->value("username").toString();
+            password = pluginStorage()->value("password").toString();
+            pluginStorage()->endGroup();
+        } else {
+            username = thing->paramValue(usernameParamTypeId).toString();
+            password = thing->paramValue(passwordParamTypeId).toString();
+        }
+
         OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
         authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
-        authentication->setUsername(thing->paramValue(netatmoConnectionThingUsernameParamTypeId).toString());
-        authentication->setPassword(thing->paramValue(netatmoConnectionThingPasswordParamTypeId).toString());
+        authentication->setUsername(username);
+        authentication->setPassword(password);
         authentication->setScope("read_station read_thermostat write_thermostat");
         m_authentications.insert(authentication, thing);
 
@@ -78,7 +119,6 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
                 refreshData(thing, authentication->token());
             }
         });
-
         authentication->startAuthentication();
 
         // Report thing setup finished when authentication reports success
