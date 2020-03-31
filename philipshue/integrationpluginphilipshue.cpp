@@ -1002,12 +1002,16 @@ void IntegrationPluginPhilipsHue::remoteStateChanged()
         qCWarning(dcPhilipsHue) << "Could not find thing for remote" << remote->name();
         return;
     }
-    if (thing->thingClassId() == tapThingClassId) {
-        thing->setStateValue(tapConnectedStateTypeId, remote->reachable());
-    } else {
+    if (thing->thingClassId() == remoteThingClassId) {
         thing->setStateValue(remoteConnectedStateTypeId, remote->reachable());
         thing->setStateValue(remoteBatteryLevelStateTypeId, remote->battery());
         thing->setStateValue(remoteBatteryCriticalStateTypeId, remote->battery() < 5);
+    } else if (thing->thingClassId() == tapThingClassId) {
+        thing->setStateValue(tapConnectedStateTypeId, remote->reachable());
+    } else if (thing->thingClassId() == smartButtonThingClassId) {
+        thing->setStateValue(smartButtonConnectedStateTypeId, remote->reachable());
+        thing->setStateValue(smartButtonBatteryLevelStateTypeId, remote->battery());
+        thing->setStateValue(smartButtonBatteryCriticalStateTypeId, remote->battery() < 5);
     }
 }
 

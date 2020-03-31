@@ -567,6 +567,25 @@
                             "defaultValue": false,
                             "type": "bool",
                             "cached": false
+                        },
+                        {
+                            "id": "a0a1b480-6822-49bc-b1b1-50c39764d255",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "7c1fd7c1-f322-4be7-9c22-7d14d0ec38ea",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "eventTypes": [
