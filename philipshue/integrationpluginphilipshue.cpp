@@ -422,6 +422,20 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         return info->finish(Thing::ThingErrorNoError);
     }
 
+    // Hue smart button
+    if (thing->thingClassId() == smartButtonThingClassId) {
+        HueRemote *smartButton = new HueRemote(this);
+        smartButton->setName(thing->name());
+        smartButton->setId(thing->paramValue(tapThingSensorIdParamTypeId).toInt());
+        smartButton->setModelId(thing->paramValue(tapThingModelIdParamTypeId).toString());
+
+        connect(smartButton, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
+        connect(smartButton, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
+
+        m_remotes.insert(smartButton, thing);
+        return info->finish(Thing::ThingErrorNoError);
+    }
+
     // Hue Motion sensor
     if (thing->thingClassId() == motionSensorThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue motion sensor" << thing->params();
@@ -515,7 +529,7 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
         light->deleteLater();
     }
 
-    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == tapThingClassId) {
+    if (thing->thingClassId() == remoteThingClassId || thing->thingClassId() == tapThingClassId || thing->thingClassId() == smartButtonThingClassId) {
         HueRemote *remote = m_remotes.key(thing);
         m_remotes.remove(remote);
         remote->deleteLater();
@@ -1053,6 +1067,12 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
         param = Param(tapPressedEventButtonNameParamTypeId, "••••");
         id = tapPressedEventTypeId;
         break;
+    case HueRemote::SmartButtonPressed:
+        id = smartButtonPressedEventTypeId;
+        break;
+    case HueRemote::SmartButtonLongPressed:
+        id = smartButtonLongPressedEventTypeId;
+        break;
     default:
         break;
     }
@@ -1341,7 +1361,8 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
         if (sensorAlreadyAdded(uuid))
             continue;
 
-        if (sensorMap.value("type").toString() == "ZLLSwitch") {
+        // Dimmer Switch: RWL020 == US, RWL021 == EU
+        if (model == "RWL020" || model == "RWL021") {
             ThingDescriptor descriptor(remoteThingClassId, sensorMap.value("name").toString(), "Philips Hue Remote", thing->id());
             ParamList params;
             params.append(Param(remoteThingModelIdParamTypeId, model));
@@ -1351,6 +1372,20 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
             descriptor.setParams(params);
             emit autoThingsAppeared({descriptor});
             qCDebug(dcPhilipsHue) << "Found new remote" << sensorMap.value("name").toString() << model;
+
+        // Smart Button
+        } else if (model == "ROM001") {
+            ThingDescriptor descriptor(smartButtonThingClassId, sensorMap.value("name").toString(), "Philips Hue Smart Button", thing->id());
+            ParamList params;
+            params.append(Param(smartButtonThingModelIdParamTypeId, model));
+            params.append(Param(smartButtonThingTypeParamTypeId, sensorMap.value("type").toString()));
+            params.append(Param(smartButtonThingUuidParamTypeId, uuid));
+            params.append(Param(smartButtonThingSensorIdParamTypeId, sensorId));
+            descriptor.setParams(params);
+            emit autoThingsAppeared({descriptor});
+            qCDebug(dcPhilipsHue) << "Found new smart button" << sensorMap.value("name").toString() << model;
+
+        // Hue Tap
         } else if (sensorMap.value("type").toString() == "ZGPSwitch") {
             ThingDescriptor descriptor(tapThingClassId, sensorMap.value("name").toString(), "Philips Hue Tap", thing->id());
             ParamList params;
@@ -1695,6 +1730,8 @@ void IntegrationPluginPhilipsHue::bridgeReachableChanged(Thing *thing, const boo
                         m_remotes.value(remote)->setStateValue(remoteConnectedStateTypeId, false);
                     } else if (m_remotes.value(remote)->thingClassId() == tapThingClassId) {
                         m_remotes.value(remote)->setStateValue(tapConnectedStateTypeId, false);
+                    } else if (m_remotes.value(remote)->thingClassId() == smartButtonThingClassId) {
+                        m_remotes.value(remote)->setStateValue(smartButtonConnectedStateTypeId, false);
                     }
                 }
             }
@@ -1755,6 +1792,13 @@ bool IntegrationPluginPhilipsHue::sensorAlreadyAdded(const QString &uuid)
         // Hue tap
         if (thing->thingClassId() == tapThingClassId) {
             if (thing->paramValue(tapThingUuidParamTypeId).toString() == uuid) {
+                return true;
+            }
+        }
+
+        // Hue smart button
+        if (thing->thingClassId() == smartButtonThingClassId) {
+            if (thing->paramValue(smartButtonThingUuidParamTypeId).toString() == uuid) {
                 return true;
             }
         }

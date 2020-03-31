@@ -45,8 +45,10 @@ class HueRemote : public HueDevice
     Q_OBJECT
 public:
     enum ButtonCode {
+        SmartButtonPressed = 1000,
         OnLongPressed = 1001,
         OnPressed = 1002,
+        SmartButtonLongPressed = 1003,
         DimUpLongPressed = 2001,
         DimUpPressed = 2002,
         DimDownLongPressed = 3001,
