@@ -1029,48 +1029,40 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
 
     if (thing->thingClassId() == remoteThingClassId) {
         switch (buttonCode) {
-        case 1000:
         case 1002:
             param = Param(remotePressedEventButtonNameParamTypeId, "ON");
             id = remotePressedEventTypeId;
             break;
-        case 1001:
         case 1003:
             param = Param(remoteLongPressedEventButtonNameParamTypeId, "ON");
             id = remoteLongPressedEventTypeId;
             break;
-        case 2000:
         case 2002:
             param = Param(remotePressedEventButtonNameParamTypeId, "DIM UP");
             id = remotePressedEventTypeId;
             break;
-        case 2001:
         case 2003:
             param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM UP");
             id = remoteLongPressedEventTypeId;
             break;
-        case 3000:
         case 3002:
             param = Param(remotePressedEventButtonNameParamTypeId, "DIM DOWN");
             id = remotePressedEventTypeId;
             break;
-        case 3001:
         case 3003:
             param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM DOWN");
             id = remoteLongPressedEventTypeId;
             break;
-        case 4000:
         case 4002:
             param = Param(remotePressedEventButtonNameParamTypeId, "OFF");
             id = remotePressedEventTypeId;
             break;
-        case 4001:
         case 4003:
             param = Param(remoteLongPressedEventButtonNameParamTypeId, "OFF");
             id = remoteLongPressedEventTypeId;
             break;
         default:
-            qCDebug(dcPhilipsHue()) << "Unhandled button code received from Hue Remoote:" << buttonCode;
+            qCDebug(dcPhilipsHue()) << "Unhandled button code received from Hue Remote:" << buttonCode;
             return;
         }
     } else if (thing->thingClassId() == tapThingClassId) {
@@ -1097,11 +1089,9 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
         }
     } else if (thing->thingClassId() == smartButtonThingClassId) {
         switch (buttonCode) {
-        case 1000:
         case 1002:
             id = smartButtonPressedEventTypeId;
             break;
-        case 1001:
         case 1003:
             id = smartButtonLongPressedEventTypeId;
             break;
