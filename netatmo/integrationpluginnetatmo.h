@@ -48,9 +48,7 @@ class IntegrationPluginNetatmo : public IntegrationPlugin
 
 public:
     explicit IntegrationPluginNetatmo();
-    ~IntegrationPluginNetatmo();
 
-    void init() override;
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
     void setupThing(ThingSetupInfo *info) override;
@@ -80,7 +78,6 @@ private slots:
     void onNetworkReplyFinished();
     void onIndoorStatesChanged();
     void onOutdoorStatesChanged();
-
 };
 
 #endif // INTEGRATIONPLUGINNETATMO_H

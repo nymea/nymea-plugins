@@ -42,16 +42,6 @@ IntegrationPluginNetatmo::IntegrationPluginNetatmo()
 
 }
 
-IntegrationPluginNetatmo::~IntegrationPluginNetatmo()
-{
-
-}
-
-void IntegrationPluginNetatmo::init()
-{
-
-}
-
 void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
 {
     info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Netatmo account."));
@@ -65,7 +55,6 @@ void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QStr
     authentication->setPassword(password);
     authentication->setScope("read_station read_thermostat write_thermostat");
 
-    // Update thing connected state based on OAuth connected state
     connect(authentication, &OAuth2::authenticationChanged, info, [this, info, username, password, authentication](){
         if (authentication->authenticated()) {
             pluginStorage()->beginGroup(info->thingId().toString());
@@ -87,11 +76,6 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
 
     if (thing->thingClassId() == netatmoConnectionThingClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo connection" << thing->name() << thing->params();
-
-        if (!m_pluginTimer) {
-            m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(600);
-            connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginNetatmo::onPluginTimer);
-        }
 
         QString username;
         QString password;
@@ -215,7 +199,7 @@ void IntegrationPluginNetatmo::thingRemoved(Thing *thing)
     }
 
     if (myThings().isEmpty() && m_pluginTimer) {
-        m_pluginTimer->deleteLater();
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
         m_pluginTimer = nullptr;
     }
 }
@@ -232,6 +216,11 @@ void IntegrationPluginNetatmo::postSetupThing(Thing *thing)
         if (m_outdoorStationInitData.contains(stationId) && m_outdoorDevices.values().contains(thing)) {
             m_outdoorDevices.key(thing)->updateStates(m_outdoorStationInitData.take(stationId));
         }
+    }
+
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(600);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginNetatmo::onPluginTimer);
     }
 }
 
