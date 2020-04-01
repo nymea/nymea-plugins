@@ -421,7 +421,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         qCDebug(dcPhilipsHue) << "Setup Hue motion sensor" << thing->params();
 
         HueIndoorSensor *motionSensor = new HueIndoorSensor(this);
-        motionSensor->setTimeout(thing->setting(motionSensorSettingsTimeoutParamTypeId).toUInt() * 1000);
+        motionSensor->setTimeout(thing->setting(motionSensorSettingsTimeoutParamTypeId).toUInt());
         motionSensor->setUuid(thing->paramValue(motionSensorThingUuidParamTypeId).toString());
         motionSensor->setModelId(thing->paramValue(motionSensorThingModelIdParamTypeId).toString());
         motionSensor->setTemperatureSensorId(thing->paramValue(motionSensorThingSensorIdTemperatureParamTypeId).toInt());
@@ -439,7 +439,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
 
         connect(thing, &Thing::settingChanged, motionSensor, [motionSensor](const ParamTypeId &paramTypeId, const QVariant &value){
             if (paramTypeId == motionSensorSettingsTimeoutParamTypeId) {
-                motionSensor->setTimeout(value.toUInt() * 1000);
+                motionSensor->setTimeout(value.toUInt());
             }
         });
 
@@ -453,7 +453,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         qCDebug(dcPhilipsHue) << "Setup Hue Outdoor sensor" << thing->params();
 
         HueMotionSensor *outdoorSensor = new HueOutdoorSensor(this);
-        outdoorSensor->setTimeout(thing->setting(outdoorSensorSettingsTimeoutParamTypeId).toUInt() * 1000);
+        outdoorSensor->setTimeout(thing->setting(outdoorSensorSettingsTimeoutParamTypeId).toUInt());
         outdoorSensor->setUuid(thing->paramValue(outdoorSensorThingUuidParamTypeId).toString());
         outdoorSensor->setModelId(thing->paramValue(outdoorSensorThingModelIdParamTypeId).toString());
         outdoorSensor->setTemperatureSensorId(thing->paramValue(outdoorSensorThingSensorIdTemperatureParamTypeId).toInt());
@@ -471,7 +471,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
 
         connect(thing, &Thing::settingChanged, outdoorSensor, [outdoorSensor](const ParamTypeId &paramTypeId, const QVariant &value){
             if (paramTypeId == outdoorSensorSettingsTimeoutParamTypeId) {
-                outdoorSensor->setTimeout(value.toUInt() * 1000);
+                outdoorSensor->setTimeout(value.toUInt());
             }
         });
 

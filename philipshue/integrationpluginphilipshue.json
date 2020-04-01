@@ -714,7 +714,8 @@
                             "displayName": "Person is present",
                             "displayNameEvent": "Person is present changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "cached": false
                         },
                         {
                             "id": "6fa16fb2-053c-4c3c-a39b-9548c1b15089",
@@ -856,7 +857,8 @@
                             "displayName": "Person is present",
                             "displayNameEvent": "Person is present changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "cached": false
                         },
                         {
                             "id": "ef2e564e-2443-448f-bcd9-f85a1126ee6a",
