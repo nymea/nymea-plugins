@@ -78,7 +78,6 @@ private:
 private slots:
     void onPluginTimer();
     void onNetworkReplyFinished();
-    void onAuthenticationChanged();
     void onIndoorStatesChanged();
     void onOutdoorStatesChanged();
 

@@ -66,8 +66,12 @@ void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QStr
     authentication->setScope("read_station read_thermostat write_thermostat");
 
     // Update thing connected state based on OAuth connected state
-    connect(authentication, &OAuth2::authenticationChanged, info, [info, authentication](){
+    connect(authentication, &OAuth2::authenticationChanged, info, [this, info, username, password, authentication](){
         if (authentication->authenticated()) {
+            pluginStorage()->beginGroup(info->thingId().toString());
+            pluginStorage()->setValue("username", username);
+            pluginStorage()->setValue("password", password);
+            pluginStorage()->endGroup();
             info->finish(Thing::ThingErrorNoError);
         } else {
             info->finish(Thing::ThingErrorAuthenticationFailure, "Wrong username of password");
@@ -92,17 +96,28 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
         QString username;
         QString password;
 
-        ParamTypeId usernameParamTypeId = ParamTypeId("763c2c10-dee5-41c8-9f7e-ded741945e73");
-        ParamTypeId passwordParamTypeId = ParamTypeId("c0d892d6-f359-4782-9d7d-8f74a3b53e3e");
-
         if (pluginStorage()->childGroups().contains(thing->id().toString())) {
             pluginStorage()->beginGroup(thing->id().toString());
             username = pluginStorage()->value("username").toString();
             password = pluginStorage()->value("password").toString();
             pluginStorage()->endGroup();
         } else {
+            /* username and password have been stored as thingParams,
+             * this is to migrate the params to plug-in storage. */
+            ParamTypeId usernameParamTypeId = ParamTypeId("763c2c10-dee5-41c8-9f7e-ded741945e73");
+            ParamTypeId passwordParamTypeId = ParamTypeId("c0d892d6-f359-4782-9d7d-8f74a3b53e3e");
+
             username = thing->paramValue(usernameParamTypeId).toString();
             password = thing->paramValue(passwordParamTypeId).toString();
+
+            pluginStorage()->beginGroup(info->thing()->id().toString());
+            pluginStorage()->setValue("username", username);
+            pluginStorage()->setValue("password", password);
+            pluginStorage()->endGroup();
+
+            // Delete username and password so it wont be visible in the things.conf file.
+            thing->setParamValue(ParamTypeId("763c2c10-dee5-41c8-9f7e-ded741945e73"), "");
+            thing->setParamValue(ParamTypeId("c0d892d6-f359-4782-9d7d-8f74a3b53e3e"), "");
         }
 
         OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
@@ -170,7 +185,6 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
         thing->setParams(migratedParams);
         // Migration done
 
-
         NetatmoOutdoorModule *outdoor = new NetatmoOutdoorModule(thing->paramValue(outdoorThingNameParamTypeId).toString(),
                                                                  thing->paramValue(outdoorThingMacParamTypeId).toString(),
                                                                  thing->paramValue(outdoorThingBaseStationParamTypeId).toString(),
@@ -181,7 +195,6 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
 
         return info->finish(Thing::ThingErrorNoError);
     }
-
     qCWarning(dcNetatmo()) << "Unhandled thing class in setupDevice";
 }
 
@@ -360,11 +373,6 @@ void IntegrationPluginNetatmo::onNetworkReplyFinished()
         qCDebug(dcNetatmo) << qUtf8Printable(jsonDoc.toJson());
         processRefreshData(jsonDoc.toVariant().toMap(), thing);
     }
-}
-
-void IntegrationPluginNetatmo::onAuthenticationChanged()
-{
-
 }
 
 void IntegrationPluginNetatmo::onIndoorStatesChanged()
