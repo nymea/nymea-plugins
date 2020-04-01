@@ -1018,67 +1018,87 @@ void IntegrationPluginPhilipsHue::remoteStateChanged()
 void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
 {
     HueRemote *remote = static_cast<HueRemote *>(sender());
+    Thing *thing = m_remotes.value(remote);
+    if (!thing) {
+        qCWarning(dcPhilipsHue()) << "Received a button press event for a thing we don't know!";
+        return;
+    }
 
     EventTypeId id;
     Param param;
 
-    switch (buttonCode) {
-    case HueRemote::OnPressed:
-        param = Param(remotePressedEventButtonNameParamTypeId, "ON");
-        id = remotePressedEventTypeId;
-        break;
-    case HueRemote::OnLongPressed:
-        param = Param(remoteLongPressedEventButtonNameParamTypeId, "ON");
-        id = remoteLongPressedEventTypeId;
-        break;
-    case HueRemote::DimUpPressed:
-        param = Param(remotePressedEventButtonNameParamTypeId, "DIM UP");
-        id = remotePressedEventTypeId;
-        break;
-    case HueRemote::DimUpLongPressed:
-        param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM UP");
-        id = remoteLongPressedEventTypeId;
-        break;
-    case HueRemote::DimDownPressed:
-        param = Param(remotePressedEventButtonNameParamTypeId, "DIM DOWN");
-        id = remotePressedEventTypeId;
-        break;
-    case HueRemote::DimDownLongPressed:
-        param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM DOWN");
-        id = remoteLongPressedEventTypeId;
-        break;
-    case HueRemote::OffPressed:
-        param = Param(remotePressedEventButtonNameParamTypeId, "OFF");
-        id = remotePressedEventTypeId;
-        break;
-    case HueRemote::OffLongPressed:
-        param = Param(remoteLongPressedEventButtonNameParamTypeId, "OFF");
-        id = remoteLongPressedEventTypeId;
-        break;
-    case HueRemote::TapButton1Pressed:
-        param = Param(tapPressedEventButtonNameParamTypeId, "•");
-        id = tapPressedEventTypeId;
-        break;
-    case HueRemote::TapButton2Pressed:
-        param = Param(tapPressedEventButtonNameParamTypeId, "••");
-        id = tapPressedEventTypeId;
-        break;
-    case HueRemote::TapButton3Pressed:
-        param = Param(tapPressedEventButtonNameParamTypeId, "•••");
-        id = tapPressedEventTypeId;
-        break;
-    case HueRemote::TapButton4Pressed:
-        param = Param(tapPressedEventButtonNameParamTypeId, "••••");
-        id = tapPressedEventTypeId;
-        break;
-    case HueRemote::SmartButtonPressed:
-        id = smartButtonPressedEventTypeId;
-        break;
-    case HueRemote::SmartButtonLongPressed:
-        id = smartButtonLongPressedEventTypeId;
-        break;
-    default:
-        break;
+    if (thing->thingClassId() == remoteThingClassId) {
+        switch (buttonCode) {
+            case 1002:
+                param = Param(remotePressedEventButtonNameParamTypeId, "ON");
+                id = remotePressedEventTypeId;
+                break;
+            case 1001:
+                param = Param(remoteLongPressedEventButtonNameParamTypeId, "ON");
+                id = remoteLongPressedEventTypeId;
+                break;
+            case 2002:
+                param = Param(remotePressedEventButtonNameParamTypeId, "DIM UP");
+                id = remotePressedEventTypeId;
+                break;
+            case 2001:
+                param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM UP");
+                id = remoteLongPressedEventTypeId;
+                break;
+            case 3002:
+                param = Param(remotePressedEventButtonNameParamTypeId, "DIM DOWN");
+                id = remotePressedEventTypeId;
+                break;
+            case 3001:
+                param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM DOWN");
+                id = remoteLongPressedEventTypeId;
+                break;
+            case 4002:
+                param = Param(remotePressedEventButtonNameParamTypeId, "OFF");
+                id = remotePressedEventTypeId;
+                break;
+            case 4001:
+                param = Param(remoteLongPressedEventButtonNameParamTypeId, "OFF");
+                id = remoteLongPressedEventTypeId;
+                break;
+        default:
+            qCDebug(dcPhilipsHue()) << "Unhandled button code received from Hue Remoote:" << buttonCode;
+            return;
+        }
+    } else if (thing->thingClassId() == tapThingClassId) {
+        switch (buttonCode) {
+        case 34:
+            param = Param(tapPressedEventButtonNameParamTypeId, "•");
+            id = tapPressedEventTypeId;
+            break;
+        case 16:
+            param = Param(tapPressedEventButtonNameParamTypeId, "••");
+            id = tapPressedEventTypeId;
+            break;
+        case 17:
+            param = Param(tapPressedEventButtonNameParamTypeId, "•••");
+            id = tapPressedEventTypeId;
+            break;
+        case 18:
+            param = Param(tapPressedEventButtonNameParamTypeId, "••••");
+            id = tapPressedEventTypeId;
+            break;
+        default:
+            qCDebug(dcPhilipsHue()) << "Received unhandled button code from Hue Tap:" << buttonCode;
+            return;
+        }
+    } else if (thing->thingClassId() == smartButtonThingClassId) {
+        switch (buttonCode) {
+        case 1000:
+            id = smartButtonPressedEventTypeId;
+            break;
+        case 1003:
+            id = smartButtonLongPressedEventTypeId;
+            break;
+        default:
+            qCDebug(dcPhilipsHue()) << "Received unhandled button code from Hue Smart Button:" << buttonCode;
+            return;
+        }
     }
     emitEvent(Event(id, m_remotes.value(remote)->id(), ParamList() << param));
 }

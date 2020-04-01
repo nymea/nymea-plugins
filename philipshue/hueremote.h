@@ -44,23 +44,6 @@ class HueRemote : public HueDevice
 {
     Q_OBJECT
 public:
-    enum ButtonCode {
-        SmartButtonPressed = 1000,
-        OnLongPressed = 1001,
-        OnPressed = 1002,
-        SmartButtonLongPressed = 1003,
-        DimUpLongPressed = 2001,
-        DimUpPressed = 2002,
-        DimDownLongPressed = 3001,
-        DimDownPressed = 3002,
-        OffLongPressed = 4001,
-        OffPressed = 4002,
-        TapButton1Pressed = 34,
-        TapButton2Pressed = 16,
-        TapButton3Pressed = 17,
-        TapButton4Pressed = 18
-    };
-
     explicit HueRemote(QObject *parent = nullptr);
 
     int battery() const;
@@ -74,7 +57,7 @@ private:
 
 signals:
     void stateChanged();
-    void buttonPressed(const int &buttonCode);
+    void buttonPressed(int buttonCode);
 
 };
 
