@@ -426,8 +426,8 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == smartButtonThingClassId) {
         HueRemote *smartButton = new HueRemote(this);
         smartButton->setName(thing->name());
-        smartButton->setId(thing->paramValue(tapThingSensorIdParamTypeId).toInt());
-        smartButton->setModelId(thing->paramValue(tapThingModelIdParamTypeId).toString());
+        smartButton->setId(thing->paramValue(smartButtonThingSensorIdParamTypeId).toInt());
+        smartButton->setModelId(thing->paramValue(smartButtonThingModelIdParamTypeId).toString());
 
         connect(smartButton, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
         connect(smartButton, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
