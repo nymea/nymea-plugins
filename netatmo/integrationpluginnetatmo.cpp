@@ -63,7 +63,7 @@ void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QStr
             pluginStorage()->endGroup();
             info->finish(Thing::ThingErrorNoError);
         } else {
-            info->finish(Thing::ThingErrorAuthenticationFailure, "Wrong username of password");
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Wrong username or password"));
         }
     });
     authentication->startAuthentication();
@@ -104,20 +104,28 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
             thing->setParamValue(ParamTypeId("c0d892d6-f359-4782-9d7d-8f74a3b53e3e"), "");
         }
 
-        OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
-        authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
-        authentication->setUsername(username);
-        authentication->setPassword(password);
-        authentication->setScope("read_station read_thermostat write_thermostat");
-        m_authentications.insert(authentication, thing);
+        OAuth2 *authentication;
+        if (m_authentications.values().contains(thing)) {
+            qCDebug(dcNetatmo()) << "Re-Discovery, not creating a new authentication";
+            authentication = m_authentications.key(thing);
+            authentication->setUsername(username);
+            authentication->setPassword(password);
+        } else {
+            authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
+            authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
+            authentication->setUsername(username);
+            authentication->setPassword(password);
+            authentication->setScope("read_station read_thermostat write_thermostat");
+            m_authentications.insert(authentication, thing);
 
-        // Update thing connected state based on OAuth connected state
-        connect(authentication, &OAuth2::authenticationChanged, thing, [this, thing, authentication](){
-            thing->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
-            if (authentication->authenticated()) {
-                refreshData(thing, authentication->token());
-            }
-        });
+            // Update thing connected state based on OAuth connected state
+            connect(authentication, &OAuth2::authenticationChanged, thing, [this, thing, authentication](){
+                thing->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
+                if (authentication->authenticated()) {
+                    refreshData(thing, authentication->token());
+                }
+            });
+        }
         authentication->startAuthentication();
 
         // Report thing setup finished when authentication reports success
@@ -127,7 +135,6 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error logging in to Netatmo server."));
                 return;
             }
-
             info->finish(Thing::ThingErrorNoError);
         });
 
@@ -394,5 +401,3 @@ void IntegrationPluginNetatmo::onOutdoorStatesChanged()
     thing->setStateValue(outdoorBatteryLevelStateTypeId, outdoor->battery());
     thing->setStateValue(outdoorBatteryCriticalStateTypeId, outdoor->battery() < 10);
 }
-
-

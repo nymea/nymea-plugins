@@ -4,12 +4,17 @@
 <context>
     <name>IntegrationPluginNetatmo</name>
     <message>
-        <location filename="../integrationpluginnetatmo.cpp" line="57"/>
+        <location filename="../integrationpluginnetatmo.cpp" line="47"/>
         <source>Please enter the login credentials for your Netatmo account.</source>
         <translation>Bitte geben Sie die Anmeldeinformationen für Ihr Netatmo-Konto ein.</translation>
     </message>
     <message>
-        <location filename="../integrationpluginnetatmo.cpp" line="128"/>
+        <location filename="../integrationpluginnetatmo.cpp" line="66"/>
+        <source>Wrong username or password</source>
+        <translation>Benutzername oder Passwort falsch</translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginnetatmo.cpp" line="135"/>
         <source>Error logging in to Netatmo server.</source>
         <translation>Fehler beim Anmelden am Netatmo-Server.</translation>
     </message>
