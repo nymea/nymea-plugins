@@ -208,19 +208,28 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             continue;
         }
 
+        qCDebug(dcShelly()) << "Found shelly thing!" << entry;
+
         ThingDescriptor descriptor(info->thingClassId(), entry.name(), entry.hostAddress().toString());
         ParamList params;
         params << Param(m_idParamTypeMap.value(info->thingClassId()), entry.name());
+        params << Param(m_usernameParamTypeMap.value(info->thingClassId()), "");
+        params << Param(m_passwordParamTypeMap.value(info->thingClassId()), "");
+        if (m_connectedDeviceParamTypeMap.contains(info->thingClassId())) {
+            params << Param(m_connectedDeviceParamTypeMap.value(info->thingClassId()), "None");
+        }
+        if (m_connectedDevice2ParamTypeMap.contains(info->thingClassId())) {
+            params << Param(m_connectedDevice2ParamTypeMap.value(info->thingClassId()), "None");
+        }
         descriptor.setParams(params);
 
-        Thing *existingThing = myThings().findByParams(params);
-        if (existingThing) {
-            descriptor.setThingId(existingThing->id());
+        Things existingThings = myThings().filterByParam(m_idParamTypeMap.value(info->thingClassId()), entry.name());
+        if (existingThings.count() == 1) {
+            qCDebug(dcShelly()) << "This shelly already exists in the system!";
+            descriptor.setThingId(existingThings.first()->id());
         }
 
         info->addThingDescriptor(descriptor);
-        qCDebug(dcShelly()) << "Found shelly thing!" << entry;
-
     }
 
     info->finish(Thing::ThingErrorNoError);
