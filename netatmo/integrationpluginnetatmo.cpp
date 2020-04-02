@@ -350,7 +350,7 @@ void IntegrationPluginNetatmo::onNetworkReplyFinished()
             thing->setStateValue(netatmoConnectionConnectedStateTypeId, false);
             return;
         }
-
+        thing->setStateValue(netatmoConnectionConnectedStateTypeId, true);
         // check JSON file
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
