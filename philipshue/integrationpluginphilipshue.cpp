@@ -414,6 +414,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         hueTap->setName(thing->name());
         hueTap->setId(thing->paramValue(tapThingSensorIdParamTypeId).toInt());
         hueTap->setModelId(thing->paramValue(tapThingModelIdParamTypeId).toString());
+        hueTap->setUuid(thing->paramValue(tapThingUuidParamTypeId).toString());
 
         connect(hueTap, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
         connect(hueTap, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
@@ -428,6 +429,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         smartButton->setName(thing->name());
         smartButton->setId(thing->paramValue(smartButtonThingSensorIdParamTypeId).toInt());
         smartButton->setModelId(thing->paramValue(smartButtonThingModelIdParamTypeId).toString());
+        smartButton->setUuid(thing->paramValue(smartButtonThingUuidParamTypeId).toString());
 
         connect(smartButton, &HueRemote::stateChanged, this, &IntegrationPluginPhilipsHue::remoteStateChanged);
         connect(smartButton, &HueRemote::buttonPressed, this, &IntegrationPluginPhilipsHue::onRemoteButtonEvent);
@@ -1369,7 +1371,9 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
         QString uuid = sensorMap.value("uniqueid").toString();
         QString model = sensorMap.value("modelid").toString();
 
+        qCDebug(dcPhilipsHue()) << "Found sensor on bridge:" << model << uuid;
         foreach (HueRemote* remote, remotesToRemove) {
+            qCDebug(dcPhilipsHue()) << "  - Checking remote to remove" << remote->modelId() << remote->uuid();
             if (remote->uuid() == uuid) {
                 remotesToRemove.removeAll(remote);
                 break;
@@ -1541,7 +1545,7 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
     foreach (HueRemote* remote, remotesToRemove) {
         Thing *remoteThing = m_remotes.value(remote);
         if (remoteThing->parentId() == thing->id()) {
-            qCDebug(dcPhilipsHue()) << "Hue remote disappeared from bridge";
+            qCDebug(dcPhilipsHue()) << "Hue remote" << remote->uuid() << "disappeared from bridge";
             emit autoThingDisappeared(remoteThing->id());
         }
     }
