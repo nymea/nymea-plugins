@@ -1371,9 +1371,9 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
         QString uuid = sensorMap.value("uniqueid").toString();
         QString model = sensorMap.value("modelid").toString();
 
-        qCDebug(dcPhilipsHue()) << "Found sensor on bridge:" << model << uuid;
+//        qCDebug(dcPhilipsHue()) << "Found sensor on bridge:" << model << uuid;
         foreach (HueRemote* remote, remotesToRemove) {
-            qCDebug(dcPhilipsHue()) << "  - Checking remote to remove" << remote->modelId() << remote->uuid();
+//            qCDebug(dcPhilipsHue()) << "  - Checking remote to remove" << remote->modelId() << remote->uuid();
             if (remote->uuid() == uuid) {
                 remotesToRemove.removeAll(remote);
                 break;

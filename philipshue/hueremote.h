@@ -54,6 +54,7 @@ public:
 private:
     int m_battery;
     QString m_lastUpdate;
+    int m_lastButtonCode = -1;
 
 signals:
     void stateChanged();

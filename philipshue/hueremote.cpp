@@ -66,10 +66,12 @@ void HueRemote::updateStates(const QVariantMap &statesMap, const QVariantMap &co
         m_lastUpdate = lastUpdate;
     }
 
-    if (m_lastUpdate != lastUpdate) {
-        m_lastUpdate = lastUpdate;
+    int buttonCode = statesMap.value("buttonevent").toInt();
 
-        int buttonCode = statesMap.value("buttonevent").toInt();
+    if (m_lastUpdate != lastUpdate || m_lastButtonCode != buttonCode) {
+        m_lastUpdate = lastUpdate;
+        m_lastButtonCode = buttonCode;
+
         qCDebug(dcPhilipsHue) << "button pressed" << buttonCode;
 
         emit buttonPressed(buttonCode);
