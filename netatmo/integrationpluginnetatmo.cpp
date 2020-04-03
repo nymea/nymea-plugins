@@ -44,7 +44,19 @@ IntegrationPluginNetatmo::IntegrationPluginNetatmo()
 
 void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
 {
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Netatmo account."));
+    // Checking the internet connection
+    NetworkAccessManager *network = hardwareManager()->networkManager();
+    QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://api.netatmo.net")));
+    connect(reply, &QNetworkReply::finished, this, [reply, info] {
+        reply->deleteLater();
+        //The server replies usually 404 not found on this request
+        //int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Netatmo server is not reachable."));
+        } else {
+            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Netatmo account."));
+        }
+    });
 }
 
 void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
@@ -54,6 +66,7 @@ void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QStr
     authentication->setUsername(username);
     authentication->setPassword(password);
     authentication->setScope("read_station read_thermostat write_thermostat");
+
 
     connect(authentication, &OAuth2::authenticationChanged, info, [this, info, username, password, authentication](){
         if (authentication->authenticated()) {
@@ -116,7 +129,6 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
             authentication->setUsername(username);
             authentication->setPassword(password);
             authentication->setScope("read_station read_thermostat write_thermostat");
-            m_authentications.insert(authentication, thing);
 
             // Update thing connected state based on OAuth connected state
             connect(authentication, &OAuth2::authenticationChanged, thing, [this, thing, authentication](){
@@ -129,15 +141,15 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
         authentication->startAuthentication();
 
         // Report thing setup finished when authentication reports success
-        connect(authentication, &OAuth2::authenticationChanged, info, [info, authentication](){
+        connect(authentication, &OAuth2::authenticationChanged, info, [this, info, thing, authentication](){
             if (!authentication->authenticated()) {
                 authentication->deleteLater();
                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error logging in to Netatmo server."));
                 return;
             }
+            m_authentications.insert(authentication, thing);
             info->finish(Thing::ThingErrorNoError);
         });
-
         return;
 
     } else if (thing->thingClassId() == indoorThingClassId) {
@@ -186,6 +198,7 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
 
         return info->finish(Thing::ThingErrorNoError);
     }
+    info->finish(Thing::ThingErrorThingClassNotFound);
     qCWarning(dcNetatmo()) << "Unhandled thing class in setupDevice";
 }
 
@@ -240,9 +253,29 @@ void IntegrationPluginNetatmo::refreshData(Thing *thing, const QString &token)
     url.setQuery(query);
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-    connect(reply, &QNetworkReply::finished, this, &IntegrationPluginNetatmo::onNetworkReplyFinished);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, thing] {
+        reply->deleteLater();
 
-    m_refreshRequest.insert(reply, thing);
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // check HTTP status code
+        if (status != 200) {
+            qCWarning(dcNetatmo) << "Refresh data reply HTTP error:" << status << reply->errorString();
+            thing->setStateValue(netatmoConnectionConnectedStateTypeId, false);
+            return;
+        }
+        thing->setStateValue(netatmoConnectionConnectedStateTypeId, true);
+        // check JSON file
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcNetatmo) << "Refresh data reply JSON error:" << error.errorString();
+            return;
+        }
+
+        qCDebug(dcNetatmo) << qUtf8Printable(jsonDoc.toJson());
+        processRefreshData(jsonDoc.toVariant().toMap(), thing);
+    });
 }
 
 void IntegrationPluginNetatmo::processRefreshData(const QVariantMap &data, Thing *connectionDevice)
@@ -333,41 +366,17 @@ Thing *IntegrationPluginNetatmo::findOutdoorDevice(const QString &macAddress)
 void IntegrationPluginNetatmo::onPluginTimer()
 {
     foreach (OAuth2 *authentication, m_authentications.keys()) {
+        Thing *thing = m_authentications.value(authentication);
+        if (!thing) {
+            qCWarning(dcNetatmo()) << "Authentication without an associated Netatmo connection thing" << authentication->username();
+            m_authentications.remove(authentication);
+            continue;
+        }
         if (authentication->authenticated()) {
-            refreshData(m_authentications.value(authentication), authentication->token());
+            refreshData(thing, authentication->token());
         } else {
             authentication->startAuthentication();
         }
-    }
-}
-
-void IntegrationPluginNetatmo::onNetworkReplyFinished()
-{
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    reply->deleteLater();
-
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    // update values request
-    if (m_refreshRequest.keys().contains(reply)) {
-        Thing *thing = m_refreshRequest.take(reply);
-
-        // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcNetatmo) << "Device list reply HTTP error:" << status << reply->errorString();
-            thing->setStateValue(netatmoConnectionConnectedStateTypeId, false);
-            return;
-        }
-        thing->setStateValue(netatmoConnectionConnectedStateTypeId, true);
-        // check JSON file
-        QJsonParseError error;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcNetatmo) << "Device list reply JSON error:" << error.errorString();
-            return;
-        }
-
-        qCDebug(dcNetatmo) << qUtf8Printable(jsonDoc.toJson());
-        processRefreshData(jsonDoc.toVariant().toMap(), thing);
     }
 }
 

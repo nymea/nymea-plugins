@@ -4,17 +4,22 @@
 <context>
     <name>IntegrationPluginNetatmo</name>
     <message>
-        <location filename="../integrationpluginnetatmo.cpp" line="47"/>
+        <location filename="../integrationpluginnetatmo.cpp" line="55"/>
+        <source>Netatmo server is not reachable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginnetatmo.cpp" line="57"/>
         <source>Please enter the login credentials for your Netatmo account.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnetatmo.cpp" line="66"/>
+        <location filename="../integrationpluginnetatmo.cpp" line="79"/>
         <source>Wrong username or password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnetatmo.cpp" line="135"/>
+        <location filename="../integrationpluginnetatmo.cpp" line="147"/>
         <source>Error logging in to Netatmo server.</source>
         <translation type="unfinished"></translation>
     </message>
