@@ -45,7 +45,18 @@ IntegrationPluginTado::IntegrationPluginTado()
 
 void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
 {
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials."));
+    // Checking the internet connection
+    NetworkAccessManager *network = hardwareManager()->networkManager();
+    QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://my.tado.com/api/v2")));
+    connect(reply, &QNetworkReply::finished, this, [reply, info] {
+        reply->deleteLater();
+
+        if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Tado server is not reachable."));
+        } else {
+            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Tado account."));
+        }
+    });
 }
 
 void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
@@ -164,14 +175,14 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
         QString homeId = thing->paramValue(zoneThingHomeIdParamTypeId).toString();
         QString zoneId = thing->paramValue(zoneThingZoneIdParamTypeId).toString();
         if (action.actionTypeId() == zoneModeActionTypeId) {
-             QUuid requestId;
+            QUuid requestId;
             if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Tado") {
                 requestId = tado->deleteOverlay(homeId, zoneId);
             } else if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Off") {
                 requestId = tado->setOverlay(homeId, zoneId, false, thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
             } else {
                 if(thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble() <= 5.0) {
-                   requestId =  tado->setOverlay(homeId, zoneId, true, 5);
+                    requestId =  tado->setOverlay(homeId, zoneId, true, 5);
                 } else {
                     requestId = tado->setOverlay(homeId, zoneId, true, thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
                 }
@@ -270,6 +281,17 @@ void IntegrationPluginTado::onAuthenticationStatusChanged(bool authenticated)
         if (!thing)
             return;
         thing->setStateValue(tadoConnectionLoggedInStateTypeId, authenticated);
+
+        if (!authenticated) {
+            QTimer::singleShot(5000, [this, tado, thing] {
+                if (!tado->connected()) {
+                    pluginStorage()->beginGroup(thing->id().toString());
+                    QString password = pluginStorage()->value("password").toString();
+                    pluginStorage()->endGroup();
+                    tado->getToken(password);
+                }
+            });
+        }
     }
 }
 
