@@ -1035,7 +1035,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(remotePressedEventButtonNameParamTypeId, "ON");
             id = remotePressedEventTypeId;
             break;
-        case 1003:
+        case 1001:
             param = Param(remoteLongPressedEventButtonNameParamTypeId, "ON");
             id = remoteLongPressedEventTypeId;
             break;
@@ -1043,7 +1043,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(remotePressedEventButtonNameParamTypeId, "DIM UP");
             id = remotePressedEventTypeId;
             break;
-        case 2003:
+        case 2001:
             param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM UP");
             id = remoteLongPressedEventTypeId;
             break;
@@ -1051,7 +1051,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(remotePressedEventButtonNameParamTypeId, "DIM DOWN");
             id = remotePressedEventTypeId;
             break;
-        case 3003:
+        case 3001:
             param = Param(remoteLongPressedEventButtonNameParamTypeId, "DIM DOWN");
             id = remoteLongPressedEventTypeId;
             break;
@@ -1059,7 +1059,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
             param = Param(remotePressedEventButtonNameParamTypeId, "OFF");
             id = remotePressedEventTypeId;
             break;
-        case 4003:
+        case 4001:
             param = Param(remoteLongPressedEventButtonNameParamTypeId, "OFF");
             id = remoteLongPressedEventTypeId;
             break;
@@ -1094,7 +1094,7 @@ void IntegrationPluginPhilipsHue::onRemoteButtonEvent(int buttonCode)
         case 1002:
             id = smartButtonPressedEventTypeId;
             break;
-        case 1003:
+        case 1001:
             id = smartButtonLongPressedEventTypeId;
             break;
         default:
