@@ -91,7 +91,6 @@ QUuid AirQualityIndex::searchByName(const QString &name)
             qCWarning(dcAirQualityIndex()) << "Received invalide JSON object";
             return;
         }
-        emit requestExecuted(requestId, true);
 
         QList<Station> stations;
         QVariantList stationList = doc.toVariant().toMap().value("data").toList();
@@ -109,6 +108,8 @@ QUuid AirQualityIndex::searchByName(const QString &name)
         }
         if (!stations.isEmpty())
             emit stationsReceived(requestId, stations);
+
+        requestExecuted(requestId, true);
     });
     return requestId;
 }
@@ -143,7 +144,9 @@ QUuid AirQualityIndex::getDataByIp()
             qCWarning(dcAirQualityIndex()) << "Request error:" << status << reply->errorString();
             return;
         }
-        parseData(requestId, reply->readAll());
+        if (!parseData(requestId, reply->readAll()))
+                requestExecuted(requestId, false);
+        requestExecuted(requestId, true);
     });
     return requestId;
 }
@@ -178,24 +181,23 @@ QUuid AirQualityIndex::getDataByGeolocation(const QString &lat, const QString &l
             qCWarning(dcAirQualityIndex()) << "Request error:" << status << reply->errorString();
             return;
         }
+        if (!parseData(requestId, reply->readAll()))
+                requestExecuted(requestId, false);
         requestExecuted(requestId, true);
-        parseData(requestId, reply->readAll());
     });
     return requestId;
 }
 
 
-void AirQualityIndex::parseData(QUuid requestId, const QByteArray &data)
+bool AirQualityIndex::parseData(QUuid requestId, const QByteArray &data)
 {
     qCDebug(dcAirQualityIndex()) << "Parsing data" << data;
     QJsonParseError error;
     QJsonDocument doc = QJsonDocument::fromJson(data, &error);
     if (error.error != QJsonParseError::NoError) {
-        emit requestExecuted(requestId, false);
         qCWarning(dcAirQualityIndex()) << "Received invalide JSON object";
-        return;
+        return false;
     }
-    emit requestExecuted(requestId, true);
     Station station;
     station.aqi =  doc.toVariant().toMap().value("data").toMap().value("aqi").toInt();
     station.idx =  doc.toVariant().toMap().value("data").toMap().value("idx").toInt();
@@ -228,4 +230,5 @@ void AirQualityIndex::parseData(QUuid requestId, const QByteArray &data)
     aqiData.temperature = iaqi["t"].toMap().value("v").toDouble();
     aqiData.windSpeed = iaqi["w"].toMap().value("v").toDouble();
     emit dataReceived(requestId, aqiData);
+    return true;
 }

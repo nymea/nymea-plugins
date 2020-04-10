@@ -40,7 +40,17 @@ IntegrationPluginAqi::IntegrationPluginAqi()
 
 void IntegrationPluginAqi::startPairing(ThingPairingInfo *info)
 {
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter your API token for Air Quality Index"));
+    NetworkAccessManager *network = hardwareManager()->networkManager();
+    QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://api.waqi.info")));
+    connect(reply, &QNetworkReply::finished, this, [reply, info] {
+        reply->deleteLater();
+
+        if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Air quality index server is not reachable."));
+        } else {
+            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter your API token for Air Quality Index"));
+        }
+    });
 }
 
 void IntegrationPluginAqi::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
@@ -116,6 +126,13 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
                 }
             });
         } else {
+            // An AQI connection might be setup because of an discovery request
+            // or because there is already another thing using the connection
+            // In any case the API key is being updated to avoid using the discovery key.
+            pluginStorage()->beginGroup(info->thing()->id().toString());
+            QString apiKey = pluginStorage()->value("apiKey").toString();
+            pluginStorage()->endGroup();
+            m_aqiConnection->setApiKey(apiKey);
             info->finish(Thing::ThingErrorNoError);
         }
     } else {
@@ -128,8 +145,10 @@ void IntegrationPluginAqi::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == airQualityIndexThingClassId) {
 
-        if (!m_aqiConnection)
+        if (!m_aqiConnection) {
+            qCWarning(dcAirQualityIndex()) << "Air quality connection not initialized";
             return;
+        }
 
         QString longitude = thing->paramValue(airQualityIndexThingLongitudeParamTypeId).toString();
         QString latitude = thing->paramValue(airQualityIndexThingLatitudeParamTypeId).toString();
@@ -147,11 +166,10 @@ void IntegrationPluginAqi::thingRemoved(Thing *thing)
 {
     Q_UNUSED(thing)
     if (myThings().empty()) {
-        if (!m_pluginTimer) {
+        if (m_pluginTimer) {
             hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-            m_pluginTimer = nullptr;
-        }
-        if (!m_aqiConnection) {
+            m_pluginTimer = nullptr;        }
+        if (m_aqiConnection) {
             m_aqiConnection->deleteLater();
             m_aqiConnection = nullptr;
         }
@@ -160,8 +178,10 @@ void IntegrationPluginAqi::thingRemoved(Thing *thing)
 
 void IntegrationPluginAqi::onAirQualityDataReceived(QUuid requestId, AirQualityIndex::AirQualityData data)
 {
+    qCDebug(dcAirQualityIndex()) << "Air Quality data received, request id:" << requestId << "is an async request:" << m_asyncRequests.contains(requestId);
+
     if (m_asyncSetups.contains(requestId)) {
-        ThingSetupInfo *info = m_asyncSetups.take(requestId);
+        ThingSetupInfo *info = m_asyncSetups.value(requestId);
         return info->finish(Thing::ThingErrorNoError);
     }
 
@@ -206,6 +226,7 @@ void IntegrationPluginAqi::onAirQualityDataReceived(QUuid requestId, AirQualityI
 
 void IntegrationPluginAqi::onAirQualityStationsReceived(QUuid requestId, QList<AirQualityIndex::Station> stations)
 {
+    qCDebug(dcAirQualityIndex()) << "Air Quality Stations received, request id:" << requestId << "is an async request:" << m_asyncRequests.contains(requestId);
     if (m_asyncDiscovery.contains(requestId)) {
         ThingDiscoveryInfo *info = m_asyncDiscovery.take(requestId);
         foreach(AirQualityIndex::Station station, stations) {
@@ -221,9 +242,11 @@ void IntegrationPluginAqi::onAirQualityStationsReceived(QUuid requestId, QList<A
 
 
     if (m_asyncRequests.contains(requestId)) {
-        Thing * thing = myThings().findById(m_asyncRequests.take(requestId));
-        if (!thing)
+        Thing * thing = myThings().findById(m_asyncRequests.value(requestId));
+        if (!thing) {
+            qCWarning(dcAirQualityIndex()) << "Can't find thing, associated to this async request";
             return;
+        }
         if (stations.length() != 0) {
             thing->setStateValue(airQualityIndexStationNameStateTypeId, stations.first().name);
         }
@@ -246,11 +269,14 @@ void IntegrationPluginAqi::onPluginTimer()
 
 void IntegrationPluginAqi::onRequestExecuted(QUuid requestId, bool success)
 {
+    qCDebug(dcAirQualityIndex()) << "Request executd, requestId:" << requestId << "Success:" << success << "is an async request:" << m_asyncRequests.contains(requestId);
     if (m_asyncRequests.contains(requestId)) {
 
         Thing *thing = myThings().findById(m_asyncRequests.value(requestId));
         thing->setStateValue(airQualityIndexConnectedStateTypeId, success);
-        if (!success)
-            m_asyncRequests.remove(requestId);
+        if (!success) {
+            qCWarning(dcAirQualityIndex()) << "Request failed, removing request from async request list";
+        }
+        m_asyncRequests.remove(requestId);
     }
 }

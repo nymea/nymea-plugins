@@ -80,7 +80,7 @@ private:
     QString m_baseUrl = "https://api.waqi.info";
     QString m_apiKey;
 
-    void parseData(QUuid requestId, const QByteArray &data);
+    bool parseData(QUuid requestId, const QByteArray &data);
 
 signals:
     void stationsReceived(QUuid requestId, QList<Station> stations);
