@@ -150,9 +150,9 @@ void IntegrationPluginLeynew::executeAction(ThingActionInfo *info)
     // =======================================
     // send data to hardware resource
     if(hardwareManager()->radio433()->sendData(delay, rawData, repetitions)){
-        qCDebug(dcLeynew) << "Transmitted" << pluginName() << thing->name() << action.id();
+        qCDebug(dcLeynew) << "Transmitted" << pluginName() << thing->name();
     }else{
-        qCWarning(dcLeynew) << "Could not transmitt" << pluginName() << thing->name() << action.id();
+        qCWarning(dcLeynew) << "Could not transmitt" << pluginName() << thing->name();
         return info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error sending data."));
     }
 

@@ -120,7 +120,6 @@ signals:
     void availableChanged(bool available);
     void authenticationProcessFinished(const PairingTransactionId &pairingId, bool success);
     void stateChanged(NukiUtils::LockState lockState);
-    void actionFinished(const ActionId &action, bool success);
 
 private slots:
     // Bluetooth thing

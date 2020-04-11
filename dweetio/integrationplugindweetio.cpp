@@ -101,7 +101,7 @@ void IntegrationPluginDweetio::executeAction(ThingActionInfo *info)
 {
     Thing *thing = info->thing();
     Action action = info->action();
-    qCDebug(dcDweetio) << "Execute action" << thing->id() << action.id() << action.params();
+    qCDebug(dcDweetio) << "Execute action" << thing->id() << action.params();
 
     if (thing->thingClassId() == postThingClassId) {
 

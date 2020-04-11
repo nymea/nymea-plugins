@@ -91,6 +91,42 @@ public:
     bool isConnected();
     bool isInitialized();
 
+public slots:
+    void enablePairingMode();
+    void disablePairingMode();
+    void refresh();
+    void customRequest(QByteArray data);
+
+    // for actions
+    int setDeviceSetpointTemp(QByteArray rfAddress, int roomId, double temperature);
+    int setDeviceAutoMode(QByteArray rfAddress, int roomId);
+    int setDeviceManuelMode(QByteArray rfAddress, int roomId);
+    int setDeviceEcoMode(QByteArray rfAddress, int roomId);
+    int displayCurrentTemperature(QByteArray rfAddress, int roomId, bool display);
+
+signals:
+    void cubeDataAvailable(const QByteArray &data);
+    void cubeACK();
+    void cubeConnectionStatusChanged(bool connected);
+
+    // when things are parsed
+    void cubeConfigReady();
+    void wallThermostatFound();
+    void radiatorThermostatFound();
+
+    void wallThermostatDataUpdated();
+    void radiatorThermostatDataUpdated();
+
+    void commandActionFinished(bool succeeded, int commandId);
+
+private slots:
+    void connectionStateChanged(const QAbstractSocket::SocketState &socketState);
+    void error(QAbstractSocket::SocketError error);
+    void readData();
+    void processCubeData(const QByteArray &data);
+
+    void processCommandQueue();
+
 private:
     // cube data
     QString m_serialNumber;
@@ -123,42 +159,15 @@ private:
     QList<QByteArray> splitMessage(QByteArray data);
     int deviceTypeFromRFAddress(QByteArray rfAddress);
 
-    ActionId m_actionId;
+    struct Command {
+        qint16 commandId;
+        QByteArray data;
+    };
 
-signals:
-    void cubeDataAvailable(const QByteArray &data);
-    void cubeACK();
-    void cubeConnectionStatusChanged(bool connected);
+    Command m_pendingCommand;
 
-    // when things are parsed
-    void cubeConfigReady();
-    void wallThermostatFound();
-    void radiatorThermostatFound();
-
-    void wallThermostatDataUpdated();
-    void radiatorThermostatDataUpdated();
-
-    void commandActionFinished(bool succeeded, const ActionId &actionId);
-
-private slots:
-    void connectionStateChanged(const QAbstractSocket::SocketState &socketState);
-    void error(QAbstractSocket::SocketError error);
-    void readData();
-    void processCubeData(const QByteArray &data);
-
-
-public slots:
-    void enablePairingMode();
-    void disablePairingMode();
-    void refresh();
-    void customRequest(QByteArray data);
-
-    // for actions
-    void setDeviceSetpointTemp(QByteArray rfAddress, int roomId, double temperature, ActionId actionId);
-    void setDeviceAutoMode(QByteArray rfAddress, int roomId, ActionId actionId);
-    void setDeviceManuelMode(QByteArray rfAddress, int roomId, ActionId actionId);
-    void setDeviceEcoMode(QByteArray rfAddress, int roomId, ActionId actionId);
-    void displayCurrentTemperature(QByteArray rfAddress, int roomId, bool display, ActionId actionId);
+    quint8 generateCommandId();
+    QList<Command> m_commandQueue;
 
 };
 

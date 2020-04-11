@@ -539,7 +539,11 @@ void MaxCube::decodeCommandMessage(QByteArray data)
         return;
     }
     bool succeeded = !(bool)list.at(2).toInt(0,10);
-    emit commandActionFinished(succeeded,m_actionId);
+
+    emit commandActionFinished(succeeded, m_pendingCommand.commandId);
+
+    m_pendingCommand.commandId = -1;
+    processCommandQueue();
 }
 
 void MaxCube::parseWeeklyProgram(QByteArray data)
@@ -688,6 +692,12 @@ int MaxCube::deviceTypeFromRFAddress(QByteArray rfAddress)
     return -1;
 }
 
+quint8 MaxCube::generateCommandId()
+{
+    static quint8 cmd = 0;
+    return cmd++;
+}
+
 void MaxCube::connectionStateChanged(const QAbstractSocket::SocketState &socketState)
 {
     switch (socketState) {
@@ -770,6 +780,21 @@ void MaxCube::processCubeData(const QByteArray &data)
     qCWarning(dcEQ3) << "  -> unknown message!!!!!!! from cube:" << data;
 }
 
+void MaxCube::processCommandQueue()
+{
+    if (m_commandQueue.isEmpty()) {
+        return; // Queue empty
+    }
+
+    if (m_pendingCommand.commandId == -1) {
+        return; // Busy...
+    }
+
+    m_pendingCommand = m_commandQueue.takeFirst();
+
+    write(m_pendingCommand.data);
+}
+
 void MaxCube::enablePairingMode()
 {
     qCDebug(dcEQ3) << "-------> enable pairing mode! press the boost button for min. 3 seconds";
@@ -796,12 +821,10 @@ void MaxCube::customRequest(QByteArray data)
     write(data + "\r\n");
 }
 
-void MaxCube::setDeviceSetpointTemp(QByteArray rfAddress, int roomId, double temperature, ActionId actionId)
+int MaxCube::setDeviceSetpointTemp(QByteArray rfAddress, int roomId, double temperature)
 {
-    m_actionId = actionId;
     if(!isConnected() || !isInitialized()){
-        emit commandActionFinished(false,m_actionId);
-        return;
+        return -1;
     }
 
     QByteArray data = "000440000000";
@@ -829,15 +852,20 @@ void MaxCube::setDeviceSetpointTemp(QByteArray rfAddress, int roomId, double tem
 
     qCDebug(dcEQ3) << "sending command " << temperatureData << data;
 
-    write("s:" + QByteArray::fromHex(data).toBase64() + "\r\n");
+    Command command;
+    command.commandId = generateCommandId();
+    command.data = "s:" + QByteArray::fromHex(data).toBase64() + "\r\n";
+    m_commandQueue.append(command);
+
+    processCommandQueue();
+
+    return command.commandId;
 }
 
-void MaxCube::setDeviceAutoMode(QByteArray rfAddress, int roomId, ActionId actionId)
+int MaxCube::setDeviceAutoMode(QByteArray rfAddress, int roomId)
 {
-    m_actionId = actionId;
     if(!isConnected() || !isInitialized()){
-        emit commandActionFinished(false,m_actionId);
-        return;
+        return -1;
     }
 
     QByteArray data = "000440000000";
@@ -853,15 +881,18 @@ void MaxCube::setDeviceAutoMode(QByteArray rfAddress, int roomId, ActionId actio
 
     qCDebug(dcEQ3) << "sending command " << temperatureData << data;
 
-    write("s:" + QByteArray::fromHex(data).toBase64() + "\r\n");
+    Command command;
+    command.commandId = generateCommandId();
+    command.data = "s:" + QByteArray::fromHex(data).toBase64() + "\r\n";
+    m_commandQueue.append(command);
+    processCommandQueue();
+    return command.commandId;
 }
 
-void MaxCube::setDeviceManuelMode(QByteArray rfAddress, int roomId, ActionId actionId)
+int MaxCube::setDeviceManuelMode(QByteArray rfAddress, int roomId)
 {
-    m_actionId = actionId;
     if(!isConnected() || !isInitialized()){
-        emit commandActionFinished(false,m_actionId);
-        return;
+        return -1;
     }
 
     QByteArray data = "000440000000";
@@ -871,15 +902,18 @@ void MaxCube::setDeviceManuelMode(QByteArray rfAddress, int roomId, ActionId act
     data.append(fillBin(QByteArray::number(roomId,16),2));
     data.append("62");
 
-    write("s:" + QByteArray::fromHex(data).toBase64() + "\r\n");
+    Command command;
+    command.commandId = generateCommandId();
+    command.data = "s:" + QByteArray::fromHex(data).toBase64() + "\r\n";
+    m_commandQueue.append(command);
+    processCommandQueue();
+    return command.commandId;
 }
 
-void MaxCube::setDeviceEcoMode(QByteArray rfAddress, int roomId, ActionId actionId)
+int MaxCube::setDeviceEcoMode(QByteArray rfAddress, int roomId)
 {
-    m_actionId = actionId;
     if(!isConnected() || !isInitialized()){
-        emit commandActionFinished(false,m_actionId);
-        return;
+        return -1;
     }
 
     QByteArray data = "000440000000";
@@ -889,16 +923,19 @@ void MaxCube::setDeviceEcoMode(QByteArray rfAddress, int roomId, ActionId action
     data.append(fillBin(QByteArray::number(roomId,16),2));
     data.append("6b");
 
-    write("s:" + QByteArray::fromHex(data).toBase64() + "\r\n");
+    Command command;
+    command.commandId = generateCommandId();
+    command.data = "s:" + QByteArray::fromHex(data).toBase64() + "\r\n";
+    m_commandQueue.append(command);
+    processCommandQueue();
+    return command.commandId;
 }
 
-void MaxCube::displayCurrentTemperature(QByteArray rfAddress, int roomId, bool display, ActionId actionId)
+int MaxCube::displayCurrentTemperature(QByteArray rfAddress, int roomId, bool display)
 {
     Q_UNUSED(roomId)
-    m_actionId = actionId;
     if(!isConnected() || !isInitialized()){
-        emit commandActionFinished(false,m_actionId);
-        return;
+        return -1;
     }
 
     QByteArray data = "000082000000";
@@ -910,6 +947,11 @@ void MaxCube::displayCurrentTemperature(QByteArray rfAddress, int roomId, bool d
         data.append("0000");
     }
 
-    write("s:" + QByteArray::fromHex(data).toBase64() + "\r\n");
+    Command command;
+    command.commandId = generateCommandId();
+    command.data = "s:" + QByteArray::fromHex(data).toBase64() + "\r\n";
+    m_commandQueue.append(command);
+    processCommandQueue();
+    return command.commandId;
 }
 

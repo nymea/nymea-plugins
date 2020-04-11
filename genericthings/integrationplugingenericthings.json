@@ -1,0 +1,475 @@
+{
+    "name": "GenericThings",
+    "displayName": "Generic Things",
+    "id": "b3188696-2585-4806-bf98-30ab576ce5c8",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "id": "9e69585f-90ba-44e4-ad90-5b4bffbe345a",
+                    "name": "awning",
+                    "displayName": "Generic awning",
+                    "createMethods": ["user"],
+                    "interfaces": ["awning"],
+                    "stateTypes": [
+                        {
+                            "id": "4bb951a4-ea23-4cf0-9269-41d2c4eaf5a4",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "displayNameAction": "Set opening output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "59bfd575-709f-4e43-9726-de26e6d4ca8b",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "displayNameAction": "Set closing output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "ff6f2565-2a2e-4d34-b10f-d3f73b676399",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Opening",
+                                "Stopped",
+                                "Closing"
+                            ],
+                            "defaultValue": "Stopped"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "979e9c51-5a93-4635-85e3-01874306b229",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "555cafe4-bd12-42c6-bab1-8cd59af6468e",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "53b5ba77-9a34-4cd6-ad24-fb01fc465f98",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
+                },
+                {
+                    "id": "17ee3657-6ad8-4ae2-8959-3cf66cec8d13",
+                    "name": "blind",
+                    "displayName": "Generic blind",
+                    "createMethods": ["user"],
+                    "interfaces": ["blind"],
+                    "stateTypes": [
+                        {
+                            "id": "b2dbf25c-27e5-4f7e-a57d-2ef6d087fa2b",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "displayNameAction": "Set opening output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "9b673430-572d-4a9c-85d3-dafadbe541cd",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "displayNameAction": "Set closing output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "5fdec1e0-51f6-48b9-b743-ba572504b2c1",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Opening",
+                                "Stopped",
+                                "Closing"
+                            ],
+                            "defaultValue": "Stopped"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "120dc265-dbbb-4f19-9d31-c372c23479c0",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "1a924c9a-5dcb-4b1c-8fd6-ab101098e007",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "86e9cf21-7487-47c4-b4be-4a940d7235fb",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
+                },
+                {
+                    "id": "7917c2e7-d7d2-4c47-a38d-41f7dd7693d9",
+                    "name": "shutter",
+                    "displayName": "Generic shutter",
+                    "createMethods": ["user"],
+                    "interfaces": ["shutter"],
+                    "stateTypes": [
+                        {
+                            "id": "cc547728-b309-4695-b355-49748ef2521c",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "displayNameAction": "Set opening output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "1c35df0e-4c41-455f-893a-0145377952a0",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "displayNameAction": "Set closing output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "6d6e72dc-4d2b-4ec1-82c2-54405a682711",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Opening",
+                                "Stopped",
+                                "Closing"
+                            ],
+                            "defaultValue": "Stopped"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "9deb662d-2378-4345-a898-8742d41e43c1",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "db5f3332-1f4e-4f9e-84d2-93c5d7de315c",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "cf5303f1-67c7-4cef-b11c-eb9de6fc8a87",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
+                },
+                {
+                    "id": "4e7261af-a27b-4446-8346-914ea59f7547",
+                    "name": "socket",
+                    "displayName": "Generic power socket",
+                    "createMethods": ["user"],
+                    "interfaces": ["powersocket"],
+                    "stateTypes": [
+                        {
+                            "id": "018038d7-1d02-4b17-8fe3-babca044b087",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "c50d3216-f307-4f9f-8190-4391510c385c",
+                    "name": "light",
+                    "displayName": "Generic light",
+                    "createMethods": ["user"],
+                    "interfaces": ["light"],
+                    "stateTypes": [
+                        {
+                            "id": "8b6e4a67-6522-408b-b676-8d2f09ed2d54",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "392854c4-3d14-4cf8-96cd-d933526bd197",
+                    "name": "heating",
+                    "displayName": "Generic heating",
+                    "createMethods": ["user"],
+                    "interfaces": ["heating"],
+                    "stateTypes": [
+                        {
+                            "id": "409b635e-a754-4b5c-b3f0-d1c5a0fb3f03",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "57daa147-dd6f-4673-a757-d8f01a2054c7",
+                    "name": "powerSwitch",
+                    "displayName": "Generic power switch",
+                    "createMethods": ["user"],
+                    "interfaces": ["power"],
+                    "stateTypes": [
+                        {
+                            "id": "08087af6-6a3b-4e4a-ac6d-56f23ce63edf",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Powered on/off",
+                            "displayNameAction": "Power on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "d013b980-20d5-4791-9c4f-b411c39241d7",
+                    "name": "irrigation",
+                    "displayName": "Generic irrigation",
+                    "createMethods": ["user"],
+                    "interfaces": ["irrigation"],
+                    "stateTypes": [
+                        {
+                            "id": "0212a287-c5ae-4644-8803-adfdd8caeb9a",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "cf3d65db-6f68-457b-968c-cfb66cbd5311",
+                    "name": "temperatureSensor",
+                    "displayName": "Generic temperature sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["temperaturesensor"],
+                    "settingsTypes": [
+                        {
+                            "id": "c86ae5d3-9335-4b6e-8231-bf3ed6670dff",
+                            "name": "minTemp",
+                            "displayName": "Minimum temperature",
+                            "type": "double",
+                            "defaultValue": -20,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "8b5947ab-127f-4995-853b-eeeb628811e3",
+                            "name": "maxTemp",
+                            "displayName": "Maximum temperature",
+                            "type": "double",
+                            "defaultValue": 50,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "3b543c3a-1fc0-45b5-8c07-600a6045f82e",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d0b6c4be-339e-4b0f-a234-0611b7565395",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fed37466-1264-4ac1-84fd-aff3a1f7ff04",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "d295bc64-773c-42a9-83e2-80db5fa0d1ce",
+                    "name": "humiditySensor",
+                    "displayName": "Generic humidity sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["humiditysensor"],
+                    "settingsTypes": [
+                        {
+                            "id": "0218ffa9-3d49-4b25-a59f-c8831f190432",
+                            "name": "minHumidity",
+                            "displayName": "Minimum humidity",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "10afc387-68d1-47ea-a816-0d1acad47b3c",
+                            "name": "maxHumidity",
+                            "displayName": "Maximum humidity",
+                            "type": "double",
+                            "defaultValue": 100,
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "38064841-6121-4862-a639-08fb0b778511",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "925225d9-2965-444a-9c42-63c2873700fb",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "a8223e65-e704-4f84-9bbe-d8fc42597047",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "33e610cf-ff30-481b-9f0b-d6857bcd41a5",
+                    "name": "moistureSensor",
+                    "displayName": "Generic soil moisture sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["moisturesensor"],
+                    "settingsTypes": [
+                        {
+                            "id": "32153786-f1ae-4aa4-a84c-b9054102eb92",
+                            "name": "minMoisture",
+                            "displayName": "Minimum moisture",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "3426817d-065e-4cfc-aa21-bb434de684d6",
+                            "name": "maxMoisture",
+                            "displayName": "Maximum moisture",
+                            "type": "double",
+                            "defaultValue": 100,
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "3c967a68-9951-4c9a-b019-79b913e762b6",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7a62e1d2-92f2-424c-876c-870478a4b2bd",
+                            "name": "moisture",
+                            "displayName": "Soil moisture",
+                            "displayNameEvent": "Soil moisture changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "ce64a425-d990-4fc1-966b-be6de445792b",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
