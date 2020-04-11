@@ -43,8 +43,8 @@ void IntegrationPluginCoinMarketCap::startPairing(ThingPairingInfo *info)
 {
     NetworkAccessManager *network = hardwareManager()->networkManager();
     QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://pro-api.coinmarketcap.com")));
-    connect(reply, &QNetworkReply::finished, this, [reply, info] {
-        reply->deleteLater();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, info] {
 
         if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("CoinMarketCap server is not reachable."));
@@ -63,14 +63,14 @@ void IntegrationPluginCoinMarketCap::confirmPairing(ThingPairingInfo *info, cons
     request.setRawHeader("Accept", "application/json");
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [this, reply, info, secret](){
-        reply->deleteLater();
 
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // check HTTP status code
         if (status != 200) {
-            //: Error setting up device with invalid token
+            // Error setting up device with invalid token
             info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("This token is not valid."));
             return;
         }
@@ -141,7 +141,6 @@ void IntegrationPluginCoinMarketCap::onPluginTimer()
 void IntegrationPluginCoinMarketCap::onPriceCallFinished()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    reply->deleteLater();
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
@@ -227,6 +226,7 @@ void IntegrationPluginCoinMarketCap::getPriceCall(Thing *thing)
     request.setRawHeader("User-Agent", "nymea 1.0");
     qCDebug(dcCoinMarketCap()) << "Sending request" << url << "API key" << m_apiKeys.value(thing->id());
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, &IntegrationPluginCoinMarketCap::onPriceCallFinished);
 
     m_httpRequests.insert(reply, thing);
