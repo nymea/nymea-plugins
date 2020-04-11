@@ -69,10 +69,10 @@
                         {
                             "id": "d8517cf8-2ebd-4be3-8573-00b595cc2ab5",
                             "name": "xrp",
-                            "displayName": "Ripple",
+                            "displayName": "XRP",
                             "type": "double",
                             "defaultValue": 0.00,
-                            "displayNameEvent": "ripple value changed"
+                            "displayNameEvent": "XRP value changed"
                         },
                         {
                             "id": "cc5b4fe5-aa43-43b3-952f-90c0e3e20740",

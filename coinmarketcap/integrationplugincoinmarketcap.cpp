@@ -91,8 +91,9 @@ void IntegrationPluginCoinMarketCap::setupThing(ThingSetupInfo *info)
         pluginStorage()->beginGroup(info->thing()->id().toString());
         QByteArray apiKey = pluginStorage()->value("apiKey").toByteArray();
         pluginStorage()->endGroup();
-        getPriceCall(thing);
+
         m_apiKeys.insert(thing->id(), apiKey);
+        getPriceCall(thing);
         info->finish(Thing::ThingErrorNoError);
         return;
     }
@@ -112,7 +113,7 @@ void IntegrationPluginCoinMarketCap::thingRemoved(Thing *thing)
         }
     }
 
-    if (myThings().empty()) {
+    if (myThings().empty() && m_pluginTimer) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
         m_pluginTimer = nullptr;
     }
@@ -123,7 +124,7 @@ void IntegrationPluginCoinMarketCap::postSetupThing(Thing *thing)
     Q_UNUSED(thing)
 
     if(!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(120);
         connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginCoinMarketCap::onPluginTimer);
     }
 }
@@ -165,58 +166,50 @@ void IntegrationPluginCoinMarketCap::onPriceCallFinished()
         return;
     }
 
-    QVariantList list = jsonResponse.toVariant().toList();
+    QVariantList list = jsonResponse.toVariant().toMap().value("data").toList();
 
     foreach (QVariant element, list) {
         QVariantMap elementMap = element.toMap();
         thing->setStateValue(currentPricesConnectedStateTypeId, true);
         double price;
-
-        if (elementMap.value("id").toString() == "bitcoin") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
-            qDebug(dcCoinMarketCap()) << "Bitcoin Price in" << QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower() << price;
+        QString fiatCurrency = thing->paramValue(currentPricesThingFiatParamTypeId).toString().toUpper();
+        qCDebug(dcCoinMarketCap()) << "Name" << elementMap.value("name").toString();
+        price = elementMap.value("quote").toMap().value(fiatCurrency).toMap().value("price").toDouble();
+        if (elementMap.value("name").toString() == "Bitcoin") {
+            qDebug(dcCoinMarketCap()) << "Bitcoin Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesBtcStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "ethereum") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
-            qDebug(dcCoinMarketCap()) << "Etherium Price in" << QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower() << price;
+        } else if (elementMap.value("name").toString() == "Ethereum") {
+            qDebug(dcCoinMarketCap()) << "Etherium Price in" <<  fiatCurrency << price;
             thing->setStateValue(currentPricesEthStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "ripple") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
-            qDebug(dcCoinMarketCap()) << "Ripple Price in" << QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower() << price;
+        } else if (elementMap.value("name").toString() == "XRP") {
+            qDebug(dcCoinMarketCap()) << "XRP Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesXrpStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "bitcoin-cash") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
-            qDebug(dcCoinMarketCap()) << "Bitcoin-cash Price in" << QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower() << price;
+        } else if (elementMap.value("name").toString() == "Bitcoin Cash") {
+            qDebug(dcCoinMarketCap()) << "Bitcoin-cash Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesBchStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "litecoin") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
-            qDebug(dcCoinMarketCap()) << "Litecoin Price in" << QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower() << price;
+        } else if (elementMap.value("name").toString() == "Litecoin") {
+            qDebug(dcCoinMarketCap()) << "Litecoin Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesLtcStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "nem") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
-            qDebug(dcCoinMarketCap()) << "Nem Price in" << QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower() << price;
+        } else if (elementMap.value("name").toString() == "NEM") {
+            qDebug(dcCoinMarketCap()) << "Nem Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesXemStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "ethereum-classic") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
-            qDebug(dcCoinMarketCap()) << "Ethereum Classic Price in" << QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower() << price;
+        } else if (elementMap.value("name").toString() == "Ethereum Classic") {
+            qDebug(dcCoinMarketCap()) << "Ethereum Classic Price in" << fiatCurrency << price;
             thing->setStateValue(currentPricesEtcStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "dash") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
+        } else if (elementMap.value("name").toString() == "Dash") {
             thing->setStateValue(currentPricesDashStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "iota") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
+        } else if (elementMap.value("name").toString() == "IOTA") {
             thing->setStateValue(currentPricesMiotaStateTypeId, price);
 
-        } else if (elementMap.value("id").toString() == "neo") {
-            price = elementMap.value(QString("price_%1").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower())).toDouble();
+        } else if (elementMap.value("name").toString() == "Neo") {
             thing->setStateValue(currentPricesAnsStateTypeId, price);
         }
     }
@@ -225,13 +218,14 @@ void IntegrationPluginCoinMarketCap::onPriceCallFinished()
 void IntegrationPluginCoinMarketCap::getPriceCall(Thing *thing)
 {
     QUrl url;
-    url.setUrl(QString("https://pro-api.coinmarketcap.com/v1/ticker/?convert=%1&limit=30").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower()));
+    QString fiatCurrency = thing->paramValue(currentPricesThingFiatParamTypeId).toString().toUpper();
+    url.setUrl(QString("https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?convert=%1&start=1&limit=30").arg(fiatCurrency));
     QNetworkRequest request;
     request.setUrl(url);
     request.setRawHeader("X-CMC_PRO_API_KEY", m_apiKeys.value(thing->id()));
     request.setRawHeader("Accept", "application/json");
     request.setRawHeader("User-Agent", "nymea 1.0");
-
+    qCDebug(dcCoinMarketCap()) << "Sending request" << url << "API key" << m_apiKeys.value(thing->id());
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, this, &IntegrationPluginCoinMarketCap::onPriceCallFinished);
 
