@@ -14,6 +14,7 @@
                     "displayName": "Crypto Prices",
                     "createMethods": ["user"],
                     "interfaces": ["connectable"],
+                    "setupMethod": "displaypin",
                     "paramTypes": [
                         {
                             "id": "92747d75-d18a-4915-bd48-0edd5cc5f19a",

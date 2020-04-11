@@ -47,11 +47,15 @@ class IntegrationPluginCoinMarketCap : public IntegrationPlugin
 public:
     explicit IntegrationPluginCoinMarketCap();
 
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
+    void postSetupThing(Thing *thing) override;
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
+    QHash<ThingId, QByteArray> m_apiKeys;
 
     QHash<QUrl, Thing *> m_priceRequests;
     QHash<QNetworkReply *, Thing *>  m_httpRequests;

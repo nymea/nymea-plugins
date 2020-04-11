@@ -38,18 +38,61 @@ IntegrationPluginCoinMarketCap::IntegrationPluginCoinMarketCap()
 {
 }
 
+
+void IntegrationPluginCoinMarketCap::startPairing(ThingPairingInfo *info)
+{
+    NetworkAccessManager *network = hardwareManager()->networkManager();
+    QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://pro-api.coinmarketcap.com")));
+    connect(reply, &QNetworkReply::finished, this, [reply, info] {
+        reply->deleteLater();
+
+        if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("CoinMarketCap server is not reachable."));
+        } else {
+            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter your API token."));
+        }
+    });
+}
+
+void IntegrationPluginCoinMarketCap::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
+{
+    Q_UNUSED(username)
+
+    QNetworkRequest request(QUrl("https://pro-api.coinmarketcap.com/v1/key/info"));
+    request.setRawHeader("X-CMC_PRO_API_KEY", secret.toUtf8());
+    request.setRawHeader("Accept", "application/json");
+
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, info, [this, reply, info, secret](){
+        reply->deleteLater();
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // check HTTP status code
+        if (status != 200) {
+            //: Error setting up device with invalid token
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("This token is not valid."));
+            return;
+        }
+
+        pluginStorage()->beginGroup(info->thingId().toString());
+        pluginStorage()->setValue("apiKey", secret);
+        pluginStorage()->endGroup();
+        info->finish(Thing::ThingErrorNoError);
+    });
+}
+
 void IntegrationPluginCoinMarketCap::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == currentPricesThingClassId) {
+
+        pluginStorage()->beginGroup(info->thing()->id().toString());
+        QByteArray apiKey = pluginStorage()->value("apiKey").toByteArray();
+        pluginStorage()->endGroup();
         getPriceCall(thing);
-
-        if(!m_pluginTimer) {
-            m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-            connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginCoinMarketCap::onPluginTimer);
-        }
-
+        m_apiKeys.insert(thing->id(), apiKey);
         info->finish(Thing::ThingErrorNoError);
         return;
     }
@@ -59,15 +102,29 @@ void IntegrationPluginCoinMarketCap::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginCoinMarketCap::thingRemoved(Thing *thing)
 {
-    while (m_httpRequests.values().contains(thing)) {
-        QNetworkReply *reply = m_httpRequests.key(thing);
-        m_httpRequests.remove(reply);
-        reply->deleteLater();
+    if (thing->thingClassId() == currentPricesThingClassId) {
+        m_apiKeys.remove(thing->id());
+
+        while (m_httpRequests.values().contains(thing)) {
+            QNetworkReply *reply = m_httpRequests.key(thing);
+            m_httpRequests.remove(reply);
+            reply->deleteLater();
+        }
     }
 
     if (myThings().empty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
         m_pluginTimer = nullptr;
+    }
+}
+
+void IntegrationPluginCoinMarketCap::postSetupThing(Thing *thing)
+{
+    Q_UNUSED(thing)
+
+    if(!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginCoinMarketCap::onPluginTimer);
     }
 }
 
@@ -168,9 +225,11 @@ void IntegrationPluginCoinMarketCap::onPriceCallFinished()
 void IntegrationPluginCoinMarketCap::getPriceCall(Thing *thing)
 {
     QUrl url;
-    url.setUrl(QString("https://api.coinmarketcap.com/v1/ticker/?convert=%1&limit=30").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower()));
+    url.setUrl(QString("https://pro-api.coinmarketcap.com/v1/ticker/?convert=%1&limit=30").arg(QString(thing->paramValue(currentPricesThingFiatParamTypeId).toString()).toLower()));
     QNetworkRequest request;
     request.setUrl(url);
+    request.setRawHeader("X-CMC_PRO_API_KEY", m_apiKeys.value(thing->id()));
+    request.setRawHeader("Accept", "application/json");
     request.setRawHeader("User-Agent", "nymea 1.0");
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
