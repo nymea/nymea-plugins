@@ -1,10 +1,10 @@
 {
-    "displayName": "Coin market cap",
+    "displayName": "CoinMarketCap",
     "name": "coinMarketCap",
     "id": "532757cf-fc6f-4ce5-ae5b-e6f5bdb67fb4",
     "vendors": [
         {
-            "displayName": "Coin Market Cap",
+            "displayName": "CoinMarketCap",
             "name": "coinMarketCap",
             "id": "28eeecbd-4178-45aa-81a6-fd95851444fd",
             "thingClasses": [
@@ -56,7 +56,7 @@
                             "displayName": "Bitcoin",
                             "type": "double",
                             "defaultValue": 0.00,
-                            "displayNameEvent": "bitcoin value changed"
+                            "displayNameEvent": "Bitcoin value changed"
                         },
                         {
                             "id": "5c58bb9f-dcdf-47c9-a0b7-f0ffc968f824",
@@ -64,7 +64,7 @@
                             "displayName": "Ethereum",
                             "type": "double",
                             "defaultValue": 0.00,
-                            "displayNameEvent": "ethereum value changed"
+                            "displayNameEvent": "Ethereum value changed"
                         },
                         {
                             "id": "d8517cf8-2ebd-4be3-8573-00b595cc2ab5",
@@ -80,7 +80,7 @@
                             "displayName": "Bitcoin Cash",
                             "type": "double",
                             "defaultValue": 0.00,
-                            "displayNameEvent": "bitcoin cash value changed"
+                            "displayNameEvent": "Bitcoin Cash value changed"
                         },
                         {
                             "id": "f591f699-ae68-4f64-a221-254f836a31d3",
@@ -96,7 +96,7 @@
                             "displayName": "NEM",
                             "type": "double",
                             "defaultValue": 0.00,
-                            "displayNameEvent": "NEM cash value changed"
+                            "displayNameEvent": "NEM value changed"
                         },
                         {
                             "id": "fc9a61b7-c3df-4f13-ba31-d7743f3d2dc2",
@@ -104,7 +104,7 @@
                             "displayName": "Ethereum Classic",
                             "type": "double",
                             "defaultValue": 0.00,
-                            "displayNameEvent": "etherium classic value changed"
+                            "displayNameEvent": "Etherium Classic value changed"
                         },
                         {
                             "id": "0b602f14-1596-4091-a0ab-6c5efa087a3f",
