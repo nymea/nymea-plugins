@@ -68,7 +68,7 @@ void IntegrationPluginTcpCommander::setupThing(ThingSetupInfo *info)
 
         if (tcpServer->isValid()) {
             m_tcpServer.insert(tcpServer, thing);
-            connect(tcpServer, &TcpServer::connectionChanged, this, &IntegrationPluginTcpCommander::onTcpServerConnectionChanged);
+            connect(tcpServer, &TcpServer::connectionCountChanged, this, &IntegrationPluginTcpCommander::onTcpServerConnectionCountChanged);
             connect(tcpServer, &TcpServer::commandReceived, this, &IntegrationPluginTcpCommander::onTcpServerCommandReceived);
             return info->finish(Thing::ThingErrorNoError);
         } else {
@@ -128,13 +128,20 @@ void IntegrationPluginTcpCommander::onTcpSocketConnectionChanged(bool connected)
 }
 
 
-void IntegrationPluginTcpCommander::onTcpServerConnectionChanged(bool connected)
+void IntegrationPluginTcpCommander::onTcpServerConnectionCountChanged(int connections)
 {
     TcpServer *tcpServer = static_cast<TcpServer *>(sender());
     Thing *thing = m_tcpServer.value(tcpServer);
-    qDebug(dcTCPCommander()) << thing->name() << "Tcp Server Client connected" ;
+    if (!thing)
+        return;
+    qDebug(dcTCPCommander()) << thing->name() << "Tcp Server Client connected";
     if (thing->thingClassId() == tcpInputThingClassId) {
-        thing->setStateValue(tcpInputConnectedStateTypeId, connected);
+        if (connections > 0) {
+            thing->setStateValue(tcpInputConnectedStateTypeId, true);
+        } else {
+            thing->setStateValue(tcpInputConnectedStateTypeId, false);
+        }
+        thing->setStateValue(tcpInputConnectionCountStateTypeId, connections);
     }
 }
 

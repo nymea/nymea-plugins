@@ -45,7 +45,6 @@ TcpServer::TcpServer(const QHostAddress address, const quint16 &port, QObject *p
     }
 }
 
-
 TcpServer::TcpServer(const quint16 &port, QObject *parent) :
     QObject(parent)
 {
@@ -77,38 +76,46 @@ int TcpServer::serverPort()
     return m_tcpServer->serverPort();
 }
 
+int TcpServer::connectionCount()
+{
+    return m_connectionCount;
+}
+
 void TcpServer::newConnection()
 {
     qDebug(dcTCPCommander()) << "TCP Server new Connection request";
-    m_socket = m_tcpServer->nextPendingConnection();
-    m_socket->flush();
+    QTcpSocket *socket = m_tcpServer->nextPendingConnection();
+    socket->flush();
 
-    emit connectionChanged(true);
-    connect(m_socket, &QTcpSocket::disconnected, this, &TcpServer::onDisconnected);
-    connect(m_socket, &QTcpSocket::readyRead, this, &TcpServer::readData);
+    m_connectionCount++;
+    emit connectionCountChanged(m_connectionCount);
+    connect(socket, &QTcpSocket::disconnected, this, &TcpServer::onDisconnected);
+    connect(socket, &QTcpSocket::readyRead, this, &TcpServer::readData);
     // Note: error signal will be interpreted as function, not as signal in C++11
-    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
 }
-
 
 void TcpServer::onDisconnected()
 {
     qDebug(dcTCPCommander()) << "TCP Server connection aborted";
-    disconnect(m_socket, &QTcpSocket::disconnected, this, &TcpServer::onDisconnected);
-    disconnect(m_socket, &QTcpSocket::readyRead, this, &TcpServer::readData);
-    m_socket->deleteLater();
-    emit connectionChanged(false);
+    m_connectionCount--;
+    if (m_connectionCount < 0)
+        m_connectionCount = 0;
+
+    emit connectionCountChanged(m_connectionCount);
 }
 
 void TcpServer::readData()
 {
-    QByteArray data = m_socket->readAll();
+    QTcpSocket *socket = static_cast<QTcpSocket *>(sender());
+    QByteArray data = socket->readAll();
     qDebug(dcTCPCommander()) << "TCP Server data received: " << data;
-    m_socket->write("OK\n");
+    socket->write("OK\n");
     emit commandReceived(data);
 }
 
 void TcpServer::onError(QAbstractSocket::SocketError error)
 {
-    qWarning(dcTCPCommander()) << "Socket Error" << m_socket->errorString() << error;
+    QTcpSocket *socket = static_cast<QTcpSocket *>(sender());
+    qWarning(dcTCPCommander()) << "Socket Error" << socket->errorString() << error;
 }

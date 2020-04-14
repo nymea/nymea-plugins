@@ -50,15 +50,16 @@ public:
     void setPort(int port);
     void setServerAddress(const QHostAddress &address);
 
-
+    int connectionCount();
 private:
     QTcpServer *m_tcpServer = nullptr;
-    QTcpSocket *m_socket = nullptr;
+
+    int m_connectionCount = 0;
 
 signals:
     void newPendingConnection();
     void commandReceived(QByteArray message);
-    void connectionChanged(bool connected);
+    void connectionCountChanged(int connections);
 
 private slots:
     void newConnection();
