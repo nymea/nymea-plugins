@@ -10,13 +10,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginonewire.cpp" line="88"/>
+        <location filename="../integrationpluginonewire.cpp" line="72"/>
+        <source>All configured one wire interfaces are set up to automatically add new devices.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginonewire.cpp" line="91"/>
         <source>There can only be one one wire interface per system.</source>
         <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginonewire.cpp" line="97"/>
+        <location filename="../integrationpluginonewire.cpp" line="100"/>
         <source>Error initializing one wire interface.</source>
         <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
