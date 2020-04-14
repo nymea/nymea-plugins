@@ -249,13 +249,19 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
             info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Not authenticated to bridge. Please reconfigure the bridge."));
             return;
         }
-
-        HueBridge *bridge = new HueBridge(this);
-        bridge->setId(thing->paramValue(bridgeThingIdParamTypeId).toString());
-        bridge->setApiKey(apiKey);
-        bridge->setHostAddress(QHostAddress(thing->paramValue(bridgeThingHostParamTypeId).toString()));
-        m_bridges.insert(bridge, thing);
-
+        HueBridge *bridge;
+        if (m_bridges.values().contains(thing)) {
+            qCDebug(dcPhilipsHue()) << "Re-Discovery, not creating new bridge" << thing->name();
+            bridge = m_bridges.key(thing);
+            bridge->setApiKey(apiKey);
+            bridge->setHostAddress(QHostAddress(thing->paramValue(bridgeThingHostParamTypeId).toString()));
+        } else {
+            bridge = new HueBridge(this);
+            bridge->setId(thing->paramValue(bridgeThingIdParamTypeId).toString());
+            bridge->setApiKey(apiKey);
+            bridge->setHostAddress(QHostAddress(thing->paramValue(bridgeThingHostParamTypeId).toString()));
+            m_bridges.insert(bridge, thing);
+        }
         discoverBridgeDevices(bridge);
         return info->finish(Thing::ThingErrorNoError);
     }
@@ -495,6 +501,7 @@ void IntegrationPluginPhilipsHue::thingRemoved(Thing *thing)
     abortRequests(m_bridgeSearchDevicesRequests, thing);
 
     if (thing->thingClassId() == bridgeThingClassId) {
+        qCDebug(dcPhilipsHue()) << "Bridge removed" << thing->name();
         HueBridge *bridge = m_bridges.key(thing);
         m_bridges.remove(bridge);
         bridge->deleteLater();
