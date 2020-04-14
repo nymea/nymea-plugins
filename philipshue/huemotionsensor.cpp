@@ -49,7 +49,7 @@ HueMotionSensor::HueMotionSensor(QObject *parent) :
 void HueMotionSensor::setTimeout(int timeout)
 {
     // The sensor keeps emitting presence = true for 10 secs, let's subtract that time from the timeout to compensate
-    m_timeout.setInterval((timeout - 9)* 1000);
+    m_timeout.setInterval(qMax(timeout - 9, 1)* 1000);
 }
 
 int HueMotionSensor::temperatureSensorId() const
