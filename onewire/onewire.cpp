@@ -101,9 +101,7 @@ bool OneWire::discoverDevices()
             oneWireDevices.append(thing);
         }
     }
-    if(!oneWireDevices.isEmpty()) {
-        emit devicesDiscovered(oneWireDevices);
-    }
+    emit devicesDiscovered(oneWireDevices);
     return true;
 }
 

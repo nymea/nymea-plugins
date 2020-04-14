@@ -59,15 +59,16 @@ void IntegrationPluginOneWire::discoverThings(ThingDiscoveryInfo *info)
                 //devices cannot be discovered since auto mode is enabled
                 return info->finish(Thing::ThingErrorNoError);
             } else {
+                m_runningDiscoveries.insert(parentDevice, info);
+                connect(info, &ThingDiscoveryInfo::destroyed, this, [this, parentDevice](){
+                    m_runningDiscoveries.remove(parentDevice);
+                });
+
                 if (m_oneWireInterface)
                     m_oneWireInterface->discoverDevices();
             }
         }
 
-        m_runningDiscoveries.append(info);
-        connect(info, &ThingDiscoveryInfo::destroyed, this, [this, info](){
-            m_runningDiscoveries.removeAll(info);
-        });
         return;
     }
 
@@ -370,9 +371,8 @@ void IntegrationPluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWire
         if (autoDiscoverEnabled) {
             emit autoThingsAppeared(descriptors);
         } else {
-
-            while (!m_runningDiscoveries.isEmpty()) {
-                ThingDiscoveryInfo *info = m_runningDiscoveries.takeFirst();
+            ThingDiscoveryInfo *info = m_runningDiscoveries.take(parentDevice);
+            if (info && m_runningDiscoveries.isEmpty()) {
                 info->addThingDescriptors(descriptors);
                 info->finish(Thing::ThingErrorNoError);
             }
