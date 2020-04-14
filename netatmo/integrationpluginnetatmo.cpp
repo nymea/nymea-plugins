@@ -42,14 +42,45 @@ IntegrationPluginNetatmo::IntegrationPluginNetatmo()
 
 }
 
-IntegrationPluginNetatmo::~IntegrationPluginNetatmo()
+void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
 {
-
+    // Checking the internet connection
+    NetworkAccessManager *network = hardwareManager()->networkManager();
+    QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://api.netatmo.net")));
+    connect(reply, &QNetworkReply::finished, this, [reply, info] {
+        reply->deleteLater();
+        //The server replies usually 404 not found on this request
+        //int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Netatmo server is not reachable."));
+        } else {
+            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Netatmo account."));
+        }
+    });
 }
 
-void IntegrationPluginNetatmo::init()
+void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
 {
+    OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
+    authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
+    authentication->setUsername(username);
+    authentication->setPassword(password);
+    authentication->setScope("read_station read_thermostat write_thermostat");
 
+
+    connect(authentication, &OAuth2::authenticationChanged, info, [this, info, username, password, authentication](){
+        if (authentication->authenticated()) {
+            pluginStorage()->beginGroup(info->thingId().toString());
+            pluginStorage()->setValue("username", username);
+            pluginStorage()->setValue("password", password);
+            pluginStorage()->endGroup();
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Wrong username or password"));
+        }
+    });
+    authentication->startAuthentication();
+    connect(info, &QObject::destroyed, authentication, &OAuth2::deleteLater);
 }
 
 void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
@@ -59,39 +90,66 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == netatmoConnectionThingClassId) {
         qCDebug(dcNetatmo) << "Setup netatmo connection" << thing->name() << thing->params();
 
-        if (!m_pluginTimer) {
-            m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(600);
-            connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginNetatmo::onPluginTimer);
+        QString username;
+        QString password;
+
+        if (pluginStorage()->childGroups().contains(thing->id().toString())) {
+            pluginStorage()->beginGroup(thing->id().toString());
+            username = pluginStorage()->value("username").toString();
+            password = pluginStorage()->value("password").toString();
+            pluginStorage()->endGroup();
+        } else {
+            /* username and password have been stored as thingParams,
+             * this is to migrate the params to plug-in storage. */
+            ParamTypeId usernameParamTypeId = ParamTypeId("763c2c10-dee5-41c8-9f7e-ded741945e73");
+            ParamTypeId passwordParamTypeId = ParamTypeId("c0d892d6-f359-4782-9d7d-8f74a3b53e3e");
+
+            username = thing->paramValue(usernameParamTypeId).toString();
+            password = thing->paramValue(passwordParamTypeId).toString();
+
+            pluginStorage()->beginGroup(info->thing()->id().toString());
+            pluginStorage()->setValue("username", username);
+            pluginStorage()->setValue("password", password);
+            pluginStorage()->endGroup();
+
+            // Delete username and password so it wont be visible in the things.conf file.
+            thing->setParamValue(ParamTypeId("763c2c10-dee5-41c8-9f7e-ded741945e73"), "");
+            thing->setParamValue(ParamTypeId("c0d892d6-f359-4782-9d7d-8f74a3b53e3e"), "");
         }
 
-        OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
-        authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
-        authentication->setUsername(thing->paramValue(netatmoConnectionThingUsernameParamTypeId).toString());
-        authentication->setPassword(thing->paramValue(netatmoConnectionThingPasswordParamTypeId).toString());
-        authentication->setScope("read_station read_thermostat write_thermostat");
-        m_authentications.insert(authentication, thing);
+        OAuth2 *authentication;
+        if (m_authentications.values().contains(thing)) {
+            qCDebug(dcNetatmo()) << "Re-Discovery, not creating a new authentication";
+            authentication = m_authentications.key(thing);
+            authentication->setUsername(username);
+            authentication->setPassword(password);
+        } else {
+            authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
+            authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
+            authentication->setUsername(username);
+            authentication->setPassword(password);
+            authentication->setScope("read_station read_thermostat write_thermostat");
 
-        // Update thing connected state based on OAuth connected state
-        connect(authentication, &OAuth2::authenticationChanged, thing, [this, thing, authentication](){
-            thing->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
-            if (authentication->authenticated()) {
-                refreshData(thing, authentication->token());
-            }
-        });
-
+            // Update thing connected state based on OAuth connected state
+            connect(authentication, &OAuth2::authenticationChanged, thing, [this, thing, authentication](){
+                thing->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
+                if (authentication->authenticated()) {
+                    refreshData(thing, authentication->token());
+                }
+            });
+        }
         authentication->startAuthentication();
 
         // Report thing setup finished when authentication reports success
-        connect(authentication, &OAuth2::authenticationChanged, info, [info, authentication](){
+        connect(authentication, &OAuth2::authenticationChanged, info, [this, info, thing, authentication](){
             if (!authentication->authenticated()) {
                 authentication->deleteLater();
                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error logging in to Netatmo server."));
                 return;
             }
-
+            m_authentications.insert(authentication, thing);
             info->finish(Thing::ThingErrorNoError);
         });
-
         return;
 
     } else if (thing->thingClassId() == indoorThingClassId) {
@@ -130,7 +188,6 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
         thing->setParams(migratedParams);
         // Migration done
 
-
         NetatmoOutdoorModule *outdoor = new NetatmoOutdoorModule(thing->paramValue(outdoorThingNameParamTypeId).toString(),
                                                                  thing->paramValue(outdoorThingMacParamTypeId).toString(),
                                                                  thing->paramValue(outdoorThingBaseStationParamTypeId).toString(),
@@ -141,7 +198,7 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
 
         return info->finish(Thing::ThingErrorNoError);
     }
-
+    info->finish(Thing::ThingErrorThingClassNotFound);
     qCWarning(dcNetatmo()) << "Unhandled thing class in setupDevice";
 }
 
@@ -162,7 +219,7 @@ void IntegrationPluginNetatmo::thingRemoved(Thing *thing)
     }
 
     if (myThings().isEmpty() && m_pluginTimer) {
-        m_pluginTimer->deleteLater();
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
         m_pluginTimer = nullptr;
     }
 }
@@ -180,6 +237,11 @@ void IntegrationPluginNetatmo::postSetupThing(Thing *thing)
             m_outdoorDevices.key(thing)->updateStates(m_outdoorStationInitData.take(stationId));
         }
     }
+
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(600);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginNetatmo::onPluginTimer);
+    }
 }
 
 void IntegrationPluginNetatmo::refreshData(Thing *thing, const QString &token)
@@ -191,9 +253,29 @@ void IntegrationPluginNetatmo::refreshData(Thing *thing, const QString &token)
     url.setQuery(query);
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-    connect(reply, &QNetworkReply::finished, this, &IntegrationPluginNetatmo::onNetworkReplyFinished);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, thing] {
+        reply->deleteLater();
 
-    m_refreshRequest.insert(reply, thing);
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // check HTTP status code
+        if (status != 200) {
+            qCWarning(dcNetatmo) << "Refresh data reply HTTP error:" << status << reply->errorString();
+            thing->setStateValue(netatmoConnectionConnectedStateTypeId, false);
+            return;
+        }
+        thing->setStateValue(netatmoConnectionConnectedStateTypeId, true);
+        // check JSON file
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcNetatmo) << "Refresh data reply JSON error:" << error.errorString();
+            return;
+        }
+
+        qCDebug(dcNetatmo) << qUtf8Printable(jsonDoc.toJson());
+        processRefreshData(jsonDoc.toVariant().toMap(), thing);
+    });
 }
 
 void IntegrationPluginNetatmo::processRefreshData(const QVariantMap &data, Thing *connectionDevice)
@@ -284,47 +366,18 @@ Thing *IntegrationPluginNetatmo::findOutdoorDevice(const QString &macAddress)
 void IntegrationPluginNetatmo::onPluginTimer()
 {
     foreach (OAuth2 *authentication, m_authentications.keys()) {
+        Thing *thing = m_authentications.value(authentication);
+        if (!thing) {
+            qCWarning(dcNetatmo()) << "Authentication without an associated Netatmo connection thing" << authentication->username();
+            m_authentications.remove(authentication);
+            continue;
+        }
         if (authentication->authenticated()) {
-            refreshData(m_authentications.value(authentication), authentication->token());
+            refreshData(thing, authentication->token());
         } else {
             authentication->startAuthentication();
         }
     }
-}
-
-void IntegrationPluginNetatmo::onNetworkReplyFinished()
-{
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    reply->deleteLater();
-
-    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    // update values request
-    if (m_refreshRequest.keys().contains(reply)) {
-        Thing *thing = m_refreshRequest.take(reply);
-
-        // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcNetatmo) << "Device list reply HTTP error:" << status << reply->errorString();
-            thing->setStateValue(netatmoConnectionConnectedStateTypeId, false);
-            return;
-        }
-
-        // check JSON file
-        QJsonParseError error;
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcNetatmo) << "Device list reply JSON error:" << error.errorString();
-            return;
-        }
-
-        qCDebug(dcNetatmo) << qUtf8Printable(jsonDoc.toJson());
-        processRefreshData(jsonDoc.toVariant().toMap(), thing);
-    }
-}
-
-void IntegrationPluginNetatmo::onAuthenticationChanged()
-{
-
 }
 
 void IntegrationPluginNetatmo::onIndoorStatesChanged()
@@ -357,5 +410,3 @@ void IntegrationPluginNetatmo::onOutdoorStatesChanged()
     thing->setStateValue(outdoorBatteryLevelStateTypeId, outdoor->battery());
     thing->setStateValue(outdoorBatteryCriticalStateTypeId, outdoor->battery() < 10);
 }
-
-
