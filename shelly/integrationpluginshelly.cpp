@@ -715,6 +715,7 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             if (info->thing()->thingClassId() == shelly1ThingClassId
                     || info->thing()->thingClassId() == shelly1pmThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch", QString(), info->thing()->id());
+                switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                 autoChilds.append(switchChild);
             }
 
