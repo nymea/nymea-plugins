@@ -834,6 +834,115 @@ void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
     });
 }
 
+void IntegrationPluginPhilipsHue::browseThing(BrowseResult *result)
+{
+    Thing *bridgeThing = result->thing();
+    HueBridge* bridge = m_bridges.key(bridgeThing);
+
+    QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/scenes"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply* reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, result, [result, reply]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcPhilipsHue()) << "Error fetching scenes";
+            result->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        QByteArray data = reply->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcPhilipsHue()) << "Error parsing json from hue bridge" << data;
+            result->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        qCDebug(dcPhilipsHue()) << "Scenes reply:" << qUtf8Printable(jsonDoc.toJson());
+        QVariantMap scenesMap = jsonDoc.toVariant().toMap();
+        foreach (const QString &sceneId, scenesMap.keys()) {
+            QVariantMap scene = scenesMap.value(sceneId).toMap();
+            BrowserItem item(sceneId, scene.value("name").toString(), false, true);
+            item.setIcon(BrowserItem::BrowserIconFavorites);
+            result->addItem(item);
+        }
+        result->finish(Thing::ThingErrorNoError);
+    });
+}
+
+void IntegrationPluginPhilipsHue::browserItem(BrowserItemResult *result)
+{
+    Thing *bridgeThing = result->thing();
+    HueBridge* bridge = m_bridges.key(bridgeThing);
+
+    QNetworkRequest request(QUrl("http://" + bridge->hostAddress().toString() + "/api/" + bridge->apiKey() + "/scenes"));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply* reply = hardwareManager()->networkManager()->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, result, [result, reply]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcPhilipsHue()) << "Error fetching scenes";
+            result->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        QByteArray data = reply->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcPhilipsHue()) << "Error parsing json from hue bridge" << data;
+            result->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        qCDebug(dcPhilipsHue()) << "Scenes reply:" << qUtf8Printable(jsonDoc.toJson());
+        QVariantMap scenesMap = jsonDoc.toVariant().toMap();
+        QVariantMap scene = scenesMap.value(result->itemId()).toMap();
+        BrowserItem item(result->itemId(), scene.value("name").toString(), false, true);
+        item.setIcon(BrowserItem::BrowserIconFavorites);
+        result->finish(item);
+    });
+}
+
+void IntegrationPluginPhilipsHue::executeBrowserItem(BrowserActionInfo *info)
+{
+    Thing *bridgeThing = info->thing()->parentId().isNull() ? info->thing() : myThings().findById(info->thing()->parentId());
+    HueBridge* bridge = m_bridges.key(bridgeThing);
+
+    QUrl url = QUrl(QString("http://%1/api/%2/groups/%3/action")
+                    .arg(bridge->hostAddress().toString())
+                    .arg(bridge->apiKey())
+                    .arg("0")
+                    );
+    QNetworkRequest request(url);
+
+    QVariantMap payload;
+    payload.insert("scene", info->browserAction().itemId());
+
+    qCDebug(dcPhilipsHue()) << "Recalling scene" << url.toString();
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply* reply = hardwareManager()->networkManager()->put(request, QJsonDocument::fromVariant(payload).toJson());
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, info, [info, reply]() {
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcPhilipsHue()) << "Error fetching scenes";
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
+        QByteArray data = reply->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcPhilipsHue()) << "Error parsing json from hue bridge" << data;
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        qCDebug(dcPhilipsHue()) << "Set scene reply:" << qUtf8Printable(jsonDoc.toJson());
+        info->finish(Thing::ThingErrorNoError);
+    });
+}
+
 void IntegrationPluginPhilipsHue::lightStateChanged()
 {
     HueLight *light = static_cast<HueLight *>(sender());
@@ -1113,11 +1222,19 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
     ThingDescriptors descriptors;
 
     QVariantMap lightsMap = jsonDoc.toVariant().toMap();
+    QList<HueLight*> lightsToRemove = m_lights.keys();
     foreach (QString lightId, lightsMap.keys()) {
         QVariantMap lightMap = lightsMap.value(lightId).toMap();
 
         QString uuid = lightMap.value("uniqueid").toString();
         QString model = lightMap.value("modelid").toString();
+
+        foreach (HueLight *light, lightsToRemove) {
+            if (light->uuid() == uuid) {
+                lightsToRemove.removeAll(light);
+                break;
+            }
+        }
 
         if (lightAlreadyAdded(uuid))
             continue;
@@ -1160,6 +1277,13 @@ void IntegrationPluginPhilipsHue::processBridgeLightDiscoveryResponse(Thing *thi
     if (!descriptors.isEmpty()) {
         emit autoThingsAppeared(descriptors);
     }
+
+    foreach (HueLight *light, lightsToRemove) {
+        Thing *lightThing = m_lights.value(light);
+        if (lightThing->parentId() == thing->id()) {
+            emit autoThingDisappeared(lightThing->id());
+        }
+    }
 }
 
 void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *thing, const QByteArray &data)
@@ -1186,11 +1310,26 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
     // Create sensors if not already added
     QVariantMap sensorsMap = jsonDoc.toVariant().toMap();
     QHash<QString, HueMotionSensor *> motionSensors;
+    QList<HueRemote*> remotesToRemove = m_remotes.keys();
+    QList<HueMotionSensor*> sensorsToRemove = m_motionSensors.keys();
     foreach (const QString &sensorId, sensorsMap.keys()) {
 
         QVariantMap sensorMap = sensorsMap.value(sensorId).toMap();
         QString uuid = sensorMap.value("uniqueid").toString();
         QString model = sensorMap.value("modelid").toString();
+
+        foreach (HueRemote* remote, remotesToRemove) {
+            if (remote->uuid() == uuid) {
+                remotesToRemove.removeAll(remote);
+                break;
+            }
+        }
+        foreach (HueMotionSensor* sensor, sensorsToRemove) {
+            if (sensor->uuid() == uuid.split("-").first()) {
+                sensorsToRemove.removeAll(sensor);
+                break;
+            }
+        }
 
         if (sensorAlreadyAdded(uuid))
             continue;
@@ -1332,6 +1471,22 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
         motionSensors.remove(baseUuid);
         motionSensor->deleteLater();
     }
+
+    foreach (HueRemote* remote, remotesToRemove) {
+        Thing *remoteThing = m_remotes.value(remote);
+        if (remoteThing->parentId() == thing->id()) {
+            qCDebug(dcPhilipsHue()) << "Hue remote disappeared from bridge";
+            emit autoThingDisappeared(remoteThing->id());
+        }
+    }
+
+    foreach (HueMotionSensor* sensor, sensorsToRemove) {
+        Thing *sensorThing = m_motionSensors.value(sensor);
+        if (sensorThing->parentId() == thing->id()) {
+            qCDebug(dcPhilipsHue()) << "Hue motion sensor disappeared from bridge";
+            emit autoThingDisappeared(sensorThing->id());
+        }
+    }
 }
 
 void IntegrationPluginPhilipsHue::processLightRefreshResponse(Thing *thing, const QByteArray &data)
@@ -1402,6 +1557,8 @@ void IntegrationPluginPhilipsHue::processBridgeRefreshResponse(Thing *thing, con
     default:
         break;
     }
+
+    discoverBridgeDevices(m_bridges.key(thing));
 }
 
 void IntegrationPluginPhilipsHue::processLightsRefreshResponse(Thing *thing, const QByteArray &data)

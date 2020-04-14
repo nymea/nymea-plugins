@@ -15,6 +15,7 @@
                     "interfaces": ["gateway"],
                     "createMethods": ["discovery"],
                     "setupMethod": "pushButton",
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "1845975b-1184-4440-bc0d-73d53a9f683c",

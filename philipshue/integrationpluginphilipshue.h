@@ -63,6 +63,10 @@ public:
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
 
+    void browseThing(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+
 private slots:
     void lightStateChanged();
     void remoteStateChanged();
