@@ -34,8 +34,6 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 
-#include "heatpump.h"
-
 #include <QHash>
 #include <QDebug>
 #include <QTimer>
@@ -57,13 +55,22 @@ public:
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
-private:
-    PluginTimer *m_pluginTimer = nullptr;
-
 private slots:
     void onPluginTimer();
     void requestPriceData(Thing* thing, ThingSetupInfo *setup = nullptr);
     void processPriceData(Thing *thing, const QVariantMap &data);
+
+private:
+    PluginTimer *m_pluginTimer = nullptr;
+
+    QHash<ThingClassId, QString> m_serverUrls;
+    QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_currentMarketPriceStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_validUntilStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_averagePriceStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_lowestPriceStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_highestPriceStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_averageDeviationStateTypeIds;
 };
 
 #endif // INTEGRATIONPLUGINAWATTAR_H
