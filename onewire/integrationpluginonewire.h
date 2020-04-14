@@ -56,7 +56,7 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     OneWire *m_oneWireInterface = nullptr;
 
-    QList<ThingDiscoveryInfo*> m_runningDiscoveries;
+    QHash<Thing*, ThingDiscoveryInfo*> m_runningDiscoveries;
 
 private slots:
     void onPluginTimer();

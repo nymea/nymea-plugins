@@ -57,17 +57,20 @@ void IntegrationPluginOneWire::discoverThings(ThingDiscoveryInfo *info)
         foreach(Thing *parentDevice, myThings().filterByThingClassId(oneWireInterfaceThingClassId)) {
             if (parentDevice->stateValue(oneWireInterfaceAutoAddStateTypeId).toBool()) {
                 //devices cannot be discovered since auto mode is enabled
-                return info->finish(Thing::ThingErrorNoError);
-            } else {
-                if (m_oneWireInterface)
-                    m_oneWireInterface->discoverDevices();
+                continue;
             }
+            m_runningDiscoveries.insert(parentDevice, info);
+            connect(info, &ThingDiscoveryInfo::destroyed, this, [this, parentDevice](){
+                m_runningDiscoveries.remove(parentDevice);
+            });
+
+            if (m_oneWireInterface)
+                m_oneWireInterface->discoverDevices();
         }
 
-        m_runningDiscoveries.append(info);
-        connect(info, &ThingDiscoveryInfo::destroyed, this, [this, info](){
-            m_runningDiscoveries.removeAll(info);
-        });
+        if (m_runningDiscoveries.isEmpty()) {
+            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("All configured one wire interfaces are set up to automatically add new devices."));
+        }
         return;
     }
 
@@ -370,9 +373,8 @@ void IntegrationPluginOneWire::onOneWireDevicesDiscovered(QList<OneWire::OneWire
         if (autoDiscoverEnabled) {
             emit autoThingsAppeared(descriptors);
         } else {
-
-            while (!m_runningDiscoveries.isEmpty()) {
-                ThingDiscoveryInfo *info = m_runningDiscoveries.takeFirst();
+            ThingDiscoveryInfo *info = m_runningDiscoveries.take(parentDevice);
+            if (info && m_runningDiscoveries.isEmpty()) {
                 info->addThingDescriptors(descriptors);
                 info->finish(Thing::ThingErrorNoError);
             }
