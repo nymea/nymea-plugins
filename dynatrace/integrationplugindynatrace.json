@@ -1,0 +1,165 @@
+{
+    "displayName": "Dynatrace",
+    "name": "dynatrace",
+    "id": "a8451bd7-69cb-4106-968f-1206a5736368",
+    "vendors": [
+        {
+            "name": "Dynatrace",
+            "displayName": "Dynatrace",
+            "id": "31b402be-1562-4335-aa83-d1c1166db570",
+            "thingClasses": [
+                {
+                    "id": "6271f010-0b0a-4f29-b894-0611bb5f3dcc",
+                    "name": "ufo",
+                    "displayName": "UFO",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["colorlight", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "3e14968b-954e-4e85-ae79-3de9ae4fe951",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "142c25c0-03e3-478e-b5c3-3d072f668cc4",
+                            "name": "id",
+                            "displayName": "Id",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1a439907-e810-4dea-b357-dd32281896e7",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "a9c123e2-db78-40d3-a422-7e4817d50984",
+                            "name": "logo",
+                            "displayName": "Logo",
+                            "displayNameEvent": "Logo changed",
+                            "displayNameAction": "Set logo",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "writable": true
+                        },
+                        {
+                            "id": "14ac8d16-72be-4530-a2ce-dd5589ce8dd7",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "60fa917b-8702-4ff2-90b8-9c8c616bb21f",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature",
+                            "displayNameEvent": "Color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "minValue": 153,
+                            "maxValue": 500,
+                            "writable": true
+                        },
+                        {
+                            "id": "9535fd99-05c6-449f-80a2-8daf61d9b9b0",
+                            "name": "color",
+                            "displayName": "Color",
+                            "displayNameEvent": "Color changed",
+                            "displayNameAction": "Set color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "1adb2df8-7ba1-48b8-b0da-d67085efe041",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "53da0021-974a-434a-94ac-3f187aad1480",
+                            "name": "effectTop",
+                            "displayName": "Effect top",
+                            "displayNameEvent": "Effect top changed",
+                            "displayNameAction": "Set top effect",
+                            "type": "QString",
+                            "defaultValue": "None",
+                            "possibleValues": [
+                                "None",
+                                "Morph",
+                                "Whirl"
+                            ],
+                            "writable": true
+                        },
+                        {
+                            "id": "0fab896b-9900-4375-96c0-0d38460cee65",
+                            "name": "effectBottom",
+                            "displayName": "Effect bottom",
+                            "displayNameEvent": "Effect bottom changed",
+                            "displayNameAction": "Set bottom effect",
+                            "type": "QString",
+                            "defaultValue": "None",
+                            "possibleValues": [
+                                "None",
+                                "Morph",
+                                "Whirl"
+                            ],
+                            "writable": true
+                        },
+                        {
+                            "id": "d3eb4a99-20cc-4d47-af7d-33453aca2087",
+                            "name": "logoColor",
+                            "displayName": "Logo color",
+                            "displayNameEvent": "Logo color changed",
+                            "displayNameAction": "Set logo color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "b378290a-468f-45ef-9d65-00546737ce9b",
+                            "name": "topColor",
+                            "displayName": "Top color",
+                            "displayNameEvent": "Top color changed",
+                            "displayNameAction": "Set top color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "ef2a8d5b-82d4-43d5-b9ec-82ef5662b971",
+                            "name": "bottomColor",
+                            "displayName": "Bottom color",
+                            "displayNameEvent": "Bottom color changed",
+                            "displayNameAction": "Set bottom color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
