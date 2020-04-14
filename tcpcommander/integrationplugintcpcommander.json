@@ -1,6 +1,6 @@
 {
     "name": "TCPCommander",
-    "displayName": "tcp commander",
+    "displayName": "Tcp Commander",
     "id": "741b7b0a-0c9c-4c93-be99-0d0bcf5a4643",
     "vendors": [
         {
@@ -80,14 +80,24 @@
                             "displayName": "Connected",
                             "type": "bool",
                             "defaultValue": false,
+                            "cached": false,
                             "displayNameEvent": "Connection status changed"
+                        },
+                        {
+                            "id": "e959417f-55d4-4316-88f4-d3fa29976841",
+                            "name": "connectionCount",
+                            "displayName": "Connection count",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "cached": false,
+                            "displayNameEvent": "Connection count changed"
                         }
                     ],
                     "eventTypes": [
                         {
                             "id": "6d7c6df6-cb61-4d9e-b0d7-37c43911ca4b",
                             "name": "triggered",
-                            "displayName": "Data recieved",
+                            "displayName": "Data received",
                             "paramTypes": [
                                 {
                                     "id": "97d7ee8c-d9db-40b4-9855-4ceecd64c411",

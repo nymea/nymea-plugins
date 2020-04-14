@@ -58,7 +58,7 @@ private:
 private slots:
     void onTcpSocketConnectionChanged(bool connected);
 
-    void onTcpServerConnectionChanged(bool connected);
+    void onTcpServerConnectionCountChanged(int connections);
     void onTcpServerCommandReceived(QByteArray message);
 };
 
