@@ -1,0 +1,223 @@
+{
+    "id": "cdb07719-c445-4fa5-9c7a-564ee02a4412",
+    "name": "Sonos",
+    "displayName": "Sonos",
+    "vendors": [
+        {
+
+            "id": "30a60752-d06f-4ec9-a4e1-9810a5d22fa3",
+            "name": "sonos",
+            "displayName": "Sonos",
+            "thingClasses": [
+                {
+                    "id": "22df416d-7732-44f1-b6b9-e41296211178",
+                    "name": "sonosConnection",
+                    "displayName": "Sonos connection",
+                    "interfaces": ["account", "gateway"],
+                    "createMethods": ["user"],
+                    "setupMethod": "oauth",
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5aa4360c-61de-47d0-a72e-a19d57712e1c",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "48b5c1bf-7df0-45d0-9ba3-290fc3acddc3",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "fb993eab-f1b5-44dd-9b99-041faec5a3b9",
+                            "name": "userDisplayName",
+                            "displayName": "User name",
+                            "displayNameEvent": "User name changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "72d9332b-2b25-4136-87a6-e534eae4cc80",
+                    "name": "sonosGroup",
+                    "displayName": "Sonos group",
+                    "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "defc44cd-2ffb-4af1-b348-d6a3474c7515",
+                            "name": "groupId",
+                            "displayName": "Group id",
+                            "type" : "QString"
+                        },
+                        {
+                            "id": "f8a5d3d8-fad9-441d-b345-3484524490a0",
+                            "name": "householdId",
+                            "displayName": "Household id",
+                            "type" : "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "09dfbd40-c97c-4a20-9ecd-f80e389a4864",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "bc98cdb0-4d0e-48ca-afc7-922e49bb7813",
+                            "name": "mute",
+                            "displayName": "Mute",
+                            "displayNameEvent": "Mute changed",
+                            "displayNameAction": "Set mute",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "writable": true
+                        },
+                        {
+                            "id": "9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9",
+                            "name": "volume",
+                            "displayName": "Volume",
+                            "displayNameEvent": "Volume changed",
+                            "displayNameAction": "Set volume",
+                            "unit": "Percentage",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 50,
+                            "writable": true
+                        },
+                        {
+                            "id": "2dd512b7-40c2-488e-8d4f-6519edaa6f74",
+                            "name": "playbackStatus",
+                            "displayName": "Playback status",
+                            "type": "QString",
+                            "possibleValues": ["Playing", "Paused", "Stopped"],
+                            "defaultValue": "Stopped",
+                            "displayNameEvent": "Playback status changed",
+                            "displayNameAction": "Set playback status",
+                            "writable": true
+                        },
+                        {
+                            "id": "f2209fec-cceb-46ad-8189-4caf42166e6b",
+                            "type": "QString",
+                            "name": "title",
+                            "displayName": "Title",
+                            "displayNameEvent": "Title changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "8cb920a3-3bf1-4231-92d4-8ac27e7b3d65",
+                            "type": "QString",
+                            "name": "artist",
+                            "displayName": "Artist",
+                            "displayNameEvent": "Artist changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "ce399eec-9f6a-4903-9916-0e90e38b255e",
+                            "type": "QString",
+                            "name": "collection",
+                            "displayName": "Collection",
+                            "displayNameEvent": "Collection changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "44304c82-c2f6-433b-b62b-815382617d0b",
+                            "type": "QString",
+                            "name": "artwork",
+                            "displayName": "Artwork",
+                            "displayNameEvent": "Artwork changed",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "5913aa2a-629d-4de5-bf44-a4a1f130c118",
+                            "type": "bool",
+                            "name": "shuffle",
+                            "displayName": "Shuffle",
+                            "displayNameEvent": "Shuffle changed",
+                            "displayNameAction": "Set shuffle",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e",
+                            "type": "QString",
+                            "name": "repeat",
+                            "displayName": "Repeat",
+                            "displayNameEvent": "Repeat changed",
+                            "displayNameAction": "Set repeat",
+                            "possibleValues": ["None", "One", "All"],
+                            "defaultValue": "None",
+                            "writable": true
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "2535a1eb-7643-4874-98f6-b027fdff6311",
+                            "name": "onPlayerPlay",
+                            "displayName": "Group play"
+                        },
+                        {
+                            "id": "99498b1c-e9c0-480a-9e91-662ee79ba976",
+                            "name": "onPlayerPause",
+                            "displayName": "Group pause"
+                        },
+                        {
+                            "id": "a02ce255-3abb-435d-a92e-7f99c952ecb2",
+                            "name": "onPlayerStop",
+                            "displayName": "Group stop"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a180807d-1265-4831-9d86-a421767418dd",
+                            "name": "skipBack",
+                            "displayName": "Skip back"
+                        },
+                        {
+                            "id": "7e70b47b-7e79-4521-be34-04a3c427e5b1",
+                            "name": "fastRewind",
+                            "displayName": "Rewind"
+                        },
+                        {
+                            "id": "ae3cbe03-ee3e-410e-abbd-efabc2402198",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "4d2ee668-a2e3-4795-8b96-0c800b703b46",
+                            "name": "play",
+                            "displayName": "Play"
+                        },
+                        {
+                            "id": "3cf341cb-fe63-40bc-a450-9678d18e91e3",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "85d7126a-b123-4a28-aeb4-d84bcfb4d14f",
+                            "name": "skipNext",
+                            "displayName": "Skip Next"
+                        }
+                    ],
+                    "browserItemActionTypes": [
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

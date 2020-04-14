@@ -2,14 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginIntertechno</name>
+    <name>IntegrationPluginIntertechno</name>
     <message>
-        <location filename="../devicepluginintertechno.cpp" line="44"/>
+        <location filename="../integrationpluginintertechno.cpp" line="52"/>
         <source>No 433MHz radio available on this system.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devicepluginintertechno.cpp" line="165"/>
+        <location filename="../integrationpluginintertechno.cpp" line="173"/>
         <source>Error sending data.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -28,31 +28,31 @@ The name of the plugin Intertechno ({e998d934-0397-42c1-ad63-9141bcac8563})</ext
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/intertechno/plugininfo.h" line="33"/>
         <source>Intertechno switch</source>
-        <extracomment>The name of the DeviceClass ({324219e8-7c53-41b5-b314-c2900cd15252})</extracomment>
+        <extracomment>The name of the ThingClass ({324219e8-7c53-41b5-b314-c2900cd15252})</extracomment>
         <translation>Intertechno Steckdose</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/intertechno/plugininfo.h" line="39"/>
         <source>family code</source>
-        <extracomment>The name of the ParamType (DeviceClass: switch, Type: device, ID: {c4e2ec44-5e8e-4168-9f6d-a905ea3329c9})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: switch, Type: thing, ID: {c4e2ec44-5e8e-4168-9f6d-a905ea3329c9})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/intertechno/plugininfo.h" line="36"/>
         <source>button code</source>
-        <extracomment>The name of the ParamType (DeviceClass: switch, Type: device, ID: {abb67f92-2e3b-40e2-9106-e538e1882d11})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: switch, Type: thing, ID: {abb67f92-2e3b-40e2-9106-e538e1882d11})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/intertechno/plugininfo.h" line="45"/>
         <source>set power</source>
-        <extracomment>The name of the ActionType ({df19fb51-c3cd-4b95-8d88-ebbb535f4789}) of DeviceClass switch</extracomment>
+        <extracomment>The name of the ActionType ({df19fb51-c3cd-4b95-8d88-ebbb535f4789}) of ThingClass switch</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/intertechno/plugininfo.h" line="42"/>
         <source>power</source>
-        <extracomment>The name of the ParamType (DeviceClass: switch, ActionType: setPower, ID: {8de21063-631c-4419-be5d-235cea3cd906})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: switch, ActionType: setPower, ID: {8de21063-631c-4419-be5d-235cea3cd906})</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

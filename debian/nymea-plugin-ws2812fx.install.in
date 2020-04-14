@@ -1,1 +1,1 @@
-usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_devicepluginws2812fx.so
+usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_integrationpluginws2812fx.so

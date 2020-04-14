@@ -18,19 +18,19 @@
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="28"/>
         <source>Wake On Lan</source>
-        <extracomment>The name of the DeviceClass ({3c8f2447-dcd0-4882-8c09-99e579e4d24c})</extracomment>
+        <extracomment>The name of the ThingClass ({3c8f2447-dcd0-4882-8c09-99e579e4d24c})</extracomment>
         <translation>Wake On Lan</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="25"/>
         <source>MAC address</source>
-        <extracomment>The name of the ParamType (DeviceClass: wol, Type: device, ID: {e2ba04ac-9fe1-4f9d-8152-024c27030cde})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: wol, Type: thing, ID: {e2ba04ac-9fe1-4f9d-8152-024c27030cde})</extracomment>
         <translation>MAC adresse</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="34"/>
         <source>Wake up device</source>
-        <extracomment>The name of the ActionType ({fb9b9d87-218f-4f0d-9e16-39f8a105029a}) of DeviceClass wol</extracomment>
+        <extracomment>The name of the ActionType ({fb9b9d87-218f-4f0d-9e16-39f8a105029a}) of ThingClass wol</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

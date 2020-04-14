@@ -31,26 +31,31 @@
 #ifndef HEOSPLAYER_H
 #define HEOSPLAYER_H
 
-#include <QObject>
+#include <QString>
 
-class HeosPlayer : public QObject
+class HeosPlayer
 {
-    Q_OBJECT
 public:
-    explicit HeosPlayer(int playerId, QObject *parent = nullptr);
-    explicit HeosPlayer(int playerId, QString name, QString serialNumber, QObject *parent = nullptr);
+    explicit HeosPlayer(int playerId);
+    explicit HeosPlayer(int playerId, const QString &name, const QString &serialNumber);
 
     QString name();
-    void setName(QString name);
+    void setName(const QString &name);
     int playerId();
     int groupId();
     void setGroupId(int groupId);
     QString playerModel();
+    void setPlayerModel(const QString &playerModel);
     QString playerVersion();
+    void setPlayerVersion(const QString &playerVersion);
     QString network();
+    void setNetwork(const QString &network);
     QString serialNumber();
+    void setSerialNumber(const QString &serialNumber);
     QString lineOut();
+    void setLineOut(const QString &lineout);
     QString control();
+    void setControl(const QString &control);
 
 private:
     int m_playerId;
@@ -62,7 +67,6 @@ private:
     QString m_playerModel;
     QString m_playerVersion;
     QString m_control;
-
 };
 
 #endif // HEOSPLAYER_H

@@ -1,17 +1,17 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginonewire)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginonewire)
 
 LIBS +=      \
         -low \
         -lowcapi \
 
 SOURCES += \
-    devicepluginonewire.cpp \
+    integrationpluginonewire.cpp \
     onewire.cpp \
 
 HEADERS += \
-    devicepluginonewire.h \
+    integrationpluginonewire.h \
     onewire.h \
 
 

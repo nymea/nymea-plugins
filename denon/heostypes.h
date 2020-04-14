@@ -93,6 +93,22 @@ enum SEARCH_CRITERIA {      // criteria id returned by 'get_search_criteria' com
     SEARCH_CRITERIA_STATION
 };
 
+enum ADD_CRITERIA {
+     ADD_CRITERIA_PLAY_NOW = 1,
+     ADD_CRITERIA_PLAY_NEXT,
+     ADD_CRITERIA_ADD_TO_END,
+     ADD_CRITERIA_REPLACE_AND_PLAY
+};
+
+enum MEDIA_TYPE {
+    MEDIA_TYPE_SONG,
+    MEDIA_TYPE_STATION,
+    MEDIA_TYPE_GENRE,
+    MEDIA_TYPE_ARTIST,
+    MEDIA_TYPE_ALBUM,
+    MEDIA_TYPE_CONTAINER
+};
+
 enum SOURCE_ID {
     SOURCE_ID_PANDORA = 1,
     SOURCE_ID_RHAPSODY,
@@ -146,7 +162,7 @@ struct PlayerObject {
 struct GroupObject {
     QString name;
     int groupId;
-    QList<PLAYER_ROLE> role;
+    QList<PlayerObject> players;
 };
 
 struct SourceContainersObject {
@@ -154,6 +170,17 @@ struct SourceContainersObject {
     int containerId;
     int range;
     int count;
+};
+
+struct MediaObject {
+    MEDIA_TYPE mediaType;
+    bool isContainer;
+    bool isPlayable;
+    QString name;
+    QString imageUrl;
+    QString containerId;
+    QString sourceId;
+    QString mediaId;
 };
 
 struct heosPlayer {

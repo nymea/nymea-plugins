@@ -4,13 +4,13 @@ QT += \
     network    \
     websockets \
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginbose)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginbose)
 
 SOURCES += \
-    devicepluginbose.cpp \
+    integrationpluginbose.cpp \
     soundtouch.cpp
 
 HEADERS += \
-    devicepluginbose.h \
+    integrationpluginbose.h \
     soundtouch.h \
     soundtouchtypes.h

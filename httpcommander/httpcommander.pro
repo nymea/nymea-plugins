@@ -2,14 +2,14 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginhttpcommander)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginhttpcommander)
 
 SOURCES += \
-    devicepluginhttpcommander.cpp \
+    integrationpluginhttpcommander.cpp \
     httpsimpleserver.cpp
 
 HEADERS += \
-    devicepluginhttpcommander.h \
+    integrationpluginhttpcommander.h \
     httpsimpleserver.h
 
 

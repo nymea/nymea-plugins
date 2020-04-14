@@ -1,6 +1,6 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginnuki)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginnuki)
 
 QT += bluetooth dbus
 
@@ -8,7 +8,7 @@ QT += bluetooth dbus
 LIBS += -lsodium
 
 HEADERS += \
-    devicepluginnuki.h \
+    integrationpluginnuki.h \
     nuki.h \
     bluez/blueztypes.h \
     bluez/bluetoothmanager.h \
@@ -22,7 +22,7 @@ HEADERS += \
     nukicontroller.h
 
 SOURCES += \
-    devicepluginnuki.cpp \
+    integrationpluginnuki.cpp \
     nuki.cpp \
     bluez/blueztypes.cpp \
     bluez/bluetoothmanager.cpp \

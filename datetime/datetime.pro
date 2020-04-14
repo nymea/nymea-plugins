@@ -2,15 +2,15 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugindatetime)
+TARGET = $$qtLibraryTarget(nymea_integrationplugindatetime)
 
 SOURCES += \
-    deviceplugindatetime.cpp \
+    integrationplugindatetime.cpp \
     alarm.cpp \
     countdown.cpp
 
 HEADERS += \
-    deviceplugindatetime.h \
+    integrationplugindatetime.h \
     alarm.h \
     countdown.h
 

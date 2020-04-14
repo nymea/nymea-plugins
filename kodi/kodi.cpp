@@ -319,7 +319,7 @@ void Kodi::browse(BrowseResult *result)
             foreach (VirtualFsNode *child, node->childs) {
                 result->addItem(child->item);
             }
-            result->finish(Device::DeviceErrorNoError);
+            result->finish(Thing::ThingErrorNoError);
             return;
         }
 
@@ -432,7 +432,7 @@ void Kodi::browse(BrowseResult *result)
         return;
     }
 
-    result->finish(Device::DeviceErrorItemNotFound);
+    result->finish(Thing::ThingErrorItemNotFound);
 }
 
 void Kodi::browserItem(BrowserItemResult *result)
@@ -460,7 +460,7 @@ void Kodi::browserItem(BrowserItemResult *result)
         method = "VideoLibrary.GetMusicVideoDetails";
     } else {
         qCWarning(dcKodi()) << "Unhandled browserItem request!" << itemId;
-        result->finish(Device::DeviceErrorItemNotFound);
+        result->finish(Thing::ThingErrorItemNotFound);
         return;
     }
     int id = m_jsonHandler->sendData(method, params);
@@ -746,7 +746,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             qCDebug(dcKodi()) << "Thumbnail" << item.thumbnail();
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -768,7 +768,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setDescription(description.join(" - "));
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -802,7 +802,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             result->addItem(item);
             i++;
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -833,7 +833,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setDescription(movie.value("year").toString() + " - " + duration + " - " + rating);
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -857,7 +857,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setDescription(tvShow.value("year").toString() + " - " + tr("%1 seasons").arg(tvShow.value("season").toInt()) + " - " + rating);
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -873,7 +873,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setDescription(season.value("showtitle").toString());
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -893,7 +893,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             }
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -908,7 +908,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setThumbnail(prepareThumbnail(musicVideo.value("thumbnail").toString()));
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -923,7 +923,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setThumbnail(prepareThumbnail(addon.value("thumbnail").toString()));
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 
@@ -946,7 +946,7 @@ void Kodi::processResponse(int id, const QString &method, const QVariantMap &res
             item.setThumbnail(prepareThumbnail(file.value("thumbnail").toString()));
             result->addItem(item);
         }
-        result->finish(Device::DeviceErrorNoError);
+        result->finish(Thing::ThingErrorNoError);
         return;
     }
 

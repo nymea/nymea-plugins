@@ -199,7 +199,7 @@ BluetoothDevice::BluetoothDevice(const QDBusObjectPath &path, const QVariantMap 
 
     m_deviceInterface = new QDBusInterface(orgBluez, m_path.path(), orgBluezDevice1, QDBusConnection::systemBus(), this);
     if (!m_deviceInterface->isValid()) {
-        qCWarning(dcBluez()) << "Invalid DBus device interface for" << m_path.path();
+        qCWarning(dcBluez()) << "Invalid DBus thing interface for" << m_path.path();
         return;
     }
 
@@ -394,7 +394,7 @@ void BluetoothDevice::setServicesResolvedInternally(const bool &servicesResolved
         if (m_servicesResolved)
             setStateInternally(Discovered);
 
-        // Note: if unresolved, the device is about to disconnect
+        // Note: if unresolved, the thing is about to disconnect
     }
 }
 
@@ -457,7 +457,7 @@ void BluetoothDevice::onCancelPairingFinished(QDBusPendingCallWatcher *call)
 bool BluetoothDevice::connectDevice()
 {
     if (!m_deviceInterface->isValid()) {
-        qCWarning(dcBluez()) << "Invalid DBus device interface for" << m_path.path();
+        qCWarning(dcBluez()) << "Invalid DBus thing interface for" << m_path.path();
         return false;
     }
 
@@ -475,7 +475,7 @@ bool BluetoothDevice::connectDevice()
 bool BluetoothDevice::disconnectDevice()
 {
     if (!m_deviceInterface->isValid()) {
-        qCWarning(dcBluez()) << "Invalid DBus device interface for" << m_path.path();
+        qCWarning(dcBluez()) << "Invalid DBus thing interface for" << m_path.path();
         return false;
     }
 
@@ -493,7 +493,7 @@ bool BluetoothDevice::disconnectDevice()
 bool BluetoothDevice::disconnectDeviceBlocking()
 {
     if (!m_deviceInterface->isValid()) {
-        qCWarning(dcBluez()) << "Invalid DBus device interface for" << m_path.path();
+        qCWarning(dcBluez()) << "Invalid DBus thing interface for" << m_path.path();
         return false;
     }
 
@@ -514,7 +514,7 @@ bool BluetoothDevice::disconnectDeviceBlocking()
 bool BluetoothDevice::requestPairing()
 {
     if (!m_deviceInterface->isValid()) {
-        qCWarning(dcBluez()) << "Invalid DBus device interface for" << m_path.path();
+        qCWarning(dcBluez()) << "Invalid DBus thing interface for" << m_path.path();
         return false;
     }
 
@@ -532,7 +532,7 @@ bool BluetoothDevice::requestPairing()
 bool BluetoothDevice::cancelPairingRequest()
 {
     if (!m_deviceInterface->isValid()) {
-        qCWarning(dcBluez()) << "Invalid DBus device interface for" << m_path.path();
+        qCWarning(dcBluez()) << "Invalid DBus thing interface for" << m_path.path();
         return false;
     }
 
@@ -547,8 +547,8 @@ bool BluetoothDevice::cancelPairingRequest()
     return true;
 }
 
-QDebug operator<<(QDebug debug, BluetoothDevice *device)
+QDebug operator<<(QDebug debug, BluetoothDevice *thing)
 {
-    debug.noquote().nospace() << "BluetoothDevice(" << device->name() << ", " << device->address() << ") ";
+    debug.noquote().nospace() << "BluetoothDevice(" << thing->name() << ", " << thing->address() << ") ";
     return debug;
 }

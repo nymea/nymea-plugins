@@ -2,14 +2,14 @@ include(../plugins.pri)
 
 QT += bluetooth
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginelgato)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginelgato)
 
 SOURCES += \
-    devicepluginelgato.cpp \
+    integrationpluginelgato.cpp \
     aveabulb.cpp \
 
 HEADERS += \
-    devicepluginelgato.h \
+    integrationpluginelgato.h \
     aveabulb.h \
 
 

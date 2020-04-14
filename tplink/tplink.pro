@@ -3,7 +3,7 @@ include(../plugins.pri)
 QT += network
 
 SOURCES += \
-    deviceplugintplink.cpp \
+    integrationplugintplink.cpp \
 
 HEADERS += \
-    deviceplugintplink.h \
+    integrationplugintplink.h \

@@ -145,8 +145,8 @@ signals:
     void pairableTimeoutChanged(const uint &pairableTimeout);
     void poweredChanged(const bool &powered);
 
-    void deviceAdded(BluetoothDevice *device);
-    void deviceRemoved(BluetoothDevice *device);
+    void deviceAdded(BluetoothDevice *thing);
+    void deviceRemoved(BluetoothDevice *thing);
 
 public slots:
     void startDiscovering();

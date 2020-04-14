@@ -36,19 +36,19 @@
 #include <QVector3D>
 #include <QDataStream>
 
-SensorTag::SensorTag(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
+SensorTag::SensorTag(Thing *thing, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
     QObject(parent),
-    m_device(device),
+    m_thing(thing),
     m_bluetoothDevice(bluetoothDevice),
-    m_dataProcessor(new SensorDataProcessor(m_device, this))
+    m_dataProcessor(new SensorDataProcessor(m_thing, this))
 {
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::connectedChanged, this, &SensorTag::onConnectedChanged);
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::servicesDiscoveryFinished, this, &SensorTag::onServiceDiscoveryFinished);
 }
 
-Device *SensorTag::device()
+Thing *SensorTag::thing()
 {
-    return m_device;
+    return m_thing;
 }
 
 BluetoothLowEnergyDevice *SensorTag::bluetoothDevice()
@@ -198,7 +198,7 @@ void SensorTag::setGreenLedPower(bool power)
     m_greenLedEnabled = power;
     qCDebug(dcTexasInstruments()) << "Green LED" << (power ? "enabled" : "disabled");
     configureIo();
-    m_device->setStateValue(sensorTagGreenLedStateTypeId, m_greenLedEnabled);
+    m_thing->setStateValue(sensorTagGreenLedStateTypeId, m_greenLedEnabled);
 }
 
 void SensorTag::setRedLedPower(bool power)
@@ -206,7 +206,7 @@ void SensorTag::setRedLedPower(bool power)
     m_redLedEnabled = power;
     qCDebug(dcTexasInstruments()) << "Red LED" << (power ? "enabled" : "disabled");
     configureIo();
-    m_device->setStateValue(sensorTagRedLedStateTypeId, m_redLedEnabled);
+    m_thing->setStateValue(sensorTagRedLedStateTypeId, m_redLedEnabled);
 }
 
 void SensorTag::setBuzzerPower(bool power)
@@ -214,7 +214,7 @@ void SensorTag::setBuzzerPower(bool power)
     m_buzzerEnabled = power;
     qCDebug(dcTexasInstruments()) << "Buzzer" << (power ? "enabled" : "disabled");
     configureIo();
-    m_device->setStateValue(sensorTagBuzzerStateTypeId, m_buzzerEnabled);
+    m_thing->setStateValue(sensorTagBuzzerStateTypeId, m_buzzerEnabled);
 }
 
 void SensorTag::buzzerImpulse()
@@ -368,7 +368,7 @@ void SensorTag::setOpticalSensorPower(bool power)
 void SensorTag::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcTexasInstruments()) << "Sensor" << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
-    m_device->setStateValue(sensorTagConnectedStateTypeId, connected);
+    m_thing->setStateValue(sensorTagConnectedStateTypeId, connected);
 
     if (!connected) {
         // Clean up services

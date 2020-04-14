@@ -39,9 +39,9 @@
 
 #include "types/browseritem.h"
 #include "types/browseritemaction.h"
-#include "devices/device.h"
-#include "devices/browseresult.h"
-#include "devices/browseritemresult.h"
+#include "integrations/thing.h"
+#include "integrations/browseresult.h"
+#include "integrations/browseritemresult.h"
 
 class Kodi : public QObject
 {

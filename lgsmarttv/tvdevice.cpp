@@ -319,7 +319,7 @@ QString TvDevice::printXmlData(const QByteArray &data)
         }
     }
     if(reader.hasError()) {
-        qCWarning(dcLgSmartTv()) << "error reading XML device information:" << reader.errorString();
+        qCWarning(dcLgSmartTv()) << "error reading XML thing information:" << reader.errorString();
     }
     return xmlOut;
 }

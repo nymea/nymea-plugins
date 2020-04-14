@@ -80,7 +80,7 @@ bool NukiController::readLockState()
     }
 
     if (!m_nukiAuthenticator->isValid()) {
-        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the device first.";
+        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the thing first.";
         return false;
     }
 
@@ -97,7 +97,7 @@ bool NukiController::lock()
     }
 
     if (!m_nukiAuthenticator->isValid()) {
-        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the device first.";
+        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the thing first.";
         return false;
     }
 
@@ -114,7 +114,7 @@ bool NukiController::unlock()
     }
 
     if (!m_nukiAuthenticator->isValid()) {
-        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the device first.";
+        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the thing first.";
         return false;
     }
 
@@ -131,7 +131,7 @@ bool NukiController::unlatch()
     }
 
     if (!m_nukiAuthenticator->isValid()) {
-        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the device first.";
+        qCWarning(dcNuki()) << "Invalid authenticator. Please authenticate the thing first.";
         return false;
     }
 

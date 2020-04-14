@@ -2,19 +2,19 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginMailNotification</name>
+    <name>IntegrationPluginMailNotification</name>
     <message>
-        <location filename="../devicepluginmailnotification.cpp" line="43"/>
+        <location filename="../integrationpluginmailnotification.cpp" line="51"/>
         <source>Please enter your username and password for the e-mail account.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devicepluginmailnotification.cpp" line="95"/>
+        <location filename="../integrationpluginmailnotification.cpp" line="103"/>
         <source>The email account cannot be accessed. Wrong username or password?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devicepluginmailnotification.cpp" line="131"/>
+        <location filename="../integrationpluginmailnotification.cpp" line="139"/>
         <source>Error sending email.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -36,61 +36,61 @@
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="44"/>
         <source>SMTP server</source>
-        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: {421f13f2-c311-446a-8ae0-7f0a1a4e1786})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: customMail, Type: thing, ID: {421f13f2-c311-446a-8ae0-7f0a1a4e1786})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="47"/>
         <source>Sender mail</source>
-        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: {af30ce7b-fb6b-42f0-889d-20b32f8b8fa4})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: customMail, Type: thing, ID: {af30ce7b-fb6b-42f0-889d-20b32f8b8fa4})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="41"/>
         <source>Recipient</source>
-        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: {d657f002-9741-42e1-9fef-32eae96dacdb})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: customMail, Type: thing, ID: {d657f002-9741-42e1-9fef-32eae96dacdb})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="38"/>
         <source>Port</source>
-        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: {56ec204f-2e02-4a17-b9d1-e855e384b689})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: customMail, Type: thing, ID: {56ec204f-2e02-4a17-b9d1-e855e384b689})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="32"/>
         <source>E-mail notifications</source>
-        <extracomment>The name of the DeviceClass ({f4844c97-7ca6-4349-904e-ff9749a9fe74})</extracomment>
+        <extracomment>The name of the ThingClass ({f4844c97-7ca6-4349-904e-ff9749a9fe74})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="50"/>
         <source>authentification</source>
-        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: {789b963b-4143-4e21-853c-2612707d726f})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: customMail, Type: thing, ID: {789b963b-4143-4e21-853c-2612707d726f})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="56"/>
         <source>encryption</source>
-        <extracomment>The name of the ParamType (DeviceClass: customMail, Type: device, ID: {2af9a397-f517-49db-9ac1-3e873f7ac78b})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: customMail, Type: thing, ID: {2af9a397-f517-49db-9ac1-3e873f7ac78b})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="65"/>
         <source>subject</source>
-        <extracomment>The name of the ParamType (DeviceClass: customMail, ActionType: notify, ID: {2047e0f4-3d34-4214-bc8f-9ab741ae6006})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: customMail, ActionType: notify, ID: {2047e0f4-3d34-4214-bc8f-9ab741ae6006})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="53"/>
         <source>body</source>
-        <extracomment>The name of the ParamType (DeviceClass: customMail, ActionType: notify, ID: {aeb6e79e-9862-43e1-9873-cbdce549344a})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: customMail, ActionType: notify, ID: {aeb6e79e-9862-43e1-9873-cbdce549344a})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/mailnotification/plugininfo.h" line="62"/>
         <source>send mail</source>
-        <extracomment>The name of the ActionType ({054613b0-3666-4dad-9252-e0ebca187edc}) of DeviceClass customMail</extracomment>
+        <extracomment>The name of the ActionType ({054613b0-3666-4dad-9252-e0ebca187edc}) of ThingClass customMail</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -44,18 +44,18 @@ static QBluetoothUuid keyturnerServiceUuid                  = QBluetoothUuid(QUu
 static QBluetoothUuid keyturnerDataCharacteristicUuid       = QBluetoothUuid(QUuid("a92ee201-5501-11e4-916c-0800200c9a66"));
 static QBluetoothUuid keyturnerUserDataCharacteristicUuid   = QBluetoothUuid(QUuid("a92ee202-5501-11e4-916c-0800200c9a66"));
 
-Nuki::Nuki(Device *device, BluetoothDevice *bluetoothDevice, QObject *parent) :
+Nuki::Nuki(Thing *thing, BluetoothDevice *bluetoothDevice, QObject *parent) :
     QObject(parent),
-    m_device(device),
+    m_thing(thing),
     m_bluetoothDevice(bluetoothDevice)
 {
     connect(m_bluetoothDevice, &BluetoothDevice::stateChanged, this, &Nuki::onBluetoothDeviceStateChanged);
     onBluetoothDeviceStateChanged(m_bluetoothDevice->state());
 }
 
-Device *Nuki::device()
+Thing *Nuki::thing()
 {
-    return m_device;
+    return m_thing;
 }
 
 BluetoothDevice *Nuki::bluetoothDevice()
@@ -104,14 +104,14 @@ bool Nuki::executeNukiAction(Nuki::NukiAction action)
     return true;
 }
 
-bool Nuki::executeDeviceAction(Nuki::NukiAction action, DeviceActionInfo *actionInfo)
+bool Nuki::executeDeviceAction(Nuki::NukiAction action, ThingActionInfo *actionInfo)
 {
     if (m_nukiAction != NukiActionNone || !m_actionInfo.isNull()) {
         qCWarning(dcNuki()) << "Nuki is busy and already processing an action. Please retry again."  << m_nukiAction;
         return false;
     }
 
-    m_actionInfo = QPointer<DeviceActionInfo>(actionInfo);
+    m_actionInfo = QPointer<ThingActionInfo>(actionInfo);
     m_nukiAction = action;
 
     if (m_available) {
@@ -247,7 +247,7 @@ void Nuki::onBluetoothDeviceStateChanged(const BluetoothDevice::State &state)
 
 void Nuki::onDeviceInfoCharacteristicReadFinished(BluetoothGattCharacteristic *characteristic, const QByteArray &value)
 {
-    qCDebug(dcNuki()) << "Read device information characteristic finished" << characteristic->chararcteristicName() << qUtf8Printable(value);
+    qCDebug(dcNuki()) << "Read thing information characteristic finished" << characteristic->chararcteristicName() << qUtf8Printable(value);
     if (characteristic->uuid() == QBluetoothUuid::SerialNumberString) {
         m_serialNumber = QString::fromUtf8(value);
         m_initUuidsToRead.removeOne(QBluetoothUuid::SerialNumberString);
@@ -260,7 +260,7 @@ void Nuki::onDeviceInfoCharacteristicReadFinished(BluetoothGattCharacteristic *c
     }
 
     if (m_initUuidsToRead.isEmpty()) {
-        // Initial read done. Make device available
+        // Initial read done. Make thing available
         setAvailable(true);
     }
 }
@@ -310,22 +310,22 @@ void Nuki::onNukiReadStatesFinished(bool success)
 
 void Nuki::onNukiStatesChanged()
 {
-    if (!m_device)
+    if (!m_thing)
         return;
 
-    m_device->setStateValue(nukiHardwareRevisionStateTypeId, m_hardwareRevision);
-    m_device->setStateValue(nukiFirmwareRevisionStateTypeId, m_firmwareRevision);
-    m_device->setStateValue(nukiBatteryCriticalStateTypeId, m_nukiController->batteryCritical());
+    m_thing->setStateValue(nukiHardwareRevisionStateTypeId, m_hardwareRevision);
+    m_thing->setStateValue(nukiFirmwareRevisionStateTypeId, m_firmwareRevision);
+    m_thing->setStateValue(nukiBatteryCriticalStateTypeId, m_nukiController->batteryCritical());
 
     switch (m_nukiController->nukiLockTrigger()) {
     case NukiUtils::LockTriggerBluetooth:
-        m_device->setStateValue(nukiTriggerStateTypeId, "Bluetooth");
+        m_thing->setStateValue(nukiTriggerStateTypeId, "Bluetooth");
         break;
     case NukiUtils::LockTriggerButton:
-        m_device->setStateValue(nukiTriggerStateTypeId, "Button");
+        m_thing->setStateValue(nukiTriggerStateTypeId, "Button");
         break;
     case NukiUtils::LockTriggerManual:
-        m_device->setStateValue(nukiTriggerStateTypeId, "Manual");
+        m_thing->setStateValue(nukiTriggerStateTypeId, "Manual");
         break;
     default:
         break;
@@ -333,13 +333,13 @@ void Nuki::onNukiStatesChanged()
 
     switch (m_nukiController->nukiState()) {
     case NukiUtils::NukiStateDoorMode:
-        m_device->setStateValue(nukiModeStateTypeId, "Door");
+        m_thing->setStateValue(nukiModeStateTypeId, "Door");
         break;
     case NukiUtils::NukiStatePairingMode:
-        m_device->setStateValue(nukiModeStateTypeId, "Pairing");
+        m_thing->setStateValue(nukiModeStateTypeId, "Pairing");
         break;
     case NukiUtils::NukiStateUninitialized:
-        m_device->setStateValue(nukiModeStateTypeId, "Uninitialized");
+        m_thing->setStateValue(nukiModeStateTypeId, "Uninitialized");
         break;
     default:
         break;
@@ -347,40 +347,40 @@ void Nuki::onNukiStatesChanged()
 
     switch (m_nukiController->nukiLockState()) {
     case NukiUtils::LockStateLocked:
-        m_device->setStateValue(nukiStateStateTypeId, "locked");
-        m_device->setStateValue(nukiStatusStateTypeId, "Ok");
+        m_thing->setStateValue(nukiStateStateTypeId, "locked");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Ok");
         break;
     case NukiUtils::LockStateLocking:
-        m_device->setStateValue(nukiStateStateTypeId, "locking");
-        m_device->setStateValue(nukiStatusStateTypeId, "Ok");
+        m_thing->setStateValue(nukiStateStateTypeId, "locking");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Ok");
         break;
     case NukiUtils::LockStateMotorBlocked:
-        m_device->setStateValue(nukiStatusStateTypeId, "Motor blocked");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Motor blocked");
         break;
     case NukiUtils::LockStateUncalibrated:
-        m_device->setStateValue(nukiStatusStateTypeId, "Uncalibrated");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Uncalibrated");
         break;
     case NukiUtils::LockStateUndefined:
-        m_device->setStateValue(nukiStatusStateTypeId, "Undefined");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Undefined");
         break;
     case NukiUtils::LockStateUnlatched:
-        m_device->setStateValue(nukiStateStateTypeId, "unlatched");
-        m_device->setStateValue(nukiStatusStateTypeId, "Ok");
+        m_thing->setStateValue(nukiStateStateTypeId, "unlatched");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Ok");
         break;
     case NukiUtils::LockStateUnlatching:
-        m_device->setStateValue(nukiStateStateTypeId, "unlatching");
-        m_device->setStateValue(nukiStatusStateTypeId, "Ok");
+        m_thing->setStateValue(nukiStateStateTypeId, "unlatching");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Ok");
         break;
     case NukiUtils::LockStateUnlockedLocknGoActive:
-        m_device->setStateValue(nukiStatusStateTypeId, "unlocked");
+        m_thing->setStateValue(nukiStatusStateTypeId, "unlocked");
         break;
     case NukiUtils::LockStateUnlocked:
-        m_device->setStateValue(nukiStateStateTypeId, "unlocked");
-        m_device->setStateValue(nukiStatusStateTypeId, "Ok");
+        m_thing->setStateValue(nukiStateStateTypeId, "unlocked");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Ok");
         break;
     case NukiUtils::LockStateUnlocking:
-        m_device->setStateValue(nukiStateStateTypeId, "unlocking");
-        m_device->setStateValue(nukiStatusStateTypeId, "Ok");
+        m_thing->setStateValue(nukiStateStateTypeId, "unlocking");
+        m_thing->setStateValue(nukiStatusStateTypeId, "Ok");
         break;
     default:
         break;
@@ -528,7 +528,7 @@ void Nuki::finishCurrentAction(bool success)
     if (m_actionInfo.isNull())
         return;
 
-    m_actionInfo->finish(success ? Device::DeviceErrorNoError : Device::DeviceErrorHardwareFailure);
+    m_actionInfo->finish(success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
     m_actionInfo.clear();
 }
 
@@ -556,8 +556,8 @@ void Nuki::setAvailable(bool available)
         }
     }
 
-    if (!m_device)
+    if (!m_thing)
         return;
 
-    m_device->setStateValue(nukiConnectedStateTypeId, m_available);
+    m_thing->setStateValue(nukiConnectedStateTypeId, m_available);
 }

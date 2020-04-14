@@ -1,1 +1,1 @@
-usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_devicepluginopenweathermap.so
+usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_integrationpluginopenweathermap.so

@@ -1,0 +1,92 @@
+{
+    "displayName": "UniFi",
+    "name": "unifi",
+    "id": "88bc00c7-9ea8-4aa6-8aec-831639e8fccc",
+    "vendors": [
+        {
+            "id": "0ccc026c-4454-4948-8fcb-be2436d232dd",
+            "name": "ubiquiti",
+            "displayName": "Ubiquiti",
+            "thingClasses": [
+                {
+                    "id": "1da7534c-dd51-4cd2-ab56-48428892c436",
+                    "name": "controller",
+                    "displayName": "UniFi Controller",
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
+                    "interfaces": ["gateway"],
+                    "paramTypes": [
+                        {
+                            "id": "9210506a-8c6a-41eb-8462-be93211fc9fe",
+                            "name": "ipAddress",
+                            "displayName": "IP Address",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "2efc35f6-dc58-4cd2-98cc-7e0a1a4f4e01",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected/disconnected",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "cf1a99ce-ad17-4cc7-8558-480daba20e72",
+                    "name": "client",
+                    "displayName": "UniFi client",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["presencesensor"],
+                    "paramTypes": [
+                        {
+                            "id": "a3e7ea90-3f92-4ccf-aec1-b9bc18bfa76f",
+                            "name": "mac",
+                            "displayName": "MAC address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "32358acf-f5ea-4a7f-b4cb-325963118398",
+                            "name": "site",
+                            "displayName": "UniFi Site",
+                            "type": "QString"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "aa10389e-f4a4-44b8-ba1e-e641914425b6",
+                            "name": "gracePeriod",
+                            "displayName": "Leave timeout",
+                            "type": "uint",
+                            "defaultValue": "1",
+                            "unit": "Minutes"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7c2420eb-31eb-43b8-b28c-0dba4a4a3910",
+                            "name": "isPresent",
+                            "displayName": "Client is connected",
+                            "displayNameEvent": "Client connected/disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "8491c998-6100-4a1c-b0b7-6d44696aceba",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -2,16 +2,16 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugindenon)
+TARGET = $$qtLibraryTarget(nymea_integrationplugindenon)
 
 SOURCES += \
-    deviceplugindenon.cpp \
+    integrationplugindenon.cpp \
     heos.cpp \
     heosplayer.cpp \
     avrconnection.cpp
 
 HEADERS += \
-    deviceplugindenon.h \
+    integrationplugindenon.h \
     heos.h \
     heosplayer.h \
     avrconnection.h \

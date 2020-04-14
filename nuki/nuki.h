@@ -38,9 +38,9 @@
 #include <QPointer>
 
 #include "typeutils.h"
-#include "devices/device.h"
+#include "integrations/thing.h"
 #include "bluez/bluetoothdevice.h"
-#include "devices/deviceactioninfo.h"
+#include "integrations/thingactioninfo.h"
 
 #include "nukiutils.h"
 #include "nukicontroller.h"
@@ -64,14 +64,14 @@ public:
     };
     Q_ENUM(NukiAction)
 
-    explicit Nuki(Device *device, BluetoothDevice *bluetoothDevice, QObject *parent = nullptr);
+    explicit Nuki(Thing *thing, BluetoothDevice *bluetoothDevice, QObject *parent = nullptr);
 
-    Device *device();
+    Thing *thing();
     BluetoothDevice *bluetoothDevice();
 
     bool startAuthenticationProcess(const PairingTransactionId &pairingTransactionId);
     bool refreshStates();
-    bool executeDeviceAction(NukiAction action, DeviceActionInfo *actionInfo);
+    bool executeDeviceAction(NukiAction action, ThingActionInfo *actionInfo);
 
     void connectDevice();
     void disconnectDevice();
@@ -80,7 +80,7 @@ public:
 
 
 private:
-    Device *m_device = nullptr;
+    Thing *m_thing = nullptr;
     BluetoothDevice *m_bluetoothDevice = nullptr;
     NukiController *m_nukiController = nullptr;
     NukiAuthenticator *m_nukiAuthenticator = nullptr;
@@ -103,7 +103,7 @@ private:
     bool m_available = false;
 
     NukiAction m_nukiAction = NukiActionNone;
-    QPointer<DeviceActionInfo> m_actionInfo;
+    QPointer<ThingActionInfo> m_actionInfo;
     PairingTransactionId m_pairingId;
 
     bool init();
@@ -123,7 +123,7 @@ signals:
     void actionFinished(const ActionId &action, bool success);
 
 private slots:
-    // Bluetooth device
+    // Bluetooth thing
     void onBluetoothDeviceStateChanged(const BluetoothDevice::State &state);
 
     // DeviceInfo service

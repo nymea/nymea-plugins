@@ -1,11 +1,11 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginconrad)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginconrad)
 
 SOURCES += \
-    devicepluginconrad.cpp
+    integrationpluginconrad.cpp
 
 HEADERS += \
-    devicepluginconrad.h
+    integrationpluginconrad.h
 
 

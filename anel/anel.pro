@@ -2,10 +2,10 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginanel)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginanel)
 
 SOURCES += \
-    devicepluginanel.cpp \
+    integrationpluginanel.cpp \
 
 HEADERS += \
-    devicepluginanel.h \
+    integrationpluginanel.h \

@@ -1,13 +1,13 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginopenuv)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginopenuv)
 
 QT+= network
 
 SOURCES += \
-    devicepluginopenuv.cpp \
+    integrationpluginopenuv.cpp \
 
 HEADERS += \
-    devicepluginopenuv.h \
+    integrationpluginopenuv.h \
 
 

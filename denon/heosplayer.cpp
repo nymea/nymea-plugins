@@ -30,15 +30,13 @@
 
 #include "heosplayer.h"
 
-HeosPlayer::HeosPlayer(int playerId, QObject *parent) :
-    QObject(parent),
+HeosPlayer::HeosPlayer(int playerId) :
     m_playerId(playerId)
 {
 
 }
 
-HeosPlayer::HeosPlayer(int playerId, QString name, QString serialNumber, QObject *parent) :
-    QObject(parent),
+HeosPlayer::HeosPlayer(int playerId, const QString &name, const QString &serialNumber) :
     m_playerId(playerId),
     m_serialNumber(serialNumber),
     m_name(name)
@@ -50,7 +48,7 @@ QString HeosPlayer::name()
     return m_name;
 }
 
-void HeosPlayer::setName(QString name)
+void HeosPlayer::setName(const QString &name)
 {
     m_name = name;
 }
@@ -75,9 +73,19 @@ QString HeosPlayer::playerModel()
     return m_playerModel;
 }
 
+void HeosPlayer::setPlayerModel(const QString &playerModel)
+{
+    m_playerModel = playerModel;
+}
+
 QString HeosPlayer::playerVersion()
 {
     return m_playerVersion;
+}
+
+void HeosPlayer::setPlayerVersion(const QString &playerVersion)
+{
+    m_playerVersion = playerVersion;
 }
 
 QString HeosPlayer::network()
@@ -85,9 +93,19 @@ QString HeosPlayer::network()
     return m_network;
 }
 
+void HeosPlayer::setNetwork(const QString &network)
+{
+    m_network = network;
+}
+
 QString HeosPlayer::serialNumber()
 {
     return m_serialNumber;
+}
+
+void HeosPlayer::setSerialNumber(const QString &serialNumber)
+{
+    m_serialNumber = serialNumber;
 }
 
 QString HeosPlayer::lineOut()
@@ -95,9 +113,19 @@ QString HeosPlayer::lineOut()
     return m_lineOut;
 }
 
+void HeosPlayer::setLineOut(const QString &lineout)
+{
+    m_lineOut = lineout;
+}
+
 QString HeosPlayer::control()
 {
     return m_control;
+}
+
+void HeosPlayer::setControl(const QString &control)
+{
+    m_control = control;
 }
 
 

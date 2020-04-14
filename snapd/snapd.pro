@@ -1,17 +1,17 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginsnapd)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginsnapd)
 
 QT += network
 
 SOURCES += \
-    devicepluginsnapd.cpp \
+    integrationpluginsnapd.cpp \
     snapdcontrol.cpp \
     snapdconnection.cpp \
     snapdreply.cpp
 
 HEADERS += \
-    devicepluginsnapd.h \
+    integrationpluginsnapd.h \
     snapdcontrol.h \
     snapdconnection.h \
     snapdreply.h

@@ -1,0 +1,291 @@
+{
+    "displayName": "Gpio Controller",
+    "name": "GpioController",
+    "id": "127ead55-996a-44ac-ba82-fc3c634e018a",
+    "paramTypes": [
+    {
+            "id": "bfb31f88-b481-49e1-9a0a-41b156b64efe",
+            "name": "longPressTime",
+            "displayName": "Long press time",
+            "type": "int",
+            "unit": "Seconds",
+            "defaultValue": 2
+        }
+    ],
+    "vendors": [
+        {
+            "displayName": "Raspberry Pi 2/3",
+            "name": "raspberryPi",
+            "id": "f0d00b66-bbd8-4a07-8591-ea48a61b229e",
+            "thingClasses": [
+                {
+                    "id": "3885c520-e202-4435-88f6-3c35c362b2e6",
+                    "displayName": "GPIO Output",
+                    "name": "gpioOutputRpi",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["power"],
+                    "paramTypes": [
+                        {
+                            "id": "9eda783f-6d9f-4d39-986d-d2cbfff5a7dd",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "2204d278-7bc7-407f-ac82-ce3ae1d5779c",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "504798eb-1faa-4703-a57a-2778e4bf9a67",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "06843766-358e-44b0-8d52-2b46ef98459a",
+                            "name": "power",
+                            "displayName": "Power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power"
+                        }
+                    ]
+                },
+                {
+                    "id": "6aff228b-0410-4ef9-9593-51e8639aacea",
+                    "displayName": "GPIO Input",
+                    "name": "gpioInputRpi",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["longpressbutton"],
+                    "paramTypes": [
+                        {
+                            "id": "b45ca4a8-c67a-411c-957c-0e78e1f12c0b",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "efd3df4a-d2b6-44f3-9095-7bba07891735",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "720bb37e-56e6-419e-878e-8c80aaf7ce32",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "57f1b7cc-26c8-434b-ba04-d3077dc886c8",
+                            "name": "pressed",
+                            "displayName": "Pressed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Pressed changed"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "0df945d3-38df-4560-b42a-12b05545904d",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
+                        }
+                    ]
+                },
+                {
+                    "id": "75b13371-a064-47a7-bb82-e9d93a5b5027",
+                    "displayName": "Counter",
+                    "name": "counterRpi",
+                    "createMethods": ["discovery"],
+                    "interfaces": [],
+                    "paramTypes": [
+                        {
+                            "id": "a6feb722-1dc9-4262-96b0-96489507508f",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "b2c194bd-1aef-4851-a290-dd45269cc592",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "f7b82516-ed2c-4d73-86fa-957b8b6737e4",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "891bc1ce-2f9b-4518-aed9-90e78bc2409e",
+                            "name": "counter",
+                            "displayName": "Counter",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "unit": "Hertz",
+                            "displayNameEvent": "Counter changed"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "displayName": "Beaglebone Black",
+            "name": "beagleboneBlack",
+            "id": "7835d14b-b455-49bd-9f31-72c6e8c3033d",
+            "thingClasses": [
+                {
+                    "id": "75d54a59-f9b0-4bc4-a86c-6b1fc47e0663",
+                    "displayName": "GPIO Output",
+                    "name": "gpioOutputBbb",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["power"],
+                    "paramTypes": [
+                        {
+                            "id": "62a9596d-fc7d-4554-9f45-9803635da619",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "14f65be0-ee84-42e4-8fcb-d98a9926a247",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "760aa4ed-d933-4188-aec8-16285d763aa5",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "82b567c6-a33c-484e-b5e7-e04795498d00",
+                            "name": "power",
+                            "displayName": "Power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power"
+                        }
+                    ]
+                },
+                {
+                    "id": "ffd2aa29-55cc-4824-ba95-c311784f7824",
+                    "displayName": "GPIO Input",
+                    "name": "gpioInputBbb",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["longpressbutton"],
+                    "paramTypes": [
+                        {
+                            "id": "20773255-4576-4c8e-8c8b-051902919761",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "f383bf1d-3ac0-4808-a82c-18748baf085d",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "da746cde-2380-4ee5-bf2c-017249fcdeef",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "22440876-417a-4d57-8e01-efe26ef9f235",
+                            "name": "pressed",
+                            "displayName": "Pressed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Pressed changed"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "6b439e89-2cac-482a-b012-452c7c665acb",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
+                        }
+                    ]
+                },
+                {
+                    "id": "3e311ef1-60c4-4b0e-a2fb-186bff9bd792",
+                    "displayName": "Counter",
+                    "name": "counterBbb",
+                    "createMethods": ["discovery"],
+                    "interfaces": [],
+                    "paramTypes": [
+                        {
+                            "id": "68bc0f3b-18c3-4a60-a2df-85bc0605caec",
+                            "name": "gpio",
+                            "displayName": "GPIO",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "f9da4a22-b010-4823-9b1c-d1f422c3ad2b",
+                            "name": "pin",
+                            "displayName": "Pin number",
+                            "type": "int",
+                            "defaultValue": -1
+                        },
+                        {
+                            "id": "cba6a527-9f5c-4c05-8602-60e0c920fd26",
+                            "name": "description",
+                            "displayName": "Description",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "fb5181d0-644b-4ab7-afa0-b7ddc8951526",
+                            "name": "counter",
+                            "displayName": "Counter",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "unit": "Hertz",
+                            "displayNameEvent": "Counter changed"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

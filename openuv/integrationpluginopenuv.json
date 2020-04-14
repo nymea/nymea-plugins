@@ -1,0 +1,162 @@
+{
+    "name": "OpenUv",
+    "displayName": "OpenUV",
+    "id": "9b7d9cc8-77df-4197-a6fc-8a365747a3b1",
+    "paramTypes": [
+        {
+            "id": "cbb8e9d1-22b6-40ab-bbff-26abb2ed416f",
+            "name": "apiKey",
+            "displayName": "API key",
+            "type": "QString",
+            "inputType": "TextLine",
+            "defaultValue": "-"
+        }
+    ],
+    "vendors": [
+        {
+            "name": "openUv",
+            "displayName": "OpenUV",
+            "id": "73560db6-af79-41f0-85a8-e9c9907647c8",
+            "thingClasses": [
+                {
+                    "id": "37e17c00-91e1-4276-a1e3-12283d2cae4c",
+                    "name": "openUv",
+                    "displayName": "UV Index",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["discovery", "user"],
+                    "paramTypes": [
+                        {
+                            "id": "35869967-20f2-4106-ba2e-90293bd460db",
+                            "name": "latitude",
+                            "displayName": "Latitude",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        },
+                        {
+                            "id": "b97dfec9-f9e7-489d-b3db-7e70938def1a",
+                            "name": "longitude",
+                            "displayName": "Longitude",
+                            "type": "QString",
+                            "inputType": "TextLine"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "47c7dd57-3592-4d05-af4c-1034268223e1",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "1d63cee1-3e28-4e90-ad4f-acbc2081ea8c",
+                            "name": "uv",
+                            "displayName": "UV index",
+                            "displayNameEvent": "UV index changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "35c799a1-d4b5-4d26-8b63-d884cf96ff2c",
+                            "name": "uvTime",
+                            "displayName": "UV time",
+                            "displayNameEvent": "UV time changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "59fe2255-3b61-44f0-84eb-afa6eea838c2",
+                            "name": "uvMax",
+                            "displayName": "UV day max index",
+                            "displayNameEvent": "UV day max index changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "4abd1745-c290-4685-bed4-108d31721b67",
+                            "name": "uvMaxTime",
+                            "displayName": "UV maximum time",
+                            "displayNameEvent": "UV maximum time changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "48e51a7c-edbb-499e-95a0-6789bf51437c",
+                            "name": "ozone",
+                            "displayName": "Ozone",
+                            "displayNameEvent": "Ozone changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "27a48154-218f-4a27-aefb-41d943ecf7e8",
+                            "name": "ozoneTime",
+                            "displayName": "Ozone time",
+                            "displayNameEvent": "Ozone time changed",
+                            "unit": "UnixTime",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "13bc0387-acfe-4461-85c8-46f5e93ee0aa",
+                            "name": "safeExposureTimeSt1",
+                            "displayName": "Safe exposure time skin type 1",
+                            "displayNameEvent": "Safe exposure time skin type 1 changed",
+                            "unit": "Minutes",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "0a60b028-97c9-4231-90a4-95ace8c6cf28",
+                            "name": "safeExposureTimeSt2",
+                            "displayName": "Safe exposure time skin type 2",
+                            "displayNameEvent": "Safe exposure time skin type 2 changed",
+                            "unit": "Minutes",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fb9c63aa-8ec6-479d-bd87-75865b8fcd77",
+                            "name": "safeExposureTimeSt3",
+                            "displayName": "Safe exposure time skin type 3",
+                            "displayNameEvent": "Safe exposure time skin type 3 changed",
+                            "unit": "Minutes",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "31fc498f-1f17-4443-b0f8-65aff70bbf1c",
+                            "name": "safeExposureTimeSt4",
+                            "displayName": "Safe exposure time skin type 4",
+                            "displayNameEvent": "Safe exposure time skin type 4 changed",
+                            "unit": "Minutes",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "268637f0-73a9-4945-ace9-fc2bfc250675",
+                            "name": "safeExposureTimeSt5",
+                            "displayName": "Safe exposure time skin type 5",
+                            "displayNameEvent": "Safe exposure time skin type 5 changed",
+                            "unit": "Minutes",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fd98313c-a6fb-4cff-8478-7399d33e7794",
+                            "name": "safeExposureTimeSt6",
+                            "displayName": "Safe exposure time skin type 6",
+                            "displayNameEvent": "Safe exposure time skin type 6 changed",
+                            "unit": "Minutes",
+                            "type": "int",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

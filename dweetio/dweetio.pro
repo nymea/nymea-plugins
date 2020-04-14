@@ -2,10 +2,10 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugindweetio)
+TARGET = $$qtLibraryTarget(nymea_integrationplugindweetio)
 
 SOURCES += \
-    deviceplugindweetio.cpp \
+    integrationplugindweetio.cpp \
 
 HEADERS += \
-    deviceplugindweetio.h   \
+    integrationplugindweetio.h   \

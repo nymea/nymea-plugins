@@ -34,16 +34,16 @@
 #include <QObject>
 #include <QLocalSocket>
 
-#include "devices/device.h"
+#include "integrations/thing.h"
 #include "snapdconnection.h"
 
 class SnapdControl : public QObject
 {
     Q_OBJECT
 public:
-    explicit SnapdControl(Device *device, QObject *parent = nullptr);
+    explicit SnapdControl(Thing *thing, QObject *parent = nullptr);
 
-    Device *device();
+    Thing *thing();
 
     bool available() const;
     bool connected() const;
@@ -51,7 +51,7 @@ public:
     bool timerBasedSchedule() const;
 
 private:
-    Device *m_device = nullptr;
+    Thing *m_device = nullptr;
     SnapdConnection *m_snapConnection = nullptr;
 
     QString m_snapdSocketPath;

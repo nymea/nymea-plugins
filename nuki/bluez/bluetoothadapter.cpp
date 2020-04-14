@@ -127,7 +127,7 @@ QString BluetoothAdapter::adapterClassString() const
 {
     QString adapterClassString;
     switch (m_adapterClass) {
-    // TODO: get device type from class
+    // TODO: get thing type from class
     default:
         break;
     }
@@ -159,8 +159,8 @@ QList<BluetoothDevice *> BluetoothAdapter::devices() const
 
 bool BluetoothAdapter::hasDevice(const QBluetoothAddress &address)
 {
-    foreach (BluetoothDevice *device, m_devices) {
-        if (device->address() == address) {
+    foreach (BluetoothDevice *thing, m_devices) {
+        if (thing->address() == address) {
             return true;
         }
     }
@@ -170,9 +170,9 @@ bool BluetoothAdapter::hasDevice(const QBluetoothAddress &address)
 
 BluetoothDevice *BluetoothAdapter::getDevice(const QBluetoothAddress &address)
 {
-    foreach (BluetoothDevice *device, m_devices) {
-        if (device->address() == address) {
-            return device;
+    foreach (BluetoothDevice *thing, m_devices) {
+        if (thing->address() == address) {
+            return thing;
         }
     }
 
@@ -181,9 +181,9 @@ BluetoothDevice *BluetoothAdapter::getDevice(const QBluetoothAddress &address)
 
 bool BluetoothAdapter::removeDevice(const QBluetoothAddress &address)
 {
-    foreach (BluetoothDevice *device, m_devices) {
-        if (device->address() == address) {
-            return removeDevice(device->m_path);
+    foreach (BluetoothDevice *thing, m_devices) {
+        if (thing->address() == address) {
+            return removeDevice(thing->m_path);
         }
     }
 
@@ -261,33 +261,33 @@ void BluetoothAdapter::processProperties(const QVariantMap &properties)
 
 void BluetoothAdapter::addDeviceInternally(const QDBusObjectPath &path, const QVariantMap &properties)
 {
-    // Check if device already added
+    // Check if thing already added
     if (hasDevice(path))
         return;
 
-    BluetoothDevice *device = new BluetoothDevice(path, properties, this);
-    m_devices.append(device);
+    BluetoothDevice *thing = new BluetoothDevice(path, properties, this);
+    m_devices.append(thing);
 
-    qCDebug(dcBluez()) << "[+]" << device;
+    qCDebug(dcBluez()) << "[+]" << thing;
 
-    emit deviceAdded(device);
+    emit deviceAdded(thing);
 }
 
 void BluetoothAdapter::removeDeviceInternally(const QDBusObjectPath &path)
 {
-    foreach (BluetoothDevice *device, m_devices) {
-        if (device->m_path == path) {
-            m_devices.removeOne(device);
-            emit deviceRemoved(device);
-            device->deleteLater();
+    foreach (BluetoothDevice *thing, m_devices) {
+        if (thing->m_path == path) {
+            m_devices.removeOne(thing);
+            emit deviceRemoved(thing);
+            thing->deleteLater();
         }
     }
 }
 
 bool BluetoothAdapter::hasDevice(const QDBusObjectPath &path)
 {
-    foreach (BluetoothDevice *device, m_devices) {
-        if (device->m_path == path)
+    foreach (BluetoothDevice *thing, m_devices) {
+        if (thing->m_path == path)
             return true;
     }
 

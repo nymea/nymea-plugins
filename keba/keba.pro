@@ -2,10 +2,10 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginkeba)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginkeba)
 
 SOURCES += \
-    devicepluginkeba.cpp \
+    integrationpluginkeba.cpp \
 
 HEADERS += \
-    devicepluginkeba.h \
+    integrationpluginkeba.h \

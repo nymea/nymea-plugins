@@ -1,1 +1,1 @@
-usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_deviceplugintado.so
+usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/libnymea_integrationplugintado.so

@@ -2,16 +2,16 @@ include(../plugins.pri)
 
 QT += bluetooth
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugintexasinstruments)
+TARGET = $$qtLibraryTarget(nymea_integrationplugintexasinstruments)
 
 HEADERS += \
-    deviceplugintexasinstruments.h \
+    integrationplugintexasinstruments.h \
     sensortag.h \
     sensordataprocessor.h \
     sensorfilter.h
 
 SOURCES += \
-    deviceplugintexasinstruments.cpp \
+    integrationplugintexasinstruments.cpp \
     sensortag.cpp \
     sensordataprocessor.cpp \
     sensorfilter.cpp

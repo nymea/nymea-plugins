@@ -2,11 +2,11 @@ include(../plugins.pri)
 
 QT += serialport
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginserialportcommander)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginserialportcommander)
 
 SOURCES += \
-    devicepluginserialportcommander.cpp \
+    integrationpluginserialportcommander.cpp \
 
 
 HEADERS += \
-    devicepluginserialportcommander.h \
+    integrationpluginserialportcommander.h \

@@ -1,0 +1,44 @@
+ {
+    "name": "Unitec",
+    "displayName": "Unitec",
+    "id": "aefca391-f8bf-4f6c-a205-6764de3c2c3c",
+    "vendors": [
+        {
+            "name": "unitec",
+            "displayName": "Unitec",
+            "id": "f2cd9a76-5a7f-4c01-bf8c-5eae8b12e95c",
+            "thingClasses": [
+                {
+                    "id": "8468a15d-ecc0-43b6-98ca-e1e4ac9e2df3",
+                    "displayName": "Unitec switch (48111)",
+                    "name": "switch",
+                    "createMethods": ["user"],
+                    "paramTypes": [
+                        {
+                            "id": "2cb59323-bc01-477c-ac0d-312b25c53463",
+                            "name": "channel",
+                            "displayName": "channel",
+                            "type": "QString",
+                            "allowedValues": ["A", "B", "C", "D"]
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "3ca1ebc2-bb8e-4429-9664-a7bc4569e73b",
+                            "name": "power",
+                            "displayName": "set power",
+                            "paramTypes": [
+                                {
+                                    "id": "c101c199-314d-420f-a302-0ae29c599047",
+                                    "name": "power",
+                                    "displayName": "power",
+                                    "type": "bool"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

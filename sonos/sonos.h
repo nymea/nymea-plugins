@@ -35,7 +35,7 @@
 #include <QTimer>
 
 #include "network/networkaccessmanager.h"
-#include "devices/device.h"
+#include "integrations/thing.h"
 
 class Sonos : public QObject
 {

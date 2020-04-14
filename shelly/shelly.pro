@@ -3,7 +3,7 @@ include(../plugins.pri)
 QT += network
 
 SOURCES += \
-    devicepluginshelly.cpp \
+    integrationpluginshelly.cpp \
 
 HEADERS += \
-    devicepluginshelly.h \
+    integrationpluginshelly.h \

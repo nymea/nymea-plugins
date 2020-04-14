@@ -1,10 +1,10 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginremotessh)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginremotessh)
 
 SOURCES += \
-    devicepluginremotessh.cpp \
+    integrationpluginremotessh.cpp \
 
 HEADERS += \
-    devicepluginremotessh.h \
+    integrationpluginremotessh.h \
 

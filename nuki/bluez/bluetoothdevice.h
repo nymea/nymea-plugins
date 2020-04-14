@@ -41,7 +41,7 @@
 #include "blueztypes.h"
 #include "bluetoothgattservice.h"
 
-// Note: DBus documentation https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/device-api.txt
+// Note: DBus documentation https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/thing-api.txt
 
 class BluetoothManager;
 class BluetoothAdapter;
@@ -187,7 +187,7 @@ public slots:
     bool cancelPairingRequest();
 };
 
-QDebug operator<<(QDebug debug, BluetoothDevice *device);
+QDebug operator<<(QDebug debug, BluetoothDevice *thing);
 
 
 #endif // BLUETOOTHDEVICE_H

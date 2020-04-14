@@ -33,18 +33,18 @@
 
 #include <QDataStream>
 
-AveaBulb::AveaBulb(Device *device, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
+AveaBulb::AveaBulb(Thing *thing, BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
     QObject(parent),
-    m_device(device),
+    m_thing(thing),
     m_bluetoothDevice(bluetoothDevice)
 {
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::connectedChanged, this, &AveaBulb::onConnectedChanged);
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::servicesDiscoveryFinished, this, &AveaBulb::onServiceDiscoveryFinished);
 }
 
-Device *AveaBulb::device()
+Thing *AveaBulb::thing()
 {
-    return m_device;
+    return m_thing;
 }
 
 BluetoothLowEnergyDevice *AveaBulb::bluetoothDevice()
@@ -209,7 +209,7 @@ bool AveaBulb::syncColor()
     if (!m_colorService)
         return false;
 
-    if (!m_device->stateValue(aveaPowerStateTypeId).toBool()) {
+    if (!m_thing->stateValue(aveaPowerStateTypeId).toBool()) {
         qCWarning(dcElgato()) << "Not syncing color because power off";
         return false;
     }
@@ -237,7 +237,7 @@ bool AveaBulb::syncColor()
 void AveaBulb::onConnectedChanged(const bool &connected)
 {
     qCDebug(dcElgato()) << "Bulb" << m_bluetoothDevice->name() << m_bluetoothDevice->address().toString() << (connected ? "connected" : "disconnected");
-    m_device->setStateValue(aveaConnectedStateTypeId, connected);
+    m_thing->setStateValue(aveaConnectedStateTypeId, connected);
 
     if (!connected) {
         // Clean up services
@@ -360,12 +360,12 @@ void AveaBulb::onColorServiceCharacteristicChanged(const QLowEnergyCharacteristi
         qCDebug(dcElgato()) << "    green (target) :" << QString::number(greenTargetValue, 16) << greenTargetValue << greenTargetAdjustedValue;
         qCDebug(dcElgato()) << "    red   (target) :" << QString::number(redTargetValue, 16) << redTargetValue << redTargetAdjustedValue;
 
-        m_device->setStateValue(aveaFadeStateTypeId, fade);
-        m_device->setStateValue(aveaWhiteStateTypeId, scaleColorValueDown(whiteTargetAdjustedValue));
-        m_device->setStateValue(aveaRedStateTypeId, scaleColorValueDown(redTargetAdjustedValue));
-        m_device->setStateValue(aveaGreenStateTypeId, scaleColorValueDown(greenTargetAdjustedValue));
-        m_device->setStateValue(aveaBlueStateTypeId, scaleColorValueDown(blueTargetAdjustedValue));
-        m_device->setStateValue(aveaColorStateTypeId, QColor(scaleColorValueDown(redTargetAdjustedValue), scaleColorValueDown(greenTargetAdjustedValue), scaleColorValueDown(blueTargetAdjustedValue)));
+        m_thing->setStateValue(aveaFadeStateTypeId, fade);
+        m_thing->setStateValue(aveaWhiteStateTypeId, scaleColorValueDown(whiteTargetAdjustedValue));
+        m_thing->setStateValue(aveaRedStateTypeId, scaleColorValueDown(redTargetAdjustedValue));
+        m_thing->setStateValue(aveaGreenStateTypeId, scaleColorValueDown(greenTargetAdjustedValue));
+        m_thing->setStateValue(aveaBlueStateTypeId, scaleColorValueDown(blueTargetAdjustedValue));
+        m_thing->setStateValue(aveaColorStateTypeId, QColor(scaleColorValueDown(redTargetAdjustedValue), scaleColorValueDown(greenTargetAdjustedValue), scaleColorValueDown(blueTargetAdjustedValue)));
 
         break;
     }
@@ -374,7 +374,7 @@ void AveaBulb::onColorServiceCharacteristicChanged(const QLowEnergyCharacteristi
         stream >> brightnessValue;
         int brightnessPercentage = qRound(brightnessValue * 100 / 4095.0);
         qCDebug(dcElgato()) << "Brightness notification" << value.mid(1, 2).toHex() << brightnessValue << "-->" << brightnessPercentage << "%";
-        m_device->setStateValue(aveaBrightnessStateTypeId, brightnessPercentage);
+        m_thing->setStateValue(aveaBrightnessStateTypeId, brightnessPercentage);
         break;
     }
     case ColorMessageName: {

@@ -2,15 +2,15 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginnetatmo)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginnetatmo)
 
 SOURCES += \
-    devicepluginnetatmo.cpp \
+    integrationpluginnetatmo.cpp \
     netatmobasestation.cpp \
     netatmooutdoormodule.cpp
 
 HEADERS += \
-    devicepluginnetatmo.h \
+    integrationpluginnetatmo.h \
     netatmobasestation.h \
     netatmooutdoormodule.h
 

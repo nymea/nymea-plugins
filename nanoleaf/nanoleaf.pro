@@ -1,15 +1,15 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginnanoleaf)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginnanoleaf)
 
 QT += network
 
 SOURCES += \
-    devicepluginnanoleaf.cpp \
+    integrationpluginnanoleaf.cpp \
     nanoleaf.cpp \
 
 HEADERS += \
-    devicepluginnanoleaf.h \
+    integrationpluginnanoleaf.h \
     nanoleaf.h \
 
 

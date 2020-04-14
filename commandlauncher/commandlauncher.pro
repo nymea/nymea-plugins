@@ -1,10 +1,10 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugincommandlauncher)
+TARGET = $$qtLibraryTarget(nymea_integrationplugincommandlauncher)
 
 SOURCES += \
-    deviceplugincommandlauncher.cpp
+    integrationplugincommandlauncher.cpp
 
 HEADERS += \
-    deviceplugincommandlauncher.h
+    integrationplugincommandlauncher.h
 

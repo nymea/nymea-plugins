@@ -37,9 +37,9 @@
 #include <QDataStream>
 #include <QDateTime>
 
-SensorDataProcessor::SensorDataProcessor(Device *device, QObject *parent) :
+SensorDataProcessor::SensorDataProcessor(Thing *thing, QObject *parent) :
     QObject(parent),
-    m_device(device)
+    m_thing(thing)
 {
     // Create data filters
     m_temperatureFilter = new SensorFilter(SensorFilter::TypeLowPass, this);
@@ -129,12 +129,12 @@ void SensorDataProcessor::processTemperatureData(const QByteArray &data)
     float ambientTemperatureFiltered = m_temperatureFilter->filterValue(ambientTemperature);
 
     if (m_objectTemperatureFilter->isReady()) {
-        m_device->setStateValue(sensorTagObjectTemperatureStateTypeId, roundValue(objectTemperatureFiltered));
+        m_thing->setStateValue(sensorTagObjectTemperatureStateTypeId, roundValue(objectTemperatureFiltered));
     }
 
     // Note: only change the state once the filter has collected enough data
     if (m_temperatureFilter->isReady()) {
-        m_device->setStateValue(sensorTagTemperatureStateTypeId, roundValue(ambientTemperatureFiltered));
+        m_thing->setStateValue(sensorTagTemperatureStateTypeId, roundValue(ambientTemperatureFiltered));
     }
 
 }
@@ -165,7 +165,7 @@ void SensorDataProcessor::processHumidityData(const QByteArray &data)
     double humidityFiltered = m_humidityFilter->filterValue(humidity);
 
     if (m_humidityFilter->isReady()) {
-        m_device->setStateValue(sensorTagHumidityStateTypeId, roundValue(humidityFiltered));
+        m_thing->setStateValue(sensorTagHumidityStateTypeId, roundValue(humidityFiltered));
     }
 }
 
@@ -193,7 +193,7 @@ void SensorDataProcessor::processPressureData(const QByteArray &data)
 
     double pressureFiltered = m_pressureFilter->filterValue(rawPressure / 100.0);
     if (m_pressureFilter->isReady()) {
-        m_device->setStateValue(sensorTagPressureStateTypeId, roundValue(pressureFiltered));
+        m_thing->setStateValue(sensorTagPressureStateTypeId, roundValue(pressureFiltered));
     }
 }
 
@@ -216,7 +216,7 @@ void SensorDataProcessor::processOpticalData(const QByteArray &data)
 
     double luxFiltered = m_opticalFilter->filterValue(lux);
     if (m_opticalFilter->isReady()) {
-        m_device->setStateValue(sensorTagLightIntensityStateTypeId, qRound(luxFiltered));
+        m_thing->setStateValue(sensorTagLightIntensityStateTypeId, qRound(luxFiltered));
     }
 
     logSensorValue(lux, qRound(luxFiltered));
@@ -277,7 +277,7 @@ void SensorDataProcessor::processMovementData(const QByteArray &data)
 
     double delta = qAbs(qAbs(m_lastAccelerometerVectorLenght) - qAbs(filteredVectorLength));
     bool motionDetected = (delta >= m_movementSensitivity);
-    m_device->setStateValue(sensorTagMovingStateTypeId, motionDetected);
+    m_thing->setStateValue(sensorTagMovingStateTypeId, motionDetected);
     m_lastAccelerometerVectorLenght = filteredVectorLength;
 }
 
@@ -301,7 +301,7 @@ void SensorDataProcessor::setLeftButtonPressed(bool pressed)
 
     qCDebug(dcTexasInstruments()) << "Left button" << (pressed ? "pressed" : "released");
     m_leftButtonPressed = pressed;
-    m_device->setStateValue(sensorTagLeftButtonPressedStateTypeId, m_leftButtonPressed);
+    m_thing->setStateValue(sensorTagLeftButtonPressedStateTypeId, m_leftButtonPressed);
 }
 
 void SensorDataProcessor::setRightButtonPressed(bool pressed)
@@ -311,7 +311,7 @@ void SensorDataProcessor::setRightButtonPressed(bool pressed)
 
     qCDebug(dcTexasInstruments()) << "Right button" << (pressed ? "pressed" : "released");
     m_rightButtonPressed = pressed;
-    m_device->setStateValue(sensorTagRightButtonPressedStateTypeId, m_rightButtonPressed);
+    m_thing->setStateValue(sensorTagRightButtonPressedStateTypeId, m_rightButtonPressed);
 }
 
 void SensorDataProcessor::setMagnetDetected(bool detected)
@@ -321,7 +321,7 @@ void SensorDataProcessor::setMagnetDetected(bool detected)
 
     qCDebug(dcTexasInstruments()) << "Magnet detector" << (detected ? "active" : "inactive");
     m_magnetDetected = detected;
-    m_device->setStateValue(sensorTagMagnetDetectedStateTypeId, m_magnetDetected);
+    m_thing->setStateValue(sensorTagMagnetDetectedStateTypeId, m_magnetDetected);
 }
 
 void SensorDataProcessor::logSensorValue(double originalValue, double filteredValue)
