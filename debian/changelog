@@ -1,7 +1,38 @@
-nymea-plugins (0.20.0) UNRELEASED; urgency=medium
+nymea-plugins (0.20.0) xenial; urgency=medium
 
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Thu, 05 Mar 2020 22:44:38 +0100
+  [ Bernhard Trinnes ]
+  * Denon Plug-In: Heos add browsing
+  * New Plugin: Air Quality Index
+  * New Plug-In: Dynatrace UFO
+  * Keba: add interfaces, async actions and async setup
+
+  [ Michael Zanetti ]
+  * Hue: Add support for scenes and cleanup removed devices
+  * aWATTar: Add support for aWATTar Germany
+  * Shelly: Fix channel parameter for generated switch on Shelly1
+  * OpenWeatherMap: Fix support for custom OWM API tokens
+  * Shelly: Fix connection status if a Shelly connects too fast
+  * FlowerCare: Fix rediscovery for reconfiguration
+
+  [ Bernhard Trinnes ]
+  * Netatmo: Added userandpassword setup method
+
+  [ Michael Zanetti ]
+  * PhilipsHue: Fix motion sensor timeout
+  * Shelly: Provide defaults for all parameters
+
+  [ Bernhard Trinnes ]
+  * Philips Hue: Fix bridge rediscovery
+
+  [ Michael Zanetti ]
+  * OneWire: Fix manual discovery of connected devices
+
+  [ Bernhard Trinnes ]
+  * CoinMarketCap: New API
+  * TCP Commander: Fix input with multiple incoming connections
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 14 Apr 2020 17:29:29 +0200
 
 nymea-plugins (0.19.0) xenial; urgency=medium
 
