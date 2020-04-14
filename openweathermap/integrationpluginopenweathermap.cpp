@@ -52,7 +52,8 @@ IntegrationPluginOpenweathermap::IntegrationPluginOpenweathermap()
     settings.beginGroup("OpenWeatherMap");
     if (settings.contains("apiKey")) {
         m_apiKey = settings.value("apiKey").toString();
-        qCDebug(dcOpenWeatherMap()) << "Using custom API key:" << m_apiKey.replace(m_apiKey.length() - 10, 10, "**********");
+        QString printedCopy = m_apiKey;
+        qCDebug(dcOpenWeatherMap()) << "Using custom API key:" << printedCopy.replace(printedCopy.length() - 10, 10, "**********");
     }
 
     settings.endGroup();
