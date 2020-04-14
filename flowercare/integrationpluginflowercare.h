@@ -61,8 +61,6 @@ private:
     QHash<Thing*, FlowerCare*> m_list;
     QHash<FlowerCare*, int> m_refreshMinutes;
 
-    bool verifyExistingDevices(const QBluetoothDeviceInfo &deviceInfo);
-
 private slots:
     void onPluginTimer();
     void onSensorDataReceived(quint8 batteryLevel, double degreeCelsius, double lux, double moisture, double fertility);
