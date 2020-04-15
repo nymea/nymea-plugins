@@ -7,12 +7,12 @@
             "id": "43cfb7a4-402f-4315-86b5-ce095697fd13",
             "name": "homeConnect",
             "displayName": "Home Connect",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "babc1a39-730a-4516-95bf-ff51a8ce887a",
                     "name": "homeConnectConnection",
                     "displayName": "Home Connect connection",
-                    "interfaces": ["gateway"],
+                    "interfaces": ["account"],
                     "createMethods": ["user"],
                     "setupMethod": "oauth",
                     "paramTypes": [
@@ -21,9 +21,10 @@
                         {
                             "id": "1180576a-1de2-4815-b442-877b572ce586",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": true,
+                            "cached": false,
                             "type": "bool"
                         },
                         {
@@ -39,6 +40,7 @@
                             "name": "userDisplayName",
                             "displayName": "User name",
                             "displayNameEvent": "User name changed",
+                            "defaultValue": "",
                             "type": "QString"
                         }
                     ]
