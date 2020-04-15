@@ -2,12 +2,12 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginhomeconnect)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginhomeconnect)
 
 SOURCES += \
-    devicepluginhomeconnect.cpp \
+    integrationpluginhomeconnect.cpp \
     homeconnect.cpp \
 
 HEADERS += \
-    devicepluginhomeconnect.h \
+    integrationpluginhomeconnect.h \
     homeconnect.h \

@@ -28,45 +28,49 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef HOMECONNECT_H
-#define HOMECONNECT_H
+#ifndef INTEGRATIONPLUGINHOMECONNECT_H
+#define INTEGRATIONPLUGINHOMECONNECt_H
 
-#include <QObject>
-#include <QTimer>
+#include "integrations/integrationplugin.h"
+#include "plugintimer.h"
+#include "homeconnect.h"
 
-#include "network/networkaccessmanager.h"
+#include <QHash>
+#include <QDebug>
 
-class HomeConnect : public QObject
+class IntegrationPluginHomeConnect : public IntegrationPlugin
 {
     Q_OBJECT
-public:
-    HomeConnect(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,  const QByteArray &clientSecret, QObject *parent = nullptr);
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "IntegrationPluginHomeConnect.json")
+    Q_INTERFACES(IntegrationPlugin)
 
-    QUrl getLoginUrl(const QUrl &redirectUrl, const QString &scope);
-    void checkStatusCode(int status, const QByteArray &payload);
-    void getAccessTokenFromRefreshToken(const QByteArray &refreshToken);
-    void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
+public:
+    explicit IntegrationPluginHomeConnect();
+    ~IntegrationPluginHomeConnect() override;
+
+    void discoverThings(ThingDiscoveryInfo *info) override;
+
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
+    void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
+    void executeAction(ThingActionInfo *info) override;
+    void thingRemoved(Thing *thing) override;
 
 private:
-    QByteArray m_baseAuthorizationUrl = "https://api.home-connect.com/security/oauth/authorize";
-    QByteArray m_baseTokenUrl = "https://api.home-connect.com/security/oauth/token";
-    QByteArray m_baseControlUrl = "https://api.home-connect.com";
-    QByteArray m_clientKey;
-    QByteArray m_clientSecret;
+    PluginTimer *m_pluginTimer5sec = nullptr;
+    PluginTimer *m_pluginTimer60sec = nullptr;
 
-    QByteArray m_accessToken;
-    QByteArray m_refreshToken;
-    QByteArray m_redirectUri;
+    QHash<ThingId, HomeConnect *> m_setupHomeConnectConnections;
+    QHash<Thing *, HomeConnect *> m_homeConnectConnections;
 
-    NetworkAccessManager *m_networkManager = nullptr;
-    QTimer *m_tokenRefreshTimer = nullptr;
+    QHash<QUuid, ActionId> m_pendingActions;
 
 private slots:
-    void onRefreshTimeout();
-
-signals:
-    void connectionChanged(bool connected);
-    void authenticationStatusChanged(bool authenticated);
-    void actionExecuted(QUuid actionId,bool success);
+    void onConnectionChanged(bool connected);
+    void onAuthenticationStatusChanged(bool authenticated);
+    void onActionExecuted(QUuid actionId, bool success);
 };
-#endif // HOMECONNECT_H
+
+#endif // INTEGRATIONPLUGINHOMECONNECT_H
