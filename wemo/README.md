@@ -9,7 +9,7 @@ This plugin allows to find and control devices from WeMo, the Belkin home automa
 	* Set power
 	* No internet connection required
 
-## Requires
+## Requirements
 
 * The WeMo device must be in the same local area network as nymea.
 * The package “nymea-plugin-wemo” must be installed
