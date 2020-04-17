@@ -1,9 +1,8 @@
 # Kodi
 
-This plugin allows to integrate nymea with the [Kodi media center](http://kodi.tv/). The minimum requred version of
-Kodi is 13 (Gotham).
+This plugin allows to integrate nymea with the Kodi media center. 
 
-## Setup
+## Usage
 
 Is is required to enable the following settings in Kodi:
 
@@ -19,3 +18,25 @@ Once those settings are activated, the kodi system can be added to nymea.
 Note: If ZeroConf cannot be used, the device can be added manually and at least the IP, Port and HTTP Port parameters must be given.
 It is recommended to configure the Kodi system to a static IP if the manual setup with IP is used. When using discovery, nymea
 will re-detect kodi when its IP address changes.
+
+## Supported Things
+
+* Kodi
+    * Set mute and volume
+    * Set playback status
+    * Get information about artist, collection, etc
+    * Skip next, skip back, shuffle, repeat
+    * Navigate buttons
+    * System commands
+    * Browse library
+    * No internet connection required
+
+## Requirements
+
+* Kodi must either be running on the same host or be in the same local area network as nymea.
+* The minimum required version of Kodi is 13 (Gotham).
+* The package “nymea-plugin-kodi” must be installed.
+
+## More
+
+Kodi media center: http://kodi.tv
