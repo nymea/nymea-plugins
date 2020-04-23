@@ -1,13 +1,13 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_deviceplugini2ctools)
+TARGET = $$qtLibraryTarget(nymea_integrationplugini2ctools)
 
 LIBS += -li2c \
 
 SOURCES += \
-    deviceplugini2ctools.cpp \
+    integrationplugini2ctools.cpp \
 
 HEADERS += \
-    deviceplugini2ctools.h \
+    integrationplugini2ctools.h \
 
 
