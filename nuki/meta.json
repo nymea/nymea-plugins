@@ -1,7 +1,7 @@
 {
     "title": "Nuki",
     "tagline": "Connect Nuki Smartlocks via Bluetooth.",
-    "icon": "nuki.svg",
+    "icon": "nuki.png",
     "stability": "consumer",
     "offline": true,
     "categories": [

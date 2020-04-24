@@ -1,7 +1,7 @@
 {
     "title": "Leynew",
     "tagline": "Control Leynew 433MHz sockets.",
-    "icon": "leynew.svg",
+    "icon": "leynew.jpg",
     "stability": "community",
     "offline": true,
     "categories": [
