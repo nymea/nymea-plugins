@@ -1,7 +1,7 @@
 {
     "title": "Boblight"
     "tagline": "Connect to Boblight devices.",
-    "icon": "boblight.svg",
+    "icon": "boblight.png",
     "stability": "community",
     "offline": false,
     "categories": [
