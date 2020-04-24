@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "Denon",
+    "tagline": "Control Denon Heos and AVR devices" ,
+    "icon": "denon.svg",
+    "stability": "consumer",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+        "multimedia"
+    ]
 }

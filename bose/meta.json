@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
+    "title": "Bose",
+    "tagline": "Connect to Bose speaker." ,
+    "icon": "bose.svg",
     "stability": "consumer"
-    "offline": false,
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+        "multimedia"
+    ]
 }

@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
+    "title": "Date and Time",
+    "tagline": "TODO" ,
+    "icon": "datetime.svg",
     "stability": "consumer"
-    "offline": false,
+    "offline": true,
     "categories": [
         "sensor"
-    ],
+    ]
 }

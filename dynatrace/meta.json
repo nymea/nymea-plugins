@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
+    "title": "Dynatrace",
+    "tagline": "Connect to the Dynatrace UFO" ,
     "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "stability": "consumer",
+    "offline": true,
     "categories": [
-        "sensor"
+        "light"
     ],
 }

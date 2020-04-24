@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
+    "title": "Boblight"
+    "tagline": "Connect to Boblight devices" ,
+    "icon": "boblight.svg",
+    "stability": "community",
     "offline": false,
     "categories": [
-        "sensor"
-    ],
+        "light"
+    ]
 }

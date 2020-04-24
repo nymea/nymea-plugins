@@ -1,10 +1,9 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "USB Reley",
+    "tagline": "Control relays connected over USB",
+    "icon": "usbrelay.svg",
+    "stability": "consumer",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+    ]
 }

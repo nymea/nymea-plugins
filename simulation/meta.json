@@ -1,10 +1,15 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
+    "title": "Simulation",
+    "tagline": "Simulate different thing types" ,
+    "icon": "",
+    "stability": "consumer",
     "offline": false,
     "categories": [
+        "light",
+        "heating",
+        "socket",
+        "blind",
+        "multimedia",
         "sensor"
     ],
 }

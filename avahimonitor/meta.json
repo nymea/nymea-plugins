@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "Avahi",
+    "tagline": "Discover Avahi devices in your network." ,
+    "icon": "avahi.svg",
+    "stability": "community",
+    "offline": true,
     "categories": [
         "sensor"
-    ],
+    ]
 }

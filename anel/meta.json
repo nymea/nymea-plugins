@@ -2,10 +2,10 @@
     "title": "Anel",
     "tagline": "Integrates Anel with nymea",
     "icon": "anel.jpg",
-    "stability": "consumer"
+    "stability": "consumer",
     "offline": true,
     "categories": [
         "sensor",
         "plug"
-    ],
+    ]
 }

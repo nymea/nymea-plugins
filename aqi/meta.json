@@ -2,9 +2,9 @@
     "title": "Air Quality Index",
     "tagline": "Get air quality index data." ,
     "icon": "aqi.png",
-    "stability": "consumer"
+    "stability": "consumer",
     "offline": false,
     "categories": [
-        "sensor"
-    ],
+        "service"
+    ]
 }
