@@ -1,6 +1,6 @@
 {
     "title": "EQ-3",
-    "tagline": "Connect to tEQ-3 devices." ,
+    "tagline": "Connect to tEQ-3 devices.",
     "icon": "eq3.svg",
     "stability": "community",
     "offline": true,

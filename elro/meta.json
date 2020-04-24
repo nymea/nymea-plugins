@@ -1,6 +1,6 @@
 {
     "title": "Elro",
-    "tagline": "Connect to Elro devices." ,
+    "tagline": "Connect to Elro devices.",
     "icon": "elro.svg",
     "stability": "community",
     "offline": true,

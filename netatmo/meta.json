@@ -1,6 +1,6 @@
 {
     "title": "Netatmo",
-    "tagline": "Get data from Netatmo weatherstations",
+    "tagline": "Get data from Netatmo weatherstations.",
     "icon": "netatmo.svg",
     "stability": "consumer",
     "offline": false,

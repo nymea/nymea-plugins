@@ -1,10 +1,10 @@
 {
     "title": "dweet.io",
-    "tagline": "Get and push data to dweet.io" ,
+    "tagline": "Get and push data to dweet.io",
     "icon": "dweet.svg",
     "stability": "consumer",
     "offline": false,
     "categories": [
-        "service
+        "service"
     ]
 }

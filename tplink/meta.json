@@ -1,6 +1,6 @@
 {
     "title": "TP-Link",
-    "tagline": "TP-Link" ,
+    "tagline": "TP-Link",
     "icon": "tplink.svg",
     "stability": "community",
     "offline": true,

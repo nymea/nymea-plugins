@@ -1,6 +1,6 @@
 {
     "title": "Shelly",
-    "tagline": "Control shelly devices.",
+    "tagline": "Control Shelly devices.",
     "icon": "shelly.svg",
     "stability": "consumer",
     "offline": true,

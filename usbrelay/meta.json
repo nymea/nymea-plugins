@@ -1,6 +1,6 @@
 {
-    "title": "USB Reley",
-    "tagline": "Control relays connected over USB",
+    "title": "USB Relay",
+    "tagline": "Control relays connected over USB.",
     "icon": "usbrelay.svg",
     "stability": "consumer",
     "offline": true,

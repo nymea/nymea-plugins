@@ -1,6 +1,6 @@
 {
     "title": "Kodi",
-    "tagline": "Control the Kodi media player" ,
+    "tagline": "Control the Kodi media player.",
     "icon": "kodi.svg",
     "stability": "community"
     "offline": true,

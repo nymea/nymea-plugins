@@ -1,10 +1,10 @@
 {
     "title": "HTTP Commander",
-    "tagline": "Send raw HTTP commands." ,
+    "tagline": "Send raw HTTP commands.",
     "icon": "httpcommander.svg",
     "stability": "consumer",
     "offline": true,
     "categories": [
         "tool"
-    ],
+    ]
 }

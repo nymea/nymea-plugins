@@ -1,6 +1,6 @@
 {
     "title": "Avahi",
-    "tagline": "Discover Avahi devices in your network." ,
+    "tagline": "Discover Avahi devices in your network.",
     "icon": "avahi.svg",
     "stability": "community",
     "offline": true,

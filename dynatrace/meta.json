@@ -1,10 +1,10 @@
 {
     "title": "Dynatrace",
-    "tagline": "Connect to the Dynatrace UFO" ,
-    "icon": "aqi.png",
+    "tagline": "Connect to the Dynatrace UFO.",
+    "icon": "dynatrace.svg",
     "stability": "consumer",
     "offline": true,
     "categories": [
         "light"
-    ],
+    ]
 }

@@ -1,10 +1,10 @@
 {
     "title": "WeMo",
-    "tagline": "Control WeMo devices." ,
+    "tagline": "Control WeMo devices.",
     "icon": "wemo.svg",
     "stability": "consumer",
     "offline": true,
     "categories": [
         "socket"
-    ],
+    ]
 }

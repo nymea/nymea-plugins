@@ -1,6 +1,6 @@
 {
     "title": "aWATTar,
-    "tagline": "Get the latest enery price from aWATTar." ,
+    "tagline": "Get the latest energy price from aWATTar.",
     "icon": "awattar.svg",
     "stability": "consumer",
     "offline": false,

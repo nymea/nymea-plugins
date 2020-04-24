@@ -1,6 +1,6 @@
 {
     "title": "UniFi",
-    "tagline": "Connect to the UniFi controller",
+    "tagline": "Connect to the UniFi controller.",
     "icon": "unifi.svg",
     "stability": "consumer",
     "offline": true,

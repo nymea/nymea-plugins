@@ -1,6 +1,6 @@
 {
     "title": "Sonos",
-    "tagline": "Control Sonos speaker",
+    "tagline": "Control Sonos speakers.",
     "icon": "sonos.svg",
     "stability": "consumer"
     "offline": false,

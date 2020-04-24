@@ -1,6 +1,6 @@
 {
     "title": "CoinMarketCap",
-    "tagline": "Get latest crypto prices from CoinMarketCap" ,
+    "tagline": "Get latest crypto prices from CoinMarketCap.",
     "icon": "coinmarketcap.svg",
     "stability": "consumer",
     "offline": false,

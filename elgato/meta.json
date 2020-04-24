@@ -1,9 +1,10 @@
 {
     "title": "Elgato",
-    "tagline": "Connect to Elgato devices." ,
+    "tagline": "Connect to Elgato devices.",
     "icon": "elgato.svg",
     "stability": "community",
     "offline": true,
     "categories": [
+        "light"
     ]
 }

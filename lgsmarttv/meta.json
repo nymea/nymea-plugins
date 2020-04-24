@@ -1,6 +1,6 @@
 {
     "title": "LG Smart TV",
-    "tagline": "Connect to the LG Smart TV." ,
+    "tagline": "Connect to the LG Smart TV.",
     "icon": "lg.svg",
     "stability": "consumer",
     "offline": true,

@@ -1,6 +1,6 @@
 {
     "title": "Denon",
-    "tagline": "Control Denon Heos and AVR devices" ,
+    "tagline": "Control Denon Heos and AVR devices.",
     "icon": "denon.svg",
     "stability": "consumer",
     "offline": true,

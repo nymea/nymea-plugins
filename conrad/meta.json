@@ -1,9 +1,9 @@
 {
     "title": "Conrad",
-    "tagline": "Gontrol Conrad 433MHz devices." ,
+    "tagline": "Gontrol Conrad 433MHz devices.",
     "icon": "conrad.svg",
     "stability": "community",
-    "offline": false,
+    "offline": true,
     "categories": [
         "socket"
     ]

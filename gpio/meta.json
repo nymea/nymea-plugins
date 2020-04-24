@@ -1,6 +1,6 @@
 {
     "title": "GPIO",
-    "tagline": "Control GPIOs for Raspberry Pi or BeagleBone Black." ,
+    "tagline": "Control GPIOs for Raspberry Pi or BeagleBone Black.",
     "icon": "beagleboneblack.svg",
     "stability": "community",
     "offline": false,

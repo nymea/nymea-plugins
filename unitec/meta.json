@@ -1,6 +1,6 @@
 {
     "title": "Unitec",
-    "tagline": "Control Unitec 433MHz sockets",
+    "tagline": "Control Unitec 433MHz sockets.",
     "icon": "unitec.svg",
     "stability": "community",
     "offline": true,

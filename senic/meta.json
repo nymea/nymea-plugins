@@ -3,7 +3,7 @@
     "tagline": "Connect to Nuimo over Bluetooth.",
     "icon": "senic.svg",
     "stability": "consumer",
-    "offline": false,
+    "offline": true,
     "categories": [
     ]
 }

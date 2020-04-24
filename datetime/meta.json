@@ -1,8 +1,8 @@
 {
     "title": "Date and Time",
-    "tagline": "TODO" ,
+    "tagline": "Get astronomical data, set alarm and countdown",
     "icon": "datetime.svg",
-    "stability": "consumer"
+    "stability": "consumer",
     "offline": true,
     "categories": [
         "sensor"
