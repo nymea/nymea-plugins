@@ -1,15 +1,10 @@
 {
     "title": "Simulation",
-    "tagline": "Simulate different thing types" ,
-    "icon": "",
+    "tagline": "Simulate different thing types.",
+    "icon": "simulation.svg",
     "stability": "consumer",
     "offline": false,
     "categories": [
-        "light",
-        "heating",
-        "socket",
-        "blind",
-        "multimedia",
-        "sensor"
-    ],
+        "tool"
+    ]
 }

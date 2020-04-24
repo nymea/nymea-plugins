@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "Generic Interfaces",
+    "tagline": "Add generic device types." ,
+    "icon": "genericinterfaces.svg",
+    "stability": "community",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+        "tool"
+    ]
 }

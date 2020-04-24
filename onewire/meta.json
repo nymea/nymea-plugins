@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "One-Wire",
+    "tagline": "Connect one-wire temperature sensors and switches.",
+    "icon": "onewire.svg",
+    "stability": "community",
+    "offline": true,
     "categories": [
         "sensor"
-    ],
+    ]
 }

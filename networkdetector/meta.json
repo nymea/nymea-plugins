@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "Network Detector",
+    "tagline": "Detect devices connected to the LAN",
+    "icon": "networkdetector.svg",
+    "stability": "community",
+    "offline": true,
     "categories": [
         "sensor"
-    ],
+    ]
 }

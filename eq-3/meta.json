@@ -1,10 +1,9 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "EQ-3",
+    "tagline": "Connect to tEQ-3 devices." ,
+    "icon": "eq3.svg",
+    "stability": "community",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+    ]
 }

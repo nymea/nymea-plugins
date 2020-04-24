@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "TCP Commander",
+    "tagline": "Send and receive raw TCP commands.",
+    "icon": "tcpcommander.svg",
+    "stability": "community",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+        "tool"
+    ]
 }

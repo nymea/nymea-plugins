@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "Unitec",
+    "tagline": "Control Unitec 433MHz sockets",
+    "icon": "unitec.svg",
+    "stability": "community",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+        "socket"
+    ]
 }

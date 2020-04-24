@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "Intertechno",
+    "tagline": "Control Intertechno 433MHz sockets." ,
+    "icon": "intertechno.svg",
+    "stability": "community",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+        "socket"
+    ]
 }

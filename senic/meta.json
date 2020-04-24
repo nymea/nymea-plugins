@@ -1,10 +1,9 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
+    "title": "Senic",
+    "tagline": "Connect to Nuimo over Bluetooth.",
+    "icon": "senic.svg",
+    "stability": "consumer",
     "offline": false,
     "categories": [
-        "sensor"
-    ],
+    ]
 }

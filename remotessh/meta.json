@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
+    "title": "Remote SSH",
+    "tagline": "Get SSH access over a reverse SSH proxy.",
+    "icon": "reversessh.svg",
+    "stability": "community",
     "offline": false,
     "categories": [
-        "sensor"
-    ],
+        "tool"
+    ]
 }

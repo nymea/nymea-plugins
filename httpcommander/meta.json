@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "HTTP Commander",
+    "tagline": "Send raw HTTP commands." ,
+    "icon": "httpcommander.svg",
+    "stability": "consumer",
+    "offline": true,
     "categories": [
-        "sensor"
+        "tool"
     ],
 }

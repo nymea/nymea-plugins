@@ -1,10 +1,11 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
+    "title": "OpenWeatherMap,
+    "tagline": "Get current weather data for your location",
+    "icon": "openweathermap.svg",
+    "stability": "consumer",
     "offline": false,
     "categories": [
-        "sensor"
-    ],
+        "weather",
+        "service"
+    ]
 }

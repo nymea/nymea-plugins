@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "Shelly",
+    "tagline": "Control shelly devices.",
+    "icon": "shelly.svg",
+    "stability": "consumer",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+        "socket"
+    ]
 }

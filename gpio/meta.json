@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
+    "title": "GPIO",
+    "tagline": "Control GPIOs for Raspberry Pi or BeagleBone Black." ,
+    "icon": "beagleboneblack.svg",
+    "stability": "community",
     "offline": false,
     "categories": [
         "sensor"
-    ],
+    ]
 }

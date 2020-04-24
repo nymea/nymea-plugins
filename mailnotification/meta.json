@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
+    "title": "Mail Notification",
+    "tagline": "Send E-Mails." ,
+    "icon": "mailnotification.svg",
+    "stability": "consumer",
     "offline": false,
     "categories": [
-        "sensor"
-    ],
+        "notification"
+    ]
 }

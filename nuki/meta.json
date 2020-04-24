@@ -1,10 +1,10 @@
 {
-    "title": "Air Quality Index",
-    "tagline": "Get air quality index data." ,
-    "icon": "aqi.png",
-    "stability": "consumer"
-    "offline": false,
+    "title": "Nuki",
+    "tagline": "Connect Nuki Smartlocks via Bluetooth",
+    "icon": "nuki.svg",
+    "stability": "consumer",
+    "offline": true,
     "categories": [
-        "sensor"
-    ],
+        "lock"
+    ]
 }
