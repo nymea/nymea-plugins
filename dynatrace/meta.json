@@ -4,6 +4,9 @@
     "icon": "dynatrace.svg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "light"
     ]

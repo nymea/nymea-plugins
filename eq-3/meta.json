@@ -4,6 +4,9 @@
     "icon": "eq3.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
     ]
 }

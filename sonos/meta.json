@@ -4,6 +4,9 @@
     "icon": "sonos.svg",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
         "multimedia"
     ]

@@ -4,8 +4,11 @@
     "icon": "anel.jpg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "sensor",
-        "plug"
+        "socket"
     ]
 }

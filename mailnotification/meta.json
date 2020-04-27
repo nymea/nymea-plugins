@@ -4,6 +4,9 @@
     "icon": "mailnotification.svg",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
         "notification"
     ]

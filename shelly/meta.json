@@ -4,7 +4,11 @@
     "icon": "shelly.svg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
-        "socket"
+        "socket",
+        "relay"
     ]
 }

@@ -4,7 +4,10 @@
     "icon": "aqi.png",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
-        "service"
+        "online-service"
     ]
 }

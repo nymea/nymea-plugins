@@ -1,9 +1,12 @@
 {
     "title": "Remote SSH",
     "tagline": "Get SSH access over a reverse SSH proxy.",
-    "icon": "reversessh.svg",
+    "icon": "remotessh.svg",
     "stability": "community",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
         "tool"
     ]

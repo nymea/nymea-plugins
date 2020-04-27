@@ -4,6 +4,10 @@
     "icon": "senic.png",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "bluetooth"
+    ],
     "categories": [
+        "switch"
     ]
 }

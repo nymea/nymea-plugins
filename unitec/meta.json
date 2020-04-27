@@ -4,6 +4,9 @@
     "icon": "unitec.jpg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "sub-ghz"
+    ],
     "categories": [
         "socket"
     ]

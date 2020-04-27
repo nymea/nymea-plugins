@@ -4,6 +4,8 @@
     "icon": "systemmonitor.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+    ],
     "categories": [
         "tool"
     ]

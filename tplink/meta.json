@@ -4,6 +4,9 @@
     "icon": "tplink.png",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "sensor"
     ]

@@ -4,6 +4,9 @@
     "icon": "flowercare.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "bluetooth"
+    ],
     "categories": [
         "sensor"
     ]

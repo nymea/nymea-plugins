@@ -4,6 +4,9 @@
     "icon": "udpcommander.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "tool"
     ]

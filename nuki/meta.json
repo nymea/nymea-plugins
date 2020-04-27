@@ -4,6 +4,9 @@
     "icon": "nuki.png",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "bluetooth"
+    ],
     "categories": [
         "lock"
     ]

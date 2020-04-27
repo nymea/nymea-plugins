@@ -4,6 +4,9 @@
     "icon": "wemo.svg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "socket"
     ]

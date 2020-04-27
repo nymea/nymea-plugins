@@ -4,6 +4,8 @@
     "icon": "commandlauncher.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+    ],
     "categories": [
         "tool"
     ]

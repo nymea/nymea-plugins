@@ -4,6 +4,9 @@
     "icon": "networkdetector.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "sensor"
     ]

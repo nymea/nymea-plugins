@@ -4,6 +4,8 @@
     "icon": "daylightsensor.svg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+    ],
     "categories": [
         "sensor"
     ]

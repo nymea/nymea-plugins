@@ -4,6 +4,9 @@
     "icon": "usbrelay.svg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "usb"
+    ],
     "categories": [
     ]
 }

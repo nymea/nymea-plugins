@@ -4,6 +4,9 @@
     "icon": "texasinstruments.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "bluetooth"
+    ],
     "categories": [
         "sensor"
     ]

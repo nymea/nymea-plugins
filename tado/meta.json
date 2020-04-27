@@ -4,6 +4,9 @@
     "icon": "tado.png",
     "stability": "community",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
         "heating"
     ]

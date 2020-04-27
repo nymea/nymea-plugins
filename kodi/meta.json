@@ -4,6 +4,9 @@
     "icon": "kodi.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "multimedia"
     ]

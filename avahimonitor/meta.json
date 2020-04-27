@@ -4,7 +4,10 @@
     "icon": "avahi.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
-        "sensor"
+        "tool"
     ]
 }

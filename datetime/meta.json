@@ -4,6 +4,8 @@
     "icon": "datetime.svg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+    ],
     "categories": [
         "sensor"
     ]

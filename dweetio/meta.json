@@ -4,6 +4,9 @@
     "icon": "dweetio.png",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
         "service"
     ]

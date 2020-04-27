@@ -4,6 +4,9 @@
     "icon": "intertechno.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "sub-ghz"
+    ],
     "categories": [
         "socket"
     ]

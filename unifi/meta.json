@@ -4,6 +4,9 @@
     "icon": "unifi.png",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "sensor"
     ]

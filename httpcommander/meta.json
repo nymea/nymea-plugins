@@ -4,6 +4,9 @@
     "icon": "httpcommander.svg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "tool"
     ]

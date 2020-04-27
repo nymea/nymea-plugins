@@ -1,10 +1,13 @@
 {
     "title": "CoinMarketCap",
     "tagline": "Get latest crypto prices from CoinMarketCap.",
-    "icon": "coinmarketcap.svg",
+    "icon": "coinmarketcap.png",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
-        "service"
+        "online-service"
     ]
 }

@@ -4,6 +4,9 @@
     "icon": "osdomotics.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "serial-port"
+    ],
     "categories": [
         "gateway"
     ]

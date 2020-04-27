@@ -4,6 +4,9 @@
     "icon": "openweathermap.svg",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
         "weather",
         "service"

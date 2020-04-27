@@ -4,6 +4,8 @@
     "icon": "simulation.svg",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+    ],
     "categories": [
         "tool"
     ]

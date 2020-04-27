@@ -1,9 +1,12 @@
 {
     "title": "Snapd",
     "tagline": "Control the Snap daemon.",
-    "icon": "snappy.svg",
+    "icon": "snapd.svg",
     "stability": "consumer",
     "offline": true,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
         "tool"
     ]

@@ -1,10 +1,13 @@
 {
     "title": "aWATTar",
     "tagline": "Get the latest energy price from aWATTar.",
-    "icon": "awattar.svg",
+    "icon": "awattar.png",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
-        "service"
+        "online-service"
     ]
 }

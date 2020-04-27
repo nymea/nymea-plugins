@@ -4,6 +4,9 @@
     "icon": "onewire.png",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "one-wire"
+    ],
     "categories": [
         "sensor"
     ]

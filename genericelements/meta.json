@@ -4,6 +4,8 @@
     "icon": "genericelements.svg",
     "stability": "community",
     "offline": true,
+    "technology": [
+    ],
     "categories": [
         "tool"
     ]

@@ -2,8 +2,11 @@
     "title": "Tuya",
     "tagline": "Connect to the Tuya cloud.",
     "icon": "tuya.jpg",
-    "stability": "consumer",
+    "stability": "community",
     "offline": false,
+    "technology": [
+        "cloud"
+    ],
     "categories": [
         "sensor"
     ]

@@ -1,9 +1,12 @@
 {
     "title": "WS2812FX",
     "tagline": "Connect to devices flashed with the WS2812FX library.",
-    "icon": "ws2812fx.svg",
+    "icon": "ws2812fx.png",
     "stability": "community",
     "offline": true,
+    "technology": [
+        "usb"
+    ],
     "categories": [
         "light"
     ]

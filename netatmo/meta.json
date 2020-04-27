@@ -4,6 +4,9 @@
     "icon": "netatmo.png",
     "stability": "consumer",
     "offline": false,
+    "technology": [
+        "network"
+    ],
     "categories": [
         "sensor"
     ]
