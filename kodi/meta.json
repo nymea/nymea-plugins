@@ -2,7 +2,7 @@
     "title": "Kodi",
     "tagline": "Control the Kodi media player.",
     "icon": "kodi.svg",
-    "stability": "community"
+    "stability": "community",
     "offline": true,
     "categories": [
         "multimedia"

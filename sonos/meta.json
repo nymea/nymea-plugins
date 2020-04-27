@@ -2,7 +2,7 @@
     "title": "Sonos",
     "tagline": "Control Sonos speakers.",
     "icon": "sonos.svg",
-    "stability": "consumer"
+    "stability": "consumer",
     "offline": false,
     "categories": [
         "multimedia"

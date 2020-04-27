@@ -1,5 +1,5 @@
 {
-    "title": "OpenWeatherMap,
+    "title": "OpenWeatherMap",
     "tagline": "Get current weather data for your location",
     "icon": "openweathermap.svg",
     "stability": "consumer",
