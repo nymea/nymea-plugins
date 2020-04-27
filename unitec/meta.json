@@ -1,7 +1,7 @@
 {
     "title": "Unitec",
     "tagline": "Control Unitec 433MHz sockets.",
-    "icon": "unitec.svg",
+    "icon": "unitec.jpg",
     "stability": "community",
     "offline": true,
     "categories": [
