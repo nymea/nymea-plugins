@@ -1,7 +1,7 @@
 {
     "title": "Intertechno",
     "tagline": "Control Intertechno 433MHz sockets.",
-    "icon": "intertechno.svg",
+    "icon": "intertechno.jpg",
     "stability": "community",
     "offline": true,
     "technology": [

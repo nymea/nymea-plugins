@@ -1,7 +1,7 @@
 {
     "title": "Serial Port Commander",
     "tagline": "Send and receive raw serial port commands.",
-    "icon": "serialportcomander.svg",
+    "icon": "serialportcommander.svg",
     "stability": "community",
     "offline": true,
     "technology": [
