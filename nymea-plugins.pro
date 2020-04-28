@@ -9,7 +9,6 @@ PLUGIN_DIRS = \
     bose                \
     coinmarketcap       \
     commandlauncher     \
-    conrad              \
     datetime            \
     daylightsensor      \
     denon               \
