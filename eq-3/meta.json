@@ -1,12 +1,13 @@
 {
-    "title": "EQ-3",
-    "tagline": "Connect to tEQ-3 devices.",
-    "icon": "eq3.svg",
+    "title": "eQ-3",
+    "tagline": "Connect to eQ-3 devices.",
+    "icon": "eq3.png",
     "stability": "community",
     "offline": true,
     "technology": [
         "network"
     ],
     "categories": [
+        "heating"
     ]
 }
