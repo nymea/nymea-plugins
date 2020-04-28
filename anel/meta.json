@@ -4,7 +4,7 @@
     "icon": "anel.jpg",
     "stability": "consumer",
     "offline": true,
-    "technology": [
+    "technologies": [
         "network"
     ],
     "categories": [

@@ -4,7 +4,7 @@
     "icon": "snapd.svg",
     "stability": "consumer",
     "offline": true,
-    "technology": [
+    "technologies": [
         "cloud"
     ],
     "categories": [

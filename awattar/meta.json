@@ -4,7 +4,7 @@
     "icon": "awattar.png",
     "stability": "consumer",
     "offline": false,
-    "technology": [
+    "technologies": [
         "cloud"
     ],
     "categories": [

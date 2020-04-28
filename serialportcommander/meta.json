@@ -4,7 +4,7 @@
     "icon": "serialportcommander.svg",
     "stability": "community",
     "offline": true,
-    "technology": [
+    "technologies": [
         "serial-port"
     ],
     "categories": [

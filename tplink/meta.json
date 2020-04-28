@@ -4,7 +4,7 @@
     "icon": "tplink.png",
     "stability": "community",
     "offline": true,
-    "technology": [
+    "technologies": [
         "network"
     ],
     "categories": [

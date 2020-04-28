@@ -4,7 +4,7 @@
     "icon": "unitec.jpg",
     "stability": "community",
     "offline": true,
-    "technology": [
+    "technologies": [
         "sub-ghz"
     ],
     "categories": [

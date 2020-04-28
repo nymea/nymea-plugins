@@ -4,8 +4,9 @@
     "icon": "mqtt.svg",
     "stability": "community",
     "offline": true,
-    "technology": [
-        "network"
+    "technologies": [
+        "network",
+	"mqtt"
     ],
     "categories": [
         "tool"

@@ -4,7 +4,7 @@
     "icon": "networkdetector.svg",
     "stability": "community",
     "offline": true,
-    "technology": [
+    "technologies": [
         "network"
     ],
     "categories": [

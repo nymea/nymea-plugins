@@ -4,7 +4,7 @@
     "icon": "avea.png",
     "stability": "community",
     "offline": true,
-    "technology": [
+    "technologies": [
         "bluetooth"
     ],
     "categories": [

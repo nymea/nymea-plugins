@@ -4,7 +4,7 @@
     "icon": "openweathermap.png",
     "stability": "consumer",
     "offline": false,
-    "technology": [
+    "technologies": [
         "cloud"
     ],
     "categories": [

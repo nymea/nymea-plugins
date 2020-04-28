@@ -4,7 +4,7 @@
     "icon": "onewire.png",
     "stability": "community",
     "offline": true,
-    "technology": [
+    "technologies": [
         "one-wire"
     ],
     "categories": [

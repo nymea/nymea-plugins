@@ -4,7 +4,7 @@
     "icon": "gpio.svg",
     "stability": "community",
     "offline": false,
-    "technology": [
+    "technologies": [
     ],
     "categories": [
         "sensor"

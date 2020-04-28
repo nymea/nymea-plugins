@@ -4,7 +4,7 @@
     "icon": "tuya.jpg",
     "stability": "community",
     "offline": false,
-    "technology": [
+    "technologies": [
         "cloud"
     ],
     "categories": [

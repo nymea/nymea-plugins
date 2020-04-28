@@ -4,7 +4,7 @@
     "icon": "senic.png",
     "stability": "consumer",
     "offline": true,
-    "technology": [
+    "technologies": [
         "bluetooth"
     ],
     "categories": [

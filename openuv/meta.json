@@ -4,7 +4,7 @@
     "icon": "openuv.png",
     "stability": "consumer",
     "offline": false,
-    "technology": [
+    "technologies": [
         "cloud"
     ],
     "categories": [

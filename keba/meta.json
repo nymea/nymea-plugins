@@ -4,7 +4,7 @@
     "icon": "keba.svg",
     "stability": "consumer",
     "offline": true,
-    "technology": [
+    "technologies": [
         "network"
     ],
     "categories": [
