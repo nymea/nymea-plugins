@@ -2,7 +2,7 @@
     "title": "Network Detector",
     "tagline": "Detect devices connected to the LAN.",
     "icon": "networkdetector.svg",
-    "stability": "community",
+    "stability": "consumer",
     "offline": true,
     "technologies": [
         "network"

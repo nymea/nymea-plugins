@@ -8,7 +8,9 @@
         "network"
     ],
     "categories": [
+        "gateway",
         "light",
-        "sensor"
+        "sensor",
+        "switch"
     ]
 }

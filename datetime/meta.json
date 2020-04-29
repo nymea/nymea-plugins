@@ -3,8 +3,9 @@
     "tagline": "Get astronomical data, set alarm and countdown",
     "icon": "datetime.svg",
     "stability": "consumer",
-    "offline": true,
+    "offline": false,
     "technologies": [
+        "cloud"
     ],
     "categories": [
         "sensor"

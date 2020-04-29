@@ -1,8 +1,8 @@
-# Application and script launcher
+# Application and Bashscript Launcher
 
 This plugin allows you to execute system commands and start bash scripts.
 
-## Supported Things
+## Usage
 
 ### Application launcher
 
@@ -58,6 +58,17 @@ An example for a very useful script could be a backup scrip like following `back
 To make the script executable use following command:
 
     chmod +x backup.sh
+
+## Supported Things
+
+* Application launcher
+    * Enter command during thing setup
+    * Get running state
+    * Trigger and kill the command
+* Bashscript launcher
+    * Enter script during thing setup
+    * Get running state
+    * Trigger and kill the script
 
 ## Requirements
 

@@ -8,6 +8,8 @@
         "network"
     ],
     "categories": [
-        "sensor"
+        "sensor",
+        "switch",
+        "socket"
     ]
 }
