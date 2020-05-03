@@ -1,0 +1,456 @@
+{
+    "id": "7318d45b-2eed-472c-ae08-aad56db31e28",
+    "name": "i2cDevices",
+    "displayName": "I²C devices",
+    "vendors": [
+        {
+            "id": "4625197b-96ab-4566-9425-5579a4acf4c0",
+            "name": "alchemyPower",
+            "displayName": "Alchemy Power Inc.",
+            "thingClasses": [
+                {
+                    "id": "15ecc88f-cdf0-498f-b1bc-bb630bcfb3c7",
+                    "name": "pi16ADC",
+                    "displayName": "Pi-16ADC",
+                    "createMethods": ["user", "discovery"],
+                    "setupMethod": "justAdd",
+                    "paramTypes": [
+                        {
+                            "id": "1c99ab01-ccb9-4ca6-a8d9-c2c2cfafd0af",
+                            "name": "i2cPort",
+                            "displayName": "I2C port",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "97f047d2-a6dc-4d40-9235-03baa1502c61",
+                            "name": "i2cAddress",
+                            "displayName": "I2C address",
+                            "type": "int"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "bcb5a45f-cacb-4a74-ba81-3309875e77eb",
+                            "name": "channel1",
+                            "displayName": "Channel 1",
+                            "displayNameEvent": "Channel 1 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "1a41c14f-d9e2-40d5-a424-6ec0391362aa",
+                            "name": "channel1overvoltage",
+                            "displayName": "Channel 1 overvoltage",
+                            "displayNameEvent": "Channel 1 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d48dab3f-cefd-4efc-a7c9-9a56d1763e5a",
+                            "name": "channel2",
+                            "displayName": "Channel 2",
+                            "displayNameEvent": "Channel 2 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "83232516-eb5c-4e50-adda-6c03e26d90f2",
+                            "name": "channel2overvoltage",
+                            "displayName": "Channel 2 overvoltage",
+                            "displayNameEvent": "Channel 2 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d52cd791-6d92-49e4-b46b-593cb0691d46",
+                            "name": "channel3",
+                            "displayName": "Channel 3",
+                            "displayNameEvent": "Channel 1 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "9af3c914-f9b9-48a5-9022-ede4a0f5f2f7",
+                            "name": "channel3overvoltage",
+                            "displayName": "Channel 3 overvoltage",
+                            "displayNameEvent": "Channel 3 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5a2e61c6-8934-40fb-b0ae-755563e1f01c",
+                            "name": "channel4",
+                            "displayName": "Channel 4",
+                            "displayNameEvent": "Channel 4 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "6f2ae858-a5de-45cc-bc6c-1119a3b2e767",
+                            "name": "channel4overvoltage",
+                            "displayName": "Channel 4 overvoltage",
+                            "displayNameEvent": "Channel 4 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "0eeff27c-aa76-4473-9fe5-baeb94c0fc4f",
+                            "name": "channel5",
+                            "displayName": "Channel 5",
+                            "displayNameEvent": "Channel 5 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "a298ce28-72a1-4bb8-965e-22061f367a73",
+                            "name": "channel5overvoltage",
+                            "displayName": "Channel 5 overvoltage",
+                            "displayNameEvent": "Channel 5 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "75a336da-4486-4709-830e-ac5ceafa44f7",
+                            "name": "channel6",
+                            "displayName": "Channel 6",
+                            "displayNameEvent": "Channel 6 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "276f1a63-2403-4c3e-9bf4-96f6c510f5d0",
+                            "name": "channel6overvoltage",
+                            "displayName": "Channel 6 overvoltage",
+                            "displayNameEvent": "Channel 6 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ca863478-b520-4a3f-900b-e864d2c975f2",
+                            "name": "channel7",
+                            "displayName": "Channel 7",
+                            "displayNameEvent": "Channel 7 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "07561810-a851-42dd-88c9-61afd3c761b6",
+                            "name": "channel7overvoltage",
+                            "displayName": "Channel 7 overvoltage",
+                            "displayNameEvent": "Channel 7 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "582bd216-ac59-4045-b9ec-d7922c5db52d",
+                            "name": "channel8",
+                            "displayName": "Channel 8",
+                            "displayNameEvent": "Channel 8 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "c22e5e29-e078-4b27-b602-d8ee90f333bc",
+                            "name": "channel8overvoltage",
+                            "displayName": "Channel 8 overvoltage",
+                            "displayNameEvent": "Channel 8 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "fe58220c-6916-4194-9015-d948580d4daf",
+                            "name": "channel9",
+                            "displayName": "Channel 9",
+                            "displayNameEvent": "Channel 9 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "0d6218c9-b848-4b5f-be88-69f88d05490c",
+                            "name": "channel9overvoltage",
+                            "displayName": "Channel 9 overvoltage",
+                            "displayNameEvent": "Channel 9 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "88fa2326-76a7-40ad-921c-725d9c871ef4",
+                            "name": "channel10",
+                            "displayName": "Channel 10",
+                            "displayNameEvent": "Channel 10 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "3a999e76-b1bb-453a-931e-17f0130a7788",
+                            "name": "channel10overvoltage",
+                            "displayName": "Channel 10 overvoltage",
+                            "displayNameEvent": "Channel 10 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "015320ae-350d-4797-a5ed-7e7f74569b7a",
+                            "name": "channel11",
+                            "displayName": "Channel 11",
+                            "displayNameEvent": "Channel 11 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "d22fe888-69a9-4328-98a8-4499f34edb53",
+                            "name": "channel11overvoltage",
+                            "displayName": "Channel 11 overvoltage",
+                            "displayNameEvent": "Channel 11 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "096bcf38-aa9b-434f-b45d-b4164bfd4eef",
+                            "name": "channel12",
+                            "displayName": "Channel 12",
+                            "displayNameEvent": "Channel 12 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "edb9cac9-b819-48bb-9a5b-e7da5e3558ea",
+                            "name": "channel12overvoltage",
+                            "displayName": "Channel 12 overvoltage",
+                            "displayNameEvent": "Channel 12 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "7e28eb87-87c6-4864-bfad-e457c1187d6a",
+                            "name": "channel13",
+                            "displayName": "Channel 13",
+                            "displayNameEvent": "Channel 13 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "dbb3a3f7-3fce-4f8a-bf19-2c4bade5c60a",
+                            "name": "channel13overvoltage",
+                            "displayName": "Channel 13 overvoltage",
+                            "displayNameEvent": "Channel 13 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ea3dde63-092d-4857-b836-70016647872c",
+                            "name": "channel14",
+                            "displayName": "Channel 14",
+                            "displayNameEvent": "Channel 14 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "0633d37f-894c-4fcd-a818-3779cf2e507c",
+                            "name": "channel14overvoltage",
+                            "displayName": "Channel 14 overvoltage",
+                            "displayNameEvent": "Channel 14 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d580d189-cb9e-446d-8a19-5c0c7891ed1b",
+                            "name": "channel15",
+                            "displayName": "Channel 15",
+                            "displayNameEvent": "Channel 15 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "43fb2001-3020-48b0-adc0-3ccd1d52e912",
+                            "name": "channel15overvoltage",
+                            "displayName": "Channel 15 overvoltage",
+                            "displayNameEvent": "Channel 15 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "80fabf7c-39cb-4ff2-aa55-a7760b13b0d5",
+                            "name": "channel16",
+                            "displayName": "Channel 16",
+                            "displayNameEvent": "Channel 16 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 2.5,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "b5b51627-acf8-4cb6-91b9-6aafd3074d97",
+                            "name": "channel16overvoltage",
+                            "displayName": "Channel 16 overvoltage",
+                            "displayNameEvent": "Channel 16 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "2edf543e-dc2c-4693-bb0c-e76c0d305fad",
+            "name": "texasInstruments",
+            "displayName": "Texas Instruments",
+            "thingClasses": [
+                {
+                    "id": "7f285010-8bc1-4a45-b9d0-185fbac0c14d",
+                    "name": "ads1115",
+                    "displayName": "ADS1113/ADS1114/ADS1115",
+                    "createMethods": ["user", "discovery"],
+                    "setupMethod": "justAdd",
+                    "paramTypes": [
+                        {
+                            "id": "190c932f-5c97-497b-89b6-d34e37087467",
+                            "name": "i2cPort",
+                            "displayName": "I2C port",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "d3a14498-f0f4-4480-9a07-2fc8ed6fa3e9",
+                            "name": "i2cAddress",
+                            "displayName": "I2C address",
+                            "type": "int"
+                        },
+                        {
+                            "id": "c1845769-636e-4744-965c-8bb0b96b80b1",
+                            "name": "inputGain",
+                            "displayName": "Input gain",
+                            "type": "double",
+                            "allowedValues": [ 6.144, 4.096, 2.048, 1.024, 0.512, 0.256 ],
+                            "unit": "Volt",
+                            "defaultValue": 4.096
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "2d2ca0f6-ad6c-41f5-9aa6-cd08c43fc4bc",
+                            "name": "channel1",
+                            "displayName": "Channel 1",
+                            "displayNameEvent": "Channel 1 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "b2b8f75a-37f9-44c1-aa08-90bbb2c19fbd",
+                            "name": "channel1overvoltage",
+                            "displayName": "Channel 1 overvoltage",
+                            "displayNameEvent": "Channel 1 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5ee7a800-a8ef-4298-aa0b-284afec75e68",
+                            "name": "channel2",
+                            "displayName": "Channel 2",
+                            "displayNameEvent": "Channel 2 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "78898e55-760a-471f-ae02-011b69040dc2",
+                            "name": "channel2overvoltage",
+                            "displayName": "Channel 2 overvoltage",
+                            "displayNameEvent": "Channel 2 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "1f44b1f5-afc8-4e6e-919f-7b1d158a8b6e",
+                            "name": "channel3",
+                            "displayName": "Channel 3",
+                            "displayNameEvent": "Channel 3 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "b6ed4cd1-486e-40e3-b6fa-577c9a1831b6",
+                            "name": "channel3overvoltage",
+                            "displayName": "Channel 3 overvoltage",
+                            "displayNameEvent": "Channel 3 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "caba4fc0-7c06-4724-bd70-cc44b3451e17",
+                            "name": "channel4",
+                            "displayName": "Channel 4",
+                            "displayNameEvent": "Channel 4 value changed",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "187faeb9-d357-4bef-a7de-2b0e195510b8",
+                            "name": "channel4overvoltage",
+                            "displayName": "Channel 4 overvoltage",
+                            "displayNameEvent": "Channel 4 overvoltage changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

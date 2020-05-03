@@ -1,0 +1,9 @@
+{
+    "title": "I²C devices",
+    "tagline": "Allows using various analog to digital converters with nymea",
+    "icon": "",
+    "stability": "community",
+    "offline": true,
+    "technologies": ["i2c"],
+    "categories": []
+}

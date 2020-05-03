@@ -20,6 +20,7 @@ PLUGIN_DIRS = \
     genericelements     \
     genericthings       \
     gpio                \
+    i2cdevices          \
     httpcommander       \
     keba                \
     kodi                \

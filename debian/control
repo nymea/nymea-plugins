@@ -325,6 +325,19 @@ Description: nymea.io plugin for gpio
  This package will install the nymea.io plugin for gpio
 
 
+Package: nymea-plugin-i2cdevices
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for I2C devies
+ This plugin adds support for I2C devices to nymea.
+ Currently supported devices are the ADS1114/1114/1115 and the Pi-16ADC.
+ .
+ This package will install the nymea.io plugin for AD converters
+
+
 Package: nymea-plugin-kodi
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -966,6 +979,7 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-avahimonitor,
          nymea-plugin-anel,
          nymea-plugin-gpio,
+         nymea-plugin-i2cdevices,
          nymea-plugin-mqttclient,
          nymea-plugin-remotessh,
          nymea-plugin-serialportcommander,
@@ -973,14 +987,11 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-onewire,
          nymea-plugin-dynatrace,
 Replaces: guh-plugins-maker
-Description: Plugins for nymea IoT server - Meta package for makers, tinkers and hackers
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
+Description: Meta package for nymea makers, tinkerers and hackers plugins.
+ This package is a meta package that pulls in useful nymea plugins for makers.
+ Such plugins allow tinkering with GPIOs, I2C, One-Wire, raw MQTT and more.
  .
- This package will install nymea plugins for maker, tinker and hackers.
+ This package will install nymea plugins for makers, tinkerers and hackers.
 
 
 Package: nymea-plugins-merkurboard
