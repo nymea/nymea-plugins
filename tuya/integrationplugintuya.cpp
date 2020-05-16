@@ -208,23 +208,28 @@ void IntegrationPluginTuya::executeAction(ThingActionInfo *info)
 {
     if (info->action().actionTypeId() == tuyaSwitchPowerActionTypeId) {
         bool on = info->action().param(tuyaSwitchPowerActionPowerParamTypeId).value().toBool();
-        controlTuyaSwitch("turnOnOff", on ? "1" : "0", info);
+        QString devId = info->thing()->paramValue(tuyaSwitchThingIdParamTypeId).toString();
+        controlTuyaSwitch(devId, "turnOnOff", on ? "1" : "0", info);
         connect(info, &ThingActionInfo::finished, [info, on](){
             info->thing()->setStateValue(tuyaSwitchPowerStateTypeId, on);
         });
         return;
     }
-    if (info->action().actionTypeId() == tuyaClosableOpenActionTypeId) {
-        controlTuyaSwitch("turnOnOff", "1", info);
-        return;
-    }
-    if (info->action().actionTypeId() == tuyaClosableCloseActionTypeId) {
-        controlTuyaSwitch("turnOnOff", "0", info);
-        return;
-    }
-    if (info->action().actionTypeId() == tuyaClosableStopActionTypeId) {
-        controlTuyaSwitch("startStop", "0", info);
-        return;
+    if (info->thing()->thingClassId() == tuyaClosableThingClassId) {
+        QString devId = info->thing()->paramValue(tuyaClosableThingIdParamTypeId).toString();
+        if (info->action().actionTypeId() == tuyaClosableOpenActionTypeId) {
+            controlTuyaSwitch(devId, "turnOnOff", "1", info);
+            return;
+        }
+        if (info->action().actionTypeId() == tuyaClosableCloseActionTypeId) {
+            controlTuyaSwitch(devId, "turnOnOff", "0", info);
+            return;
+        }
+        if (info->action().actionTypeId() == tuyaClosableStopActionTypeId) {
+            controlTuyaSwitch(devId, "startStop", "0", info);
+            return;
+        }
+
     }
     Q_ASSERT_X(false, "tuyaplugin", "Unhandled action type " + info->action().actionTypeId().toByteArray());
 }
@@ -400,12 +405,12 @@ void IntegrationPluginTuya::updateChildDevices(Thing *thing)
 
 }
 
-void IntegrationPluginTuya::controlTuyaSwitch(const QString &command, const QString &value, ThingActionInfo *info)
+void IntegrationPluginTuya::controlTuyaSwitch(const QString &devId, const QString &command, const QString &value, ThingActionInfo *info)
 {
     Thing *thing = info->thing();
     Thing *parentDevice = myThings().findById(thing->parentId());
 
-    qCDebug(dcTuya()) << thing->name() << "Controlling Tuya switch. Parent:" << parentDevice->name() << "command:" << command << "value:" << value;
+    qCDebug(dcTuya()) << "Controlling Tuya device" << info->thing() << ". Parent:" << parentDevice->name() << "command:" << command << "value:" << value;
 
     pluginStorage()->beginGroup(parentDevice->id().toString());
     QString accesToken = pluginStorage()->value("accessToken").toString();
@@ -423,7 +428,7 @@ void IntegrationPluginTuya::controlTuyaSwitch(const QString &command, const QStr
 
     QVariantMap payload;
     payload.insert("accessToken", accesToken);
-    payload.insert("devId", thing->paramValue(tuyaSwitchThingIdParamTypeId).toString());
+    payload.insert("devId", devId);
     payload.insert("value", value);
 
     QVariantMap data;

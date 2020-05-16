@@ -63,7 +63,7 @@ private:
     void refreshAccessToken(Thing *thing);
     void updateChildDevices(Thing *thing);
 
-    void controlTuyaSwitch(const QString &command, const QString &value, ThingActionInfo *info);
+    void controlTuyaSwitch(const QString &devId, const QString &command, const QString &value, ThingActionInfo *info);
 
     QHash<ThingId, QTimer*> m_tokenExpiryTimers;
     PluginTimer *m_pluginTimer = nullptr;
