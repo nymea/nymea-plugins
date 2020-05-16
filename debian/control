@@ -864,6 +864,22 @@ Description: nymea.io plugin for simulated devices
  This package will install the nymea.io plugin for simulated devices
 
 
+Package: nymea-plugin-snapd
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Replaces: guh-plugin-snapd
+Description: nymea.io plugin for snapd
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for snapd
+
+
 Package: nymea-plugin-sonos
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -880,20 +896,15 @@ Description: nymea.io plugin for Sonos smart speakers
  This package will install the nymea.io plugin for Sonos smart speakers
 
 
-Package: nymea-plugin-snapd
+Package: nymea-plugin-streamunlimited
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Replaces: guh-plugin-snapd
-Description: nymea.io plugin for snapd
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
+Description: nymea.io plugin for StreamUnlimited powered smart speakers
+ StreamUnlimited powers various smart speakers from different brands.
  .
- This package will install the nymea.io plugin for snapd
+ This package will install the nymea.io plugin for StreamUnlimited smart speakers
 
 
 Package: nymea-plugin-keba

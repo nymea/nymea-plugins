@@ -48,6 +48,7 @@ PLUGIN_DIRS = \
     simulation          \
     snapd               \
     sonos               \
+    streamunlimited     \
     tado                \
     tasmota             \
     tcpcommander        \

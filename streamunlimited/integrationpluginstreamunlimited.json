@@ -1,0 +1,219 @@
+{
+    "displayName": "StreamUnlimited",
+    "name": "streamUnlimited",
+    "id": "bd89bddc-775b-4e8e-b0e8-8847d192718d",
+    "vendors": [
+        {
+            "id": "b9501c90-3fe6-4b4f-b27c-5f50f30819b0",
+            "displayName": "StreamUnlimited",
+            "name": "streamUnlimited",
+            "thingClasses": [
+                {
+                    "id": "f6ba9d19-d208-4994-8a7b-4cf171978ed3",
+                    "name": "streamSDKdevBoard",
+                    "displayName": "StreamSDK Dev Board",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["mediaplayer", "mediacontroller", "mediametadataprovider", "extendedvolumecontroller", "shufflerepeat", "connectable"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "5c1a9637-6d87-49f1-9d4c-1eeeaf2bf8e4",
+                            "name": "id",
+                            "displayName": "ID",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b6a9d6fa-fa2f-408a-8517-30bcb5524c97",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "a2112b45-466b-4ffa-8c86-c006523a6baa",
+                            "name": "playbackStatus",
+                            "displayName": "Playback status",
+                            "displayNameEvent": "Playback status changed",
+                            "type": "QString",
+                            "possibleValues": ["Playing", "Paused", "Stopped"],
+                            "defaultValue": "Stopped"
+                        },
+                        {
+                            "id": "c3ae2ed0-9f22-4d41-98c8-757d5d04270d",
+                            "name": "playerType",
+                            "displayName": "Player type",
+                            "displayNameEvent": "Player type changed",
+                            "type": "QString",
+                            "possibleValues": ["audio", "video"],
+                            "defaultValue": "audio"
+                        },
+                        {
+                            "id": "065b9bce-bda3-4a73-acd7-58d627881929",
+                            "name": "mute",
+                            "displayName": "Mute",
+                            "displayNameEvent": "Muted/unmuted",
+                            "displayNameAction": "Mute/unmute",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "b8232605-9936-4c5b-ba95-65cfa39d0a0e",
+                            "name": "volume",
+                            "displayName": "Volume",
+                            "displayNameEvent": "Volume changed",
+                            "displayNameAction": "Set volume",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true,
+                            "defaultValue": 50
+                        },
+                        {
+                            "id": "508c5d74-88d3-4acb-9557-14ffe798d991",
+                            "name": "title",
+                            "displayName": "Title",
+                            "displayNameEvent": "Title changed",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "d5b99f31-6c6d-459e-a15b-725319e0b544",
+                            "name": "artist",
+                            "displayName": "Artist",
+                            "displayNameEvent": "Artist changed",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "18181e99-82ae-4633-80ec-fc45253b70e9",
+                            "name": "collection",
+                            "displayName": "Collection",
+                            "displayNameEvent": "Collection changed",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "ff943f4b-ee33-4289-a94a-ca8851415035",
+                            "name": "artwork",
+                            "displayName": "Artwork",
+                            "displayNameEvent": "Artwork changed",
+                            "type": "QString",
+                            "defaultValue": "",
+                            "cached": false
+                        },
+                        {
+                            "id": "4503aead-4d82-44b7-b21f-8a1e05756a64",
+                            "name": "shuffle",
+                            "displayName": "Shuffle",
+                            "displayNameEvent": "Shuffle changed",
+                            "displayNameAction": "Set shuffle",
+                            "type": "bool",
+                            "defaultValue": "",
+                            "cached": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "309f9cde-ff41-4429-bdb0-e6800d2287d0",
+                            "name": "repeat",
+                            "displayName": "Repeat",
+                            "displayNameEvent": "Repeat changed",
+                            "displayNameAction": "Set repeat",
+                            "type": "QString",
+                            "possibleValues": ["None", "One", "All"],
+                            "defaultValue": "None",
+                            "cached": false,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "eca41275-d191-4194-9001-76f290114831",
+                            "name": "skipBack",
+                            "displayName": "Skip back"
+                        },
+                        {
+                            "id": "1c00afa5-f0f4-4a45-8783-4dd3c21642c9",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "456e369d-0229-4ad8-8705-c87ef4af87c4",
+                            "name": "play",
+                            "displayName": "Play"
+                        },
+                        {
+                            "id": "a8c61a87-057d-4737-9835-407dbe82f181",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "39ff53e4-ef7b-4800-b175-d7aab7e1d2b7",
+                            "name": "skipNext",
+                            "displayName": "Skip next"
+                        },
+                        {
+                            "id": "66b971b3-dbcb-42c0-9e43-b8865de1a462",
+                            "name": "storePreset",
+                            "displayName": "Store preset",
+                            "paramTypes": [
+                                {
+                                    "id": "d1c0dbcd-cf45-4f65-9506-cf5fbd41ff9e",
+                                    "name": "index",
+                                    "displayName": "Preset index",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 4
+                                }
+                            ]
+                        },
+                        {
+                            "id": "f61e261d-6b16-4d1d-b448-2237fda7e0e6",
+                            "name": "loadPreset",
+                            "displayName": "Activate preset",
+                            "paramTypes": [
+                                {
+                                    "id": "18b79087-44a7-4443-a5d6-8ac808d822ed",
+                                    "name": "index",
+                                    "displayName": "Preset index",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 4
+                                }
+                            ]
+                        }
+                    ],
+                    "browserItemActionTypes": [
+                        {
+                            "id": "dc2456d1-f993-4b50-a631-5dbd576164b2",
+                            "name": "addToPlayQueue",
+                            "displayName": "Add to play queue",
+                            "paramTypes": [
+                                {
+                                    "id": "bf4d3dca-3159-439d-a2c0-cdf506499f08",
+                                    "name": "position",
+                                    "displayName": "Position",
+                                    "type": "QString",
+                                    "allowedValues": ["Now", "Next", "Append"],
+                                    "defaultValue": "Now"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "8220e7bf-f099-4569-b938-d78be8ef7977",
+                            "name": "clearPlaylist",
+                            "displayName": "Clear playlist"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
