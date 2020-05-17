@@ -56,7 +56,8 @@
                             "defaultValue": false,
                             "writable": true,
                             "displayNameEvent": "Power changed",
-                            "displayNameAction": "Set power"
+                            "displayNameAction": "Set power",
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
@@ -96,7 +97,8 @@
                             "displayName": "Pressed",
                             "type": "bool",
                             "defaultValue": false,
-                            "displayNameEvent": "Pressed changed"
+                            "displayNameEvent": "Pressed changed",
+                            "ioType": "digitalInput"
                         }
                     ],
                     "eventTypes": [
@@ -193,7 +195,8 @@
                             "defaultValue": false,
                             "writable": true,
                             "displayNameEvent": "Power changed",
-                            "displayNameAction": "Set power"
+                            "displayNameAction": "Set power",
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
@@ -233,7 +236,8 @@
                             "displayName": "Pressed",
                             "type": "bool",
                             "defaultValue": false,
-                            "displayNameEvent": "Pressed changed"
+                            "displayNameEvent": "Pressed changed",
+                            "ioType": "digitalInput"
                         }
                     ],
                     "eventTypes": [
