@@ -49,10 +49,16 @@ void IntegrationPluginStreamUnlimited::init()
     connect(m_zeroConfBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=](const ZeroConfServiceEntry &entry){
         foreach (Thing *thing, m_devices.keys()) {
             QString thingId = thing->paramValue(streamSDKdevBoardThingIdParamTypeId).toString();
-            if (entry.protocol() == QAbstractSocket::IPv4Protocol && entry.txt("uuid") == thingId) {
-                StreamUnlimitedDevice *device = m_devices.value(thing);
-                if (device->connectionStatus() != StreamUnlimitedDevice::ConnectionStatusConnected) {
-                    device->setHost(entry.hostAddress(), entry.port());
+            if (entry.protocol() == QAbstractSocket::IPv4Protocol) {
+
+                foreach (const QString &txtEntry, entry.txt()) {
+                    QStringList parts = txtEntry.split('=');
+                    if (parts.length() == 2 && parts.first() == "uuid" && parts.last() == thingId) {
+                        StreamUnlimitedDevice *device = m_devices.value(thing);
+                        if (device->connectionStatus() != StreamUnlimitedDevice::ConnectionStatusConnected) {
+                            device->setHost(entry.hostAddress(), entry.port());
+                        }
+                    }
                 }
             }
         }
@@ -111,8 +117,13 @@ void IntegrationPluginStreamUnlimited::setupThing(ThingSetupInfo *info)
 
     ZeroConfServiceEntry entry;
     foreach (const ZeroConfServiceEntry &e, m_zeroConfBrowser->serviceEntries()) {
-        if (entry.serviceType() != "_sues800device._tcp" && e.txt("uuid") == id && entry.protocol() == QAbstractSocket::IPv4Protocol) {
-            entry = e;
+        if (entry.serviceType() != "_sues800device._tcp" && entry.protocol() == QAbstractSocket::IPv4Protocol) {
+            foreach (const QString &txtEntry, entry.txt()) {
+                QStringList parts = txtEntry.split('=');
+                if (parts.length() == 2 && parts.first() == "uuid" && parts.last() == id) {
+                    entry = e;
+                }
+            }
         }
     }
     if (entry.isValid()) {
