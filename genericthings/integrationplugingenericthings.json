@@ -292,6 +292,26 @@
                     ]
                 },
                 {
+                    "id": "24af8dd3-ddf0-47f0-bf09-70fdfd8dceab",
+                    "name": "ventilation",
+                    "displayName": "Generic ventilation",
+                    "createMethods": ["user"],
+                    "interfaces": ["ventilation"],
+                    "stateTypes": [
+                        {
+                            "id": "846711b7-ea5a-4c66-a267-001c60406509",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
                     "id": "cf3d65db-6f68-457b-968c-cfb66cbd5311",
                     "name": "temperatureSensor",
                     "displayName": "Generic temperature sensor",

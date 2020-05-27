@@ -243,6 +243,14 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         }
     }
 
+    if (thing->thingClassId() == ventilationThingClassId) {
+        if (action.actionTypeId() == ventilationPowerActionTypeId) {
+            thing->setStateValue(ventilationPowerStateTypeId, action.param(ventilationPowerActionPowerParamTypeId).value());
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+    }
+
     if (thing->thingClassId() == temperatureSensorThingClassId) {
         if (action.actionTypeId() == temperatureSensorInputActionTypeId) {
             double value = info->action().param(temperatureSensorInputActionInputParamTypeId).value().toDouble();
