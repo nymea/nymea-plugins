@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginSimulation</name>
+    <name>IntegrationPluginSimulation</name>
     <message>
         <source>Fingerprint could not be scanned. Please try again.</source>
         <translation type="unfinished"></translation>

@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginSerialPortCommander</name>
+    <name>IntegrationPluginSerialPortCommander</name>
     <message>
         <location filename="../integrationpluginserialportcommander.cpp" line="109"/>
         <source>Could not open serial port.</source>

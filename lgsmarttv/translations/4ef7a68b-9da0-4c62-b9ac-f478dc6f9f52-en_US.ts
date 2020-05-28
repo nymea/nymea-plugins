@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginLgSmartTv</name>
+    <name>IntegrationPluginLgSmartTv</name>
     <message>
         <location filename="../integrationpluginlgsmarttv.cpp" line="68"/>
         <source>Error discovering devices. Please check your network connection.</source>

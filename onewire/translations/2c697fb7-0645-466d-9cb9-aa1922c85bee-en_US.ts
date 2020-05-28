@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginOneWire</name>
+    <name>IntegrationPluginOneWire</name>
     <message>
         <location filename="../integrationpluginonewire.cpp" line="54"/>
         <source>No one wire interface initialized. Please set up a one wire interface first.</source>

@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginMailNotification</name>
+    <name>IntegrationPluginMailNotification</name>
     <message>
         <location filename="../integrationpluginmailnotification.cpp" line="51"/>
         <source>Please enter your username and password for the e-mail account.</source>

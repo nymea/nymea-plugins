@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginLeynew</name>
+    <name>IntegrationPluginLeynew</name>
     <message>
         <location filename="../integrationpluginleynew.cpp" line="45"/>
         <location filename="../integrationpluginleynew.cpp" line="52"/>

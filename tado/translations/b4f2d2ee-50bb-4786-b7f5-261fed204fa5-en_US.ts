@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginTado</name>
+    <name>IntegrationPluginTado</name>
     <message>
         <location filename="../integrationplugintado.cpp" line="47"/>
         <source>Please enter the login credentials.</source>

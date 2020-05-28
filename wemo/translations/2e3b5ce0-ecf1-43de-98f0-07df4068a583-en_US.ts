@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginWemo</name>
+    <name>IntegrationPluginWemo</name>
     <message>
         <location filename="../integrationpluginwemo.cpp" line="73"/>
         <source>An error happened during discovery.</source>

@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginKodi</name>
+    <name>IntegrationPluginKodi</name>
     <message>
         <location filename="../integrationpluginkodi.cpp" line="420"/>
         <source>This installation of Kodi is too old. Please upgrade your Kodi system.</source>

@@ -2,18 +2,18 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
-    <name>DevicePluginFlowercare</name>
+    <name>IntegrationPluginFlowercare</name>
     <message>
         <source>Cannot discover Bluetooth devices. Bluetooth is not available on this system.</source>
-        <translation>Es kann nicht nach Bluetooth Geräten gesucht werden. Bluetooth ist auf diesem System nicht verfügbar.</translation>
+        <translation type="unfinished">Es kann nicht nach Bluetooth Geräten gesucht werden. Bluetooth ist auf diesem System nicht verfügbar.</translation>
     </message>
     <message>
         <source>Cannot discover Bluetooth devices. Bluetooth is disabled.</source>
-        <translation>Es kann nicht nach Bluetooth Geräten gesucht werden. Bluetooth ist deaktiviert.</translation>
+        <translation type="unfinished">Es kann nicht nach Bluetooth Geräten gesucht werden. Bluetooth ist deaktiviert.</translation>
     </message>
     <message>
         <source>An error happened during Bluetooth discovery.</source>
-        <translation>Beim Suchen von Bluetooth Geräten ist ein Fehler aufgetreten.</translation>
+        <translation type="unfinished">Beim Suchen von Bluetooth Geräten ist ein Fehler aufgetreten.</translation>
     </message>
 </context>
 <context>

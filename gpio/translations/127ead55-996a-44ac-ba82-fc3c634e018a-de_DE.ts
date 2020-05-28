@@ -2,56 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginGpio</name>
-    <message>
-        <location filename="../integrationplugingpio.cpp" line="49"/>
-        <source>No GPIOs found on this system.</source>
-        <extracomment>Error setting up GPIO thing</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationplugingpio.cpp" line="67"/>
-        <source>Exporting GPIO failed.</source>
-        <extracomment>Error setting up GPIO thing</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationplugingpio.cpp" line="73"/>
-        <source>Configuring output GPIO failed.</source>
-        <extracomment>Error setting up GPIO thing</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationplugingpio.cpp" line="79"/>
-        <location filename="../integrationplugingpio.cpp" line="342"/>
-        <location filename="../integrationplugingpio.cpp" line="362"/>
-        <source>Setting GPIO value failed.</source>
-        <extracomment>Error setting up GPIO thing
-----------
-Error executing GPIO action</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationplugingpio.cpp" line="107"/>
-        <location filename="../integrationplugingpio.cpp" line="137"/>
-        <source>Enabling GPIO monitor failed.</source>
-        <extracomment>Error setting up GPIO thing</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationplugingpio.cpp" line="164"/>
-        <source>No GPIOs available on this system.</source>
-        <extracomment>Error discovering GPIO devices</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationplugingpio.cpp" line="326"/>
-        <source>GPIO not found</source>
-        <extracomment>Error executing GPIO action</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>GpioController</name>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="147"/>
@@ -258,6 +208,56 @@ The name of the StateType ({57f1b7cc-26c8-434b-ba04-d3077dc886c8}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/gpio/plugininfo.h" line="72"/>
         <source>Beaglebone Black</source>
         <extracomment>The name of the vendor ({7835d14b-b455-49bd-9f31-72c6e8c3033d})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IntegrationPluginGpio</name>
+    <message>
+        <location filename="../integrationplugingpio.cpp" line="49"/>
+        <source>No GPIOs found on this system.</source>
+        <extracomment>Error setting up GPIO thing</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationplugingpio.cpp" line="67"/>
+        <source>Exporting GPIO failed.</source>
+        <extracomment>Error setting up GPIO thing</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationplugingpio.cpp" line="73"/>
+        <source>Configuring output GPIO failed.</source>
+        <extracomment>Error setting up GPIO thing</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationplugingpio.cpp" line="79"/>
+        <location filename="../integrationplugingpio.cpp" line="342"/>
+        <location filename="../integrationplugingpio.cpp" line="362"/>
+        <source>Setting GPIO value failed.</source>
+        <extracomment>Error setting up GPIO thing
+----------
+Error executing GPIO action</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationplugingpio.cpp" line="107"/>
+        <location filename="../integrationplugingpio.cpp" line="137"/>
+        <source>Enabling GPIO monitor failed.</source>
+        <extracomment>Error setting up GPIO thing</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationplugingpio.cpp" line="164"/>
+        <source>No GPIOs available on this system.</source>
+        <extracomment>Error discovering GPIO devices</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationplugingpio.cpp" line="326"/>
+        <source>GPIO not found</source>
+        <extracomment>Error executing GPIO action</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

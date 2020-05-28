@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="cs">
 <context>
-    <name>DevicePluginNetatmo</name>
+    <name>IntegrationPluginNetatmo</name>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="88"/>
         <source>Error logging in to Netatmo server.</source>

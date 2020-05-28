@@ -2,21 +2,16 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="es">
 <context>
-    <name>DevicePluginPushbullet</name>
+    <name>IntegrationPluginPushbullet</name>
     <message>
-        <location filename="../integrationpluginpushbullet.cpp" line="137"/>
-        <source>Not authenticated to Pushbullet.</source>
+        <location filename="../integrationpluginpushbullet.cpp" line="69"/>
+        <source>The provided token must not be empty.</source>
+        <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../integrationpluginpushbullet.cpp" line="81"/>
         <source>The provided token is not valid.</source>
-        <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginpushbullet.cpp" line="69"/>
-        <source>The provided token must not be empty.</source>
         <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
@@ -37,6 +32,11 @@
         <location filename="../integrationpluginpushbullet.cpp" line="171"/>
         <source>The Pushbullet account seems to be disabled.</source>
         <extracomment>Error setting up thing</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginpushbullet.cpp" line="137"/>
+        <source>Not authenticated to Pushbullet.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

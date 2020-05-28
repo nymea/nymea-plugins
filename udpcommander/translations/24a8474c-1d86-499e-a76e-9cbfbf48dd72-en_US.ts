@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginUdpCommander</name>
+    <name>IntegrationPluginUdpCommander</name>
     <message>
         <location filename="../integrationpluginudpcommander.cpp" line="52"/>
         <source>Error opening UDP port.</source>

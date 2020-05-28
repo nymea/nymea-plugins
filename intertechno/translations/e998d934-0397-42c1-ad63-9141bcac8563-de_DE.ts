@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
-    <name>DevicePluginIntertechno</name>
+    <name>IntegrationPluginIntertechno</name>
     <message>
         <location filename="../integrationpluginintertechno.cpp" line="52"/>
         <source>No 433MHz radio available on this system.</source>

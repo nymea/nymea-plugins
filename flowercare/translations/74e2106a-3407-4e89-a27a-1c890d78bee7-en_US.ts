@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginFlowercare</name>
+    <name>IntegrationPluginFlowercare</name>
     <message>
         <source>Cannot discover Bluetooth devices. Bluetooth is not available on this system.</source>
         <translation type="unfinished"></translation>

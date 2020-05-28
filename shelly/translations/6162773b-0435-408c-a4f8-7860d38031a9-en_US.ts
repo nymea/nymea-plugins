@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginShelly</name>
+    <name>IntegrationPluginShelly</name>
     <message>
         <location filename="../integrationpluginshelly.cpp" line="620"/>
         <source>Unable to find the thing in the network.</source>

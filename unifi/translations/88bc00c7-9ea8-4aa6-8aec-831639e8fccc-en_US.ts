@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginUnifi</name>
+    <name>IntegrationPluginUnifi</name>
     <message>
         <location filename="../integrationpluginunifi.cpp" line="62"/>
         <source>Please configure a UniFi controller first.</source>

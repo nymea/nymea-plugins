@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>DevicePluginAnel</name>
+    <name>IntegrationPluginAnel</name>
     <message>
         <source>Error sending data to the network.</source>
         <extracomment>Error discovering devices</extracomment>
@@ -18,12 +18,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unexpected data received from NET-PWRCTL device. Perhaps it&apos;s running an old firmware?</source>
+        <source>The thing rejected our connection. Please check the configured network ports.</source>
         <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The thing rejected our connection. Please check the configured network ports.</source>
+        <source>Unexpected data received from NET-PWRCTL device. Perhaps it&apos;s running an old firmware?</source>
         <extracomment>Error setting up thing</extracomment>
         <translation type="unfinished"></translation>
     </message>
