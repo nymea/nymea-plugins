@@ -100,8 +100,9 @@ void IntegrationPluginBluOS::setupThing(ThingSetupInfo *info)
         m_asyncSetup.insert(bluos, info);
         bluos->getStatus();
         // In case the setup is cancelled before we finish it...
-        connect(info, &QObject::destroyed, this, [this, bluos]() {
+        connect(info, &ThingSetupInfo::aborted, this, [this, bluos] {
             m_asyncSetup.remove(bluos);
+            bluos->deleteLater();
         });
         return;
     } else {
@@ -111,7 +112,7 @@ void IntegrationPluginBluOS::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginBluOS::postSetupThing(Thing *thing)
 {
-    Q_UNUSED(thing);
+    Q_UNUSED(thing)
 
     if (!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
@@ -222,6 +223,8 @@ void IntegrationPluginBluOS::browseThing(BrowseResult *result)
     if (thing->thingClassId() == bluosPlayerThingClassId) {
         BluOS *bluos = m_bluos.value(thing->id());
         if (!bluos) {
+            qCWarning(dcBluOS()) << "Could not find any BluOS object that belongs to" << thing->name();
+            result->finish(Thing::ThingErrorHardwareNotAvailable, "BluOS connection not properly initialized");
             return;
         }
         if (result->itemId() == "presets") {
@@ -270,6 +273,7 @@ void IntegrationPluginBluOS::browserItem(BrowserItemResult *result)
     if (thing->thingClassId() == bluosPlayerThingClassId) {
         BluOS *bluos = m_bluos.value(thing->id());
         if (!bluos) {
+            qCWarning(dcBluOS()) << "Could not find any BluOS object that belongs to" << thing->name();
             return;
         }
         if (result->itemId() == "presets") {
@@ -291,8 +295,10 @@ void IntegrationPluginBluOS::executeBrowserItem(BrowserActionInfo *info)
     Thing *thing = info->thing();
     if (thing->thingClassId() == bluosPlayerThingClassId) {
         BluOS *bluos = m_bluos.value(thing->id());
-        if (!bluos)
+        if (!bluos) {
+            qCWarning(dcBluOS()) << "Could not find any BluOS object that belongs to" << thing->name();
             return;
+        }
 
         if (info->browserAction().itemId().startsWith("presets")) {
             QUuid requestId;
@@ -302,8 +308,10 @@ void IntegrationPluginBluOS::executeBrowserItem(BrowserActionInfo *info)
             connect(info, &BrowserActionInfo::aborted, this, [this, requestId]{m_asyncExecuteBrowseItems.remove(requestId);});
         } else  if (info->browserAction().itemId().startsWith("grouping")) {
             //TODO Grouping
+            //Test devices are required
         } else {
             //TODO Sources
+            //Test services are required
         }
     }
 }
@@ -319,12 +327,15 @@ void IntegrationPluginBluOS::onConnectionChanged(bool connected)
             info->thing()->setStateValue(bluosPlayerConnectedStateTypeId, true);
             info->finish(Thing::ThingErrorNoError);
         } else {
+            bluos->deleteLater();
             info->finish(Thing::ThingErrorSetupFailed);
         }
     } else {
         Thing *thing = myThings().findById(m_bluos.key(bluos));
-        if (!thing)
+        if (!thing) {
+            qCWarning(dcBluOS()) << "Could not find any Thing that belongs to the BluOS object";
             return;
+        }
         thing->setStateValue(bluosPlayerConnectedStateTypeId, connected);
     }
 }
@@ -333,8 +344,10 @@ void IntegrationPluginBluOS::onStatusResponseReceived(const BluOS::StatusRespons
 {
     BluOS *bluos = static_cast<BluOS*>(sender());
     Thing *thing = myThings().findById(m_bluos.key(bluos));
-    if (!thing)
+    if (!thing){
+        qCWarning(dcBluOS()) << "Could not find any Thing that belongs to this BluOS object";
         return;
+    }
     thing->setStateValue(bluosPlayerArtistStateTypeId, status.Artist);
     thing->setStateValue(bluosPlayerCollectionStateTypeId, status.Album);
     thing->setStateValue(bluosPlayerTitleStateTypeId, status.Title);
@@ -398,8 +411,10 @@ void IntegrationPluginBluOS::onVolumeReceived(int volume, bool mute)
 {
     BluOS *bluos = static_cast<BluOS*>(sender());
     Thing *thing = myThings().findById(m_bluos.key(bluos));
-    if (!thing)
+    if (!thing){
+        qCWarning(dcBluOS()) << "Could not find any Thing that belongs to this BluOS object";
         return;
+    }
     thing->setStateValue(bluosPlayerMuteStateTypeId, mute);
     thing->setStateValue(bluosPlayerVolumeStateTypeId, volume);
 }
@@ -417,8 +432,10 @@ void IntegrationPluginBluOS::onRepeatModeReceived(BluOS::RepeatMode mode)
 {
     BluOS *bluos = static_cast<BluOS*>(sender());
     Thing *thing = myThings().findById(m_bluos.key(bluos));
-    if (!thing)
+    if (!thing){
+        qCWarning(dcBluOS()) << "Could not find any Thing that belongs to this BluOS object";
         return;
+    }
     switch (mode) {
     case BluOS::RepeatMode::All:
         thing->setStateValue(bluosPlayerRepeatStateTypeId, "All");
@@ -437,10 +454,14 @@ void IntegrationPluginBluOS::onPresetsReceived(QUuid requestId, const QList<BluO
 {
     BluOS *bluos = static_cast<BluOS*>(sender());
     Thing *thing = myThings().findById(m_bluos.key(bluos));
-    if (!thing)
-        return;
+
     if (m_asyncBrowseResults.contains(requestId)) {
         BrowseResult *result = m_asyncBrowseResults.take(requestId);
+        if (!thing) {
+            qCWarning(dcBluOS()) << "Could not find any Thing that belongs to this browse result";
+            result->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
         foreach(BluOS::Preset preset, presets) {
             qCDebug(dcBluOS()) << "Preset added" << preset.Name << preset.Id << preset.Url;
             BrowserItem item("presets&"+QString::number(preset.Id), preset.Name, false, true);
@@ -451,7 +472,8 @@ void IntegrationPluginBluOS::onPresetsReceived(QUuid requestId, const QList<BluO
     }
     if (m_asyncBrowseItemResults.contains(requestId)) {
         BrowserItemResult *result = m_asyncBrowseItemResults.take(requestId);
-        Q_UNUSED(result)
+        result->finish(Thing::ThingErrorItemNotFound);
+        //For future browsing features
     }
 }
 
@@ -459,10 +481,14 @@ void IntegrationPluginBluOS::onSourcesReceived(QUuid requestId, const QList<BluO
 {
     BluOS *bluos = static_cast<BluOS*>(sender());
     Thing *thing = myThings().findById(m_bluos.key(bluos));
-    if (!thing)
-        return;
+
     if (m_asyncBrowseResults.contains(requestId)) {
         BrowseResult *result = m_asyncBrowseResults.take(requestId);
+        if (!thing) {
+            qCWarning(dcBluOS()) << "Could not find any Thing that belongs to this browse result";
+            result->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
         foreach(BluOS::Source source, sources) {
             qCDebug(dcBluOS()) << "Source added" << source.Text << source.BrowseKey << source.Type;
             MediaBrowserItem item;
@@ -493,15 +519,18 @@ void IntegrationPluginBluOS::onSourcesReceived(QUuid requestId, const QList<BluO
                 item.setMediaIcon(MediaBrowserItem::MediaBrowserIconAux);
                 result->addItem(item);
             } else if (source.Text == "Radio Paradise") {
-                item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRadioParadise);
+                //item.setMediaIcon(MediaBrowserItem::MediaBrowserIconRadioParadise);
                 //result->addItem(item);
+                //Needs testing before continuing
             }
         }
         result->finish(Thing::ThingErrorNoError);
     }
+
     if (m_asyncBrowseItemResults.contains(requestId)) {
         BrowserItemResult *result = m_asyncBrowseItemResults.take(requestId);
-        Q_UNUSED(result)
+        result->finish(Thing::ThingErrorItemNotFound);
+        //For future browsing features
     }
 }
 
@@ -509,10 +538,15 @@ void IntegrationPluginBluOS::onBrowseResultReceived(QUuid requestId, const QList
 {
     BluOS *bluos = static_cast<BluOS*>(sender());
     Thing *thing = myThings().findById(m_bluos.key(bluos));
-    if (!thing)
-        return;
+
     if (m_asyncBrowseResults.contains(requestId)) {
         BrowseResult *result = m_asyncBrowseResults.take(requestId);
+
+        if (!thing) {
+            qCWarning(dcBluOS()) << "Could not find any Thing that belongs to this browse result";
+            result->finish(Thing::ThingErrorHardwareNotAvailable);
+            return;
+        }
         foreach(BluOS::Source source, sources) {
             qCDebug(dcBluOS()) << "Source added" << source.Text << source.BrowseKey << source.Type;
             MediaBrowserItem item;

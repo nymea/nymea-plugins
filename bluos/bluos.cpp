@@ -55,9 +55,8 @@ QHostAddress BluOS::hostAddress()
     return m_hostAddress;
 }
 
-QUuid BluOS::getStatus()
+void BluOS::getStatus()
 {
-    QUuid requestId = QUuid::createUuid();
     QUrl url;
     url.setScheme("http");
     url.setHost(m_hostAddress.toString());
@@ -81,7 +80,7 @@ QUuid BluOS::getStatus()
         //qCDebug(dcBluOS()) << "Get Status:" << data;
         parseState(data);
     });
-    return requestId;
+    return;
 }
 
 QUuid BluOS::setVolume(uint volume)

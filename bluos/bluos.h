@@ -102,7 +102,7 @@ public:
     QHostAddress hostAddress();
     
     // Status Queries
-    QUuid getStatus();
+    void getStatus();
     
     // Volume Control
     QUuid setVolume(uint volume);
