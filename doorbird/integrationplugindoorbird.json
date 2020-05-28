@@ -81,7 +81,7 @@
                             "id": "295c9700-b598-4681-898f-d63e2889cedf",
                             "name": "lastSeenTime",
                             "displayName": "Motion sensor last seen time",
-                            "displayNameEvent": "Motion sensor last seen time changedd",
+                            "displayNameEvent": "Motion sensor last seen time changed",
                             "type": "int",
                             "unit": "UnixTime",
                             "defaultValue": 0
