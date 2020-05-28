@@ -48,8 +48,7 @@ void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
     // Checking the internet connection
     NetworkAccessManager *network = hardwareManager()->networkManager();
     QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://my.tado.com/api/v2")));
-    connect(reply, &QNetworkReply::finished, this, [reply, info] {
-        reply->deleteLater();
+    connect(reply, &QNetworkReply::finished, info, [reply, info] {
 
         if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Tado server is not reachable."));
@@ -57,6 +56,7 @@ void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
             info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Tado account."));
         }
     });
+    connect(reply, &QNetworkReply::finished, this, &QNetworkReply::deleteLater);
 }
 
 void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
@@ -240,9 +240,9 @@ void IntegrationPluginTado::onConnectionChanged(bool connected)
     Tado *tado = static_cast<Tado*>(sender());
 
     if (m_asyncDeviceSetup.contains(tado)) {
-        // thing setup failed, try as lon as ThingSetupInfo is valid.
+        //Thing setup failed, try as long as ThingSetupInfo is valid.
         if (!connected) {
-            QTimer::singleShot(2000, [tado, this]{
+            QTimer::singleShot(2000, tado, [tado, this]{
                 if(m_asyncDeviceSetup.contains(tado)){
                     //Check once more if the ThingSetupInfo is still valid
                     pluginStorage()->beginGroup(m_asyncDeviceSetup.value(tado)->thing()->id().toString());
@@ -283,7 +283,7 @@ void IntegrationPluginTado::onAuthenticationStatusChanged(bool authenticated)
         thing->setStateValue(tadoConnectionLoggedInStateTypeId, authenticated);
 
         if (!authenticated) {
-            QTimer::singleShot(5000, [this, tado, thing] {
+            QTimer::singleShot(5000, tado, [this, tado, thing] {
                 if (!tado->connected()) {
                     pluginStorage()->beginGroup(thing->id().toString());
                     QString password = pluginStorage()->value("password").toString();
@@ -309,7 +309,7 @@ void IntegrationPluginTado::onRequestExecuted(QUuid requestId, bool success)
 
 void IntegrationPluginTado::onTokenReceived(Tado::Token token)
 {
-    Q_UNUSED(token);
+    Q_UNUSED(token)
 
     qCDebug(dcTado()) << "Token received";
     Tado *tado = static_cast<Tado*>(sender());
