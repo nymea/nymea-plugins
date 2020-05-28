@@ -5,8 +5,6 @@ This integration allows to control audio devices based on BluOS. BluOS is an ope
 ## Supported Things
 
 * BluOS Player
-	* Auto discovery setup
-	* Auto rediscovery on IP address change
 	* Multimedia control
 	* Volume
 	* Browsing Presets
