@@ -1381,7 +1381,9 @@ QUuid Sonos::loadPlaylist(const QString &groupId, const QString &playlistId)
     QUuid actionId = QUuid::createUuid();
 
     QJsonObject object;
-    object["playlistId"] = playlistId;
+    object.insert("action", "REPLACE");
+    object.insert("playlistId", playlistId);
+    object.insert("playOnCompletion", true);
     QJsonDocument doc(object);
 
     QNetworkReply *reply = m_networkManager->post(request, doc.toJson(QJsonDocument::Compact));
