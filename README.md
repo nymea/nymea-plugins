@@ -21,16 +21,22 @@ If you want to present your project or want to share your newest developments yo
 If you are facing any troubles, don't hesitate to reach out for us or the community members, we will be pleased to help you:
 Chat with us on [Telegram](http://t.me/nymeacommunity)
 
-## Wiki and Documentation
+## Documentation
 
-* A detailed description how to install and getting started with the *nymea* can be found in the
+* A detailed description how to install and getting started with the *nymea* can be found here:
 
-    [nymea | github wiki](https://wiki.nymea.io).
+    [nymea | user documentation](https://preview.nymea.io/documentation/users/installation/getting-started).
 
-* A detailed documentation of the source code can be found in the
+* A detailed documentation for developers can be found here:
 
-    [nymea | developer documentation](https://doc.nymea.io).
+    [nymea | developer documentation](https://nymea.io/documentation/developers/).
 
+
+## Contributing
+
+To contribute support for a device or service, you're welcome to file a pull request to this repository. If you need help in creating an integration plugin, feel free to ask in our forum or the Telegram group as well.
+
+If you don't have any developer skills at all, still feel free to bring the topic up. Our community is happy to help wherever possible."
 
 ## License
 --------------------------------------------
