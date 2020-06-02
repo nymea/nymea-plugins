@@ -25,7 +25,7 @@ Chat with us on [Telegram](http://t.me/nymeacommunity)
 
 * A detailed description how to install and getting started with the *nymea* can be found here:
 
-    [nymea | user documentation](https://preview.nymea.io/documentation/users/installation/getting-started).
+    [nymea | user documentation](https://nymea.io/documentation/users/installation/getting-started).
 
 * A detailed documentation for developers can be found here:
 
