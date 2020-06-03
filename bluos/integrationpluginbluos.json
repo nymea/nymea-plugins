@@ -13,7 +13,7 @@
                     "name": "bluosPlayer",
                     "displayName": "BluOS player",
                     "createMethods": ["discovery"],
-                    "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "interfaces": ["mediaplayer", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
                     "browsable": true,
                     "paramTypes":[
                         {
@@ -150,6 +150,18 @@
                             "displayNameEvent": "Group changed",
                             "type": "QString",
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "e5222e93-fa14-49de-950f-2f605ce8927b",
+                            "name": "playerType",
+                            "displayName": "Player type",
+                            "displayNameEvent": "Player type changed",
+                            "possibleValues": [
+                                "audio",
+                                "video"
+                            ],
+                            "type": "QString",
+                            "defaultValue": "audio"
                         }
                     ],
                     "actionTypes": [

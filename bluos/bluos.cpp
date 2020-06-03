@@ -63,10 +63,9 @@ void BluOS::getStatus()
     url.setPort(m_port);
     url.setPath("/Status");
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::HostNotFoundError) {
@@ -98,8 +97,9 @@ QUuid BluOS::setVolume(uint volume)
     url.setPath("/Volume");
     url.setQuery(query);
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -150,8 +150,9 @@ QUuid BluOS::setMute(bool mute)
     url.setQuery(query);
 
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -204,8 +205,9 @@ QUuid BluOS::setShuffle(bool shuffle)
     query.addQueryItem("state", QString::number(shuffle));
     url.setQuery(query);
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -250,8 +252,9 @@ QUuid BluOS::setRepeat(RepeatMode repeatMode)
     query.addQueryItem("state", QString::number(repeatMode));
     url.setQuery(query);
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -295,8 +298,9 @@ QUuid BluOS::listPresets()
     url.setPort(m_port);
     url.setPath("/Presets");
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -342,7 +346,6 @@ QUuid BluOS::listPresets()
         }
         emit presetsReceived(requestId, presetList);
     });
-
     return requestId;
 }
 
@@ -360,8 +363,9 @@ QUuid BluOS::loadPreset(int preset)
     url.setQuery(query);
     qCDebug(dcBluOS()) << "Loading preset" << url.toString();
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -389,8 +393,9 @@ QUuid BluOS::getSources()
     url.setPort(m_port);
     url.setPath("/Browse");
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -454,8 +459,9 @@ QUuid BluOS::browseSource(const QString &key)
     query.addQueryItem("key", key);
     url.setQuery(query);
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -522,8 +528,9 @@ QUuid BluOS::addGroupPlayer(QHostAddress address, int port)
     query.addQueryItem("port", QString::number(port));
     url.setQuery(query);
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -556,8 +563,9 @@ QUuid BluOS::removeGroupPlayer(QHostAddress address, int port)
     query.addQueryItem("port", QString::number(port));
     url.setQuery(query);
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -607,8 +615,9 @@ QUuid BluOS::playBackControl(BluOS::PlaybackCommand command)
     request.setUrl(url);
     QNetworkReply *reply = m_networkManager->get(request);
     qCDebug(dcBluOS()) << "Sending request" << request.url();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
