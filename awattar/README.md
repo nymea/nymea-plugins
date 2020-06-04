@@ -14,9 +14,9 @@ price is above the average, if the deviation is negative, the current price is b
 
 In the following chart you can see an example of the market prices from -12 hours to + 12 hours.The green line displays the current market prices, the red-dotted line is the average price of the regarding interval and the red line describes the deviation. If the deviation is positive, the current price is above the average, if the deviation is negative, the current price is below the average.
 
-* -100 % current price equals lowest price in the interval [-12h < now < + 12h]
-* 0 %    current price equals average price in the interval  [-12h < now < + 12h]
-* +100 % current price equals highest price in the interval [-12h < now < + 12h]
+* -100 % current price equals lowest price in the interval [-12h `<` now `<` + 12h]
+* 0 %    current price equals average price in the interval  [-12h `<` now `<` + 12h]
+* +100 % current price equals highest price in the interval [-12h `<` now `<` + 12h]
 
 ![aWATTar graph](https://raw.githubusercontent.com/guh/nymea-plugins/master/awattar/docs/images/awattar-graph.png "aWATTar graph")
  
