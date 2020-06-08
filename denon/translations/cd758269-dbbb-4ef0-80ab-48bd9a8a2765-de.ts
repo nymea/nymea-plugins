@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="de">
 <context>
     <name>Denon</name>
     <message>
@@ -10,13 +10,13 @@
         <extracomment>The name of the vendor ({cf0a9644-2c13-4daf-85c1-ad88d6745b42})
 ----------
 The name of the plugin Denon ({cd758269-dbbb-4ef0-80ab-48bd9a8a2765})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Denon</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="181"/>
         <source>AVR X1000</source>
         <extracomment>The name of the ThingClass ({1cd3d67e-aba0-450e-9e2a-483a1527aba6})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>AVR X1000</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="184"/>
@@ -31,7 +31,7 @@ The name of the StateType ({9cd60864-f141-4e03-a85b-357690cad1b8}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: collection, ID: {d4f14d93-8cae-4e1b-9ee7-a5c21c0211df})
 ----------
 The name of the StateType ({d4f14d93-8cae-4e1b-9ee7-a5c21c0211df}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="196"/>
@@ -40,13 +40,13 @@ The name of the StateType ({d4f14d93-8cae-4e1b-9ee7-a5c21c0211df}) of ThingClass
         <extracomment>The name of the EventType ({9cd60864-f141-4e03-a85b-357690cad1b8}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({d4f14d93-8cae-4e1b-9ee7-a5c21c0211df}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Album geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="202"/>
         <source>Alert</source>
         <extracomment>The name of the ActionType ({db8e001a-fcae-4c41-9811-325e14c06109}) of ThingClass heosPlayer</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Alarm</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="205"/>
@@ -61,7 +61,7 @@ The name of the StateType ({0a9183a4-b633-4773-ba7a-f4266895157e}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: artist, ID: {50b34df4-90f7-41aa-9a57-6f2d31a18430})
 ----------
 The name of the StateType ({50b34df4-90f7-41aa-9a57-6f2d31a18430}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Künstler</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="217"/>
@@ -70,7 +70,7 @@ The name of the StateType ({50b34df4-90f7-41aa-9a57-6f2d31a18430}) of ThingClass
         <extracomment>The name of the EventType ({0a9183a4-b633-4773-ba7a-f4266895157e}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({50b34df4-90f7-41aa-9a57-6f2d31a18430}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Künstler geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="223"/>
@@ -85,7 +85,7 @@ The name of the StateType ({a7f0ba95-383a-4efd-adc5-a36e50a04018}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: artwork, ID: {6c4a208b-5b04-40cc-b14b-8f79aff30307})
 ----------
 The name of the StateType ({6c4a208b-5b04-40cc-b14b-8f79aff30307}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Artwork</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="235"/>
@@ -94,7 +94,7 @@ The name of the StateType ({6c4a208b-5b04-40cc-b14b-8f79aff30307}) of ThingClass
         <extracomment>The name of the EventType ({a7f0ba95-383a-4efd-adc5-a36e50a04018}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({6c4a208b-5b04-40cc-b14b-8f79aff30307}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Artwork geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="241"/>
@@ -106,13 +106,13 @@ The name of the EventType ({6c4a208b-5b04-40cc-b14b-8f79aff30307}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: bass, ID: {2c92b22e-d5b2-4991-a523-64222bffc9e7})
 ----------
 The name of the StateType ({2c92b22e-d5b2-4991-a523-64222bffc9e7}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bass</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="250"/>
         <source>Bass changed</source>
         <extracomment>The name of the EventType ({2c92b22e-d5b2-4991-a523-64222bffc9e7}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bass geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="253"/>
@@ -124,13 +124,13 @@ The name of the StateType ({2c92b22e-d5b2-4991-a523-64222bffc9e7}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: channel, ID: {f29ffa2c-31d6-4d88-b160-a38288c82ce1})
 ----------
 The name of the StateType ({f29ffa2c-31d6-4d88-b160-a38288c82ce1}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Kanal</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="262"/>
         <source>Channel changed</source>
         <extracomment>The name of the EventType ({f29ffa2c-31d6-4d88-b160-a38288c82ce1}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Kanal geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="265"/>
@@ -151,7 +151,7 @@ The name of the StateType ({4d1790bf-28c6-4c1f-8892-ba1a0ef140f5}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: connected, ID: {fc1dee8b-8fcc-4ec2-8fe6-6be4f5f47a5c})
 ----------
 The name of the StateType ({fc1dee8b-8fcc-4ec2-8fe6-6be4f5f47a5c}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="283"/>
@@ -163,31 +163,31 @@ The name of the StateType ({fc1dee8b-8fcc-4ec2-8fe6-6be4f5f47a5c}) of ThingClass
 The name of the EventType ({4d1790bf-28c6-4c1f-8892-ba1a0ef140f5}) of ThingClass heos
 ----------
 The name of the EventType ({fc1dee8b-8fcc-4ec2-8fe6-6be4f5f47a5c}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="292"/>
         <source>Decrease volume</source>
         <extracomment>The name of the ActionType ({d3752c32-92e3-4396-8e2f-ab5e57c6cfb1}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lautstärke verringern</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="301"/>
         <source>Heos</source>
         <extracomment>The name of the ThingClass ({28bbf4c6-dfd8-4d9d-aa27-5daf2c25d63c})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Heos</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="304"/>
         <source>Heos player</source>
         <extracomment>The name of the ThingClass ({fce5247f-4c6d-408f-ac62-e5973dc6adfa})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Heos Player</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="307"/>
         <source>ID</source>
         <extracomment>The name of the ParamType (ThingClass: AVRX1000, Type: thing, ID: {2e8806cb-f6f3-4e9a-b6ea-0b35f75e61c5})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="310"/>
@@ -196,19 +196,19 @@ The name of the EventType ({fc1dee8b-8fcc-4ec2-8fe6-6be4f5f47a5c}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: heos, Type: thing, ID: {a54b98b4-b78f-41dd-a257-14425c6cf9ab})
 ----------
 The name of the ParamType (ThingClass: AVRX1000, Type: thing, ID: {cb6eeeb0-3d75-43b6-8177-b5ac19648557})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>IPv4 Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="316"/>
         <source>Increase volume</source>
         <extracomment>The name of the ActionType ({4ae686d6-2307-40a0-bd38-2cd3a92342cc}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lautstärke verringern</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="319"/>
         <source>Join group</source>
         <extracomment>The name of the Browser Item ActionType ({73112a01-84c7-4b1d-8b86-71672c110d06}) of ThingClass heosPlayer</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gruppe beitreten</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="322"/>
@@ -217,25 +217,25 @@ The name of the ParamType (ThingClass: AVRX1000, Type: thing, ID: {cb6eeeb0-3d75
         <extracomment>The name of the ParamType (ThingClass: heos, EventType: loggedIn, ID: {ab689a6e-eb71-4a41-a267-ba1afe7e2f56})
 ----------
 The name of the StateType ({ab689a6e-eb71-4a41-a267-ba1afe7e2f56}) of ThingClass heos</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingelogged</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="328"/>
         <source>Logged in changed</source>
         <extracomment>The name of the EventType ({ab689a6e-eb71-4a41-a267-ba1afe7e2f56}) of ThingClass heos</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingelogged geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="331"/>
         <source>Model</source>
         <extracomment>The name of the ParamType (ThingClass: heosPlayer, Type: thing, ID: {e760f92b-8fca-4f20-aead-a52045505b81})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Modell</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="334"/>
         <source>Model name</source>
         <extracomment>The name of the ParamType (ThingClass: heos, Type: thing, ID: {ab1a0be8-e3a5-4f95-b9b7-893de1ca4cf7})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Modellname</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="337"/>
@@ -256,7 +256,7 @@ The name of the ParamType (ThingClass: AVRX1000, ActionType: mute, ID: {3e11470d
 The name of the ParamType (ThingClass: AVRX1000, EventType: mute, ID: {3e11470d-a5b7-499c-be55-9b1b4fe5eedf})
 ----------
 The name of the StateType ({3e11470d-a5b7-499c-be55-9b1b4fe5eedf}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Stumm</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="355"/>
@@ -265,13 +265,13 @@ The name of the StateType ({3e11470d-a5b7-499c-be55-9b1b4fe5eedf}) of ThingClass
         <extracomment>The name of the EventType ({fcc89c7c-b793-4b6f-a3dc-0e0e3a86748f}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({3e11470d-a5b7-499c-be55-9b1b4fe5eedf}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Stumm geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="361"/>
         <source>Notification url</source>
         <extracomment>The name of the ParamType (ThingClass: denon, Type: plugin, ID: {5a3cd3eb-8ff5-4110-aef0-7b0608450e60})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benachrichtigungs-Url</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="364"/>
@@ -280,7 +280,7 @@ The name of the EventType ({3e11470d-a5b7-499c-be55-9b1b4fe5eedf}) of ThingClass
         <extracomment>The name of the ActionType ({21c1cbe6-278f-4688-a65f-6620be1ee5ea}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({3de38047-006f-4d97-9326-08bb5ad79b05}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Pause</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="370"/>
@@ -289,7 +289,7 @@ The name of the ActionType ({3de38047-006f-4d97-9326-08bb5ad79b05}) of ThingClas
         <extracomment>The name of the ActionType ({c64964e4-cea0-468a-a9bf-8f69657b74e9}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({d04eb30b-838d-4fbd-b781-c01005b59756}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Play</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="376"/>
@@ -310,7 +310,7 @@ The name of the ParamType (ThingClass: AVRX1000, ActionType: playbackStatus, ID:
 The name of the ParamType (ThingClass: AVRX1000, EventType: playbackStatus, ID: {8ef6708c-812a-4e6a-a608-9e480aa3b7bf})
 ----------
 The name of the StateType ({8ef6708c-812a-4e6a-a608-9e480aa3b7bf}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wiedergabestatus</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="394"/>
@@ -319,13 +319,13 @@ The name of the StateType ({8ef6708c-812a-4e6a-a608-9e480aa3b7bf}) of ThingClass
         <extracomment>The name of the EventType ({6db3b484-4cd4-477b-b822-275865d308db}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({8ef6708c-812a-4e6a-a608-9e480aa3b7bf}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wiedergabestatus geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="400"/>
         <source>Player ID</source>
         <extracomment>The name of the ParamType (ThingClass: heosPlayer, Type: thing, ID: {89629008-6ad8-4e92-863d-b86e0e012d0b})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Player ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="403"/>
@@ -340,7 +340,7 @@ The name of the StateType ({c59835ac-ee6e-4e6c-aa20-aeb3501937c5}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: playerType, ID: {2f372374-16f3-4900-afdc-834f51075d07})
 ----------
 The name of the StateType ({2f372374-16f3-4900-afdc-834f51075d07}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Playertyp</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="415"/>
@@ -349,7 +349,7 @@ The name of the StateType ({2f372374-16f3-4900-afdc-834f51075d07}) of ThingClass
         <extracomment>The name of the EventType ({c59835ac-ee6e-4e6c-aa20-aeb3501937c5}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({2f372374-16f3-4900-afdc-834f51075d07}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Playertyp geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="421"/>
@@ -361,19 +361,19 @@ The name of the EventType ({2f372374-16f3-4900-afdc-834f51075d07}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: power, ID: {1cdb6b54-6831-4900-95b2-c78f64497701})
 ----------
 The name of the StateType ({1cdb6b54-6831-4900-95b2-c78f64497701}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeschalten</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="430"/>
         <source>Power changed</source>
         <extracomment>The name of the EventType ({1cdb6b54-6831-4900-95b2-c78f64497701}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeschalten geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="433"/>
         <source>Reboot</source>
         <extracomment>The name of the ActionType ({4f8b7fe8-7a18-483a-859d-ed5acb0b9a20}) of ThingClass heos</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Neustarten</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="436"/>
@@ -394,7 +394,7 @@ The name of the ParamType (ThingClass: AVRX1000, ActionType: repeat, ID: {947898
 The name of the ParamType (ThingClass: AVRX1000, EventType: repeat, ID: {9478987b-14e4-4572-a059-a18a5a9db229})
 ----------
 The name of the StateType ({9478987b-14e4-4572-a059-a18a5a9db229}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wiederholungsmodus</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="454"/>
@@ -403,7 +403,7 @@ The name of the StateType ({9478987b-14e4-4572-a059-a18a5a9db229}) of ThingClass
         <extracomment>The name of the EventType ({4e60cd17-5845-4351-aa2c-2504610e1532}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({9478987b-14e4-4572-a059-a18a5a9db229}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wiederholungsmodus geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="460"/>
@@ -412,13 +412,13 @@ The name of the EventType ({9478987b-14e4-4572-a059-a18a5a9db229}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: heosPlayer, Type: thing, ID: {866e8d6a-953f-4bdc-8d85-8d92e51e8592})
 ----------
 The name of the ParamType (ThingClass: heos, Type: thing, ID: {f796664d-6cb7-4f29-9d05-771968d82a32})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Seriennummer</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="466"/>
         <source>Set bass</source>
         <extracomment>The name of the ActionType ({2c92b22e-d5b2-4991-a523-64222bffc9e7}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Bass</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="472"/>
@@ -427,7 +427,7 @@ The name of the ParamType (ThingClass: heos, Type: thing, ID: {f796664d-6cb7-4f2
         <extracomment>The name of the ActionType ({fcc89c7c-b793-4b6f-a3dc-0e0e3a86748f}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({3e11470d-a5b7-499c-be55-9b1b4fe5eedf}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Stumm</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="478"/>
@@ -436,7 +436,7 @@ The name of the ActionType ({3e11470d-a5b7-499c-be55-9b1b4fe5eedf}) of ThingClas
         <extracomment>The name of the ActionType ({6db3b484-4cd4-477b-b822-275865d308db}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({8ef6708c-812a-4e6a-a608-9e480aa3b7bf}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Wiedergabemodus</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="487"/>
@@ -445,7 +445,7 @@ The name of the ActionType ({8ef6708c-812a-4e6a-a608-9e480aa3b7bf}) of ThingClas
         <extracomment>The name of the ActionType ({4e60cd17-5845-4351-aa2c-2504610e1532}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({9478987b-14e4-4572-a059-a18a5a9db229}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Wiederholungsmodus</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="493"/>
@@ -454,25 +454,25 @@ The name of the ActionType ({9478987b-14e4-4572-a059-a18a5a9db229}) of ThingClas
         <extracomment>The name of the ActionType ({4b581237-acf5-4d8f-9e83-9b24e9ac900a}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({8ad33cb9-e758-433d-a013-2e4d43157c92}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Zufallswiedergabe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="499"/>
         <source>Set surround mode</source>
         <extracomment>The name of the ActionType ({4f203bdd-691c-4384-a934-2d49a5448f0a}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Surroundmodus</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="502"/>
         <source>Set tone control</source>
         <extracomment>The name of the ActionType ({d57c1e5e-2cc9-4638-999c-1523f16dbb83}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Tonkontrolle</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="505"/>
         <source>Set treble</source>
         <extracomment>The name of the ActionType ({38a3be02-6ed4-4a84-903e-eb923b933989}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Höhen</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="514"/>
@@ -493,7 +493,7 @@ The name of the ParamType (ThingClass: AVRX1000, ActionType: shuffle, ID: {8ad33
 The name of the ParamType (ThingClass: AVRX1000, EventType: shuffle, ID: {8ad33cb9-e758-433d-a013-2e4d43157c92})
 ----------
 The name of the StateType ({8ad33cb9-e758-433d-a013-2e4d43157c92}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zufallswiedergabe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="532"/>
@@ -502,7 +502,7 @@ The name of the StateType ({8ad33cb9-e758-433d-a013-2e4d43157c92}) of ThingClass
         <extracomment>The name of the EventType ({4b581237-acf5-4d8f-9e83-9b24e9ac900a}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({8ad33cb9-e758-433d-a013-2e4d43157c92}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zufallswiedergabe geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="538"/>
@@ -511,7 +511,7 @@ The name of the EventType ({8ad33cb9-e758-433d-a013-2e4d43157c92}) of ThingClass
         <extracomment>The name of the ActionType ({a718f7e9-0b54-4403-b661-49f7b0d13085}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({3f2eb789-918c-475a-a295-14c0c24338b8}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="544"/>
@@ -520,7 +520,7 @@ The name of the ActionType ({3f2eb789-918c-475a-a295-14c0c24338b8}) of ThingClas
         <extracomment>The name of the ActionType ({57697e9c-ce5e-4b8f-b42e-16662829ceb2}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({bf9664e4-a53e-474c-afcc-88f25e6fe365}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Nächstes</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="550"/>
@@ -529,13 +529,13 @@ The name of the ActionType ({bf9664e4-a53e-474c-afcc-88f25e6fe365}) of ThingClas
         <extracomment>The name of the ParamType (ThingClass: heosPlayer, EventType: source, ID: {eee22722-3ee5-48f7-8af8-275dc04b21eb})
 ----------
 The name of the StateType ({eee22722-3ee5-48f7-8af8-275dc04b21eb}) of ThingClass heosPlayer</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Quelle</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="556"/>
         <source>Source changed</source>
         <extracomment>The name of the EventType ({eee22722-3ee5-48f7-8af8-275dc04b21eb}) of ThingClass heosPlayer</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Quelle geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="559"/>
@@ -544,7 +544,7 @@ The name of the StateType ({eee22722-3ee5-48f7-8af8-275dc04b21eb}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: AVRX1000, ActionType: decreaseVolume, ID: {1d54fda8-336c-436f-ab2b-e8bd549f830c})
 ----------
 The name of the ParamType (ThingClass: AVRX1000, ActionType: increaseVolume, ID: {765c7e2a-9eb6-46fc-a880-4e96c81f8d1e})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="565"/>
@@ -553,7 +553,7 @@ The name of the ParamType (ThingClass: AVRX1000, ActionType: increaseVolume, ID:
         <extracomment>The name of the ActionType ({c4b29c09-e3b3-4843-b6d9-e032f3fc1d78}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({ddab0869-5b90-4fd4-9c40-9ad57101b87c}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="571"/>
@@ -565,13 +565,13 @@ The name of the ActionType ({ddab0869-5b90-4fd4-9c40-9ad57101b87c}) of ThingClas
 The name of the ParamType (ThingClass: AVRX1000, EventType: surroundMode, ID: {4f203bdd-691c-4384-a934-2d49a5448f0a})
 ----------
 The name of the StateType ({4f203bdd-691c-4384-a934-2d49a5448f0a}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Surroundmodus</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="580"/>
         <source>Surround mode changed</source>
         <extracomment>The name of the EventType ({4f203bdd-691c-4384-a934-2d49a5448f0a}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Surroundmodus geädert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="583"/>
@@ -586,7 +586,7 @@ The name of the StateType ({bbeecf30-6feb-48d5-ade3-57b2a4eea05f}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: title, ID: {d32493d8-5faf-4c7a-ba94-847dc9b81615})
 ----------
 The name of the StateType ({d32493d8-5faf-4c7a-ba94-847dc9b81615}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Title</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="595"/>
@@ -595,7 +595,7 @@ The name of the StateType ({d32493d8-5faf-4c7a-ba94-847dc9b81615}) of ThingClass
         <extracomment>The name of the EventType ({bbeecf30-6feb-48d5-ade3-57b2a4eea05f}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({d32493d8-5faf-4c7a-ba94-847dc9b81615}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Title geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="601"/>
@@ -607,13 +607,13 @@ The name of the EventType ({d32493d8-5faf-4c7a-ba94-847dc9b81615}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: toneControl, ID: {d57c1e5e-2cc9-4638-999c-1523f16dbb83})
 ----------
 The name of the StateType ({d57c1e5e-2cc9-4638-999c-1523f16dbb83}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tonkontrolle</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="610"/>
         <source>Tone control changed</source>
         <extracomment>The name of the EventType ({d57c1e5e-2cc9-4638-999c-1523f16dbb83}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tonkontroller geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="613"/>
@@ -625,19 +625,19 @@ The name of the StateType ({d57c1e5e-2cc9-4638-999c-1523f16dbb83}) of ThingClass
 The name of the ParamType (ThingClass: AVRX1000, EventType: treble, ID: {38a3be02-6ed4-4a84-903e-eb923b933989})
 ----------
 The name of the StateType ({38a3be02-6ed4-4a84-903e-eb923b933989}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Höhen</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="622"/>
         <source>Treble changed</source>
         <extracomment>The name of the EventType ({38a3be02-6ed4-4a84-903e-eb923b933989}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Höhen geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="625"/>
         <source>Unjoin group</source>
         <extracomment>The name of the Browser Item ActionType ({1b866b95-1fc7-4b45-ad71-c85e43fcc367}) of ThingClass heosPlayer</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gruppe verlassen</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="628"/>
@@ -646,19 +646,19 @@ The name of the StateType ({38a3be02-6ed4-4a84-903e-eb923b933989}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: heos, EventType: userDisplayName, ID: {77756132-5fa4-409e-969e-d23bcee72356})
 ----------
 The name of the StateType ({77756132-5fa4-409e-969e-d23bcee72356}) of ThingClass heos</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="634"/>
         <source>User name changed</source>
         <extracomment>The name of the EventType ({77756132-5fa4-409e-969e-d23bcee72356}) of ThingClass heos</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="637"/>
         <source>Version</source>
         <extracomment>The name of the ParamType (ThingClass: heosPlayer, Type: thing, ID: {aa1158f7-b451-456a-840f-4f0c63b2b7f0})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Version</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="640"/>
@@ -679,7 +679,7 @@ The name of the ParamType (ThingClass: AVRX1000, ActionType: volume, ID: {773636
 The name of the ParamType (ThingClass: AVRX1000, EventType: volume, ID: {773636b9-304d-463a-8755-fc7488dc0ff3})
 ----------
 The name of the StateType ({773636b9-304d-463a-8755-fc7488dc0ff3}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lautstärke</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="658"/>
@@ -688,13 +688,13 @@ The name of the StateType ({773636b9-304d-463a-8755-fc7488dc0ff3}) of ThingClass
         <extracomment>The name of the EventType ({6d4886a1-fa5d-4889-96c5-7a1c206f59be}) of ThingClass heosPlayer
 ----------
 The name of the EventType ({773636b9-304d-463a-8755-fc7488dc0ff3}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lautstärke geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="484"/>
         <source>Set power</source>
         <extracomment>The name of the ActionType ({1cdb6b54-6831-4900-95b2-c78f64497701}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Schalte ein</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="508"/>
@@ -703,13 +703,13 @@ The name of the EventType ({773636b9-304d-463a-8755-fc7488dc0ff3}) of ThingClass
         <extracomment>The name of the ActionType ({6d4886a1-fa5d-4889-96c5-7a1c206f59be}) of ThingClass heosPlayer
 ----------
 The name of the ActionType ({773636b9-304d-463a-8755-fc7488dc0ff3}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Lautstärke</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/denon/plugininfo.h" line="469"/>
         <source>Set channel</source>
         <extracomment>The name of the ActionType ({f29ffa2c-31d6-4d88-b160-a38288c82ce1}) of ThingClass AVRX1000</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wähle Kanal</translation>
     </message>
 </context>
 <context>
@@ -717,28 +717,28 @@ The name of the ActionType ({773636b9-304d-463a-8755-fc7488dc0ff3}) of ThingClas
     <message>
         <location filename="../integrationplugindenon.cpp" line="116"/>
         <source>UPnP discovery failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>UPnP Gerätesuche fehlgeschlagen.</translation>
     </message>
     <message>
         <location filename="../integrationplugindenon.cpp" line="153"/>
         <source>Please enter your HEOS account credentials. Leave empty if you doesn&apos;t have any. Some features like music browsing won&apos;t be available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte geben Sie Ihre HEOS-Kontoanmeldeinformationen ein. Lassen Sie sie leer wenn Sie keine haben, einige Funktionen wie das Durchsuchen von Musik sind dann nicht verfügbar.</translation>
     </message>
     <message>
         <location filename="../integrationplugindenon.cpp" line="193"/>
         <location filename="../integrationplugindenon.cpp" line="232"/>
         <source>The given IP address is not valid.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die eingegebene IP-Adresse ist nicht gültig.</translation>
     </message>
     <message>
         <location filename="../integrationplugindenon.cpp" line="958"/>
         <source>Service is not available</source>
-        <translation type="unfinished"></translation>
+        <translation>Service ist nicht verfügbar</translation>
     </message>
     <message>
         <location filename="../integrationplugindenon.cpp" line="1169"/>
         <source>Wrong username or password</source>
-        <translation type="unfinished"></translation>
+        <translation>Falscher Benutzername oder Passwort</translation>
     </message>
 </context>
 </TS>
