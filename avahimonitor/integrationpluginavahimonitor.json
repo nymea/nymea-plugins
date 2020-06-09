@@ -48,6 +48,22 @@
                             "type": "int",
                             "unit": "UnixTime",
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "db04b1ce-bc05-48b8-8012-bab97f3d0728",
+                            "name": "address",
+                            "displayName": "IP address",
+                            "displayNameEvent": "IP address changed",
+                            "type": "QString",
+                            "defaultValue": "0.0.0.0"
+                        },
+                        {
+                            "id": "e98a4d9e-92e0-4d84-adf9-2693cf2cd714",
+                            "name": "port",
+                            "displayName": "Port",
+                            "displayNameEvent": "Port changed",
+                            "type": "int",
+                            "defaultValue": "0"
                         }
                     ]
                 }

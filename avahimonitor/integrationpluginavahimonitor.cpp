@@ -60,7 +60,9 @@ void IntegrationPluginAvahiMonitor::setupThing(ThingSetupInfo *info)
         if (info->thing()->paramValue(avahiThingServiceParamTypeId).toString() == entry.name() &&
                 info->thing()->paramValue(avahiThingHostNameParamTypeId).toString() == entry.hostName()) {
             info->thing()->setStateValue(avahiIsPresentStateTypeId, true);
-            info->thing()->setStateValue(avahiLastSeenTimeStateTypeId, QDateTime::currentDateTime());
+            info->thing()->setStateValue(avahiLastSeenTimeStateTypeId, QDateTime::currentDateTime().toString());
+            info->thing()->setStateValue(avahiAddressStateTypeId, entry.hostAddress().toString());
+            info->thing()->setStateValue(avahiPortStateTypeId, entry.port());
         }
     }
 
@@ -110,7 +112,9 @@ void IntegrationPluginAvahiMonitor::onServiceEntryAdded(const ZeroConfServiceEnt
         if (thing->paramValue(avahiThingServiceParamTypeId).toString() == serviceEntry.name() &&
                 thing->paramValue(avahiThingHostNameParamTypeId).toString() == serviceEntry.hostName()) {
             thing->setStateValue(avahiIsPresentStateTypeId, true);
-            thing->setStateValue(avahiLastSeenTimeStateTypeId, QDateTime::currentDateTime());
+            thing->setStateValue(avahiLastSeenTimeStateTypeId, QDateTime::currentDateTime().toString());
+            thing->setStateValue(avahiAddressStateTypeId, serviceEntry.hostAddress().toString());
+            thing->setStateValue(avahiPortStateTypeId, serviceEntry.port());
         }
     }
 }
