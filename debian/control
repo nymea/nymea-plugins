@@ -166,22 +166,6 @@ Description: nymea.io plugin for commandlauncher
  This package will install the nymea.io plugin for commandlauncher
 
 
-Package: nymea-plugin-conrad
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-conrad
-Description: nymea.io plugin for conrad
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for conrad
-
-
 Package: nymea-plugin-datetime
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -292,22 +276,6 @@ Description: nymea.io plugin for elgato
  This package will install the nymea.io plugin for elgato
 
 
-Package: nymea-plugin-elro
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-elro
-Description: nymea.io plugin for elro
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for elro
-
-
 Package: nymea-plugin-flowercare
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -387,22 +355,6 @@ Description: nymea.io plugin for gpio
  This package will install the nymea.io plugin for gpio
 
 
-Package: nymea-plugin-intertechno
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-intertechno
-Description: nymea.io plugin for intertechno
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for intertechno
-
-
 Package: nymea-plugin-kodi
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -417,22 +369,6 @@ Description: nymea.io plugin for kodi
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for kodi
-
-
-Package: nymea-plugin-leynew
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-leynew
-Description: nymea.io plugin for leynew
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for leynew
 
 
 Package: nymea-plugin-lgsmarttv
@@ -732,22 +668,6 @@ Description: nymea.io plugin for UniFi network controllers
  in the system and create individual scenes and behaviors for your environment.
  .
  This package will install the nymea.io plugin for UniFi network controllers
-
-
-Package: nymea-plugin-unitec
-Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         nymea-plugins-translations,
-Replaces: guh-plugin-unitec
-Description: nymea.io plugin for unitec
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the nymea.io plugin for unitec
 
 
 Package: nymea-plugin-usbrelay
@@ -1109,32 +1029,12 @@ Description: Plugins for nymea IoT server - Meta package for 6LoWPAN Merkur boar
  This package will install the 6LoWPAN Merkur board plugins for nymea.
 
 
-Package: nymea-plugins-433mhz
-Section: libs
-Architecture: all
-Depends: nymea-plugin-elro,
-         nymea-plugin-conrad,
-         nymea-plugin-intertechno,
-         nymea-plugin-leynew,
-         nymea-plugin-unitec,
-Replaces: guh-plugins-433mhz
-Description: Plugins for nymea IoT server - Meta package for RF 433 MHz plugins
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
- .
- This package will install the RF 433 MHz plugins for nymea.
-
-
 Package: nymea-plugins-all
 Section: libs
 Architecture: all
 Depends: nymea-plugins,
          nymea-plugin-simulation,
          nymea-plugin-snapd,
-         nymea-plugins-433mhz,
          nymea-plugins-maker,
          nymea-plugins-merkurboard,
 Replaces: guh-plugins-all

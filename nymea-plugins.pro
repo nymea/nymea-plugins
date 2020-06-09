@@ -10,7 +10,6 @@ PLUGIN_DIRS = \
     bose                \
     coinmarketcap       \
     commandlauncher     \
-    conrad              \
     datetime            \
     daylightsensor      \
     denon               \
@@ -18,17 +17,14 @@ PLUGIN_DIRS = \
     dweetio             \
     dynatrace           \
     elgato              \
-    elro                \
     eq-3                \
     flowercare          \
     genericelements     \
     genericthings       \
     gpio                \
     httpcommander       \
-    intertechno         \
     keba                \
     kodi                \
-    leynew              \
     lgsmarttv           \
     mailnotification    \
     mqttclient          \
@@ -58,7 +54,6 @@ PLUGIN_DIRS = \
     tuya                \
     udpcommander        \
     unifi               \
-    unitec              \
     usbrelay            \
     wakeonlan           \
     wemo                \
