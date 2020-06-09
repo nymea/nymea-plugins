@@ -59,10 +59,10 @@ void IntegrationPluginDenon::init()
         foreach (Thing *thing, myThings().filterByThingClassId(AVRX1000ThingClassId)) {
 
             if (entry.txt().contains("am=AVRX1000")) {
-                QString thingId = thing->paramValue(AVRX1000ThingIdParamTypeId).toString();
-                QString id = entry.name().split("@").first();
+                QString existingId = thing->paramValue(AVRX1000ThingIdParamTypeId).toString();
+                QString discoveredId = entry.name().split("@").first();
                 QHostAddress address = entry.hostAddress();
-                if (thingId == id) {
+                if (existingId == discoveredId && m_avrConnections.contains(thing->id())) {
                     AvrConnection *avrConnection = m_avrConnections.value(thing->id());
                     avrConnection->setHostAddress(address);
                 }
@@ -753,16 +753,17 @@ void IntegrationPluginDenon::onAvrPlayBackModeChanged(AvrConnection::PlayBackMod
 
 void IntegrationPluginDenon::onAvrSocketError()
 {
-    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    AvrConnection *avrConnection = static_cast<AvrConnection *>(sender());
 
     // Check if setup running for this thing
-    if (m_asyncAvrSetups.contains(denonConnection)) {
-        ThingSetupInfo *info = m_asyncAvrSetups.take(denonConnection);
+    if (m_asyncAvrSetups.contains(avrConnection)) {
+        ThingSetupInfo *info = m_asyncAvrSetups.take(avrConnection);
+        m_avrConnections.remove(info->thing()->id());
         qCWarning(dcDenon()) << "Could not add thing. The setup failed.";
         info->finish(Thing::ThingErrorHardwareFailure);
         // Delete the connection, the thing will not be added and
         // the connection will be created in the next setup
-        denonConnection->deleteLater();
+        avrConnection->deleteLater();
     }
 }
 

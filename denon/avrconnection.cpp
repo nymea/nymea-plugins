@@ -87,8 +87,11 @@ QHostAddress AvrConnection::hostAddress() const
 
 void AvrConnection::setHostAddress(const QHostAddress &hostAddress)
 {
-    m_hostAddress = hostAddress;
-    connectDevice();
+    if (!m_hostAddress.isEqual(hostAddress)) {
+        disconnectDevice();
+        m_hostAddress = hostAddress;
+        connectDevice();
+    }
 }
 
 int AvrConnection::port() const
@@ -98,8 +101,11 @@ int AvrConnection::port() const
 
 void AvrConnection::setPort(int port)
 {
-    m_port = port;
-    connectDevice();
+    if (m_port != port) {
+        disconnectDevice();
+        m_port = port;
+        connectDevice();
+    }
 }
 
 bool AvrConnection::connected()
