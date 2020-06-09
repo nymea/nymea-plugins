@@ -41,6 +41,9 @@
 #include "plugintimer.h"
 #include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
+#include "network/zeroconf/zeroconfserviceentry.h"
+
 
 class QNetworkReply;
 
@@ -90,6 +93,7 @@ private:
         QNetworkReply* nUpnpReply;
         ThingDescriptors results;
     };
+    ZeroConfServiceBrowser *m_zeroConfBrowser = nullptr;
     QHash<ThingDiscoveryInfo*, DiscoveryJob*> m_discoveries;
     void finishDiscovery(DiscoveryJob* job);
 
@@ -146,4 +150,4 @@ private:
     void abortRequests(QHash<QNetworkReply *, Thing *> requestList, Thing* thing);
 };
 
-#endif // INTEGRATIONPLUGINBOBLIGHT_H
+#endif // INTEGRATIONPLUGINPHILIPSHUE_H
