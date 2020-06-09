@@ -87,7 +87,7 @@ QHostAddress AvrConnection::hostAddress() const
 
 void AvrConnection::setHostAddress(const QHostAddress &hostAddress)
 {
-    if (!m_hostAddress.isEqual(hostAddress)) {
+    if (m_hostAddress != hostAddress) {
         disconnectDevice();
         m_hostAddress = hostAddress;
         connectDevice();
