@@ -41,6 +41,9 @@
 #include "plugintimer.h"
 #include "network/networkaccessmanager.h"
 #include "network/upnp/upnpdiscovery.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
+#include "network/zeroconf/zeroconfserviceentry.h"
+
 
 class QNetworkReply;
 
@@ -90,6 +93,7 @@ private:
         QNetworkReply* nUpnpReply;
         ThingDescriptors results;
     };
+    ZeroConfServiceBrowser *m_zeroConfBrowser = nullptr;
     QHash<ThingDiscoveryInfo*, DiscoveryJob*> m_discoveries;
     void finishDiscovery(DiscoveryJob* job);
 
@@ -107,8 +111,6 @@ private:
     QHash<QNetworkReply *, Thing *> m_bridgeLightsDiscoveryRequests;
     QHash<QNetworkReply *, Thing *> m_bridgeSensorsDiscoveryRequests;
     QHash<QNetworkReply *, Thing *> m_bridgeSearchDevicesRequests;
-
-    QHash<QNetworkReply *, QPair<Thing *, ActionId> > m_asyncActions;
 
     QHash<HueBridge *, Thing *> m_bridges;
     QHash<HueLight *, Thing *> m_lights;
@@ -135,7 +137,6 @@ private:
     void processLightsRefreshResponse(Thing *thing, const QByteArray &data);
     void processSensorsRefreshResponse(Thing *thing, const QByteArray &data);
     void processSetNameResponse(Thing *thing, const QByteArray &data);
-    void processActionResponse(Thing *thing, const ActionId actionId, const QByteArray &data);
 
     void bridgeReachableChanged(Thing *thing, const bool &reachable);
 
@@ -149,4 +150,4 @@ private:
     void abortRequests(QHash<QNetworkReply *, Thing *> requestList, Thing* thing);
 };
 
-#endif // INTEGRATIONPLUGINBOBLIGHT_H
+#endif // INTEGRATIONPLUGINPHILIPSHUE_H

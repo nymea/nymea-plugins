@@ -36,6 +36,9 @@
 #include "network/upnp/upnpdiscovery.h"
 #include "network/upnp/upnpdiscoveryreply.h"
 
+#include "platform/platformzeroconfcontroller.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
+
 #include <QDebug>
 #include <QColor>
 #include <QDateTime>
@@ -78,11 +81,29 @@ void IntegrationPluginPhilipsHue::init()
         }
     });
 
+    m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_hue._tcp._local");
+    connect(m_zeroConfBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=](const ZeroConfServiceEntry &entry){
+        foreach (Thing *thing, myThings().filterByThingClassId(bridgeThingClassId)) {
+            QString thingId = thing->paramValue(bridgeThingIdParamTypeId).toString();
+            if (entry.protocol() == QAbstractSocket::IPv4Protocol) {
+
+                foreach (const QString &txtEntry, entry.txt()) {
+                    QStringList parts = txtEntry.split('=');
+                    if (parts.length() == 2 && parts.first() == "uuid" && parts.last() == thingId) {
+                        thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
+                        HueBridge *bridge = m_bridges.key(thing);
+                        bridge->setHostAddress(entry.hostAddress());
+                        //TODO also add upnp to update the address
+                    }
+                }
+            }
+        }
+    });
 }
 
 void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
 {
-    // We're starting a UpnpDiscovery and a NUpnpDiscovery.
+    // We're starting a mDNS-, Upnp- and a NUpnpDiscovery.
     // For that, we create a tracking object holding pointers to both of those discoveries.
     // Both discoveries add their results to a temporary list.
     // Once a discovery is finished, it will remove itself from the tracking object.
@@ -98,6 +119,38 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
         delete m_discoveries.take(info);
     });
 
+    foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
+
+        /*
+         * Philips Hue - xxxxxx._hue._tcp._local
+         * protocol: tcp
+         * service: hue
+         * name: Philips Hue - xxxxxx where xxxxxx are the last 6 digits of the bridge ID.
+        */
+        if (!entry.serviceType().contains("_hue._tcp._local")) {
+            continue;
+        }
+        qCDebug(dcPhilipsHue()) << "Zeroconf entry:" << entry;
+
+        QString name = entry.name().split(" - ").first();
+        QString id = entry.name().split(" - ").last();
+        QHostAddress address = entry.hostAddress();
+
+        ParamList params;
+        params.append(Param(bridgeThingHostParamTypeId, address.toString()));
+        params.append(Param(bridgeThingIdParamTypeId, id));
+
+        ThingDescriptor descriptor(bridgeThingClassId, "Philips Hue Bridge", address.toString());
+        descriptor.setParams(params);
+
+        foreach (Thing *thing, myThings()) {
+            if (thing->paramValue(bridgeThingIdParamTypeId).toString() == id) {
+                descriptor.setThingId(thing->id());
+                break;
+            }
+        }
+        discovery->results.append(descriptor);
+    }
 
     qCDebug(dcPhilipsHue()) << "Starting UPnP discovery...";
     UpnpDiscoveryReply *upnpReply = hardwareManager()->upnpDiscovery()->discoverDevices("libhue:idl");
@@ -139,7 +192,7 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
 
 
     qCDebug(dcPhilipsHue) << "Starting N-UPNP discovery...";
-    QNetworkRequest request(QUrl("https://www.meethue.com/api/nupnp"));
+    QNetworkRequest request(QUrl(" https://discovery.meethue.com "));
     QNetworkReply *nUpnpReply = hardwareManager()->networkManager()->get(request);
     discovery->nUpnpReply = nUpnpReply;
 
