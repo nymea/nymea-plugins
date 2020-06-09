@@ -87,14 +87,13 @@ void IntegrationPluginPhilipsHue::init()
             QString thingId = thing->paramValue(bridgeThingIdParamTypeId).toString();
             if (entry.protocol() == QAbstractSocket::IPv4Protocol) {
 
-                QString name = entry.name().split(" - ").first();
-                QString id = entry.name().split(" - ").last();
-
-                if (thingId.contains(id)) {
-                    thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
-                    HueBridge *bridge = m_bridges.key(thing);
-                    bridge->setHostAddress(entry.hostAddress());
-                    //TODO also add upnp to update the address
+                foreach (const QString &txtEntry, entry.txt()) {
+                    QStringList parts = txtEntry.split('=');
+                    if (parts.length() == 2 && parts.first() == "bridgeid" && parts.last().toLower() == thingId) {
+                        thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
+                        HueBridge *bridge = m_bridges.key(thing);
+                        bridge->setHostAddress(entry.hostAddress());
+                    }
                 }
             }
         }
@@ -127,13 +126,20 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
          * service: hue
          * name: Philips Hue - xxxxxx where xxxxxx are the last 6 digits of the bridge ID.
         */
-        if (!entry.serviceType().contains("_hue._tcp._local")) {
+        if (!entry.serviceType().contains("_hue._tcp._local") || entry.protocol() != QAbstractSocket::IPv4Protocol) {
             continue;
         }
         qCDebug(dcPhilipsHue()) << "Zeroconf entry:" << entry;
 
-        QString name = entry.name().split(" - ").first();
-        QString id = entry.name().split(" - ").last();
+        QString id;
+        foreach (const QString &txt, entry.txt()) {
+            QString field = txt.split("=").first();
+            QString value = txt.split("=").last();
+            if (field == "bridgeid") {
+                id = value;
+                break;
+            }
+        }
         QHostAddress address = entry.hostAddress();
 
         ParamList params;
