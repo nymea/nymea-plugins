@@ -136,7 +136,7 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
             QString field = txt.split("=").first();
             QString value = txt.split("=").last();
             if (field == "bridgeid") {
-                id = value;
+                id = value.toLower();
                 break;
             }
         }
