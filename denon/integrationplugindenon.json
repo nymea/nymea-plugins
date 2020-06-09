@@ -22,7 +22,7 @@
                     "name": "AVRX1000",
                     "displayName": "AVR X1000",
                     "createMethods": ["discovery"],
-                    "interfaces": ["extendedvolumecontroller", "connectable", "power"],
+                    "interfaces": ["mediaplayer", "mediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable", "power"],
                     "paramTypes": [
                         {
                             "id": "cb6eeeb0-3d75-43b6-8177-b5ac19648557",
@@ -49,7 +49,7 @@
                             "cached": false
                         },
                         {
-                            "displayName": "power",
+                            "displayName": "Power",
                             "id": "1cdb6b54-6831-4900-95b2-c78f64497701",
                             "name": "power",
                             "displayNameEvent": "Power changed",
@@ -78,6 +78,40 @@
                             "defaultValue": 0,
                             "minValue": 0,
                             "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "displayName": "Tone control",
+                            "id": "d57c1e5e-2cc9-4638-999c-1523f16dbb83",
+                            "name": "toneControl",
+                            "displayNameEvent": "Tone control changed",
+                            "displayNameAction": "Set tone control",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "displayName": "Bass",
+                            "id": "2c92b22e-d5b2-4991-a523-64222bffc9e7",
+                            "name": "bass",
+                            "displayNameEvent": "Bass changed",
+                            "displayNameAction": "Set bass",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "minValue": -50,
+                            "maxValue": 49,
+                            "writable": true
+                        },
+                        {
+                            "displayName": "Treble",
+                            "id": "38a3be02-6ed4-4a84-903e-eb923b933989",
+                            "name": "treble",
+                            "displayNameEvent": "Treble changed",
+                            "displayNameAction": "Set treble",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "minValue": -50,
+                            "maxValue": 49,
                             "writable": true
                         },
                         {
@@ -136,6 +170,85 @@
                                 "MATRIX"
                             ],
                             "defaultValue": "MOVIE"
+                        },
+                        {
+                            "id": "50b34df4-90f7-41aa-9a57-6f2d31a18430",
+                            "name": "artist",
+                            "displayName": "Artist",
+                            "displayNameEvent": "Artist changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "d4f14d93-8cae-4e1b-9ee7-a5c21c0211df",
+                            "name": "collection",
+                            "displayName": "Album",
+                            "displayNameEvent": "Album changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "d32493d8-5faf-4c7a-ba94-847dc9b81615",
+                            "name": "title",
+                            "displayName": "Title",
+                            "displayNameEvent": "Title changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "6c4a208b-5b04-40cc-b14b-8f79aff30307",
+                            "name": "artwork",
+                            "displayName": "Artwork",
+                            "displayNameEvent": "Artwork changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "2f372374-16f3-4900-afdc-834f51075d07",
+                            "name": "playerType",
+                            "displayName": "Player type",
+                            "displayNameEvent": "Player type changed",
+                            "possibleValues": [
+                                "audio",
+                                "video"
+                            ],
+                            "type": "QString",
+                            "defaultValue": "audio"
+                        },
+                        {
+                            "id": "8ef6708c-812a-4e6a-a608-9e480aa3b7bf",
+                            "name": "playbackStatus",
+                            "displayName": "Playback status",
+                            "displayNameEvent": "Playback status changed",
+                            "displayNameAction": "Set playback status",
+                            "type": "QString",
+                            "defaultValue": "Stopped",
+                            "possibleValues": ["Playing", "Paused", "Stopped"],
+                            "cached": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "8ad33cb9-e758-433d-a013-2e4d43157c92",
+                            "name": "shuffle",
+                            "displayName": "Shuffle",
+                            "displayNameEvent": "Shuffle changed",
+                            "displayNameAction": "Set shuffle",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "9478987b-14e4-4572-a059-a18a5a9db229",
+                            "name": "repeat",
+                            "displayName": "Repeat mode",
+                            "displayNameEvent": "Repeat mode changed",
+                            "displayNameAction": "Set repeat mode",
+                            "type": "QString",
+                            "defaultValue": "None",
+                            "possibleValues": ["None", "One", "All"],
+                            "cached": false,
+                            "writable": true
                         }
                     ],
                     "actionTypes": [
@@ -164,6 +277,31 @@
                                     "type": "int"
                                 }
                             ]
+                        },
+                        {
+                            "id": "3f2eb789-918c-475a-a295-14c0c24338b8",
+                            "name": "skipBack",
+                            "displayName": "Skip back"
+                        },
+                        {
+                            "id": "ddab0869-5b90-4fd4-9c40-9ad57101b87c",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "d04eb30b-838d-4fbd-b781-c01005b59756",
+                            "name": "play",
+                            "displayName": "Play"
+                        },
+                        {
+                            "id": "3de38047-006f-4d97-9326-08bb5ad79b05",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "bf9664e4-a53e-474c-afcc-88f25e6fe365",
+                            "name": "skipNext",
+                            "displayName": "Skip next"
                         }
                     ]
                 },

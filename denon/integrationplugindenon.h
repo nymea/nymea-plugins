@@ -90,7 +90,8 @@ private:
     QHash<const Action *, int> m_asyncActions;
     QUrl m_notificationUrl;
 
-    QHash<int, ThingActionInfo*> m_pendingActions;
+    QHash<int, ThingActionInfo*> m_heosPendingActions;
+    QHash<QUuid, ThingActionInfo*> m_avrPendingActions;
 
     QHash<Heos*, BrowseResult*> m_pendingGetSourcesRequest;
     QHash<QString, BrowseResult*> m_pendingBrowseResult;    // QString = containerId or sourceId
@@ -128,11 +129,20 @@ private slots:
 
     void onAvrConnectionChanged(bool status);
     void onAvrSocketError();
+    void onAvrCommandExecuted(const QUuid &commandId, bool success);
+
     void onAvrVolumeChanged(int volume);
-    void onAvrChannelChanged(const QByteArray &channel);
+    void onAvrChannelChanged(const QString &channel);
     void onAvrMuteChanged(bool mute);
     void onAvrPowerChanged(bool power);
-    void onAvrSurroundModeChanged(const QByteArray &surroundMode);
+    void onAvrSurroundModeChanged(const QString &surroundMode);
+    void onAvrSongChanged(const QString &song);
+    void onAvrArtistChanged(const QString &artist);
+    void onAvrAlbumChanged(const QString &album);
+    void onAvrPlayBackModeChanged(AvrConnection::PlayBackMode mode);
+    void onAvrBassLevelChanged(int level);
+    void onAvrTrebleLevelChanged(int level);
+    void onAvrToneControlEnabledChanged(bool enabled);
 
     void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
 };

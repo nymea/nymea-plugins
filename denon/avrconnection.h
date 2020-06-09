@@ -34,11 +34,25 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QHostAddress>
+#include <QTimer>
+#include <QUuid>
 
 class AvrConnection : public QObject
 {
     Q_OBJECT
 public:
+    enum RepeatMode {
+        RepeatModeRepeatAll,
+        RepeatModeRepeatOne,
+        RepeatModeRepeatNone
+    };
+
+    enum PlayBackMode {
+        PlayBackModePlaying,
+        PlayBackModeStopped,
+        PlayBackModePaused
+    };
+
     explicit AvrConnection(const QHostAddress &hostAddress, const int &port = 23, QObject *parent = nullptr);
     ~AvrConnection();
 
@@ -46,30 +60,49 @@ public:
     void disconnectDevice();
 
     QHostAddress hostAddress() const;
+    void setHostAddress(const QHostAddress &hostAddress);
     int port() const;
+    void setPort(int port);
     bool connected();
 
-    void getAllStatus();
-    void getChannel();
-    void getVolume();
-    void getMute();
-    void getPower();
-    void getSurroundMode();
+    QUuid getChannel();
+    QUuid getVolume();
+    QUuid getMute();
+    QUuid getPower();
+    QUuid getSurroundMode();
+    QUuid getPlayBackInfo();
 
-    void setChannel(const QByteArray &channel);
-    void setVolume(int volume);
-    void setMute(bool mute);
-    void setPower(bool power);
-    void setSurroundMode(const QByteArray &surroundMode);
+    QUuid setChannel(const QByteArray &channel);
+    QUuid setVolume(int volume);
+    QUuid setMute(bool mute);
+    QUuid setPower(bool power);
+    QUuid setSurroundMode(const QByteArray &surroundMode);
+    QUuid enableToneControl(bool enabled);
+    QUuid setBassLevel(int level); //-6 to +6
+    QUuid setTrebleLevel(int level); //-6 to +6
 
-    void increaseVolume();
-    void decreaseVolume();
+    QUuid getBassLevel();
+    QUuid getTrebleLevel();
+    QUuid getToneControl();
+
+    QUuid play();
+    QUuid pause();
+    QUuid stop();
+    QUuid skipNext();
+    QUuid skipBack();
+    QUuid setRandom(bool on);
+    QUuid setRepeat(RepeatMode mode);
+
+    QUuid increaseVolume();
+    QUuid decreaseVolume();
 private:
+    QTimer *m_commandTimer = nullptr;
     QTcpSocket *m_socket = nullptr;
     QHostAddress m_hostAddress;
     int m_port;
+    QList<QPair<QUuid, QByteArray>> m_commandBuffer;
 
-    void sendCommand(const QByteArray &message);
+    QUuid sendCommand(const QByteArray &message);
 
 private slots:
     void onConnected();
@@ -80,11 +113,19 @@ private slots:
 signals:
     void socketErrorOccured(QAbstractSocket::SocketError socketError);
     void connectionStatusChanged(bool status);
+    void commandExecuted(const QUuid &commandId, bool success);
     void volumeChanged(int volume);
     void muteChanged(bool mute);
-    void channelChanged(const QByteArray &channel);
+    void channelChanged(const QString &channel);
     void powerChanged(bool power);
-    void surroundModeChanged(const QByteArray &surroundMode);
+    void surroundModeChanged(const QString &surroundMode);
+    void songChanged(const QString &song);
+    void artistChanged(const QString &artist);
+    void albumChanged(const QString &album);
+    void playBackModeChanged(AvrConnection::PlayBackMode);
+    void bassLevelChanged(int level);
+    void trebleLevelChanged(int level);
+    void toneControlEnabledChanged(bool enabled);
 };
 
 #endif // AVRCONNECTION_H

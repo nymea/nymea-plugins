@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
 * Copyright 2013 - 2020, nymea GmbH
 * Contact: contact@nymea.io
@@ -43,6 +43,23 @@ AvrConnection::AvrConnection(const QHostAddress &hostAddress, const int &port, Q
     connect(m_socket, &QTcpSocket::readyRead, this, &AvrConnection::readData);
     // Note: error signal will be interpreted as function, not as signal in C++11
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
+
+   m_commandTimer = new QTimer(this);
+   m_commandTimer->start(50); // 50ms is the minimum request interval specified
+
+   connect(m_commandTimer, &QTimer::timeout, this, [this] {
+       if (!m_commandBuffer.isEmpty()) {
+           QPair<QUuid, QByteArray> command =  m_commandBuffer.takeFirst();
+           if (m_socket->write(command.second) == -1) {
+               emit commandExecuted(command.first, false);
+               qCWarning(dcDenon()) << "Could not execute command" << command.second;
+           } else {
+               emit commandExecuted(command.first, true);
+           }
+       } else {
+           m_commandTimer->stop();
+       }
+   });
 }
 
 AvrConnection::~AvrConnection()
@@ -68,9 +85,27 @@ QHostAddress AvrConnection::hostAddress() const
     return m_hostAddress;
 }
 
+void AvrConnection::setHostAddress(const QHostAddress &hostAddress)
+{
+    if (m_hostAddress != hostAddress) {
+        disconnectDevice();
+        m_hostAddress = hostAddress;
+        connectDevice();
+    }
+}
+
 int AvrConnection::port() const
 {
     return m_port;
+}
+
+void AvrConnection::setPort(int port)
+{
+    if (m_port != port) {
+        disconnectDevice();
+        m_port = port;
+        connectDevice();
+    }
 }
 
 bool AvrConnection::connected()
@@ -78,56 +113,62 @@ bool AvrConnection::connected()
     return m_socket->isOpen();
 }
 
-void AvrConnection::getAllStatus()
+QUuid AvrConnection::getChannel()
 {
-    sendCommand("PW?\rSI?\rMV?\rMS?\rMU?\r");
+    return sendCommand("SI?\r");
 }
 
-void AvrConnection::getChannel()
+QUuid AvrConnection::getVolume()
 {
-    sendCommand("SI?\r");
+    return sendCommand("MV?\r");
 }
 
-void AvrConnection::getVolume()
+QUuid AvrConnection::getMute()
 {
-    sendCommand("MV?\r");
+    return sendCommand("MU?\r");
 }
 
-void AvrConnection::getMute()
+QUuid AvrConnection::getPower()
 {
-    sendCommand("MU?\r");
+    return sendCommand("PW?\r");
 }
 
-void AvrConnection::getPower()
+QUuid AvrConnection::getSurroundMode()
 {
-    sendCommand("PW?\r");
+    return sendCommand("MS?\r");
 }
 
-void AvrConnection::getSurroundMode()
+QUuid AvrConnection::getPlayBackInfo()
 {
-    sendCommand("MS?\r");
+    return sendCommand("NSE\r");
 }
 
-void AvrConnection::sendCommand(const QByteArray &message)
+QUuid AvrConnection::sendCommand(const QByteArray &message)
 {
-    m_socket->write(message);
+   QUuid commandId = QUuid::createUuid();
+
+   if (!m_commandTimer->isActive())
+       m_commandTimer->start(50);
+
+   m_commandBuffer.append(QPair<QUuid, QByteArray>(commandId, message));
+   return commandId;
 }
 
-void AvrConnection::setChannel(const QByteArray &channel)
+QUuid AvrConnection::setChannel(const QByteArray &channel)
 {
     QByteArray cmd = "SI" + channel + "\r";
-    qCDebug(dcDenon) << "Change to channel:" << cmd;
-    sendCommand(cmd);
+    qCDebug(dcDenon) << "Change to channel:" << channel;
+    return sendCommand(cmd);
 }
 
-void AvrConnection::setVolume(int volume)
+QUuid AvrConnection::setVolume(int volume)
 {
     qCDebug(dcDenon) << "Set volume" << volume;
     QByteArray cmd = "MV" + QByteArray::number(volume) + "\r";
-    sendCommand(cmd);
+    return sendCommand(cmd);
 }
 
-void AvrConnection::setMute(bool mute)
+QUuid AvrConnection::setMute(bool mute)
 {
     qCDebug(dcDenon) << "Set mute" << mute;
     QByteArray cmd;
@@ -136,10 +177,10 @@ void AvrConnection::setMute(bool mute)
     } else {
         cmd = "MUOFF\r";
     }
-    sendCommand(cmd);
+    return sendCommand(cmd);
 }
 
-void AvrConnection::setPower(bool power)
+QUuid AvrConnection::setPower(bool power)
 {
     qCDebug(dcDenon) << "Set power" << power;
     QByteArray cmd;
@@ -148,28 +189,125 @@ void AvrConnection::setPower(bool power)
     } else {
         cmd = "PWSTANDBY\r";
     }
-    sendCommand(cmd);
+    return sendCommand(cmd);
 }
 
-void AvrConnection::setSurroundMode(const QByteArray &surroundMode)
+QUuid AvrConnection::setSurroundMode(const QByteArray &surroundMode)
 {
     qCDebug(dcDenon) << "Set surround mode" << surroundMode;
     QByteArray cmd = "MS" + surroundMode + "\r";
-    sendCommand(cmd);
+    return sendCommand(cmd);
 }
 
-void AvrConnection::increaseVolume()
+QUuid AvrConnection::enableToneControl(bool enabled)
+{
+    QByteArray cmd;
+    if (enabled) {
+        cmd = "PSTONE CTRL ON\r";
+    } else {
+        cmd = "PSTONE CTRL OFF\r";
+    }
+    return sendCommand(cmd);
+}
+
+QUuid AvrConnection::setBassLevel(int level)
+{
+    QByteArray cmd;
+    cmd = "PSBAS ";
+    cmd.append(50 + level);
+    cmd.append("\r");
+    return sendCommand(cmd);
+}
+
+QUuid AvrConnection::setTrebleLevel(int level)
+{
+    QByteArray cmd;
+    cmd = "PSTRE ";
+    cmd.append(50 + level);
+    cmd.append("\r");
+    return sendCommand(cmd);
+}
+
+QUuid AvrConnection::getBassLevel()
+{
+    return sendCommand("PSBAS ?\r");
+}
+
+QUuid AvrConnection::getTrebleLevel()
+{
+    return sendCommand("PSTRE ?\r");
+}
+
+QUuid AvrConnection::getToneControl()
+{
+    return sendCommand("PSTONE CTRL ?\r");
+}
+
+QUuid AvrConnection::play()
+{
+    return sendCommand("NS9A\r");
+}
+
+QUuid AvrConnection::pause()
+{
+    return sendCommand("NS9B\r");
+}
+
+QUuid AvrConnection::stop()
+{
+    return sendCommand("NS9C\r");
+}
+
+QUuid AvrConnection::skipNext()
+{
+    return sendCommand("NS9D\r");
+}
+
+QUuid AvrConnection::skipBack()
+{
+    return sendCommand("NS9E\r");
+}
+
+QUuid AvrConnection::setRandom(bool on)
+{
+    QByteArray cmd;
+    if (on) {
+        cmd = "NS9K\r";
+    } else {
+        cmd = "NS9M\r";
+    }
+    return sendCommand(cmd);
+}
+
+QUuid AvrConnection::setRepeat(AvrConnection::RepeatMode mode)
+{
+    QByteArray cmd;
+    switch (mode) {
+    case RepeatModeRepeatAll:
+        cmd = "NS9I\r";
+    break;
+    case RepeatModeRepeatOne:
+        cmd = "NS9H\r";
+        break;
+    case RepeatModeRepeatNone:
+        cmd = "NS9J\r";
+        break;
+    }
+    return sendCommand(cmd);
+}
+
+QUuid AvrConnection::increaseVolume()
 {
     qCDebug(dcDenon) << "Execute volume increase";
     QByteArray cmd = "MVUP\r";
-    sendCommand(cmd);
+    return sendCommand(cmd);
 }
 
-void AvrConnection::decreaseVolume()
+QUuid AvrConnection::decreaseVolume()
 {
     qCDebug(dcDenon) << "Execute volume decrease";
     QByteArray cmd = "MVDOWN\r";
-    sendCommand(cmd);
+    return sendCommand(cmd);
 }
 
 void AvrConnection::onConnected()
@@ -192,77 +330,112 @@ void AvrConnection::onError(QAbstractSocket::SocketError socketError)
 
 void AvrConnection::readData()
 {
-    QByteArray data = m_socket->readAll();
-    qCDebug(dcDenon) << "Data received" << data;
+    QString data = QString(m_socket->readAll());
 
-    if (data.contains("MV") && !data.contains("MAX")){
-        int index = data.indexOf("MV");
-        int volume = data.mid(index+2, 2).toInt();
-        emit volumeChanged(volume);
-    }
+    QStringList lines = data.split('\r');
+    foreach (QString line, lines) {
+        if(line.isEmpty())
+            continue;
 
-    if (data.left(2).contains("SI")) {
-        QByteArray cmd;
-        if (data.contains("TUNER")) {
-            cmd = "TUNER";
-        } else if (data.contains("DVD")) {
-            cmd = "DVD";
-        } else if (data.contains("BD")) {
-            cmd = "BD";
-        } else if (data.contains("TV")) {
-            cmd = "TV";
-        } else if (data.contains("SAT/CBL")) {
-            cmd = "SAT/CBL";
-        } else if (data.contains("MPLAY")) {
-            cmd = "MPLAY";
-        } else if (data.contains("GAME")) {
-            cmd = "GAME";
-        } else if (data.contains("AUX1")) {
-            cmd = "AUX1";
-        } else if (data.contains("NET")) {
-            cmd = "NET";
-        } else if (data.contains("PANDORA")) {
-            cmd = "PANDORA";
-        } else if (data.contains("SIRIUSXM")) {
-            cmd = "SIRIUSXM";
-        } else if (data.contains("SPOTIFY")) {
-            cmd = "SPOTIFY";
-        } else if (data.contains("FLICKR")) {
-            cmd = "FLICKR";
-        } else if (data.contains("FAVORITES")) {
-            cmd = "FAVORITES";
-        } else if (data.contains("IRADIO")) {
-            cmd = "IRADIO";
-        } else if (data.contains("SERVER")) {
-            cmd = "SERVER";
-        } else if (data.contains("USB/IPOD")) {
-            cmd = "USB/IPOD";
-        } else if (data.contains("IPD")) {
-            cmd = "IPD";
-        } else if (data.contains("IRP")) {
-            cmd = "IRP";
-        } else if (data.contains("FVP")) {
-            cmd = "FVP";
+        qCDebug(dcDenon) << "Data received" << line;
+        if (line.contains("MV") && !data.contains("MAX")){
+            int index = data.indexOf("MV");
+            int volume = data.mid(index+2, 2).toInt();
+            emit volumeChanged(volume);
+
+        } else if (line.left(2).contains("SI")) {
+            QByteArray cmd;
+            if (data.contains("TUNER")) {
+                cmd = "TUNER";
+            } else if (data.contains("DVD")) {
+                cmd = "DVD";
+            } else if (data.contains("BD")) {
+                cmd = "BD";
+            } else if (data.contains("TV")) {
+                cmd = "TV";
+            } else if (data.contains("SAT/CBL")) {
+                cmd = "SAT/CBL";
+            } else if (data.contains("MPLAY")) {
+                cmd = "MPLAY";
+            } else if (data.contains("GAME")) {
+                cmd = "GAME";
+            } else if (data.contains("AUX1")) {
+                cmd = "AUX1";
+            } else if (data.contains("NET")) {
+                cmd = "NET";
+            } else if (data.contains("PANDORA")) {
+                cmd = "PANDORA";
+            } else if (data.contains("SIRIUSXM")) {
+                cmd = "SIRIUSXM";
+            } else if (data.contains("SPOTIFY")) {
+                cmd = "SPOTIFY";
+            } else if (data.contains("FLICKR")) {
+                cmd = "FLICKR";
+            } else if (data.contains("FAVORITES")) {
+                cmd = "FAVORITES";
+            } else if (data.contains("IRADIO")) {
+                cmd = "IRADIO";
+            } else if (data.contains("SERVER")) {
+                cmd = "SERVER";
+            } else if (data.contains("USB/IPOD")) {
+                cmd = "USB/IPOD";
+            } else if (data.contains("IPD")) {
+                cmd = "IPD";
+            } else if (data.contains("IRP")) {
+                cmd = "IRP";
+            } else if (data.contains("FVP")) {
+                cmd = "FVP";
+            }
+            emit channelChanged(cmd);
+        } else if (data.contains("PWON")) {
+            emit powerChanged(true);
+        } else if (data.contains("PWSTANDBY")) {
+            emit powerChanged(false);
+        } else if (data.contains("MUON")) {
+            emit muteChanged(true);
+        } else if (data.contains("MUOFF")) {
+            emit muteChanged(false);
+        } else if (data.left(2).contains("MS")) {
+            QString surroundMode = data.remove(0, 2).trimmed();
+            qCDebug(dcDenon()) << "Surround mode changed" << surroundMode;
+            emit surroundModeChanged(surroundMode);
+
+        } else if (data.left(4).contains("NSE0")) {
+            QString nowPlaying = QString(data).remove(0, 4).trimmed();
+            qCDebug(dcDenon()) << "Playbackstatus" << nowPlaying;
+            if (nowPlaying.contains("Now Playing")) {
+                emit playBackModeChanged(PlayBackMode::PlayBackModePlaying);
+            } else {
+                emit playBackModeChanged(PlayBackMode::PlayBackModeStopped);
+            }
+        } else if (data.left(4).contains("NSE1")) {
+            QString song = QString(data).remove(0, 5).trimmed();
+            qCDebug(dcDenon()) << "Song" << song;
+            emit songChanged(song);
+        } else if (data.left(4).contains("NSE2")) {
+            QString artist = QString(data).remove(0, 5).trimmed();
+            qCDebug(dcDenon()) << "Artist" << artist;
+            emit artistChanged(artist);
+        } else if (data.left(4).contains("NSE4")) {
+            QString album = QString(data).remove(0, 5).trimmed();
+            qCDebug(dcDenon()) << "Album" << album;
+            emit albumChanged(album);
+        } else if (data.contains("PSTONE CTRL ON")) {
+            qCDebug(dcDenon()) << "Tone control is on";
+            emit toneControlEnabledChanged(true);
+        } else if (data.contains("PSTONE CTRL OFF")) {
+            qCDebug(dcDenon()) << "Tone control is off";
+            emit toneControlEnabledChanged(false);
+        } else if (data.contains("PSBAS")) {
+            int index = data.indexOf("PSBAS");
+            int bass = data.mid(index+6, 2).toInt() - 50;
+            qCDebug(dcDenon()) << "Bass level" << bass;
+            emit bassLevelChanged(bass);
+        } else if (data.contains("PSTRE")) {
+            int index = data.indexOf("PSTRE");
+            int treble = data.mid(index+6, 2).toInt() - 50;
+            qCDebug(dcDenon()) << "Treble level" << treble;
+            emit trebleLevelChanged(treble);
         }
-        emit channelChanged(cmd);
-    }
-
-    if (data.contains("PWON")) {
-        emit powerChanged(true);
-    }
-    if (data.contains("PWSTANDBY")) {
-        emit powerChanged(false);
-    }
-    if (data.contains("MUON")) {
-        emit muteChanged(false);
-    }
-    if (data.contains("MUOFF")) {
-        emit muteChanged(false);
-    }
-
-    if (data.left(2).contains("MS")) {
-        data.remove(0, 2);
-        QByteArray cmd = data;
-        emit surroundModeChanged(cmd);
     }
 }

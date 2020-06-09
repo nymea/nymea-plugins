@@ -53,51 +53,63 @@ void IntegrationPluginDenon::init()
 {
     m_notificationUrl = QUrl(configValue(denonPluginNotificationUrlParamTypeId).toString());
     connect(this, &IntegrationPluginDenon::configValueChanged, this, &IntegrationPluginDenon::onPluginConfigurationChanged);
+
+    m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
+    connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=](const ZeroConfServiceEntry &entry){
+        foreach (Thing *thing, myThings().filterByThingClassId(AVRX1000ThingClassId)) {
+
+            if (entry.txt().contains("am=AVRX1000")) {
+                QString existingId = thing->paramValue(AVRX1000ThingIdParamTypeId).toString();
+                QString discoveredId = entry.name().split("@").first();
+                QHostAddress address = entry.hostAddress();
+                if (existingId == discoveredId && m_avrConnections.contains(thing->id())) {
+                    AvrConnection *avrConnection = m_avrConnections.value(thing->id());
+                    avrConnection->setHostAddress(address);
+                }
+            }
+        }
+    });
 }
 
 void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
 {
     if (info->thingClassId() == AVRX1000ThingClassId) {
-        if (!hardwareManager()->zeroConfController()->available() || !hardwareManager()->zeroConfController()->enabled()) {
-            //: Error discovering Denon things
-            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Thing discovery is not available."));
+
+        if (!hardwareManager()->zeroConfController()->available()) {
+            qCDebug(dcDenon()) << "Error discovering Denon things. Available:" << hardwareManager()->zeroConfController()->available();
+            info->finish(Thing::ThingErrorHardwareNotAvailable, "Thing discovery not possible");
             return;
         }
 
-        if (!m_serviceBrowser) {
-            m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();;
-        }
+        QStringList discoveredIds;
 
-        QTimer::singleShot(2000, info, [this, info](){
-            QStringList discoveredIds;
+        foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
+             qCDebug(dcDenon()) << "mDNS service entry:" << service;
+            if (service.txt().contains("am=AVRX1000")) {
 
-            foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
-                if (service.txt().contains("am=AVRX1000")) {
-
-                    QString id = service.name().split("@").first();
-                    QString name = service.name().split("@").last();
-                    QString address = service.hostAddress().toString();
-                    qCDebug(dcDenon) << "service discovered" << name << "ID:" << id;
-                    if (discoveredIds.contains(id))
+                QString id = service.name().split("@").first();
+                QString name = service.name().split("@").last();
+                QString address = service.hostAddress().toString();
+                qCDebug(dcDenon) << "service discovered" << name << "ID:" << id;
+                if (discoveredIds.contains(id))
+                    break;
+                discoveredIds.append(id);
+                ThingDescriptor thingDescriptor(AVRX1000ThingClassId, name, address);
+                ParamList params;
+                params.append(Param(AVRX1000ThingIpParamTypeId, address));
+                params.append(Param(AVRX1000ThingIdParamTypeId, id));
+                thingDescriptor.setParams(params);
+                foreach (Thing *existingThing, myThings().filterByThingClassId(AVRX1000ThingClassId)) {
+                    if (existingThing->paramValue(AVRX1000ThingIdParamTypeId).toString() == id) {
+                        thingDescriptor.setThingId(existingThing->id());
                         break;
-                    discoveredIds.append(id);
-                    ThingDescriptor thingDescriptor(AVRX1000ThingClassId, name, address);
-                    ParamList params;
-                    params.append(Param(AVRX1000ThingIpParamTypeId, address));
-                    params.append(Param(AVRX1000ThingIdParamTypeId, id));
-                    thingDescriptor.setParams(params);
-                    foreach (Thing *existingThing, myThings()) {
-                        if (existingThing->paramValue(AVRX1000ThingIdParamTypeId).toString() == id) {
-                            thingDescriptor.setThingId(existingThing->id());
-                            break;
-                        }
                     }
-                    info->addThingDescriptor(thingDescriptor);
                 }
+                info->addThingDescriptor(thingDescriptor);
             }
-            info->finish(Thing::ThingErrorNoError);
-        });
-        return;
+        }
+        info->finish(Thing::ThingErrorNoError);
+
     } else if (info->thingClassId() == heosThingClassId) {
         /*
         * The HEOS products can be discovered using the UPnP SSDP protocol. Through discovery,
@@ -196,16 +208,30 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
         AvrConnection *denonConnection = new AvrConnection(address, 23, this);
         connect(denonConnection, &AvrConnection::connectionStatusChanged, this, &IntegrationPluginDenon::onAvrConnectionChanged);
         connect(denonConnection, &AvrConnection::socketErrorOccured, this, &IntegrationPluginDenon::onAvrSocketError);
+        connect(denonConnection, &AvrConnection::commandExecuted, this, &IntegrationPluginDenon::onAvrCommandExecuted);
         connect(denonConnection, &AvrConnection::channelChanged, this, &IntegrationPluginDenon::onAvrChannelChanged);
         connect(denonConnection, &AvrConnection::powerChanged, this, &IntegrationPluginDenon::onAvrPowerChanged);
         connect(denonConnection, &AvrConnection::volumeChanged, this, &IntegrationPluginDenon::onAvrVolumeChanged);
         connect(denonConnection, &AvrConnection::surroundModeChanged, this, &IntegrationPluginDenon::onAvrSurroundModeChanged);
         connect(denonConnection, &AvrConnection::muteChanged, this, &IntegrationPluginDenon::onAvrMuteChanged);
+        connect(denonConnection, &AvrConnection::artistChanged, this, &IntegrationPluginDenon::onAvrArtistChanged);
+        connect(denonConnection, &AvrConnection::albumChanged, this, &IntegrationPluginDenon::onAvrAlbumChanged);
+        connect(denonConnection, &AvrConnection::songChanged, this, &IntegrationPluginDenon::onAvrSongChanged);
+        connect(denonConnection, &AvrConnection::playBackModeChanged, this, &IntegrationPluginDenon::onAvrPlayBackModeChanged);
+        connect(denonConnection, &AvrConnection::bassLevelChanged, this, &IntegrationPluginDenon::onAvrBassLevelChanged);
+        connect(denonConnection, &AvrConnection::trebleLevelChanged, this, &IntegrationPluginDenon::onAvrTrebleLevelChanged);
+        connect(denonConnection, &AvrConnection::toneControlEnabledChanged, this, &IntegrationPluginDenon::onAvrToneControlEnabledChanged);
 
         m_avrConnections.insert(thing->id(), denonConnection);
         m_asyncAvrSetups.insert(denonConnection, info);
         // In case the setup is cancelled before we finish it...
         connect(info, &QObject::destroyed, this, [this, denonConnection]() { m_asyncAvrSetups.remove(denonConnection); });
+        connect(info, &ThingSetupInfo::aborted, this, [this, thing] () {
+            if (m_avrConnections.contains(thing->id())) {
+                AvrConnection *connection = m_avrConnections.take(thing->id());
+                connection->deleteLater();
+            }
+        });
         denonConnection->connectDevice();
         return;
     } else if (thing->thingClassId() == heosThingClassId) {
@@ -246,9 +272,9 @@ void IntegrationPluginDenon::thingRemoved(Thing *thing)
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         if (m_avrConnections.contains(thing->id())) {
-            AvrConnection *denonConnection = m_avrConnections.take(thing->id());
-            denonConnection->disconnectDevice();
-            denonConnection->deleteLater();
+            AvrConnection *avrConnection = m_avrConnections.take(thing->id());
+            avrConnection->disconnectDevice();
+            avrConnection->deleteLater();
         }
     } else if (thing->thingClassId() == heosThingClassId) {
         if (m_heosConnections.contains(thing->id())) {
@@ -273,48 +299,120 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         AvrConnection *avrConnection = m_avrConnections.value(thing->id());
 
-        if (action.actionTypeId() == AVRX1000PowerActionTypeId) {
-
+        if (action.actionTypeId() == AVRX1000PlayActionTypeId) {
+            QUuid commandId = avrConnection->play();
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000PauseActionTypeId) {
+            QUuid commandId = avrConnection->pause();
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000StopActionTypeId) {
+            QUuid commandId = avrConnection->stop();
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000SkipNextActionTypeId) {
+            QUuid commandId = avrConnection->skipNext();
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000SkipBackActionTypeId) {
+            QUuid commandId = avrConnection->skipBack();
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000PowerActionTypeId) {
             bool power = action.param(AVRX1000PowerActionPowerParamTypeId).value().toBool();
-            avrConnection->setPower(power);
-            return info->finish(Thing::ThingErrorNoError);
-
+            QUuid commandId = avrConnection->setPower(power);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
         } else if (action.actionTypeId() == AVRX1000VolumeActionTypeId) {
-
             int vol = action.param(AVRX1000VolumeActionVolumeParamTypeId).value().toInt();
-            avrConnection->setVolume(vol);
-            return info->finish(Thing::ThingErrorNoError);
-
+            QUuid commandId = avrConnection->setVolume(vol);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
         } else if (action.actionTypeId() == AVRX1000ChannelActionTypeId) {
-
-            qCDebug(dcDenon) << "Execute update action";
             QByteArray channel = action.param(AVRX1000ChannelActionChannelParamTypeId).value().toByteArray();
-            avrConnection->setChannel(channel);
-            return info->finish(Thing::ThingErrorNoError);
-
+            QUuid commandId =  avrConnection->setChannel(channel);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
         } else if (action.actionTypeId() == AVRX1000IncreaseVolumeActionTypeId) {
-
-            avrConnection->increaseVolume();
-            return info->finish(Thing::ThingErrorNoError);
-
+            QUuid commandId = avrConnection->increaseVolume();
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
         } else if (action.actionTypeId() == AVRX1000DecreaseVolumeActionTypeId) {
-
-            avrConnection->decreaseVolume();
-            return info->finish(Thing::ThingErrorNoError);
-
+            QUuid commandId = avrConnection->decreaseVolume();
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
         } else if (action.actionTypeId() == AVRX1000SurroundModeActionTypeId) {
-
             QByteArray surroundMode = action.param(AVRX1000SurroundModeActionSurroundModeParamTypeId).value().toByteArray();
-            avrConnection->setSurroundMode(surroundMode);
-            return info->finish(Thing::ThingErrorNoError);
+            QUuid commandId = avrConnection->setSurroundMode(surroundMode);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000MuteActionTypeId) {
+            bool mute = action.param(AVRX1000MuteActionMuteParamTypeId).value().toBool();
+            QUuid commandId = avrConnection->setMute(mute);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000RepeatActionTypeId) {
+            QString repeatMode = action.param(AVRX1000RepeatActionRepeatParamTypeId).value().toString();
+            QUuid commandId;
+            if (repeatMode == "One") {
+                commandId = avrConnection->setRepeat(AvrConnection::RepeatModeRepeatOne);
+            } else if (repeatMode == "All") {
+                commandId = avrConnection->setRepeat(AvrConnection::RepeatModeRepeatAll);
+            } else {
+                commandId = avrConnection->setRepeat(AvrConnection::RepeatModeRepeatNone);
+            }
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000ShuffleActionTypeId) {
+            bool shuffle = action.param(AVRX1000ShuffleActionShuffleParamTypeId).value().toBool();
+            QUuid commandId = avrConnection->setRandom(shuffle);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000PlaybackStatusActionTypeId) {
+            QString playbackStatus = action.param(AVRX1000PlaybackStatusActionPlaybackStatusParamTypeId).value().toString();
+            QUuid commandId;
+            if (playbackStatus == "Playing") {
+                commandId = avrConnection->play();
+            } else if (playbackStatus == "Stopped") {
+                commandId = avrConnection->stop();
+            } else if (playbackStatus == "Paused") {
+                commandId = avrConnection->pause();
+            } else {
+                qCWarning(dcDenon()) << "Unrecognized playback status" << playbackStatus;
+                return info->finish(Thing::ThingErrorHardwareFailure, "Unrecognized command");
+            }
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000ToneControlActionTypeId) {
+            bool enable = action.param(AVRX1000ToneControlActionToneControlParamTypeId).value().toBool();
+            QUuid commandId = avrConnection->enableToneControl(enable);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000BassActionTypeId) {
+            int bass = action.param(AVRX1000BassActionBassParamTypeId).value().toInt();
+            QUuid commandId = avrConnection->setBassLevel(bass);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else if (action.actionTypeId() == AVRX1000TrebleActionTypeId) {
+            int treble = action.param(AVRX1000TrebleActionTrebleParamTypeId).value().toInt();
+            QUuid commandId = avrConnection->setTrebleLevel(treble);
+            connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
+            m_avrPendingActions.insert(commandId, info);
+        } else {
+            qCWarning(dcDenon()) << "ActionType not found" << thing->thingClass().name() << action.actionTypeId() ;
+            return info->finish(Thing::ThingErrorActionTypeNotFound);
         }
-        return info->finish(Thing::ThingErrorActionTypeNotFound);
+
     } else if (thing->thingClassId() == heosThingClassId) {
 
         Heos *heos = m_heosConnections.value(thing->id());
         if (action.actionTypeId() == heosRebootActionTypeId) {
             heos->rebootSpeaker();
             return info->finish(Thing::ThingErrorNoError);
+        } else {
+            qCWarning(dcDenon()) << "ActionType not found" << thing->thingClass().name() << action.actionTypeId() ;
+            return info->finish(Thing::ThingErrorActionTypeNotFound);
         }
     } else if (thing->thingClassId() == heosPlayerThingClassId) {
 
@@ -369,16 +467,31 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
             heos->playNext(playerId);
             return info->finish(Thing::ThingErrorNoError);
         } else {
+            qCWarning(dcDenon()) << "ActionType not found" << thing->thingClass().name() << action.actionTypeId() ;
             return info->finish(Thing::ThingErrorActionTypeNotFound);
         }
     } else {
+        qCWarning(dcDenon()) << "ThingClass not found" << thing->thingClass().name() << thing->thingClassId() ;
         return info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
 
 void IntegrationPluginDenon::postSetupThing(Thing *thing)
 {
-    if (thing->thingClassId() == heosThingClassId) {
+    if (thing->thingClassId() == AVRX1000ThingClassId) {
+        AvrConnection *avrConnection = m_avrConnections.value(thing->id());
+        thing->setStateValue(AVRX1000ConnectedStateTypeId, avrConnection->connected());
+        avrConnection->getPower();
+        avrConnection->getMute();
+        avrConnection->getVolume();
+        avrConnection->getChannel();
+        avrConnection->getSurroundMode();
+        avrConnection->getPlayBackInfo();
+        avrConnection->getBassLevel();
+        avrConnection->getTrebleLevel();
+        avrConnection->getToneControl();
+
+    } else if (thing->thingClassId() == heosThingClassId) {
         Heos *heos = m_heosConnections.value(thing->id());
         thing->setStateValue(heosConnectedStateTypeId, heos->connected());
         if (pluginStorage()->childGroups().contains(thing->id().toString())) {
@@ -414,13 +527,21 @@ void IntegrationPluginDenon::postSetupThing(Thing *thing)
 
 void IntegrationPluginDenon::onPluginTimer()
 {
-    foreach(AvrConnection *denonConnection, m_avrConnections.values()) {
-        if (!denonConnection->connected()) {
-            denonConnection->connectDevice();
+    foreach(AvrConnection *avrConnection, m_avrConnections.values()) {
+        if (!avrConnection->connected()) {
+            avrConnection->connectDevice();
         }
-        Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+        Thing *thing = myThings().findById(m_avrConnections.key(avrConnection));
         if (thing->thingClassId() == AVRX1000ThingClassId) {
-            denonConnection->getAllStatus();
+            avrConnection->getPower();
+            avrConnection->getMute();
+            avrConnection->getVolume();
+            avrConnection->getChannel();
+            avrConnection->getSurroundMode();
+            avrConnection->getPlayBackInfo();
+            avrConnection->getBassLevel();
+            avrConnection->getTrebleLevel();
+            avrConnection->getToneControl();
         }
     }
 
@@ -437,19 +558,25 @@ void IntegrationPluginDenon::onPluginTimer()
 void IntegrationPluginDenon::onAvrConnectionChanged(bool status)
 {
     AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
-    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
-    if (!thing)
+
+    // if the thing and from the first setup
+    if (m_asyncAvrSetups.contains(denonConnection)) {
+        // and ist connected
+        if (status) {
+            ThingSetupInfo *info = m_asyncAvrSetups.take(denonConnection);
+            info->thing()->setStateValue(AVRX1000ConnectedStateTypeId, true);
+            info->finish(Thing::ThingErrorNoError);
+        }
         return;
+    }
+
+    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+    if (!thing) {
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
+        return;
+    }
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
-        // if the thing is connected
-        if (status) {
-            // and from the first setup
-            if (m_asyncAvrSetups.contains(denonConnection)) {
-                ThingSetupInfo *info = m_asyncAvrSetups.take(denonConnection);
-                info->finish(Thing::ThingErrorNoError);
-            }
-        }
         thing->setStateValue(AVRX1000ConnectedStateTypeId, denonConnection->connected());
     }
 }
@@ -458,15 +585,17 @@ void IntegrationPluginDenon::onAvrVolumeChanged(int volume)
 {
     AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
     Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
-    if (!thing)
+    if (!thing) {
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
         return;
+    }
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         thing->setStateValue(AVRX1000VolumeStateTypeId, volume);
     }
 }
 
-void IntegrationPluginDenon::onAvrChannelChanged(const QByteArray &channel)
+void IntegrationPluginDenon::onAvrChannelChanged(const QString &channel)
 {
     AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
     Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
@@ -482,8 +611,10 @@ void IntegrationPluginDenon::onAvrMuteChanged(bool mute)
 {
     AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
     Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
-    if (!thing)
+    if (!thing) {
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
         return;
+    }
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         thing->setStateValue(AVRX1000MuteStateTypeId, mute);
@@ -502,37 +633,158 @@ void IntegrationPluginDenon::onAvrPowerChanged(bool power)
     }
 }
 
-void IntegrationPluginDenon::onAvrSurroundModeChanged(const QByteArray &surroundMode)
+void IntegrationPluginDenon::onAvrSurroundModeChanged(const QString &surroundMode)
 {
     AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
     Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
-    if (!thing)
+    if (!thing){
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
         return;
-
+    }
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         thing->setStateValue(AVRX1000SurroundModeStateTypeId, surroundMode);
+    }
+}
+
+void IntegrationPluginDenon::onAvrSongChanged(const QString &song)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+    if (!thing){
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
+        return;
+    }
+
+    if (thing->thingClassId() == AVRX1000ThingClassId) {
+        thing->setStateValue(AVRX1000TitleStateTypeId, song);
+    }
+}
+
+void IntegrationPluginDenon::onAvrArtistChanged(const QString &artist)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+    if (!thing){
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
+        return;
+    }
+
+    if (thing->thingClassId() == AVRX1000ThingClassId) {
+        thing->setStateValue(AVRX1000ArtistStateTypeId, artist);
+    }
+}
+
+void IntegrationPluginDenon::onAvrAlbumChanged(const QString &album)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+    if (!thing){
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
+        return;
+    }
+    if (thing->thingClassId() == AVRX1000ThingClassId) {
+        thing->setStateValue(AVRX1000CollectionStateTypeId, album);
+    }
+}
+
+void IntegrationPluginDenon::onAvrBassLevelChanged(int level)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+    if (!thing){
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
+        return;
+    }
+    if (thing->thingClassId() == AVRX1000ThingClassId) {
+        thing->setStateValue(AVRX1000BassStateTypeId, level);
+    }
+}
+
+void IntegrationPluginDenon::onAvrTrebleLevelChanged(int level)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+    if (!thing){
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
+        return;
+    }
+    if (thing->thingClassId() == AVRX1000ThingClassId) {
+        thing->setStateValue(AVRX1000TrebleStateTypeId, level);
+    }
+}
+
+void IntegrationPluginDenon::onAvrToneControlEnabledChanged(bool enabled)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+    if (!thing){
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
+        return;
+    }
+    if (thing->thingClassId() == AVRX1000ThingClassId) {
+        thing->setStateValue(AVRX1000ToneControlStateTypeId, enabled);
+    }
+}
+
+void IntegrationPluginDenon::onAvrPlayBackModeChanged(AvrConnection::PlayBackMode mode)
+{
+    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
+    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
+    if (!thing){
+        qCWarning(dcDenon()) << "Could not find a thing associated to this AVR connection";
+        return;
+    }
+
+    if (thing->thingClassId() == AVRX1000ThingClassId) {
+        switch (mode) {
+        case AvrConnection::PlayBackModePlaying:
+            thing->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Playing");
+            break;
+        case AvrConnection::PlayBackModePaused:
+            thing->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Paused");
+            break;
+        case AvrConnection::PlayBackModeStopped:
+            thing->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Stopped");
+            break;
+        }
     }
 }
 
 
 void IntegrationPluginDenon::onAvrSocketError()
 {
-    AvrConnection *denonConnection = static_cast<AvrConnection *>(sender());
-    Thing *thing = myThings().findById(m_avrConnections.key(denonConnection));
-    if (!thing)
-        return;
+    AvrConnection *avrConnection = static_cast<AvrConnection *>(sender());
 
-    if (thing->thingClassId() == AVRX1000ThingClassId) {
+    // Check if setup running for this thing
+    if (m_asyncAvrSetups.contains(avrConnection)) {
+        ThingSetupInfo *info = m_asyncAvrSetups.take(avrConnection);
+        m_avrConnections.remove(info->thing()->id());
+        qCWarning(dcDenon()) << "Could not add thing. The setup failed.";
+        info->finish(Thing::ThingErrorHardwareFailure);
+        // Delete the connection, the thing will not be added and
+        // the connection will be created in the next setup
+        avrConnection->deleteLater();
+    }
+}
 
-        // Check if setup running for this thing
-        if (m_asyncAvrSetups.contains(denonConnection)) {
-            ThingSetupInfo *info = m_asyncAvrSetups.take(denonConnection);
-            qCWarning(dcDenon()) << "Could not add thing. The setup failed.";
-            info->finish(Thing::ThingErrorHardwareFailure);
-            // Delete the connection, the thing will not be added and
-            // the connection will be created in the next setup
-            denonConnection->deleteLater();
-            m_avrConnections.remove(thing->id());
+void IntegrationPluginDenon::onAvrCommandExecuted(const QUuid &commandId, bool success)
+{
+    if (m_avrPendingActions.contains(commandId)) {
+        ThingActionInfo *info = m_avrPendingActions.take(commandId);
+        if (success){
+            if(info->action().actionTypeId() == AVRX1000PlayActionTypeId) {
+                info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Playing");
+            } else if(info->action().actionTypeId() == AVRX1000PauseActionTypeId) {
+                info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Paused");
+            } else if(info->action().actionTypeId() == AVRX1000StopActionTypeId) {
+                info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Stopped");
+            } else if(info->action().actionTypeId() == AVRX1000PlaybackStatusActionTypeId) {
+                info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, info->action().param(AVRX1000PlaybackStatusActionPlaybackStatusParamTypeId).value());
+            }
+            info->finish(Thing::ThingErrorNoError);
+
+        } else {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
         }
     }
 }
@@ -663,7 +915,7 @@ void IntegrationPluginDenon::onHeosRepeatModeReceived(int playerId, REPEAT_MODE 
 void IntegrationPluginDenon::onHeosShuffleModeReceived(int playerId, bool shuffle)
 {
     foreach(Thing *thing, myThings().filterByParam(heosPlayerThingPlayerIdParamTypeId, playerId)) {
-        thing->setStateValue(heosPlayerMuteStateTypeId, shuffle);
+        thing->setStateValue(heosPlayerShuffleStateTypeId, shuffle);
         break;
     }
 }
