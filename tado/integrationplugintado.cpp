@@ -36,6 +36,7 @@
 #include <QDebug>
 #include <QUrlQuery>
 #include <QJsonDocument>
+#include <QTimer>
 
 IntegrationPluginTado::IntegrationPluginTado()
 {
@@ -44,7 +45,18 @@ IntegrationPluginTado::IntegrationPluginTado()
 
 void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
 {
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials."));
+    // Checking the internet connection
+    NetworkAccessManager *network = hardwareManager()->networkManager();
+    QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://my.tado.com/api/v2")));
+    connect(reply, &QNetworkReply::finished, info, [reply, info] {
+
+        if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Tado server is not reachable."));
+        } else {
+            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Tado account."));
+        }
+    });
+    connect(reply, &QNetworkReply::finished, this, &QNetworkReply::deleteLater);
 }
 
 void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
@@ -52,6 +64,7 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
     Tado *tado = new Tado(hardwareManager()->networkManager(), username, this);
     connect(tado, &Tado::tokenReceived, this, &IntegrationPluginTado::onTokenReceived);
     connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
+    connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
     connect(tado, &Tado::connectionChanged, this, &IntegrationPluginTado::onConnectionChanged);
     connect(tado, &Tado::homesReceived, this, &IntegrationPluginTado::onHomesReceived);
     connect(tado, &Tado::zonesReceived, this, &IntegrationPluginTado::onZonesReceived);
@@ -88,6 +101,7 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             tado = new Tado(hardwareManager()->networkManager(), username, this);
             connect(tado, &Tado::tokenReceived, this, &IntegrationPluginTado::onTokenReceived);
             connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
+            connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
             connect(tado, &Tado::connectionChanged, this, &IntegrationPluginTado::onConnectionChanged);
             connect(tado, &Tado::homesReceived, this, &IntegrationPluginTado::onHomesReceived);
             connect(tado, &Tado::zonesReceived, this, &IntegrationPluginTado::onZonesReceived);
@@ -96,14 +110,20 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             tado->getToken(password);
             m_tadoAccounts.insert(thing->id(), tado);
             m_asyncDeviceSetup.insert(tado, info);
-            return;
+            connect(info, &ThingSetupInfo::aborted, [info, this] {
+                Tado *tado = m_tadoAccounts.take(info->thing()->id());
+                m_asyncDeviceSetup.remove(tado);
+                tado->deleteLater();
+            });
         }
 
     } else if (thing->thingClassId() == zoneThingClassId) {
         qCDebug(dcTado) << "Setup tado thermostat" << thing->params();
         return info->finish(Thing::ThingErrorNoError);
+    } else {
+        return info->finish(Thing::ThingErrorThingClassNotFound);
+        qCWarning(dcTado()) << "Unhandled thing class in setupDevice";
     }
-    qCWarning(dcTado()) << "Unhandled thing class in setupDevice";
 }
 
 void IntegrationPluginTado::thingRemoved(Thing *thing)
@@ -148,35 +168,57 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
 
     if (thing->thingClassId() == zoneThingClassId) {
         Tado *tado = m_tadoAccounts.value(thing->parentId());
-        if (!tado)
+        if (!tado) {
+            info->finish(Thing::ThingErrorThingNotFound);
             return;
+        }
         QString homeId = thing->paramValue(zoneThingHomeIdParamTypeId).toString();
         QString zoneId = thing->paramValue(zoneThingZoneIdParamTypeId).toString();
         if (action.actionTypeId() == zoneModeActionTypeId) {
-
+            QUuid requestId;
             if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Tado") {
-                tado->deleteOverlay(homeId, zoneId);
+                requestId = tado->deleteOverlay(homeId, zoneId);
             } else if (action.param(zoneModeActionModeParamTypeId).value().toString() == "Off") {
-                tado->setOverlay(homeId, zoneId, false, thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
+                requestId = tado->setOverlay(homeId, zoneId, false, thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
             } else {
                 if(thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble() <= 5.0) {
-                    tado->setOverlay(homeId, zoneId, true, 5);
+                    requestId =  tado->setOverlay(homeId, zoneId, true, 5);
                 } else {
-                    tado->setOverlay(homeId, zoneId, true, thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
+                    requestId = tado->setOverlay(homeId, zoneId, true, thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble());
                 }
             }
-            info->finish(Thing::ThingErrorNoError);
+            m_asyncActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == zoneTargetTemperatureActionTypeId) {
 
             double temperature = action.param(zoneTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
+            QUuid requestId;
             if (temperature <= 0) {
-                QUuid requestId = tado->setOverlay(homeId, zoneId, false, 0);
-                m_asyncActions.insert(requestId, info);
+                requestId = tado->setOverlay(homeId, zoneId, false, 0);
             } else {
-                tado->setOverlay(homeId, zoneId, true, temperature);
+                requestId = tado->setOverlay(homeId, zoneId, true, temperature);
             }
-            info->finish(Thing::ThingErrorNoError);
+            m_asyncActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {m_asyncActions.remove(requestId);});
+        } else if (action.actionTypeId() == zonePowerActionTypeId) {
+            bool power = action.param(zonePowerActionPowerParamTypeId).value().toBool();
+            thing->setStateValue(zonePowerStateTypeId, power); // the actual power set response might be slow
+            QUuid requestId;
+            double temperature = thing->stateValue(zoneTargetTemperatureStateTypeId).toDouble();
+            if (!power) {
+                requestId = tado->setOverlay(homeId, zoneId, false, 0);
+            } else {
+                requestId = tado->setOverlay(homeId, zoneId, true, temperature);
+            }
+            m_asyncActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {m_asyncActions.remove(requestId);});
+        } else {
+            qCWarning(dcTado()) << "Execute action, unhandled actionTypeId" << action.actionTypeId();
+            info->finish(Thing::ThingErrorActionTypeNotFound);
         }
+    } else {
+        qCWarning(dcTado()) << "Execute action, unhandled thingClassId" << thing->thingClassId();
+        info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
 
@@ -197,8 +239,24 @@ void IntegrationPluginTado::onConnectionChanged(bool connected)
 {
     Tado *tado = static_cast<Tado*>(sender());
 
+    if (m_asyncDeviceSetup.contains(tado)) {
+        //Thing setup failed, try as long as ThingSetupInfo is valid.
+        if (!connected) {
+            QTimer::singleShot(2000, tado, [tado, this]{
+                if(m_asyncDeviceSetup.contains(tado)){
+                    //Check once more if the ThingSetupInfo is still valid
+                    pluginStorage()->beginGroup(m_asyncDeviceSetup.value(tado)->thing()->id().toString());
+                    QString password = pluginStorage()->value("password").toString();
+                    pluginStorage()->endGroup();
+                    tado->getToken(password);
+                }
+            });
+        }
+    }
     if (m_tadoAccounts.values().contains(tado)){
         Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
+        if (!thing)
+            return;
         thing->setStateValue(tadoConnectionConnectedStateTypeId, connected);
 
         foreach(Thing *zoneThing, myThings().filterByParentId(thing->id())) {
@@ -220,13 +278,38 @@ void IntegrationPluginTado::onAuthenticationStatusChanged(bool authenticated)
 
     if (m_tadoAccounts.values().contains(tado)){
         Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
+        if (!thing)
+            return;
         thing->setStateValue(tadoConnectionLoggedInStateTypeId, authenticated);
+
+        if (!authenticated) {
+            QTimer::singleShot(5000, tado, [this, tado, thing] {
+                if (!tado->connected()) {
+                    pluginStorage()->beginGroup(thing->id().toString());
+                    QString password = pluginStorage()->value("password").toString();
+                    pluginStorage()->endGroup();
+                    tado->getToken(password);
+                }
+            });
+        }
+    }
+}
+
+void IntegrationPluginTado::onRequestExecuted(QUuid requestId, bool success)
+{
+    if (m_asyncActions.contains(requestId)) {
+        ThingActionInfo *info = m_asyncActions.take(requestId);
+        if (success) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+        }
     }
 }
 
 void IntegrationPluginTado::onTokenReceived(Tado::Token token)
 {
-    Q_UNUSED(token);
+    Q_UNUSED(token)
 
     qCDebug(dcTado()) << "Token received";
     Tado *tado = static_cast<Tado*>(sender());

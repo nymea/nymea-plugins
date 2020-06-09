@@ -46,7 +46,7 @@
                     "id": "1a7bb944-fb9c-490a-8a4c-794b27282292",
                     "name": "zone",
                     "displayName": "Zone",
-                    "interfaces": ["thermostat", "temperaturesensor", "connectable"],
+                    "interfaces": ["heating", "temperaturesensor", "humiditysensor", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -110,7 +110,9 @@
                             "name": "power",
                             "displayName": "Power",
                             "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
                             "type": "bool",
+                            "writable": true,
                             "defaultValue": false
                         },
                         {

@@ -93,6 +93,8 @@ public:
 
     void setUsername(const QString &username);
     QString username();
+    bool authenticated();
+    bool connected();
 
     void getToken(const QString &password);
     void getHomes();
@@ -113,6 +115,11 @@ private:
     QString m_accessToken;
     QString m_refreshToken;
     QTimer *m_refreshTimer = nullptr;
+
+    bool m_authenticationStatus = false;
+    bool m_connectionStatus = false;
+    void setAuthenticationStatus(bool status);
+    void setConnectionStatus(bool status);
 
 signals:
     void connectionChanged(bool connected);

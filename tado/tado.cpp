@@ -56,6 +56,16 @@ QString Tado::username()
     return m_username;
 }
 
+bool Tado::authenticated()
+{
+    return m_authenticationStatus;
+}
+
+bool Tado::connected()
+{
+    return m_connectionStatus;
+}
+
 void Tado::getToken(const QString &password)
 {
     QNetworkRequest request;
@@ -78,15 +88,15 @@ void Tado::getToken(const QString &password)
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::HostNotFoundError) {
-                emit connectionChanged(false);
+                setConnectionStatus(false);
             }
-            if (status == 401) {
-                emit authenticationStatusChanged(false);
+            if (status == 401 || status == 400) {
+                setAuthenticationStatus(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
-        emit connectionChanged(true);
+        setConnectionStatus(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
@@ -111,15 +121,15 @@ void Tado::getToken(const QString &password)
                 token.expires = obj["expires_in"].toInt();
                 m_refreshTimer->start((token.expires - 10)*1000);
             } else {
-                  qCWarning(dcTado()) << "Received response doesn't contain an expire time";
+                qCWarning(dcTado()) << "Received response doesn't contain an expire time";
             }
             token.scope = obj["scope"].toString();
             token.jti = obj["jti"].toString();
-            emit authenticationStatusChanged(true);
+            setAuthenticationStatus(true);
             emit tokenReceived(token);
         } else {
             qCWarning(dcTado()) << "Received response isn't an object" << data.toJson();
-            emit authenticationStatusChanged(false);
+            setAuthenticationStatus(false);
         }
     });
 }
@@ -139,16 +149,16 @@ void Tado::getHomes()
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::HostNotFoundError) {
-                emit connectionChanged(false);
+                setConnectionStatus(false);
             }
-            if (status == 401) {
-                emit authenticationStatusChanged(false);
+            if (status == 401 || status == 400) {
+                setAuthenticationStatus(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
-        emit connectionChanged(true);
-        emit authenticationStatusChanged(true);
+        setConnectionStatus(true);
+        setAuthenticationStatus(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
@@ -184,16 +194,16 @@ void Tado::getZones(const QString &homeId)
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::HostNotFoundError) {
-                emit connectionChanged(false);
+                setConnectionStatus(false);
             }
-            if (status == 401) {
-                emit authenticationStatusChanged(false);
+            if (status == 401 || status == 400) {
+                setAuthenticationStatus(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
-        emit connectionChanged(true);
-        emit authenticationStatusChanged(true);
+        setConnectionStatus(true);
+        setAuthenticationStatus(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
@@ -230,17 +240,17 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::HostNotFoundError) {
-                emit connectionChanged(false);
+                setConnectionStatus(false);
             }
-            if (status == 401) {
-                emit authenticationStatusChanged(false);
+            if (status == 401 || status == 400) {
+                setAuthenticationStatus(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
 
-        emit connectionChanged(true);
-        emit authenticationStatusChanged(true);
+        setConnectionStatus(true);
+        setAuthenticationStatus(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
@@ -291,9 +301,9 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
     QByteArray body;
     QByteArray powerString;
     if (power)
-       powerString = "ON";
+        powerString = "ON";
     else
-       powerString = "OFF";
+        powerString = "OFF";
 
     body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\""+ powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
     //qCDebug(dcTado()) << "Sending request" << body;
@@ -306,10 +316,10 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
             if (reply->error() == QNetworkReply::HostNotFoundError) {
-                emit connectionChanged(false);
+                setConnectionStatus(false);
             }
-            if (status == 401) { //Unauthorized
-                emit authenticationStatusChanged(false);
+            if (status == 401 || status == 400) { //Unauthorized
+                setAuthenticationStatus(false);
             } else if (status == 422) { //Unprocessable Entity
                 qCWarning(dcTado()) << "Unprocessable Entity, probably a value out of range";
             } else {
@@ -317,8 +327,8 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
             }
             return;
         }
-        emit authenticationStatusChanged(true);
-        emit connectionChanged(true);
+        setAuthenticationStatus(true);
+        setConnectionStatus(true);
         emit requestExecuted(requestId, true);
 
         QJsonParseError error;
@@ -358,10 +368,10 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
         if (status < 200 || status > 210 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId ,false);
             if (reply->error() == QNetworkReply::HostNotFoundError) {
-                emit connectionChanged(false);
+                setConnectionStatus(false);
             }
-            if (status == 401) { //Unauthorized
-                emit authenticationStatusChanged(false);
+            if (status == 401 || status == 400) { //Unauthorized
+                setAuthenticationStatus(false);
             } else if (status == 422) { //Unprocessable Entity
                 qCWarning(dcTado()) << "Unprocessable Entity, probably a value out of range";
             } else {
@@ -370,8 +380,8 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
-        emit authenticationStatusChanged(true);
-        emit connectionChanged(true);
+        setAuthenticationStatus(true);
+        setConnectionStatus(true);
         emit requestExecuted(requestId, true);
 
         QJsonParseError error;
@@ -396,6 +406,26 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
     return requestId;
 }
 
+void Tado::setAuthenticationStatus(bool status)
+{
+    if (m_authenticationStatus != status) {
+        m_authenticationStatus = status;
+        emit authenticationStatusChanged(status);
+    }
+
+    if (!status) {
+        m_refreshTimer->stop();
+    }
+}
+
+void Tado::setConnectionStatus(bool status)
+{
+    if (m_connectionStatus != status) {
+        m_connectionStatus = status;
+        emit connectionChanged(status);
+    }
+}
+
 void Tado::onRefreshTimer()
 {
     QNetworkRequest request;
@@ -416,16 +446,16 @@ void Tado::onRefreshTimer()
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::HostNotFoundError) {
-                emit connectionChanged(false);
+                setConnectionStatus(false);
             }
             if (status == 400 || status == 401) {
-                emit authenticationStatusChanged(false);
+                setAuthenticationStatus(false);
             }
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
             return;
         }
-        emit connectionChanged(true);
-        emit authenticationStatusChanged(true);
+        setConnectionStatus(true);
+        setAuthenticationStatus(true);
 
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
