@@ -216,6 +216,21 @@ Description: nymea.io plugin for denon
  This package will install the nymea.io plugin for denon
 
 
+Package: nymea-plugin-doorbird
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for DoorBird
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for DoorBird
+
+
 Package: nymea-plugin-dweetio
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -998,6 +1013,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-datetime,
          nymea-plugin-daylightsensor,
          nymea-plugin-denon,
+         nymea-plugin-doorbird,
          nymea-plugin-eq-3,
          nymea-plugin-flowercare,
          nymea-plugin-kodi,

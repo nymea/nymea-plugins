@@ -1,0 +1,101 @@
+{
+    "name": "doorBird",
+    "displayName": "DoorBird",
+    "id": "6fe1614a-fc47-4eb2-a47c-13c50f1798ee",
+    "vendors": [
+        {
+            "name": "doorBird",
+            "displayName": "DoorBird",
+            "id": "2da07435-571e-4956-a387-6caa51d6e845",
+            "thingClasses": [
+                {
+                    "id": "0485eb61-2a22-42ba-9dd2-a5961485bf08",
+                    "name": "doorBird",
+                    "displayName": "DoorBird",
+                    "createMethods": ["discovery", "user" ],
+                    "interfaces": [ "doorbell", "presencesensor", "connectable" ],
+                    "setupMethod": "userandpassword",
+                    "paramTypes": [
+                        {
+                            "id": "8873b17d-526e-408d-95d8-6439b501f489",
+                            "name": "address",
+                            "displayName": "IP address",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "67ea5534-330a-4291-93b5-0237034e15fa",
+                            "name": "serialnumber",
+                            "displayName": "Serial number",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "b6c3377b-91de-411a-9d48-8b509c39d67c",
+                            "name": "openDoor",
+                            "displayName": "Open door",
+                            "paramTypes": [
+                                {
+                                    "id": "95dd35d7-0bc3-49e1-af96-d8da8ea5244d",
+                                    "name": "number",
+                                    "displayName": "Relay number",
+                                    "type": "QString",
+                                    "allowedValues": [
+                                        "1",
+                                        "2"
+                                    ],
+                                    "defaultValue": 1
+                                }
+                            ]
+                        },
+                        {
+                            "id": "3a6cfc5d-804c-4d21-91b5-999913d4f1a5",
+                            "name": "lightOn",
+                            "displayName": "Light on"
+                        },
+                        {
+                            "id": "e874242e-5acb-4d98-94c7-0a70db65150c",
+                            "name": "restart",
+                            "displayName": "Restart"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "186c270b-923c-46e4-a7da-33e45427cdbb",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "0f5eb200-6c0d-45c5-9156-3060fd66d332",
+                            "name": "isPresent",
+                            "displayName": "Motion sensor presence",
+                            "displayNameEvent": "Motion sensor presence detected",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "295c9700-b598-4681-898f-d63e2889cedf",
+                            "name": "lastSeenTime",
+                            "displayName": "Motion sensor last seen time",
+                            "displayNameEvent": "Motion sensor last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "9bc89937-a2ab-4e8e-af0e-a9ba41caa89b",
+                            "name": "doorbellPressed",
+                            "displayName": "Doorbell pressed"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

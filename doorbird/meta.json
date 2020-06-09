@@ -1,0 +1,13 @@
+{
+    "title": "DoorBird",
+    "tagline": "Integrates DoorBird doorstations with nymea.",
+    "icon": "doorbird.jpg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

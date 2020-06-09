@@ -13,6 +13,7 @@ PLUGIN_DIRS = \
     datetime            \
     daylightsensor      \
     denon               \
+    doorbird            \
     dweetio             \
     dynatrace           \
     elgato              \
