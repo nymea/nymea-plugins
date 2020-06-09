@@ -28,22 +28,25 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINGENERICINTERFACES_H
-#define INTEGRATIONPLUGINGENERICINTERFACES_H
+#ifndef INTEGRATIONPLUGINGENERICTHINGS_H
+#define INTEGRATIONPLUGINGENERICTHINGS_H
 
 #include "integrations/integrationplugin.h"
 
-class IntegrationPluginGenericInterfaces : public IntegrationPlugin
+class IntegrationPluginGenericThings: public IntegrationPlugin
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugingenericinterfaces.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugingenericthings.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit IntegrationPluginGenericInterfaces();
+    explicit IntegrationPluginGenericThings();
     void setupThing(ThingSetupInfo *info) override;
     void executeAction(ThingActionInfo *info) override;
+
+private:
+    double mapDoubleValue(double value, double fromMin, double fromMax, double toMin, double toMax);
 };
 
-#endif // INTEGRATIONPLUGINGENERICINTERFACES_H
+#endif // INTEGRATIONPLUGINGENERICTHINGS_H

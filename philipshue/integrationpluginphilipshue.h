@@ -108,8 +108,6 @@ private:
     QHash<QNetworkReply *, Thing *> m_bridgeSensorsDiscoveryRequests;
     QHash<QNetworkReply *, Thing *> m_bridgeSearchDevicesRequests;
 
-    QHash<QNetworkReply *, QPair<Thing *, ActionId> > m_asyncActions;
-
     QHash<HueBridge *, Thing *> m_bridges;
     QHash<HueLight *, Thing *> m_lights;
     QHash<HueRemote *, Thing *> m_remotes;
@@ -135,7 +133,6 @@ private:
     void processLightsRefreshResponse(Thing *thing, const QByteArray &data);
     void processSensorsRefreshResponse(Thing *thing, const QByteArray &data);
     void processSetNameResponse(Thing *thing, const QByteArray &data);
-    void processActionResponse(Thing *thing, const ActionId actionId, const QByteArray &data);
 
     void bridgeReachableChanged(Thing *thing, const bool &reachable);
 

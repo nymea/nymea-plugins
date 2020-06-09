@@ -357,19 +357,18 @@ Description: nymea.io plugin for genericelements
  This package will install the nymea.io plugin for genericelements
 
 
-Package: nymea-plugin-genericinterfaces
+Package: nymea-plugin-genericthings
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
-Description: nymea.io plugin for generic interfaces
- The nymea daemon is a plugin based IoT (Internet of Things) server. The
- server works like a translator for devices, things and services and
- allows them to interact.
- With the powerful rule engine you are able to connect any device available
- in the system and create individual scenes and behaviors for your environment.
+Replaces: nymea-plugin-genericinterfaces
+Conflicts: nymea-plugin-genericinterfaces
+Description: nymea.io plugin for generic things
+ Use the generic things plugin to create visually appealing thing setups
+ containing lights, shutter, sensors etc which are connected to GPIOs.
  .
- This package will install the nymea.io plugin for generic interfaces
+ This package will install the nymea.io plugin for genericthings
 
 
 Package: nymea-plugin-gpio
@@ -1031,6 +1030,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-doorbird,
          nymea-plugin-eq-3,
          nymea-plugin-flowercare,
+         nymea-plugin-genericthings,
          nymea-plugin-kodi,
          nymea-plugin-lgsmarttv,
          nymea-plugin-mailnotification,
@@ -1074,8 +1074,6 @@ Depends: nymea-plugin-boblight,
          nymea-plugin-udpcommander,
          nymea-plugin-tcpcommander,
          nymea-plugin-httpcommander,
-         nymea-plugin-genericelements,
-         nymea-plugin-genericinterfaces,
          nymea-plugin-avahimonitor,
          nymea-plugin-anel,
          nymea-plugin-gpio,

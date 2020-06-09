@@ -58,7 +58,6 @@ private:
     QHash<QNetworkReply *, Thing *> m_refreshReplies;
 
     void refresh(Thing* thing);
-    bool setPower(Thing *thing, const bool &power, const ActionId &actionId);
 
     void processRefreshData(const QByteArray &data, Thing *thing);
 

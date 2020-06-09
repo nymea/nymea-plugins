@@ -143,13 +143,12 @@ void IntegrationPluginEQ3::setupThing(ThingSetupInfo *info)
         MaxCube *cube = new MaxCube(this,thing->paramValue(cubeThingSerialParamTypeId).toString(),QHostAddress(thing->paramValue(cubeThingHostParamTypeId).toString()),thing->paramValue(cubeThingPortParamTypeId).toInt());
         m_cubes.insert(cube,thing);
 
-        connect(cube,SIGNAL(cubeConnectionStatusChanged(bool)),this,SLOT(cubeConnectionStatusChanged(bool)));
-        connect(cube,SIGNAL(commandActionFinished(bool,ActionId)),this,SLOT(commandActionFinished(bool,ActionId)));
-        connect(cube,SIGNAL(cubeConfigReady()),this,SLOT(updateCubeConfig()));
-        connect(cube,SIGNAL(wallThermostatFound()),this,SLOT(wallThermostatFound()));
-        connect(cube,SIGNAL(wallThermostatDataUpdated()),this,SLOT(wallThermostatDataUpdated()));
-        connect(cube,SIGNAL(radiatorThermostatFound()),this,SLOT(radiatorThermostatFound()));
-        connect(cube,SIGNAL(radiatorThermostatDataUpdated()),this,SLOT(radiatorThermostatDataUpdated()));
+        connect(cube, &MaxCube::cubeConnectionStatusChanged, this, &IntegrationPluginEQ3::cubeConnectionStatusChanged);
+        connect(cube, &MaxCube::cubeConfigReady, this, &IntegrationPluginEQ3::updateCubeConfig);
+        connect(cube, &MaxCube::wallThermostatFound, this, &IntegrationPluginEQ3::wallThermostatFound);
+        connect(cube, &MaxCube::wallThermostatDataUpdated, this, &IntegrationPluginEQ3::wallThermostatDataUpdated);
+        connect(cube, &MaxCube::radiatorThermostatFound, this, &IntegrationPluginEQ3::radiatorThermostatFound);
+        connect(cube, &MaxCube::radiatorThermostatDataUpdated, this, &IntegrationPluginEQ3::radiatorThermostatDataUpdated);
 
         cube->connectToCube();
         connect(cube, &MaxCube::cubeConnectionStatusChanged, info, [info](bool connected){
@@ -278,23 +277,30 @@ void IntegrationPluginEQ3::executeAction(ThingActionInfo *info)
 
         // FIXME: The MaxCube class needs a reworkto queue commands instead of overwriting each other's actionId
 
+        int id = -1;
         if (action.actionTypeId() == wallThermostatTargetTemperatureActionTypeId){
-            cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostatTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble(), action.id());
+            id = cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostatTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble());
         } else if (action.actionTypeId() == wallThermostatPowerActionTypeId) {
-            cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostatPowerActionPowerParamTypeId).value().toBool() ? thing->stateValue(wallThermostatComfortTemperatureStateTypeId).toDouble() : 4.5, action.id());
+            id = cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(wallThermostatPowerActionPowerParamTypeId).value().toBool() ? thing->stateValue(wallThermostatComfortTemperatureStateTypeId).toDouble() : 4.5);
         } else if (action.actionTypeId() == wallThermostatSetAutoModeActionTypeId){
-            cube->setDeviceAutoMode(rfAddress, roomId, action.id());
+            id = cube->setDeviceAutoMode(rfAddress, roomId);
         } else if (action.actionTypeId() == wallThermostatSetManualModeActionTypeId){
-            cube->setDeviceManuelMode(rfAddress, roomId, action.id());
+            id = cube->setDeviceManuelMode(rfAddress, roomId);
         } else if (action.actionTypeId() == wallThermostatSetEcoModeActionTypeId){
-            cube->setDeviceEcoMode(rfAddress, roomId, action.id());
+            id = cube->setDeviceEcoMode(rfAddress, roomId);
         } else if (action.actionTypeId() == wallThermostatDisplayCurrentTempActionTypeId){
-            cube->displayCurrentTemperature(rfAddress, roomId, action.param(wallThermostatDisplayCurrentTempActionDisplayParamTypeId).value().toBool(), action.id());
+            id = cube->displayCurrentTemperature(rfAddress, roomId, action.param(wallThermostatDisplayCurrentTempActionDisplayParamTypeId).value().toBool());
+        }
+        if (id == -1) {
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
         }
 
         // Connect this info object to the next coming commandActionFinished
-        connect(cube, &MaxCube::commandActionFinished, info, [info](bool success, const ActionId &){
-            info->finish(success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+        connect(cube, &MaxCube::commandActionFinished, info, [info, id](bool success, int replyId){
+            if (replyId == id) {
+                info->finish(success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+            }
         });
         return;
     }
@@ -305,21 +311,28 @@ void IntegrationPluginEQ3::executeAction(ThingActionInfo *info)
         QByteArray rfAddress = thing->paramValue(radiatorThermostatThingRfParamTypeId).toByteArray();
         int roomId = thing->paramValue(radiatorThermostatThingRoomParamTypeId).toInt();
 
+        int id = -1;
         if (action.actionTypeId() == radiatorThermostatTargetTemperatureActionTypeId){
-            cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(radiatorThermostatTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble(), action.id());
+            id = cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(radiatorThermostatTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble());
         } else if (action.actionTypeId() == radiatorThermostatPowerActionTypeId) {
-            cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(radiatorThermostatPowerActionPowerParamTypeId).value().toBool() ? thing->stateValue(radiatorThermostatComfortTempStateTypeId).toDouble() : 4.5, action.id());
+            id = cube->setDeviceSetpointTemp(rfAddress, roomId, action.param(radiatorThermostatPowerActionPowerParamTypeId).value().toBool() ? thing->stateValue(radiatorThermostatComfortTempStateTypeId).toDouble() : 4.5);
         } else if (action.actionTypeId() == radiatorThermostatSetAutoModeActionTypeId){
-            cube->setDeviceAutoMode(rfAddress, roomId, action.id());
+            id = cube->setDeviceAutoMode(rfAddress, roomId);
         } else if (action.actionTypeId() == radiatorThermostatSetManualModeActionTypeId){
-            cube->setDeviceManuelMode(rfAddress, roomId, action.id());
+            id = cube->setDeviceManuelMode(rfAddress, roomId);
         } else if (action.actionTypeId() == radiatorThermostatSetEcoModeActionTypeId){
-            cube->setDeviceEcoMode(rfAddress, roomId, action.id());
+            id = cube->setDeviceEcoMode(rfAddress, roomId);
+        }
+        if (id == -1) {
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
         }
 
         // Connect this info object to the next coming commandActionFinished
-        connect(cube, &MaxCube::commandActionFinished, info, [info](bool success, const ActionId &){
-            info->finish(success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+        connect(cube, &MaxCube::commandActionFinished, info, [info, id](bool success, int replyId){
+            if (replyId == id) {
+                info->finish(success ? Thing::ThingErrorNoError : Thing::ThingErrorHardwareFailure);
+            }
         });
 
         return;

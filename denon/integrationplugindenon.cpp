@@ -269,7 +269,7 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    qCDebug(dcDenon) << "Execute action" << thing->id() << action.id() << action.params();
+    qCDebug(dcDenon) << "Execute action" << thing->id() << action.params();
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         AvrConnection *avrConnection = m_avrConnections.value(thing->id());
 
@@ -287,7 +287,7 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
 
         } else if (action.actionTypeId() == AVRX1000ChannelActionTypeId) {
 
-            qCDebug(dcDenon) << "Execute update action" << action.id();
+            qCDebug(dcDenon) << "Execute update action";
             QByteArray channel = action.param(AVRX1000ChannelActionChannelParamTypeId).value().toByteArray();
             avrConnection->setChannel(channel);
             return info->finish(Thing::ThingErrorNoError);
