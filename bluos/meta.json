@@ -1,0 +1,13 @@
+{
+    "title": "BluOS",
+    "tagline": "Control audio devices based on BluOS.",
+    "icon": "blusound.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "multimedia"
+    ]
+}

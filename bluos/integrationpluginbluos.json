@@ -1,0 +1,198 @@
+{
+    "displayName": "BluOS",
+    "name": "BluOS",
+    "id": "71dd25b3-37ef-4b27-abca-24989fa38c61",
+    "vendors": [
+        {
+            "id": "39a492e9-e497-4b43-94d4-970eb9913b96",
+            "displayName": "BluOS",
+            "name": "bluos",
+            "thingClasses": [
+                {
+                    "id": "406adcbc-1e7d-4e41-ae2a-f87b6bafd13d",
+                    "name": "bluosPlayer",
+                    "displayName": "BluOS player",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["mediaplayer", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "browsable": true,
+                    "paramTypes":[
+                        {
+                            "id": "833f99cc-fc3f-48ef-a705-a69ae2c8e9ec",
+                            "name": "address",
+                            "displayName": "IP Address",
+                            "type" : "QString"
+                        },
+                        {
+                            "id": "4628c040-6bbb-43c9-b25f-ce3b22300e3b",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int"
+                        },
+                        {
+                            "id": "8fd2a7d5-bb26-4f18-a488-5ab0779733f8",
+                            "name": "serialNumber",
+                            "displayName": "Serial number",
+                            "type" : "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8092f387-5099-43e8-a7c4-7f0dd7b70fce",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "2f650ae6-f3a5-4851-8449-1ba02c4864e5",
+                            "name": "mute",
+                            "displayName": "Mute",
+                            "displayNameEvent": "Mute changed",
+                            "displayNameAction": "Set mute",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "a444bb7c-7266-4c7e-874a-eb04bb91b9cf",
+                            "name": "volume",
+                            "displayName": "Volume",
+                            "displayNameEvent": "Volume changed",
+                            "displayNameAction": "Set volume",
+                            "type": "int",
+                            "defaultValue": 50,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "43f552c7-7dfe-4358-bebd-ab558191cdfc",
+                            "name": "playbackStatus",
+                            "displayName": "Playback status",
+                            "displayNameEvent": "Playback status changed",
+                            "displayNameAction": "Set playback status",
+                            "type": "QString",
+                            "defaultValue": "Stopped",
+                            "possibleValues": ["Playing", "Paused", "Stopped"],
+                            "cached": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "5636c21a-f14b-472c-8486-177543f6adfb",
+                            "name": "shuffle",
+                            "displayName": "Shuffle",
+                            "displayNameEvent": "Shuffle changed",
+                            "displayNameAction": "Set shuffle",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "b4a572b1-6120-43e8-9a6c-18d099c8b162",
+                            "name": "repeat",
+                            "displayName": "Repeat mode",
+                            "displayNameEvent": "Repeat mode changed",
+                            "displayNameAction": "Set repeat mode",
+                            "type": "QString",
+                            "defaultValue": "None",
+                            "possibleValues": ["None", "One", "All"],
+                            "cached": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "604e4995-ee1a-44fc-bfcb-ca0e861710bd",
+                            "name": "source",
+                            "displayName": "Source",
+                            "displayNameEvent": "Source changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "8c5372f1-3dde-4984-9955-9a436a29e8e3",
+                            "name": "artist",
+                            "displayName": "Artist",
+                            "displayNameEvent": "Artist changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "d2a2db24-5855-40cd-a043-6f67e43acc61",
+                            "name": "collection",
+                            "displayName": "Album",
+                            "displayNameEvent": "Album changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "6204ec9d-6aab-4fd3-8911-fdaa462c19a8",
+                            "name": "title",
+                            "displayName": "Title",
+                            "displayNameEvent": "Title changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "918bfeed-bf96-4034-85d6-9f4cff35fd00",
+                            "name": "artwork",
+                            "displayName": "Artwork",
+                            "displayNameEvent": "Artwork changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "69757ef3-173f-499c-9304-4252de3588c6",
+                            "name": "group",
+                            "displayName": "Group",
+                            "displayNameEvent": "Group changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "e5222e93-fa14-49de-950f-2f605ce8927b",
+                            "name": "playerType",
+                            "displayName": "Player type",
+                            "displayNameEvent": "Player type changed",
+                            "possibleValues": [
+                                "audio",
+                                "video"
+                            ],
+                            "type": "QString",
+                            "defaultValue": "audio"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "864a5bcc-71e1-4d7f-8f2e-3c4222d5d988",
+                            "name": "skipBack",
+                            "displayName": "Skip back"
+                        },
+                        {
+                            "id": "2526ec6d-1c21-4f73-97f1-973a5f05b626",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "253eb62f-d50d-4667-8213-8632de178aa3",
+                            "name": "play",
+                            "displayName": "Play"
+                        },
+                        {
+                            "id": "92446566-8c32-4ee2-9498-d9dd9333a75d",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "30930095-6f97-48ef-8bbf-597d734f0751",
+                            "name": "skipNext",
+                            "displayName": "Skip next"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

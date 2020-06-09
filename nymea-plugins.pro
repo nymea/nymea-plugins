@@ -5,6 +5,7 @@ PLUGIN_DIRS = \
     aqi                 \ 
     avahimonitor        \
     awattar             \
+    bluos               \
     boblight            \
     bose                \
     coinmarketcap       \
