@@ -732,7 +732,8 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
             }
 
             // Create 2 switches for shelly 2.5
-            if (info->thing()->thingClassId() == shelly25ThingClassId) {
+            if (info->thing()->thingClassId() == shelly25ThingClassId
+                    || info->thing()->thingClassId() == shellyDimmerThingClassId) {
                 ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
                 switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
                 autoChilds.append(switchChild);
