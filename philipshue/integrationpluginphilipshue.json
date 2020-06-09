@@ -523,37 +523,116 @@
                     ]
                 },
                 {
+                    "id": "1e34a056-9f37-4741-b249-a5eca7a4ab4e",
+                    "name": "smartButton",
+                    "displayName": "Hue Smart Button",
+                    "interfaces": ["longpressbutton", "connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "9271179f-5fe1-4005-9f97-ccde33b1b2c4",
+                            "name": "modelId",
+                            "displayName": "Model ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "7221aacc-1420-43f2-a05a-448a0f783713",
+                            "name": "type",
+                            "displayName": "Type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "2378a06d-b748-445b-94e2-4dd885a54f22",
+                            "name": "uuid",
+                            "displayName": "UUID",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "54744fcc-c052-4c16-a857-fbe0b791e538",
+                            "name": "sensorId",
+                            "displayName": "Sensor ID",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b449cca5-19a0-483f-b4bd-b9b43b4f8ed4",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool",
+                            "cached": false
+                        },
+                        {
+                            "id": "a0a1b480-6822-49bc-b1b1-50c39764d255",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "7c1fd7c1-f322-4be7-9c22-7d14d0ec38ea",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "c809179e-effa-4717-9172-11df7e80d109",
+                            "name": "pressed",
+                            "displayName": "Button pressed"
+                        },
+                        {
+                            "id": "25803922-37f1-47c8-ac00-2d3acb9eb634",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
+                        }
+                    ]
+                },
+                {
                     "id": "2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e",
                     "name": "tap",
                     "displayName": "Hue Tap",
-                    "interfaces": ["simplemultibutton", "connectable"],
+                    "interfaces": ["multibutton", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
                             "id": "62d92175-db3a-4da2-a72b-f58f34cb6911",
                             "name": "modelId",
-                            "displayName": "model id",
+                            "displayName": "Model ID",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
                             "id": "eace85b9-5369-466f-89eb-46c4de718305",
                             "name": "type",
-                            "displayName": "type",
+                            "displayName": "Type",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
                             "id": "25cf4167-6c28-4497-9fa9-3d02faf4f3ed",
                             "name": "uuid",
-                            "displayName": "uuid",
+                            "displayName": "UUID",
                             "type" : "QString",
                             "readOnly": true
                         },
                         {
                             "id": "5eca2b24-8986-4487-bc12-50e91d023d97",
                             "name": "sensorId",
-                            "displayName": "sensor id",
+                            "displayName": "Sensor ID",
                             "type" : "int",
                             "readOnly": true
                         }
@@ -562,8 +641,8 @@
                         {
                             "id": "5e21b032-1230-4e93-8543-0c4773da17d3",
                             "name": "connected",
-                            "displayName": "reachable",
-                            "displayNameEvent": "reachable changed",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
                             "defaultValue": false,
                             "type": "bool",
                             "cached": false
