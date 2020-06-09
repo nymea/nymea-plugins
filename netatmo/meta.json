@@ -1,0 +1,13 @@
+{
+    "title": "Netatmo",
+    "tagline": "Get data from Netatmo weatherstations.",
+    "icon": "netatmo.png",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

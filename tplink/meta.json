@@ -1,0 +1,15 @@
+{
+    "title": "TP-Link",
+    "tagline": "TP-Link",
+    "icon": "tplink.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "sensor",
+        "switch",
+        "socket"
+    ]
+}

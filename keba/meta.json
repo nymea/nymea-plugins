@@ -1,0 +1,12 @@
+{
+    "title": "Keba",
+    "tagline": "Control Keba wallbox.",
+    "icon": "keba.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+    ]
+}

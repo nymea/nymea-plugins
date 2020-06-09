@@ -1,0 +1,13 @@
+{
+    "title": "Nanoleaf",
+    "tagline": "Control Nanoleaf light panels.",
+    "icon": "nanoleaf.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "light"
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "title": "TCP Commander",
+    "tagline": "Send and receive raw TCP commands.",
+    "icon": "tcpcommander.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "tool"
+    ]
+}

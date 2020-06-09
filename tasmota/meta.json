@@ -1,0 +1,15 @@
+{
+    "title": "Tasmota",
+    "tagline": "Tasmota",
+    "icon": "tasmota.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network",
+        "mqtt"
+    ],
+    "categories": [
+        "relay",
+        "socket"
+    ]
+}

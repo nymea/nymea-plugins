@@ -1,0 +1,16 @@
+{
+    "title": "Philips Hue",
+    "tagline": "Connect and control Philips Hue devices.",
+    "icon": "philipshue.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "gateway",
+        "light",
+        "sensor",
+        "switch"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "title": "Shelly",
+    "tagline": "Control Shelly devices.",
+    "icon": "shelly.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "socket",
+        "relay"
+    ]
+}

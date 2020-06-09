@@ -1,0 +1,13 @@
+{
+    "title": "Date and Time",
+    "tagline": "Get astronomical data, set alarm and countdown",
+    "icon": "datetime.svg",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "title": "Daylight Sensor",
+    "tagline": "Get sunrise and sundown events.",
+    "icon": "daylightsensor.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

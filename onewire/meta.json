@@ -1,0 +1,13 @@
+{
+    "title": "One-Wire",
+    "tagline": "Connect one-wire temperature sensors and switches.",
+    "icon": "onewire.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "one-wire"
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

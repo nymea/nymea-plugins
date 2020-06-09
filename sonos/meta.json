@@ -1,0 +1,13 @@
+{
+    "title": "Sonos",
+    "tagline": "Control Sonos speakers.",
+    "icon": "sonos.svg",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "multimedia"
+    ]
+}

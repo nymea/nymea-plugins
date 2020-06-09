@@ -1,0 +1,13 @@
+{
+    "title": "Texas Instruments",
+    "tagline": "Connect to the TI multisensor over Bluetooth.",
+    "icon": "texasinstruments.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "bluetooth"
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

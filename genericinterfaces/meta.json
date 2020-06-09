@@ -1,0 +1,12 @@
+{
+    "title": "Generic Interfaces",
+    "tagline": "Add generic device types.",
+    "icon": "genericinterfaces.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+    ],
+    "categories": [
+        "tool"
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "title": "Tuya",
+    "tagline": "Connect to the Tuya cloud.",
+    "icon": "tuya.jpg",
+    "stability": "community",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

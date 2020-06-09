@@ -1,26 +1,28 @@
-# Application and script launcher
+# Application and Bashscript Launcher
 
 This plugin allows you to execute system commands and start bash scripts.
 
-## Application launcher
+## Usage
+
+### Application launcher
 
 The application launcher allows you to call bash applications or commands with parameters from nymea.
 Once, the application started, the `running` state will change to `true`, if the application
 is finished, the `running` state will change to `false`.
 
-### Example
+**Example**
 
 An example command could be [espeak](http://linux.die.net/man/1/espeak). (`apt-get install espeak`)
 
     espeak -v en "Chuck Norris is using nymea"
 
-## Bash script launcher
+### Bash script launcher
 
 The bashscript launcher allows you to start a bash script (with parameters)
 from nymea. Once, the script is running, the `running` state will change to `true`, if the application
 is finished, the `running` state will change to `false`.
 
-### Example
+**Example**
 
 An example for a very useful script could be a backup scrip like following `backup.sh` script.
 
@@ -57,3 +59,21 @@ To make the script executable use following command:
 
     chmod +x backup.sh
 
+## Supported Things
+
+* Application launcher
+    * Enter command during thing setup
+    * Get running state
+    * Trigger and kill the command
+* Bashscript launcher
+    * Enter script during thing setup
+    * Get running state
+    * Trigger and kill the script
+
+## Requirements
+
+* The package “nymea-plugin-commandlauncher” must be installed.
+
+## More
+
+https://ubuntu.com/tutorials/command-line-for-beginners

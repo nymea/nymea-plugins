@@ -1,4 +1,3 @@
-
 # Air Quality Index
 
 This plug-in gets air quality information from http://aqicn.org.

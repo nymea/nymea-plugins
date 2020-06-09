@@ -1,0 +1,13 @@
+{
+    "title": "UniFi",
+    "tagline": "Connect to the UniFi controller.",
+    "icon": "unifi.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

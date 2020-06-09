@@ -1,0 +1,14 @@
+{
+    "title": "Anel",
+    "tagline": "Integrates Anel with nymea.",
+    "icon": "anel.jpg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "sensor",
+        "socket"
+    ]
+}

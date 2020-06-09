@@ -1,0 +1,13 @@
+{
+    "title": "Kodi",
+    "tagline": "Control the Kodi media player.",
+    "icon": "kodi.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "multimedia"
+    ]
+}

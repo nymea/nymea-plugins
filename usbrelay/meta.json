@@ -1,0 +1,12 @@
+{
+    "title": "USB Relay",
+    "tagline": "Control relays connected over USB.",
+    "icon": "usbrelay.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "usb"
+    ],
+    "categories": [
+    ]
+}

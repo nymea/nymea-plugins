@@ -1,0 +1,13 @@
+{
+    "title": "Tado",
+    "tagline": "Connect to you Tado account.",
+    "icon": "tado.png",
+    "stability": "community",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "heating"
+    ]
+}

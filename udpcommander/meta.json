@@ -1,0 +1,13 @@
+{
+    "title": "UDP Commander",
+    "tagline": "Send and receive raw UDP commands.",
+    "icon": "udpcommander.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "tool"
+    ]
+}

@@ -1,7 +1,8 @@
-#CoinMarketCap
+# CoinMarketCap
 
-The coin market cap plugin gets the latest crypto prices from coin market cap and displays it in your favorite flat currency.
+The coin market cap plugin gets the latest crypto prices from coin market cap and displays it in your favorite fiat currency.
 
+## Supported Things
 
 Supported cypto currencies:
 
@@ -16,7 +17,7 @@ Supported cypto currencies:
 * miota - IOTA
 * ans   - NEO
 
-Supported flat currencies:
+Supported fiat currencies:
 
 * EUR
 * USD
@@ -33,3 +34,14 @@ Supported flat currencies:
 * KRW
 * MXN
 * RUB
+
+## Requirements
+
+* Internet connection
+* coinmarketcap.com beeing reachable.
+* The package “nymea-plugin-coinmarketcap” must be installed.
+
+## More
+
+https://coinmarketcap.com/
+

@@ -1,0 +1,13 @@
+{
+    "title": "Bose",
+    "tagline": "Connect to Bose speaker.",
+    "icon": "bose.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "multimedia"
+    ]
+}

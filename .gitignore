@@ -1,3 +1,4 @@
 *.pro.user
 builddir
 doc/html
+.DS_Store

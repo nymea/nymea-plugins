@@ -1,0 +1,12 @@
+{
+    "title": "Wake-On-LAN",
+    "tagline": "Wake up devices in you LAN.",
+    "icon": "wol.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+    ]
+}

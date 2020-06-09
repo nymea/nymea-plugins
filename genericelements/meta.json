@@ -1,0 +1,12 @@
+{
+    "title": "Generic Elements",
+    "tagline": "Add basic buttons.",
+    "icon": "genericelements.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+    ],
+    "categories": [
+        "tool"
+    ]
+}

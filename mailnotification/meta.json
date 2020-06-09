@@ -1,0 +1,13 @@
+{
+    "title": "Mail Notification",
+    "tagline": "Send E-Mails.",
+    "icon": "mailnotification.svg",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "notification"
+    ]
+}

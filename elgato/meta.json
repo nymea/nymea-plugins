@@ -1,0 +1,13 @@
+{
+    "title": "Elgato",
+    "tagline": "Connect to Elgato devices.",
+    "icon": "avea.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "bluetooth"
+    ],
+    "categories": [
+        "light"
+    ]
+}

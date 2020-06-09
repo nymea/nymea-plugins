@@ -1,0 +1,13 @@
+{
+    "title": "WeMo",
+    "tagline": "Control WeMo devices.",
+    "icon": "wemo.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "socket"
+    ]
+}

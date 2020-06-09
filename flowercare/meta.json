@@ -1,0 +1,13 @@
+{
+    "title": "Flower Care",
+    "tagline": "Flower Care.",
+    "icon": "xiaomi.svg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "bluetooth"
+    ],
+    "categories": [
+        "sensor"
+    ]
+}

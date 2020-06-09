@@ -1,0 +1,14 @@
+{
+    "title": "MQTT client",
+    "tagline": "Send and receive raw MQTT messages",
+    "icon": "mqtt.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network",
+        "mqtt"
+    ],
+    "categories": [
+        "tool"
+    ]
+}

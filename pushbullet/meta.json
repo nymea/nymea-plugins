@@ -1,0 +1,14 @@
+{
+    "title": "Pushbullet",
+    "tagline": "Send notifictions over Pushbullet.",
+    "icon": "pushbullet.png",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "online-service",
+        "notification"
+    ]
+}

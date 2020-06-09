@@ -1,0 +1,13 @@
+{
+    "title": "OSDomotics",
+    "tagline": "Connect and control Merkur boards.",
+    "icon": "merkur-board.jpg",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "serial-port"
+    ],
+    "categories": [
+        "gateway"
+    ]
+}

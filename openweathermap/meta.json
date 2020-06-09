@@ -1,0 +1,14 @@
+{
+    "title": "OpenWeatherMap",
+    "tagline": "Get current weather data for your location",
+    "icon": "openweathermap.png",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "weather",
+        "online-service"
+    ]
+}

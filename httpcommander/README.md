@@ -1,11 +1,22 @@
-# HTTP commander
+# HTTP Commander
 
-The HTTP commander allows you to send and reqceive generiv HTTP requests.
+The HTTP commander allows to send and receive raw HTTP requests.
 
-## HTTP Request
+## Supported Things
 
-Send simple HTTP GET/POST/PUT/DELETE requests. URL and port will be defined during setup, body and HTTP method can be set within every request.
+* HTTP Request
+    * GET/POST/PUT/DELETE
+    * URL and port get defined during thing setup
+    * Body and HTTP method can be set within every request
+* HTTP Server
+    * GET/POST/PUT/DELETE
+    * Get event with HTTP request type, url and body as parameter.
 
-## HTTP Server
+## Requirements
 
-Simple HTTP Server to receive GET/POST/PUT/DELETE requests. Emits an event including HTTP request type, Url and body as parameter.
+* The package 'nymea-plugin-httpcommander' must be installed.
+
+## More
+
+https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
+
