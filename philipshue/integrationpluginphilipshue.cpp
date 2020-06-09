@@ -81,7 +81,7 @@ void IntegrationPluginPhilipsHue::init()
         }
     });
 
-    m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_hue._tcp._local");
+    m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_hue._tcp");
     connect(m_zeroConfBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=](const ZeroConfServiceEntry &entry){
         foreach (Thing *thing, myThings().filterByThingClassId(bridgeThingClassId)) {
             QString thingId = thing->paramValue(bridgeThingIdParamTypeId).toString();
@@ -126,10 +126,9 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
          * service: hue
          * name: Philips Hue - xxxxxx where xxxxxx are the last 6 digits of the bridge ID.
         */
-        if (!entry.serviceType().contains("_hue._tcp._local") || entry.protocol() != QAbstractSocket::IPv4Protocol) {
+        if (!entry.serviceType().contains("_hue._tcp") || entry.protocol() != QAbstractSocket::IPv4Protocol) {
             continue;
         }
-        qCDebug(dcPhilipsHue()) << "Zeroconf entry:" << entry;
 
         QString id;
         foreach (const QString &txt, entry.txt()) {
@@ -140,6 +139,12 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
                 break;
             }
         }
+
+        // For some reason the UPnP api returns serial numbers withouot a "fffe" in the middle. For backwards compatiblity adjust to that
+        if (id.indexOf("fffe") == 6) {
+            id.remove(6, 4);
+        }
+
         QHostAddress address = entry.hostAddress();
 
         ParamList params;
@@ -155,6 +160,7 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
                 break;
             }
         }
+        qCDebug(dcPhilipsHue()) << "mDNS: Found Hue bridge:" << id << address.toString();
         discovery->results.append(descriptor);
     }
 
@@ -179,6 +185,8 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
                 ThingDescriptor descriptor(bridgeThingClassId, "Philips Hue Bridge", upnpDevice.hostAddress().toString());
                 ParamList params;
                 QString bridgeId = upnpDevice.serialNumber().toLower();
+
+                // We need to add it, check if this bridge is already set up
                 foreach (Thing *existingThing, myThings()) {
                     if (existingThing->paramValue(bridgeThingIdParamTypeId).toString() == bridgeId) {
                         descriptor.setThingId(existingThing->id());
@@ -188,7 +196,7 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
                 params.append(Param(bridgeThingHostParamTypeId, upnpDevice.hostAddress().toString()));
                 params.append(Param(bridgeThingIdParamTypeId, bridgeId));
                 descriptor.setParams(params);
-                qCDebug(dcPhilipsHue()) << "UPnP: Found Hue bridge:" << bridgeId;
+                qCDebug(dcPhilipsHue()) << "UPnP: Found Hue bridge:" << bridgeId << upnpDevice.hostAddress().toString();
                 discovery->results.append(descriptor);
             }
         }
@@ -224,18 +232,22 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
         }
 
         foreach (const QVariant &bridgeVariant, jsonDoc.toVariant().toList()) {
+
+
             QVariantMap bridgeMap = bridgeVariant.toMap();
             ThingDescriptor descriptor(bridgeThingClassId, "Philips Hue Bridge", bridgeMap.value("internalipaddress").toString());
             ParamList params;
             QString bridgeId = bridgeMap.value("id").toString().toLower();
-            // For some reason the N-UPnP api returns serial numbers with a "fffe" in the middle...
+            QString address = bridgeMap.value("internalipaddress").toString();
+
+            // For some reason the UPnP api returns serial numbers withouot a "fffe" in the middle. For backwards compatiblity adjust to that
             if (bridgeId.indexOf("fffe") == 6) {
                 bridgeId.remove(6, 4);
             }
-            params.append(Param(bridgeThingHostParamTypeId, bridgeMap.value("internalipaddress").toString()));
+            params.append(Param(bridgeThingHostParamTypeId, address));
             params.append(Param(bridgeThingIdParamTypeId, bridgeId));
             descriptor.setParams(params);
-            qCDebug(dcPhilipsHue()) << "N-UPnP: Found Hue bridge:" << bridgeId;
+            qCDebug(dcPhilipsHue()) << "N-UPnP: Found Hue bridge:" << bridgeId << address;
             discovery->results.append(descriptor);
         }
 
