@@ -1,7 +1,36 @@
-nymea-plugins (0.21.0) UNRELEASED; urgency=medium
+nymea-plugins (0.21.0) xenial; urgency=medium
 
 
- -- Michael Zanetti <michael.zanetti@guh.io>  Thu, 09 Apr 2020 18:20:40 +0200
+  [ Bernhard Trinnes ]
+  * New Plug-In: Doorbird
+  * Rework readmes
+  * New integration plug-in: BluOS
+  * Tado: Add heating interface
+
+  [ Michael Zanetti ]
+  * PhilipsHue: Add support for the Hue Smart Button
+  * New Plugin: Generic Things
+
+  [ Bernhard Trinnes ]
+  * Removed all 433MHz plug-ins
+
+  [ Michael Zanetti ]
+  * New Plugin: I²C devices
+  * Shelly: Add switch device to Shelly Dimmer
+  * All Plugins: Fix german translations to also work all german regions
+
+  [ Bernhard Trinnes ]
+  * Avahi Monitor: added address and port
+
+  [ Michael Zanetti ]
+  * Tuya: Fix devId parameter for blinds
+  * GPIO: Add support for generic IO connections
+
+  [ Bernhard Trinnes ]
+  * Denon Plug-in: Fixed discovery and added async actions
+  * Philips Hue: Additional discovery method
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 09 Jun 2020 18:19:27 +0200
 
 nymea-plugins (0.20.0) xenial; urgency=medium
 
