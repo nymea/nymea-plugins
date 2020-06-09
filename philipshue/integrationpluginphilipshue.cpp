@@ -87,14 +87,14 @@ void IntegrationPluginPhilipsHue::init()
             QString thingId = thing->paramValue(bridgeThingIdParamTypeId).toString();
             if (entry.protocol() == QAbstractSocket::IPv4Protocol) {
 
-                foreach (const QString &txtEntry, entry.txt()) {
-                    QStringList parts = txtEntry.split('=');
-                    if (parts.length() == 2 && parts.first() == "uuid" && parts.last() == thingId) {
-                        thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
-                        HueBridge *bridge = m_bridges.key(thing);
-                        bridge->setHostAddress(entry.hostAddress());
-                        //TODO also add upnp to update the address
-                    }
+                QString name = entry.name().split(" - ").first();
+                QString id = entry.name().split(" - ").last();
+
+                if (thingId.contains(id)) {
+                    thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
+                    HueBridge *bridge = m_bridges.key(thing);
+                    bridge->setHostAddress(entry.hostAddress());
+                    //TODO also add upnp to update the address
                 }
             }
         }
@@ -192,7 +192,7 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
 
 
     qCDebug(dcPhilipsHue) << "Starting N-UPNP discovery...";
-    QNetworkRequest request(QUrl(" https://discovery.meethue.com "));
+    QNetworkRequest request(QUrl("https://discovery.meethue.com"));
     QNetworkReply *nUpnpReply = hardwareManager()->networkManager()->get(request);
     discovery->nUpnpReply = nUpnpReply;
 
@@ -1424,9 +1424,9 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
         QString uuid = sensorMap.value("uniqueid").toString();
         QString model = sensorMap.value("modelid").toString();
 
-//        qCDebug(dcPhilipsHue()) << "Found sensor on bridge:" << model << uuid;
+        //        qCDebug(dcPhilipsHue()) << "Found sensor on bridge:" << model << uuid;
         foreach (HueRemote* remote, remotesToRemove) {
-//            qCDebug(dcPhilipsHue()) << "  - Checking remote to remove" << remote->modelId() << remote->uuid();
+            //            qCDebug(dcPhilipsHue()) << "  - Checking remote to remove" << remote->modelId() << remote->uuid();
             if (remote->uuid() == uuid) {
                 remotesToRemove.removeAll(remote);
                 break;
@@ -1454,7 +1454,7 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
             emit autoThingsAppeared({descriptor});
             qCDebug(dcPhilipsHue) << "Found new remote" << sensorMap.value("name").toString() << model;
 
-        // Smart Button
+            // Smart Button
         } else if (model == "ROM001") {
             ThingDescriptor descriptor(smartButtonThingClassId, sensorMap.value("name").toString(), "Philips Hue Smart Button", thing->id());
             ParamList params;
@@ -1466,7 +1466,7 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
             emit autoThingsAppeared({descriptor});
             qCDebug(dcPhilipsHue) << "Found new smart button" << sensorMap.value("name").toString() << model;
 
-        // Hue Tap
+            // Hue Tap
         } else if (sensorMap.value("type").toString() == "ZGPSwitch") {
             ThingDescriptor descriptor(tapThingClassId, sensorMap.value("name").toString(), "Philips Hue Tap", thing->id());
             ParamList params;
