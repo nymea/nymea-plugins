@@ -60,7 +60,9 @@ public:
     void disconnectDevice();
 
     QHostAddress hostAddress() const;
+    void setHostAddress(const QHostAddress &hostAddress);
     int port() const;
+    void setPort(int port);
     bool connected();
 
     QUuid getChannel();

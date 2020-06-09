@@ -91,28 +91,28 @@
                             "writable": true
                         },
                         {
-                                                    "displayName": "Bass",
-                                                    "id": "2c92b22e-d5b2-4991-a523-64222bffc9e7",
-                                                    "name": "bass",
-                                                    "displayNameEvent": "Bass changed",
-                                                    "displayNameAction": "Set bass",
-                                                    "type": "int",
-                                                    "defaultValue": 0,
-                                                    "minValue": -50,
-                                                    "maxValue": 49,
-                                                    "writable": true
+                            "displayName": "Bass",
+                            "id": "2c92b22e-d5b2-4991-a523-64222bffc9e7",
+                            "name": "bass",
+                            "displayNameEvent": "Bass changed",
+                            "displayNameAction": "Set bass",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "minValue": -50,
+                            "maxValue": 49,
+                            "writable": true
                         },
                         {
-                                                    "displayName": "Treble",
-                                                    "id": "38a3be02-6ed4-4a84-903e-eb923b933989",
-                                                    "name": "treble",
-                                                    "displayNameEvent": "Treble changed",
-                                                    "displayNameAction": "Set treble",
-                                                    "type": "int",
-                                                    "defaultValue": 0,
-                                                    "minValue": -50,
-                                                    "maxValue": 49,
-                                                    "writable": true
+                            "displayName": "Treble",
+                            "id": "38a3be02-6ed4-4a84-903e-eb923b933989",
+                            "name": "treble",
+                            "displayNameEvent": "Treble changed",
+                            "displayNameAction": "Set treble",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "minValue": -50,
+                            "maxValue": 49,
+                            "writable": true
                         },
                         {
                             "displayName": "Channel",

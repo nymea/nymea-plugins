@@ -85,9 +85,21 @@ QHostAddress AvrConnection::hostAddress() const
     return m_hostAddress;
 }
 
+void AvrConnection::setHostAddress(const QHostAddress &hostAddress)
+{
+    m_hostAddress = hostAddress;
+    connectDevice();
+}
+
 int AvrConnection::port() const
 {
     return m_port;
+}
+
+void AvrConnection::setPort(int port)
+{
+    m_port = port;
+    connectDevice();
 }
 
 bool AvrConnection::connected()
@@ -391,15 +403,15 @@ void AvrConnection::readData()
                 emit playBackModeChanged(PlayBackMode::PlayBackModeStopped);
             }
         } else if (data.left(4).contains("NSE1")) {
-            QString song = QString(data).remove(0, 4).trimmed();
+            QString song = QString(data).remove(0, 5).trimmed();
             qCDebug(dcDenon()) << "Song" << song;
             emit songChanged(song);
         } else if (data.left(4).contains("NSE2")) {
-            QString artist = QString(data).remove(0, 4).trimmed();
+            QString artist = QString(data).remove(0, 5).trimmed();
             qCDebug(dcDenon()) << "Artist" << artist;
             emit artistChanged(artist);
         } else if (data.left(4).contains("NSE4")) {
-            QString album = QString(data).remove(0, 4).trimmed();
+            QString album = QString(data).remove(0, 5).trimmed();
             qCDebug(dcDenon()) << "Album" << album;
             emit albumChanged(album);
         } else if (data.contains("PSTONE CTRL ON")) {

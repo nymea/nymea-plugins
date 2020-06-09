@@ -53,15 +53,27 @@ void IntegrationPluginDenon::init()
 {
     m_notificationUrl = QUrl(configValue(denonPluginNotificationUrlParamTypeId).toString());
     connect(this, &IntegrationPluginDenon::configValueChanged, this, &IntegrationPluginDenon::onPluginConfigurationChanged);
+
+    m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
+    connect(m_serviceBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=](const ZeroConfServiceEntry &entry){
+        foreach (Thing *thing, myThings().filterByThingClassId(AVRX1000ThingClassId)) {
+
+            if (entry.txt().contains("am=AVRX1000")) {
+                QString thingId = thing->paramValue(AVRX1000ThingIdParamTypeId).toString();
+                QString id = entry.name().split("@").first();
+                QHostAddress address = entry.hostAddress();
+                if (thingId == id) {
+                    AvrConnection *avrConnection = m_avrConnections.value(thing->id());
+                    avrConnection->setHostAddress(address);
+                }
+            }
+        }
+    });
 }
 
 void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
 {
     if (info->thingClassId() == AVRX1000ThingClassId) {
-
-        if (!m_serviceBrowser) {
-            m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser();
-        }
 
         if (!hardwareManager()->zeroConfController()->available()) {
             qCDebug(dcDenon()) << "Error discovering Denon things. Available:" << hardwareManager()->zeroConfController()->available();
@@ -69,36 +81,35 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
             return;
         }
 
-        QTimer::singleShot(2000, info, [this, info](){
-            QStringList discoveredIds;
+        QStringList discoveredIds;
 
-            foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
-                if (service.txt().contains("am=AVRX1000")) {
+        foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
+             qCDebug(dcDenon()) << "mDNS service entry:" << service;
+            if (service.txt().contains("am=AVRX1000")) {
 
-                    QString id = service.name().split("@").first();
-                    QString name = service.name().split("@").last();
-                    QString address = service.hostAddress().toString();
-                    qCDebug(dcDenon) << "service discovered" << name << "ID:" << id;
-                    if (discoveredIds.contains(id))
+                QString id = service.name().split("@").first();
+                QString name = service.name().split("@").last();
+                QString address = service.hostAddress().toString();
+                qCDebug(dcDenon) << "service discovered" << name << "ID:" << id;
+                if (discoveredIds.contains(id))
+                    break;
+                discoveredIds.append(id);
+                ThingDescriptor thingDescriptor(AVRX1000ThingClassId, name, address);
+                ParamList params;
+                params.append(Param(AVRX1000ThingIpParamTypeId, address));
+                params.append(Param(AVRX1000ThingIdParamTypeId, id));
+                thingDescriptor.setParams(params);
+                foreach (Thing *existingThing, myThings().filterByThingClassId(AVRX1000ThingClassId)) {
+                    if (existingThing->paramValue(AVRX1000ThingIdParamTypeId).toString() == id) {
+                        thingDescriptor.setThingId(existingThing->id());
                         break;
-                    discoveredIds.append(id);
-                    ThingDescriptor thingDescriptor(AVRX1000ThingClassId, name, address);
-                    ParamList params;
-                    params.append(Param(AVRX1000ThingIpParamTypeId, address));
-                    params.append(Param(AVRX1000ThingIdParamTypeId, id));
-                    thingDescriptor.setParams(params);
-                    foreach (Thing *existingThing, myThings()) {
-                        if (existingThing->paramValue(AVRX1000ThingIdParamTypeId).toString() == id) {
-                            thingDescriptor.setThingId(existingThing->id());
-                            break;
-                        }
                     }
-                    info->addThingDescriptor(thingDescriptor);
                 }
+                info->addThingDescriptor(thingDescriptor);
             }
-            info->finish(Thing::ThingErrorNoError);
-        });
-        return;
+        }
+        info->finish(Thing::ThingErrorNoError);
+
     } else if (info->thingClassId() == heosThingClassId) {
         /*
         * The HEOS products can be discovered using the UPnP SSDP protocol. Through discovery,
@@ -261,9 +272,9 @@ void IntegrationPluginDenon::thingRemoved(Thing *thing)
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         if (m_avrConnections.contains(thing->id())) {
-            AvrConnection *denonConnection = m_avrConnections.take(thing->id());
-            denonConnection->disconnectDevice();
-            denonConnection->deleteLater();
+            AvrConnection *avrConnection = m_avrConnections.take(thing->id());
+            avrConnection->disconnectDevice();
+            avrConnection->deleteLater();
         }
     } else if (thing->thingClassId() == heosThingClassId) {
         if (m_heosConnections.contains(thing->id())) {
@@ -763,11 +774,11 @@ void IntegrationPluginDenon::onAvrCommandExecuted(const QUuid &commandId, bool s
             if(info->action().actionTypeId() == AVRX1000PlayActionTypeId) {
                 info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Playing");
             } else if(info->action().actionTypeId() == AVRX1000PauseActionTypeId) {
-                 info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Paused");
+                info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Paused");
             } else if(info->action().actionTypeId() == AVRX1000StopActionTypeId) {
-                 info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Stopped");
+                info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, "Stopped");
             } else if(info->action().actionTypeId() == AVRX1000PlaybackStatusActionTypeId) {
-                 info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, info->action().param(AVRX1000PlaybackStatusActionPlaybackStatusParamTypeId).value());
+                info->thing()->setStateValue(AVRX1000PlaybackStatusStateTypeId, info->action().param(AVRX1000PlaybackStatusActionPlaybackStatusParamTypeId).value());
             }
             info->finish(Thing::ThingErrorNoError);
 
