@@ -3,7 +3,7 @@
 --------------------------------------------
 <p align="center">
   <a  href="https://nymea.io">
-    <img src="https://nymea.io/app/default/assets/addons/default/guh/default-theme/resources/img/nymea-logo.svg" width=300>
+    <img src="https://nymea.io/downloads/img/nymea-logo.svg" width=300>
   </a>
 </p>
 
