@@ -392,6 +392,65 @@
                     ]
                 },
                 {
+                    "id": "38757fee-ac55-403e-be53-bad5b97364c1",
+                    "name": "venetianBlind",
+                    "displayName": "Venetian blind",
+                    "createMethods": ["user"],
+                    "interfaces": ["venetianblind"],
+                    "paramTypes": [ ],
+                    "stateTypes": [
+                        {
+                            "id": "16453cde-15c9-4133-a4fd-7da76735778c",
+                            "name": "percentage",
+                            "displayName": "percentage",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "displayNameEvent": "percentage changed",
+                            "writable": true,
+                            "displayNameAction": "set percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "9dedaf04-3570-403e-b083-ec59dd08981a",
+                            "name": "moving",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayName": "moving",
+                            "displayNameEvent": "moving changed"
+                        },
+                        {
+                            "id": "fe3c802d-253f-4594-b64c-14a8870d9828",
+                            "name": "angle",
+                            "type": "int",
+                            "displayName": "Angle",
+                            "displayNameEvent": "Angle changed",
+                            "displayNameAction": "Set angle",
+                            "minValue": -90,
+                            "maxValue": 90,
+                            "defaultValue": 0,
+                            "unit": "Degree",
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "4347b46b-4048-4f3a-b45d-71d99c15c30d",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "06be8ad4-24e5-4c03-9502-cda165a01bc4",
+                            "name": "stop",
+                            "displayName": "stop"
+                        },
+                        {
+                            "id": "61cadeae-810e-43f5-a6b5-e85fcaefde9c",
+                            "name": "close",
+                            "displayName": "close"
+                        }
+                    ]
+                },
+                {
                     "id": "d302630b-f331-4bb0-88e4-4078f16aba7f",
                     "name": "extendedAwning",
                     "displayName": "Extended awning",
@@ -436,6 +495,30 @@
                             "id": "79ec0271-5361-4f0f-a458-bf22e570c9ac",
                             "name": "close",
                             "displayName": "close"
+                        }
+                    ]
+                },
+                {
+                    "id": "5f4e3fc9-afb1-45d0-86a2-8713d5894aee",
+                    "name": "simpleShutter",
+                    "displayName": "Simple roller shutter",
+                    "createMethods": ["user"],
+                    "interfaces": ["shutter"],
+                    "actionTypes": [
+                        {
+                            "id": "20259935-c39b-42d3-888b-ffdb98800a8d",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "b1f9b62a-1987-4d2b-af88-e64710cbf626",
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "7c310908-75ee-47b2-b2c1-90b85eed4694",
+                            "name": "stop",
+                            "displayName": "Stop"
                         }
                     ]
                 },
