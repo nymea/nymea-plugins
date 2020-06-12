@@ -41,7 +41,8 @@
                             "displayNameAction": "Turn on or off",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
@@ -78,7 +79,8 @@
                             "displayNameAction": "Turn on or off",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "a3533121-69ee-44fd-8394-13373e8f960e",

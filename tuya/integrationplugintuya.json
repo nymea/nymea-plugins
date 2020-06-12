@@ -76,7 +76,8 @@
                             "displayNameAction": "Set power",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },

@@ -193,14 +193,6 @@
                             "readOnly": true
                         },
                         {
-                            "id": "9686b1ca-e71f-4e62-beb0-6a20f21550e9",
-                            "name": "connectedDevice",
-                            "displayName": "Connected device",
-                            "type": "QString",
-                            "allowedValues": ["Generic", "Light"],
-                            "defaultValue": "Generic"
-                        },
-                        {
                             "id": "42797a00-1591-4021-8f4c-2a170189911b",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -241,7 +233,8 @@
                             "displayNameAction": "Turn on or off",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "962fec29-6be0-452e-87c5-5ff71435c40f",
