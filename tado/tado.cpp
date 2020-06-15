@@ -81,10 +81,10 @@ void Tado::getToken(const QString &password)
 
     QNetworkReply *reply = m_networkManager->post(request, body);
     //qCDebug(dcTado()) << "Sending request" << request.url() << body;
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             if (reply->error() == QNetworkReply::HostNotFoundError) {
@@ -142,8 +142,9 @@ void Tado::getHomes()
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
     //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -187,8 +188,9 @@ void Tado::getZones(const QString &homeId)
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
     //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, homeId, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -233,8 +235,9 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
     //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, homeId, zoneId, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -308,8 +311,8 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
     body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\""+ powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
     //qCDebug(dcTado()) << "Sending request" << body;
     QNetworkReply *reply = m_networkManager->put(request, body);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
-        reply->deleteLater();
 
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
@@ -360,8 +363,9 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->deleteResource(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -439,8 +443,9 @@ void Tado::onRefreshTimer()
     body.append("&scope=home.user");
 
     QNetworkReply *reply = m_networkManager->post(request, body);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
