@@ -63,7 +63,6 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
 {
     qCDebug(dcTado()) << "Confirm pairing" << username << "password" << password << "Network manager available" << hardwareManager()->networkManager()->available();
     Tado *tado = new Tado(hardwareManager()->networkManager(), username, this);
-    connect(tado, &Tado::tokenReceived, this, &IntegrationPluginTado::onTokenReceived);
     connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
     connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
     connect(tado, &Tado::connectionChanged, this, &IntegrationPluginTado::onConnectionChanged);
@@ -72,21 +71,31 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
     connect(tado, &Tado::zoneStateReceived, this, &IntegrationPluginTado::onZoneStateReceived);
     connect(tado, &Tado::overlayReceived, this, &IntegrationPluginTado::onOverlayReceived);
     m_unfinishedTadoAccounts.insert(info->thingId(), tado);
-    m_unfinishedDevicePairings.insert(info->thingId(), info);
-    tado->getToken(password);
 
     connect(info, &ThingPairingInfo::aborted, this, [info, tado, this]() {
         qCWarning(dcTado()) << "Thing pairing has been aborted, going to clean-up";
-        m_unfinishedDevicePairings.remove(info->thingId());
         m_unfinishedTadoAccounts.remove(info->thingId());
         tado->deleteLater();
-        //TODO clean up plugin storage
     });
 
-    pluginStorage()->beginGroup(info->thingId().toString());
-    pluginStorage()->setValue("username", username);
-    pluginStorage()->setValue("password", password);
-    pluginStorage()->endGroup();
+    connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error){
+        if (error != QNetworkReply::NetworkError::NoError){
+            info->finish(Thing::ThingErrorSetupFailed);
+        }
+        // info->finish(success) will be called after the token has been received
+    });
+
+    connect(tado, &Tado::tokenReceived, info, [this, info, username, password](Tado::Token token) {
+        Q_UNUSED(token)
+
+        pluginStorage()->beginGroup(info->thingId().toString());
+        pluginStorage()->setValue("username", username);
+        pluginStorage()->setValue("password", password);
+        pluginStorage()->endGroup();
+
+        info->finish(Thing::ThingErrorNoError);
+    });
+    tado->getToken(password);
 }
 
 void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
@@ -108,7 +117,6 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             pluginStorage()->endGroup();
 
             tado = new Tado(hardwareManager()->networkManager(), username, this);
-            connect(tado, &Tado::tokenReceived, this, &IntegrationPluginTado::onTokenReceived);
             connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
             connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
             connect(tado, &Tado::connectionChanged, this, &IntegrationPluginTado::onConnectionChanged);
@@ -116,14 +124,43 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             connect(tado, &Tado::zonesReceived, this, &IntegrationPluginTado::onZonesReceived);
             connect(tado, &Tado::zoneStateReceived, this, &IntegrationPluginTado::onZoneStateReceived);
             connect(tado, &Tado::overlayReceived, this, &IntegrationPluginTado::onOverlayReceived);
-            tado->getToken(password);
+
             m_tadoAccounts.insert(thing->id(), tado);
-            m_asyncDeviceSetup.insert(tado, info);
             connect(info, &ThingSetupInfo::aborted, [info, this] {
-                Tado *tado = m_tadoAccounts.take(info->thing()->id());
-                m_asyncDeviceSetup.remove(tado);
-                tado->deleteLater();
+                if (m_tadoAccounts.contains(info->thing()->id())) {
+                    Tado *tado = m_tadoAccounts.take(info->thing()->id());
+                    tado->deleteLater();
+                }
             });
+
+            connect(tado, &Tado::tokenReceived, info, [this, info, tado](Tado::Token token) {
+                Q_UNUSED(token)
+
+                qCDebug(dcTado()) << "Token received, account setup successfull";
+                info->finish(Thing::ThingErrorNoError);
+            });
+
+            connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error){
+                if (error == QNetworkReply::NetworkError::HostNotFoundError) {
+                    QTimer::singleShot(2000, info, [info, this] {
+
+                        pluginStorage()->beginGroup(info->thing()->id().toString());
+                        QString password = pluginStorage()->value("password").toString();
+                        pluginStorage()->endGroup();
+                        if (m_tadoAccounts.contains(info->thing()->id())) {
+                            Tado *tado = m_tadoAccounts.take(info->thing()->id());
+                            tado->getToken(password);
+                        }
+                    });
+                } else if (error != QNetworkReply::NetworkError::NoError){
+                    if (m_tadoAccounts.contains(info->thing()->id())) {
+                        Tado *tado = m_tadoAccounts.take(info->thing()->id());
+                        tado->deleteLater();
+                    }
+                    info->finish(Thing::ThingErrorSetupFailed);
+                }
+            });
+            tado->getToken(password);
         }
 
     } else if (thing->thingClassId() == zoneThingClassId) {
@@ -250,20 +287,6 @@ void IntegrationPluginTado::onConnectionChanged(bool connected)
 {
     Tado *tado = static_cast<Tado*>(sender());
 
-    if (m_asyncDeviceSetup.contains(tado)) {
-        //Thing setup failed, try as long as ThingSetupInfo is valid.
-        if (!connected) {
-            QTimer::singleShot(2000, tado, [tado, this]{
-                if(m_asyncDeviceSetup.contains(tado)){
-                    //Check once more if the ThingSetupInfo is still valid
-                    pluginStorage()->beginGroup(m_asyncDeviceSetup.value(tado)->thing()->id().toString());
-                    QString password = pluginStorage()->value("password").toString();
-                    pluginStorage()->endGroup();
-                    tado->getToken(password);
-                }
-            });
-        }
-    }
     if (m_tadoAccounts.values().contains(tado)){
         Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
         if (!thing)
@@ -279,18 +302,6 @@ void IntegrationPluginTado::onConnectionChanged(bool connected)
 void IntegrationPluginTado::onAuthenticationStatusChanged(bool authenticated)
 {
     Tado *tado = static_cast<Tado*>(sender());
-
-    if (m_unfinishedTadoAccounts.values().contains(tado) && !authenticated){
-        qCWarning(dcTado()) << "Authentication Status changed: " << authenticated << "removing unfinished Tado account";
-        ThingId id = m_unfinishedTadoAccounts.key(tado);
-        m_unfinishedTadoAccounts.remove(id);
-
-        if (m_unfinishedDevicePairings.contains(id)) {
-            qCWarning(dcTado()) << "Removing unfinished device pairing";
-            ThingPairingInfo *info = m_unfinishedDevicePairings.take(id);
-            info->finish(Thing::ThingErrorSetupFailed);
-        }
-    }
 
     if (m_tadoAccounts.values().contains(tado)){
         Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
@@ -321,28 +332,6 @@ void IntegrationPluginTado::onRequestExecuted(QUuid requestId, bool success)
             info->finish(Thing::ThingErrorNoError);
         } else {
             info->finish(Thing::ThingErrorHardwareNotAvailable);
-        }
-    }
-}
-
-void IntegrationPluginTado::onTokenReceived(Tado::Token token)
-{
-    Q_UNUSED(token)
-
-    qCDebug(dcTado()) << "Token received";
-    Tado *tado = static_cast<Tado*>(sender());
-
-    if (m_asyncDeviceSetup.contains(tado)) {
-        ThingSetupInfo *info = m_asyncDeviceSetup.take(tado);
-        info->finish(Thing::ThingErrorNoError);
-    }
-
-    if (m_unfinishedTadoAccounts.values().contains(tado)) {
-        qCDebug(dcTado()) << "onTokenReceived: Finishing pairing process";
-        ThingId id = m_unfinishedTadoAccounts.key(tado);
-        if (m_unfinishedDevicePairings.contains(id)) {
-            ThingPairingInfo *info = m_unfinishedDevicePairings.take(id);
-            info->finish(Thing::ThingErrorNoError);
         }
     }
 }

@@ -87,6 +87,7 @@ void Tado::getToken(const QString &password)
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit connectionError(reply->error());
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -136,6 +137,10 @@ void Tado::getToken(const QString &password)
 
 void Tado::getHomes()
 {
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return;
+    }
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl + "/me"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -149,6 +154,7 @@ void Tado::getHomes()
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit connectionError(reply->error());
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -229,6 +235,10 @@ void Tado::getZones(const QString &homeId)
 
 void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 {
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return;
+    }
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/state"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -242,6 +252,8 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit connectionError(reply->error());
+
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -295,6 +307,10 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 
 QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature)
 {
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return "";
+    }
     QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
@@ -318,6 +334,8 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
+            emit connectionError(reply->error());
+
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -358,6 +376,10 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
 
 QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
 {
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return "";
+    }
     QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
@@ -371,6 +393,7 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
         // Check HTTP status code
         if (status < 200 || status > 210 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId ,false);
+            emit connectionError(reply->error());
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -432,6 +455,11 @@ void Tado::setConnectionStatus(bool status)
 
 void Tado::onRefreshTimer()
 {
+    if(m_refreshToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return;
+    }
+
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseAuthorizationUrl));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -450,6 +478,7 @@ void Tado::onRefreshTimer()
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit connectionError(reply->error());
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }

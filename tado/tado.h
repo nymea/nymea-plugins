@@ -42,6 +42,7 @@ class Tado : public QObject
 {
     Q_OBJECT
 public:
+
     struct Token {
         QString accesToken;
         QString tokenType;
@@ -64,7 +65,6 @@ public:
       QString terminationType;
       QString tadoMode;
     };
-
 
     struct ZoneState {
         bool connected;
@@ -131,6 +131,7 @@ signals:
     void zonesReceived(const QString &homeId, QList<Zone> zones);
     void zoneStateReceived(const QString &homeId,const QString &zoneId, ZoneState sate);
     void overlayReceived(const QString &homeId, const QString &zoneId, const Overlay &overlay);
+    void connectionError(QNetworkReply::NetworkError error);
 
 private slots:
     void onRefreshTimer();
