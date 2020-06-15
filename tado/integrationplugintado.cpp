@@ -61,7 +61,7 @@ void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
 {
-    qCDebug(dcTado()) << "Confirm pairing" << username << "password" << password << "Network manager available" << hardwareManager()->networkManager()->available();
+    qCDebug(dcTado()) << "Confirm pairing" << username << "Network manager available" << hardwareManager()->networkManager()->available();
     Tado *tado = new Tado(hardwareManager()->networkManager(), username, this);
     connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
     connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
