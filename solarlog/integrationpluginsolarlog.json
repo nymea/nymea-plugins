@@ -5,15 +5,15 @@
     "vendors": [
         {
             "id": "0cf5f437-abf0-4396-92d4-be94d616c667",
-            "name": "Solarlog",
+            "name": "solarlog",
             "displayName": "Solar-Log",
             "thingClasses": [
                 {
                     "id": "1374b47e-5555-4ec1-b2cd-6474048dd30c",
-                    "name": "Solarlog",
+                    "name": "solarlog",
                     "displayName": "Solar-Log",
                     "createMethods": [ "user", "discovery" ],
-                    "interfaces": [ "batterylevel", "connectable" ],
+                    "interfaces": [ "connectable" ],
                     "paramTypes": [
                         {
                             "id": "84bd8a41-2411-4bb0-87a9-ab7e01044b10",
@@ -66,7 +66,7 @@
                             "displayName": "UAC",
                             "displayNameEvent": "UAC changed",
                             "type": "int",
-                            "unit": "Voltage",
+                            "unit": "Volt",
                             "defaultValue": 0
                         },
                         {
@@ -75,7 +75,7 @@
                             "displayName": "DC Voltage",
                             "displayNameEvent": "DC Voltage changed",
                             "type": "int",
-                            "unit": "Voltage",
+                            "unit": "Volt",
                             "defaultValue": 0
                         },
                         {
@@ -84,7 +84,7 @@
                             "displayName": "Yield day",
                             "displayNameEvent": "Yield day changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -93,7 +93,7 @@
                             "displayName": "Yield yesterday",
                             "displayNameEvent": "Yield yesterday changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -102,7 +102,7 @@
                             "displayName": "Yield month",
                             "displayNameEvent": "Yield month changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -111,7 +111,7 @@
                             "displayName": "Yield year",
                             "displayNameEvent": "Yield year changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -120,7 +120,7 @@
                             "displayName": "Yield total",
                             "displayNameEvent": "Yield total changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -138,7 +138,7 @@
                             "displayName": "consYieldDay",
                             "displayNameEvent": "consYieldDay changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -147,7 +147,7 @@
                             "displayName": "consYieldYesterday",
                             "displayNameEvent": "consYieldYesterday changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -156,7 +156,7 @@
                             "displayName": "consYieldMonth",
                             "displayNameEvent": "consYieldMonth changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -165,7 +165,7 @@
                             "displayName": "consYieldYear",
                             "displayNameEvent": "consYieldYear changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {
@@ -174,7 +174,7 @@
                             "displayName": "consYieldTotal",
                             "displayNameEvent": "consYieldTotal changed",
                             "type": "int",
-                            "unit": "WattHour",
+                            "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
                         {

@@ -45,6 +45,25 @@ class IntegrationPluginSolarLog: public IntegrationPlugin {
     Q_INTERFACES(IntegrationPlugin)
 
 public:
+    enum JsonObjectNumbers{
+        LastUpdateTime = 100,
+        Pac,
+        Pdc,
+        Uac,
+        DCVoltage,
+        YieldDay,
+        YieldYesterday,
+        YieldMonth,
+        YieldYear,
+        YieldTotal,
+        ConsPac,
+        ConsYieldDay,
+        ConsYieldYesterday,
+        ConsYieldMonth,
+        ConsYieldYear,
+        ConsYieldTotal,
+        TotalPower
+    };
     explicit IntegrationPluginSolarLog();
     ~IntegrationPluginSolarLog() override;
 
@@ -57,7 +76,7 @@ private slots:
 private:
     PluginTimer *m_refreshTimer = nullptr;
 
-    QUuid getData(const QHostAddress &address);
+    void getData(Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINSOLARLOG_H

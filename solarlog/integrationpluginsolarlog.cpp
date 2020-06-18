@@ -28,10 +28,13 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "integrationpluginsolarlog.h".h"
+#include "integrationpluginsolarlog.h"
 #include "plugininfo.h"
 #include "network/networkaccessmanager.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QVariantMap>
 
 IntegrationPluginSolarLog::IntegrationPluginSolarLog()
 {
@@ -59,19 +62,57 @@ void IntegrationPluginSolarLog::thingRemoved(Thing *thing)
 
 void IntegrationPluginSolarLog::onRefreshTimer()
 {
-    foreach (Thing *, myThings().filterByThingClassId()) {
-
+    foreach (Thing *thing, myThings().filterByThingClassId(solarlogThingClassId)) {
+        getData(thing);
     }
 }
 
-QUuid IntegrationPluginSolarLog::getData(const QHostAddress &address)
+void IntegrationPluginSolarLog::getData(Thing *thing)
 {
     QUrl url;
-    url.setHost(address);
+    url.setHost(thing->paramValue(solarlogThingHostParamTypeId).toString());
     url.setPath("/getjp");
     url.setScheme("http");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "text/plain");
+    QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QByteArray("{\"801\":{\"170\":null}}"));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply, thing]{
 
-    hardwareManager()->networkManager()->post(QNetworkRequest(url), QByteArray("{\"801\":{\"170\":null}}"));
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            if (reply->error() == QNetworkReply::HostNotFoundError) {
+            }
+            qCWarning(dcSolarlog()) << "Request error:" << status << reply->errorString();
+            return;
+        }
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qDebug(dcSolarlog()) << "Recieved invalide JSON object";
+            return;
+        }
+
+        QVariantMap map = data.toVariant().toMap().value("801").toMap().value("170").toMap();
+        thing->setStateValue(solarlogLastupdateStateTypeId, map.value(QString::number(JsonObjectNumbers::LastUpdateTime)));
+        thing->setStateValue(solarlogPacStateTypeId, map.value(QString::number(JsonObjectNumbers::Pac)));
+        thing->setStateValue(solarlogPdcStateTypeId, map.value(QString::number(JsonObjectNumbers::Pdc)));
+        thing->setStateValue(solarlogUacStateTypeId, map.value(QString::number(JsonObjectNumbers::Uac)));
+        thing->setStateValue(solarlogDcVoltageStateTypeId, map.value(QString::number(JsonObjectNumbers::DCVoltage)));
+        thing->setStateValue(solarlogYieldDayStateTypeId, map.value(QString::number(JsonObjectNumbers::YieldDay)));
+        thing->setStateValue(solarlogYieldYesterdayStateTypeId, map.value(QString::number(JsonObjectNumbers::YieldYesterday)));
+        thing->setStateValue(solarlogYieldMonthStateTypeId, map.value(QString::number(JsonObjectNumbers::YieldMonth)));
+        thing->setStateValue(solarlogYieldYearStateTypeId, map.value(QString::number(JsonObjectNumbers::YieldYear)));
+        thing->setStateValue(solarlogYieldTotalStateTypeId, map.value(QString::number(JsonObjectNumbers::YieldTotal)));
+        thing->setStateValue(solarlogCurrentTotalConsumptionStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsPac)));
+        thing->setStateValue(solarlogConsYieldDayStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldDay)));
+        thing->setStateValue(solarlogConsYieldYesterdayStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldYesterday)));
+        thing->setStateValue(solarlogConsYieldMonthStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldMonth)));
+        thing->setStateValue(solarlogConsYieldYearStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldYear)));
+        thing->setStateValue(solarlogConsYieldTotalStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldTotal)));
+        thing->setStateValue(solarlogTotalPowerStateTypeId, map.value(QString::number(JsonObjectNumbers::TotalPower)));
+    });
 }
-
-
