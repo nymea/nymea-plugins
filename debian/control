@@ -591,6 +591,21 @@ Description: nymea.io plugin for Pushbullet
  This package will install the nymea.io plugin for sending messages via Pushbullet.
 
 
+Package: nymea-plugin-solarlog
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for Solar-Log
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for Solar-Log.
+
+
 Package: nymea-plugin-tasmota
 Architecture: any
 Depends: ${shlibs:Depends},
