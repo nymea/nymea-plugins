@@ -57,10 +57,8 @@ public:
 private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<ThingId, Tado*> m_unfinishedTadoAccounts;
-    QHash<ThingId, ThingPairingInfo *> m_unfinishedDevicePairings;
 
     QHash<ThingId, Tado*> m_tadoAccounts;
-    QHash<Tado *, ThingSetupInfo *> m_asyncDeviceSetup;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
 
 private slots:
@@ -69,7 +67,6 @@ private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
     void onRequestExecuted(QUuid requestId, bool success);
-    void onTokenReceived(Tado::Token token);
     void onHomesReceived(QList<Tado::Home> homes);
     void onZonesReceived(const QString &homeId, QList<Tado::Zone> zones);
     void onZoneStateReceived(const QString &homeId,const QString &zoneId, Tado::ZoneState sate);

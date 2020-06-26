@@ -81,12 +81,13 @@ void Tado::getToken(const QString &password)
 
     QNetworkReply *reply = m_networkManager->post(request, body);
     //qCDebug(dcTado()) << "Sending request" << request.url() << body;
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit connectionError(reply->error());
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -136,18 +137,24 @@ void Tado::getToken(const QString &password)
 
 void Tado::getHomes()
 {
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return;
+    }
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl + "/me"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
     //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit connectionError(reply->error());
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -187,8 +194,9 @@ void Tado::getZones(const QString &homeId)
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
     //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, homeId, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
@@ -227,18 +235,25 @@ void Tado::getZones(const QString &homeId)
 
 void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 {
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return;
+    }
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/state"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->get(request);
     //qDebug(dcTado()) << "Sending request" << request.url() << request.rawHeaderList();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, homeId, zoneId, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit connectionError(reply->error());
+
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -292,6 +307,10 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 
 QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature)
 {
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return "";
+    }
     QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
@@ -308,13 +327,15 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
     body.append("{\"setting\":{\"type\":\"HEATING\",\"power\":\""+ powerString + "\",\"temperature\":{\"celsius\":" + QVariant(targetTemperature).toByteArray() + "}},\"termination\":{\"type\":\"MANUAL\"}}");
     //qCDebug(dcTado()) << "Sending request" << body;
     QNetworkReply *reply = m_networkManager->put(request, body);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
-        reply->deleteLater();
 
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId, false);
+            emit connectionError(reply->error());
+
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -355,18 +376,24 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
 
 QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
 {
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return "";
+    }
     QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
     request.setRawHeader("Authorization", "Bearer " + m_accessToken.toLocal8Bit());
     QNetworkReply *reply = m_networkManager->deleteResource(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [homeId, zoneId, requestId, reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
         if (status < 200 || status > 210 || reply->error() != QNetworkReply::NoError) {
             emit requestExecuted(requestId ,false);
+            emit connectionError(reply->error());
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
@@ -428,6 +455,11 @@ void Tado::setConnectionStatus(bool status)
 
 void Tado::onRefreshTimer()
 {
+    if(m_refreshToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return;
+    }
+
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseAuthorizationUrl));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -439,12 +471,14 @@ void Tado::onRefreshTimer()
     body.append("&scope=home.user");
 
     QNetworkReply *reply = m_networkManager->post(request, body);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [reply, this] {
-        reply->deleteLater();
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            emit connectionError(reply->error());
             if (reply->error() == QNetworkReply::HostNotFoundError) {
                 setConnectionStatus(false);
             }
