@@ -111,6 +111,18 @@ public:
         SetInfrared = 122
     };
 
+    struct LifxProduct {
+      int pid;
+      QString name;
+      bool color;
+      bool infrared;
+      bool matrix;
+      bool multizone;
+      uint minColorTemperature;
+      uint maxColorTemperature;
+      bool chain;
+    };
+
     explicit Lifx(QObject *parent = nullptr);
     ~Lifx();
     bool enable();
@@ -124,11 +136,13 @@ public:
     int flash15s();
 
 private:
+    quint32 m_clientId = 0;
     QTimer *m_reconnectTimer = nullptr;
     QUdpSocket *m_socket = nullptr;
     QHostAddress m_host;
     quint16 m_port;
     quint8 m_sequenceNumber = 0;
+    QHash<int, LifxProduct> m_lifxProducts;
 
     void sendMessage(const Message &message);
 
@@ -139,7 +153,7 @@ private slots:
 
 signals:
     void connectionChanged(bool connected);
-    void devicesDiscovered(QHostAddress address, int port);
+    void deviceDiscovered(const QHostAddress &address, int port, const LifxProduct &product);
     //void requestExecuted(int requestId, bool success);
     //void errorReceived(int code, const QString &message);
 

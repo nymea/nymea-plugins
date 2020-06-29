@@ -63,6 +63,10 @@ void IntegrationPluginLifx::discoverThings(ThingDiscoveryInfo *info)
     }
 
     if (info->thingClassId() == colorBulbThingClassId) {
+    } else if () {
+
+    } else {
+
     }
 }
 

@@ -33,6 +33,10 @@
 #include "extern-plugininfo.h"
 
 #include <QColor>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
 
 Lifx::Lifx(QObject *parent) :
     QObject(parent)
@@ -40,6 +44,36 @@ Lifx::Lifx(QObject *parent) :
     m_reconnectTimer = new QTimer(this);
     m_reconnectTimer->setSingleShot(true);
     connect(m_reconnectTimer, &QTimer::timeout, this, &Lifx::onReconnectTimer);
+    m_clientId = qrand();
+
+    QFile file;
+    file.setFileName("/tmp/products.json");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qCWarning(dcLifx()) << "Could not open products file" << file.errorString();
+    }
+    QJsonDocument productsJson = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    if (!productsJson.isArray()) {
+        qCWarning(dcLifx()) << "Products JSON is not a valid array";
+    }
+    QJsonArray productsArray = productsJson.array().first().toObject().value("products").toArray();
+    foreach (QJsonValue value, productsArray) {
+        QJsonObject object = value.toObject();
+        LifxProduct product;
+        product.pid = object["pid"].toInt();
+        product.name = object["name"].toString();
+        qCDebug(dcLifx()) << "Lifx product JSON, found product. PID:" << product.pid << "Name" << product.name;
+        QJsonObject features = object["features"].toObject();
+        product.color = features["color"].toBool();
+        product.infrared = features["infrared"].toBool();
+        product.matrix = features["matrix"].toBool();
+        product.multizone = features["multizone"].toBool();
+        product.minColorTemperature = features["temperature_range"].toArray().first().toInt();
+        product.maxColorTemperature = features["temperature_range"].toArray().last().toInt();
+        product.chain = features["chain"].toBool();
+        m_lifxProducts.insert(product.pid, product);
+    }
 }
 
 Lifx::~Lifx()
@@ -143,42 +177,56 @@ int Lifx::flash15s()
 
 void Lifx::sendMessage(const Lifx::Message &message)
 {
-    QByteArray data;
+    QByteArray header;
     // -- FRAME --
     // Protocol number: must be 1024 (decimal)
     quint16 protocol = 1024;
     protocol |= (0x0001 << 4); //Message includes a target address: must be one (1)
     protocol |= (message.frame.Tagged << 5);   // Determines usage of the Frame Address target field
     protocol &= ~(0x0003); // Message origin indicator: must be zero (0)
-    data.append(protocol >> 8);
-    data.append(protocol & 0xff);
+    header.append(protocol >> 8);
+    header.append(protocol & 0xff);
 
     //Source identifier: unique value set by the client, used by responses
-    data.append("nyma");
+    header.append(m_clientId);
 
     // -- FRAME ADDRESS --
     //Target - frame address starts with 64 bits
 
 
     //ADD RESERVED SECTION a reserved section of 48 bits (6 bytes)
-    data.append(6, '0');
+    header.append(6, 0x00); //that must be all zeros.
 
     //ADD ACK and RES
+    header.append(2, 0x01);
 
     //ADD SEQUENCE NUMBER 1Byte
-    data.append(m_sequenceNumber + 1);
+    header.append(m_sequenceNumber++);
+
+    //Protocol header. which begins with 64 reserved bits (8 bytes). Set these all to zero.
+    header.append(8, 0x00); //that must be all zeros.
 
     //ADD MESSAGE TYPE
+    header.append(static_cast<uint16_t>(LightMessages::SetColor));
+
+    // Finally another reserved field of 16 bits (2 bytes).
+    header.append(2, 0x00);
 
     //ADD SIZE
-    data.append(((static_cast<uint16_t>(data.length()+1) & 0xff00) >> 8));
-    data.append((static_cast<uint16_t>(data.length()+1) & 0x00ff));
+    header.append(((static_cast<uint16_t>(header.length()+1) & 0xff00) >> 8));
+    header.append((static_cast<uint16_t>(header.length()+1) & 0x00ff));
 
     //Finally another reserved field of 16 bits (2 bytes).
-    data.append(2, '0');
-    data = QByteArray::fromHex("0x310000340000000000000000000000000000000000000000000000000000000066000000005555FFFFFFFFAC0D00040000");
-    m_socket->writeDatagram(data, m_host, m_port);
-    Q_UNUSED(message)
+    header.append(2, '0');
+
+    QByteArray payload;
+
+    QByteArray message;
+    message.append(header);
+    message.append(payload);
+    message.append(message.length());
+    //header = QByteArray::fromHex("0x310000340000000000000000000000000000000000000000000000000000000066000000005555FFFFFFFFAC0D00040000");
+    m_socket->writeDatagram(message, m_host, m_port);
 }
 
 void Lifx::onStateChanged(QAbstractSocket::SocketState state)
