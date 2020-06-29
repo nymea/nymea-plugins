@@ -45,7 +45,8 @@
                             "displayName": "Reachable",
                             "displayNameEvent": "Reachable changed",
                             "defaultValue": false,
-                            "type": "bool"
+                            "type": "bool",
+                            "cached": false
                         },
                         {
                             "id": "12de3f8f-2454-4057-aa12-9290296fdbdd",
@@ -85,7 +86,7 @@
                             "name": "brightness",
                             "displayName": "Brightness",
                             "displayNameEvent": "Brightness changed",
-                            "displayNameAction": "Set brigtness",
+                            "displayNameAction": "Set brightness",
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0,
@@ -96,8 +97,8 @@
                         {
                             "id": "65f88396-2958-480e-b0be-c4695400a343",
                             "name": "effect",
-                            "displayName": "effect",
-                            "displayNameEvent": "effect changed",
+                            "displayName": "Effect",
+                            "displayNameEvent": "Effect changed",
                             "displayNameAction": "Set effect",
                             "type": "QString",
                             "defaultValue": "none",
@@ -134,7 +135,7 @@
                         {
                             "id": "f157a97b-3fe5-4d9e-b5e3-5636f80d46ed",
                             "name": "id",
-                            "displayName": "Id",
+                            "displayName": "ID",
                             "type" : "QString",
                             "readOnly": true
                         }
@@ -163,7 +164,7 @@
                             "name": "brightness",
                             "displayName": "Brightness",
                             "displayNameEvent": "Brightness changed",
-                            "displayNameAction": "Set brigtness",
+                            "displayNameAction": "Set brightness",
                             "type": "int",
                             "unit": "Percentage",
                             "defaultValue": 0,

@@ -1,7 +1,5 @@
 include(../plugins.pri)
 
-TARGET = $$qtLibraryTarget(nymea_integrationpluginlifx)
-
 QT += network
 
 SOURCES += \
