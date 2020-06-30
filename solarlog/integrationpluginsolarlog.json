@@ -47,7 +47,7 @@
                             "name": "pac",
                             "displayName": "Power AC",
                             "displayNameEvent": "Power AC changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWatt",
                             "defaultValue": 0
                         },
@@ -56,7 +56,7 @@
                             "name": "pdc",
                             "displayName": "Power DC",
                             "displayNameEvent": "Power DC changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWatt",
                             "defaultValue": 0
                         },
@@ -65,7 +65,7 @@
                             "name": "uac",
                             "displayName": "AC voltage",
                             "displayNameEvent": "AC voltage changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "Volt",
                             "defaultValue": 0
                         },
@@ -74,7 +74,7 @@
                             "name": "dcVoltage",
                             "displayName": "DC voltage",
                             "displayNameEvent": "DC voltage changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "Volt",
                             "defaultValue": 0
                         },
@@ -83,7 +83,7 @@
                             "name": "yieldDay",
                             "displayName": "Yield day",
                             "displayNameEvent": "Yield day changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -92,7 +92,7 @@
                             "name": "yieldYesterday",
                             "displayName": "Yield yesterday",
                             "displayNameEvent": "Yield yesterday changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -101,7 +101,7 @@
                             "name": "yieldMonth",
                             "displayName": "Yield month",
                             "displayNameEvent": "Yield month changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -110,7 +110,7 @@
                             "name": "yieldYear",
                             "displayName": "Yield year",
                             "displayNameEvent": "Yield year changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -119,7 +119,7 @@
                             "name": "yieldTotal",
                             "displayName": "Yield total",
                             "displayNameEvent": "Yield total changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -128,7 +128,7 @@
                             "name": "currentTotalConsumption",
                             "displayName": "Current total power consumption",
                             "displayNameEvent": "Current total power consumption changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWatt",
                             "defaultValue": 0
                         },
@@ -137,7 +137,7 @@
                             "name": "consYieldDay",
                             "displayName": "Energy consumption day",
                             "displayNameEvent": "Energy consumption day changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -146,7 +146,7 @@
                             "name": "consYieldYesterday",
                             "displayName": "Energy consumption yesterday",
                             "displayNameEvent": "Energy consumption yesterday changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -155,7 +155,7 @@
                             "name": "consYieldMonth",
                             "displayName": "Energy consumption month",
                             "displayNameEvent": "Energy consumption month changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -164,7 +164,7 @@
                             "name": "consYieldYear",
                             "displayName": "Energy consumption year",
                             "displayNameEvent": "Energy consumption year changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -173,7 +173,7 @@
                             "name": "consYieldTotal",
                             "displayName": "Energy consumption total",
                             "displayNameEvent": "Energy consumption total changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
                         },
@@ -182,7 +182,7 @@
                             "name": "totalPower",
                             "displayName": "Installed generator power",
                             "displayNameEvent": "Installed generator power changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "KiloWatt",
                             "defaultValue": 0
                         }
