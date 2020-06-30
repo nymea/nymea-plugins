@@ -33,6 +33,7 @@
 
 #include "tvdevice.h"
 #include "plugintimer.h"
+#include "webosconnection.h"
 #include "integrations/integrationplugin.h"
 #include "network/upnp/upnpdevicedescriptor.h"
 
@@ -64,6 +65,8 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<TvDevice *, Thing *> m_tvList;
     QHash<QString, QString> m_tvKeys;
+
+    QHash<WebosConnection *, Thing *> m_webosTvs;
 
     // update requests
     QHash<QNetworkReply *, Thing *> m_volumeInfoRequests;
