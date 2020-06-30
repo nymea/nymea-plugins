@@ -100,21 +100,20 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
             qCWarning(dcSolarlog()) << "Request error:" << status << reply->errorString();
             if (m_asyncSetup.contains(thing)) {
                 ThingSetupInfo *info = m_asyncSetup.take(thing);
-                info->finish(Thing::ThingErrorHardwareNotAvailable, "No Solar-Log device at given IP-Address");
+                info->finish(Thing::ThingErrorHardwareNotAvailable, tr("No Solar-Log device at given IP-Address"));
             }
             return;
         }
 
         thing->setStateValue(solarlogConnectedStateTypeId, true);
         QByteArray rawData = reply->readAll();
-        qCDebug(dcSolarlog()) << "Data:" << rawData;
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(rawData, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcSolarlog()) << "Received invalide JSON object, try to upgrade the Solarlog firmware. Min Version is 3.5.";
             if (m_asyncSetup.contains(thing)) {
                 ThingSetupInfo *info = m_asyncSetup.take(thing);
-                info->finish(Thing::ThingErrorHardwareFailure, "Firmware outdated");
+                info->finish(Thing::ThingErrorHardwareFailure, tr("Outdated Solar-Log firmware"));
             }
             return;
         }
@@ -125,7 +124,6 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
         }
 
         QVariantMap map = data.toVariant().toMap().value("801").toMap().value("170").toMap();
-        qCDebug(dcSolarlog()) << "Map 170:" << map;
         thing->setStateValue(solarlogLastupdateStateTypeId, map.value(QString::number(JsonObjectNumbers::LastUpdateTime)));
         thing->setStateValue(solarlogPacStateTypeId, (map.value(QString::number(JsonObjectNumbers::Pac)).toDouble()/1000.00));
         thing->setStateValue(solarlogPdcStateTypeId, (map.value(QString::number(JsonObjectNumbers::Pdc)).toDouble()/1000.00));

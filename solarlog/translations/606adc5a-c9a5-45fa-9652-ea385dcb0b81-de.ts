@@ -2,6 +2,19 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
+    <name>IntegrationPluginSolarLog</name>
+    <message>
+        <location filename="../integrationpluginsolarlog.cpp" line="103"/>
+        <source>No Solar-Log device at given IP-Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginsolarlog.cpp" line="116"/>
+        <source>Outdated Solar-Log firmware</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>solarlog</name>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="87"/>
