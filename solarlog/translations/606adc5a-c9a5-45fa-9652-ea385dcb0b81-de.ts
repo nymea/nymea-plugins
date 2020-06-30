@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="de">
 <context>
     <name>solarlog</name>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="87"/>
         <source>Address</source>
         <extracomment>The name of the ParamType (ThingClass: solarlog, Type: thing, ID: {84bd8a41-2411-4bb0-87a9-ab7e01044b10})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="153"/>
@@ -16,13 +16,13 @@
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: totalPower, ID: {0aa21401-2a3d-4149-803b-f0ba8c66b2f7})
 ----------
 The name of the StateType ({0aa21401-2a3d-4149-803b-f0ba8c66b2f7}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Installierte Generatorleistung</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="159"/>
         <source>Installed generator power changed</source>
         <extracomment>The name of the EventType ({0aa21401-2a3d-4149-803b-f0ba8c66b2f7}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Installierte Generatorleistung geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="162"/>
@@ -31,13 +31,13 @@ The name of the StateType ({0aa21401-2a3d-4149-803b-f0ba8c66b2f7}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: lastupdate, ID: {b944c513-a7f0-4bc1-941e-aae9849557fe})
 ----------
 The name of the StateType ({b944c513-a7f0-4bc1-941e-aae9849557fe}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Letztes Update</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="168"/>
         <source>Last update changed</source>
         <extracomment>The name of the EventType ({b944c513-a7f0-4bc1-941e-aae9849557fe}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Letztes Update geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="198"/>
@@ -49,7 +49,7 @@ The name of the StateType ({b944c513-a7f0-4bc1-941e-aae9849557fe}) of ThingClass
 The name of the vendor ({0cf5f437-abf0-4396-92d4-be94d616c667})
 ----------
 The name of the plugin solarlog ({606adc5a-c9a5-45fa-9652-ea385dcb0b81})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Solar-Log</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="78"/>
@@ -58,13 +58,13 @@ The name of the plugin solarlog ({606adc5a-c9a5-45fa-9652-ea385dcb0b81})</extrac
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: uac, ID: {7dc46b2e-5fba-4cc6-a159-09472cdfac62})
 ----------
 The name of the StateType ({7dc46b2e-5fba-4cc6-a159-09472cdfac62}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wechselspannung</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="84"/>
         <source>AC voltage changed</source>
         <extracomment>The name of the EventType ({7dc46b2e-5fba-4cc6-a159-09472cdfac62}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wechselspannung geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="90"/>
@@ -73,13 +73,13 @@ The name of the StateType ({7dc46b2e-5fba-4cc6-a159-09472cdfac62}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: currentTotalConsumption, ID: {5b665247-278a-4b59-9046-add40763e937})
 ----------
 The name of the StateType ({5b665247-278a-4b59-9046-add40763e937}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="96"/>
         <source>Current total power consumption changed</source>
         <extracomment>The name of the EventType ({5b665247-278a-4b59-9046-add40763e937}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="99"/>
@@ -88,13 +88,13 @@ The name of the StateType ({5b665247-278a-4b59-9046-add40763e937}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: dcVoltage, ID: {bb891a05-59d8-4a3b-a0ea-b63af58558f7})
 ----------
 The name of the StateType ({bb891a05-59d8-4a3b-a0ea-b63af58558f7}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gleichspannung</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="105"/>
         <source>DC voltage changed</source>
         <extracomment>The name of the EventType ({bb891a05-59d8-4a3b-a0ea-b63af58558f7}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gleichspannung geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="108"/>
@@ -178,13 +178,13 @@ The name of the StateType ({5d6d5ba5-ebc3-42ce-9d08-802da694b4da}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: pac, ID: {0bf515d8-0f48-4eba-9255-f774d68c80fe})
 ----------
 The name of the StateType ({0bf515d8-0f48-4eba-9255-f774d68c80fe}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Leistung AC</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="177"/>
         <source>Power AC changed</source>
         <extracomment>The name of the EventType ({0bf515d8-0f48-4eba-9255-f774d68c80fe}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Leistung AC geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="180"/>
@@ -193,13 +193,13 @@ The name of the StateType ({0bf515d8-0f48-4eba-9255-f774d68c80fe}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: pdc, ID: {e4183a70-c848-447a-962a-f19dc5974140})
 ----------
 The name of the StateType ({e4183a70-c848-447a-962a-f19dc5974140}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Leistung DC</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="186"/>
         <source>Power DC changed</source>
         <extracomment>The name of the EventType ({e4183a70-c848-447a-962a-f19dc5974140}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Leistung DC geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="189"/>
@@ -208,13 +208,13 @@ The name of the StateType ({e4183a70-c848-447a-962a-f19dc5974140}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: connected, ID: {eb9f8575-71e3-42a9-aa4d-ffea9586cc4f})
 ----------
 The name of the StateType ({eb9f8575-71e3-42a9-aa4d-ffea9586cc4f}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Erreichbar</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="195"/>
         <source>Reachable changed</source>
         <extracomment>The name of the EventType ({eb9f8575-71e3-42a9-aa4d-ffea9586cc4f}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Erreichbar geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="207"/>

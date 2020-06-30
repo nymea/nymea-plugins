@@ -126,8 +126,8 @@
                         {
                             "id": "5b665247-278a-4b59-9046-add40763e937",
                             "name": "currentTotalConsumption",
-                            "displayName": "Current total consumption",
-                            "displayNameEvent": "Current total consumption changed",
+                            "displayName": "Current total power consumption",
+                            "displayNameEvent": "Current total power consumption changed",
                             "type": "int",
                             "unit": "KiloWatt",
                             "defaultValue": 0
@@ -135,8 +135,8 @@
                         {
                             "id": "40ff1d14-a5d2-4fdb-919c-58dfbcdca123",
                             "name": "consYieldDay",
-                            "displayName": "consYieldDay",
-                            "displayNameEvent": "consYieldDay changed",
+                            "displayName": "Energy consumption day",
+                            "displayNameEvent": "Energy consumption day changed",
                             "type": "int",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
@@ -144,8 +144,8 @@
                         {
                             "id": "5d6d5ba5-ebc3-42ce-9d08-802da694b4da",
                             "name": "consYieldYesterday",
-                            "displayName": "consYieldYesterday",
-                            "displayNameEvent": "consYieldYesterday changed",
+                            "displayName": "Energy consumption yesterday",
+                            "displayNameEvent": "Energy consumption yesterday changed",
                             "type": "int",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
@@ -153,8 +153,8 @@
                         {
                             "id": "a45a557a-a937-4382-8ef5-76f1ff5940e4",
                             "name": "consYieldMonth",
-                            "displayName": "Cons yield month",
-                            "displayNameEvent": "Cons yield month changed",
+                            "displayName": "Energy consumption month",
+                            "displayNameEvent": "Energy consumption month changed",
                             "type": "int",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
@@ -162,8 +162,8 @@
                         {
                             "id": "1d42619b-3a50-4bde-b325-67a8014332ef",
                             "name": "consYieldYear",
-                            "displayName": "Cons yield year",
-                            "displayNameEvent": "Cons yield year changed",
+                            "displayName": "Energy consumption year",
+                            "displayNameEvent": "Energy consumption year changed",
                             "type": "int",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
@@ -171,8 +171,8 @@
                         {
                             "id": "34f60062-5dec-45ed-9a27-4fbc083cb36e",
                             "name": "consYieldTotal",
-                            "displayName": "Cons yield total",
-                            "displayNameEvent": "Cons yield total changed",
+                            "displayName": "Energy consumption total",
+                            "displayNameEvent": "Energy consumption total changed",
                             "type": "int",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
