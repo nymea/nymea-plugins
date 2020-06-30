@@ -89,8 +89,10 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
             return;
         }
 
+        QByteArray rawData = reply->readAll();
+        qCDebug(dcSolarlog()) << "Data:" << rawData;
         QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        QJsonDocument data = QJsonDocument::fromJson(rawData, &error);
         if (error.error != QJsonParseError::NoError) {
             qCWarning(dcSolarlog()) << "Received invalide JSON object" << data.toJson();
             return;
