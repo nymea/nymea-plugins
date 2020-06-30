@@ -67,6 +67,7 @@ public:
     explicit IntegrationPluginSolarLog();
 
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
 
 private slots:
@@ -74,6 +75,7 @@ private slots:
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
+    QHash<Thing *, ThingSetupInfo *> m_asyncSetup;
 
     void getData(Thing *thing);
 };

@@ -28,8 +28,8 @@
                         {
                             "id": "eb9f8575-71e3-42a9-aa4d-ffea9586cc4f",
                             "name": "connected",
-                            "displayName": "Connected",
-                            "displayNameEvent": "Connected changed",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
@@ -45,26 +45,26 @@
                         {
                             "id": "0bf515d8-0f48-4eba-9255-f774d68c80fe",
                             "name": "pac",
-                            "displayName": "PAC",
-                            "displayNameEvent": "PAC changed",
+                            "displayName": "Power AC",
+                            "displayNameEvent": "Power AC changed",
                             "type": "int",
-                            "unit": "Watt",
+                            "unit": "KiloWatt",
                             "defaultValue": 0
                         },
                         {
                             "id": "e4183a70-c848-447a-962a-f19dc5974140",
                             "name": "pdc",
-                            "displayName": "PDC",
-                            "displayNameEvent": "PDC changed",
+                            "displayName": "Power DC",
+                            "displayNameEvent": "Power DC changed",
                             "type": "int",
-                            "unit": "Watt",
+                            "unit": "KiloWatt",
                             "defaultValue": 0
                         },
                         {
                             "id": "7dc46b2e-5fba-4cc6-a159-09472cdfac62",
                             "name": "uac",
-                            "displayName": "UAC",
-                            "displayNameEvent": "UAC changed",
+                            "displayName": "AC voltage",
+                            "displayNameEvent": "AC voltage changed",
                             "type": "int",
                             "unit": "Volt",
                             "defaultValue": 0
@@ -72,8 +72,8 @@
                         {
                             "id": "bb891a05-59d8-4a3b-a0ea-b63af58558f7",
                             "name": "dcVoltage",
-                            "displayName": "DC Voltage",
-                            "displayNameEvent": "DC Voltage changed",
+                            "displayName": "DC voltage",
+                            "displayNameEvent": "DC voltage changed",
                             "type": "int",
                             "unit": "Volt",
                             "defaultValue": 0
@@ -129,7 +129,7 @@
                             "displayName": "Current total consumption",
                             "displayNameEvent": "Current total consumption changed",
                             "type": "int",
-                            "unit": "Watt",
+                            "unit": "KiloWatt",
                             "defaultValue": 0
                         },
                         {
@@ -153,8 +153,8 @@
                         {
                             "id": "a45a557a-a937-4382-8ef5-76f1ff5940e4",
                             "name": "consYieldMonth",
-                            "displayName": "consYieldMonth",
-                            "displayNameEvent": "consYieldMonth changed",
+                            "displayName": "Cons yield month",
+                            "displayNameEvent": "Cons yield month changed",
                             "type": "int",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
@@ -162,8 +162,8 @@
                         {
                             "id": "1d42619b-3a50-4bde-b325-67a8014332ef",
                             "name": "consYieldYear",
-                            "displayName": "consYieldYear",
-                            "displayNameEvent": "consYieldYear changed",
+                            "displayName": "Cons yield year",
+                            "displayNameEvent": "Cons yield year changed",
                             "type": "int",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
@@ -171,8 +171,8 @@
                         {
                             "id": "34f60062-5dec-45ed-9a27-4fbc083cb36e",
                             "name": "consYieldTotal",
-                            "displayName": "consYieldTotal",
-                            "displayNameEvent": "consYieldTotal changed",
+                            "displayName": "Cons yield total",
+                            "displayNameEvent": "Cons yield total changed",
                             "type": "int",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
@@ -183,7 +183,7 @@
                             "displayName": "Installed generator power",
                             "displayNameEvent": "Installed generator power changed",
                             "type": "int",
-                            "unit": "Watt",
+                            "unit": "KiloWatt",
                             "defaultValue": 0
                         }
                     ]
