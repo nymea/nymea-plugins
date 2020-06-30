@@ -92,11 +92,12 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcSolarlog()) << "Recieved invalide JSON object";
+            qCWarning(dcSolarlog()) << "Received invalide JSON object" << data.toJson();
             return;
         }
 
         QVariantMap map = data.toVariant().toMap().value("801").toMap().value("170").toMap();
+        qCDebug(dcSolarlog()) << "Map 170:" << map;
         thing->setStateValue(solarlogLastupdateStateTypeId, map.value(QString::number(JsonObjectNumbers::LastUpdateTime)));
         thing->setStateValue(solarlogPacStateTypeId, map.value(QString::number(JsonObjectNumbers::Pac)));
         thing->setStateValue(solarlogPdcStateTypeId, map.value(QString::number(JsonObjectNumbers::Pdc)));
