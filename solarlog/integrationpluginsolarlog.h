@@ -65,7 +65,6 @@ public:
         TotalPower
     };
     explicit IntegrationPluginSolarLog();
-    ~IntegrationPluginSolarLog() override;
 
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
