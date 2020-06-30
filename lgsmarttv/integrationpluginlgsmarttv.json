@@ -231,6 +231,89 @@
                             "displayName": "program list"
                         }
                     ]
+                },
+                {
+                    "id": "5203755d-1560-4d43-bc19-5375d37be8be",
+                    "name": "webosTv",
+                    "displayName": "LG WebOS Smart Tv",
+                    "createMethods": [ "Discovery" ],
+                    "setupMethod": "PushButton",
+                    "interfaces": [ "extendedvolumecontroller", "mediacontroller", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "adebba0c-ac7b-4b6a-8668-307f44dbe5bf",
+                            "name": "hostAddress",
+                            "displayName": "host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address"
+                        },
+                        {
+                            "id": "e367fa30-13c9-4380-b25c-489ac8bc98bb",
+                            "name": "apiKey",
+                            "displayName": "API key",
+                            "type": "QString",
+                            "inputType": "Password"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "a0304262-1054-4a18-ac9a-4462910c4133",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8e49fe17-617d-4d2e-bf36-0a05e5687887",
+                            "name": "mute",
+                            "displayName": "Mute",
+                            "displayNameEvent": "Mute changed",
+                            "displayNameAction": "Set mute",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "40551b26-a7b2-4d02-ab22-fa6a9c731c4f",
+                            "displayName": "Volume",
+                            "displayNameEvent": "Volume changed",
+                            "displayNameAction": "Set volume",
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "name": "volume",
+                            "type": "int",
+                            "defaultValue": 10,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "35cdb587-956a-4310-8e4c-85fdc240943e",
+                            "displayName": "Skip back",
+                            "name": "skipBack"
+                        },
+                        {
+                            "id": "04bb9eca-2ac5-4a49-a10b-1f10d612e394",
+                            "displayName": "Stop",
+                            "name": "stop"
+                        },
+                        {
+                            "id": "5ded6518-c5f6-4043-9a4b-bf838c2029e4",
+                            "displayName": "Play",
+                            "name": "play"
+                        },
+                        {
+                            "id": "9e6b2085-cef8-4c23-ae1a-c48cb359bccb",
+                            "displayName": "Pause",
+                            "name": "pause"
+                        },
+                        {
+                            "id": "3a922eee-832f-4e8c-b13b-00fb788ac8be",
+                            "displayName": "SkipNext",
+                            "name": "skipNext"
+                        }
+                    ]
                 }
             ]
         }
