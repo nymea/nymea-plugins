@@ -6,12 +6,12 @@
     <message>
         <location filename="../integrationpluginsolarlog.cpp" line="103"/>
         <source>No Solar-Log device at given IP-Address</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Solar-Log Gerät an angegebener IP Adresse</translation>
     </message>
     <message>
         <location filename="../integrationpluginsolarlog.cpp" line="116"/>
         <source>Outdated Solar-Log firmware</source>
-        <translation type="unfinished"></translation>
+        <translation>Veraltete Solar-Log Firware</translation>
     </message>
 </context>
 <context>
@@ -86,13 +86,13 @@ The name of the StateType ({7dc46b2e-5fba-4cc6-a159-09472cdfac62}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: currentTotalConsumption, ID: {5b665247-278a-4b59-9046-add40763e937})
 ----------
 The name of the StateType ({5b665247-278a-4b59-9046-add40763e937}) of ThingClass solarlog</extracomment>
-        <translation></translation>
+        <translation>Derzeitiger Gesamtleistungsverbrauch</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="96"/>
         <source>Current total power consumption changed</source>
         <extracomment>The name of the EventType ({5b665247-278a-4b59-9046-add40763e937}) of ThingClass solarlog</extracomment>
-        <translation></translation>
+        <translation>Derzeitiger Gesamtleistungsverbrauch geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="99"/>
@@ -107,7 +107,7 @@ The name of the StateType ({bb891a05-59d8-4a3b-a0ea-b63af58558f7}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="105"/>
         <source>DC voltage changed</source>
         <extracomment>The name of the EventType ({bb891a05-59d8-4a3b-a0ea-b63af58558f7}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished">Gleichspannung geändert</translation>
+        <translation>Gleichspannung geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="108"/>
@@ -116,13 +116,13 @@ The name of the StateType ({bb891a05-59d8-4a3b-a0ea-b63af58558f7}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: consYieldDay, ID: {40ff1d14-a5d2-4fdb-919c-58dfbcdca123})
 ----------
 The name of the StateType ({40ff1d14-a5d2-4fdb-919c-58dfbcdca123}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tagesenergieverbrauch</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="114"/>
         <source>Energy consumption day changed</source>
         <extracomment>The name of the EventType ({40ff1d14-a5d2-4fdb-919c-58dfbcdca123}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tagesenergieverbrauch geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="117"/>
@@ -131,13 +131,13 @@ The name of the StateType ({40ff1d14-a5d2-4fdb-919c-58dfbcdca123}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: consYieldMonth, ID: {a45a557a-a937-4382-8ef5-76f1ff5940e4})
 ----------
 The name of the StateType ({a45a557a-a937-4382-8ef5-76f1ff5940e4}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Monatsenergieverbrauch</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="123"/>
         <source>Energy consumption month changed</source>
         <extracomment>The name of the EventType ({a45a557a-a937-4382-8ef5-76f1ff5940e4}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Monatsenergieverbrauch geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="126"/>
@@ -146,13 +146,13 @@ The name of the StateType ({a45a557a-a937-4382-8ef5-76f1ff5940e4}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: consYieldTotal, ID: {34f60062-5dec-45ed-9a27-4fbc083cb36e})
 ----------
 The name of the StateType ({34f60062-5dec-45ed-9a27-4fbc083cb36e}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Totalenergieverbrauch</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="132"/>
         <source>Energy consumption total changed</source>
         <extracomment>The name of the EventType ({34f60062-5dec-45ed-9a27-4fbc083cb36e}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Totalenergieverbrauch geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="135"/>
@@ -161,13 +161,13 @@ The name of the StateType ({34f60062-5dec-45ed-9a27-4fbc083cb36e}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: consYieldYear, ID: {1d42619b-3a50-4bde-b325-67a8014332ef})
 ----------
 The name of the StateType ({1d42619b-3a50-4bde-b325-67a8014332ef}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Jahresenergieverbrauch</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="141"/>
         <source>Energy consumption year changed</source>
         <extracomment>The name of the EventType ({1d42619b-3a50-4bde-b325-67a8014332ef}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Jahresenergieverbrauch geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="144"/>
@@ -176,13 +176,13 @@ The name of the StateType ({1d42619b-3a50-4bde-b325-67a8014332ef}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: consYieldYesterday, ID: {5d6d5ba5-ebc3-42ce-9d08-802da694b4da})
 ----------
 The name of the StateType ({5d6d5ba5-ebc3-42ce-9d08-802da694b4da}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gestriger Tagesenergieverbrauch</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="150"/>
         <source>Energy consumption yesterday changed</source>
         <extracomment>The name of the EventType ({5d6d5ba5-ebc3-42ce-9d08-802da694b4da}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gestriger Tagesenergieverbrauch geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="171"/>
@@ -236,13 +236,13 @@ The name of the StateType ({eb9f8575-71e3-42a9-aa4d-ffea9586cc4f}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: yieldDay, ID: {53ed041a-e3c3-4ae5-9a79-1cd7ad82e9a8})
 ----------
 The name of the StateType ({53ed041a-e3c3-4ae5-9a79-1cd7ad82e9a8}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tagesertrag</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="213"/>
         <source>Yield day changed</source>
         <extracomment>The name of the EventType ({53ed041a-e3c3-4ae5-9a79-1cd7ad82e9a8}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tagesertrag geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="216"/>
@@ -251,13 +251,13 @@ The name of the StateType ({53ed041a-e3c3-4ae5-9a79-1cd7ad82e9a8}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: yieldMonth, ID: {9a77662a-2034-4031-8e7a-1e6347089d97})
 ----------
 The name of the StateType ({9a77662a-2034-4031-8e7a-1e6347089d97}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Monatsertrag</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="222"/>
         <source>Yield month changed</source>
         <extracomment>The name of the EventType ({9a77662a-2034-4031-8e7a-1e6347089d97}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Monatsertrag geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="225"/>
@@ -266,13 +266,13 @@ The name of the StateType ({9a77662a-2034-4031-8e7a-1e6347089d97}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: yieldTotal, ID: {3afb6ea1-fef8-4c17-8307-c7547a7a6f3c})
 ----------
 The name of the StateType ({3afb6ea1-fef8-4c17-8307-c7547a7a6f3c}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Totalertrag</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="231"/>
         <source>Yield total changed</source>
         <extracomment>The name of the EventType ({3afb6ea1-fef8-4c17-8307-c7547a7a6f3c}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Totalertrag geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="234"/>
@@ -281,13 +281,13 @@ The name of the StateType ({3afb6ea1-fef8-4c17-8307-c7547a7a6f3c}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: yieldYear, ID: {d18169ce-deeb-4f7b-b737-818a91760041})
 ----------
 The name of the StateType ({d18169ce-deeb-4f7b-b737-818a91760041}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Jahresertrag</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="240"/>
         <source>Yield year changed</source>
         <extracomment>The name of the EventType ({d18169ce-deeb-4f7b-b737-818a91760041}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Jahresertrag geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="243"/>
@@ -296,13 +296,13 @@ The name of the StateType ({d18169ce-deeb-4f7b-b737-818a91760041}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: yieldYesterday, ID: {bd96d0b3-e921-49eb-8b34-0b3be5bb27fa})
 ----------
 The name of the StateType ({bd96d0b3-e921-49eb-8b34-0b3be5bb27fa}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gestriger Tagesertrag</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="249"/>
         <source>Yield yesterday changed</source>
         <extracomment>The name of the EventType ({bd96d0b3-e921-49eb-8b34-0b3be5bb27fa}) of ThingClass solarlog</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gestriger Tagesertrag geändert</translation>
     </message>
 </context>
 </TS>
