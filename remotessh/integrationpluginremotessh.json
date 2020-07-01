@@ -80,6 +80,43 @@
                             "displayNameEvent": "SSH key changed",
                             "type": "QString",
                             "defaultValue": "-"
+                            }
+                        ]
+                    },
+                    {
+                        "id": "41936e94-dc08-4fe9-82cb-99f515cee1ed",
+                        "name": "tmate",
+                        "displayName": "tmate",
+                        "createMethods": ["user"],
+                        "interfaces": ["connectable"],
+                        "paramTypes": [
+                        ],
+                        "stateTypes":[
+                        {
+                            "id": "4587e3c0-6be4-444e-8492-e7bce8537662",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayNameEvent": "Connected changed",
+                            "displayNameAction": "Connect to Server",
+                            "writable": true
+                        },
+                        {
+                            "id": "c050d6f3-48e7-4167-8b3b-d358a0946f83",
+                            "name": "sessionString",
+                            "displayName": "Session",
+                            "displayNameEvent": "Session changed",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        },
+                        {
+                            "id": "039d39e3-187f-445b-be31-add68247c6f2",
+                            "name": "sshKey",
+                            "displayName": "SSH public key",
+                            "displayNameEvent": "SSH key changed",
+                            "type": "QString",
+                            "defaultValue": "-"
                         }
                     ]
                 }

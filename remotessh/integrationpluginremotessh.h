@@ -46,13 +46,14 @@ class IntegrationPluginRemoteSsh : public IntegrationPlugin
 public:
     explicit IntegrationPluginRemoteSsh();
 
-    void init() override;
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
 
 private:
     QHash<QProcess *, Thing *> m_reverseSSHProcess;
+    QHash<QProcess *, Thing *> m_tmateProcess;
     QHash<QProcess *, Thing *> m_sshKeyGenProcess;
 
     QHash<QProcess *, ThingActionInfo*> m_startingProcess;
@@ -64,9 +65,9 @@ private:
     QString m_identityFilePath;
 
     QProcess *startReverseSSHProcess(Thing *thing);
+    QProcess *startTmateProcess(Thing *thing);
 
 private slots:
-    void onPluginTimeout();
     void processReadyRead();
     void processStateChanged(QProcess::ProcessState state);
     void processFinished(int exitCode, QProcess::ExitStatus exitStatus);

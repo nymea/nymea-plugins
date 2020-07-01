@@ -39,12 +39,6 @@ IntegrationPluginRemoteSsh::IntegrationPluginRemoteSsh()
 
 }
 
-void IntegrationPluginRemoteSsh::init()
-{
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginRemoteSsh::onPluginTimeout);
-}
-
 void IntegrationPluginRemoteSsh::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
@@ -54,6 +48,31 @@ void IntegrationPluginRemoteSsh::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == reverseSshThingClassId) {
         m_identityFilePath = QString("%1/.ssh/id_rsa_guh").arg(QDir::homePath());
         return info->finish(Thing::ThingErrorNoError);
+    } else  if (thing->thingClassId() == tmateThingClassId) {
+
+        return info->finish(Thing::ThingErrorNoError);
+    } else {
+          Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+    }
+}
+
+void IntegrationPluginRemoteSsh::postSetupThing(Thing *thing)
+{
+    Q_UNUSED(thing)
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, [this] {
+
+            foreach(QProcess *process, m_reverseSSHProcess.keys()) {
+                if (process->state() == QProcess::NotRunning)
+                    qCDebug(dcRemoteSsh()) << "SSH Process not running";
+            }
+
+            foreach(QProcess *process, m_tmateProcess.keys()) {
+                if (process->state() == QProcess::NotRunning)
+                    qCDebug(dcRemoteSsh()) << "tmate Process not running";
+            }
+        });
     }
 }
 
@@ -92,13 +111,54 @@ void IntegrationPluginRemoteSsh::executeAction(ThingActionInfo *info)
                 });
                 return;
             }
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
+    } else if (thing->thingClassId() == tmateThingClassId ) {
+        if (action.actionTypeId() == tmateConnectedActionTypeId) {
+            if (action.param(tmateConnectedActionConnectedParamTypeId).value().toBool() == true) {
+                QProcess *process = startTmateProcess(thing);
+                m_tmateProcess.insert(process, thing);
+                m_startingProcess.insert(process, info);
+                // in case action call is cancelled, detach result reporting
+                connect(info, &ThingActionInfo::destroyed, process, [this, process]{
+                    m_startingProcess.remove(process);
+                });
+                return;
+            } else {
+                QProcess *process =  m_reverseSSHProcess.key(thing);
+
+                // Check if the application is running...
+                if (!process)
+                    return info->finish(Thing::ThingErrorNoError);
+
+                if (process->state() == QProcess::NotRunning)
+                    return info->finish(Thing::ThingErrorNoError);
+
+                process->kill();
+                m_killingProcess.insert(process, info);
+                // in case action call is cancelled, detach result reporting
+                connect(info, &ThingActionInfo::destroyed, process, [this, process]{
+                    m_killingProcess.remove(process);
+                });
+                return;
+            }
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+    } else {
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
 
 
 void IntegrationPluginRemoteSsh::thingRemoved(Thing *thing)
 {
+    if (myThings().empty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
+    }
+
     if (thing->thingClassId() == reverseSshThingClassId) {
         QProcess *process =  m_reverseSSHProcess.key(thing);
         if (!process)
@@ -109,15 +169,20 @@ void IntegrationPluginRemoteSsh::thingRemoved(Thing *thing)
             process->kill();
         }
         process->deleteLater();
+    } else if (thing->thingClassId() == tmateThingClassId ) {
+        QProcess *process =  m_tmateProcess.key(thing);
+        if (!process)
+            return;
+
+        m_tmateProcess.remove(process);
+        if (process->state() != QProcess::NotRunning) {
+            process->kill();
+        }
+        process->deleteLater();
+    } else {
+        Q_ASSERT_X(false, "thingRemoved", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
-
-void IntegrationPluginRemoteSsh::processReadyRead()
-{
-    QByteArray data = static_cast<QProcess*>(sender())->readAll();
-    qCWarning(dcRemoteSsh()) << "process read" << data;
-}
-
 
 QProcess * IntegrationPluginRemoteSsh::startReverseSSHProcess(Thing *thing)
 {
@@ -125,9 +190,51 @@ QProcess * IntegrationPluginRemoteSsh::startReverseSSHProcess(Thing *thing)
     QProcess *process = new QProcess(this);
     process->setProcessChannelMode(QProcess::MergedChannels);
 
-    connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processFinished(int,QProcess::ExitStatus)));
-    connect(process, &QProcess::stateChanged, this, &IntegrationPluginRemoteSsh::processStateChanged);
-    connect(process, &QProcess::readyRead, this, &IntegrationPluginRemoteSsh::processReadyRead);
+    connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [process, thing, this](int exitCode, QProcess::ExitStatus exitStatus){
+
+        if(exitStatus != QProcess::NormalExit || exitCode != 0) {
+            qCWarning(dcRemoteSsh()) << "Error:" << process->readAllStandardError();
+        }
+
+        if (m_reverseSSHProcess.contains(process)) {
+            qCDebug(dcRemoteSsh()) << "SSH process finished";
+            Thing *thing = m_reverseSSHProcess.value(process);
+            thing->setStateValue(reverseSshConnectedStateTypeId, false);
+            m_reverseSSHProcess.remove(process);
+        }
+    });
+    connect(process, &QProcess::stateChanged, this, [process, thing, this] (QProcess::ProcessState state) {
+
+        switch (state) {
+        case QProcess::Running:
+            thing->setStateValue(reverseSshConnectedStateTypeId, true);
+            if (m_startingProcess.contains(process)) {
+                m_startingProcess.take(process)->finish(Thing::ThingErrorNoError);
+            }
+            break;
+
+        case QProcess::NotRunning:
+            if (thing)
+                thing->setStateValue(reverseSshConnectedStateTypeId, false);
+
+            if (m_startingProcess.contains(process)) {
+                m_startingProcess.take(process)->finish(Thing::ThingErrorInvalidParameter);
+            }
+
+            if (m_killingProcess.contains(process)) {
+                m_killingProcess.take(process)->finish(Thing::ThingErrorNoError);
+                m_reverseSSHProcess.remove(process);
+            }
+            break;
+        default:
+            break;
+        }
+
+    });
+    connect(process, &QProcess::readyRead, this, [process, this] {
+        QByteArray data = process->readAll();
+        qCWarning(dcRemoteSsh()) << "process read" << data;
+    });
 
     QStringList arguments;
     int localPort    = thing->paramValue(reverseSshThingLocalPortParamTypeId).toInt();
@@ -144,12 +251,9 @@ QProcess * IntegrationPluginRemoteSsh::startReverseSSHProcess(Thing *thing)
     return process;
 }
 
-void IntegrationPluginRemoteSsh::onPluginTimeout()
+QProcess *IntegrationPluginRemoteSsh::startTmateProcess(Thing *thing)
 {
-    foreach(QProcess *process, m_reverseSSHProcess.keys()) {
-        if (process->state() == QProcess::NotRunning)
-            qCDebug(dcRemoteSsh()) << "SSH Process not running";
-    }
+
 }
 
 
@@ -158,30 +262,7 @@ void IntegrationPluginRemoteSsh::processFinished(int exitCode, QProcess::ExitSta
     Q_UNUSED(exitCode);
     QProcess *process = static_cast<QProcess*>(sender());
 
-    if(exitStatus != QProcess::NormalExit || exitCode != 0) {
-        qCWarning(dcRemoteSsh()) << "Error:" << process->readAllStandardError();
-    }
 
-    if (m_reverseSSHProcess.contains(process)) {
-        qCDebug(dcRemoteSsh()) << "SSH process finished";
-        Thing *thing = m_reverseSSHProcess.value(process);
-        thing->setStateValue(reverseSshConnectedStateTypeId, false);
-        m_reverseSSHProcess.remove(process);
-
-    } else if (m_sshKeyGenProcess.contains(process)) {
-        qCDebug(dcRemoteSsh()) << "SSH Key generation process finished" <<  process->readAll();
-        Thing *thing = m_sshKeyGenProcess.value(process);
-        QFile file(QString(m_identityFilePath + ".pub"));
-        if(!file.open(QIODevice::ReadOnly))
-            qCWarning(dcRemoteSsh()) << "error" << file.errorString();
-
-        QTextStream in(&file);
-        QString sshKey = in.readLine();
-        thing->setStateValue(reverseSshSshKeyStateTypeId, sshKey);
-        process->kill();
-        m_sshKeyGenProcess.remove(process);
-        file.close();
-    }
 }
 
 
