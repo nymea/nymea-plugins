@@ -359,6 +359,15 @@ void IntegrationPluginNanoleaf::onConnectionChanged(bool connected)
     if (!thing)
         return;
     thing->setStateValue(lightPanelsConnectedStateTypeId, connected);
+    if (!connected) {
+        QTimer::singleShot(3000, this, [nanoleaf, thing, connected, this] {
+           if (!connected) { //If after 3 seconds it is still not connected
+               nanoleaf->setIpAddress(getHostAddress(thing->paramValue(lightPanelsThingSerialNoParamTypeId).toString()));
+               nanoleaf->setPort(getPort(thing->paramValue(lightPanelsThingSerialNoParamTypeId).toString()));
+               nanoleaf->getControllerInfo(); //Test connection
+           }
+        });
+    }
 }
 
 void IntegrationPluginNanoleaf::onControllerInfoReceived(const Nanoleaf::ControllerInfo &controllerInfo)
