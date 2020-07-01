@@ -52,7 +52,8 @@ void IntegrationPluginNanoleaf::discoverThings(ThingDiscoveryInfo *info)
     QStringList serialNumbers;
     foreach (const ZeroConfServiceEntry &entry, m_zeroconfBrowser->serviceEntries()) {
 
-        ThingDescriptor descriptor(lightPanelsThingClassId, entry.name(), entry.hostAddress().toString());
+        QHostAddress address = QHostAddress(entry.hostAddress().toString());
+        ThingDescriptor descriptor(lightPanelsThingClassId, entry.name(), address.toString());
         ParamList params;
 
         QString serialNo;
@@ -80,8 +81,6 @@ void IntegrationPluginNanoleaf::discoverThings(ThingDiscoveryInfo *info)
 
         serialNumbers.append(serialNo);
         qCDebug(dcNanoleaf()) << "Have device" << entry.name() << serialNo << model << firmwareVersion;
-        params << Param(lightPanelsThingAddressParamTypeId, entry.hostAddress().toString());
-        params << Param(lightPanelsThingPortParamTypeId, entry.port());
         params << Param(lightPanelsThingModelParamTypeId, model);
         params << Param(lightPanelsThingSerialNoParamTypeId, serialNo);
         params << Param(lightPanelsThingFirmwareVersionParamTypeId, firmwareVersion);
@@ -101,7 +100,9 @@ void IntegrationPluginNanoleaf::confirmPairing(ThingPairingInfo *info, const QSt
 {
     Q_UNUSED(username)
     Q_UNUSED(secret)
-    Nanoleaf *nanoleaf = createNanoleafConnection(QHostAddress(info->params().paramValue(lightPanelsThingAddressParamTypeId).toString()), info->params().paramValue(lightPanelsThingPortParamTypeId).toInt());
+    QHostAddress address = getHostAddress(info->params().paramValue(lightPanelsThingSerialNoParamTypeId).toString());
+    uint port = getPort(info->params().paramValue(lightPanelsThingSerialNoParamTypeId).toString());
+    Nanoleaf *nanoleaf = createNanoleafConnection(address, port);
     nanoleaf->addUser(); //push button pairing
     m_unfinishedNanoleafConnections.insert(info->thingId(), nanoleaf);
     m_unfinishedPairing.insert(nanoleaf, info);
@@ -116,6 +117,10 @@ void IntegrationPluginNanoleaf::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
     if(thing->thingClassId() == lightPanelsThingClassId) {
+
+        QString thingSerialNo = thing->paramValue(lightPanelsThingSerialNoParamTypeId).toString();
+        qCDebug(dcNanoleaf()) << "Setting up Nanoleaf light panel with serial number:" << thingSerialNo;
+
         pluginStorage()->beginGroup(thing->id().toString());
         QString token = pluginStorage()->value("authToken").toString();
         pluginStorage()->endGroup();
@@ -128,8 +133,8 @@ void IntegrationPluginNanoleaf::setupThing(ThingSetupInfo *info)
             return info->finish(Thing::ThingErrorNoError);
         } else {
             // This setupDevice is called after a (re)start, with an already added thing
-            QHostAddress address(thing->paramValue(lightPanelsThingAddressParamTypeId).toString());
-            int port = thing->paramValue(lightPanelsThingPortParamTypeId).toInt();
+            QHostAddress address = getHostAddress(thing->paramValue(lightPanelsThingSerialNoParamTypeId).toString());
+            int port = getPort(thing->paramValue(lightPanelsThingSerialNoParamTypeId).toString());
             nanoleaf = createNanoleafConnection(address, port);
             nanoleaf->setAuthToken(token);
             nanoleaf->getControllerInfo(); //This is just to check if the thing is available
@@ -261,6 +266,44 @@ Nanoleaf *IntegrationPluginNanoleaf::createNanoleafConnection(const QHostAddress
     connect(nanoleaf, &Nanoleaf::effectListReceived, this, &IntegrationPluginNanoleaf::onEffectListReceived);
     connect(nanoleaf, &Nanoleaf::selectedEffectReceived, this, &IntegrationPluginNanoleaf::onSelectedEffectReceived);
     return nanoleaf;
+}
+
+QHostAddress IntegrationPluginNanoleaf::getHostAddress(const QString &serialNumber)
+{
+    ZeroConfServiceEntry entry;
+    foreach (const ZeroConfServiceEntry &e, m_zeroconfBrowser->serviceEntries()) {
+        QString entrySerialNo;
+        foreach (QString value, entry.txt()) {
+            if (value.contains("id=")) {
+                entrySerialNo = value.split("=").last();
+                break;
+            }
+        }
+        if (serialNumber == entrySerialNo) {
+            entry = e;
+            break;
+        }
+    }
+    return QHostAddress(entry.hostAddress());
+}
+
+uint IntegrationPluginNanoleaf::getPort(const QString &serialNumber)
+{
+    ZeroConfServiceEntry entry;
+    foreach (const ZeroConfServiceEntry &e, m_zeroconfBrowser->serviceEntries()) {
+        QString entrySerialNo;
+        foreach (QString value, entry.txt()) {
+            if (value.contains("id=")) {
+                entrySerialNo = value.split("=").last();
+                break;
+            }
+        }
+        if (serialNumber == entrySerialNo) {
+            entry = e;
+            break;
+        }
+    }
+    return entry.port();
 }
 
 void IntegrationPluginNanoleaf::onAuthTokenReceived(const QString &token)
