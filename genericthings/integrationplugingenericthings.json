@@ -131,6 +131,181 @@
                     ]
                 },
                 {
+                    "id": "40aa9f3c-a23c-4f7f-8786-fcf3554f3e19",
+                    "name": "extendedBlind",
+                    "displayName": "Generic extended blind",
+                    "createMethods": ["user"],
+                    "interfaces": ["blind"],
+                    "stateTypes": [
+                        {
+                            "id": "e559f077-e904-4bbc-8ec3-344b814d2eab",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "displayNameAction": "Set opening output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "1a4a5839-a30d-4239-a124-63bfdc74a8f6",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "displayNameAction": "Set closing output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "c2354d7e-198a-43ae-aa5f-c6710010c7e1",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Opening",
+                                "Stopped",
+                                "Closing"
+                            ],
+                           "defaultValue": "Stopped"
+                        },
+                        {
+                            "id": "941d1e1f-8dd7-4493-812f-6cefefd88c2e",
+                            "name": "moving",
+                            "type": "bool",
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "181df603-d45f-4d3d-a358-97aa3e4ac0bd",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "displayNameAction": "Set percentage",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                       {
+                           "id": "5a7599fa-8351-4ed6-9b98-fa2f3be54304",
+                           "name": "open",
+                           "displayName": "Open"
+                       },
+                       {
+                           "id": "ab67e4bf-c7b6-489b-9b49-3e0a1c7d33ca",
+                           "name": "stop",
+                           "displayName": "Stop"
+                       },
+                       {
+                           "id": "97d6351d-7440-47f3-bdba-a31bb15368ac",
+                           "name": "close",
+                           "displayName": "Close"
+                        }
+                    ]
+                },
+                {
+                    "id": "e6b96ced-8d50-45da-91c8-792d364d2795",
+                    "name": "venetianBlind",
+                    "displayName": "Venetian blind",
+                    "createMethods": ["user"],
+                    "interfaces": ["blind"],
+                    "stateTypes": [
+                        {
+                            "id": "6041dacf-5303-4dc0-ba3c-7ecaa438f2dd",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "displayNameAction": "Set opening output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "84dd2fa1-85fe-47f3-9e32-e6083432d39c",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "displayNameAction": "Set closing output",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "6fb7826e-b6d8-42f8-b712-719496046436",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Opening",
+                                "Stopped",
+                                "Closing"
+                            ],
+                           "defaultValue": "Stopped"
+                        },
+                        {
+                            "id": "6234c07e-4200-4f2c-8cbd-bff24c38c243",
+                            "name": "moving",
+                            "type": "bool",
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "33dc8019-336d-4d50-8d60-dff8508338ca",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "displayNameAction": "Set percentage",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0,
+                            "writable": true
+                        },
+                        {
+                            "id": "fcb700c4-5da8-4385-85b0-6616e807974e",
+                            "name": "angle",
+                            "displayName": "Angle",
+                            "displayNameEvent": "Angle changed",
+                            "displayNameAction": "Set angle",
+                            "type": "int",
+                            "unit": "Degree",
+                            "minValue": "any",
+                            "maxValue": "any",
+                            "defaultValue": 0,
+                            "writable": true
+                        }
+                     ],
+                     "actionTypes": [
+                        {
+                            "id": "3e728e50-3d45-4035-b215-1e604cf3159b",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "6e3eeb5d-d7ed-4175-9795-e76451e0a00b",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "1c71f050-f6cb-4929-9c9d-7c262f77c143",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
+                },
+                {
                     "id": "7917c2e7-d7d2-4c47-a38d-41f7dd7693d9",
                     "name": "shutter",
                     "displayName": "Generic shutter",

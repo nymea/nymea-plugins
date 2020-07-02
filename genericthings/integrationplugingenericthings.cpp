@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *
 * Copyright 2013 - 2020, nymea GmbH
 * Contact: contact@nymea.io
@@ -27,28 +27,6 @@
 * https://nymea.io/license/faq
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*!
-    \page genericinterfaces.html
-    \title Generic interfaces
-    \brief Common interfaces to test the rule engine.
-
-    \ingroup plugins
-    \ingroup nymea-tests
-
-    The generic interfaces plugin allows you create virtual buttons, which can be connected with a rule. This gives you
-    the possibility to execute multiple \l{Action}{Actions} with one signal. Without a rule this generic interfaces are
-    useless.
-
-    \chapter Plugin properties
-    Following JSON file contains the definition and the description of all available \l{ThingClass}{DeviceClasses}
-    and \l{Vendor}{Vendors} of this \l{DevicePlugin}.
-
-    For more details how to read this JSON file please check out the documentation for \l{The plugin JSON File}.
-
-    \quotefile plugins/deviceplugins/genericinterfaces/deviceplugingenericinterfaces.json
-*/
-
 
 #include "integrationplugingenericthings.h"
 #include "plugininfo.h"
@@ -113,9 +91,8 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
         }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
-    }
 
-    if (thing->thingClassId() == blindThingClassId ) {
+    } else if (thing->thingClassId() == blindThingClassId ) {
         if (action.actionTypeId() == blindOpenActionTypeId) {
             thing->setStateValue(blindStatusStateTypeId, "Opening");
             thing->setStateValue(blindClosingOutputStateTypeId, false);
@@ -157,9 +134,100 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
         }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
-    }
 
-    if (thing->thingClassId() == shutterThingClassId) {
+    } else if (thing->thingClassId() == extendedBlindThingClassId) {
+        if (action.actionTypeId() == extendedBlindOpenActionTypeId) {
+            thing->setStateValue(extendedBlindStatusStateTypeId, "Opening");
+            thing->setStateValue(extendedBlindClosingOutputStateTypeId, false);
+            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, true);
+            //TODO set moving state
+            return info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == extendedBlindStopActionTypeId) {
+            thing->setStateValue(extendedBlindStatusStateTypeId, "Stopped");
+            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, false);
+            thing->setStateValue(extendedBlindClosingOutputStateTypeId, false);
+            return info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == extendedBlindCloseActionTypeId) {
+            thing->setStateValue(extendedBlindStatusStateTypeId, "Closing");
+            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, false);
+            thing->setStateValue(extendedBlindClosingOutputStateTypeId, true);
+            return info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == extendedBlindOpeningOutputActionTypeId) {
+            bool on = action.param(extendedBlindOpeningOutputActionOpeningOutputParamTypeId).value().toBool();
+            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, on);
+            if (on) {
+                thing->setStateValue(extendedBlindStatusStateTypeId, "Opening");
+                thing->setStateValue(extendedBlindClosingOutputStateTypeId, false);
+            } else {
+                thing->setStateValue(extendedBlindStatusStateTypeId, "Stopped");
+            }
+            info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == extendedBlindClosingOutputActionTypeId) {
+            bool on = action.param(extendedBlindClosingOutputActionClosingOutputParamTypeId).value().toBool();
+            thing->setStateValue(extendedBlindClosingOutputStateTypeId, on);
+            if (on) {
+                thing->setStateValue(extendedBlindStatusStateTypeId, "Closing");
+                thing->setStateValue(extendedBlindOpeningOutputStateTypeId, false);
+            } else {
+                thing->setStateValue(extendedBlindStatusStateTypeId, "Stopped");
+            }
+            info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == extendedBlindPercentageActionTypeId) {
+            int percentage = action.param(extendedBlindPercentageActionPercentageParamTypeId).value().toBool();
+            Q_UNUSED(percentage)
+            //TODO move to percentage
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+    } else if (thing->thingClassId() == venetianBlindThingClassId) {
+        if (action.actionTypeId() == venetianBlindOpenActionTypeId) {
+            thing->setStateValue(venetianBlindStatusStateTypeId, "Opening");
+            thing->setStateValue(venetianBlindClosingOutputStateTypeId, false);
+            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, true);
+            //TODO set moving state
+            return info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == venetianBlindStopActionTypeId) {
+            thing->setStateValue(venetianBlindStatusStateTypeId, "Stopped");
+            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, false);
+            thing->setStateValue(venetianBlindClosingOutputStateTypeId, false);
+            return info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == venetianBlindCloseActionTypeId) {
+            thing->setStateValue(venetianBlindStatusStateTypeId, "Closing");
+            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, false);
+            thing->setStateValue(venetianBlindClosingOutputStateTypeId, true);
+            return info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == venetianBlindOpeningOutputActionTypeId) {
+            bool on = action.param(venetianBlindOpeningOutputActionOpeningOutputParamTypeId).value().toBool();
+            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, on);
+            if (on) {
+                thing->setStateValue(venetianBlindStatusStateTypeId, "Opening");
+                thing->setStateValue(venetianBlindClosingOutputStateTypeId, false);
+            } else {
+                thing->setStateValue(venetianBlindStatusStateTypeId, "Stopped");
+            }
+            info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == venetianBlindClosingOutputActionTypeId) {
+            bool on = action.param(venetianBlindClosingOutputActionClosingOutputParamTypeId).value().toBool();
+            thing->setStateValue(venetianBlindClosingOutputStateTypeId, on);
+            if (on) {
+                thing->setStateValue(venetianBlindStatusStateTypeId, "Closing");
+                thing->setStateValue(venetianBlindOpeningOutputStateTypeId, false);
+            } else {
+                thing->setStateValue(venetianBlindStatusStateTypeId, "Stopped");
+            }
+            info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == venetianBlindPercentageActionTypeId) {
+            int percentage = action.param(venetianBlindPercentageActionPercentageParamTypeId).value().toInt();
+            Q_UNUSED(percentage)
+            //TODO move to percentage
+        } else if (action.actionTypeId() == venetianBlindAngleActionTypeId) {
+            int angle = action.param(venetianBlindAngleActionAngleParamTypeId).value().toInt();
+            Q_UNUSED(angle)
+            //TODO move to angle
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+    } else if (thing->thingClassId() == shutterThingClassId) {
         if (action.actionTypeId() == shutterOpenActionTypeId) {
             thing->setStateValue(shutterStatusStateTypeId, "Opening");
             thing->setStateValue(shutterClosingOutputStateTypeId, false);
@@ -201,57 +269,43 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
         }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
-    }
-
-    if (thing->thingClassId() == socketThingClassId) {
+    } else if (thing->thingClassId() == socketThingClassId) {
         if (action.actionTypeId() == socketPowerActionTypeId) {
             thing->setStateValue(socketPowerStateTypeId, action.param(socketPowerActionPowerParamTypeId).value());
             return info->finish(Thing::ThingErrorNoError);
         }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
-    }
-
-    if (thing->thingClassId() == lightThingClassId) {
+    } else if (thing->thingClassId() == lightThingClassId) {
         if (action.actionTypeId() == lightPowerActionTypeId) {
             thing->setStateValue(lightPowerStateTypeId, action.param(lightPowerActionPowerParamTypeId).value());
             return info->finish(Thing::ThingErrorNoError);
         }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
-    }
-
-    if (thing->thingClassId() == heatingThingClassId) {
+    } else if (thing->thingClassId() == heatingThingClassId) {
         if (action.actionTypeId() == heatingPowerActionTypeId) {
             thing->setStateValue(heatingPowerStateTypeId, action.param(heatingPowerActionPowerParamTypeId).value());
             return info->finish(Thing::ThingErrorNoError);
         }
         return info->finish(Thing::ThingErrorActionTypeNotFound);
-    }
-
-    if (thing->thingClassId() == powerSwitchThingClassId) {
+    } else if (thing->thingClassId() == powerSwitchThingClassId) {
         if (action.actionTypeId() == powerSwitchPowerActionTypeId) {
             thing->setStateValue(powerSwitchPowerStateTypeId, action.param(powerSwitchPowerActionPowerParamTypeId).value());
             info->finish(Thing::ThingErrorNoError);
             return;
         }
-    }
-
-    if (thing->thingClassId() == irrigationThingClassId) {
+    } else if (thing->thingClassId() == irrigationThingClassId) {
         if (action.actionTypeId() == irrigationPowerActionTypeId) {
             thing->setStateValue(irrigationPowerStateTypeId, action.param(irrigationPowerActionPowerParamTypeId).value());
             info->finish(Thing::ThingErrorNoError);
             return;
         }
-    }
-
-    if (thing->thingClassId() == ventilationThingClassId) {
+    } else if (thing->thingClassId() == ventilationThingClassId) {
         if (action.actionTypeId() == ventilationPowerActionTypeId) {
             thing->setStateValue(ventilationPowerStateTypeId, action.param(ventilationPowerActionPowerParamTypeId).value());
             info->finish(Thing::ThingErrorNoError);
             return;
         }
-    }
-
-    if (thing->thingClassId() == temperatureSensorThingClassId) {
+    } else if (thing->thingClassId() == temperatureSensorThingClassId) {
         if (action.actionTypeId() == temperatureSensorInputActionTypeId) {
             double value = info->action().param(temperatureSensorInputActionInputParamTypeId).value().toDouble();
             thing->setStateValue(temperatureSensorInputStateTypeId, value);
@@ -264,9 +318,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         }
-    }
-
-    if (thing->thingClassId() == humiditySensorThingClassId) {
+    } else if (thing->thingClassId() == humiditySensorThingClassId) {
         if (action.actionTypeId() == humiditySensorInputActionTypeId) {
             double value = info->action().param(humiditySensorInputActionInputParamTypeId).value().toDouble();
             thing->setStateValue(humiditySensorInputStateTypeId, value);
@@ -279,9 +331,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         }
-    }
-
-    if (thing->thingClassId() == moistureSensorThingClassId) {
+    } else if (thing->thingClassId() == moistureSensorThingClassId) {
         if (action.actionTypeId() == moistureSensorInputActionTypeId) {
             double value = info->action().param(moistureSensorInputActionInputParamTypeId).value().toDouble();
             thing->setStateValue(moistureSensorInputStateTypeId, value);
@@ -294,9 +344,9 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         }
+    } else {
+        Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
-
-    return info->finish(Thing::ThingErrorThingClassNotFound);
 }
 
 double IntegrationPluginGenericThings::mapDoubleValue(double value, double fromMin, double fromMax, double toMin, double toMax)
