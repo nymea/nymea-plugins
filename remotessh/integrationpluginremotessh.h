@@ -66,11 +66,6 @@ private:
 
     QProcess *startReverseSSHProcess(Thing *thing);
     QProcess *startTmateProcess(Thing *thing);
-
-private slots:
-    void processReadyRead();
-    void processStateChanged(QProcess::ProcessState state);
-    void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
 };
 
 #endif // INTEGRATIONPLUGINREMOTESSH_H

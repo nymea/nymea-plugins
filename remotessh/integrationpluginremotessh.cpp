@@ -44,15 +44,15 @@ void IntegrationPluginRemoteSsh::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     qCDebug(dcRemoteSsh()) << "Setup" << thing->name() << thing->params();
-
+    m_identityFilePath = QString("%1/.ssh/id_rsa_guh").arg(QDir::homePath());
     if (thing->thingClassId() == reverseSshThingClassId) {
-        m_identityFilePath = QString("%1/.ssh/id_rsa_guh").arg(QDir::homePath());
+
         return info->finish(Thing::ThingErrorNoError);
     } else  if (thing->thingClassId() == tmateThingClassId) {
 
         return info->finish(Thing::ThingErrorNoError);
     } else {
-          Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+        Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
 
@@ -253,46 +253,53 @@ QProcess * IntegrationPluginRemoteSsh::startReverseSSHProcess(Thing *thing)
 
 QProcess *IntegrationPluginRemoteSsh::startTmateProcess(Thing *thing)
 {
+    qCDebug(dcRemoteSsh()) << "Start tmate";
+    QProcess *process = new QProcess(this);
+    process->setProcessChannelMode(QProcess::MergedChannels);
 
-}
+    connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [process, thing, this](int exitCode, QProcess::ExitStatus exitStatus){
 
-
-void IntegrationPluginRemoteSsh::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
-{
-    Q_UNUSED(exitCode);
-    QProcess *process = static_cast<QProcess*>(sender());
-
-
-}
-
-
-void IntegrationPluginRemoteSsh::processStateChanged(QProcess::ProcessState state)
-{
-    QProcess *process = static_cast<QProcess*>(sender());
-    Thing *thing = m_reverseSSHProcess.value(process);
-
-    switch (state) {
-    case QProcess::Running:
-        thing->setStateValue(reverseSshConnectedStateTypeId, true);
-        if (m_startingProcess.contains(process)) {
-            m_startingProcess.take(process)->finish(Thing::ThingErrorNoError);
+        if(exitStatus != QProcess::NormalExit || exitCode != 0) {
+            qCWarning(dcRemoteSsh()) << "Error:" << process->readAllStandardError();
         }
-        break;
+        qCDebug(dcRemoteSsh()) << "tmate process finished";
+        thing->setStateValue(tmateConnectedStateTypeId, false);
 
-    case QProcess::NotRunning:
-        if (thing)
-            thing->setStateValue(reverseSshConnectedStateTypeId, false);
+    });
+    connect(process, &QProcess::stateChanged, this, [process, thing, this] (QProcess::ProcessState state) {
 
-        if (m_startingProcess.contains(process)) {
-            m_startingProcess.take(process)->finish(Thing::ThingErrorInvalidParameter);
+        switch (state) {
+        case QProcess::Running:
+            thing->setStateValue(tmateConnectedStateTypeId, true);
+            if (m_startingProcess.contains(process)) {
+                m_startingProcess.take(process)->finish(Thing::ThingErrorNoError);
+            }
+            break;
+
+        case QProcess::NotRunning:
+            if (thing)
+                thing->setStateValue(tmateConnectedStateTypeId, false);
+
+            if (m_startingProcess.contains(process)) {
+                m_startingProcess.take(process)->finish(Thing::ThingErrorInvalidParameter);
+            }
+
+            if (m_killingProcess.contains(process)) {
+                m_killingProcess.take(process)->finish(Thing::ThingErrorNoError);
+                m_reverseSSHProcess.remove(process);
+            }
+            break;
+        default:
+            break;
         }
 
-        if (m_killingProcess.contains(process)) {
-            m_killingProcess.take(process)->finish(Thing::ThingErrorNoError);
-            m_reverseSSHProcess.remove(process);
-        }
-        break;
-    default:
-        break;
-    }
+    });
+    connect(process, &QProcess::readyRead, this, [process, this] {
+        QByteArray data = process->readAll();
+        qCWarning(dcRemoteSsh()) << "process read" << data;
+    });
+
+    process->start(QStringLiteral("tmate -F"));
+    qCDebug(dcRemoteSsh()) << "Command:" << process->program() << process->arguments();
+    return process;
 }
