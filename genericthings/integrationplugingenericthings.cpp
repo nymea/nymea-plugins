@@ -50,24 +50,64 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
         timer->setInterval(closingTime/100); // closing timer / 100 to update on every percent
         m_extendedBlindPercentageTimer.insert(thing, timer);
         connect(timer, &QTimer::timeout, this, [thing, this] {
-            int targetPercentage = m_extendedBlindTargetPercentage.value(thing);
-            m_extendedBlindTargetPercentage.insert(thing, targetPercentage++);
             int currentPercentage = thing->stateValue(extendedBlindPercentageStateTypeId).toInt();
-            thing->setStateValue(extendedBlindPercentageStateTypeId, currentPercentage++);
-            if (targetPercentage == currentPercentage) {
-                //Stop timer
+
+            if (thing->stateValue(extendedBlindStatusStateTypeId).toString() == "Closing") {
+                thing->setStateValue(extendedBlindPercentageStateTypeId, currentPercentage++);
+                if (currentPercentage == 100) {
+                    setBlindState(BlindStateStopped, thing);
+                    qCDebug(dcGenericThings()) << "Extended blind is closed, stopping timer";
+                }
+            } else if (thing->stateValue(extendedBlindStatusStateTypeId).toString() == "Opening") {
+                thing->setStateValue(extendedBlindPercentageStateTypeId, currentPercentage--);
+                if (currentPercentage == 0) {
+                    setBlindState(BlindStateStopped, thing);
+                    qCDebug(dcGenericThings()) << "Extended blind is opened, stopping timer";
+                }
+            } else {
                 setBlindState(BlindStateStopped, thing);
             }
-            if (BlindStateOpening) {
 
-            } else if (BlindStateClosing) {
-
-            } else {
-
+            if (m_extendedBlindPercentageTimer.contains(thing)) {
+                int targetPercentage = m_extendedBlindTargetPercentage.value(thing);
+                if (targetPercentage == currentPercentage) {
+                    qCDebug(dcGenericThings()) << "Extended blind has reached target percentage, stopping timer";
+                    setBlindState(BlindStateStopped, thing);
+                }
             }
         });
     } else if (info->thing()->thingClassId() == venetianBlindThingClassId) {
+        int closingTime = thing->paramValue(venetianBlindThingClosingTimeParamTypeId).toInt();
+        QTimer* timer = new QTimer(this);
+        timer->setInterval(closingTime/100); // closing timer / 100 to update on every percent
+        m_extendedBlindPercentageTimer.insert(thing, timer);
+        connect(timer, &QTimer::timeout, this, [thing, this] {
+            int currentPercentage = thing->stateValue(venetianBlindPercentageStateTypeId).toInt();
 
+            if (thing->stateValue(venetianBlindStatusStateTypeId).toString() == "Closing") {
+                thing->setStateValue(venetianBlindPercentageStateTypeId, currentPercentage++);
+                if (currentPercentage == 100) {
+                    setBlindState(BlindStateStopped, thing);
+                    qCDebug(dcGenericThings()) << "Venetian blind is closed, stopping timer";
+                }
+            } else if (thing->stateValue(venetianBlindStatusStateTypeId).toString() == "Opening") {
+                thing->setStateValue(venetianBlindPercentageStateTypeId, currentPercentage--);
+                if (currentPercentage == 0) {
+                    setBlindState(BlindStateStopped, thing);
+                    qCDebug(dcGenericThings()) << "Venetian blind is opened, stopping timer";
+                }
+            } else {
+                setBlindState(BlindStateStopped, thing);
+            }
+
+            if (m_extendedBlindPercentageTimer.contains(thing)) {
+                int targetPercentage = m_extendedBlindTargetPercentage.value(thing);
+                if (targetPercentage == currentPercentage) {
+                    qCDebug(dcGenericThings()) << "Venetian blind has reached target percentage, stopping timer";
+                    setBlindState(BlindStateStopped, thing);
+                }
+            }
+        });
     }
 }
 
@@ -358,8 +398,8 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
 void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
 {
     if (thing->thingClassId() == extendedBlindThingClassId) {
-         m_extendedBlindPercentageTimer.take(thing)->deleteLater();
-         m_extendedBlindTargetPercentage.remove(thing);
+        m_extendedBlindPercentageTimer.take(thing)->deleteLater();
+        m_extendedBlindTargetPercentage.remove(thing);
     } else if (thing->thingClassId() == venetianBlindThingClassId) {
         m_extendedBlindPercentageTimer.take(thing)->deleteLater();
         m_extendedBlindTargetPercentage.remove(thing);
@@ -477,17 +517,30 @@ void IntegrationPluginGenericThings::moveBlindToPercentage(Action action, Thing 
     } else if (thing->thingClassId() == venetianBlindThingClassId) {
         int targetPercentage = action.param(venetianBlindPercentageActionPercentageParamTypeId).value().toBool();
         int currentPercentage = thing->stateValue(venetianBlindPercentageStateTypeId).toInt();
+        // 100% indicates the device is fully closed
         if (targetPercentage == currentPercentage) {
-
+            //Nothing to do
         } else if (targetPercentage > currentPercentage) {
-
+            setBlindState(BlindStateClosing, thing);
+            m_extendedBlindTargetPercentage.insert(thing, targetPercentage);
+            m_extendedBlindPercentageTimer.value(thing)->start();
         } else if (targetPercentage < currentPercentage) {
-
+            setBlindState(BlindStateOpening, thing);
+            m_extendedBlindTargetPercentage.insert(thing, targetPercentage);
+            m_extendedBlindPercentageTimer.value(thing)->start();
+        } else {
+            setBlindState(BlindStateStopped, thing);
         }
     }
 }
 
 void IntegrationPluginGenericThings::moveBlindToAngle(Action action, Thing *thing)
 {
+    Q_UNUSED(action)
+    Q_UNUSED(thing)
+    if (thing->thingClassId() == venetianBlindThingClassId) {
+        if (action.actionTypeId() == venetianBlindAngleActionTypeId) {
 
+        }
+    }
 }
