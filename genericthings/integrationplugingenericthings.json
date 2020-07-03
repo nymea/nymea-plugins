@@ -135,7 +135,16 @@
                     "name": "extendedBlind",
                     "displayName": "Generic extended blind",
                     "createMethods": ["user"],
-                    "interfaces": ["blind"],
+                    "interfaces": ["extendedblind"],
+                    "paramTypes": [
+                        {
+                            "id": "27a95b8d-7f97-441b-a3be-0646c517cb06",
+                            "name": "closingTime",
+                            "displayName": "Closing time [MilliSecond]",
+                            "type": "int",
+                            "defaultValue": 0
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "e559f077-e904-4bbc-8ec3-344b814d2eab",
@@ -216,7 +225,23 @@
                     "name": "venetianBlind",
                     "displayName": "Venetian blind",
                     "createMethods": ["user"],
-                    "interfaces": ["blind"],
+                    "interfaces": ["venetianblind"],
+                    "paramTypes": [
+                        {
+                            "id": "4c0bf07d-aaab-4f67-af65-00ceaefbaa84",
+                            "name": "closingTime",
+                            "displayName": "Closing time [MilliSecond]",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "6c8340bf-7fd3-43e3-a75b-dfa2f6426e11",
+                            "name": "angleTime",
+                            "displayName": "Angle end to end time [MilliSecond]",
+                            "type": "int",
+                            "defaultValue": 0
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "6041dacf-5303-4dc0-ba3c-7ecaa438f2dd",

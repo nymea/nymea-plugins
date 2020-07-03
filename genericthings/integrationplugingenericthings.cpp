@@ -1,8 +1,9 @@
-﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+﻿/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
 *
 * Copyright 2013 - 2020, nymea GmbH
 * Contact: contact@nymea.io
-*
+
 * This file is part of nymea.
 * This project including source code and documentation is protected by
 * copyright law, and remains the property of nymea GmbH. All rights, including
@@ -42,6 +43,32 @@ IntegrationPluginGenericThings::IntegrationPluginGenericThings()
 void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
 {
     info->finish(Thing::ThingErrorNoError);
+    Thing *thing = info->thing();
+    if (thing->thingClassId() == extendedBlindThingClassId) {
+        int closingTime = thing->paramValue(extendedBlindThingClosingTimeParamTypeId).toInt();
+        QTimer* timer = new QTimer(this);
+        timer->setInterval(closingTime/100); // closing timer / 100 to update on every percent
+        m_extendedBlindPercentageTimer.insert(thing, timer);
+        connect(timer, &QTimer::timeout, this, [thing, this] {
+            int targetPercentage = m_extendedBlindTargetPercentage.value(thing);
+            m_extendedBlindTargetPercentage.insert(thing, targetPercentage++);
+            int currentPercentage = thing->stateValue(extendedBlindPercentageStateTypeId).toInt();
+            thing->setStateValue(extendedBlindPercentageStateTypeId, currentPercentage++);
+            if (targetPercentage == currentPercentage) {
+                //Stop timer
+                setBlindState(BlindStateStopped, thing);
+            }
+            if (BlindStateOpening) {
+
+            } else if (BlindStateClosing) {
+
+            } else {
+
+            }
+        });
+    } else if (info->thing()->thingClassId() == venetianBlindThingClassId) {
+
+    }
 }
 
 void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
@@ -136,94 +163,73 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         return info->finish(Thing::ThingErrorActionTypeNotFound);
 
     } else if (thing->thingClassId() == extendedBlindThingClassId) {
+
         if (action.actionTypeId() == extendedBlindOpenActionTypeId) {
-            thing->setStateValue(extendedBlindStatusStateTypeId, "Opening");
-            thing->setStateValue(extendedBlindClosingOutputStateTypeId, false);
-            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, true);
-            //TODO set moving state
+            setBlindState(BlindStateOpening, thing);
             return info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == extendedBlindStopActionTypeId) {
-            thing->setStateValue(extendedBlindStatusStateTypeId, "Stopped");
-            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, false);
-            thing->setStateValue(extendedBlindClosingOutputStateTypeId, false);
+            setBlindState(BlindStateStopped, thing);
             return info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == extendedBlindCloseActionTypeId) {
-            thing->setStateValue(extendedBlindStatusStateTypeId, "Closing");
-            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, false);
-            thing->setStateValue(extendedBlindClosingOutputStateTypeId, true);
+            setBlindState(BlindStateClosing, thing);
             return info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == extendedBlindOpeningOutputActionTypeId) {
             bool on = action.param(extendedBlindOpeningOutputActionOpeningOutputParamTypeId).value().toBool();
             thing->setStateValue(extendedBlindOpeningOutputStateTypeId, on);
             if (on) {
-                thing->setStateValue(extendedBlindStatusStateTypeId, "Opening");
-                thing->setStateValue(extendedBlindClosingOutputStateTypeId, false);
+                setBlindState(BlindStateOpening, thing);
             } else {
-                thing->setStateValue(extendedBlindStatusStateTypeId, "Stopped");
+                setBlindState(BlindStateStopped, thing);
             }
             info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == extendedBlindClosingOutputActionTypeId) {
             bool on = action.param(extendedBlindClosingOutputActionClosingOutputParamTypeId).value().toBool();
             thing->setStateValue(extendedBlindClosingOutputStateTypeId, on);
             if (on) {
-                thing->setStateValue(extendedBlindStatusStateTypeId, "Closing");
-                thing->setStateValue(extendedBlindOpeningOutputStateTypeId, false);
+                setBlindState(BlindStateClosing, thing);
             } else {
-                thing->setStateValue(extendedBlindStatusStateTypeId, "Stopped");
+                setBlindState(BlindStateStopped, thing);
             }
             info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == extendedBlindPercentageActionTypeId) {
-            int percentage = action.param(extendedBlindPercentageActionPercentageParamTypeId).value().toBool();
-            Q_UNUSED(percentage)
-            //TODO move to percentage
+            moveBlindToPercentage(action, thing);
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == venetianBlindThingClassId) {
         if (action.actionTypeId() == venetianBlindOpenActionTypeId) {
-            thing->setStateValue(venetianBlindStatusStateTypeId, "Opening");
-            thing->setStateValue(venetianBlindClosingOutputStateTypeId, false);
-            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, true);
-            //TODO set moving state
+            setBlindState(BlindStateOpening, thing);
             return info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == venetianBlindStopActionTypeId) {
-            thing->setStateValue(venetianBlindStatusStateTypeId, "Stopped");
-            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, false);
-            thing->setStateValue(venetianBlindClosingOutputStateTypeId, false);
+            setBlindState(BlindStateStopped, thing);
             return info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == venetianBlindCloseActionTypeId) {
-            thing->setStateValue(venetianBlindStatusStateTypeId, "Closing");
-            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, false);
-            thing->setStateValue(venetianBlindClosingOutputStateTypeId, true);
+            setBlindState(BlindStateClosing, thing);
             return info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == venetianBlindOpeningOutputActionTypeId) {
             bool on = action.param(venetianBlindOpeningOutputActionOpeningOutputParamTypeId).value().toBool();
             thing->setStateValue(venetianBlindOpeningOutputStateTypeId, on);
             if (on) {
-                thing->setStateValue(venetianBlindStatusStateTypeId, "Opening");
-                thing->setStateValue(venetianBlindClosingOutputStateTypeId, false);
+                setBlindState(BlindStateOpening, thing);
             } else {
-                thing->setStateValue(venetianBlindStatusStateTypeId, "Stopped");
+                setBlindState(BlindStateStopped, thing);
             }
             info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == venetianBlindClosingOutputActionTypeId) {
             bool on = action.param(venetianBlindClosingOutputActionClosingOutputParamTypeId).value().toBool();
             thing->setStateValue(venetianBlindClosingOutputStateTypeId, on);
             if (on) {
-                thing->setStateValue(venetianBlindStatusStateTypeId, "Closing");
-                thing->setStateValue(venetianBlindOpeningOutputStateTypeId, false);
+                setBlindState(BlindStateClosing, thing);
             } else {
-                thing->setStateValue(venetianBlindStatusStateTypeId, "Stopped");
+                setBlindState(BlindStateStopped, thing);
             }
             info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == venetianBlindPercentageActionTypeId) {
-            int percentage = action.param(venetianBlindPercentageActionPercentageParamTypeId).value().toInt();
-            Q_UNUSED(percentage)
-            //TODO move to percentage
+            moveBlindToPercentage(action, thing);
+            info->finish(Thing::ThingErrorNoError);
         } else if (action.actionTypeId() == venetianBlindAngleActionTypeId) {
-            int angle = action.param(venetianBlindAngleActionAngleParamTypeId).value().toInt();
-            Q_UNUSED(angle)
-            //TODO move to angle
+            moveBlindToAngle(action, thing);
+            info->finish(Thing::ThingErrorNoError);
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
@@ -349,9 +355,139 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
     }
 }
 
+void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
+{
+    if (thing->thingClassId() == extendedBlindThingClassId) {
+         m_extendedBlindPercentageTimer.take(thing)->deleteLater();
+         m_extendedBlindTargetPercentage.remove(thing);
+    } else if (thing->thingClassId() == venetianBlindThingClassId) {
+        m_extendedBlindPercentageTimer.take(thing)->deleteLater();
+        m_extendedBlindTargetPercentage.remove(thing);
+        m_venetianBlindAngleTimer.take(thing)->deleteLater();
+    }
+}
+
 double IntegrationPluginGenericThings::mapDoubleValue(double value, double fromMin, double fromMax, double toMin, double toMax)
 {
     double percent = (value - fromMin) / (fromMax - fromMin);
     double toValue = toMin + (toMax - toMin) * percent;
     return toValue;
+}
+
+void IntegrationPluginGenericThings::setBlindState(IntegrationPluginGenericThings::BlindState state, Thing *thing)
+{
+    //If an ongoing "to percentage" actions is beeing executed, it is now overruled by another action
+    m_extendedBlindPercentageTimer.value(thing)->stop();
+    m_extendedBlindTargetPercentage.remove(thing);
+
+    if (thing->thingClassId() == extendedBlindThingClassId) {
+        switch (state) {
+        case BlindStateOpening:
+            thing->setStateValue(extendedBlindStatusStateTypeId, "Opening");
+            thing->setStateValue(extendedBlindClosingOutputStateTypeId, false);
+            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, true);
+            thing->setStateValue(extendedBlindMovingStateTypeId, true);
+            break;
+        case BlindStateClosing:
+            thing->setStateValue(extendedBlindStatusStateTypeId, "Closing");
+            thing->setStateValue(extendedBlindClosingOutputStateTypeId, true);
+            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, false);
+            thing->setStateValue(extendedBlindMovingStateTypeId, true);
+            break;
+        case BlindStateStopped:
+            thing->setStateValue(extendedBlindStatusStateTypeId, "Stopped");
+            thing->setStateValue(extendedBlindClosingOutputStateTypeId, false);
+            thing->setStateValue(extendedBlindOpeningOutputStateTypeId, false);
+            thing->setStateValue(extendedBlindMovingStateTypeId, false);
+            break;
+        }
+    } else if (thing->thingClassId() == venetianBlindThingClassId) {
+        switch (state) {
+        case BlindStateOpening:
+            thing->setStateValue(venetianBlindStatusStateTypeId, "Opening");
+            thing->setStateValue(venetianBlindClosingOutputStateTypeId, false);
+            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, true);
+            thing->setStateValue(venetianBlindMovingStateTypeId, true);
+            break;
+        case BlindStateClosing:
+            thing->setStateValue(venetianBlindStatusStateTypeId, "Closing");
+            thing->setStateValue(venetianBlindClosingOutputStateTypeId, true);
+            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, false);
+            thing->setStateValue(venetianBlindMovingStateTypeId, true);
+            break;
+        case BlindStateStopped:
+            thing->setStateValue(venetianBlindStatusStateTypeId, "Stopped");
+            thing->setStateValue(venetianBlindClosingOutputStateTypeId, false);
+            thing->setStateValue(venetianBlindOpeningOutputStateTypeId, false);
+            thing->setStateValue(venetianBlindMovingStateTypeId, false);
+            break;
+        }
+    }
+}
+
+void IntegrationPluginGenericThings::setBlindMovingState(Action action, Thing *thing)
+{
+    if (thing->thingClassId() == extendedBlindThingClassId) {
+        int percentage = thing->stateValue(extendedBlindPercentageStateTypeId).toInt();
+        if (action.actionTypeId() == extendedBlindOpenActionTypeId) {
+            if (percentage != 100) {
+                setBlindState(BlindStateOpening, thing);
+            } else {
+                // Blind already open
+                setBlindState(BlindStateStopped, thing);
+            }
+        } else if (action.actionTypeId() == extendedBlindStopActionTypeId) {
+            setBlindState(BlindStateStopped, thing);
+            thing->setStateValue(extendedBlindMovingStateTypeId, false);
+
+        } else if (action.actionTypeId() == extendedBlindCloseActionTypeId) {
+            if (percentage != 0) {
+                setBlindState(BlindStateClosing, thing);
+            } else {
+                // Blind already closed
+                setBlindState(BlindStateStopped, thing);
+                thing->setStateValue(extendedBlindMovingStateTypeId, false);
+            }
+        }
+
+    } else if (thing->thingClassId() == venetianBlindThingClassId) {
+
+    }
+}
+
+void IntegrationPluginGenericThings::moveBlindToPercentage(Action action, Thing *thing)
+{
+    if (thing->thingClassId() == extendedBlindThingClassId) {
+        int targetPercentage = action.param(extendedBlindPercentageActionPercentageParamTypeId).value().toBool();
+        int currentPercentage = thing->stateValue(extendedBlindPercentageStateTypeId).toInt();
+        // 100% indicates the device is fully closed
+        if (targetPercentage == currentPercentage) {
+            //Nothing to do
+        } else if (targetPercentage > currentPercentage) {
+            setBlindState(BlindStateClosing, thing);
+            m_extendedBlindTargetPercentage.insert(thing, targetPercentage);
+            m_extendedBlindPercentageTimer.value(thing)->start();
+        } else if (targetPercentage < currentPercentage) {
+            setBlindState(BlindStateOpening, thing);
+            m_extendedBlindTargetPercentage.insert(thing, targetPercentage);
+            m_extendedBlindPercentageTimer.value(thing)->start();
+        } else {
+            setBlindState(BlindStateStopped, thing);
+        }
+    } else if (thing->thingClassId() == venetianBlindThingClassId) {
+        int targetPercentage = action.param(venetianBlindPercentageActionPercentageParamTypeId).value().toBool();
+        int currentPercentage = thing->stateValue(venetianBlindPercentageStateTypeId).toInt();
+        if (targetPercentage == currentPercentage) {
+
+        } else if (targetPercentage > currentPercentage) {
+
+        } else if (targetPercentage < currentPercentage) {
+
+        }
+    }
+}
+
+void IntegrationPluginGenericThings::moveBlindToAngle(Action action, Thing *thing)
+{
+
 }
