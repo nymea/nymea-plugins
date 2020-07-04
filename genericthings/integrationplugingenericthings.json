@@ -199,6 +199,7 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 0,
+                            "unit": "Percentage",
                             "writable": true
                         }
                     ],
@@ -296,6 +297,7 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 0,
+                            "unit": "Percentage",
                             "writable": true
                         },
                         {
@@ -306,8 +308,8 @@
                             "displayNameAction": "Set angle",
                             "type": "int",
                             "unit": "Degree",
-                            "minValue": "any",
-                            "maxValue": "any",
+                            "minValue": -90,
+                            "maxValue": 90,
                             "defaultValue": 0,
                             "writable": true
                         }

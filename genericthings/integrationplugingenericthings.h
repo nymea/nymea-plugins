@@ -52,7 +52,8 @@ private:
 
     QHash<Thing *, QTimer *> m_extendedBlindPercentageTimer;
     QHash<Thing *, QTimer *> m_venetianBlindAngleTimer;
-    QHash<Thing *, int> m_extendedBlindTargetPercentage;
+    QHash<Thing *, uint> m_extendedBlindTargetPercentage;
+    QHash<Thing *, int> m_venetianBlindTargetAngle;
 
     enum BlindState {
         BlindStateOpening,
@@ -60,7 +61,6 @@ private:
         BlindStateStopped
     };
     void setBlindState(BlindState state, Thing *thing);
-    void setBlindMovingState(Action action, Thing *thing);
     void moveBlindToPercentage(Action action, Thing *thing);
     void moveBlindToAngle(Action action, Thing *thing);
 };
