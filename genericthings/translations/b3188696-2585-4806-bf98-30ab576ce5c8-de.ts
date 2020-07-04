@@ -10,7 +10,7 @@
 The name of the ParamType (ThingClass: humiditySensor, Type: settings, ID: {38064841-6121-4862-a639-08fb0b778511})
 ----------
 The name of the ParamType (ThingClass: temperatureSensor, Type: settings, ID: {3b543c3a-1fc0-45b5-8c07-600a6045f82e})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Genauigkeit</translation>
     </message>
     <message>
         <source>Angle</source>
@@ -19,17 +19,17 @@ The name of the ParamType (ThingClass: temperatureSensor, Type: settings, ID: {3
 The name of the ParamType (ThingClass: venetianBlind, EventType: angle, ID: {fcb700c4-5da8-4385-85b0-6616e807974e})
 ----------
 The name of the StateType ({fcb700c4-5da8-4385-85b0-6616e807974e}) of ThingClass venetianBlind</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Winkel</translation>
     </message>
     <message>
         <source>Angle changed</source>
         <extracomment>The name of the EventType ({fcb700c4-5da8-4385-85b0-6616e807974e}) of ThingClass venetianBlind</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Winkel geändert</translation>
     </message>
     <message>
         <source>Angle end to end time [MilliSecond]</source>
         <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: thing, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>End- zu Endwinkelzeit</translation>
     </message>
     <message>
         <source>Close</source>
@@ -42,7 +42,7 @@ The name of the ActionType ({97d6351d-7440-47f3-bdba-a31bb15368ac}) of ThingClas
 The name of the ActionType ({86e9cf21-7487-47c4-b4be-4a940d7235fb}) of ThingClass blind
 ----------
 The name of the ActionType ({53b5ba77-9a34-4cd6-ad24-fb01fc465f98}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <source>Closing output</source>
@@ -75,7 +75,7 @@ The name of the ParamType (ThingClass: awning, ActionType: closingOutput, ID: {5
 The name of the ParamType (ThingClass: awning, EventType: closingOutput, ID: {59bfd575-709f-4e43-9726-de26e6d4ca8b})
 ----------
 The name of the StateType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ausgang Schließen</translation>
     </message>
     <message>
         <source>Closing output changed</source>
@@ -88,96 +88,96 @@ The name of the EventType ({1a4a5839-a30d-4239-a124-63bfdc74a8f6}) of ThingClass
 The name of the EventType ({9b673430-572d-4a9c-85d3-dafadbe541cd}) of ThingClass blind
 ----------
 The name of the EventType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ausgang Schließen geändert</translation>
     </message>
     <message>
         <source>Closing time [MilliSecond]</source>
         <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: thing, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
 ----------
 The name of the ParamType (ThingClass: extendedBlind, Type: thing, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Schließdauer [Millisekunden]</translation>
     </message>
     <message>
         <source>Generic Things</source>
         <extracomment>The name of the plugin GenericThings ({b3188696-2585-4806-bf98-30ab576ce5c8})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generische Dinge</translation>
     </message>
     <message>
         <source>Generic awning</source>
         <extracomment>The name of the ThingClass ({9e69585f-90ba-44e4-ad90-5b4bffbe345a})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generische Markise</translation>
     </message>
     <message>
         <source>Generic blind</source>
         <extracomment>The name of the ThingClass ({17ee3657-6ad8-4ae2-8959-3cf66cec8d13})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generische Beschattung</translation>
     </message>
     <message>
         <source>Generic extended blind</source>
         <extracomment>The name of the ThingClass ({40aa9f3c-a23c-4f7f-8786-fcf3554f3e19})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generische erweiterte Beschattung</translation>
     </message>
     <message>
         <source>Generic heating</source>
         <extracomment>The name of the ThingClass ({392854c4-3d14-4cf8-96cd-d933526bd197})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generische Heizung</translation>
     </message>
     <message>
         <source>Generic humidity sensor</source>
         <extracomment>The name of the ThingClass ({d295bc64-773c-42a9-83e2-80db5fa0d1ce})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generischer Luftfeuchtigkeitssensor</translation>
     </message>
     <message>
         <source>Generic irrigation</source>
         <extracomment>The name of the ThingClass ({d013b980-20d5-4791-9c4f-b411c39241d7})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generische Bewässerung</translation>
     </message>
     <message>
         <source>Generic light</source>
         <extracomment>The name of the ThingClass ({c50d3216-f307-4f9f-8190-4391510c385c})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generisches Licht</translation>
     </message>
     <message>
         <source>Generic power socket</source>
         <extracomment>The name of the ThingClass ({4e7261af-a27b-4446-8346-914ea59f7547})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generische Steckdose</translation>
     </message>
     <message>
         <source>Generic power switch</source>
         <extracomment>The name of the ThingClass ({57daa147-dd6f-4673-a757-d8f01a2054c7})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generischer Schalter</translation>
     </message>
     <message>
         <source>Generic shutter</source>
         <extracomment>The name of the ThingClass ({7917c2e7-d7d2-4c47-a38d-41f7dd7693d9})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gnerische Rollos</translation>
     </message>
     <message>
         <source>Generic soil moisture sensor</source>
         <extracomment>The name of the ThingClass ({33e610cf-ff30-481b-9f0b-d6857bcd41a5})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gnerischer Erdbodenfeuchtesensor</translation>
     </message>
     <message>
         <source>Generic temperature sensor</source>
         <extracomment>The name of the ThingClass ({cf3d65db-6f68-457b-968c-cfb66cbd5311})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Gnerischer Temperaturesensor</translation>
     </message>
     <message>
         <source>Generic ventilation</source>
         <extracomment>The name of the ThingClass ({24af8dd3-ddf0-47f0-bf09-70fdfd8dceab})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generische Lüftung</translation>
     </message>
     <message>
         <source>Humidity</source>
         <extracomment>The name of the ParamType (ThingClass: humiditySensor, EventType: humidity, ID: {925225d9-2965-444a-9c42-63c2873700fb})
 ----------
 The name of the StateType ({925225d9-2965-444a-9c42-63c2873700fb}) of ThingClass humiditySensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Luftfeuchte</translation>
     </message>
     <message>
         <source>Humidity changed</source>
         <extracomment>The name of the EventType ({925225d9-2965-444a-9c42-63c2873700fb}) of ThingClass humiditySensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Luftfeuchte geändert</translation>
     </message>
     <message>
         <source>Input value</source>
@@ -198,7 +198,7 @@ The name of the ParamType (ThingClass: temperatureSensor, ActionType: input, ID:
 The name of the ParamType (ThingClass: temperatureSensor, EventType: input, ID: {fed37466-1264-4ac1-84fd-aff3a1f7ff04})
 ----------
 The name of the StateType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingangswert</translation>
     </message>
     <message>
         <source>Input value changed</source>
@@ -207,37 +207,37 @@ The name of the StateType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass
 The name of the EventType ({a8223e65-e704-4f84-9bbe-d8fc42597047}) of ThingClass humiditySensor
 ----------
 The name of the EventType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingangswert geändert</translation>
     </message>
     <message>
         <source>Maximum humidity</source>
         <extracomment>The name of the ParamType (ThingClass: humiditySensor, Type: settings, ID: {10afc387-68d1-47ea-a816-0d1acad47b3c})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Luftfeuchte</translation>
     </message>
     <message>
         <source>Maximum moisture</source>
         <extracomment>The name of the ParamType (ThingClass: moistureSensor, Type: settings, ID: {3426817d-065e-4cfc-aa21-bb434de684d6})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Erdbodenfeuchte</translation>
     </message>
     <message>
         <source>Maximum temperature</source>
         <extracomment>The name of the ParamType (ThingClass: temperatureSensor, Type: settings, ID: {8b5947ab-127f-4995-853b-eeeb628811e3})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Temperatur</translation>
     </message>
     <message>
         <source>Minimum humidity</source>
         <extracomment>The name of the ParamType (ThingClass: humiditySensor, Type: settings, ID: {0218ffa9-3d49-4b25-a59f-c8831f190432})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Minimale Luftfeuchtigkeit</translation>
     </message>
     <message>
         <source>Minimum moisture</source>
         <extracomment>The name of the ParamType (ThingClass: moistureSensor, Type: settings, ID: {32153786-f1ae-4aa4-a84c-b9054102eb92})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Minimale Erdbodenfeuchte</translation>
     </message>
     <message>
         <source>Minimum temperature</source>
         <extracomment>The name of the ParamType (ThingClass: temperatureSensor, Type: settings, ID: {c86ae5d3-9335-4b6e-8231-bf3ed6670dff})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Minimale Temperatur</translation>
     </message>
     <message>
         <source>Moving</source>
@@ -248,14 +248,14 @@ The name of the StateType ({6234c07e-4200-4f2c-8cbd-bff24c38c243}) of ThingClass
 The name of the ParamType (ThingClass: extendedBlind, EventType: moving, ID: {941d1e1f-8dd7-4493-812f-6cefefd88c2e})
 ----------
 The name of the StateType ({941d1e1f-8dd7-4493-812f-6cefefd88c2e}) of ThingClass extendedBlind</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bewegung</translation>
     </message>
     <message>
         <source>Moving changed</source>
         <extracomment>The name of the EventType ({6234c07e-4200-4f2c-8cbd-bff24c38c243}) of ThingClass venetianBlind
 ----------
 The name of the EventType ({941d1e1f-8dd7-4493-812f-6cefefd88c2e}) of ThingClass extendedBlind</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bewegung geändert</translation>
     </message>
     <message>
         <source>Open</source>
@@ -268,7 +268,7 @@ The name of the ActionType ({5a7599fa-8351-4ed6-9b98-fa2f3be54304}) of ThingClas
 The name of the ActionType ({120dc265-dbbb-4f19-9d31-c372c23479c0}) of ThingClass blind
 ----------
 The name of the ActionType ({979e9c51-5a93-4635-85e3-01874306b229}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Opening output</source>
@@ -301,7 +301,7 @@ The name of the ParamType (ThingClass: awning, ActionType: openingOutput, ID: {4
 The name of the ParamType (ThingClass: awning, EventType: openingOutput, ID: {4bb951a4-ea23-4cf0-9269-41d2c4eaf5a4})
 ----------
 The name of the StateType ({4bb951a4-ea23-4cf0-9269-41d2c4eaf5a4}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Öffungsausgang geändert</translation>
     </message>
     <message>
         <source>Opening output changed</source>
@@ -314,7 +314,7 @@ The name of the EventType ({e559f077-e904-4bbc-8ec3-344b814d2eab}) of ThingClass
 The name of the EventType ({b2dbf25c-27e5-4f7e-a57d-2ef6d087fa2b}) of ThingClass blind
 ----------
 The name of the EventType ({4bb951a4-ea23-4cf0-9269-41d2c4eaf5a4}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Öffnungsausgang geändert</translation>
     </message>
     <message>
         <source>Percentage</source>
@@ -329,14 +329,14 @@ The name of the ParamType (ThingClass: extendedBlind, ActionType: percentage, ID
 The name of the ParamType (ThingClass: extendedBlind, EventType: percentage, ID: {181df603-d45f-4d3d-a358-97aa3e4ac0bd})
 ----------
 The name of the StateType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClass extendedBlind</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Prozent</translation>
     </message>
     <message>
         <source>Percentage changed</source>
         <extracomment>The name of the EventType ({33dc8019-336d-4d50-8d60-dff8508338ca}) of ThingClass venetianBlind
 ----------
 The name of the EventType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClass extendedBlind</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Prozent geändert</translation>
     </message>
     <message>
         <source>Power</source>
@@ -375,7 +375,7 @@ The name of the ParamType (ThingClass: socket, ActionType: power, ID: {018038d7-
 The name of the ParamType (ThingClass: socket, EventType: power, ID: {018038d7-1d02-4b17-8fe3-babca044b087})
 ----------
 The name of the StateType ({018038d7-1d02-4b17-8fe3-babca044b087}) of ThingClass socket</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeschalten</translation>
     </message>
     <message>
         <source>Power changed</source>
@@ -384,22 +384,22 @@ The name of the StateType ({018038d7-1d02-4b17-8fe3-babca044b087}) of ThingClass
 The name of the EventType ({8b6e4a67-6522-408b-b676-8d2f09ed2d54}) of ThingClass light
 ----------
 The name of the EventType ({018038d7-1d02-4b17-8fe3-babca044b087}) of ThingClass socket</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeschalten geändert</translation>
     </message>
     <message>
         <source>Power on/off</source>
         <extracomment>The name of the ActionType ({08087af6-6a3b-4e4a-ac6d-56f23ce63edf}) of ThingClass powerSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeschalten Ein/Aus</translation>
     </message>
     <message>
         <source>Powered on/off</source>
         <extracomment>The name of the EventType ({08087af6-6a3b-4e4a-ac6d-56f23ce63edf}) of ThingClass powerSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeschalten Ein/Aus</translation>
     </message>
     <message>
         <source>Set angle</source>
         <extracomment>The name of the ActionType ({fcb700c4-5da8-4385-85b0-6616e807974e}) of ThingClass venetianBlind</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setzte Winkel</translation>
     </message>
     <message>
         <source>Set closing output</source>
@@ -412,7 +412,7 @@ The name of the ActionType ({1a4a5839-a30d-4239-a124-63bfdc74a8f6}) of ThingClas
 The name of the ActionType ({9b673430-572d-4a9c-85d3-dafadbe541cd}) of ThingClass blind
 ----------
 The name of the ActionType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Schließausgang</translation>
     </message>
     <message>
         <source>Set input value</source>
@@ -421,7 +421,7 @@ The name of the ActionType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClas
 The name of the ActionType ({a8223e65-e704-4f84-9bbe-d8fc42597047}) of ThingClass humiditySensor
 ----------
 The name of the ActionType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Eingangswert</translation>
     </message>
     <message>
         <source>Set opening output</source>
@@ -434,14 +434,14 @@ The name of the ActionType ({e559f077-e904-4bbc-8ec3-344b814d2eab}) of ThingClas
 The name of the ActionType ({b2dbf25c-27e5-4f7e-a57d-2ef6d087fa2b}) of ThingClass blind
 ----------
 The name of the ActionType ({4bb951a4-ea23-4cf0-9269-41d2c4eaf5a4}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Öffnungsausgang</translation>
     </message>
     <message>
         <source>Set percentage</source>
         <extracomment>The name of the ActionType ({33dc8019-336d-4d50-8d60-dff8508338ca}) of ThingClass venetianBlind
 ----------
 The name of the ActionType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClass extendedBlind</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Prozent</translation>
     </message>
     <message>
         <source>Set power</source>
@@ -450,19 +450,19 @@ The name of the ActionType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClas
 The name of the ActionType ({8b6e4a67-6522-408b-b676-8d2f09ed2d54}) of ThingClass light
 ----------
 The name of the ActionType ({018038d7-1d02-4b17-8fe3-babca044b087}) of ThingClass socket</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Eingeschalten</translation>
     </message>
     <message>
         <source>Soil moisture</source>
         <extracomment>The name of the ParamType (ThingClass: moistureSensor, EventType: moisture, ID: {7a62e1d2-92f2-424c-876c-870478a4b2bd})
 ----------
 The name of the StateType ({7a62e1d2-92f2-424c-876c-870478a4b2bd}) of ThingClass moistureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Erdbodenfeuchte</translation>
     </message>
     <message>
         <source>Soil moisture changed</source>
         <extracomment>The name of the EventType ({7a62e1d2-92f2-424c-876c-870478a4b2bd}) of ThingClass moistureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Erdbodenfeuchte geändert</translation>
     </message>
     <message>
         <source>Status</source>
@@ -485,7 +485,7 @@ The name of the StateType ({5fdec1e0-51f6-48b9-b743-ba572504b2c1}) of ThingClass
 The name of the ParamType (ThingClass: awning, EventType: status, ID: {ff6f2565-2a2e-4d34-b10f-d3f73b676399})
 ----------
 The name of the StateType ({ff6f2565-2a2e-4d34-b10f-d3f73b676399}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Status</translation>
     </message>
     <message>
         <source>Status changed</source>
@@ -498,7 +498,7 @@ The name of the EventType ({c2354d7e-198a-43ae-aa5f-c6710010c7e1}) of ThingClass
 The name of the EventType ({5fdec1e0-51f6-48b9-b743-ba572504b2c1}) of ThingClass blind
 ----------
 The name of the EventType ({ff6f2565-2a2e-4d34-b10f-d3f73b676399}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Status geändert</translation>
     </message>
     <message>
         <source>Stop</source>
@@ -511,43 +511,43 @@ The name of the ActionType ({ab67e4bf-c7b6-489b-9b49-3e0a1c7d33ca}) of ThingClas
 The name of the ActionType ({1a924c9a-5dcb-4b1c-8fd6-ab101098e007}) of ThingClass blind
 ----------
 The name of the ActionType ({555cafe4-bd12-42c6-bab1-8cd59af6468e}) of ThingClass awning</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <source>Temperature</source>
         <extracomment>The name of the ParamType (ThingClass: temperatureSensor, EventType: temperature, ID: {d0b6c4be-339e-4b0f-a234-0611b7565395})
 ----------
 The name of the StateType ({d0b6c4be-339e-4b0f-a234-0611b7565395}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur</translation>
     </message>
     <message>
         <source>Temperature changed</source>
         <extracomment>The name of the EventType ({d0b6c4be-339e-4b0f-a234-0611b7565395}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur geändert</translation>
     </message>
     <message>
         <source>Turn on or off</source>
         <extracomment>The name of the ActionType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
 ----------
 The name of the ActionType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Schalte ein oder aus</translation>
     </message>
     <message>
         <source>Turned on or off</source>
         <extracomment>The name of the EventType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
 ----------
 The name of the EventType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ein- oder Ausgeschalten</translation>
     </message>
     <message>
         <source>Venetian blind</source>
         <extracomment>The name of the ThingClass ({e6b96ced-8d50-45da-91c8-792d364d2795})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Jalousie</translation>
     </message>
     <message>
         <source>nymea</source>
         <extracomment>The name of the vendor ({2062d64d-3232-433c-88bc-0d33c0ba2ba6})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>nymea</translation>
     </message>
 </context>
 </TS>
