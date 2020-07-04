@@ -113,15 +113,15 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                     qCWarning(dcGenericThings()) << "Venetian blind overshoot 100 percent";
                 } else {
                     currentPercentage++;
-                 thing->setStateValue(venetianBlindPercentageStateTypeId, currentPercentage);
+                    thing->setStateValue(venetianBlindPercentageStateTypeId, currentPercentage);
                 }
             } else if (thing->stateValue(venetianBlindStatusStateTypeId).toString() == "Opening") {
-                currentPercentage--;
+
                 if (currentPercentage == 0) {
                     setBlindState(BlindStateStopped, thing);
                     qCDebug(dcGenericThings()) << "Venetian blind is opened, stopping timer";
                 } else {
-                    currentPercentage++;
+                    currentPercentage--;
                     thing->setStateValue(venetianBlindPercentageStateTypeId, currentPercentage);
                 }
             } else {
@@ -153,7 +153,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                     m_venetianBlindAngleTimer.value(thing)->stop();
                     qCWarning(dcGenericThings()) << "Venetian blind overshoot angle boundaries";
                 }
-                thing->setStateValue(venetianBlindPercentageStateTypeId, currentAngle);
+                thing->setStateValue(venetianBlindAngleStateTypeId, currentAngle);
             } else if (thing->stateValue(venetianBlindStatusStateTypeId).toString() == "Opening") {
 
                 if (currentAngle > -90) {
@@ -165,7 +165,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                     m_venetianBlindAngleTimer.value(thing)->stop();
                     qCWarning(dcGenericThings()) << "Venetian blind overshoot angle boundaries";
                 }
-                thing->setStateValue(venetianBlindPercentageStateTypeId, currentAngle);
+                thing->setStateValue(venetianBlindAngleStateTypeId, currentAngle);
             }
 
             if (m_venetianBlindTargetAngle.contains(thing)) {
@@ -221,7 +221,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             }
             info->finish(Thing::ThingErrorNoError);
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == blindThingClassId ) {
         if (action.actionTypeId() == blindOpenActionTypeId) {
@@ -370,28 +370,28 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             }
             info->finish(Thing::ThingErrorNoError);
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == socketThingClassId) {
         if (action.actionTypeId() == socketPowerActionTypeId) {
             thing->setStateValue(socketPowerStateTypeId, action.param(socketPowerActionPowerParamTypeId).value());
             return info->finish(Thing::ThingErrorNoError);
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == lightThingClassId) {
         if (action.actionTypeId() == lightPowerActionTypeId) {
             thing->setStateValue(lightPowerStateTypeId, action.param(lightPowerActionPowerParamTypeId).value());
             return info->finish(Thing::ThingErrorNoError);
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == heatingThingClassId) {
         if (action.actionTypeId() == heatingPowerActionTypeId) {
             thing->setStateValue(heatingPowerStateTypeId, action.param(heatingPowerActionPowerParamTypeId).value());
             return info->finish(Thing::ThingErrorNoError);
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == powerSwitchThingClassId) {
         if (action.actionTypeId() == powerSwitchPowerActionTypeId) {
@@ -399,7 +399,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == irrigationThingClassId) {
         if (action.actionTypeId() == irrigationPowerActionTypeId) {
@@ -407,7 +407,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == ventilationThingClassId) {
         if (action.actionTypeId() == ventilationPowerActionTypeId) {
@@ -415,7 +415,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == temperatureSensorThingClassId) {
         if (action.actionTypeId() == temperatureSensorInputActionTypeId) {
@@ -430,7 +430,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == humiditySensorThingClassId) {
         if (action.actionTypeId() == humiditySensorInputActionTypeId) {
@@ -445,7 +445,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == moistureSensorThingClassId) {
         if (action.actionTypeId() == moistureSensorInputActionTypeId) {
@@ -460,7 +460,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             info->finish(Thing::ThingErrorNoError);
             return;
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
@@ -476,6 +476,7 @@ void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
         m_extendedBlindPercentageTimer.take(thing)->deleteLater();
         m_extendedBlindTargetPercentage.remove(thing);
         m_venetianBlindAngleTimer.take(thing)->deleteLater();
+        m_venetianBlindTargetAngle.remove(thing);
     }
 }
 
