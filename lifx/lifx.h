@@ -152,7 +152,7 @@ private slots:
 
 signals:
     void connectionChanged(bool connected);
-    //void requestExecuted(int requestId, bool success);
+    void requestExecuted(int requestId, bool success);
     //void errorReceived(int code, const QString &message);
 
     //void powerNotificationReceived(bool status);

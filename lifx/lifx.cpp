@@ -75,7 +75,6 @@ bool Lifx::enable()
         m_socket = nullptr;
         return false;
     }
-    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error(QAbstractSocket::SocketError)));
     connect(m_socket, &QUdpSocket::readyRead, this, &Lifx::onReadyRead);
     return true;
 }

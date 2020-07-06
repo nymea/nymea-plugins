@@ -234,6 +234,8 @@ void IntegrationPluginLifx::setupThing(ThingSetupInfo *info)
         connect(lifxCloud, &LifxCloud::lightsListReceived, this, &IntegrationPluginLifx::onLifxCloudLightsListReceived);
         connect(lifxCloud, &LifxCloud::scenesListReceived, this, &IntegrationPluginLifx::onLifxCloudScenesListReceived);
         connect(lifxCloud, &LifxCloud::requestExecuted, this, &IntegrationPluginLifx::onLifxCloudRequestExecuted);
+        connect(lifxCloud, &LifxCloud::connectionChanged, this, &IntegrationPluginLifx::onLifxCloudConnectionChanged);
+        connect(lifxCloud, &LifxCloud::authenticationChanged, this, &IntegrationPluginLifx::onLifxCloudAuthenticationChanged);
         lifxCloud->setAuthorizationToken(token);
         lifxCloud->listLights();
 
@@ -245,8 +247,6 @@ void IntegrationPluginLifx::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginLifx::postSetupThing(Thing *thing)
 {
-    connect(thing, &Thing::nameChanged, this, &IntegrationPluginLifx::onDeviceNameChanged);
-
     if (!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this]() {
@@ -336,7 +336,7 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
             connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             m_asyncActions.insert(requestId, info);
         } else {
-             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else if (thing->thingClassId() == dimmableBulbThingClassId) {
         QByteArray lightId = thing->paramValue(dimmableBulbThingIdParamTypeId).toByteArray();
@@ -412,12 +412,6 @@ void IntegrationPluginLifx::executeBrowserItem(BrowserActionInfo *info)
     connect(info, &BrowserActionInfo::aborted, this, [requestId, this] {m_asyncBrowserItem.remove(requestId);});
 }
 
-void IntegrationPluginLifx::onDeviceNameChanged()
-{
-    Thing *thing = static_cast<Thing *>(sender());
-    Q_UNUSED(thing)
-}
-
 void IntegrationPluginLifx::onConnectionChanged(bool connected)
 {
     Q_UNUSED(connected)
@@ -437,9 +431,7 @@ void IntegrationPluginLifx::onRequestExecuted(int requestId, bool success)
         } else {
             info->finish(Thing::ThingErrorHardwareFailure);
         }
-    }
-
-    if (m_asyncBrowserItem.contains(requestId)) {
+    } else if (m_asyncBrowserItem.contains(requestId)) {
         BrowserActionInfo *info = m_asyncBrowserItem.take(requestId);
         if (success) {
             info->finish(Thing::ThingErrorNoError);
@@ -461,6 +453,15 @@ void IntegrationPluginLifx::onLifxCloudConnectionChanged(bool connected)
         if (!connected)
             thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), connected);
     }
+}
+
+void IntegrationPluginLifx::onLifxCloudAuthenticationChanged(bool authenticated)
+{
+    LifxCloud *lifxCloud = static_cast<LifxCloud *>(sender());
+    Thing *accountThing = m_lifxCloudConnections.key(lifxCloud);
+    if (!accountThing)
+        return;
+    accountThing->setStateValue(lifxAccountLoggedInStateTypeId, authenticated);
 }
 
 void IntegrationPluginLifx::onLifxCloudLightsListReceived(const QList<LifxCloud::Light> &lights)
@@ -502,6 +503,8 @@ void IntegrationPluginLifx::onLifxCloudLightsListReceived(const QList<LifxCloud:
         }
         ParamList params;
         params << Param(m_idParamTypeIds.value(thingDescriptor.thingClassId()), light.id);
+        params << Param(m_hostAddressParamTypeIds.value(thingDescriptor.thingClassId()), "-");
+        params << Param(m_portParamTypeIds.value(thingDescriptor.thingClassId()), 0);
         thingDescriptor.setParams(params);
         thingDescriptors.append(thingDescriptor);
     }
@@ -511,15 +514,26 @@ void IntegrationPluginLifx::onLifxCloudLightsListReceived(const QList<LifxCloud:
 
 void IntegrationPluginLifx::onLifxCloudRequestExecuted(int requestId, bool success)
 {
-    ThingActionInfo *info = m_asyncActions.take(requestId);
-    if (!info) {
-        return;
-    }
-
-    if (success) {
-        info->finish(Thing::ThingErrorNoError);
-    } else {
-        info->finish(Thing::ThingErrorHardwareNotAvailable);
+    if (m_asyncActions.contains(requestId)) {
+        ThingActionInfo *info = m_asyncActions.take(requestId);
+        if (!info) {
+            return;
+        }
+        if (success) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+        }
+    } else if (m_asyncBrowserItem.contains(requestId)) {
+        BrowserActionInfo *info = m_asyncBrowserItem.value(requestId);
+        if (!info) {
+            return;
+        }
+        if (success) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
+        }
     }
 }
 

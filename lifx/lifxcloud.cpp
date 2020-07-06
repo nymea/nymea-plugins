@@ -50,6 +50,16 @@ void LifxCloud::setAuthorizationToken(const QByteArray &token)
     m_authorizationToken = token;
 }
 
+bool LifxCloud::cloudAuthenticated()
+{
+    return m_authenticated;
+}
+
+bool LifxCloud::cloudConnected()
+{
+    return m_connected;
+}
+
 void LifxCloud::listLights()
 {
     if (m_authorizationToken.isEmpty()) {
@@ -67,9 +77,17 @@ void LifxCloud::listLights()
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         // check HTTP status code
-        if (status != 200) {
+        if (status > 207) {
             qCWarning(dcLifx()) << "Error get lights list" << status << reply->errorString();
             return;
+        }
+        if (!m_authenticated) {
+            m_authenticated = true;
+            emit authenticationChanged(true);
+        }
+        if (!m_connected) {
+            m_connected = true;
+            emit authenticationChanged(true);
         }
         QByteArray rawData = reply->readAll();
 
@@ -151,6 +169,14 @@ void LifxCloud::listScenes()
             qCWarning(dcLifx()) << "Error get scene list" << status << reply->errorString();
             return;
         }
+        if (!m_authenticated) {
+            m_authenticated = true;
+            emit authenticationChanged(true);
+        }
+        if (!m_connected) {
+            m_connected = true;
+            emit authenticationChanged(true);
+        }
         QByteArray rawData = reply->readAll();
         qCDebug(dcLifx()) << "Got list scenes reply" << rawData;
         QJsonDocument data; QJsonParseError error;
@@ -166,7 +192,7 @@ void LifxCloud::listScenes()
         QList<Scene> scenes;
         foreach (QJsonValue value, array) {
             Scene scene;
-            scene.id = value.toObject().value("id").toString().toUtf8();
+            scene.id = value.toObject().value("uuid").toString().toUtf8();
             scene.name = value.toObject().value("name").toString();
             scenes.append(scene);
         }
@@ -208,23 +234,36 @@ int LifxCloud::activateScene(const QString &sceneId)
     int requestId = qrand();
 
     QNetworkRequest request;
-    request.setUrl(QUrl(QString("https://api.lifx.com/v1/scenes/scene_id::%1/activate").arg(sceneId)));
+    request.setUrl(QUrl(QString("https://api.lifx.com/v1/scenes/scene_id:%1/activate").arg(sceneId)));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     request.setRawHeader("Authorization","Bearer "+m_authorizationToken);
-    QByteArray payload;
-    payload.append("duration:5");
-    QNetworkReply *reply = m_networkManager->put(request, payload);
+    QNetworkReply *reply = m_networkManager->put(request, "");
     connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [reply,  this] {
+    connect(reply, &QNetworkReply::finished, this, [requestId, reply, this] {
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // check HTTP status code
-        if (status != 200) {
-            qCWarning(dcLifx()) << "Error get scene list" << status << reply->errorString();
+        if (status == 401 || status == 403) {
+            if (m_authenticated) {
+                m_authenticated = false;
+                emit authenticationChanged(false);
+            }
+        }
+        if (status > 207) {
+            qCWarning(dcLifx()) << "Error activate Scene" << status << reply->errorString();
+            emit requestExecuted(requestId, false);
             return;
         }
+        if (!m_authenticated) {
+            m_authenticated = true;
+            emit authenticationChanged(true);
+        }
+        if (!m_connected) {
+            m_connected = true;
+            emit authenticationChanged(true);
+        }
+        emit requestExecuted(requestId, true);
         QByteArray rawData = reply->readAll();
-        qCDebug(dcLifx()) << "Got list lights reply" << rawData;
-
+        qCDebug(dcLifx()) << "Got activate scene reply" << rawData;
     });
     return requestId;
 }
@@ -271,10 +310,18 @@ int LifxCloud::setState(const QString &selector, State state, QVariant stateValu
     connect(reply, &QNetworkReply::finished, this, [requestId, reply,  this] {
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // check HTTP status code
-        if (status != 200) {
+        if (status > 207) {
             qCWarning(dcLifx()) << "Error get scene list" << status << reply->errorString();
             emit requestExecuted(requestId, false);
             return;
+        }
+        if (!m_authenticated) {
+            m_authenticated = true;
+            emit authenticationChanged(true);
+        }
+        if (!m_connected) {
+            m_connected = true;
+            emit authenticationChanged(true);
         }
         QByteArray rawData = reply->readAll();
         qCDebug(dcLifx()) << "Got set state reply" << rawData;

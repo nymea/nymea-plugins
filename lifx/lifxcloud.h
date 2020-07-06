@@ -96,6 +96,8 @@ public:
 
     explicit LifxCloud(NetworkAccessManager *networkManager, QObject *parent = nullptr);
     void setAuthorizationToken(const QByteArray &token);
+    bool cloudAuthenticated();
+    bool cloudConnected();
 
     void listLights();
     void listScenes();
@@ -112,8 +114,11 @@ private:
     QByteArray m_authorizationToken;
 
     int setState(const QString &lightId, State state, QVariant stateValue, int duration);
-
+    bool m_authenticated = false;
+    bool m_connected = false;
 signals:
+    void connectionChanged(bool m_connected);
+    void authenticationChanged(bool m_authenticated);
     void lightsListReceived(const QList<Light> &lights);
     void scenesListReceived(const QList<Scene> &scenes);
     void requestExecuted(int requestId, bool susccess);

@@ -90,11 +90,11 @@ private:
     QHash<int, Lifx::LifxProduct> m_lifxProducts;
 
 private slots:
-    void onDeviceNameChanged();
     void onConnectionChanged(bool connected);
     void onRequestExecuted(int requestId, bool success);
 
     void onLifxCloudConnectionChanged(bool connected);
+    void onLifxCloudAuthenticationChanged(bool authenticated);
     void onLifxCloudRequestExecuted(int requestId, bool success);
     void onLifxCloudLightsListReceived(const QList<LifxCloud::Light> &lights);
     void onLifxCloudScenesListReceived(const QList<LifxCloud::Scene> &scenes);
