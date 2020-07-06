@@ -47,6 +47,16 @@ public:
         StateColorTemperature,
         StateInfrared
     };
+
+    enum Effect {
+        EffectNone,
+        EffectBreathe,
+        EffectMove,
+        EffectMorph,
+        EffectFlame,
+        EffectPulse
+    };
+
     struct Group {
         QByteArray id;
         QString name;
@@ -101,19 +111,22 @@ public:
 
     void listLights();
     void listScenes();
-    int setPower(const QString &lightId, bool power, int duration = 3);
-    int setBrightnesss(const QString &lightId, int brightness, int duration = 3);
-    int setColor(const QString &selector, QColor color, int duration = 3);
-    int setColorTemperature(const QString &selector, int kelvin, int duration = 3);
-    int setInfrared(const QString &lightId, int infrared, int duration = 3);
+    int setPower(const QString &lightId, bool power, int duration = 5);
+    int setBrightnesss(const QString &lightId, int brightness, int duration = 5);
+    int setColor(const QString &lightId, QColor color, int duration = 5);
+    int setColorTemperature(const QString &lightId, int kelvin, int duration = 5);
+    int setInfrared(const QString &lightId, int infrared, int duration = 5);
 
     int activateScene(const QString &sceneId);
+
+    int setEffect(const QString &lightId, Effect effect, QColor color);
 
 private:
     NetworkAccessManager *m_networkManager = nullptr;
     QByteArray m_authorizationToken;
 
     int setState(const QString &lightId, State state, QVariant stateValue, int duration);
+    bool checkHttpStatusCode(QNetworkReply *reply);
     bool m_authenticated = false;
     bool m_connected = false;
 signals:

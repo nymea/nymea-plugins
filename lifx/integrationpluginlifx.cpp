@@ -63,52 +63,45 @@ void IntegrationPluginLifx::init()
     m_brightnessStateTypeIds.insert(colorBulbThingClassId, colorBulbBrightnessStateTypeId);
     m_brightnessStateTypeIds.insert(dimmableBulbThingClassId, dimmableBulbBrightnessStateTypeId);
 
-
     m_colorTemperatureStateTypeIds.insert(colorBulbThingClassId, colorBulbColorTemperatureStateTypeId);
     m_colorTemperatureStateTypeIds.insert(dimmableBulbThingClassId, dimmableBulbColorTemperatureStateTypeId);
-
-    m_hostAddressParamTypeIds.insert(colorBulbThingClassId, colorBulbThingHostParamTypeId);
-    m_hostAddressParamTypeIds.insert(dimmableBulbThingClassId, dimmableBulbThingHostParamTypeId);
-
-    m_portParamTypeIds.insert(colorBulbThingClassId, colorBulbThingPortParamTypeId);
-    m_portParamTypeIds.insert(dimmableBulbThingClassId, dimmableBulbThingPortParamTypeId);
 
     m_idParamTypeIds.insert(colorBulbThingClassId, colorBulbThingIdParamTypeId);
     m_idParamTypeIds.insert(dimmableBulbThingClassId, dimmableBulbThingIdParamTypeId);
 
     m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_hap._tcp"); // discovers all homekit devices
 
-    QFile file;
-    file.setFileName("/tmp/products.json");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qCWarning(dcLifx()) << "Could not open products file" << file.errorString() << "file name:" << file.fileName();
-    } else {
-        QJsonDocument productsJson = QJsonDocument::fromJson(file.readAll());
-        file.close();
+    // TODO for LAN connection, get id and device features
+    //    QFile file;
+    //    file.setFileName("/tmp/products.json");
+    //    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    //        qCWarning(dcLifx()) << "Could not open products file" << file.errorString() << "file name:" << file.fileName();
+    //    } else {
+    //        QJsonDocument productsJson = QJsonDocument::fromJson(file.readAll());
+    //        file.close();
 
-        if (!productsJson.isArray()) {
-            qCWarning(dcLifx()) << "Products JSON is not a valid array";
-        } else {
-            QJsonArray productsArray = productsJson.array().first().toObject().value("products").toArray();
-            foreach (QJsonValue value, productsArray) {
-                QJsonObject object = value.toObject();
-                Lifx::LifxProduct product;
-                product.pid = object["pid"].toInt();
-                product.name = object["name"].toString();
-                qCDebug(dcLifx()) << "Lifx product JSON, found product. PID:" << product.pid << "Name" << product.name;
-                QJsonObject features = object["features"].toObject();
-                product.color = features["color"].toBool();
-                product.infrared = features["infrared"].toBool();
-                product.matrix = features["matrix"].toBool();
-                product.multizone = features["multizone"].toBool();
-                product.minColorTemperature = features["temperature_range"].toArray().first().toInt();
-                product.maxColorTemperature = features["temperature_range"].toArray().last().toInt();
-                product.chain = features["chain"].toBool();
-                m_lifxProducts.insert(product.pid, product);
-            }
-        }
-    }
-
+    //        if (!productsJson.isArray()) {
+    //            qCWarning(dcLifx()) << "Products JSON is not a valid array";
+    //        } else {
+    //            QJsonArray productsArray = productsJson.array().first().toObject().value("products").toArray();
+    //            foreach (QJsonValue value, productsArray) {
+    //                QJsonObject object = value.toObject();
+    //                LifxLan::LifxProduct product;
+    //                product.pid = object["pid"].toInt();
+    //                product.name = object["name"].toString();
+    //                qCDebug(dcLifx()) << "Lifx product JSON, found product. PID:" << product.pid << "Name" << product.name;
+    //                QJsonObject features = object["features"].toObject();
+    //                product.color = features["color"].toBool();
+    //                product.infrared = features["infrared"].toBool();
+    //                product.matrix = features["matrix"].toBool();
+    //                product.multizone = features["multizone"].toBool();
+    //                product.minColorTemperature = features["temperature_range"].toArray().first().toInt();
+    //                product.maxColorTemperature = features["temperature_range"].toArray().last().toInt();
+    //                product.chain = features["chain"].toBool();
+    //                m_lifxProducts.insert(product.pid, product);
+    //            }
+    //        }
+    //    }
     m_networkManager = hardwareManager()->networkManager();
 }
 
@@ -156,6 +149,7 @@ void IntegrationPluginLifx::confirmPairing(ThingPairingInfo *info, const QString
 
 void IntegrationPluginLifx::discoverThings(ThingDiscoveryInfo *info)
 {
+    // NOTE: the LAN API is not yet finished, to enable LAN discovery add "discovery" to the createMethods
     if ((info->thingClassId() == colorBulbThingClassId) || (info->thingClassId() == dimmableBulbThingClassId)) {
         QHash<QString, ThingDescriptor> descriptors;
         foreach (const ZeroConfServiceEntry avahiEntry, m_serviceBrowser->serviceEntries()) {
@@ -203,15 +197,20 @@ void IntegrationPluginLifx::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == colorBulbThingClassId || thing->thingClassId() == dimmableBulbThingClassId) {
-        Lifx *lifx = new Lifx(QHostAddress(thing->paramValue(m_hostAddressParamTypeIds.value(thing->thingClassId())).toString()),
-                              thing->paramValue(m_portParamTypeIds.value(thing->thingClassId())).toInt(), this);
-        if(lifx->enable()) {
-            m_lifxConnections.insert(thing, lifx);
-            //TODO async setup
-            info->finish(Thing::ThingErrorNoError);
-        } else {
-            lifx->deleteLater();
+        if (thing->parentId().isNull()) {
+            // Lifx LAN
+            //LifxLan *lifx = new LifxLan(, this);
+            //if(lifx->enable()) {
+            //    m_lifxLanConnections.insert(thing, lifx);
+            //TODO async setup for LAN devices
+            //    info->finish(Thing::ThingErrorNoError);
+            //} else {
+            //    lifx->deleteLater();
             info->finish(Thing::ThingErrorSetupFailed);
+            //}
+        } else {
+            // Lifx Cloud
+            info->finish(Thing::ThingErrorNoError);
         }
     } else if (thing->thingClassId() == lifxAccountThingClassId) {
 
@@ -250,8 +249,9 @@ void IntegrationPluginLifx::postSetupThing(Thing *thing)
     if (!m_pluginTimer) {
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this]() {
-            foreach (Lifx *lifx, m_lifxConnections) {
+            foreach (LifxLan *lifx, m_lifxLanConnections) {
                 Q_UNUSED(lifx)
+                //TODO update LAN device states
             }
 
             foreach (LifxCloud *lifx, m_lifxCloudConnections) {
@@ -271,11 +271,11 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
     bool cloudDevice = false;
-    Lifx *lifx;
+    LifxLan *lifx;
     LifxCloud *lifxCloud;
 
-    if (m_lifxConnections.contains(thing)) {
-        lifx = m_lifxConnections.value(thing);
+    if (m_lifxLanConnections.contains(thing)) {
+        lifx = m_lifxLanConnections.value(thing);
     } else if (m_lifxCloudConnections.contains(myThings().findById(thing->parentId()))) {
         lifxCloud = m_lifxCloudConnections.value(myThings().findById(thing->parentId()));
         cloudDevice = true;
@@ -299,9 +299,13 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
 
         } else if (action.actionTypeId() == colorBulbBrightnessActionTypeId) {
 
-            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool())
-                lifx->setPower(true);
-
+            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool()){
+                if (cloudDevice) {
+                    lifxCloud->setPower(lightId, true);
+                }  else {
+                    lifx->setPower(true);
+                }
+            }
             int brightness = info->action().param(colorBulbBrightnessActionBrightnessParamTypeId).value().toInt();
             int requestId;
             if (cloudDevice) {
@@ -313,8 +317,13 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
             m_asyncActions.insert(requestId, info);
         } else if (action.actionTypeId() == colorBulbColorActionColorParamTypeId) {
             QRgb color = QColor(action.param(colorBulbColorActionColorParamTypeId).value().toString()).rgba();
-            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool())
-                lifx->setPower(true);
+            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool()){
+                if (cloudDevice) {
+                    lifxCloud->setPower(lightId, true);
+                }  else {
+                    lifx->setPower(true);
+                }
+            }
             int requestId;
             if (cloudDevice) {
                 requestId = lifxCloud->setColor(lightId, color);
@@ -325,13 +334,52 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
             m_asyncActions.insert(requestId, info);
         } else if (action.actionTypeId() == colorBulbColorTemperatureActionTypeId) {
             int colorTemperature = 6500 - (action.param(colorBulbColorTemperatureActionColorTemperatureParamTypeId).value().toUInt() * -11.12);
-            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool())
-                lifx->setPower(true);
+            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool()){
+                if (cloudDevice) {
+                    lifxCloud->setPower(lightId, true);
+                }  else {
+                    lifx->setPower(true);
+                }
+            }
             int requestId;
             if (cloudDevice) {
                 requestId = lifxCloud->setColorTemperature(lightId, colorTemperature);
             } else {
                 requestId = lifx->setColorTemperature(colorTemperature);
+            }
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+            m_asyncActions.insert(requestId, info);
+        } else if (action.actionTypeId() == colorBulbEffectStateTypeId) {
+            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool()){
+                if (cloudDevice) {
+                    lifxCloud->setPower(lightId, true);
+                }  else {
+                    lifx->setPower(true);
+                }
+            }
+            QString effectString = action.param(colorBulbColorTemperatureActionColorTemperatureParamTypeId).value().toString();
+            int requestId;
+            LifxCloud::Effect effect;
+            if (effectString == "None") {
+                effect = LifxCloud::EffectNone;
+            } else if (effectString == "Breathe") {
+                effect = LifxCloud::EffectBreathe;
+            } else if (effectString == "Move") {
+                effect = LifxCloud::EffectMove;
+            }  else if (effectString == "Morph") {
+                effect = LifxCloud::EffectMove;
+            }  else if (effectString == "Flame") {
+                effect = LifxCloud::EffectMove;
+            } else if (effectString == "Pulse") {
+                effect = LifxCloud::EffectMove;
+            }
+            if (cloudDevice) {
+                QColor color = QColor(thing->stateValue(colorBulbColorStateTypeId).toString());
+                requestId = lifxCloud->setEffect(lightId, effect, color);
+            } else {
+                qCWarning(dcLifx()) << "LAN devices are not yet supported";
+                info->finish(Thing::ThingErrorHardwareNotAvailable);
+                return;
             }
             connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             m_asyncActions.insert(requestId, info);
@@ -351,13 +399,51 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
             connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
         } else if (action.actionTypeId() == dimmableBulbBrightnessActionTypeId) {
             int brightness = action.param(dimmableBulbBrightnessActionBrightnessParamTypeId).value().toInt();
-            if (!thing->stateValue(dimmableBulbPowerStateTypeId).toBool())
-                lifx->setPower(true);
+            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool()){
+                if (cloudDevice) {
+                    lifxCloud->setPower(lightId, true);
+                }  else {
+                    lifx->setPower(true);
+                }
+            }
             int requestId;
             if (cloudDevice) {
                 requestId = lifxCloud->setBrightnesss(lightId, brightness);
             } else {
                 requestId = lifx->setBrightness(brightness);
+            }
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
+            m_asyncActions.insert(requestId, info);
+        } else if (action.actionTypeId() == dimmableBulbEffectStateTypeId) {
+            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool()){
+                if (cloudDevice) {
+                    lifxCloud->setPower(lightId, true);
+                }  else {
+                    lifx->setPower(true);
+                }
+            }
+            QString effectString = action.param(dimmableBulbColorTemperatureActionColorTemperatureParamTypeId).value().toString();
+            int requestId;
+            LifxCloud::Effect effect;
+            if (effectString == "None") {
+                effect = LifxCloud::EffectNone;
+            } else if (effectString == "Breathe") {
+                effect = LifxCloud::EffectBreathe;
+            } else if (effectString == "Move") {
+                effect = LifxCloud::EffectMove;
+            }  else if (effectString == "Morph") {
+                effect = LifxCloud::EffectMove;
+            }  else if (effectString == "Flame") {
+                effect = LifxCloud::EffectMove;
+            } else if (effectString == "Pulse") {
+                effect = LifxCloud::EffectMove;
+            }
+            if (cloudDevice) {
+                requestId = lifxCloud->setEffect(lightId, effect, QColor("0xffffff"));
+            } else {
+                qCWarning(dcLifx()) << "LAN devices are not yet supported";
+                info->finish(Thing::ThingErrorHardwareNotAvailable);
+                return;
             }
             connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             m_asyncActions.insert(requestId, info);
@@ -372,8 +458,8 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
 void IntegrationPluginLifx::thingRemoved(Thing *thing)
 {
     if (thing->thingClassId() == colorBulbThingClassId || thing->thingClassId() == dimmableBulbThingClassId) {
-        if (m_lifxConnections.contains(thing))
-            m_lifxConnections.take(thing)->deleteLater();
+        if (m_lifxLanConnections.contains(thing))
+            m_lifxLanConnections.take(thing)->deleteLater();
     } else if (thing->thingClassId() == lifxAccountThingClassId) {
         if (m_lifxCloudConnections.contains(thing))
             m_lifxCloudConnections.take(thing)->deleteLater();
@@ -412,17 +498,17 @@ void IntegrationPluginLifx::executeBrowserItem(BrowserActionInfo *info)
     connect(info, &BrowserActionInfo::aborted, this, [requestId, this] {m_asyncBrowserItem.remove(requestId);});
 }
 
-void IntegrationPluginLifx::onConnectionChanged(bool connected)
+void IntegrationPluginLifx::onLifxLanConnectionChanged(bool connected)
 {
     Q_UNUSED(connected)
-    Lifx *lifx = static_cast<Lifx *>(sender());
-    Thing *thing = m_lifxConnections.key(lifx);
+    LifxLan *lifx = static_cast<LifxLan *>(sender());
+    Thing *thing = m_lifxLanConnections.key(lifx);
     if (!thing)
         return;
     thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), connected);
 }
 
-void IntegrationPluginLifx::onRequestExecuted(int requestId, bool success)
+void IntegrationPluginLifx::onLifxLanRequestExecuted(int requestId, bool success)
 {
     if (m_asyncActions.contains(requestId)) {
         ThingActionInfo *info = m_asyncActions.take(requestId);
@@ -492,8 +578,8 @@ void IntegrationPluginLifx::onLifxCloudLightsListReceived(const QList<LifxCloud:
         ThingDescriptor thingDescriptor(thingClassId, light.product.name, light.location.name, parentThing->id());
         foreach (Thing * thing, myThings().filterByParam(m_idParamTypeIds.value(thingClassId), light.id)) {
             thing->setStateValue(m_connectedStateTypeIds.value(thingClassId), light.connected);
-            thing->setStateValue(m_brightnessStateTypeIds.value(thingClassId), light.brightness);
-            thing->setStateValue(m_colorTemperatureStateTypeIds.value(thingClassId), light.colorTemperature);
+            thing->setStateValue(m_brightnessStateTypeIds.value(thingClassId), light.brightness*100.00);
+            thing->setStateValue(m_colorTemperatureStateTypeIds.value(thingClassId), light.colorTemperature); //TODO Kelvin to mired
             thing->setStateValue(m_powerStateTypeIds.value(thingClassId), light.power);
             if (thingClassId == colorBulbThingClassId) {
                 thing->setStateValue(colorBulbColorStateTypeId, light.color);
@@ -536,7 +622,6 @@ void IntegrationPluginLifx::onLifxCloudRequestExecuted(int requestId, bool succe
         }
     }
 }
-
 
 void IntegrationPluginLifx::onLifxCloudScenesListReceived(const QList<LifxCloud::Scene> &scenes)
 {

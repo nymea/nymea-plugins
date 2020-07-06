@@ -29,20 +29,16 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-#include "lifx.h"
+#include "lifxlan.h"
 #include "extern-plugininfo.h"
 
 #include <QColor>
 
-
-Lifx::Lifx(const QHostAddress &address, quint16 port, QObject *parent) :
+LifxLan::LifxLan(const QHostAddress &address, quint16 port, QObject *parent) :
     QObject(parent),
     m_host(address),
     m_port(port)
 {
-    m_reconnectTimer = new QTimer(this);
-    m_reconnectTimer->setSingleShot(true);
-    connect(m_reconnectTimer, &QTimer::timeout, this, &Lifx::onReconnectTimer);
     m_clientId = qrand();
 
     m_socket = new QUdpSocket(this);
@@ -51,7 +47,7 @@ Lifx::Lifx(const QHostAddress &address, quint16 port, QObject *parent) :
     m_socket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, QVariant(1));
 }
 
-Lifx::~Lifx()
+LifxLan::~LifxLan()
 {
     if (m_socket) {
         m_socket->waitForBytesWritten(1000);
@@ -59,7 +55,7 @@ Lifx::~Lifx()
     }
 }
 
-bool Lifx::enable()
+bool LifxLan::enable()
 {
     // Bind udp socket and join multicast group
     if(!m_socket->bind(QHostAddress::AnyIPv4, m_port, QUdpSocket::ShareAddress)){
@@ -75,21 +71,21 @@ bool Lifx::enable()
         m_socket = nullptr;
         return false;
     }
-    connect(m_socket, &QUdpSocket::readyRead, this, &Lifx::onReadyRead);
+    connect(m_socket, &QUdpSocket::readyRead, this, &LifxLan::onReadyRead);
     return true;
 }
 
-void Lifx::setHostAddress(const QHostAddress &address)
+void LifxLan::setHostAddress(const QHostAddress &address)
 {
     m_host = address;
 }
 
-void Lifx::setPort(quint16 port)
+void LifxLan::setPort(quint16 port)
 {
     m_port = port;
 }
 
-int Lifx::setColorTemperature(uint mirad, uint msFadeTime)
+int LifxLan::setColorTemperature(uint mirad, uint msFadeTime)
 {
     Q_UNUSED(mirad)
     Q_UNUSED(msFadeTime)
@@ -99,59 +95,48 @@ int Lifx::setColorTemperature(uint mirad, uint msFadeTime)
     return requestId;
 }
 
-int Lifx::setColor(QColor color, uint msFadeTime)
+int LifxLan::setColor(QColor color, uint msFadeTime)
 {
     Q_UNUSED(color)
     Q_UNUSED(msFadeTime)
     int requestId = qrand();
     Message message;
+    //TODO create LAN message
     sendMessage(message);
     return requestId;
 }
 
-int Lifx::setBrightness(uint percentage, uint msFadeTime)
+int LifxLan::setBrightness(uint percentage, uint msFadeTime)
 {
     Q_UNUSED(percentage)
     Q_UNUSED(msFadeTime)
     int requestId = qrand();
     Message message;
     sendMessage(message);
+        //TODO create LAN message
     return requestId;
 }
 
-int Lifx::setPower(bool power, uint msFadeTime)
+int LifxLan::setPower(bool power, uint msFadeTime)
 {
     Q_UNUSED(power)
     Q_UNUSED(msFadeTime)
     int requestId = qrand();
     Message message;
     sendMessage(message);
+        //TODO create LAN message
     return requestId;
 }
 
-int Lifx::flash()
-{
-    int requestId = qrand();
-
-    return requestId;
-}
-
-int Lifx::flash15s()
-{
-    int requestId = qrand();
-
-    return requestId;
-}
-
-void Lifx::sendMessage(const Lifx::Message &message)
+void LifxLan::sendMessage(const LifxLan::Message &message)
 {
     QByteArray header;
     // -- FRAME --
     // Protocol number: must be 1024 (decimal)
     quint16 protocol = 1024;
-    protocol |= (0x0001 << 4); //Message includes a target address: must be one (1)
+    protocol |= (0x0001 << 4);                 //Message includes a target address: must be one (1)
     protocol |= (message.frame.Tagged << 5);   // Determines usage of the Frame Address target field
-    protocol &= ~(0x0003); // Message origin indicator: must be zero (0)
+    protocol &= ~(0x0003);                     // Message origin indicator: must be zero (0)
     header.append(protocol >> 8);
     header.append(protocol & 0xff);
 
@@ -188,15 +173,12 @@ void Lifx::sendMessage(const Lifx::Message &message)
     header.append(2, '0');
 
     QByteArray fullMessage;
-    //message.append(header);
-    //message.append(payload);
-    //message.append(message.length());
-    fullMessage = QByteArray::fromHex("0x310000340000000000000000000000000000000000000000000000000000000066000000005555FFFFFFFFAC0D00040000");
-    std::reverse(fullMessage.begin(), fullMessage.end());
+    //fullMessage = QByteArray::fromHex("0x310000340000000000000000000000000000000000000000000000000000000066000000005555FFFFFFFFAC0D00040000"); // test message - set all lights green
+    //std::reverse(fullMessage.begin(), fullMessage.end());
     m_socket->writeDatagram(fullMessage, m_host, m_port);
 }
 
-void Lifx::onStateChanged(QAbstractSocket::SocketState state)
+void LifxLan::onStateChanged(QAbstractSocket::SocketState state)
 {
     switch (state) {
     case QAbstractSocket::SocketState::ConnectedState:
@@ -212,13 +194,8 @@ void Lifx::onStateChanged(QAbstractSocket::SocketState state)
     }
 }
 
-void Lifx::onReadyRead()
+void LifxLan::onReadyRead()
 {
     QByteArray data = m_socket->readAll();
     qCDebug(dcLifx()) << "Message received" << data;
-}
-
-void Lifx::onReconnectTimer()
-{
-
 }

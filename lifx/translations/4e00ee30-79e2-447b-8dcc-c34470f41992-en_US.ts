@@ -2,6 +2,17 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>IntegrationPluginLifx</name>
+    <message>
+        <source>LIFX server is not reachable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This token is invalid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>Lifx</name>
     <message>
         <source>Brightness</source>
@@ -69,29 +80,10 @@ The name of the EventType ({dd7d7e70-5552-4531-8789-2d0f750488be}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Host address</source>
-        <extracomment>The name of the ParamType (ThingClass: dimmableBulb, Type: thing, ID: {cc0a765b-a753-4e07-a6e5-47e9272c4346})
-----------
-The name of the ParamType (ThingClass: colorBulb, Type: thing, ID: {fd1c4817-5111-433a-b5b9-fd9f49d4975c})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Id</source>
-        <extracomment>The name of the ParamType (ThingClass: colorBulb, Type: thing, ID: {976ecea0-ac25-47d4-9dc5-362962ddb6c0})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>LIFX</source>
         <extracomment>The name of the vendor ({e5e48c0d-cff7-4c0f-983e-d23bd3e4ba87})
 ----------
 The name of the plugin Lifx ({4e00ee30-79e2-447b-8dcc-c34470f41992})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Port</source>
-        <extracomment>The name of the ParamType (ThingClass: dimmableBulb, Type: thing, ID: {d233d9bf-6662-414d-92f6-dd3e267051b5})
-----------
-The name of the ParamType (ThingClass: colorBulb, Type: thing, ID: {44c13745-300c-491f-b617-3a8d53472998})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -148,7 +140,9 @@ The name of the ActionType ({dd7d7e70-5552-4531-8789-2d0f750488be}) of ThingClas
     </message>
     <message>
         <source>Set effect</source>
-        <extracomment>The name of the ActionType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass colorBulb</extracomment>
+        <extracomment>The name of the ActionType ({be47c474-eca1-479e-9393-68281a43d72a}) of ThingClass dimmableBulb
+----------
+The name of the ActionType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass colorBulb</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -160,7 +154,13 @@ The name of the ActionType ({12de3f8f-2454-4057-aa12-9290296fdbdd}) of ThingClas
     </message>
     <message>
         <source>Effect</source>
-        <extracomment>The name of the ParamType (ThingClass: colorBulb, ActionType: effect, ID: {65f88396-2958-480e-b0be-c4695400a343})
+        <extracomment>The name of the ParamType (ThingClass: dimmableBulb, ActionType: effect, ID: {be47c474-eca1-479e-9393-68281a43d72a})
+----------
+The name of the ParamType (ThingClass: dimmableBulb, EventType: effect, ID: {be47c474-eca1-479e-9393-68281a43d72a})
+----------
+The name of the StateType ({be47c474-eca1-479e-9393-68281a43d72a}) of ThingClass dimmableBulb
+----------
+The name of the ParamType (ThingClass: colorBulb, ActionType: effect, ID: {65f88396-2958-480e-b0be-c4695400a343})
 ----------
 The name of the ParamType (ThingClass: colorBulb, EventType: effect, ID: {65f88396-2958-480e-b0be-c4695400a343})
 ----------
@@ -169,12 +169,16 @@ The name of the StateType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass
     </message>
     <message>
         <source>Effect changed</source>
-        <extracomment>The name of the EventType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass colorBulb</extracomment>
+        <extracomment>The name of the EventType ({be47c474-eca1-479e-9393-68281a43d72a}) of ThingClass dimmableBulb
+----------
+The name of the EventType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass colorBulb</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>ID</source>
-        <extracomment>The name of the ParamType (ThingClass: dimmableBulb, Type: thing, ID: {f157a97b-3fe5-4d9e-b5e3-5636f80d46ed})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: dimmableBulb, Type: thing, ID: {f157a97b-3fe5-4d9e-b5e3-5636f80d46ed})
+----------
+The name of the ParamType (ThingClass: colorBulb, Type: thing, ID: {976ecea0-ac25-47d4-9dc5-362962ddb6c0})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -182,6 +186,47 @@ The name of the StateType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass
         <extracomment>The name of the ActionType ({a0a1bdcc-2761-4d90-85d1-5ce887546611}) of ThingClass dimmableBulb
 ----------
 The name of the ActionType ({8bd20350-0e79-45dc-b68a-84da99356863}) of ThingClass colorBulb</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <extracomment>The name of the ParamType (ThingClass: lifxAccount, EventType: connected, ID: {3e7b358b-d7de-4db4-8a3a-b9860eae186f})
+----------
+The name of the StateType ({3e7b358b-d7de-4db4-8a3a-b9860eae186f}) of ThingClass lifxAccount</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected changed</source>
+        <extracomment>The name of the EventType ({3e7b358b-d7de-4db4-8a3a-b9860eae186f}) of ThingClass lifxAccount</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>LIFX cloud account</source>
+        <extracomment>The name of the ThingClass ({387c87f6-3e5b-4d6a-ba4d-372d0efad79f})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logged in</source>
+        <extracomment>The name of the ParamType (ThingClass: lifxAccount, EventType: loggedIn, ID: {0db34069-5de0-4233-baec-27f039228524})
+----------
+The name of the StateType ({0db34069-5de0-4233-baec-27f039228524}) of ThingClass lifxAccount</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logged in changed</source>
+        <extracomment>The name of the EventType ({0db34069-5de0-4233-baec-27f039228524}) of ThingClass lifxAccount</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User name</source>
+        <extracomment>The name of the ParamType (ThingClass: lifxAccount, EventType: userDisplayName, ID: {554afd9b-a2ec-4d28-9065-2b9ab3a9e3b2})
+----------
+The name of the StateType ({554afd9b-a2ec-4d28-9065-2b9ab3a9e3b2}) of ThingClass lifxAccount</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User name changed</source>
+        <extracomment>The name of the EventType ({554afd9b-a2ec-4d28-9065-2b9ab3a9e3b2}) of ThingClass lifxAccount</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

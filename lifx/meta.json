@@ -3,7 +3,7 @@
     "tagline": "Control LIFX light bulbs.",
     "icon": "lifx.png",
     "stability": "consumer",
-    "offline": true,
+    "offline": false,
     "technologies": [
         "network"
     ],

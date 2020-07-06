@@ -28,8 +28,8 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef LIFX_H
-#define LIFX_H
+#ifndef LIFXLAN_H
+#define LIFXLAN_H
 
 #include <QObject>
 #include <QTimer>
@@ -40,7 +40,7 @@
 
 #include <QColor>
 
-class Lifx : public QObject
+class LifxLan : public QObject
 {
     Q_OBJECT
 public:
@@ -122,8 +122,8 @@ public:
       bool chain;
     };
 
-    explicit Lifx(const QHostAddress &address, quint16 port = 56700, QObject *parent = nullptr);
-    ~Lifx();
+    explicit LifxLan(const QHostAddress &address, quint16 port = 56700, QObject *parent = nullptr);
+    ~LifxLan();
     bool enable();
     void setHostAddress(const QHostAddress &address);
     void setPort(quint16 port);
@@ -132,8 +132,6 @@ public:
     int setColor(QColor color, uint msFadeTime = 500);
     int setBrightness(uint percentage, uint msFadeTime = 500);
     int setPower(bool power, uint msFadeTime = 500);
-    int flash();
-    int flash15s();
 
 private:
     quint32 m_clientId = 0;
@@ -148,19 +146,9 @@ private:
 private slots:
     void onStateChanged(QAbstractSocket::SocketState state);
     void onReadyRead();
-    void onReconnectTimer();
 
 signals:
     void connectionChanged(bool connected);
     void requestExecuted(int requestId, bool success);
-    //void errorReceived(int code, const QString &message);
-
-    //void powerNotificationReceived(bool status);
-    //void brightnessNotificationReceived(int percentage);
-    //void colorTemperatureNotificationReceived(int kelvin);
-    //void rgbNotificationReceived(QRgb rgbColor);
-    //void hueNotificationReceived(int hueColor);
-    //void nameNotificationReceived(const QString &name);
-    //void saturationNotificationReceived(int percentage);
 };
-#endif // LIFX_H
+#endif // LIFXLAN_H

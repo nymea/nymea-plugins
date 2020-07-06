@@ -51,23 +51,9 @@
                     "id": "12907c9c-e7f0-47f2-bd58-39d52ffdf24e",
                     "name": "colorBulb",
                     "displayName": "Color",
-                    "createMethods": ["auto", "discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": ["colorlight", "connectable"],
                     "paramTypes": [
-                        {
-                            "id": "fd1c4817-5111-433a-b5b9-fd9f49d4975c",
-                            "name": "host",
-                            "displayName": "Host address",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "44c13745-300c-491f-b617-3a8d53472998",
-                            "name": "port",
-                            "displayName": "Port",
-                            "type" : "int",
-                            "readOnly": true
-                        },
                         {
                             "id": "976ecea0-ac25-47d4-9dc5-362962ddb6c0",
                             "name": "id",
@@ -139,10 +125,14 @@
                             "displayNameEvent": "Effect changed",
                             "displayNameAction": "Set effect",
                             "type": "QString",
-                            "defaultValue": "none",
+                            "defaultValue": "None",
                             "possibleValues": [
-                                "none",
-                                "color loop"
+                                "None",
+                                "Breathe",
+                                "Move",
+                                "Morph",
+                                "Flame",
+                                "Pulse"
                             ],
                             "writable": true
                         }
@@ -152,23 +142,9 @@
                     "id": "a5b02af8-7c97-4a78-9c78-bafee7407b5e",
                     "name": "dimmableBulb",
                     "displayName": "Day and Dusk",
-                    "createMethods": ["auto", "discovery"],
+                    "createMethods": ["auto"],
                     "interfaces": ["colortemperaturelight", "connectable"],
                     "paramTypes": [
-                        {
-                            "id": "cc0a765b-a753-4e07-a6e5-47e9272c4346",
-                            "name": "host",
-                            "displayName": "Host address",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
-                            "id": "d233d9bf-6662-414d-92f6-dd3e267051b5",
-                            "name": "port",
-                            "displayName": "Port",
-                            "type" : "int",
-                            "readOnly": true
-                        },
                         {
                             "id": "f157a97b-3fe5-4d9e-b5e3-5636f80d46ed",
                             "name": "id",
@@ -220,6 +196,24 @@
                             "defaultValue": 170,
                             "minValue": 153,
                             "maxValue": 500,
+                            "writable": true
+                        },
+                        {
+                            "id": "be47c474-eca1-479e-9393-68281a43d72a",
+                            "name": "effect",
+                            "displayName": "Effect",
+                            "displayNameEvent": "Effect changed",
+                            "displayNameAction": "Set effect",
+                            "type": "QString",
+                            "defaultValue": "None",
+                            "possibleValues": [
+                                "None",
+                                "Breathe",
+                                "Move",
+                                "Morph",
+                                "Flame",
+                                "Pulse"
+                            ],
                             "writable": true
                         }
                     ]

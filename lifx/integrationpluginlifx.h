@@ -33,7 +33,7 @@
 
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
-#include "lifx.h"
+#include "lifxlan.h"
 #include "lifxcloud.h"
 
 #include "network/networkaccessmanager.h"
@@ -71,7 +71,7 @@ private:
     PluginTimer *m_pluginTimer = nullptr;
     QHash<LifxCloud *, ThingSetupInfo *> m_asyncCloudSetups;
     QHash<int, ThingActionInfo *> m_asyncActions;
-    QHash<Thing *, Lifx *> m_lifxConnections;
+    QHash<Thing *, LifxLan *> m_lifxLanConnections;
     QHash<Thing *, LifxCloud *> m_lifxCloudConnections;
     QHash<LifxCloud *, BrowseResult *> m_asyncBrowseResults;
     QHash<int, BrowserActionInfo *> m_asyncBrowserItem;
@@ -87,11 +87,11 @@ private:
     QHash<ThingClassId, ParamTypeId> m_idParamTypeIds;
 
     QHash<ThingId, ThingActionInfo *> m_pendingBrightnessAction;
-    QHash<int, Lifx::LifxProduct> m_lifxProducts;
+    QHash<int, LifxLan::LifxProduct> m_lifxProducts;
 
 private slots:
-    void onConnectionChanged(bool connected);
-    void onRequestExecuted(int requestId, bool success);
+    void onLifxLanConnectionChanged(bool connected);
+    void onLifxLanRequestExecuted(int requestId, bool success);
 
     void onLifxCloudConnectionChanged(bool connected);
     void onLifxCloudAuthenticationChanged(bool authenticated);
