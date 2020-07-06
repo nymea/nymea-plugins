@@ -33,47 +33,22 @@
 #include "extern-plugininfo.h"
 
 #include <QColor>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
 
-Lifx::Lifx(QObject *parent) :
-    QObject(parent)
+
+Lifx::Lifx(const QHostAddress &address, quint16 port, QObject *parent) :
+    QObject(parent),
+    m_host(address),
+    m_port(port)
 {
     m_reconnectTimer = new QTimer(this);
     m_reconnectTimer->setSingleShot(true);
     connect(m_reconnectTimer, &QTimer::timeout, this, &Lifx::onReconnectTimer);
     m_clientId = qrand();
 
-    QFile file;
-    file.setFileName("/tmp/products.json");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qCWarning(dcLifx()) << "Could not open products file" << file.errorString();
-    }
-    QJsonDocument productsJson = QJsonDocument::fromJson(file.readAll());
-    file.close();
+    m_socket = new QUdpSocket(this);
 
-    if (!productsJson.isArray()) {
-        qCWarning(dcLifx()) << "Products JSON is not a valid array";
-    }
-    QJsonArray productsArray = productsJson.array().first().toObject().value("products").toArray();
-    foreach (QJsonValue value, productsArray) {
-        QJsonObject object = value.toObject();
-        LifxProduct product;
-        product.pid = object["pid"].toInt();
-        product.name = object["name"].toString();
-        qCDebug(dcLifx()) << "Lifx product JSON, found product. PID:" << product.pid << "Name" << product.name;
-        QJsonObject features = object["features"].toObject();
-        product.color = features["color"].toBool();
-        product.infrared = features["infrared"].toBool();
-        product.matrix = features["matrix"].toBool();
-        product.multizone = features["multizone"].toBool();
-        product.minColorTemperature = features["temperature_range"].toArray().first().toInt();
-        product.maxColorTemperature = features["temperature_range"].toArray().last().toInt();
-        product.chain = features["chain"].toBool();
-        m_lifxProducts.insert(product.pid, product);
-    }
+    m_socket->setSocketOption(QAbstractSocket::MulticastTtlOption, QVariant(1));
+    m_socket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, QVariant(1));
 }
 
 Lifx::~Lifx()
@@ -86,20 +61,7 @@ Lifx::~Lifx()
 
 bool Lifx::enable()
 {
-    // Clean up
-    if (m_socket) {
-        delete m_socket;
-        m_socket = nullptr;
-    }
-
     // Bind udp socket and join multicast group
-    m_socket = new QUdpSocket(this);
-    m_port = 56700;
-    m_host = QHostAddress("239.255.255.250");
-
-    m_socket->setSocketOption(QAbstractSocket::MulticastTtlOption,QVariant(1));
-    m_socket->setSocketOption(QAbstractSocket::MulticastLoopbackOption,QVariant(1));
-
     if(!m_socket->bind(QHostAddress::AnyIPv4, m_port, QUdpSocket::ShareAddress)){
         qCWarning(dcLifx()) << "could not bind to port" << m_port;
         delete m_socket;
@@ -107,8 +69,8 @@ bool Lifx::enable()
         return false;
     }
 
-    if(!m_socket->joinMulticastGroup(m_host)){
-        qCWarning(dcLifx()) << "could not join multicast group" << m_host;
+    if(!m_socket->joinMulticastGroup(QHostAddress("239.255.255.250"))){
+        qCWarning(dcLifx()) << "could not join multicast group";
         delete m_socket;
         m_socket = nullptr;
         return false;
@@ -118,31 +80,37 @@ bool Lifx::enable()
     return true;
 }
 
-void Lifx::discoverDevices()
+void Lifx::setHostAddress(const QHostAddress &address)
 {
-    Message message;
-    sendMessage(message);
+    m_host = address;
 }
 
-int Lifx::setColorTemperature(int mirad, int msFadeTime)
+void Lifx::setPort(quint16 port)
+{
+    m_port = port;
+}
+
+int Lifx::setColorTemperature(uint mirad, uint msFadeTime)
 {
     Q_UNUSED(mirad)
     Q_UNUSED(msFadeTime)
     int requestId = qrand();
-
+    Message message;
+    sendMessage(message);
     return requestId;
 }
 
-int Lifx::setColor(QColor color, int msFadeTime)
+int Lifx::setColor(QColor color, uint msFadeTime)
 {
     Q_UNUSED(color)
     Q_UNUSED(msFadeTime)
     int requestId = qrand();
-
+    Message message;
+    sendMessage(message);
     return requestId;
 }
 
-int Lifx::setBrightness(int percentage, int msFadeTime)
+int Lifx::setBrightness(uint percentage, uint msFadeTime)
 {
     Q_UNUSED(percentage)
     Q_UNUSED(msFadeTime)
@@ -152,12 +120,13 @@ int Lifx::setBrightness(int percentage, int msFadeTime)
     return requestId;
 }
 
-int Lifx::setPower(bool power, int msFadeTime)
+int Lifx::setPower(bool power, uint msFadeTime)
 {
     Q_UNUSED(power)
     Q_UNUSED(msFadeTime)
     int requestId = qrand();
-
+    Message message;
+    sendMessage(message);
     return requestId;
 }
 
@@ -219,14 +188,13 @@ void Lifx::sendMessage(const Lifx::Message &message)
     //Finally another reserved field of 16 bits (2 bytes).
     header.append(2, '0');
 
-    QByteArray payload;
-
-    QByteArray message;
-    message.append(header);
-    message.append(payload);
-    message.append(message.length());
-    //header = QByteArray::fromHex("0x310000340000000000000000000000000000000000000000000000000000000066000000005555FFFFFFFFAC0D00040000");
-    m_socket->writeDatagram(message, m_host, m_port);
+    QByteArray fullMessage;
+    //message.append(header);
+    //message.append(payload);
+    //message.append(message.length());
+    fullMessage = QByteArray::fromHex("0x310000340000000000000000000000000000000000000000000000000000000066000000005555FFFFFFFFAC0D00040000");
+    std::reverse(fullMessage.begin(), fullMessage.end());
+    m_socket->writeDatagram(fullMessage, m_host, m_port);
 }
 
 void Lifx::onStateChanged(QAbstractSocket::SocketState state)

@@ -28,7 +28,6 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
 #ifndef LIFX_H
 #define LIFX_H
 
@@ -123,15 +122,16 @@ public:
       bool chain;
     };
 
-    explicit Lifx(QObject *parent = nullptr);
+    explicit Lifx(const QHostAddress &address, quint16 port = 56700, QObject *parent = nullptr);
     ~Lifx();
     bool enable();
+    void setHostAddress(const QHostAddress &address);
+    void setPort(quint16 port);
 
-    void discoverDevices();
-    int setColorTemperature(int kelvin, int msFadeTime=500);
-    int setColor(QColor color, int msFadeTime = 500);
-    int setBrightness(int percentage, int msFadeTime = 500);
-    int setPower(bool power, int msFadeTime = 500);
+    int setColorTemperature(uint kelvin, uint msFadeTime=500);
+    int setColor(QColor color, uint msFadeTime = 500);
+    int setBrightness(uint percentage, uint msFadeTime = 500);
+    int setPower(bool power, uint msFadeTime = 500);
     int flash();
     int flash15s();
 
@@ -142,7 +142,6 @@ private:
     QHostAddress m_host;
     quint16 m_port;
     quint8 m_sequenceNumber = 0;
-    QHash<int, LifxProduct> m_lifxProducts;
 
     void sendMessage(const Message &message);
 
@@ -153,7 +152,6 @@ private slots:
 
 signals:
     void connectionChanged(bool connected);
-    void deviceDiscovered(const QHostAddress &address, int port, const LifxProduct &product);
     //void requestExecuted(int requestId, bool success);
     //void errorReceived(int code, const QString &message);
 

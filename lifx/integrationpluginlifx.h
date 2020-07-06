@@ -34,6 +34,11 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 #include "lifx.h"
+#include "lifxcloud.h"
+
+#include "network/networkaccessmanager.h"
+#include "network/zeroconf/zeroconfservicebrowser.h"
+#include "network/zeroconf/zeroconfserviceentry.h"
 
 #include <QTimer>
 
@@ -48,33 +53,51 @@ public:
     explicit IntegrationPluginLifx();
 
     void init() override;
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
+    void browseThing(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+
 private:
+    NetworkAccessManager *m_networkManager = nullptr;
     PluginTimer *m_pluginTimer = nullptr;
+    QHash<LifxCloud *, ThingSetupInfo *> m_asyncCloudSetups;
     QHash<int, ThingActionInfo *> m_asyncActions;
-    Lifx *m_lifxConnection;
+    QHash<Thing *, Lifx *> m_lifxConnections;
+    QHash<Thing *, LifxCloud *> m_lifxCloudConnections;
+    QHash<LifxCloud *, BrowseResult *> m_asyncBrowseResults;
+    QHash<int, BrowserActionInfo *> m_asyncBrowserItem;
+
+    ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
 
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_powerStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_brightnessStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_colorTemperatureStateTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_hostAddressParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_portParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_idParamTypeIds;
 
     QHash<ThingId, ThingActionInfo *> m_pendingBrightnessAction;
+    QHash<int, Lifx::LifxProduct> m_lifxProducts;
 
 private slots:
     void onDeviceNameChanged();
     void onConnectionChanged(bool connected);
     void onRequestExecuted(int requestId, bool success);
 
-    /*void onPowerNotificationReceived(bool status);
-    void onBrightnessNotificationReceived(int percentage);
-    void onColorTemperatureNotificationReceived(int kelvin);
-    void onRgbNotificationReceived(QRgb rgbColor);
-    void onNameNotificationReceived(const QString &name);*/
+    void onLifxCloudConnectionChanged(bool connected);
+    void onLifxCloudRequestExecuted(int requestId, bool success);
+    void onLifxCloudLightsListReceived(const QList<LifxCloud::Light> &lights);
+    void onLifxCloudScenesListReceived(const QList<LifxCloud::Scene> &scenes);
 };
 
 #endif // INTEGRATIONPLUGIN_LIFX_H
