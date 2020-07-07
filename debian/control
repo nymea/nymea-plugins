@@ -879,6 +879,9 @@ Package: nymea-plugin-remotessh
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         tmate,
+         sshpass,
+         openssh-client,
          nymea-plugins-translations,
 Description: nymea.io plugin to configure remotessh for your nymea:core
  The nymea daemon is a plugin based IoT (Internet of Things) server. The

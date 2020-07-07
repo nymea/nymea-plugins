@@ -15,6 +15,15 @@
                     "createMethods": ["user"],
                     "setupMethod": "userandpassword",
                     "interfaces": ["connectable"],
+                    "settingsTypes": [
+                        {
+                            "id": "942636bc-95fe-4165-9613-e24f38e49699",
+                            "name": "sshKeyFilePath",
+                            "displayName": "SSH key file",
+                            "type": "QString",
+                            "defaultValue": "/root/.ssh/id_rsa.pub"
+                        }
+                    ],
                     "paramTypes": [
                         {
                             "id": "92747d75-d18a-4915-bd48-0edd5cc5f19a",
@@ -64,18 +73,27 @@
                             "displayNameEvent": "SSH key changed",
                             "type": "QString",
                             "defaultValue": "-"
-                            }
-                        ]
-                    },
-                    {
-                        "id": "41936e94-dc08-4fe9-82cb-99f515cee1ed",
-                        "name": "tmate",
-                        "displayName": "tmate",
-                        "createMethods": ["user"],
-                        "interfaces": ["connectable"],
-                        "paramTypes": [
-                        ],
-                        "stateTypes":[
+                        }
+                    ]
+                },
+                {
+                    "id": "41936e94-dc08-4fe9-82cb-99f515cee1ed",
+                    "name": "tmate",
+                    "displayName": "tmate",
+                    "createMethods": ["user"],
+                    "interfaces": ["connectable"],
+                    "settingsTypes": [
+                        {
+                            "id": "497f4e4b-9789-45dd-8108-6aba8d76d66d",
+                            "name": "apiKey",
+                            "displayName": "API Key",
+                            "type": "QString",
+                            "defaultValue": "tmk-8WSspLRJX4bpNqvEGlba0MOa5P"
+                        }
+                    ],
+                    "paramTypes": [
+                    ],
+                    "stateTypes":[
                         {
                             "id": "4587e3c0-6be4-444e-8492-e7bce8537662",
                             "name": "connected",
@@ -91,14 +109,6 @@
                             "name": "sessionString",
                             "displayName": "Session",
                             "displayNameEvent": "Session changed",
-                            "type": "QString",
-                            "defaultValue": "-"
-                        },
-                        {
-                            "id": "039d39e3-187f-445b-be31-add68247c6f2",
-                            "name": "sshKey",
-                            "displayName": "SSH public key",
-                            "displayNameEvent": "SSH key changed",
                             "type": "QString",
                             "defaultValue": "-"
                         }

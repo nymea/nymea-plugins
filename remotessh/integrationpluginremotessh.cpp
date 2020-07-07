@@ -33,6 +33,7 @@
 
 #include <QFile>
 #include <QDir>
+#include <QUuid>
 
 IntegrationPluginRemoteSsh::IntegrationPluginRemoteSsh()
 {
@@ -42,7 +43,7 @@ IntegrationPluginRemoteSsh::IntegrationPluginRemoteSsh()
 void IntegrationPluginRemoteSsh::startPairing(ThingPairingInfo *info)
 {
     if (info->thingClassId() == reverseSshThingClassId) {
-        info->finish(Thing::ThingErrorNoError, "Please enter user name and password");
+        info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter user name and password"));
     } else {
         qCWarning(dcRemoteSsh()) << "Unhandled pairing method!";
         info->finish(Thing::ThingErrorCreationMethodNotSupported);
@@ -53,10 +54,11 @@ void IntegrationPluginRemoteSsh::confirmPairing(ThingPairingInfo *info, const QS
 {
     if (info->thingClassId() == reverseSshThingClassId) {
 
-            pluginStorage()->beginGroup(info->thingId().toString());
-            pluginStorage()->setValue("username", username);
-            pluginStorage()->setValue("password", secret);
-            pluginStorage()->endGroup();
+        pluginStorage()->beginGroup(info->thingId().toString());
+        pluginStorage()->setValue("username", username);
+        pluginStorage()->setValue("password", secret);
+        pluginStorage()->endGroup();
+        info->finish(Thing::ThingErrorNoError);
 
     } else {
         qCWarning(dcRemoteSsh()) << "Invalid thingClassId -> no pairing possible with this device";
@@ -71,10 +73,15 @@ void IntegrationPluginRemoteSsh::setupThing(ThingSetupInfo *info)
 
     qCDebug(dcRemoteSsh()) << "Setup" << thing->name() << thing->params();
     if (thing->thingClassId() == reverseSshThingClassId) {
-
+        QFile sshKey(thing->setting(reverseSshSettingsSshKeyFilePathParamTypeId).toString());
+        qCDebug(dcRemoteSsh()) << "Opening sshKey" << sshKey.fileName();
+        if (!sshKey.open(QFile::OpenModeFlag::ReadOnly)) {
+            startSshKeyGenProcess(thing);
+        } else {
+            thing->setStateValue(reverseSshSshKeyStateTypeId, sshKey.readAll());
+        }
         return info->finish(Thing::ThingErrorNoError);
     } else  if (thing->thingClassId() == tmateThingClassId) {
-
         return info->finish(Thing::ThingErrorNoError);
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
@@ -272,7 +279,7 @@ QProcess * IntegrationPluginRemoteSsh::startReverseSSHProcess(Thing *thing)
     pluginStorage()->endGroup();
 
     arguments << "-p" << password;
-    arguments << "ssh" << "-o StrictHostKeyChecking=no" << "-oUserKnownHostsFile=/dev/null";
+    arguments << "ssh" << "-o StrictHostKeyChecking=no" << "-o UserKnownHostsFile=/dev/null";
     arguments << "-TN" << "-R" << QString("%1:localhost:%2").arg(remotePort).arg(localPort) << QString("%1@%2").arg(user, address);
     process->start(QStringLiteral("sshpass"), arguments);
     qCDebug(dcRemoteSsh()) << "Command:" << process->program() << process->arguments();
@@ -327,7 +334,50 @@ QProcess *IntegrationPluginRemoteSsh::startTmateProcess(Thing *thing)
         qCWarning(dcRemoteSsh()) << "process read" << data;
     });
 
-    process->start(QStringLiteral("tmate -F"));
+    QStringList arguments;
+    arguments << "-k" << thing->setting(tmateSettingsApiKeyParamTypeId).toString();
+    QUuid sessionName = QUuid::createUuid();
+    thing->setStateValue(tmateSessionStringEventTypeId, sessionName.toString().remove('{').remove('}').remove("-"));
+    arguments << "-n" << sessionName.toString().remove('{').remove('}').remove("-");
+    arguments << "new-session" << "-d";
+    process->start(QStringLiteral("tmate"), arguments);
+    qCDebug(dcRemoteSsh()) << "Command:" << process->program() << process->arguments();
+    return process;
+}
+
+QProcess *IntegrationPluginRemoteSsh::startSshKeyGenProcess(Thing *thing)
+{
+    qCDebug(dcRemoteSsh()) << "Start ssh-keygen";
+    QProcess *process = new QProcess(this);
+    process->setProcessChannelMode(QProcess::MergedChannels);
+
+    connect(process, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [process, thing, this](int exitCode, QProcess::ExitStatus exitStatus){
+
+        if(exitStatus != QProcess::NormalExit || exitCode != 0) {
+            qCWarning(dcRemoteSsh()) << "Error:" << process->readAllStandardError();
+        }
+        qCDebug(dcRemoteSsh()) << "ssh-keygen process finished";
+        QString fileName;
+        if (thing->thingClassId() == reverseSshThingClassId) {
+            fileName = thing->setting(reverseSshSettingsSshKeyFilePathParamTypeId).toString();
+        }
+        QFile file(fileName);
+        if (file.open(QFile::OpenModeFlag::ReadOnly)) {
+            thing->setStateValue(reverseSshSshKeyStateTypeId, file.readAll());
+        }
+    });
+    connect(process, &QProcess::readyRead, this, [process, this] {
+        QByteArray data = process->readAll();
+        qCWarning(dcRemoteSsh()) << "process read" << data;
+    });
+    QString file;
+    if (thing->thingClassId() == reverseSshThingClassId) {
+        file = thing->setting(reverseSshSettingsSshKeyFilePathParamTypeId).toString();
+    } else {
+        process->deleteLater();
+        return nullptr;
+    }
+    process->start(QStringLiteral("ssh-keygen -t rsa -N '' -q -f %1").arg(file.remove(".pub")));
     qCDebug(dcRemoteSsh()) << "Command:" << process->program() << process->arguments();
     return process;
 }

@@ -62,13 +62,11 @@ private:
     QHash<QProcess *, ThingActionInfo*> m_startingProcess;
     QHash<QProcess *, ThingActionInfo*> m_killingProcess;
 
-    PluginTimer *m_pluginTimer = nullptr;
-
-    bool m_aboutToQuit = false;
-    QString m_identityFilePath;
+    PluginTimer *m_pluginTimer = nullptr;;
 
     QProcess *startReverseSSHProcess(Thing *thing);
     QProcess *startTmateProcess(Thing *thing);
+    QProcess *startSshKeyGenProcess(Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINREMOTESSH_H
