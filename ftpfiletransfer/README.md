@@ -14,6 +14,7 @@ upload logfiles or simply to share any file on the file system.
 ## Requirements
 
 * The package "nymea-plugin-ftpfiletransfer" must be installed.
+* The FTP server must be reachable, likely internet connection required.
 
 ## More
 

@@ -1,0 +1,13 @@
+{
+    "title": "FTP file transfer",
+    "tagline": "Browse the local file system and upload it to a FTP server.",
+    "icon": "ftp.png",
+    "stability": "community",
+    "offline": false,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "tool"
+    ]
+}
