@@ -46,6 +46,9 @@ class IntegrationPluginRemoteSsh : public IntegrationPlugin
 public:
     explicit IntegrationPluginRemoteSsh();
 
+    void startPairing(ThingPairingInfo *info) override;
+    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
     void thingRemoved(Thing *thing) override;

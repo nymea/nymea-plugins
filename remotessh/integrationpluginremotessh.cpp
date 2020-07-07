@@ -39,12 +39,37 @@ IntegrationPluginRemoteSsh::IntegrationPluginRemoteSsh()
 
 }
 
+void IntegrationPluginRemoteSsh::startPairing(ThingPairingInfo *info)
+{
+    if (info->thingClassId() == reverseSshThingClassId) {
+        info->finish(Thing::ThingErrorNoError, "Please enter user name and password");
+    } else {
+        qCWarning(dcRemoteSsh()) << "Unhandled pairing method!";
+        info->finish(Thing::ThingErrorCreationMethodNotSupported);
+    }
+}
+
+void IntegrationPluginRemoteSsh::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
+{
+    if (info->thingClassId() == reverseSshThingClassId) {
+
+            pluginStorage()->beginGroup(info->thingId().toString());
+            pluginStorage()->setValue("username", username);
+            pluginStorage()->setValue("password", secret);
+            pluginStorage()->endGroup();
+
+    } else {
+        qCWarning(dcRemoteSsh()) << "Invalid thingClassId -> no pairing possible with this device";
+        info->finish(Thing::ThingErrorThingClassNotFound);
+    }
+}
+
+
 void IntegrationPluginRemoteSsh::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
     qCDebug(dcRemoteSsh()) << "Setup" << thing->name() << thing->params();
-    m_identityFilePath = QString("%1/.ssh/id_rsa_guh").arg(QDir::homePath());
     if (thing->thingClassId() == reverseSshThingClassId) {
 
         return info->finish(Thing::ThingErrorNoError);
@@ -239,9 +264,12 @@ QProcess * IntegrationPluginRemoteSsh::startReverseSSHProcess(Thing *thing)
     QStringList arguments;
     int localPort    = thing->paramValue(reverseSshThingLocalPortParamTypeId).toInt();
     int remotePort   = thing->paramValue(reverseSshThingRemotePortParamTypeId).toInt();
-    QString user     = thing->paramValue(reverseSshThingUserParamTypeId).toString();
-    QString password = thing->paramValue(reverseSshThingPasswordParamTypeId).toString();
     QString address  = thing->paramValue(reverseSshThingAddressParamTypeId).toString();
+
+    pluginStorage()->beginGroup(thing->id().toString());
+    QString user = pluginStorage()->value("username").toString();
+    QString password = pluginStorage()->value("password").toString();
+    pluginStorage()->endGroup();
 
     arguments << "-p" << password;
     arguments << "ssh" << "-o StrictHostKeyChecking=no" << "-oUserKnownHostsFile=/dev/null";
