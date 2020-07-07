@@ -115,7 +115,7 @@ void IntegrationPluginLifx::startPairing(ThingPairingInfo *info)
         if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("LIFX server is not reachable."));
         } else {
-            info->finish(Thing::ThingErrorNoError, "Please enter your Token and password. Get the token from https://cloud.lifx.com/settings");
+            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter your user name and token. Get the token from https://cloud.lifx.com/settings"));
         }
     });
 }
@@ -134,7 +134,7 @@ void IntegrationPluginLifx::confirmPairing(ThingPairingInfo *info, const QString
         // check HTTP status code
         if (status != 200) {
             // Error setting up device with invalid token
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("This token is invalid."));
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("The token is invalid."));
             return;
         }
         qCDebug(dcLifx()) << "Confirm pairing successfull";
@@ -237,8 +237,9 @@ void IntegrationPluginLifx::setupThing(ThingSetupInfo *info)
         connect(lifxCloud, &LifxCloud::authenticationChanged, this, &IntegrationPluginLifx::onLifxCloudAuthenticationChanged);
         lifxCloud->setAuthorizationToken(token);
         lifxCloud->listLights();
-
-        //TODO try setup again if it failes
+        QTimer::singleShot(2000, info, [this, info] {
+            setupThing(info);
+        });
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -247,13 +248,12 @@ void IntegrationPluginLifx::setupThing(ThingSetupInfo *info)
 void IntegrationPluginLifx::postSetupThing(Thing *thing)
 {
     if (!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(15);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this]() {
             foreach (LifxLan *lifx, m_lifxLanConnections) {
                 Q_UNUSED(lifx)
                 //TODO update LAN device states
             }
-
             foreach (LifxCloud *lifx, m_lifxCloudConnections) {
                 lifx->listLights();
             }
@@ -275,6 +275,7 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
     LifxCloud *lifxCloud;
 
     if (m_lifxLanConnections.contains(thing)) {
+        // Local connection first
         lifx = m_lifxLanConnections.value(thing);
     } else if (m_lifxCloudConnections.contains(myThings().findById(thing->parentId()))) {
         lifxCloud = m_lifxCloudConnections.value(myThings().findById(thing->parentId()));

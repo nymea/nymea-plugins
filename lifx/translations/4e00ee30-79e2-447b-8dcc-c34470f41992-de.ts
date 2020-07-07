@@ -5,11 +5,11 @@
     <name>IntegrationPluginLifx</name>
     <message>
         <source>LIFX server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translation>LIFX Server ist nicht erreichbar</translation>
     </message>
     <message>
         <source>This token is invalid.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Token ist ungültig</translation>
     </message>
 </context>
 <context>
@@ -193,41 +193,41 @@ The name of the ActionType ({8bd20350-0e79-45dc-b68a-84da99356863}) of ThingClas
         <extracomment>The name of the ParamType (ThingClass: lifxAccount, EventType: connected, ID: {3e7b358b-d7de-4db4-8a3a-b9860eae186f})
 ----------
 The name of the StateType ({3e7b358b-d7de-4db4-8a3a-b9860eae186f}) of ThingClass lifxAccount</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden</translation>
     </message>
     <message>
         <source>Connected changed</source>
         <extracomment>The name of the EventType ({3e7b358b-d7de-4db4-8a3a-b9860eae186f}) of ThingClass lifxAccount</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden geändert</translation>
     </message>
     <message>
         <source>LIFX cloud account</source>
         <extracomment>The name of the ThingClass ({387c87f6-3e5b-4d6a-ba4d-372d0efad79f})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>LIFX Cloud-Account</translation>
     </message>
     <message>
         <source>Logged in</source>
         <extracomment>The name of the ParamType (ThingClass: lifxAccount, EventType: loggedIn, ID: {0db34069-5de0-4233-baec-27f039228524})
 ----------
 The name of the StateType ({0db34069-5de0-4233-baec-27f039228524}) of ThingClass lifxAccount</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingelogged</translation>
     </message>
     <message>
         <source>Logged in changed</source>
         <extracomment>The name of the EventType ({0db34069-5de0-4233-baec-27f039228524}) of ThingClass lifxAccount</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingelogged geändert</translation>
     </message>
     <message>
         <source>User name</source>
         <extracomment>The name of the ParamType (ThingClass: lifxAccount, EventType: userDisplayName, ID: {554afd9b-a2ec-4d28-9065-2b9ab3a9e3b2})
 ----------
 The name of the StateType ({554afd9b-a2ec-4d28-9065-2b9ab3a9e3b2}) of ThingClass lifxAccount</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername</translation>
     </message>
     <message>
         <source>User name changed</source>
         <extracomment>The name of the EventType ({554afd9b-a2ec-4d28-9065-2b9ab3a9e3b2}) of ThingClass lifxAccount</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername geändert</translation>
     </message>
 </context>
 </TS>
