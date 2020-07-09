@@ -141,8 +141,9 @@
                             "id": "27a95b8d-7f97-441b-a3be-0646c517cb06",
                             "name": "closingTime",
                             "displayName": "Closing time [MilliSecond]",
-                            "type": "int",
-                            "defaultValue": 0
+                            "type": "uint",
+                            "minValue": 1,
+                            "defaultValue": 5000
                         }
                     ],
                     "stateTypes": [
@@ -232,15 +233,17 @@
                             "id": "4c0bf07d-aaab-4f67-af65-00ceaefbaa84",
                             "name": "closingTime",
                             "displayName": "Closing time [MilliSecond]",
-                            "type": "int",
-                            "defaultValue": 0
+                            "minValue": 1,
+                            "type": "uint",
+                            "defaultValue": 5000
                         },
                         {
                             "id": "6c8340bf-7fd3-43e3-a75b-dfa2f6426e11",
                             "name": "angleTime",
                             "displayName": "Angle end to end time [MilliSecond]",
-                            "type": "int",
-                            "defaultValue": 0
+                            "minValue": 1,
+                            "type": "uint",
+                            "defaultValue": 1000
                         }
                     ],
                     "stateTypes": [

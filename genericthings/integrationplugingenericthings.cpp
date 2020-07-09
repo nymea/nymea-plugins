@@ -46,7 +46,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
     if (thing->thingClassId() == extendedBlindThingClassId) {
         uint closingTime = thing->paramValue(extendedBlindThingClosingTimeParamTypeId).toUInt();
-        if (closingTime <= 0) {
+        if (closingTime == 0) {
             return info->finish(Thing::ThingErrorSetupFailed, tr("Invalid closing time"));
         }
         QTimer* timer = new QTimer(this);
@@ -60,10 +60,6 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 if (currentPercentage == 100) {
                     setBlindState(BlindStateStopped, thing);
                     qCDebug(dcGenericThings()) << "Extended blind is closed, stopping timer";
-                } else if (currentPercentage > 100) {
-                    currentPercentage = 100;
-                    setBlindState(BlindStateStopped, thing);
-                    qCWarning(dcGenericThings()) << "Extended blind overshoot 100 percent";
                 } else {
                     currentPercentage++;
                     thing->setStateValue(extendedBlindPercentageStateTypeId, currentPercentage);
@@ -99,7 +95,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
         timer->setInterval(closingTime/100.00); // closing timer / 100 to update on every percent
         m_extendedBlindPercentageTimer.insert(thing, timer);
 
-        connect(timer, &QTimer::timeout, this, [thing, this] {
+        connect(timer, &QTimer::timeout, thing, [thing, this] {
             uint currentPercentage = thing->stateValue(venetianBlindPercentageStateTypeId).toUInt();
 
             if (thing->stateValue(venetianBlindStatusStateTypeId).toString() == "Closing") {
@@ -140,7 +136,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
         QTimer* angleTimer = new QTimer(this);
         angleTimer->setInterval(angleTime/180.00); // -90 to 90 degree -> 180 degree total
         m_venetianBlindAngleTimer.insert(thing, angleTimer);
-        connect(angleTimer, &QTimer::timeout, this, [thing, this] {
+        connect(angleTimer, &QTimer::timeout, thing, [thing, this] {
             int currentAngle = thing->stateValue(venetianBlindAngleStateTypeId).toInt();
             if (thing->stateValue(venetianBlindStatusStateTypeId).toString() == "Closing") {
 
@@ -463,7 +459,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else {
-        Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
 
