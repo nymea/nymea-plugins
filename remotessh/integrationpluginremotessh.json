@@ -13,14 +13,23 @@
                     "name": "reverseSsh",
                     "displayName": "Reverse SSH",
                     "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
                     "interfaces": ["connectable"],
+                    "settingsTypes": [
+                        {
+                            "id": "942636bc-95fe-4165-9613-e24f38e49699",
+                            "name": "sshKeyFilePath",
+                            "displayName": "SSH key file",
+                            "type": "QString",
+                            "defaultValue": "/root/.ssh/id_rsa"
+                        }
+                    ],
                     "paramTypes": [
                         {
                             "id": "92747d75-d18a-4915-bd48-0edd5cc5f19a",
                             "name": "address",
-                            "displayName": "Address",
+                            "displayName": "Host address",
                             "type": "QString",
-                            "inputType": "IPv4Address",
                             "defaultValue": "127.0.0.1"
                         },
                         {
@@ -36,33 +45,9 @@
                             "displayName": "Remote Port",
                             "type": "int",
                             "defaultValue": 2022
-                        },
-                        {
-                            "id": "c675f7ea-f94a-46e9-bf0f-92682182d6dd",
-                            "name": "user",
-                            "displayName": "User Name",
-                            "type": "QString",
-                            "inputType": "TextLine",
-                            "defaultValue": "Enter your user"
-                        },
-                        {
-                            "id": "d8cc7177-bf35-4394-ab7b-881184bd8c8b",
-                            "name": "password",
-                            "displayName": "Password",
-                            "type": "QString",
-                            "inputType": "TextLine",
-                            "defaultValue": "Enter your password"
                         }
                     ],
                     "stateTypes":[
-                        {
-                            "id": "19f079f0-1654-44c3-ab10-e7d7f9742e09",
-                            "name": "reachable",
-                            "displayName": "Server Reachable",
-                            "displayNameEvent": "reachable status changed",
-                            "type": "bool",
-                            "defaultValue": true
-                        },
                         {
                             "id": "1ae425b2-d642-42ca-be41-4d06dff5c5cd",
                             "name": "connected",
