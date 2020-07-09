@@ -98,7 +98,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
     } else if (info->thing()->thingClassId() == venetianBlindThingClassId) {
         uint closingTime = thing->setting(venetianBlindSettingsClosingTimeParamTypeId).toUInt();
         uint angleTime = thing->setting(venetianBlindSettingsAngleTimeParamTypeId).toUInt();
-        if (closingTime <=0 || closingTime < angleTime || angleTime <= 0) {
+        if (closingTime < angleTime) {
             return info->finish(Thing::ThingErrorSetupFailed, tr("Invalid closing or angle time"));
         }
         QTimer* closingTimer = new QTimer(this);
