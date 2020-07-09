@@ -21,7 +21,7 @@
                             "displayName": "Address",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue": "http://solar-log"
+                            "defaultValue": "solar-log"
                         }
                     ],
                     "stateTypes": [

@@ -90,7 +90,7 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, QByteArray("{\"801\":{\"170\":null}}"));
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, thing]{
+    connect(reply, &QNetworkReply::finished, thing, [this, reply, thing]{
 
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
@@ -110,7 +110,7 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(rawData, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcSolarlog()) << "Received invalide JSON object, try to upgrade the Solarlog firmware. Min Version is 3.5.";
+            qCWarning(dcSolarlog()) << "Received invalid JSON object, try to upgrade the Solarlog firmware. Min Version is 3.5.";
             if (m_asyncSetup.contains(thing)) {
                 ThingSetupInfo *info = m_asyncSetup.take(thing);
                 info->finish(Thing::ThingErrorHardwareFailure, tr("Outdated Solar-Log firmware"));
