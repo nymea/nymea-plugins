@@ -136,7 +136,7 @@
                     "displayName": "Generic extended blind",
                     "createMethods": ["user"],
                     "interfaces": ["extendedblind"],
-                    "paramTypes": [
+                    "settingsTypes": [
                         {
                             "id": "27a95b8d-7f97-441b-a3be-0646c517cb06",
                             "name": "closingTime",
@@ -228,7 +228,7 @@
                     "displayName": "Venetian blind",
                     "createMethods": ["user"],
                     "interfaces": ["venetianblind"],
-                    "paramTypes": [
+                    "settingsTypes": [
                         {
                             "id": "4c0bf07d-aaab-4f67-af65-00ceaefbaa84",
                             "name": "closingTime",
