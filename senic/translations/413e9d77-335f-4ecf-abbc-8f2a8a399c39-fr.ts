@@ -165,7 +165,7 @@ The name of the StateType ({edcf76c6-9fed-4c26-9853-c284cf887adb}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: rotation, ID: {69a5f495-5452-434b-8fb8-b73d992c5446})
 ----------
 The name of the StateType ({69a5f495-5452-434b-8fb8-b73d992c5446}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rotation</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="127"/>
