@@ -192,7 +192,7 @@ The name of the StateType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="195"/>
         <source>Pressure changed</source>
         <extracomment>The name of the EventType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of ThingClass indoor</extracomment>
-        <translation>Pression</translation>
+        <translation>Pression changée</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="198"/>
@@ -201,13 +201,13 @@ The name of the StateType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: outdoor, EventType: signalStrength, ID: {0faa3d08-9004-46fb-a5aa-a59b75e454cc})
 ----------
 The name of the StateType ({0faa3d08-9004-46fb-a5aa-a59b75e454cc}) of ThingClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Puissance du signal</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="204"/>
         <source>Signal strength changed</source>
         <extracomment>The name of the EventType ({0faa3d08-9004-46fb-a5aa-a59b75e454cc}) of ThingClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La puissance du signal a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="207"/>
@@ -222,7 +222,7 @@ The name of the StateType ({f98776bd-887e-4b01-a87f-3d8224180563}) of ThingClass
 The name of the ParamType (ThingClass: indoor, EventType: temperature, ID: {3cb25538-e463-40ae-92f9-8f34f0c06b92})
 ----------
 The name of the StateType ({3cb25538-e463-40ae-92f9-8f34f0c06b92}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperature</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="219"/>
