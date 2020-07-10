@@ -51,13 +51,13 @@ The name of the plugin Senic ({413e9d77-335f-4ecf-abbc-8f2a8a399c39})</extracomm
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="79"/>
         <source>Button pressed</source>
         <extracomment>The name of the EventType ({24649eb2-47d1-4a2b-8c09-1f074382e2c4}) of ThingClass nuimo</extracomment>
-        <translation>Button gedrückt.</translation>
+        <translation>Button gedrückt</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="76"/>
         <source>Button name</source>
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: pressed, ID: {8ed643c0-1b8a-4709-8abf-717cf213f4a4})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Button Name</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="88"/>
@@ -93,7 +93,7 @@ The name of the StateType ({5c400da4-a14e-4e0a-be9f-c82ffe7e1972}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="52"/>
         <source>Automatically display symbols</source>
         <extracomment>The name of the ParamType (ThingClass: senic, Type: plugin, ID: {ba3d4269-940b-42ee-8c73-1e1bdea329c2})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Automatisch Symbole anzeigen.</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="55"/>
