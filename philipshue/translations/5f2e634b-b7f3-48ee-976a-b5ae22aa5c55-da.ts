@@ -52,7 +52,7 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1350"/>
         <source>Philips Hue Outdoor sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue Outdoor sensor</translation>
     </message>
 </context>
 <context>
