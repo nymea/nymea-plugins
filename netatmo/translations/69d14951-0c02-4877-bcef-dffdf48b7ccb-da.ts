@@ -6,22 +6,22 @@
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="55"/>
         <source>Netatmo server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translation>Netatmo-serveren kan ikke nås.</translation>
     </message>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="57"/>
         <source>Please enter the login credentials for your Netatmo account.</source>
-        <translation type="unfinished"></translation>
+        <translation>Indtast login-legitimationsoplysninger for din Netatmo-konto.</translation>
     </message>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="79"/>
         <source>Wrong username or password</source>
-        <translation type="unfinished"></translation>
+        <translation>Forkert brugernavn eller adgangskode</translation>
     </message>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="147"/>
         <source>Error logging in to Netatmo server.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fejl ved login på Netatmo-serveren.</translation>
     </message>
 </context>
 <context>
@@ -33,13 +33,13 @@
         <extracomment>The name of the ParamType (ThingClass: netatmoConnection, EventType: connected, ID: {2f79bc1d-27ed-480a-b583-728363c83ea6})
 ----------
 The name of the StateType ({2f79bc1d-27ed-480a-b583-728363c83ea6}) of ThingClass netatmoConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Oversættelse</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="90"/>
         <source>Available changed</source>
         <extracomment>The name of the EventType ({2f79bc1d-27ed-480a-b583-728363c83ea6}) of ThingClass netatmoConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tilgængelig ændret</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="93"/>
