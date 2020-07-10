@@ -127,7 +127,7 @@ The name of the StateType ({452c0388-7fa1-414e-aeb2-8c7c385824b4}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="242"/>
         <source>nymea</source>
         <extracomment>The name of the vendor ({2062d64d-3232-433c-88bc-0d33c0ba2ba6})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>nymea</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="293"/>
