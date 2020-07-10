@@ -108,7 +108,7 @@ The name of the StateType ({b5ee2465-7fa1-450b-8073-f115537d3409}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="61"/>
         <source>Battery changed</source>
         <extracomment>The name of the EventType ({b5ee2465-7fa1-450b-8073-f115537d3409}) of ThingClass nuimo</extracomment>
-        <translation>Battery wechsel.</translation>
+        <translation>Battery wechsel</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="64"/>
@@ -117,19 +117,19 @@ The name of the StateType ({b5ee2465-7fa1-450b-8073-f115537d3409}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: batteryCritical, ID: {aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd})
 ----------
 The name of the StateType ({aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie kritisch</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="70"/>
         <source>Battery critical changed</source>
         <extracomment>The name of the EventType ({aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Battery kritisch geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="73"/>
         <source>Button long pressed</source>
         <extracomment>The name of the EventType ({a2f4add5-f76a-4dca-ae68-4107533bee0e}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Button lange gedrückt</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="91"/>
@@ -144,19 +144,19 @@ The name of the StateType ({edcf76c6-9fed-4c26-9853-c284cf887adb}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="109"/>
         <source>Logo</source>
         <extracomment>The name of the ParamType (ThingClass: nuimo, ActionType: showLogo, ID: {a8f72c37-9cb5-4885-a7e4-b2b396f8e4cd})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Logo</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="112"/>
         <source>Long press time</source>
         <extracomment>The name of the ParamType (ThingClass: senic, Type: plugin, ID: {f9900dfe-310b-462b-b09d-a999df441075})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lange Pressezeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="115"/>
         <source>Mac address</source>
         <extracomment>The name of the ParamType (ThingClass: nuimo, Type: thing, ID: {71553f6a-2ed4-4896-bb7b-52e7dca948b2})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Mac Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="121"/>
@@ -165,7 +165,7 @@ The name of the StateType ({edcf76c6-9fed-4c26-9853-c284cf887adb}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: rotation, ID: {69a5f495-5452-434b-8fb8-b73d992c5446})
 ----------
 The name of the StateType ({69a5f495-5452-434b-8fb8-b73d992c5446}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rotation</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="127"/>
