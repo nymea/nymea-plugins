@@ -129,7 +129,7 @@ The name of the StateType ({154aad5c-4998-43c2-b9ee-0b997eb6dd69}) of ThingClass
 The name of the ParamType (ThingClass: indoor, EventType: updateTime, ID: {50da9f6b-c350-401c-a72e-2e4036f3975d})
 ----------
 The name of the StateType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of ThingClass indoor</extracomment>
-        <translation>Sidste ændring</translation>
+        <translation>Sidste opdatering</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="156"/>
@@ -147,7 +147,7 @@ The name of the EventType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: outdoor, Type: thing, ID: {73a76c5c-84f5-4e65-8541-457e5aca9bb0})
 ----------
 The name of the ParamType (ThingClass: indoor, Type: thing, ID: {157d470a-e579-4d0e-b879-6b5bfa8e34ae})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>MAC Address</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="168"/>
