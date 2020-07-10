@@ -171,7 +171,7 @@ The name of the StateType ({69a5f495-5452-434b-8fb8-b73d992c5446}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="127"/>
         <source>Rotation changed</source>
         <extracomment>The name of the EventType ({69a5f495-5452-434b-8fb8-b73d992c5446}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rotation ændret</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="145"/>
