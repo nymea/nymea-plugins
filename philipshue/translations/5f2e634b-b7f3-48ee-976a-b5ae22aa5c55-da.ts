@@ -160,7 +160,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="305"/>
         <source>Hue Smart Button</source>
         <extracomment>The name of the ThingClass ({1e34a056-9f37-4741-b249-a5eca7a4ab4e})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Smart Button</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="353"/>
