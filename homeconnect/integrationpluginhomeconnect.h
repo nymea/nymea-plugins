@@ -41,7 +41,7 @@
 class IntegrationPluginHomeConnect : public IntegrationPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "IntegrationPluginHomeConnect.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginhomeconnect.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:
@@ -62,15 +62,17 @@ private:
     PluginTimer *m_pluginTimer5sec = nullptr;
     PluginTimer *m_pluginTimer60sec = nullptr;
 
+    QHash<HomeConnect *, ThingSetupInfo *> m_asyncSetup;
+
     QHash<ThingId, HomeConnect *> m_setupHomeConnectConnections;
     QHash<Thing *, HomeConnect *> m_homeConnectConnections;
 
-    QHash<QUuid, ActionId> m_pendingActions;
+    QHash<QUuid, ThingActionInfo *> m_pendingActions;
 
 private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
-    void onActionExecuted(QUuid actionId, bool success);
+    void onRequestExecuted(QUuid requestId, bool success);
 };
 
 #endif // INTEGRATIONPLUGINHOMECONNECT_H
