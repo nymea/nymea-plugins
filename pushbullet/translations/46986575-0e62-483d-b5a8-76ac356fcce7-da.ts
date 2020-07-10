@@ -7,37 +7,37 @@
         <location filename="../integrationpluginpushbullet.cpp" line="69"/>
         <source>The provided token must not be empty.</source>
         <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Det medfølgende token må ikke være tomt.</translation>
     </message>
     <message>
         <location filename="../integrationpluginpushbullet.cpp" line="81"/>
         <source>The provided token is not valid.</source>
         <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Det angivne token er ikke gyldigt.</translation>
     </message>
     <message>
         <location filename="../integrationpluginpushbullet.cpp" line="87"/>
         <source>Error connecting to Pushbullet.</source>
         <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Fejl ved forbindelse til Pushbullet.</translation>
     </message>
     <message>
         <location filename="../integrationpluginpushbullet.cpp" line="99"/>
         <source>Received unexpected data from Pushbullet.</source>
         <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Modtaget uventede data fra Pushbullet.</translation>
     </message>
     <message>
         <location filename="../integrationpluginpushbullet.cpp" line="107"/>
         <location filename="../integrationpluginpushbullet.cpp" line="171"/>
         <source>The Pushbullet account seems to be disabled.</source>
         <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Pushbullet-kontoen ser ud til at være deaktiveret.</translation>
     </message>
     <message>
         <location filename="../integrationpluginpushbullet.cpp" line="137"/>
         <source>Not authenticated to Pushbullet.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ikke godkendt til Pushbullet.</translation>
     </message>
 </context>
 <context>
