@@ -6,22 +6,22 @@
     <message>
         <location filename="../integrationpluginsenic.cpp" line="52"/>
         <source>Bluetooth is not available on this system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bluetooth n&apos;est pas disponible sur ce système.</translation>
     </message>
     <message>
         <location filename="../integrationpluginsenic.cpp" line="55"/>
         <source>Bluetooth is disabled. Please enable Bluetooth and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bluetooth est désactivé. Veuillez activer Bluetooth et réessayer.</translation>
     </message>
     <message>
         <location filename="../integrationpluginsenic.cpp" line="64"/>
         <source>An error happened during Bluetooth discovery.</source>
-        <translation type="unfinished"></translation>
+        <translation>Une erreur s&apos;est produite lors de la découverte de Bluetooth.</translation>
     </message>
     <message>
         <location filename="../integrationpluginsenic.cpp" line="124"/>
         <source>Error connecting to nuimo.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur de connexion à nuimo.</translation>
     </message>
 </context>
 <context>
