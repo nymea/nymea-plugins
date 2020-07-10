@@ -93,7 +93,7 @@ The name of the StateType ({5c400da4-a14e-4e0a-be9f-c82ffe7e1972}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="52"/>
         <source>Automatically display symbols</source>
         <extracomment>The name of the ParamType (ThingClass: senic, Type: plugin, ID: {ba3d4269-940b-42ee-8c73-1e1bdea329c2})</extracomment>
-        <translation>Automatisch Symbole anzeigen.</translation>
+        <translation>Automatisch Symbole anzeigen</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="55"/>
@@ -102,13 +102,13 @@ The name of the StateType ({5c400da4-a14e-4e0a-be9f-c82ffe7e1972}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: batteryLevel, ID: {b5ee2465-7fa1-450b-8073-f115537d3409})
 ----------
 The name of the StateType ({b5ee2465-7fa1-450b-8073-f115537d3409}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Battery</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="61"/>
         <source>Battery changed</source>
         <extracomment>The name of the EventType ({b5ee2465-7fa1-450b-8073-f115537d3409}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Battery wechsel.</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="64"/>
