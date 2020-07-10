@@ -44,6 +44,126 @@
                             "type": "QString"
                         }
                     ]
+                },
+                {
+                    "id": "96845b7d-4c20-43a0-a810-ec505df3ee88",
+                    "name": "oven",
+                    "displayName": "Oven",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e0a6c618-d849-4206-9e3c-cd01352664e7",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "bb0fcd0b-9594-4368-99d9-3ad5e5a8136b",
+                    "name": "dishwasher",
+                    "displayName": "Dishwasher",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7c056989-d91b-492c-9206-ef77fb81b0c8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "f6b39ce2-8276-4db7-b2a3-4a04cafacbb9",
+                    "name": "coffeMachine",
+                    "displayName": "Coffe Machine",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "796aa7d3-db32-4b6a-88b0-323813feceb3",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "f360cc43-41fc-454a-b6df-09ec0a66c22a",
+                    "name": "dryer",
+                    "displayName": "Dryer",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "485f895a-5c2d-4e1a-8f77-a2d020363635",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "6cbf309d-bde8-4e6e-ad6d-b85c8fc1843f",
+                    "name": "fridge",
+                    "displayName": "Fridge",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "16931afd-44f6-4b13-bd3e-f6d30ac54ea0",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "aaec390e-a61f-40ea-b42c-80f69428690b",
+                    "name": "washer",
+                    "displayName": "Washer",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "950a8bf0-83c4-4e1b-9c00-167a4d3e3c22",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
                 }
             ]
         }

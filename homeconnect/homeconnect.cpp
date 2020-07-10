@@ -49,6 +49,16 @@ HomeConnect::HomeConnect(NetworkAccessManager *networkmanager,  const QByteArray
     }
 }
 
+QByteArray HomeConnect::accessToken()
+{
+    return m_accessToken;
+}
+
+QByteArray HomeConnect::refreshToken()
+{
+    return m_refreshToken;
+}
+
 QUrl HomeConnect::getLoginUrl(const QUrl &redirectUrl, const QString &scope)
 {
     if (m_clientKey.isEmpty()) {
@@ -66,11 +76,12 @@ QUrl HomeConnect::getLoginUrl(const QUrl &redirectUrl, const QString &scope)
     queryParams.addQueryItem("client_id", m_clientKey);
     queryParams.addQueryItem("redirect_uri", m_redirectUri);
     queryParams.addQueryItem("response_type", "code");
-    queryParams.addQueryItem("scope", "TODO");
+    queryParams.addQueryItem("scope", scope);
     queryParams.addQueryItem("state", QUuid::createUuid().toString());
     queryParams.addQueryItem("nonce", QUuid::createUuid().toString());
-    //queryParams.addQueryItem("code_challenge", QUuid::createUuid().toString());
-    //queryParams.addQueryItem("code_challenge_method", QUuid::createUuid().toString());
+    m_codeChallenge = QUuid::createUuid().toString().remove('{').remove('}').remove("-");
+    queryParams.addQueryItem("code_challenge", m_codeChallenge);
+    queryParams.addQueryItem("code_challenge_method", "plain");
     url.setQuery(queryParams);
 
     return url;
@@ -133,8 +144,8 @@ void HomeConnect::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
     request.setRawHeader("Authorization", QString("Basic %1").arg(QString(auth)).toUtf8());
 
     QNetworkReply *reply = m_networkManager->post(request, QByteArray());
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply](){
-        reply->deleteLater();
 
         QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -168,32 +179,77 @@ void HomeConnect::getAccessTokenFromAuthorizationCode(const QByteArray &authoriz
 {
     // Obtaining access token
     if(authorizationCode.isEmpty())
-        qWarning(dcHomeConnect) << "No auhtorization code given!";
+        qWarning(dcHomeConnect) << "No authorization code given!";
     if(m_clientKey.isEmpty())
         qWarning(dcHomeConnect) << "Client key not set!";
     if(m_clientSecret.isEmpty())
         qWarning(dcHomeConnect) << "Client secret not set!";
 
-    QUrl url = QUrl(m_baseAuthorizationUrl);
-    QUrlQuery query;
+    QUrl url = QUrl(m_baseTokenUrl);
+    QUrlQuery query;    url.setQuery(query);
+
     query.clear();
+    query.addQueryItem("client_id", m_clientKey);
+    query.addQueryItem("client_secret", m_clientSecret);
+    query.addQueryItem("redirect_uri", m_redirectUri);
     query.addQueryItem("grant_type", "authorization_code");
     query.addQueryItem("code", authorizationCode);
-    query.addQueryItem("redirect_uri", m_redirectUri);
-    url.setQuery(query);
+    query.addQueryItem("code_verifier", m_codeChallenge);
+    /* Code verifier which was used during code challenge creation on client side. Please note that it is required if the code_challenge parameter was included in the authorization request. */
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    qCDebug(dcHomeConnect()) << "Get access token" << url.toString();
+
+    QNetworkReply *reply = m_networkManager->post(request, query.toString().toUtf8());
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply](){
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qWarning(dcHomeConnect()) << reply->errorString() << status << reply->readAll();
+            emit authenticationStatusChanged(false);
+            return;
+        }
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+
+        qCDebug(dcHomeConnect()) << "HomeConnect accessToken reply:" << this << reply->error() << reply->errorString() << jsonDoc.toJson();
+        if(!jsonDoc.toVariant().toMap().contains("access_token") || !jsonDoc.toVariant().toMap().contains("refresh_token") ) {
+            emit authenticationStatusChanged(false);
+            return;
+        }
+        qCDebug(dcHomeConnect()) << "Access token:" << jsonDoc.toVariant().toMap().value("access_token").toString();
+        m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
+
+        qCDebug(dcHomeConnect()) << "Refresh token:" << jsonDoc.toVariant().toMap().value("refresh_token").toString();
+        m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();
+
+        if (jsonDoc.toVariant().toMap().contains("expires_in")) {
+            int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
+            qCDebug(dcHomeConnect()) << "expires at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
+            if (!m_tokenRefreshTimer) {
+                qWarning(dcHomeConnect()) << "Token refresh timer not initialized";
+                emit authenticationStatusChanged(false);
+                return;
+            }
+            m_tokenRefreshTimer->start((expireTime - 20) * 1000);
+        }
+        emit authenticationStatusChanged(true);
+    });
+}
+
+void HomeConnect::getHomeAppliances()
+{
+    QUrl url = QUrl(m_baseAuthorizationUrl);
 
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded;charset=utf-8");
 
     QByteArray auth = QByteArray(m_clientKey + ':' + m_clientSecret).toBase64(QByteArray::Base64Encoding | QByteArray::KeepTrailingEquals);
     request.setRawHeader("Authorization", QString("Basic %1").arg(QString(auth)).toUtf8());
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
 
-    QNetworkReply *reply = m_networkManager->post(request, QByteArray());
+    QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, this, [this, reply](){
         reply->deleteLater();
         QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
         qCDebug(dcHomeConnect()) << "HomeConnect accessToken reply:" << this << reply->error() << reply->errorString() << jsonDoc.toJson();
         if(!jsonDoc.toVariant().toMap().contains("access_token") || !jsonDoc.toVariant().toMap().contains("refresh_token") ) {

@@ -40,12 +40,28 @@ class HomeConnect : public QObject
 {
     Q_OBJECT
 public:
+    enum Type {
+
+    };
+
+    struct HomeAppliance {
+        QString name;
+        QString brand;
+        QString typeCode;
+        bool connected;
+        QString type;
+    };
     HomeConnect(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,  const QByteArray &clientSecret, QObject *parent = nullptr);
+    QByteArray accessToken();
+    QByteArray refreshToken();
 
     QUrl getLoginUrl(const QUrl &redirectUrl, const QString &scope);
     void checkStatusCode(int status, const QByteArray &payload);
     void getAccessTokenFromRefreshToken(const QByteArray &refreshToken);
     void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
+
+    void getHomeAppliances();
+    void getHomeAppliance(const QString &haid);
 
 private:
     QByteArray m_baseAuthorizationUrl = "https://api.home-connect.com/security/oauth/authorize";
@@ -56,7 +72,8 @@ private:
 
     QByteArray m_accessToken;
     QByteArray m_refreshToken;
-    QByteArray m_redirectUri;
+    QByteArray m_redirectUri  = "https://127.0.0.1:8888";
+    QString m_codeChallenge;
 
     NetworkAccessManager *m_networkManager = nullptr;
     QTimer *m_tokenRefreshTimer = nullptr;
@@ -68,5 +85,7 @@ signals:
     void connectionChanged(bool connected);
     void authenticationStatusChanged(bool authenticated);
     void actionExecuted(QUuid actionId,bool success);
+
+    void receivedHomeAppliances(const QList<HomeAppliance> &appliances);
 };
 #endif // HOMECONNECT_H

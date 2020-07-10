@@ -60,14 +60,13 @@ void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
 {
     if (info->thingClassId() == homeConnectConnectionThingClassId) {
 
-        HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), "TODO", "TODO", this);
-        QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), "TODO Scope");
+        HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", this);
+        QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), "Monitor");
         qCDebug(dcHomeConnect()) << "HomeConnect url:" << url;
         info->setOAuthUrl(url);
         info->finish(Thing::ThingErrorNoError);
         m_setupHomeConnectConnections.insert(info->thingId(), homeConnect);
     } else {
-
         qCWarning(dcHomeConnect()) << "Unhandled pairing metod!";
         info->finish(Thing::ThingErrorCreationMethodNotSupported);
     }
@@ -82,43 +81,39 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
         QUrl url(secret);
         QUrlQuery query(url);
         QByteArray authorizationCode = query.queryItemValue("code").toLocal8Bit();
-        QByteArray state = query.queryItemValue("state").toLocal8Bit();
+        //QByteArray state = query.queryItemValue("state").toLocal8Bit();
         //TODO evaluate state if it equals the given state
 
-        HomeConnect *HomeConnect = m_setupHomeConnectConnections.value(info->thingId());
-
-        if (!HomeConnect) {
+        HomeConnect *homeConnect = m_setupHomeConnectConnections.value(info->thingId());
+        if (!homeConnect) {
             qWarning(dcHomeConnect()) << "No HomeConnect connection found for device:"  << info->thingName();
             m_setupHomeConnectConnections.remove(info->thingId());
-            HomeConnect->deleteLater();
+            homeConnect->deleteLater();
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
-        HomeConnect->getAccessTokenFromAuthorizationCode(authorizationCode);
-        connect(HomeConnect, &HomeConnect::authenticationStatusChanged, this, [info, this](bool authenticated){
+        qCDebug(dcHomeConnect()) << "Authorization code" << authorizationCode;
+        homeConnect->getAccessTokenFromAuthorizationCode(authorizationCode);
+        connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, [info, this](bool authenticated){
             HomeConnect *homeConnect = static_cast<HomeConnect *>(sender());
-            DevicePairingInfo info(devicePairingInfo);
+
             if(!authenticated) {
-                qWarning(dcHomeConnect()) << "Authentication process failed"  << devicePairingInfo.deviceName();
-                m_setupHomeConnectConnections.remove(info.deviceId());
+                qWarning(dcHomeConnect()) << "Authentication process failed";
+                m_setupHomeConnectConnections.remove(info->thingId());
                 homeConnect->deleteLater();
-                info.setStatus(Device::DeviceErrorSetupFailed);
-                emit pairingFinished(info);
+                info->finish(Thing::ThingErrorSetupFailed);
                 return;
             }
             QByteArray accessToken = homeConnect->accessToken();
             QByteArray refreshToken = homeConnect->refreshToken();
             qCDebug(dcHomeConnect()) << "Token:" << accessToken << refreshToken;
 
-            pluginStorage()->beginGroup(info.deviceId().toString());
+            pluginStorage()->beginGroup(info->thingId().toString());
             pluginStorage()->setValue("refresh_token", refreshToken);
             pluginStorage()->endGroup();
 
-            info.setStatus(Device::DeviceErrorNoError);
-            emit pairingFinished(info);
+            info->finish(Thing::ThingErrorNoError);
         });
-        devicePairingInfo.setStatus(Device::DeviceErrorAsync);
-
     } else {
         qCWarning(dcHomeConnect()) << "Invalid thingClassId -> no pairing possible with this device";
         info->finish(Thing::ThingErrorThingClassNotFound);
@@ -127,6 +122,40 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
 
 
 void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
+{
+    Thing *thing = info->thing();
+
+    if (info->thing()->thingClassId() == homeConnectConnectionThingClassId) {
+        HomeConnect *homeConnect;
+        if (m_setupHomeConnectConnections.keys().contains(thing->id())) {
+            //Fresh device setup, has already a fresh access token
+            qCDebug(dcHomeConnect()) << "HomeConnect OAuth setup complete";
+            homeConnect = m_setupHomeConnectConnections.take(thing->id());
+            connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
+            connect(homeConnect, &HomeConnect::actionExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
+            connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
+            m_homeConnectConnections.insert(thing, homeConnect);
+            return;
+        } else {
+            //device loaded from the device database, needs a new access token;
+            pluginStorage()->beginGroup(thing->id().toString());
+            QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
+            pluginStorage()->endGroup();
+
+            homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", this);
+            connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
+            connect(homeConnect, &HomeConnect::actionExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
+            connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
+            homeConnect->getAccessTokenFromRefreshToken(refreshToken);
+            m_homeConnectConnections.insert(thing, homeConnect);
+            info->finish(Thing::ThingErrorNoError);
+        }
+    } else {
+        info->finish(Thing::ThingErrorThingClassNotFound);
+    }
+}
+
+void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
 {
     if (!m_pluginTimer5sec) {
         m_pluginTimer5sec = hardwareManager()->pluginTimerManager()->registerTimer(5);
@@ -156,38 +185,6 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
         });
     }
 
-    if (info->thing()->thingClassId() == homeConnectConnectionThingClassId) {
-        HomeConnect *homeConnect;
-        if (m_setupHomeConnectConnections.keys().contains(thing->id())) {
-            //Fresh device setup, has already a fresh access token
-            qCDebug(dcHomeConnect()) << "HomeConnect OAuth setup complete";
-            HomeConnect = m_setupHomeConnectConnections.take(device->id());
-            connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
-            connect(homeConnect, &HomeConnect::actionExecuted, this, &IntegrationPluginHomeConnect::onActionExecuted);
-            connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
-            m_homeConnectConnections.insert(thing, homeConnect);
-            return;
-        } else {
-            //device loaded from the device database, needs a new access token;
-            pluginStorage()->beginGroup(thing->id().toString());
-            QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
-            pluginStorage()->endGroup();
-
-            homeConnect = new HomeConnect(hardwareManager()->networkManager(), "TODO", "TODO", this);
-            connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
-            connect(homeConnect, &HomeConnect::actionExecuted, this, &IntegrationPluginHomeConnect::onActionExecuted);
-            connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
-            homeConnect->getAccessTokenFromRefreshToken(refreshToken);
-            m_homeConnectConnections.insert(thing, homeConnect);
-            info->finish(Thing::ThingErrorNoError);
-        }
-    } else {
-        info->finish(Thing::ThingErrorThingClassNotFound);
-    }
-}
-
-void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
-{
     if (thing->thingClassId() == homeConnectConnectionThingClassId) {
         HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
         Q_UNUSED(homeConnect)
@@ -196,12 +193,26 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
 
 void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
 {
+    Thing *thing = info->thing();
+    Action action = info->action();
+    if (thing->thingClassId() == homeConnectConnectionThingClassId) {
+        if (action.actionTypeId() == ActionTypeId("asdf")) { //TODO
 
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+    } else {
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled deviceClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+    }
 }
 
 void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
 {
     qCDebug(dcHomeConnect) << "Delete " << thing->name();
+    if (thing->thingClassId() == homeConnectConnectionThingClassId) {
+        m_homeConnectConnections.take(thing)->deleteLater();
+    }
+
     if (myThings().empty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer5sec);
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer60sec);
@@ -209,7 +220,6 @@ void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
         m_pluginTimer60sec = nullptr;
     }
 }
-Device *device
 
 void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
 {
@@ -222,37 +232,38 @@ void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
 
 void IntegrationPluginHomeConnect::onAuthenticationStatusChanged(bool authenticated)
 {
-    HomeConnect *HomeConnectConnection = static_cast<HomeConnect *>(sender());
-    Thing *thing = m_homeConnectConnections.key(HomeConnectConnection);
-    if (!thing)
-        return;
-
-    if (!thing->setupComplete()) {
+    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
+    if (m_asyncSetup.contains(homeConnectConnection)) {
+        ThingSetupInfo *info = m_asyncSetup.take(homeConnectConnection);
         if (authenticated) {
-            //emit deviceSetupFinished(device, Device::DeviceSetupStatusSuccess);
+            info->finish(Thing::ThingErrorNoError);
         } else {
-            //emit deviceSetupFinished(device, Device::DeviceSetupStatusFailure);
+            info->finish(Thing::ThingErrorHardwareFailure);
         }
     } else {
+        Thing *thing = m_homeConnectConnections.key(homeConnectConnection);
+        if (!thing)
+            return;
+
         thing->setStateValue(homeConnectConnectionLoggedInStateTypeId, authenticated);
         if (!authenticated) {
             //refresh access token needs to be refreshed
             pluginStorage()->beginGroup(thing->id().toString());
             QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
             pluginStorage()->endGroup();
-            HomeConnectConnection->getAccessTokenFromRefreshToken(refreshToken);
+            homeConnectConnection->getAccessTokenFromRefreshToken(refreshToken);
         }
     }
 }
 
-void IntegrationPluginHomeConnect::onActionExecuted(QUuid HomeConnectActionId, bool success)
+void IntegrationPluginHomeConnect::onRequestExecuted(QUuid requestId, bool success)
 {
-    if (m_pendingActions.contains(HomeConnectActionId)) {
-        ActionId nymeaActionId = m_pendingActions.value(HomeConnectActionId);
+    if (m_pendingActions.contains(requestId)) {
+        ThingActionInfo *info = m_pendingActions.value(requestId);
         if (success) {
-            //emit actionExecutionFinished(nymeaActionId, Device::DeviceErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else {
-            //emit actionExecutionFinished(nymeaActionId, Device::DeviceErrorHardwareFailure);
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
         }
     }
 }
