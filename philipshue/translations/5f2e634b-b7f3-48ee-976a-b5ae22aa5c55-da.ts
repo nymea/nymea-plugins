@@ -6,48 +6,48 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="220"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
-        <translation type="unfinished">Tryk på knappen påHue Bridge inden for 30 sekunder, før du fortsætter</translation>
+        <translation>Tryk på knappen på Hue Bridge inden for 30 sekunder, før du fortsætter</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="249"/>
         <source>Not authenticated to bridge. Please reconfigure the bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ikke godkendt til bridge. Konfigurer venligst bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="556"/>
         <source>Error connecting to hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fejl ved forbindelse til hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="566"/>
         <location filename="../integrationpluginphilipshue.cpp" line="829"/>
         <source>Received unexpected data from hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Modtog uventede data fra hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="577"/>
         <source>An error happened pairing the hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der opstod en fejl ved parring af hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="585"/>
         <source>The hue bridge has rejected the connection request.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hue bridge har afvist forbindelsesanmodningen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="819"/>
         <source>Error sending command to hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fejl ved afsendelse af kommando til hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="839"/>
         <source>An unexpected error happened when sending the command to the hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der opstod en uventet fejl, når du sendte kommandoen til hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1336"/>
         <source>Philips Hue Motion sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue Motion sensor</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1350"/>
