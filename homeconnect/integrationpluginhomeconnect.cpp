@@ -40,28 +40,28 @@
 
 IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
 {
-}
+    m_idParamTypeIds.insert(fridgeThingClassId, fridgeThingIdParamTypeId);
+    m_idParamTypeIds.insert(dryerThingClassId, dryerThingIdParamTypeId);
+    m_idParamTypeIds.insert(coffeMakerThingClassId, coffeMakerThingIdParamTypeId);
+    m_idParamTypeIds.insert(dishwasherThingClassId, dishwasherThingIdParamTypeId);
+    m_idParamTypeIds.insert(washerThingClassId, washerThingIdParamTypeId);
+    m_idParamTypeIds.insert(ovenThingClassId, ovenThingIdParamTypeId);
 
-
-IntegrationPluginHomeConnect::~IntegrationPluginHomeConnect()
-{
-    if (m_pluginTimer5sec)
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer5sec);
-    if (m_pluginTimer60sec)
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer60sec);
-}
-
-void IntegrationPluginHomeConnect::discoverThings(ThingDiscoveryInfo *info)
-{
-    Q_UNUSED(info)
+    m_connectedStateTypeIds.insert(fridgeThingClassId, fridgeConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(dryerThingClassId, dryerConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(coffeMakerThingClassId, coffeMakerConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(dishwasherThingClassId, dishwasherConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(washerThingClassId, washerConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(ovenThingClassId, ovenConnectedStateTypeId);
 }
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
 {
     if (info->thingClassId() == homeConnectConnectionThingClassId) {
 
-        HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", this);
-        QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), "Monitor");
+        bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
+        HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", simulationMode, this);
+        QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), "IdentifyAppliance Monitor Settings");
         qCDebug(dcHomeConnect()) << "HomeConnect url:" << url;
         info->setOAuthUrl(url);
         info->finish(Thing::ThingErrorNoError);
@@ -115,8 +115,7 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
             info->finish(Thing::ThingErrorNoError);
         });
     } else {
-        qCWarning(dcHomeConnect()) << "Invalid thingClassId -> no pairing possible with this device";
-        info->finish(Thing::ThingErrorThingClassNotFound);
+        Q_ASSERT_X(false, "confirmPairing", QString("Unhandled thingClassId: %1").arg(info->thingClassId().toString()).toUtf8());
     }
 }
 
@@ -125,7 +124,8 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    if (info->thing()->thingClassId() == homeConnectConnectionThingClassId) {
+    if (thing->thingClassId() == homeConnectConnectionThingClassId) {
+        bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
         HomeConnect *homeConnect;
         if (m_setupHomeConnectConnections.keys().contains(thing->id())) {
             //Fresh device setup, has already a fresh access token
@@ -134,24 +134,38 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
             connect(homeConnect, &HomeConnect::actionExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
             connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
+            connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
             m_homeConnectConnections.insert(thing, homeConnect);
-            return;
+            m_homeConnectConnections.insert(thing, homeConnect);
+            info->finish(Thing::ThingErrorNoError);
         } else {
             //device loaded from the device database, needs a new access token;
             pluginStorage()->beginGroup(thing->id().toString());
             QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
             pluginStorage()->endGroup();
 
-            homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", this);
+            homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", simulationMode,  this);
             connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
             connect(homeConnect, &HomeConnect::actionExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
             connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
+            connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
             homeConnect->getAccessTokenFromRefreshToken(refreshToken);
-            m_homeConnectConnections.insert(thing, homeConnect);
-            info->finish(Thing::ThingErrorNoError);
+            m_asyncSetup.insert(homeConnect, info);
         }
+    } else if (thing->thingClassId() == dryerThingClassId) {
+          info->finish(Thing::ThingErrorNoError);
+    } else if (thing->thingClassId() == fridgeThingClassId) {
+          info->finish(Thing::ThingErrorNoError);
+    } else if (thing->thingClassId() == washerThingClassId) {
+          info->finish(Thing::ThingErrorNoError);
+    } else if (thing->thingClassId() == dishwasherThingClassId) {
+          info->finish(Thing::ThingErrorNoError);
+    } else if (thing->thingClassId() == coffeMakerThingClassId) {
+          info->finish(Thing::ThingErrorNoError);
+    } else if (thing->thingClassId() == ovenThingClassId) {
+          info->finish(Thing::ThingErrorNoError);
     } else {
-        info->finish(Thing::ThingErrorThingClassNotFound);
+        Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
 
@@ -167,6 +181,7 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
                     qWarning(dcHomeConnect()) << "No HomeConnect account found for" << connectionThing->name();
                     continue;
                 }
+                //TODO upate thing states
             }
         });
     }
@@ -180,14 +195,28 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
                     qWarning(dcHomeConnect()) << "No HomeConnect account found for" << thing->name();
                     continue;
                 }
-
+                homeConnect->getHomeAppliances();
             }
         });
     }
 
     if (thing->thingClassId() == homeConnectConnectionThingClassId) {
         HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
-        Q_UNUSED(homeConnect)
+        homeConnect->getHomeAppliances();
+        thing->setStateValue(homeConnectConnectionConnectedStateTypeId, true);
+        thing->setStateValue(homeConnectConnectionLoggedInStateTypeId, true);
+    } else if ((thing->thingClassId() == dryerThingClassId) ||
+               (thing->thingClassId() == fridgeThingClassId) ||
+               (thing->thingClassId() == washerThingClassId) ||
+               (thing->thingClassId() == dishwasherThingClassId) ||
+               (thing->thingClassId() == coffeMakerThingClassId) ||
+               (thing->thingClassId() == ovenThingClassId)) {
+        Thing *parentThing = myThings().findById(thing->parentId());
+        HomeConnect *homeConnect = m_homeConnectConnections.value(parentThing);
+        if (homeConnect)
+            homeConnect->getHomeAppliances();
+    } else {
+        Q_ASSERT_X(false, "postSetupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
 
@@ -214,10 +243,14 @@ void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
     }
 
     if (myThings().empty()) {
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer5sec);
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer60sec);
-        m_pluginTimer5sec = nullptr;
-        m_pluginTimer60sec = nullptr;
+        if (m_pluginTimer5sec) {
+            m_pluginTimer5sec = nullptr;
+            hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer5sec);
+        }
+        if (m_pluginTimer60sec) {
+            hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer60sec);
+            m_pluginTimer60sec = nullptr;
+        }
     }
 }
 
@@ -228,6 +261,11 @@ void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
     if (!thing)
         return;
     thing->setStateValue(homeConnectConnectionConnectedStateTypeId, connected);
+    if (!connected) {
+        Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
+            child->setStateValue(m_connectedStateTypeIds.value(child->thingClassId()), connected);
+        }
+    }
 }
 
 void IntegrationPluginHomeConnect::onAuthenticationStatusChanged(bool authenticated)
@@ -236,8 +274,10 @@ void IntegrationPluginHomeConnect::onAuthenticationStatusChanged(bool authentica
     if (m_asyncSetup.contains(homeConnectConnection)) {
         ThingSetupInfo *info = m_asyncSetup.take(homeConnectConnection);
         if (authenticated) {
+            m_homeConnectConnections.insert(info->thing(), homeConnectConnection);
             info->finish(Thing::ThingErrorNoError);
         } else {
+            homeConnectConnection->deleteLater();
             info->finish(Thing::ThingErrorHardwareFailure);
         }
     } else {
@@ -266,4 +306,68 @@ void IntegrationPluginHomeConnect::onRequestExecuted(QUuid requestId, bool succe
             info->finish(Thing::ThingErrorHardwareNotAvailable);
         }
     }
+}
+
+void IntegrationPluginHomeConnect::onReceivedHomeAppliances(QList<HomeConnect::HomeAppliance> appliances)
+{
+    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
+    Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
+    if (!parentThing)
+        return;
+
+    ThingDescriptors desciptors;
+    Q_FOREACH(HomeConnect::HomeAppliance appliance, appliances) {
+        ThingClassId thingClassId;
+        /*Oven,
+        Dishwasher,
+        Washer,
+        Dryer,
+        WasherDryer,
+        FridgeFreezer,
+        Refrigerator,
+        Freezer,
+        WineCooler,
+        CoffeeMaker,
+        Hood,
+        CleaningRobot,
+        CookProcessor*/
+
+        if (appliance.type.contains("Oven", Qt::CaseInsensitive)) {
+            thingClassId = ovenThingClassId;
+        } else if (appliance.type.contains("Dishwasher", Qt::CaseInsensitive)) {
+            thingClassId = dishwasherThingClassId;
+        } else if (appliance.type.contains("Washer", Qt::CaseInsensitive)) {
+            thingClassId = washerThingClassId;
+        } else if (appliance.type.contains("FidgeFreezer", Qt::CaseInsensitive)) {
+            thingClassId = fridgeThingClassId;
+        } else if (appliance.type.contains("Refrigerator", Qt::CaseInsensitive)) {
+            thingClassId = fridgeThingClassId;
+        } else if (appliance.type.contains("Freezer", Qt::CaseInsensitive)) {
+            thingClassId = fridgeThingClassId;
+        } else if (appliance.type.contains("WineCooler", Qt::CaseInsensitive)) {
+            thingClassId = fridgeThingClassId;
+        } else if (appliance.type.contains("CoffeMaker", Qt::CaseInsensitive)) {
+            thingClassId = coffeMakerThingClassId;
+        } else if (appliance.type.contains("Dryer", Qt::CaseInsensitive)) {
+            thingClassId = dryerThingClassId;
+        } else {
+            qCWarning(dcHomeConnect()) << "Unknown thing type" << appliance.type;
+            continue;
+        }
+
+        if (!myThings().filterByParam(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId).isEmpty()) {
+            Thing * existingThing = myThings().filterByParam(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId).first();
+            existingThing->setStateValue(m_connectedStateTypeIds.value(thingClassId), appliance.connected);
+            continue;
+        }
+
+        ThingDescriptor descriptor(thingClassId, appliance.name, appliance.brand+" "+appliance.vib, parentThing->id());
+
+        ParamList params;
+        params << Param(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId);
+        descriptor.setParams(params);
+        desciptors.append(descriptor);
+    }
+    if (!desciptors.isEmpty())
+        emit autoThingsAppeared(desciptors);
 }

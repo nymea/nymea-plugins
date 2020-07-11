@@ -46,9 +46,6 @@ class IntegrationPluginHomeConnect : public IntegrationPlugin
 
 public:
     explicit IntegrationPluginHomeConnect();
-    ~IntegrationPluginHomeConnect() override;
-
-    void discoverThings(ThingDiscoveryInfo *info) override;
 
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
@@ -69,10 +66,15 @@ private:
 
     QHash<QUuid, ThingActionInfo *> m_pendingActions;
 
+    QHash<ThingClassId, ParamTypeId> m_idParamTypeIds;
+    QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
+
+    HomeConnect *createHomeConnection();
 private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
     void onRequestExecuted(QUuid requestId, bool success);
+    void onReceivedHomeAppliances(QList<HomeConnect::HomeAppliance> appliances);
 };
 
 #endif // INTEGRATIONPLUGINHOMECONNECT_H

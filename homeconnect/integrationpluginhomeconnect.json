@@ -2,6 +2,15 @@
     "id": "109abdc7-5d53-4f63-a4b2-851e97cea8ea",
     "name": "homeConnect",
     "displayName": "Home Connect",
+    "paramTypes": [
+        {
+            "id": "82a1d671-4774-49df-97dc-ed89398c0dc9",
+            "name": "simulationMode",
+            "displayName": "Simulation mode",
+            "defaultValue": false,
+            "type": "bool"
+        }
+    ],
     "vendors": [
         {
             "id": "43cfb7a4-402f-4315-86b5-ce095697fd13",
@@ -52,6 +61,13 @@
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
+                        {
+                            "id": "661c1603-356e-4a78-baf4-7ea0bc9da316",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
                     ],
                     "stateTypes": [
                         {
@@ -72,6 +88,13 @@
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
+                        {
+                            "id": "f6b86d1b-481a-4496-975e-055f5ecc2bdb",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
                     ],
                     "stateTypes": [
                         {
@@ -87,11 +110,18 @@
                 },
                 {
                     "id": "f6b39ce2-8276-4db7-b2a3-4a04cafacbb9",
-                    "name": "coffeMachine",
-                    "displayName": "Coffe Machine",
+                    "name": "coffeMaker",
+                    "displayName": "Coffe Maker",
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
+                        {
+                            "id": "85d48203-e97b-45cc-a899-494c375389a5",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
                     ],
                     "stateTypes": [
                         {
@@ -112,6 +142,13 @@
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
+                        {
+                            "id": "cad8a1f9-6313-48dd-bb1d-b285006c760b",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
                     ],
                     "stateTypes": [
                         {
@@ -132,6 +169,13 @@
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
+                        {
+                            "id": "ba36e6a0-cb88-42d2-bdb9-9d7d106dec83",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
                     ],
                     "stateTypes": [
                         {
@@ -152,6 +196,13 @@
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
+                        {
+                            "id": "be4a1dcf-a0ce-44bb-a374-65f875e53c94",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
                     ],
                     "stateTypes": [
                         {

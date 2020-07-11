@@ -41,19 +41,34 @@ class HomeConnect : public QObject
     Q_OBJECT
 public:
     enum Type {
-
+        Oven,
+        Dishwasher,
+        Washer,
+        Dryer,
+        WasherDryer,
+        FridgeFreezer,
+        Refrigerator,
+        Freezer,
+        WineCooler,
+        CoffeeMaker,
+        Hood,
+        CleaningRobot,
+        CookProcessor
     };
 
     struct HomeAppliance {
         QString name;
         QString brand;
-        QString typeCode;
+        QString enumber;
+        QString vib;
         bool connected;
         QString type;
+        QString homeApplianceId;
     };
-    HomeConnect(NetworkAccessManager *networkmanager,  const QByteArray &clientKey,  const QByteArray &clientSecret, QObject *parent = nullptr);
+    HomeConnect(NetworkAccessManager *networkmanager, const QByteArray &clientKey, const QByteArray &clientSecret, bool simulationMode = false, QObject *parent = nullptr);
     QByteArray accessToken();
     QByteArray refreshToken();
+    void setSimulationMode(bool simulation);
 
     QUrl getLoginUrl(const QUrl &redirectUrl, const QString &scope);
     void checkStatusCode(int status, const QByteArray &payload);
@@ -64,9 +79,10 @@ public:
     void getHomeAppliance(const QString &haid);
 
 private:
-    QByteArray m_baseAuthorizationUrl = "https://api.home-connect.com/security/oauth/authorize";
-    QByteArray m_baseTokenUrl = "https://api.home-connect.com/security/oauth/token";
-    QByteArray m_baseControlUrl = "https://api.home-connect.com";
+    bool m_simulationMode = false;
+    QByteArray m_baseAuthorizationUrl;
+    QByteArray m_baseTokenUrl;
+    QByteArray m_baseControlUrl;
     QByteArray m_clientKey;
     QByteArray m_clientSecret;
 
