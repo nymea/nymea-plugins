@@ -136,7 +136,6 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
             connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
             m_homeConnectConnections.insert(thing, homeConnect);
-            m_homeConnectConnections.insert(thing, homeConnect);
             info->finish(Thing::ThingErrorNoError);
         } else {
             //device loaded from the device database, needs a new access token;
@@ -152,18 +151,22 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             homeConnect->getAccessTokenFromRefreshToken(refreshToken);
             m_asyncSetup.insert(homeConnect, info);
         }
-    } else if (thing->thingClassId() == dryerThingClassId) {
-          info->finish(Thing::ThingErrorNoError);
-    } else if (thing->thingClassId() == fridgeThingClassId) {
-          info->finish(Thing::ThingErrorNoError);
-    } else if (thing->thingClassId() == washerThingClassId) {
-          info->finish(Thing::ThingErrorNoError);
-    } else if (thing->thingClassId() == dishwasherThingClassId) {
-          info->finish(Thing::ThingErrorNoError);
-    } else if (thing->thingClassId() == coffeMakerThingClassId) {
-          info->finish(Thing::ThingErrorNoError);
-    } else if (thing->thingClassId() == ovenThingClassId) {
-          info->finish(Thing::ThingErrorNoError);
+    } else if ((thing->thingClassId() == dryerThingClassId) ||
+            (thing->thingClassId() == fridgeThingClassId) ||
+            (thing->thingClassId() == washerThingClassId) ||
+            (thing->thingClassId() == dishwasherThingClassId) ||
+            (thing->thingClassId() == coffeMakerThingClassId) ||
+            (thing->thingClassId() == ovenThingClassId)) {
+        Thing *parentThing = myThings().findById(thing->parentId());
+        if (parentThing->setupComplete()) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            connect(parentThing, &Thing::setupStatusChanged, info, [parentThing, info]{
+                if (parentThing->setupComplete()) {
+                    info->finish(Thing::ThingErrorNoError);
+                }
+            });
+        }
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -212,9 +215,15 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
                (thing->thingClassId() == coffeMakerThingClassId) ||
                (thing->thingClassId() == ovenThingClassId)) {
         Thing *parentThing = myThings().findById(thing->parentId());
+        if (!parentThing)
+            qCWarning(dcHomeConnect()) << "Could not find parent with Id" << thing->parentId().toString();
         HomeConnect *homeConnect = m_homeConnectConnections.value(parentThing);
-        if (homeConnect)
-            homeConnect->getHomeAppliances();
+        QString haId = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+        if (!homeConnect) {
+            qCWarning(dcHomeConnect()) << "Could not find HomeConnect connection for thing" << thing->name();
+        } else {
+            homeConnect->getProgramsAvailable(haId);
+        }
     } else {
         Q_ASSERT_X(false, "postSetupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
