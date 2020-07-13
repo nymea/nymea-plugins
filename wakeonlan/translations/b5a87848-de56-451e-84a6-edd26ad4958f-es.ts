@@ -31,7 +31,7 @@
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="34"/>
         <source>Wake up device</source>
         <extracomment>The name of the ActionType ({fb9b9d87-218f-4f0d-9e16-39f8a105029a}) of ThingClass wol</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>dispositivo para levantarse</translation>
     </message>
 </context>
 </TS>
