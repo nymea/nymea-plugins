@@ -65,6 +65,13 @@ public:
         QString type;
         QString homeApplianceId;
     };
+
+    struct OptionData {
+        QString key;
+        QVariant value;
+        QString unit;
+    };
+
     HomeConnect(NetworkAccessManager *networkmanager, const QByteArray &clientKey, const QByteArray &clientSecret, bool simulationMode = false, QObject *parent = nullptr);
     QByteArray accessToken();
     QByteArray refreshToken();
@@ -77,6 +84,11 @@ public:
 
     void getHomeAppliances();
     void getHomeAppliance(const QString &haid);
+
+    void getProgramsAvailable(const QString &haId);
+    void getProgramsActiveOption(const QString &haId, const QString &optionKey);
+
+    void getSettings(const QString &haid);
 
 private:
     bool m_simulationMode = false;

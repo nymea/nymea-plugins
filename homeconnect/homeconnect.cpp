@@ -294,3 +294,94 @@ void HomeConnect::getHomeAppliances()
         }
     });
 }
+
+void HomeConnect::getProgramsAvailable(const QString &haId)
+{
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/available");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]{
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcHomeConnect()) << "Get programs available: Recieved invalide JSON object";
+            return;
+        }
+        qCDebug(dcHomeConnect()) << "Get programs available" << data.toJson();
+
+    });
+}
+
+void HomeConnect::getProgramsActiveOption(const QString &haId, const QString &optionKey)
+{
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/active/options/"+optionKey);
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]{
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCDebug(dcHomeConnect()) << "Get home appliances: Recieved invalide JSON object";
+            return;
+        }
+        qCDebug(dcHomeConnect()) << "Get home appliances" << data.toJson();
+        if (data.toVariant().toMap().contains("data")) {
+            QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
+            qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
+        } else if (data.toVariant().toMap().contains("error")) {
+            qCWarning(dcHomeConnect()) << "Get home appliences" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+        }
+    });
+}
+
+/* Get a list of available setting of the home appliance.
+ * Possible Settings:
+ *      Power state
+ *      Fridge temperature
+ *      Fridge super mode
+ *      Freezer temperature
+ *      Freezer super mode
+ */
+
+void HomeConnect::getSettings(const QString &haid)
+{
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haid+"/settings");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]{
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCDebug(dcHomeConnect()) << "Get settings: Recieved invalide JSON object";
+            return;
+        }
+        qCDebug(dcHomeConnect()) << "Get settings" << data.toJson();
+        if (data.toVariant().toMap().contains("data")) {
+            QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
+            qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
+        } else if (data.toVariant().toMap().contains("error")) {
+            qCWarning(dcHomeConnect()) << "Get settings" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+        }
+    });
+}
