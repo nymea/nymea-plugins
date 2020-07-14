@@ -508,7 +508,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {4a15f861
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {c9e81e29-f8d4-4370-ada2-f48b32def1fe})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {c732fefd-ca6b-4e27-a6d2-11595c4aab3e})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>ID du capteur de température</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="503"/>
@@ -517,7 +517,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {c732fefd
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {aa29b5f1-5589-4fa9-bbd4-8869723c037c})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {2fdb34e8-25ca-4c5d-85c9-9a12bd48dbed})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Capteur de température uuid</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="392"/>
@@ -526,7 +526,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {2fdb34e8
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {337b2c6c-e3bf-495c-943c-b45fa08add37})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {3ca82a24-5eca-4285-83c2-f862d387c3bc})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Identification du capteur de présence</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="398"/>
@@ -535,7 +535,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {3ca82a24
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {3829bddb-e722-4724-be36-3a8402738581})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {7d55ed97-3a32-41e9-9112-8cc5b44aab23})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Capteur de présence uuid</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="341"/>
@@ -544,7 +544,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {7d55ed97
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {04fba73e-730e-437a-b6f2-10df21296af5})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {22a164fc-fa6e-427a-9a60-7a1872901fd6})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Identification du capteur de lumière</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="347"/>
@@ -553,7 +553,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {22a164fc
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {171cc2e7-7a95-4116-986c-66d75e3e23eb})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {db678144-de2b-4767-a2f6-9ada8377b96c})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Capteur de lumière uuid</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="428"/>
@@ -568,7 +568,7 @@ The name of the EventType ({9fe43e6b-3c29-43a9-bb96-3b80eacc10db}) of ThingClass
 The name of the EventType ({5e21b032-1230-4e93-8543-0c4773da17d3}) of ThingClass tap
 ----------
 The name of the EventType ({b449cca5-19a0-483f-b4bd-b9b43b4f8ed4}) of ThingClass smartButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Atteignable changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="404"/>
@@ -595,7 +595,7 @@ The name of the StateType ({5e21b032-1230-4e93-8543-0c4773da17d3}) of ThingClass
 The name of the ParamType (ThingClass: smartButton, EventType: connected, ID: {b449cca5-19a0-483f-b4bd-b9b43b4f8ed4})
 ----------
 The name of the StateType ({b449cca5-19a0-483f-b4bd-b9b43b4f8ed4}) of ThingClass smartButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Accessible à l&apos;adresse suivante</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="251"/>
@@ -604,7 +604,7 @@ The name of the StateType ({b449cca5-19a0-483f-b4bd-b9b43b4f8ed4}) of ThingClass
         <extracomment>The name of the EventType ({ac463b30-24af-4352-84da-19a3ffc906bd}) of ThingClass motionSensor
 ----------
 The name of the EventType ({19b18531-61e5-4998-89d1-765d740e24eb}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie changée</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="239"/>
@@ -619,7 +619,7 @@ The name of the StateType ({ac463b30-24af-4352-84da-19a3ffc906bd}) of ThingClass
 The name of the ParamType (ThingClass: outdoorSensor, EventType: batteryLevel, ID: {19b18531-61e5-4998-89d1-765d740e24eb})
 ----------
 The name of the StateType ({19b18531-61e5-4998-89d1-765d740e24eb}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="269"/>
@@ -628,7 +628,7 @@ The name of the StateType ({19b18531-61e5-4998-89d1-765d740e24eb}) of ThingClass
         <extracomment>The name of the EventType ({d7c4e143-6f03-411e-a12e-dd22806270fd}) of ThingClass motionSensor
 ----------
 The name of the EventType ({617aa352-789c-46e7-bf55-7455b1e5018e}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Changement de pile critique</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="257"/>
@@ -643,7 +643,7 @@ The name of the StateType ({d7c4e143-6f03-411e-a12e-dd22806270fd}) of ThingClass
 The name of the ParamType (ThingClass: outdoorSensor, EventType: batteryCritical, ID: {617aa352-789c-46e7-bf55-7455b1e5018e})
 ----------
 The name of the StateType ({617aa352-789c-46e7-bf55-7455b1e5018e}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterie critique</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="491"/>
@@ -652,7 +652,7 @@ The name of the StateType ({617aa352-789c-46e7-bf55-7455b1e5018e}) of ThingClass
         <extracomment>The name of the EventType ({63ee79f7-702b-48c1-86cf-8ddebb78bae6}) of ThingClass motionSensor
 ----------
 The name of the EventType ({88f5b708-65bb-41a7-885f-01be46074713}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La température a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="479"/>
@@ -667,7 +667,7 @@ The name of the StateType ({63ee79f7-702b-48c1-86cf-8ddebb78bae6}) of ThingClass
 The name of the ParamType (ThingClass: outdoorSensor, EventType: temperature, ID: {88f5b708-65bb-41a7-885f-01be46074713})
 ----------
 The name of the StateType ({88f5b708-65bb-41a7-885f-01be46074713}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperature</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="233"/>
