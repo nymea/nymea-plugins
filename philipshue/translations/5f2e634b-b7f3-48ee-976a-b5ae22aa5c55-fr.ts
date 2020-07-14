@@ -433,7 +433,7 @@ The name of the ActionType ({90e91f64-a208-468c-a5a2-7f47e08859e2}) of ThingClas
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="317"/>
         <source>Hue dimmable light</source>
         <extracomment>The name of the ThingClass ({4fa568ef-7a3a-422b-b0c0-206d37cb4eed})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue dimmable light</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="569"/>
