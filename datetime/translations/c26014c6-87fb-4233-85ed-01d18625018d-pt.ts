@@ -73,7 +73,7 @@ The name of the StateType ({eb5231ea-6a1b-4d7e-a95f-d49e7b25122e}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: month, ID: {fcd8ec96-4488-438a-8b30-58bfe2a7fae2})
 ----------
 The name of the StateType ({fcd8ec96-4488-438a-8b30-58bfe2a7fae2}) of ThingClass today</extracomment>
-        <translation>mês </translation>
+        <translation>mês</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="236"/>
@@ -145,7 +145,7 @@ The name of the StateType ({ab16997c-be29-438e-b588-2507d723d264}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: monthName, ID: {a37acc9c-5cfb-4687-adce-e56beb32586f})
 ----------
 The name of the StateType ({a37acc9c-5cfb-4687-adce-e56beb32586f}) of ThingClass today</extracomment>
-        <translation>nome mês </translation>
+        <translation>nome mês</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="317"/>
