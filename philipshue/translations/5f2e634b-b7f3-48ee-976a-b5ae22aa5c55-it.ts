@@ -6,7 +6,7 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="220"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
-        <translation type="unfinished">Premi il pulsante sullo Hue Bridge entro 30 secondi prima di continuare</translation>
+        <translation>Premi il pulsante sullo Hue Bridge entro 30 secondi prima di continuare</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="249"/>
@@ -37,22 +37,22 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="819"/>
         <source>Error sending command to hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore nell&apos;invio del comando a hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="839"/>
         <source>An unexpected error happened when sending the command to the hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Beim Senden des Befehls an die Farbtonbrücke trat ein unerwarteter Fehler auf.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1336"/>
         <source>Philips Hue Motion sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue Bewegungssensor</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1350"/>
         <source>Philips Hue Outdoor sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Philips Farbton Außensensor</translation>
     </message>
 </context>
 <context>
@@ -136,7 +136,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="446"/>
         <source>Serial Number (optional)</source>
         <extracomment>The name of the ParamType (ThingClass: bridge, ActionType: searchNewDevices, ID: {1924bdb5-f8f1-4dcd-bc09-21ad7c5ce377})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Serienummer (optioneel)</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="608"/>
@@ -154,7 +154,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="296"/>
         <source>Hue Motion Sensor</source>
         <extracomment>The name of the ThingClass ({25b79fff-4b88-4af8-b06c-2fe246238790})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Motion Sensor</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="305"/>
