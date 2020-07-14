@@ -676,7 +676,7 @@ The name of the StateType ({88f5b708-65bb-41a7-885f-01be46074713}) of ThingClass
         <extracomment>The name of the EventType ({064f48c1-f86d-4a0a-bdae-3420123dff3f}) of ThingClass motionSensor
 ----------
 The name of the EventType ({4fb12c06-981c-4c42-b55c-46bdfe68681a}) of ThingClass outdoorSensor</extracomment>
-        <translation>Ambient light changed</translation>
+        <translation>La lumière ambiante a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="221"/>
@@ -691,7 +691,7 @@ The name of the StateType ({064f48c1-f86d-4a0a-bdae-3420123dff3f}) of ThingClass
 The name of the ParamType (ThingClass: outdoorSensor, EventType: lightIntensity, ID: {4fb12c06-981c-4c42-b55c-46bdfe68681a})
 ----------
 The name of the StateType ({4fb12c06-981c-4c42-b55c-46bdfe68681a}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ambient light</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="380"/>
