@@ -481,7 +481,7 @@ The name of the ParamType (ThingClass: remote, EventType: pressed, ID: {e4e3eb3a
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="299"/>
         <source>Hue Outdoor Sensor</source>
         <extracomment>The name of the ThingClass ({32dc6390-600f-4eb4-b349-cc2d6796a82a})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Outdoor Sensor</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="362"/>
