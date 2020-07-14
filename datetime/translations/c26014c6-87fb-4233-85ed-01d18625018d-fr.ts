@@ -205,7 +205,7 @@ The name of the StateType ({4de5b57b-bb1a-4d66-9ce3-22bb280b075d}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="122"/>
         <source>Daylight changed</source>
         <extracomment>The name of the EventType ({1c3d6179-3b00-456c-841a-2d26ce960c25}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La lumière du jour a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="116"/>
@@ -214,7 +214,7 @@ The name of the StateType ({4de5b57b-bb1a-4d66-9ce3-22bb280b075d}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: daylight, ID: {1c3d6179-3b00-456c-841a-2d26ce960c25})
 ----------
 The name of the StateType ({1c3d6179-3b00-456c-841a-2d26ce960c25}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lumière du jour</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="101"/>
@@ -229,13 +229,13 @@ The name of the StateType ({1c3d6179-3b00-456c-841a-2d26ce960c25}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: dawnTime, ID: {a5779b11-0499-4a6d-a7bd-8143dcc546b4})
 ----------
 The name of the StateType ({a5779b11-0499-4a6d-a7bd-8143dcc546b4}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;heure de l&apos;aube</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="113"/>
         <source>Dawn time changed</source>
         <extracomment>The name of the EventType ({a5779b11-0499-4a6d-a7bd-8143dcc546b4}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;heure de l&apos;aube a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="125"/>
@@ -244,13 +244,13 @@ The name of the StateType ({a5779b11-0499-4a6d-a7bd-8143dcc546b4}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: duskTime, ID: {44a99419-fbcd-4d8e-9441-897848b8f77c})
 ----------
 The name of the StateType ({44a99419-fbcd-4d8e-9441-897848b8f77c}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;heure du crépuscule</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="131"/>
         <source>Dusk time changed</source>
         <extracomment>The name of the EventType ({44a99419-fbcd-4d8e-9441-897848b8f77c}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;heure du crépuscule a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="134"/>
@@ -259,13 +259,13 @@ The name of the StateType ({44a99419-fbcd-4d8e-9441-897848b8f77c}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: noonTime, ID: {d92be29a-929c-4240-91a0-30153850f838})
 ----------
 The name of the StateType ({d92be29a-929c-4240-91a0-30153850f838}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Midi</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="140"/>
         <source>Noon time changed</source>
         <extracomment>The name of the EventType ({d92be29a-929c-4240-91a0-30153850f838}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;heure de midi a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="143"/>
@@ -274,13 +274,13 @@ The name of the StateType ({d92be29a-929c-4240-91a0-30153850f838}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: sunriseTime, ID: {3a08824d-285b-412e-a515-9664b491a85c})
 ----------
 The name of the StateType ({3a08824d-285b-412e-a515-9664b491a85c}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;heure du lever du soleil</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="149"/>
         <source>Sunrise time changed</source>
         <extracomment>The name of the EventType ({3a08824d-285b-412e-a515-9664b491a85c}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sunrise time</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="152"/>
@@ -289,13 +289,13 @@ The name of the StateType ({3a08824d-285b-412e-a515-9664b491a85c}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: sunsetTime, ID: {377f04a7-df58-42ad-a234-e9e23bdc2f85})
 ----------
 The name of the StateType ({377f04a7-df58-42ad-a234-e9e23bdc2f85}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Heure du coucher du soleil</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="158"/>
         <source>Sunset time changed</source>
         <extracomment>The name of the EventType ({377f04a7-df58-42ad-a234-e9e23bdc2f85}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;heure du coucher du soleil a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="218"/>
