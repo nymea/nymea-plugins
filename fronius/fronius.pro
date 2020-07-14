@@ -1,7 +1,7 @@
 include(../plugins.pri)
 
 QT += \
-    ^network \
+    network \
 
 SOURCES += \
     integrationpluginfronius.cpp \
