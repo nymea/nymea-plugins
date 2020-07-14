@@ -6,7 +6,7 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="220"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
-        <translation type="unfinished">Veuillez maintenir le bouton de la Hue Bridge enfoncée pendant  secondes avant de poursuivre</translation>
+        <translation>Veuillez maintenir le bouton de la Hue Bridge enfoncée pendant  secondes avant de poursuivre</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="249"/>
@@ -700,7 +700,7 @@ The name of the StateType ({4fb12c06-981c-4c42-b55c-46bdfe68681a}) of ThingClass
         <extracomment>The name of the EventType ({e38ee39c-c77f-40b5-b122-4efc411da0ed}) of ThingClass motionSensor
 ----------
 The name of the EventType ({680f79cf-c17c-4ffd-96fa-a5b286e2c117}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La personne est présente changée</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="368"/>
@@ -715,7 +715,7 @@ The name of the StateType ({e38ee39c-c77f-40b5-b122-4efc411da0ed}) of ThingClass
 The name of the ParamType (ThingClass: outdoorSensor, EventType: isPresent, ID: {680f79cf-c17c-4ffd-96fa-a5b286e2c117})
 ----------
 The name of the StateType ({680f79cf-c17c-4ffd-96fa-a5b286e2c117}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La personne est présente</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="335"/>
@@ -724,7 +724,7 @@ The name of the StateType ({680f79cf-c17c-4ffd-96fa-a5b286e2c117}) of ThingClass
         <extracomment>The name of the EventType ({ef2e564e-2443-448f-bcd9-f85a1126ee6a}) of ThingClass motionSensor
 ----------
 The name of the EventType ({6fa16fb2-053c-4c3c-a39b-9548c1b15089}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Dernière fois vu le temps a changé</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="323"/>
@@ -739,7 +739,7 @@ The name of the StateType ({ef2e564e-2443-448f-bcd9-f85a1126ee6a}) of ThingClass
 The name of the ParamType (ThingClass: outdoorSensor, EventType: lastSeenTime, ID: {6fa16fb2-053c-4c3c-a39b-9548c1b15089})
 ----------
 The name of the StateType ({6fa16fb2-053c-4c3c-a39b-9548c1b15089}) of ThingClass outdoorSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Dernière fois qu&apos;on l&apos;a vu</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="389"/>
@@ -802,7 +802,7 @@ The name of the StateType ({16a126f3-0cef-4931-bb2b-9e1b49bec7fc}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="311"/>
         <source>Hue color light</source>
         <extracomment>The name of the ThingClass ({0edba26c-96ab-44fb-a6a2-c0574d19630e})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Teinte, couleur, lumière</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="623"/>
