@@ -85,11 +85,11 @@ void FroniusMeter::updateThingInfo(const QByteArray &data)
     }
 
     if (dataMap.contains("EnergyReal_WAC_Sum_Produced")) {
-            pluginThing()->setStateValue(meterTotalEnergyProducedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Produced").toInt()/1000);
+            pluginThing()->setStateValue(meterTotalEnergyProducedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Produced").toInt()/1000.00);
     }
 
     if (dataMap.contains("EnergyReal_WAC_Sum_Consumed")) {
-            pluginThing()->setStateValue(meterTotalEnergyConsumedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Consumed").toInt()/1000);
+            pluginThing()->setStateValue(meterTotalEnergyConsumedStateTypeId, dataMap.value("EnergyReal_WAC_Sum_Consumed").toInt()/1000.00);
     }
 
     //update successful
@@ -104,24 +104,4 @@ QUrl FroniusMeter::activityUrl()
     requestUrl.setPath(baseUrl()+"GetPowerFlowRealtimeData.fcgi");
 
     return requestUrl;
-}
-
-void FroniusMeter::updateActivityInfo(const QByteArray &data)
-{
-    // Convert the rawdata to a json document
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-    if(error.error != QJsonParseError::NoError) {
-        qCWarning(dcFronius()) << "FroniusMeter: Failed to parse JSON data" << data << ":" << error.errorString();
-        return;
-    }
-
-    // create Meter Info list map
-    //QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
-
-    //if (dataMap.value("Site").toMap().value("P_PV").toFloat() > 0) {
-    //    pluginThing()->setStateValue(inverteractivStateTypeId, "production");
-    //} else {
-    //    pluginThing()->setStateValue(inverteractivStateTypeId, "inactive");
-    //}
 }

@@ -46,7 +46,6 @@ public:
     QUrl updateUrl();
     void updateThingInfo(const QByteArray &data);
     QUrl activityUrl();
-    void updateActivityInfo(const QByteArray &data);
 
 private:
     QString m_activity;

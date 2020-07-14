@@ -352,19 +352,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
                 m_froniusMeters.key(thing)->updateThingInfo(data);
             }
         });
-        QNetworkReply *next_reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusMeters.key(thing)->activityUrl()));
-        connect(next_reply, &QNetworkReply::finished, next_reply, &QNetworkReply::deleteLater);
-        connect(next_reply, &QNetworkReply::finished, [this, thing, next_reply]() {
 
-            if (next_reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Network request error:" << next_reply->error() << next_reply->errorString() << next_reply->request().url();
-                return;
-            }
-            QByteArray data = next_reply->readAll();
-            if(m_froniusMeters.values().contains(thing)){ // check if thing was not removed before reply was received
-                m_froniusMeters.key(thing)->updateActivityInfo(data);
-            }
-        });
     } else if (thing->thingClassId() == storageThingClassId) {
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusStorages.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
@@ -491,6 +479,21 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
                 descriptor.setParams(params);
                 thingDescriptors.append(descriptor);
             }
+        }
+
+        QVariantMap ohmpilotMap = bodyMap.value("Data").toMap().value("Ohmpilot").toMap();
+        foreach (QString ohmpilotId, ohmpilotMap.keys()) {
+            qCDebug(dcFronius()) << "Unhandled device Ohmpilot" << ohmpilotId;
+        }
+
+        QVariantMap sensorCardMap = bodyMap.value("Data").toMap().value("SensorCard").toMap();
+        foreach (QString sensorCardId, sensorCardMap.keys()) {
+            qCDebug(dcFronius()) << "Unhandled device SensorCard" << sensorCardId;
+        }
+
+        QVariantMap stringControlMap = bodyMap.value("Data").toMap().value("StringControl").toMap();
+        foreach (QString stringControlId, stringControlMap.keys()) {
+            qCDebug(dcFronius()) << "Unhandled device StringControl" << stringControlId;
         }
 
         if (!thingDescriptors.empty()) {
