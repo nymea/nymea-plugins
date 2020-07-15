@@ -55,6 +55,10 @@ public:
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
+    void browseThing(BrowseResult *result) override;
+    void browserItem(BrowserItemResult *result) override;
+    void executeBrowserItem(BrowserActionInfo *info) override;
+
 private:
     PluginTimer *m_pluginTimer5sec = nullptr;
     PluginTimer *m_pluginTimer60sec = nullptr;

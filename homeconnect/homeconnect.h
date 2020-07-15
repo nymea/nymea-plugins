@@ -33,6 +33,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QUuid>
 
 #include "network/networkaccessmanager.h"
 
@@ -88,7 +89,10 @@ public:
     void getProgramsAvailable(const QString &haId);
     void getProgramsActiveOption(const QString &haId, const QString &optionKey);
 
+    void getStatus(const QString &haid);
     void getSettings(const QString &haid);
+
+    QUuid sendCommand(const QString &haid, const QString &command); //commands "BSH.Common.Command.ResumeProgram" & "PauseProgram"
 
 private:
     bool m_simulationMode = false;
@@ -112,7 +116,7 @@ private slots:
 signals:
     void connectionChanged(bool connected);
     void authenticationStatusChanged(bool authenticated);
-    void actionExecuted(QUuid actionId,bool success);
+    void commandExecuted(QUuid commandId,bool success);
 
     void receivedHomeAppliances(const QList<HomeAppliance> &appliances);
 };

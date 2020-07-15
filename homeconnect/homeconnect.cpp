@@ -348,6 +348,42 @@ void HomeConnect::getProgramsActiveOption(const QString &haId, const QString &op
     });
 }
 
+void HomeConnect::getStatus(const QString &haid)
+{
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haid+"/status");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, reply]{
+
+
+        // Remote control activation state
+        // Remote start allowance state
+        // Local control state
+        // Operation state
+        // Door state
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCDebug(dcHomeConnect()) << "Get home appliances: Recieved invalide JSON object";
+            return;
+        }
+        qCDebug(dcHomeConnect()) << "Get home appliances" << data.toJson();
+        if (data.toVariant().toMap().contains("data")) {
+            QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
+            qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
+        } else if (data.toVariant().toMap().contains("error")) {
+            qCWarning(dcHomeConnect()) << "Get home appliences" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+        }
+    });
+}
+
 /* Get a list of available setting of the home appliance.
  * Possible Settings:
  *      Power state
@@ -384,4 +420,43 @@ void HomeConnect::getSettings(const QString &haid)
             qCWarning(dcHomeConnect()) << "Get settings" << data.toVariant().toMap().value("error").toMap().value("description").toString();
         }
     });
+}
+
+QUuid HomeConnect::sendCommand(const QString &haid, const QString &command)
+{
+    QUuid commandId = QUuid::createUuid();
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haid+"/commands/"+command);
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QJsonDocument doc;
+    QJsonObject data;
+    data.insert("key", command);
+    data.insert("value", true);
+    QJsonObject obj;
+    obj.insert("data", data);
+    doc.setObject(obj);
+    QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCDebug(dcHomeConnect()) << "Send command: Recieved invalide JSON object";
+            return;
+        }
+        qCDebug(dcHomeConnect()) << "Send command" << data.toJson();
+        if (data.toVariant().toMap().contains("data")) {
+            QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
+            qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
+        } else if (data.toVariant().toMap().contains("error")) {
+            qCWarning(dcHomeConnect()) << "Send command" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+        }
+        emit commandExecuted(commandId, true);
+    });
+    return commandId;
 }
