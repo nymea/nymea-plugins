@@ -60,6 +60,7 @@
                     "displayName": "Oven",
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "661c1603-356e-4a78-baf4-7ea0bc9da316",
@@ -78,6 +79,86 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "e892ca9e-5b31-41f5-a568-44474091f0f6",
+                            "name": "doorState",
+                            "displayName": "Door state",
+                            "displayNameEvent": "Door state changed",
+                            "defaultValue": "Open",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Open",
+                                "Closed"
+                            ]
+                        },
+                        {
+                            "id": "c9f9bd33-513f-4834-a504-c2c1611fb4be",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "8843a1ce-796a-40c3-ab24-cf97b821d45c",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "6afd574a-3c22-46cd-bc28-4dfcba01c51d",
+                            "name": "remoteControlActivationState",
+                            "displayName": "Remote control activation state",
+                            "displayNameEvent": "Remote control state activation changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "9f9cb8ea-8527-48c9-8bf2-f5148d5b53f1",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "f3f5f257-5887-4d64-b61a-8179424912b3",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
+                            "defaultValue": 180,
+                            "minValue": 30,
+                            "maxValue": 250,
+                            "writable": true,
+                            "unit": "DegreeCelsius",
+                            "type": "int"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "c7b9b467-6ac5-4870-8874-da977fa30987",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "0467aeed-b275-4e5f-a288-1a600465b582",
+                            "name": "resume",
+                            "displayName": "Resume"
                         }
                     ]
                 },
@@ -87,6 +168,7 @@
                     "displayName": "Dishwasher",
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "f6b86d1b-481a-4496-975e-055f5ecc2bdb",
@@ -105,6 +187,51 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "8cbb3746-7e04-4fc8-93eb-b774b606a057",
+                            "name": "doorState",
+                            "displayName": "Door state",
+                            "displayNameEvent": "Door state changed",
+                            "defaultValue": "Open",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Open",
+                                "Closed"
+                            ]
+                        },
+                        {
+                            "id": "2b45fbfc-d3d7-4dd4-91f8-4a789405246e",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Action required",
+                                "Finished",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "c8bf60d2-e8e3-44dd-9cea-c7bcbe17c2b1",
+                            "name": "remoteControlActivationState",
+                            "displayName": "Remote control activation state",
+                            "displayNameEvent": "Remote control state activation changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "a8ce4a4e-fae3-4100-ad05-7c390b774b4a",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         }
                     ]
                 },
@@ -114,6 +241,7 @@
                     "displayName": "Coffe Maker",
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "85d48203-e97b-45cc-a899-494c375389a5",
@@ -132,6 +260,51 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "5011efa7-9915-4ecc-b717-6ced369abcb7",
+                            "name": "doorState",
+                            "displayName": "Door state",
+                            "displayNameEvent": "Door state changed",
+                            "defaultValue": "Open",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Open",
+                                "Closed"
+                            ]
+                        },
+                        {
+                            "id": "693fc8d2-d9a9-4109-b8c5-f3d22091500c",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Run",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "dc0fbd4b-364e-4856-a237-7d789a99f321",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "598985c1-7c9a-4b04-aabd-f72e6dd8cab8",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         }
                     ]
                 },
@@ -141,6 +314,7 @@
                     "displayName": "Dryer",
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "cad8a1f9-6313-48dd-bb1d-b285006c760b",
@@ -159,6 +333,74 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "81aa609e-69c0-4d5c-98f0-46e6f14c7eaa",
+                            "name": "doorState",
+                            "displayName": "Door state",
+                            "displayNameEvent": "Door state changed",
+                            "defaultValue": "Open",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Open",
+                                "Closed",
+                                "Locked"
+                            ]
+                        },
+                        {
+                            "id": "52fde732-ed14-437e-8fbf-461d2ed19654",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "d73c04c4-7082-4259-a225-10c453247103",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "ed8a56a1-18db-469f-b51d-487111037c71",
+                            "name": "remoteControlActivationState",
+                            "displayName": "Remote control activation state",
+                            "displayNameEvent": "Remote control state activation changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "d18d89c1-d04f-491c-b817-7234ea531deb",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "aedd85a6-0f9a-4bc4-b2ba-90ba11d1a955",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "8c9923f6-2a2d-48bb-aaf4-5f887565c58a",
+                            "name": "resume",
+                            "displayName": "Resume"
                         }
                     ]
                 },
@@ -186,6 +428,18 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "99bba70c-5ead-4076-8b71-720a931668a4",
+                            "name": "doorState",
+                            "displayName": "Door state",
+                            "displayNameEvent": "Door state changed",
+                            "defaultValue": "Open",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Open",
+                                "Closed"
+                            ]
                         }
                     ]
                 },
@@ -195,6 +449,7 @@
                     "displayName": "Washer",
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
+                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "be4a1dcf-a0ce-44bb-a374-65f875e53c94",
@@ -207,6 +462,182 @@
                     "stateTypes": [
                         {
                             "id": "950a8bf0-83c4-4e1b-9c00-167a4d3e3c22",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "99296e86-09bf-4b74-b122-ee82b6bfdb62",
+                            "name": "doorState",
+                            "displayName": "Door state",
+                            "displayNameEvent": "Door state changed",
+                            "defaultValue": "Open",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Open",
+                                "Closed",
+                                "Locked"
+                            ]
+                        },
+                        {
+                            "id": "2ad3e2f8-c955-4e1d-b394-1e71a16f03bb",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "f3aa6f6e-bfa3-4465-906c-3d5137d4098c",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "3c9c7163-b5f5-47cc-86b1-aa95273a22f6",
+                            "name": "remoteControlActivationState",
+                            "displayName": "Remote control activation state",
+                            "displayNameEvent": "Remote control state activation changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "f7a68b23-6d74-451b-89c8-b2d2fb5d0839",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "c87d6825-f37d-4da6-8545-945bd589dbc2",
+                            "name": "pause",
+                            "displayName": "Pause"
+                        },
+                        {
+                            "id": "044582ca-30e6-4d37-9377-809fb5fa120a",
+                            "name": "resume",
+                            "displayName": "Resume"
+                        }
+                    ]
+                },
+                {
+                    "id": "6ab99f5b-c8b6-4391-84d3-2e258a529174",
+                    "name": "cookTop",
+                    "displayName": "Cook top",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "5babea64-0cd3-4477-9b95-3a71433b9c0c",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d8113d26-045d-4fd5-a2f5-f202968408e0",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "62ce7eee-f6bb-43e5-8adf-dfd030276987",
+                    "name": "hood",
+                    "displayName": "Hood",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "7aa9f92a-e8ad-4b89-80d2-4ed0f3ead114",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "bb137bcd-bb6e-464b-8fdc-fb376efd1f59",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "a7bfe39f-14d1-481a-a255-eea7f40e0c07",
+                    "name": "cleaningRobot",
+                    "displayName": "Cleaning robot",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "a48821ab-b777-4d34-9b49-f3422c190825",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f0f81c21-b10e-44ef-8606-600ebaf646e0",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "8b792638-11dc-4288-ac94-5b41d9e11a4e",
+                    "name": "cookProcessor",
+                    "displayName": "Cook processor",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "a104145b-a373-45b3-a457-0245681f8256",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "434c5690-a62d-4815-ad8b-e3c306745d9f",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
