@@ -162,7 +162,7 @@ The name of the plugin Netatmo ({69d14951-0c02-4877-bcef-dffdf48b7ccb})</extraco
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="174"/>
         <source>Netatmo Connection</source>
         <extracomment>The name of the ThingClass ({728d5a67-27a3-400e-b83c-2765f5196f69})</extracomment>
-        <translation>Netatmo-verbinding</translation>
+        <translation>Netatmo-aansluiting</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="177"/>
@@ -171,13 +171,13 @@ The name of the plugin Netatmo ({69d14951-0c02-4877-bcef-dffdf48b7ccb})</extraco
         <extracomment>The name of the ParamType (ThingClass: indoor, EventType: noise, ID: {906cea9d-1daf-4e9c-90b9-e40f43052a34})
 ----------
 The name of the StateType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rumore</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="183"/>
         <source>Noise changed</source>
         <extracomment>The name of the EventType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rumore cambiato</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="189"/>
@@ -186,13 +186,13 @@ The name of the StateType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: indoor, EventType: pressure, ID: {03b0a7b7-987d-4d3b-b3f0-21d9f92ad326})
 ----------
 The name of the StateType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Pressione</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="195"/>
         <source>Pressure changed</source>
         <extracomment>The name of the EventType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Pressione cambiata</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="198"/>
