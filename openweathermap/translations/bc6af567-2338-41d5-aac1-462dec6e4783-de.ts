@@ -6,28 +6,28 @@
     <message>
         <location filename="../integrationpluginopenweathermap.cpp" line="149"/>
         <source>Error detecting current location.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei der Erkennung der aktuellen Position.</translation>
     </message>
     <message>
         <location filename="../integrationpluginopenweathermap.cpp" line="158"/>
         <source>Received unexpected data detecting current location.</source>
-        <translation type="unfinished"></translation>
+        <translation>Unerwartete Daten zur Erkennung der aktuellen Position empfangen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginopenweathermap.cpp" line="201"/>
         <source>Error searching for weather stations.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei der Suche nach Wetterstationen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginopenweathermap.cpp" line="210"/>
         <location filename="../integrationpluginopenweathermap.cpp" line="259"/>
         <source>Received unexpected data while searching for weather stations.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erhielt unerwartete Daten bei der Suche nach Wetterstationen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginopenweathermap.cpp" line="250"/>
         <source>Error searching for weather stations in current location.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler bei der Suche nach Wetterstationen am aktuellen Standort.</translation>
     </message>
 </context>
 <context>
@@ -285,7 +285,7 @@ The name of the StateType ({a1dddc3d-549f-4f20-b78b-be850548f286}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="100"/>
         <source>daylightChanged</source>
         <extracomment>The name of the EventType ({e0a14b66-c8e1-49fb-8eff-b48e5dce80de}) of ThingClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tageslicht geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="94"/>
@@ -294,7 +294,7 @@ The name of the StateType ({a1dddc3d-549f-4f20-b78b-be850548f286}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: openweathermap, EventType: daylight, ID: {e0a14b66-c8e1-49fb-8eff-b48e5dce80de})
 ----------
 The name of the StateType ({e0a14b66-c8e1-49fb-8eff-b48e5dce80de}) of ThingClass openweathermap</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tageslicht</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/openweathermap/plugininfo.h" line="139"/>
