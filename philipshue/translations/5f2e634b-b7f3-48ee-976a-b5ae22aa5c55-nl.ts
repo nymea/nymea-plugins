@@ -136,7 +136,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="446"/>
         <source>Serial Number (optional)</source>
         <extracomment>The name of the ParamType (ThingClass: bridge, ActionType: searchNewDevices, ID: {1924bdb5-f8f1-4dcd-bc09-21ad7c5ce377})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Serienummer (optioneel)</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="608"/>
@@ -154,7 +154,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="296"/>
         <source>Hue Motion Sensor</source>
         <extracomment>The name of the ThingClass ({25b79fff-4b88-4af8-b06c-2fe246238790})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Motion Sensor</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="305"/>
