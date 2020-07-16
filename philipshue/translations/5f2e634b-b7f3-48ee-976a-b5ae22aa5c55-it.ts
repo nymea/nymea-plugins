@@ -568,7 +568,7 @@ The name of the EventType ({9fe43e6b-3c29-43a9-bb96-3b80eacc10db}) of ThingClass
 The name of the EventType ({5e21b032-1230-4e93-8543-0c4773da17d3}) of ThingClass tap
 ----------
 The name of the EventType ({b449cca5-19a0-483f-b4bd-b9b43b4f8ed4}) of ThingClass smartButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Reachable changed</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="404"/>
