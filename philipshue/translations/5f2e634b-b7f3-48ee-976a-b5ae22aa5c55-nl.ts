@@ -193,7 +193,7 @@ The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {54744fcc-c
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: settings, ID: {beedc4af-c107-4c53-be25-fd01a349fd35})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: settings, ID: {21d461b2-b4dd-4a70-b3d5-aaedc88605a4})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tijdspanne</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="515"/>
@@ -202,7 +202,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: settings, ID: {21d46
         <extracomment>The name of the ParamType (ThingClass: tap, Type: thing, ID: {eace85b9-5369-466f-89eb-46c4de718305})
 ----------
 The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {7221aacc-1420-43f2-a05a-448a0f783713})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Type</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="521"/>
@@ -211,7 +211,7 @@ The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {7221aacc-1
         <extracomment>The name of the ParamType (ThingClass: tap, Type: thing, ID: {25cf4167-6c28-4497-9fa9-3d02faf4f3ed})
 ----------
 The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {2378a06d-b748-445b-94e2-4dd885a54f22})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>UUID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="683"/>
@@ -427,13 +427,13 @@ The name of the ActionType ({90e91f64-a208-468c-a5a2-7f47e08859e2}) of ThingClas
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="314"/>
         <source>Hue color temperature light</source>
         <extracomment>The name of the ThingClass ({35f749f7-b60a-4922-bd25-1bdd2eddcbe3})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue kleurtemperatuur licht</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="317"/>
         <source>Hue dimmable light</source>
         <extracomment>The name of the ThingClass ({4fa568ef-7a3a-422b-b0c0-206d37cb4eed})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue dimbaar licht</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="569"/>
@@ -481,7 +481,7 @@ The name of the ParamType (ThingClass: remote, EventType: pressed, ID: {e4e3eb3a
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="299"/>
         <source>Hue Outdoor Sensor</source>
         <extracomment>The name of the ThingClass ({32dc6390-600f-4eb4-b349-cc2d6796a82a})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Outdoor Sensor</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="362"/>
