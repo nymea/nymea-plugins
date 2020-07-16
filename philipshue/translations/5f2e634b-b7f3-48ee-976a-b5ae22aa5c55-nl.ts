@@ -166,7 +166,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="353"/>
         <source>Long pressed</source>
         <extracomment>The name of the EventType ({25803922-37f1-47c8-ac00-2d3acb9eb634}) of ThingClass smartButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lang ingedrukt</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="356"/>
@@ -175,7 +175,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: tap, Type: thing, ID: {62d92175-db3a-4da2-a72b-f58f34cb6911})
 ----------
 The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {9271179f-5fe1-4005-9f97-ccde33b1b2c4})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Model ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="440"/>
@@ -184,7 +184,7 @@ The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {9271179f-5
         <extracomment>The name of the ParamType (ThingClass: tap, Type: thing, ID: {5eca2b24-8986-4487-bc12-50e91d023d97})
 ----------
 The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {54744fcc-c052-4c16-a857-fbe0b791e538})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sensor ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="509"/>
