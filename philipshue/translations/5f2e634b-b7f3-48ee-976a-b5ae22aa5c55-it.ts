@@ -553,7 +553,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {22a164fc
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {171cc2e7-7a95-4116-986c-66d75e3e23eb})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {db678144-de2b-4767-a2f6-9ada8377b96c})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Light sensor uuid</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="428"/>
