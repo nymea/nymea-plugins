@@ -11,28 +11,28 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="249"/>
         <source>Not authenticated to bridge. Please reconfigure the bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Non autenticato a ponte. Si prega di riconfigurare il ponte.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="556"/>
         <source>Error connecting to hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore di collegamento al ponte di tinta.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="566"/>
         <location filename="../integrationpluginphilipshue.cpp" line="829"/>
         <source>Received unexpected data from hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Received unexpected data from hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="577"/>
         <source>An error happened pairing the hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>E&apos; successo un errore nell&apos;accoppiare il ponte di tinta.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="585"/>
         <source>The hue bridge has rejected the connection request.</source>
-        <translation type="unfinished"></translation>
+        <translation>Il ponte tinta ha rifiutato la richiesta di collegamento.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="819"/>
