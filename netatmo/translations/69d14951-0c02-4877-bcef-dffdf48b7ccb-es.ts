@@ -231,7 +231,7 @@ The name of the StateType ({3cb25538-e463-40ae-92f9-8f34f0c06b92}) of ThingClass
         <extracomment>The name of the EventType ({f98776bd-887e-4b01-a87f-3d8224180563}) of ThingClass outdoor
 ----------
 The name of the EventType ({3cb25538-e463-40ae-92f9-8f34f0c06b92}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La temperatura cambió</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="225"/>
@@ -246,7 +246,7 @@ The name of the StateType ({aae071dc-70d5-4a6a-8daa-3dca0d150bd7}) of ThingClass
 The name of the ParamType (ThingClass: indoor, EventType: temperatureMax, ID: {dd30507e-037b-4c74-bcca-e04b94c7c5fe})
 ----------
 The name of the StateType ({dd30507e-037b-4c74-bcca-e04b94c7c5fe}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatura máxima</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="237"/>
@@ -255,7 +255,7 @@ The name of the StateType ({dd30507e-037b-4c74-bcca-e04b94c7c5fe}) of ThingClass
         <extracomment>The name of the EventType ({aae071dc-70d5-4a6a-8daa-3dca0d150bd7}) of ThingClass outdoor
 ----------
 The name of the EventType ({dd30507e-037b-4c74-bcca-e04b94c7c5fe}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>El máximo de la temperatura ha cambiado</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="243"/>
@@ -270,7 +270,7 @@ The name of the StateType ({b71e0c8b-3c94-421e-830e-dab97b6c104e}) of ThingClass
 The name of the ParamType (ThingClass: indoor, EventType: temperatureMin, ID: {ae8bb713-8805-4efd-89a1-bca44a1f1690})
 ----------
 The name of the StateType ({ae8bb713-8805-4efd-89a1-bca44a1f1690}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatura mínima</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="255"/>
@@ -279,7 +279,7 @@ The name of the StateType ({ae8bb713-8805-4efd-89a1-bca44a1f1690}) of ThingClass
         <extracomment>The name of the EventType ({b71e0c8b-3c94-421e-830e-dab97b6c104e}) of ThingClass outdoor
 ----------
 The name of the EventType ({ae8bb713-8805-4efd-89a1-bca44a1f1690}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Mínimo de temperatura cambiado</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="261"/>
@@ -288,13 +288,13 @@ The name of the EventType ({ae8bb713-8805-4efd-89a1-bca44a1f1690}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: indoor, EventType: wifiStrength, ID: {6ea906d4-5740-454d-a730-6fdb9fa0d624})
 ----------
 The name of the StateType ({6ea906d4-5740-454d-a730-6fdb9fa0d624}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La intensidad de la señal de WiFi</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="267"/>
         <source>WiFi signal strength changed</source>
         <extracomment>The name of the EventType ({6ea906d4-5740-454d-a730-6fdb9fa0d624}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La intensidad de la señal de WiFi cambió</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="270"/>
