@@ -6,22 +6,22 @@
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="55"/>
         <source>Netatmo server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translation>O servidor Netatmo não é alcançável.</translation>
     </message>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="57"/>
         <source>Please enter the login credentials for your Netatmo account.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por favor introduza as credenciais de login para a sua conta Netatmo.</translation>
     </message>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="79"/>
         <source>Wrong username or password</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome de utilizador ou palavra-passe errados</translation>
     </message>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="147"/>
         <source>Error logging in to Netatmo server.</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao iniciar sessão no servidor Netatmo.</translation>
     </message>
 </context>
 <context>
@@ -33,19 +33,19 @@
         <extracomment>The name of the ParamType (ThingClass: netatmoConnection, EventType: connected, ID: {2f79bc1d-27ed-480a-b583-728363c83ea6})
 ----------
 The name of the StateType ({2f79bc1d-27ed-480a-b583-728363c83ea6}) of ThingClass netatmoConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Disponível</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="90"/>
         <source>Available changed</source>
         <extracomment>The name of the EventType ({2f79bc1d-27ed-480a-b583-728363c83ea6}) of ThingClass netatmoConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Disponível alterado</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="93"/>
         <source>Base station</source>
         <extracomment>The name of the ParamType (ThingClass: outdoor, Type: thing, ID: {d7a0ec46-760c-4fdc-9753-fe10c86fe1b9})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Estação base</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="96"/>
@@ -54,13 +54,13 @@ The name of the StateType ({2f79bc1d-27ed-480a-b583-728363c83ea6}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: outdoor, EventType: batteryLevel, ID: {15d8fae1-ba47-42e1-994d-530e8017c965})
 ----------
 The name of the StateType ({15d8fae1-ba47-42e1-994d-530e8017c965}) of ThingClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bateria</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="102"/>
         <source>Battery changed</source>
         <extracomment>The name of the EventType ({15d8fae1-ba47-42e1-994d-530e8017c965}) of ThingClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Bateria trocada</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="105"/>
@@ -69,13 +69,13 @@ The name of the StateType ({15d8fae1-ba47-42e1-994d-530e8017c965}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: outdoor, EventType: batteryCritical, ID: {f8aeb144-014d-4ccb-81db-64ffc70f1c97})
 ----------
 The name of the StateType ({f8aeb144-014d-4ccb-81db-64ffc70f1c97}) of ThingClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Changed battery</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="111"/>
         <source>Battery critical changed</source>
         <extracomment>The name of the EventType ({f8aeb144-014d-4ccb-81db-64ffc70f1c97}) of ThingClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Mudança de bateria crítica</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="114"/>
@@ -84,13 +84,13 @@ The name of the StateType ({f8aeb144-014d-4ccb-81db-64ffc70f1c97}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: indoor, EventType: co2, ID: {e5710bd1-79fa-4bd4-9052-8416aae909b9})
 ----------
 The name of the StateType ({e5710bd1-79fa-4bd4-9052-8416aae909b9}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>CO2</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="120"/>
         <source>CO2 changed</source>
         <extracomment>The name of the EventType ({e5710bd1-79fa-4bd4-9052-8416aae909b9}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>CO2 alterado</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="123"/>
@@ -105,7 +105,7 @@ The name of the StateType ({7ba6ddeb-5142-4b87-9729-487fcda394df}) of ThingClass
 The name of the ParamType (ThingClass: indoor, EventType: humidity, ID: {e2db5f01-196a-48d1-8874-6b8cbfe0d8c9})
 ----------
 The name of the StateType ({e2db5f01-196a-48d1-8874-6b8cbfe0d8c9}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Humidade</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="135"/>
@@ -114,7 +114,7 @@ The name of the StateType ({e2db5f01-196a-48d1-8874-6b8cbfe0d8c9}) of ThingClass
         <extracomment>The name of the EventType ({7ba6ddeb-5142-4b87-9729-487fcda394df}) of ThingClass outdoor
 ----------
 The name of the EventType ({e2db5f01-196a-48d1-8874-6b8cbfe0d8c9}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Humidade alterada</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="144"/>
@@ -129,7 +129,7 @@ The name of the StateType ({154aad5c-4998-43c2-b9ee-0b997eb6dd69}) of ThingClass
 The name of the ParamType (ThingClass: indoor, EventType: updateTime, ID: {50da9f6b-c350-401c-a72e-2e4036f3975d})
 ----------
 The name of the StateType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Última actualização</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="156"/>
@@ -138,7 +138,7 @@ The name of the StateType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of ThingClass
         <extracomment>The name of the EventType ({154aad5c-4998-43c2-b9ee-0b997eb6dd69}) of ThingClass outdoor
 ----------
 The name of the EventType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Última actualização alterada</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="162"/>
@@ -147,7 +147,7 @@ The name of the EventType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: outdoor, Type: thing, ID: {73a76c5c-84f5-4e65-8541-457e5aca9bb0})
 ----------
 The name of the ParamType (ThingClass: indoor, Type: thing, ID: {157d470a-e579-4d0e-b879-6b5bfa8e34ae})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>MAC Address</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="168"/>
