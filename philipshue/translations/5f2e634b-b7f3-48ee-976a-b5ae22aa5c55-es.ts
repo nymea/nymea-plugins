@@ -6,53 +6,53 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="220"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
-        <translation type="unfinished">Pulse el botón del Hue Bridge dentro de 30 segundos antes de continuar</translation>
+        <translation>Pulse el botón del Hue Bridge dentro de 30 segundos antes de continuar</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="249"/>
         <source>Not authenticated to bridge. Please reconfigure the bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Niet geverifieerd om te overbruggen. Gelieve de brug te herconfigureren.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="556"/>
         <source>Error connecting to hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fout bij het aansluiten op de kleurenbrug.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="566"/>
         <location filename="../integrationpluginphilipshue.cpp" line="829"/>
         <source>Received unexpected data from hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Onverwachte gegevens ontvangen van tintenbrug.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="577"/>
         <source>An error happened pairing the hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Er is een fout opgetreden bij het koppelen van de kleurschakeringsbrug.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="585"/>
         <source>The hue bridge has rejected the connection request.</source>
-        <translation type="unfinished"></translation>
+        <translation>De kleurstofbrug heeft de aansluitingsaanvraag afgewezen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="819"/>
         <source>Error sending command to hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fout bij het sturen van het commando naar de Hue Bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="839"/>
         <source>An unexpected error happened when sending the command to the hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Er is een onverwachte fout opgetreden bij het sturen van het commando naar de kleurenbrug.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1336"/>
         <source>Philips Hue Motion sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue Bewegingssensor</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1350"/>
         <source>Philips Hue Outdoor sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue Outdoor sensor</translation>
     </message>
 </context>
 <context>
