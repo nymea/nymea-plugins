@@ -481,7 +481,7 @@ The name of the ParamType (ThingClass: remote, EventType: pressed, ID: {e4e3eb3a
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="299"/>
         <source>Hue Outdoor Sensor</source>
         <extracomment>The name of the ThingClass ({32dc6390-600f-4eb4-b349-cc2d6796a82a})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Farbton Außensensor</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="362"/>
@@ -490,7 +490,7 @@ The name of the ParamType (ThingClass: remote, EventType: pressed, ID: {e4e3eb3a
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {9cb488b7-a76f-4389-a6b5-b36250246f2b})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {3ca8632d-7bd1-45a9-86af-c856e006c334})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Modell-ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="530"/>
@@ -499,7 +499,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {3ca8632d
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: thing, ID: {3e9aad4c-1dff-42c0-bbd4-cdd8635c01a7})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: thing, ID: {4a15f861-cad6-464a-b250-08793c68ae30})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Uuid</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="497"/>
