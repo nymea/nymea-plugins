@@ -171,13 +171,13 @@ The name of the plugin Netatmo ({69d14951-0c02-4877-bcef-dffdf48b7ccb})</extraco
         <extracomment>The name of the ParamType (ThingClass: indoor, EventType: noise, ID: {906cea9d-1daf-4e9c-90b9-e40f43052a34})
 ----------
 The name of the StateType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of ThingClass indoor</extracomment>
-        <translation>Rumore</translation>
+        <translation>Geluidsoverlast</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="183"/>
         <source>Noise changed</source>
         <extracomment>The name of the EventType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of ThingClass indoor</extracomment>
-        <translation>Rumore cambiato</translation>
+        <translation>Geluidsoverlast veranderd</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="189"/>
