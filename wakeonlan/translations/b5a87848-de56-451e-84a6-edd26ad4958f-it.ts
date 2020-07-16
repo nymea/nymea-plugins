@@ -13,7 +13,7 @@
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="37"/>
         <source>nymea</source>
         <extracomment>The name of the vendor ({2062d64d-3232-433c-88bc-0d33c0ba2ba6})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>nymea</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="28"/>
@@ -31,7 +31,7 @@
         <location filename="../../../build-nymea-plugins-Desktop-Debug/wakeonlan/plugininfo.h" line="34"/>
         <source>Wake up device</source>
         <extracomment>The name of the ActionType ({fb9b9d87-218f-4f0d-9e16-39f8a105029a}) of ThingClass wol</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>dispositivo wake up</translation>
     </message>
 </context>
 </TS>

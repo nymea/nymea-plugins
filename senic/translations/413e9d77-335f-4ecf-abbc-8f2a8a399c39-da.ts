@@ -6,22 +6,22 @@
     <message>
         <location filename="../integrationpluginsenic.cpp" line="52"/>
         <source>Bluetooth is not available on this system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bluetooth er ikke tilgængelig på dette system.</translation>
     </message>
     <message>
         <location filename="../integrationpluginsenic.cpp" line="55"/>
         <source>Bluetooth is disabled. Please enable Bluetooth and try again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bluetooth er deaktiveret. Aktivér Bluetooth, og prøv igen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginsenic.cpp" line="64"/>
         <source>An error happened during Bluetooth discovery.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der opstod en fejl under opdagelsen af Bluetooth.</translation>
     </message>
     <message>
         <location filename="../integrationpluginsenic.cpp" line="124"/>
         <source>Error connecting to nuimo.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fejl ved forbindelse til nuimo.</translation>
     </message>
 </context>
 <context>
@@ -51,13 +51,13 @@ The name of the plugin Senic ({413e9d77-335f-4ecf-abbc-8f2a8a399c39})</extracomm
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="79"/>
         <source>Button pressed</source>
         <extracomment>The name of the EventType ({24649eb2-47d1-4a2b-8c09-1f074382e2c4}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tryk på knappen</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="76"/>
         <source>Button name</source>
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: pressed, ID: {8ed643c0-1b8a-4709-8abf-717cf213f4a4})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Knappenavn</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="88"/>
@@ -93,7 +93,7 @@ The name of the StateType ({5c400da4-a14e-4e0a-be9f-c82ffe7e1972}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="52"/>
         <source>Automatically display symbols</source>
         <extracomment>The name of the ParamType (ThingClass: senic, Type: plugin, ID: {ba3d4269-940b-42ee-8c73-1e1bdea329c2})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Vis symboler automatisk</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="55"/>
@@ -102,13 +102,13 @@ The name of the StateType ({5c400da4-a14e-4e0a-be9f-c82ffe7e1972}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: batteryLevel, ID: {b5ee2465-7fa1-450b-8073-f115537d3409})
 ----------
 The name of the StateType ({b5ee2465-7fa1-450b-8073-f115537d3409}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batteri</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="61"/>
         <source>Battery changed</source>
         <extracomment>The name of the EventType ({b5ee2465-7fa1-450b-8073-f115537d3409}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batteri ændret</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="64"/>
@@ -117,19 +117,19 @@ The name of the StateType ({b5ee2465-7fa1-450b-8073-f115537d3409}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: batteryCritical, ID: {aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd})
 ----------
 The name of the StateType ({aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterikritisk</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="70"/>
         <source>Battery critical changed</source>
         <extracomment>The name of the EventType ({aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Batterikritisk ændret</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="73"/>
         <source>Button long pressed</source>
         <extracomment>The name of the EventType ({a2f4add5-f76a-4dca-ae68-4107533bee0e}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Knappen længe trykket på</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="91"/>
@@ -144,19 +144,19 @@ The name of the StateType ({edcf76c6-9fed-4c26-9853-c284cf887adb}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="109"/>
         <source>Logo</source>
         <extracomment>The name of the ParamType (ThingClass: nuimo, ActionType: showLogo, ID: {a8f72c37-9cb5-4885-a7e4-b2b396f8e4cd})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Logo</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="112"/>
         <source>Long press time</source>
         <extracomment>The name of the ParamType (ThingClass: senic, Type: plugin, ID: {f9900dfe-310b-462b-b09d-a999df441075})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lang pressetid</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="115"/>
         <source>Mac address</source>
         <extracomment>The name of the ParamType (ThingClass: nuimo, Type: thing, ID: {71553f6a-2ed4-4896-bb7b-52e7dca948b2})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Mac-adresse</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="121"/>
@@ -165,13 +165,13 @@ The name of the StateType ({edcf76c6-9fed-4c26-9853-c284cf887adb}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: nuimo, EventType: rotation, ID: {69a5f495-5452-434b-8fb8-b73d992c5446})
 ----------
 The name of the StateType ({69a5f495-5452-434b-8fb8-b73d992c5446}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rotation</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="127"/>
         <source>Rotation changed</source>
         <extracomment>The name of the EventType ({69a5f495-5452-434b-8fb8-b73d992c5446}) of ThingClass nuimo</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Rotation ændret</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/senic/plugininfo.h" line="145"/>
