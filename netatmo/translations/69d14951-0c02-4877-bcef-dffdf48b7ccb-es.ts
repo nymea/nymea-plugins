@@ -171,13 +171,13 @@ The name of the plugin Netatmo ({69d14951-0c02-4877-bcef-dffdf48b7ccb})</extraco
         <extracomment>The name of the ParamType (ThingClass: indoor, EventType: noise, ID: {906cea9d-1daf-4e9c-90b9-e40f43052a34})
 ----------
 The name of the StateType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ruido</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="183"/>
         <source>Noise changed</source>
         <extracomment>The name of the EventType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ruido cambiado</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="189"/>
@@ -186,13 +186,13 @@ The name of the StateType ({906cea9d-1daf-4e9c-90b9-e40f43052a34}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: indoor, EventType: pressure, ID: {03b0a7b7-987d-4d3b-b3f0-21d9f92ad326})
 ----------
 The name of the StateType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Presión</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="195"/>
         <source>Pressure changed</source>
         <extracomment>The name of the EventType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La presión cambió</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="198"/>
@@ -201,13 +201,13 @@ The name of the StateType ({03b0a7b7-987d-4d3b-b3f0-21d9f92ad326}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: outdoor, EventType: signalStrength, ID: {0faa3d08-9004-46fb-a5aa-a59b75e454cc})
 ----------
 The name of the StateType ({0faa3d08-9004-46fb-a5aa-a59b75e454cc}) of ThingClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>La fuerza de la señal</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="204"/>
         <source>Signal strength changed</source>
         <extracomment>The name of the EventType ({0faa3d08-9004-46fb-a5aa-a59b75e454cc}) of ThingClass outdoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>The strength of the signal</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="207"/>
@@ -222,7 +222,7 @@ The name of the StateType ({f98776bd-887e-4b01-a87f-3d8224180563}) of ThingClass
 The name of the ParamType (ThingClass: indoor, EventType: temperature, ID: {3cb25538-e463-40ae-92f9-8f34f0c06b92})
 ----------
 The name of the StateType ({3cb25538-e463-40ae-92f9-8f34f0c06b92}) of ThingClass indoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperature</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="219"/>
