@@ -244,13 +244,13 @@ The name of the StateType ({a5779b11-0499-4a6d-a7bd-8143dcc546b4}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: duskTime, ID: {44a99419-fbcd-4d8e-9441-897848b8f77c})
 ----------
 The name of the StateType ({44a99419-fbcd-4d8e-9441-897848b8f77c}) of ThingClass today</extracomment>
-        <translation>Abenddämmerung</translation>
+        <translation>Abenddämmerungszeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="131"/>
         <source>Dusk time changed</source>
         <extracomment>The name of the EventType ({44a99419-fbcd-4d8e-9441-897848b8f77c}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Abenddämmerungszeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="134"/>
@@ -259,13 +259,13 @@ The name of the StateType ({44a99419-fbcd-4d8e-9441-897848b8f77c}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: noonTime, ID: {d92be29a-929c-4240-91a0-30153850f838})
 ----------
 The name of the StateType ({d92be29a-929c-4240-91a0-30153850f838}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Mittagszeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="140"/>
         <source>Noon time changed</source>
         <extracomment>The name of the EventType ({d92be29a-929c-4240-91a0-30153850f838}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Mittagszeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="143"/>
@@ -274,13 +274,13 @@ The name of the StateType ({d92be29a-929c-4240-91a0-30153850f838}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: sunriseTime, ID: {3a08824d-285b-412e-a515-9664b491a85c})
 ----------
 The name of the StateType ({3a08824d-285b-412e-a515-9664b491a85c}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sonnenaufgangszeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="149"/>
         <source>Sunrise time changed</source>
         <extracomment>The name of the EventType ({3a08824d-285b-412e-a515-9664b491a85c}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sonnenaufgangszeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="152"/>
@@ -289,13 +289,13 @@ The name of the StateType ({3a08824d-285b-412e-a515-9664b491a85c}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: sunsetTime, ID: {377f04a7-df58-42ad-a234-e9e23bdc2f85})
 ----------
 The name of the StateType ({377f04a7-df58-42ad-a234-e9e23bdc2f85}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sonnenuntergangszeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="158"/>
         <source>Sunset time changed</source>
         <extracomment>The name of the EventType ({377f04a7-df58-42ad-a234-e9e23bdc2f85}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sonnenuntergangszeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="218"/>
