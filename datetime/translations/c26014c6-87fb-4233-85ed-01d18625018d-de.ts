@@ -229,13 +229,13 @@ The name of the StateType ({1c3d6179-3b00-456c-841a-2d26ce960c25}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: dawnTime, ID: {a5779b11-0499-4a6d-a7bd-8143dcc546b4})
 ----------
 The name of the StateType ({a5779b11-0499-4a6d-a7bd-8143dcc546b4}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Dämmerungszeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="113"/>
         <source>Dawn time changed</source>
         <extracomment>The name of the EventType ({a5779b11-0499-4a6d-a7bd-8143dcc546b4}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Dämmerungszeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="125"/>
@@ -244,7 +244,7 @@ The name of the StateType ({a5779b11-0499-4a6d-a7bd-8143dcc546b4}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: today, EventType: duskTime, ID: {44a99419-fbcd-4d8e-9441-897848b8f77c})
 ----------
 The name of the StateType ({44a99419-fbcd-4d8e-9441-897848b8f77c}) of ThingClass today</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Abenddämmerung</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/datetime/plugininfo.h" line="131"/>
