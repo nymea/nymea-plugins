@@ -802,7 +802,7 @@ The name of the StateType ({16a126f3-0cef-4931-bb2b-9e1b49bec7fc}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="311"/>
         <source>Hue color light</source>
         <extracomment>The name of the ThingClass ({0edba26c-96ab-44fb-a6a2-c0574d19630e})</extracomment>
-        <translation>Hue color light</translation>
+        <translation>Hue colore luce</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="623"/>
