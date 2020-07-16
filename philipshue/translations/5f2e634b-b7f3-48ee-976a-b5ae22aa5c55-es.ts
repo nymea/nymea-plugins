@@ -166,7 +166,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="353"/>
         <source>Long pressed</source>
         <extracomment>The name of the EventType ({25803922-37f1-47c8-ac00-2d3acb9eb634}) of ThingClass smartButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Long pressed</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="356"/>
