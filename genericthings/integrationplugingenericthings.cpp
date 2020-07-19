@@ -51,14 +51,14 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
         if (!m_smartMeterTimer) {
             m_smartMeterTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-            connect(m_smartMeterTimer, &PluginTimer::timeout, thing, [this, thing] {
-
-                int impulsePerKwh = thing->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toInt();
-                double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(m_smartMeterTimer->interval()/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
-                thing->setStateValue(extendedSmartMeterConsumerCurrentPowerStateTypeId, power);
-                m_pulsesPerTimeframe.insert(thing, 0);
-            });
         }
+        connect(m_smartMeterTimer, &PluginTimer::timeout, thing, [this, thing] {
+
+            double impulsePerKwh = thing->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toDouble();
+            double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(m_smartMeterTimer->interval()/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
+            thing->setStateValue(extendedSmartMeterConsumerCurrentPowerStateTypeId, power*1000);
+            m_pulsesPerTimeframe.insert(thing, 0);
+        });
     }
     info->finish(Thing::ThingErrorNoError);
     Thing *thing = info->thing();
@@ -491,6 +491,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
     } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
         if (action.actionTypeId() == extendedSmartMeterConsumerS0InputActionTypeId) {
             bool value = info->action().param(extendedSmartMeterConsumerS0InputActionS0InputParamTypeId).value().toBool();
+            thing->setStateValue(extendedSmartMeterConsumerS0InputStateTypeId, value);
             int impulsePerKwh = info->thing()->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toInt();
             if (value) {
                 double currentEnergy = thing->stateValue(extendedSmartMeterConsumerTotalEnergyConsumedStateTypeId).toDouble();
