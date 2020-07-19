@@ -340,7 +340,11 @@ The name of the EventType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClass
     </message>
     <message>
         <source>Power</source>
-        <extracomment>The name of the ParamType (ThingClass: ventilation, ActionType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: currentPower, ID: {5983d714-5f80-42d8-bee2-9228b6382b3b})
+----------
+The name of the StateType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass extendedSmartMeterConsumer
+----------
+The name of the ParamType (ThingClass: ventilation, ActionType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
 ----------
 The name of the ParamType (ThingClass: ventilation, EventType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
 ----------
@@ -379,7 +383,9 @@ The name of the StateType ({018038d7-1d02-4b17-8fe3-babca044b087}) of ThingClass
     </message>
     <message>
         <source>Power changed</source>
-        <extracomment>The name of the EventType ({409b635e-a754-4b5c-b3f0-d1c5a0fb3f03}) of ThingClass heating
+        <extracomment>The name of the EventType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass extendedSmartMeterConsumer
+----------
+The name of the EventType ({409b635e-a754-4b5c-b3f0-d1c5a0fb3f03}) of ThingClass heating
 ----------
 The name of the EventType ({8b6e4a67-6522-408b-b676-8d2f09ed2d54}) of ThingClass light
 ----------
@@ -528,6 +534,29 @@ The name of the StateType ({d0b6c4be-339e-4b0f-a234-0611b7565395}) of ThingClass
     <message>
         <source>Turn on or off</source>
         <extracomment>The name of the ActionType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
+<<<<<<< HEAD
+=======
+----------
+The name of the ActionType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turned on or off</source>
+        <extracomment>The name of the EventType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
+----------
+The name of the EventType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input value</source>
+        <extracomment>The name of the ParamType (ThingClass: moistureSensor, ActionType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
+----------
+The name of the ParamType (ThingClass: moistureSensor, EventType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
+----------
+The name of the StateType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
+----------
+The name of the ParamType (ThingClass: humiditySensor, ActionType: input, ID: {a8223e65-e704-4f84-9bbe-d8fc42597047})
+>>>>>>> updated translation
 ----------
 The name of the ActionType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
         <translation type="unfinished"></translation>
@@ -547,6 +576,49 @@ The name of the EventType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass
     <message>
         <source>nymea</source>
         <extracomment>The name of the vendor ({2062d64d-3232-433c-88bc-0d33c0ba2ba6})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Energy</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: totalEnergyConsumed, ID: {5821edb7-e6cb-4e5a-9d0b-3375126d3367})
+----------
+The name of the StateType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Energy changed</source>
+        <extracomment>The name of the EventType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extended smart meter consumer</source>
+        <extracomment>The name of the ThingClass ({c3123967-f741-4fe1-a0d4-9a3e405d7e52})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic ventilation</source>
+        <extracomment>The name of the ThingClass ({24af8dd3-ddf0-47f0-bf09-70fdfd8dceab})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Impulse/kWh</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, Type: settings, ID: {c361732b-68eb-447e-a434-e84031231871})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>S0 impulse</source>
+        <extracomment>The name of the ActionType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer
+----------
+The name of the EventType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>S0 input</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, ActionType: s0Input, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
+----------
+The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: s0Input, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
+----------
+The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
