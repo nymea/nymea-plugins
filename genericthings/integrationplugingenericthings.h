@@ -33,6 +33,7 @@
 
 #include "integrations/integrationplugin.h"
 #include <QTimer>
+#include "plugintimer.h"
 
 class IntegrationPluginGenericThings: public IntegrationPlugin
 {
@@ -49,6 +50,9 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
+    PluginTimer *m_smartMeterTimer = nullptr;
+    QHash<Thing *, int> m_pulsesPerTimeframe;
+
     double mapDoubleValue(double value, double fromMin, double fromMax, double toMin, double toMax);
 
     QHash<Thing *, QTimer *> m_extendedBlindPercentageTimer;

@@ -47,6 +47,19 @@ void IntegrationPluginGenericThings::init()
 
 void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
 {
+    Thing *thing = info->thing();
+    if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
+        if (!m_smartMeterTimer) {
+            m_smartMeterTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+            connect(m_smartMeterTimer, &PluginTimer::timeout, thing, [this, thing] {
+
+                int impulsePerKwh = thing->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toInt();
+                double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(m_smartMeterTimer->interval()/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
+                thing->setStateValue(extendedSmartMeterConsumerCurrentPowerStateTypeId, power);
+                m_pulsesPerTimeframe.insert(thing, 0);
+            });
+        }
+    }
     info->finish(Thing::ThingErrorNoError);
     Thing *thing = info->thing();
     if (thing->thingClassId() == extendedBlindThingClassId) {
@@ -475,6 +488,20 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
+    } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
+        if (action.actionTypeId() == extendedSmartMeterConsumerS0InputActionTypeId) {
+            bool value = info->action().param(extendedSmartMeterConsumerS0InputActionS0InputParamTypeId).value().toBool();
+            int impulsePerKwh = info->thing()->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toInt();
+            if (value) {
+                double currentEnergy = thing->stateValue(extendedSmartMeterConsumerTotalEnergyConsumedStateTypeId).toDouble();
+                thing->setStateValue(extendedSmartMeterConsumerTotalEnergyConsumedStateTypeId ,currentEnergy + (1.00/impulsePerKwh));
+                m_pulsesPerTimeframe.insert(thing, m_pulsesPerTimeframe.value(thing)+1);
+            }
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -490,6 +517,18 @@ void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
         m_extendedBlindTargetPercentage.remove(thing);
         m_venetianBlindAngleTimer.take(thing)->deleteLater();
         m_venetianBlindTargetAngle.remove(thing);
+    }
+}
+
+void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
+{
+    if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
+        m_pulsesPerTimeframe.remove(thing);
+    }
+
+    if (myThings().isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_smartMeterTimer);
+        m_smartMeterTimer = nullptr;
     }
 }
 

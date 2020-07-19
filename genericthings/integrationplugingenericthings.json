@@ -693,6 +693,55 @@
                             "ioType": "analogOutput"
                         }
                     ]
+                },
+                {
+                    "id": "c3123967-f741-4fe1-a0d4-9a3e405d7e52",
+                    "name": "extendedSmartMeterConsumer",
+                    "displayName": "Extended smart meter consumer",
+                    "createMethods": ["user"],
+                    "interfaces": ["extendedsmartmeterconsumer"],
+                    "settingsTypes": [
+                        {
+                            "id": "c361732b-68eb-447e-a434-e84031231871",
+                            "name": "impulsePerKwh",
+                            "displayName": "Impulse/kWh",
+                            "type": "int",
+                            "minValue": 1,
+                            "maxValue": 1000000,
+                            "defaultValue": 1000
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5983d714-5f80-42d8-bee2-9228b6382b3b",
+                            "name": "currentPower",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "unit": "Watt"
+                        },
+                        {
+                            "id": "5821edb7-e6cb-4e5a-9d0b-3375126d3367",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Energy",
+                            "displayNameEvent": "Energy changed",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "unit": "KiloWattHour"
+                        },
+                        {
+                            "id": "9cd7e5ca-f8f8-48d5-9785-911ae75158c3",
+                            "name": "s0Input",
+                            "displayName": "S0 input",
+                            "displayNameEvent": "S0 impulse",
+                            "displayNameAction": "S0 impulse",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
                 }
             ]
         }
