@@ -28,7 +28,7 @@ The name of the StateType ({fcb700c4-5da8-4385-85b0-6616e807974e}) of ThingClass
     </message>
     <message>
         <source>Angle end to end time [MilliSecond]</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: thing, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -92,9 +92,9 @@ The name of the EventType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClass
     </message>
     <message>
         <source>Closing time [MilliSecond]</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: thing, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
+        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
 ----------
-The name of the ParamType (ThingClass: extendedBlind, Type: thing, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
+The name of the ParamType (ThingClass: extendedBlind, Type: settings, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -534,29 +534,6 @@ The name of the StateType ({d0b6c4be-339e-4b0f-a234-0611b7565395}) of ThingClass
     <message>
         <source>Turn on or off</source>
         <extracomment>The name of the ActionType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
-<<<<<<< HEAD
-=======
-----------
-The name of the ActionType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Turned on or off</source>
-        <extracomment>The name of the EventType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
-----------
-The name of the EventType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input value</source>
-        <extracomment>The name of the ParamType (ThingClass: moistureSensor, ActionType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
-----------
-The name of the ParamType (ThingClass: moistureSensor, EventType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
-----------
-The name of the StateType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
-----------
-The name of the ParamType (ThingClass: humiditySensor, ActionType: input, ID: {a8223e65-e704-4f84-9bbe-d8fc42597047})
->>>>>>> updated translation
 ----------
 The name of the ActionType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
         <translation type="unfinished"></translation>
@@ -596,11 +573,6 @@ The name of the StateType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Generic ventilation</source>
-        <extracomment>The name of the ThingClass ({24af8dd3-ddf0-47f0-bf09-70fdfd8dceab})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Impulse/kWh</source>
         <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, Type: settings, ID: {c361732b-68eb-447e-a434-e84031231871})</extracomment>
         <translation type="unfinished"></translation>
@@ -619,6 +591,17 @@ The name of the EventType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass
 The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: s0Input, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
 ----------
 The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IntegrationPluginGenericThings</name>
+    <message>
+        <source>Invalid closing time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid closing or angle time</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

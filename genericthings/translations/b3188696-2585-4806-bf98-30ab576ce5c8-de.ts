@@ -28,7 +28,7 @@ The name of the StateType ({fcb700c4-5da8-4385-85b0-6616e807974e}) of ThingClass
     </message>
     <message>
         <source>Angle end to end time [MilliSecond]</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: thing, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
         <translation>End- zu Endwinkelzeit</translation>
     </message>
     <message>
@@ -92,9 +92,9 @@ The name of the EventType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClass
     </message>
     <message>
         <source>Closing time [MilliSecond]</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: thing, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
+        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
 ----------
-The name of the ParamType (ThingClass: extendedBlind, Type: thing, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
+The name of the ParamType (ThingClass: extendedBlind, Type: settings, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
         <translation>Schließdauer [Millisekunden]</translation>
     </message>
     <message>
@@ -340,15 +340,11 @@ The name of the EventType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClass
     </message>
     <message>
         <source>Power</source>
-<<<<<<< HEAD
-        <extracomment>The name of the ParamType (ThingClass: ventilation, ActionType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
-=======
         <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: currentPower, ID: {5983d714-5f80-42d8-bee2-9228b6382b3b})
 ----------
 The name of the StateType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass extendedSmartMeterConsumer
 ----------
 The name of the ParamType (ThingClass: ventilation, ActionType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
->>>>>>> updated translation
 ----------
 The name of the ParamType (ThingClass: ventilation, EventType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
 ----------
@@ -540,32 +536,6 @@ The name of the StateType ({d0b6c4be-339e-4b0f-a234-0611b7565395}) of ThingClass
         <extracomment>The name of the ActionType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
 ----------
 The name of the ActionType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
-        <translation>Ein- oder ausschalten</translation>
-    </message>
-    <message>
-        <source>Turned on or off</source>
-        <extracomment>The name of the EventType ({846711b7-ea5a-4c66-a267-001c60406509}) of ThingClass ventilation
-----------
-The name of the EventType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
-        <translation>Ein- oder ausgeschaltet</translation>
-    </message>
-    <message>
-        <source>Input value</source>
-        <extracomment>The name of the ParamType (ThingClass: moistureSensor, ActionType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
-----------
-The name of the ParamType (ThingClass: moistureSensor, EventType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
-----------
-The name of the StateType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
-----------
-The name of the ParamType (ThingClass: humiditySensor, ActionType: input, ID: {a8223e65-e704-4f84-9bbe-d8fc42597047})
-----------
-The name of the ParamType (ThingClass: humiditySensor, EventType: input, ID: {a8223e65-e704-4f84-9bbe-d8fc42597047})
-----------
-The name of the StateType ({a8223e65-e704-4f84-9bbe-d8fc42597047}) of ThingClass humiditySensor
-----------
-The name of the ParamType (ThingClass: temperatureSensor, ActionType: input, ID: {fed37466-1264-4ac1-84fd-aff3a1f7ff04})
-----------
-The name of the ActionType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass irrigation</extracomment>
         <translation>Schalte ein oder aus</translation>
     </message>
     <message>
@@ -600,12 +570,7 @@ The name of the StateType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass
     <message>
         <source>Extended smart meter consumer</source>
         <extracomment>The name of the ThingClass ({c3123967-f741-4fe1-a0d4-9a3e405d7e52})</extracomment>
-        <translation>Erweiterter Smart Meter Verbraucher</translation>
-    </message>
-    <message>
-        <source>Generic ventilation</source>
-        <extracomment>The name of the ThingClass ({24af8dd3-ddf0-47f0-bf09-70fdfd8dceab})</extracomment>
-        <translation>Generische Lüftung</translation>
+        <translation>Erweiterter Smart-Meter Verbraucher</translation>
     </message>
     <message>
         <source>Impulse/kWh</source>
@@ -626,7 +591,18 @@ The name of the EventType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass
 The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: s0Input, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
 ----------
 The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
-        <translation>S0 Eingang</translation>
+        <translation>S0 Input</translation>
+    </message>
+</context>
+<context>
+    <name>IntegrationPluginGenericThings</name>
+    <message>
+        <source>Invalid closing time</source>
+        <translation>Ungültige Schließzeit</translation>
+    </message>
+    <message>
+        <source>Invalid closing or angle time</source>
+        <translation>Ungültige Schließ- oder Winkelstellzeit</translation>
     </message>
 </context>
 </TS>
