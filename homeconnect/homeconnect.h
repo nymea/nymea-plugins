@@ -73,6 +73,10 @@ public:
         QString unit;
     };
 
+    struct Status {
+
+    };
+
     HomeConnect(NetworkAccessManager *networkmanager, const QByteArray &clientKey, const QByteArray &clientSecret, bool simulationMode = false, QObject *parent = nullptr);
     QByteArray accessToken();
     QByteArray refreshToken();
@@ -118,6 +122,8 @@ signals:
     void authenticationStatusChanged(bool authenticated);
     void commandExecuted(QUuid commandId,bool success);
 
+    void receivedStatus(const QString &haId, const QHash<QString, QVariant> &statusList);
     void receivedHomeAppliances(const QList<HomeAppliance> &appliances);
+    void receivedAvailablePrograms();
 };
 #endif // HOMECONNECT_H

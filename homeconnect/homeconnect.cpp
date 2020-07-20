@@ -359,7 +359,7 @@ void HomeConnect::getStatus(const QString &haid)
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply]{
+    connect(reply, &QNetworkReply::finished, this, [this, haid, reply]{
 
 
         // Remote control activation state
@@ -371,16 +371,20 @@ void HomeConnect::getStatus(const QString &haid)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Get home appliances: Recieved invalide JSON object";
+            qCDebug(dcHomeConnect()) << "Get status: Recieved invalide JSON object";
             return;
         }
-        qCDebug(dcHomeConnect()) << "Get home appliances" << data.toJson();
-        if (data.toVariant().toMap().contains("data")) {
-            QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
-            qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
-        } else if (data.toVariant().toMap().contains("error")) {
-            qCWarning(dcHomeConnect()) << "Get home appliences" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+        QHash<QString, QString> statusList;
+        qCDebug(dcHomeConnect()) << "Get status" << data.toJson();
+        QVariantList statusVariantList= data.toVariant().toMap().value("data").toMap().value("status").toList();
+        Q_FOREACH(QVariant status, statusVariantList) {
+            QVariantMap map = status.toMap();
+            if (map.value("key") == "BSH.Common.Status.OperationState") {
+                qCDebug(dcHomeConnect()) << map.value("value").toString();
+            }
+            statusList.insert(map.value("key").toString(), map.value("value").toString());
         }
+        emit receivedStatus(haid, statusList);
     });
 }
 

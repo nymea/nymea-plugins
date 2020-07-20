@@ -47,14 +47,18 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_idParamTypeIds.insert(washerThingClassId, washerThingIdParamTypeId);
     m_idParamTypeIds.insert(ovenThingClassId, ovenThingIdParamTypeId);
     m_idParamTypeIds.insert(cookTopThingClassId, cookTopThingIdParamTypeId);
-    //TODO add new devices
+    m_idParamTypeIds.insert(hoodThingClassId, hoodThingIdParamTypeId);
+    m_idParamTypeIds.insert(cleaningRobotThingClassId, cleaningRobotThingIdParamTypeId);
+
     m_connectedStateTypeIds.insert(fridgeThingClassId, fridgeConnectedStateTypeId);
     m_connectedStateTypeIds.insert(dryerThingClassId, dryerConnectedStateTypeId);
     m_connectedStateTypeIds.insert(coffeMakerThingClassId, coffeMakerConnectedStateTypeId);
     m_connectedStateTypeIds.insert(dishwasherThingClassId, dishwasherConnectedStateTypeId);
     m_connectedStateTypeIds.insert(washerThingClassId, washerConnectedStateTypeId);
     m_connectedStateTypeIds.insert(ovenThingClassId, ovenConnectedStateTypeId);
-    //TODO add new devices
+    m_connectedStateTypeIds.insert(cookTopThingClassId, cookTopConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(hoodThingClassId, hoodConnectedStateTypeId);
 }
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
@@ -158,7 +162,10 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
                (thing->thingClassId() == washerThingClassId) ||
                (thing->thingClassId() == dishwasherThingClassId) ||
                (thing->thingClassId() == coffeMakerThingClassId) ||
-               (thing->thingClassId() == ovenThingClassId)) {
+               (thing->thingClassId() == ovenThingClassId) ||
+               (thing->thingClassId() == hoodThingClassId) ||
+               (thing->thingClassId() == cleaningRobotThingClassId) ||
+               (thing->thingClassId() == cookTopThingClassId)) {
         Thing *parentThing = myThings().findById(thing->parentId());
         if (parentThing->setupComplete()) {
             info->finish(Thing::ThingErrorNoError);
@@ -218,7 +225,10 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
                (thing->thingClassId() == washerThingClassId) ||
                (thing->thingClassId() == dishwasherThingClassId) ||
                (thing->thingClassId() == coffeMakerThingClassId) ||
-               (thing->thingClassId() == ovenThingClassId)) {
+               (thing->thingClassId() == ovenThingClassId) ||
+               (thing->thingClassId() == hoodThingClassId) ||
+               (thing->thingClassId() == cleaningRobotThingClassId) ||
+               (thing->thingClassId() == cookTopThingClassId)){
         Thing *parentThing = myThings().findById(thing->parentId());
         if (!parentThing)
             qCWarning(dcHomeConnect()) << "Could not find parent with Id" << thing->parentId().toString();
@@ -245,15 +255,20 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
     } else if (thing->thingClassId() == ovenThingClassId) {
         HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
         QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+        QUuid requestId;
         if (action.actionTypeId() == ovenPauseActionTypeId) {
-            homeConnect->sendCommand(haid, "BSH.Common.Command.PauseProgram");
+            requestId = homeConnect->sendCommand(haid, "BSH.Common.Command.PauseProgram");
         } else if (action.actionTypeId() == ovenResumeActionTypeId) {
-            homeConnect->sendCommand(haid, "BSH.Common.Command.ResumeProgram");
+            requestId = homeConnect->sendCommand(haid, "BSH.Common.Command.ResumeProgram");
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
+        m_pendingActions.insert(requestId, info);
+        connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            m_pendingActions.remove(requestId);
+        });
     } else {
-        Q_ASSERT_X(false, "executeAction", QString("Unhandled deviceClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
 
@@ -279,16 +294,31 @@ void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
 void IntegrationPluginHomeConnect::browseThing(BrowseResult *result)
 {
     Q_UNUSED(result)
+    Thing *thing = result->thing();
+    qCDebug(dcHomeConnect()) << "Browse thing called " << thing->name();
+
+    if (thing->thingClassId() == ovenThingClassId) {
+        HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
+        if (!homeConnect)
+            return;
+        QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+        homeConnect->getProgramsAvailable(haid);
+        connect(homeConnect, &HomeConnect::re)
+    }
 }
 
 void IntegrationPluginHomeConnect::browserItem(BrowserItemResult *result)
 {
     Q_UNUSED(result)
+    Thing *thing = result->thing();
+    qCDebug(dcHomeConnect()) << "Browse item called " << thing->name();
 }
 
 void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
 {
     Q_UNUSED(info)
+    Thing *thing = info->thing();
+        qCDebug(dcHomeConnect()) << "Execute browse item called " << thing->name();
 }
 
 void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
@@ -407,4 +437,17 @@ void IntegrationPluginHomeConnect::onReceivedHomeAppliances(QList<HomeConnect::H
     }
     if (!desciptors.isEmpty())
         emit autoThingsAppeared(desciptors);
+}
+
+void IntegrationPluginHomeConnect::onReceivedStatusList(QHash<QString, QString> statusList)
+{
+    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
+    Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
+    if (!parentThing)
+        return;
+
+    if (statusList.contains("BSH.Common.Status.LocalControlActive")) {
+
+    }
+
 }
