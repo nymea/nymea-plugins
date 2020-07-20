@@ -40,28 +40,10 @@ IntegrationPluginGenericThings::IntegrationPluginGenericThings()
 
 }
 
-void IntegrationPluginGenericThings::init()
-{
-
-}
-
 void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
-        if (!m_smartMeterTimer) {
-            m_smartMeterTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
-        }
-        connect(m_smartMeterTimer, &PluginTimer::timeout, thing, [this, thing] {
 
-            double impulsePerKwh = thing->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toDouble();
-            double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(m_smartMeterTimer->interval()/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
-            thing->setStateValue(extendedSmartMeterConsumerCurrentPowerStateTypeId, power*1000);
-            m_pulsesPerTimeframe.insert(thing, 0);
-        });
-    }
-    info->finish(Thing::ThingErrorNoError);
-    Thing *thing = info->thing();
     if (thing->thingClassId() == extendedBlindThingClassId) {
         uint closingTime = thing->setting(extendedBlindSettingsClosingTimeParamTypeId).toUInt();
         if (closingTime == 0) {
@@ -202,7 +184,19 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 }
             }
         });
+    } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
+        if (!m_smartMeterTimer) {
+            m_smartMeterTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        }
+        connect(m_smartMeterTimer, &PluginTimer::timeout, thing, [this, thing] {
+
+            double impulsePerKwh = thing->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toDouble();
+            double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(m_smartMeterTimer->interval()/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
+            thing->setStateValue(extendedSmartMeterConsumerCurrentPowerStateTypeId, power*1000);
+            m_pulsesPerTimeframe.insert(thing, 0);
+        });
     }
+    info->finish(Thing::ThingErrorNoError);
 }
 
 void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
@@ -518,12 +512,7 @@ void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
         m_extendedBlindTargetPercentage.remove(thing);
         m_venetianBlindAngleTimer.take(thing)->deleteLater();
         m_venetianBlindTargetAngle.remove(thing);
-    }
-}
-
-void IntegrationPluginGenericThings::thingRemoved(Thing *thing)
-{
-    if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
+    } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
         m_pulsesPerTimeframe.remove(thing);
     }
 
