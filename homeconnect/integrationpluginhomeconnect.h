@@ -74,11 +74,13 @@ private:
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
 
     HomeConnect *createHomeConnection();
+
 private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
     void onRequestExecuted(QUuid requestId, bool success);
     void onReceivedHomeAppliances(QList<HomeConnect::HomeAppliance> appliances);
+    void onReceivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
 };
 
 #endif // INTEGRATIONPLUGINHOMECONNECT_H
