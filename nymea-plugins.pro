@@ -40,6 +40,7 @@ PLUGIN_DIRS = \
     philipshue          \
     pushbullet          \
     shelly              \
+    solarlog            \
     systemmonitor       \
     remotessh           \
     senic               \
