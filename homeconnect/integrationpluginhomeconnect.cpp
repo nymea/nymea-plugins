@@ -59,6 +59,16 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_connectedStateTypeIds.insert(cookTopThingClassId, cookTopConnectedStateTypeId);
     m_connectedStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotConnectedStateTypeId);
     m_connectedStateTypeIds.insert(hoodThingClassId, hoodConnectedStateTypeId);
+
+    m_localControlStateTypeIds.insert(ovenThingClassId, ovenLocalControlStateStateTypeId);
+
+    m_remoteStartAllowanceStateTypeIds.insert(ovenThingClassId, ovenRemoteStartAllowanceStateStateTypeId);
+
+    m_remoteControlActivationStateTypeIds.insert(ovenThingClassId, ovenRemoteControlActivationStateStateTypeId);
+
+    m_doorStateTypeIds.insert(ovenThingClassId, ovenDoorStateEventTypeId);
+
+    m_operationStateTypeIds.insert(ovenThingClassId, ovenOperationStateEventTypeId);
 }
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
@@ -141,6 +151,8 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             connect(homeConnect, &HomeConnect::commandExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
             connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
             connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
+            connect(homeConnect, &HomeConnect::receivedStatusList, this, &IntegrationPluginHomeConnect::onReceivedStatusList);
+            //TODO add settings received
             m_homeConnectConnections.insert(thing, homeConnect);
             info->finish(Thing::ThingErrorNoError);
         } else {
@@ -154,6 +166,8 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             connect(homeConnect, &HomeConnect::commandExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
             connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
             connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
+            connect(homeConnect, &HomeConnect::receivedStatusList, this, &IntegrationPluginHomeConnect::onReceivedStatusList);
+            //TODO add settings received
             homeConnect->getAccessTokenFromRefreshToken(refreshToken);
             m_asyncSetup.insert(homeConnect, info);
         }
@@ -303,7 +317,7 @@ void IntegrationPluginHomeConnect::browseThing(BrowseResult *result)
             return;
         QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
         homeConnect->getProgramsAvailable(haid);
-        connect(homeConnect, &HomeConnect::re)
+        //connect(homeConnect, &HomeConnect::re)
     }
 }
 
@@ -318,7 +332,7 @@ void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
 {
     Q_UNUSED(info)
     Thing *thing = info->thing();
-        qCDebug(dcHomeConnect()) << "Execute browse item called " << thing->name();
+    qCDebug(dcHomeConnect()) << "Execute browse item called " << thing->name();
 }
 
 void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
@@ -439,15 +453,45 @@ void IntegrationPluginHomeConnect::onReceivedHomeAppliances(QList<HomeConnect::H
         emit autoThingsAppeared(desciptors);
 }
 
-void IntegrationPluginHomeConnect::onReceivedStatusList(QHash<QString, QString> statusList)
+void IntegrationPluginHomeConnect::onReceivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList)
 {
     HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
     Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
     if (!parentThing)
         return;
 
-    if (statusList.contains("BSH.Common.Status.LocalControlActive")) {
-
+    Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
+        if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
+            if (statusList.contains("BSH.Common.Status.LocalControlActive")) {
+                if (m_localControlStateTypeIds.contains(thing->thingClassId())) {
+                    thing->setStateValue(m_localControlStateTypeIds.value(thing->thingClassId()), statusList.value("BSH.Common.Status.LocalControlActive").toBool());
+                }
+            }
+            if (statusList.contains("BSH.Common.Status.RemoteControlActive")) {
+                if (m_remoteControlActivationStateTypeIds.contains(thing->thingClassId())) {
+                    thing->setStateValue(m_remoteControlActivationStateTypeIds.value(thing->thingClassId()), statusList.value("BSH.Common.Status.RemoteControlActive").toBool());
+                }
+            }
+            if (statusList.contains("BSH.Common.Status.RemoteControlStartAllowed")) {
+                if (m_remoteStartAllowanceStateTypeIds.contains(thing->thingClassId())) {
+                    thing->setStateValue(m_remoteStartAllowanceStateTypeIds.value(thing->thingClassId()), statusList.value("BSH.Common.Status.RemoteControlStartAllowed").toBool());
+                }
+            }
+            if (statusList.contains("BSH.Common.Status.DoorState")) {
+                if (m_doorStateTypeIds.contains(thing->thingClassId())) {
+                    thing->setStateValue(m_doorStateTypeIds.value(thing->thingClassId()), statusList.value("BSH.Common.Status.DoorState").toString().split('.').last());
+                }
+            }
+            if (statusList.contains("BSH.Common.Status.OperationState")) {
+                if (m_operationStateTypeIds.contains(thing->thingClassId())) {
+                    thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), statusList.value("BSH.Common.Status.OperationState").toString().split('.').last());
+                }
+            }
+        }
     }
+}
 
+void IntegrationPluginHomeConnect::onReceivedEvents(const QList<HomeConnect::Event> events)
+{
+    Q_UNUSED(events)
 }
