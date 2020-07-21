@@ -365,7 +365,7 @@
                 {
                     "id": "3a1d6fc1-c623-4b45-9c81-1573fcc15f99",
                     "name": "shellyDimmer",
-                    "displayName": "Shelly Dimmer",
+                    "displayName": "Shelly Dimmer / Dimmer 2",
                     "createMethods": ["discovery"],
                     "interfaces": ["dimmablelight", "connectable"],
                     "paramTypes": [

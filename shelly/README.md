@@ -8,7 +8,7 @@ The currently supported devices are:
 * Shelly 2.5
 * Shelly Plug / PlugS
 * Shelly RGBW2
-* Shelly Dimmer
+* Shelly Dimmer / Dimmer 2
 
 ## Requirements
 Shelly devices communicate with via MQTT. This means, in order to add Shelly devices to nymea, the nymea instance is required

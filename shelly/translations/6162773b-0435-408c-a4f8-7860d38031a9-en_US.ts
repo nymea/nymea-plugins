@@ -4,38 +4,38 @@
 <context>
     <name>IntegrationPluginShelly</name>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="620"/>
+        <location filename="../integrationpluginshelly.cpp" line="629"/>
         <source>Unable to find the thing in the network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="631"/>
+        <location filename="../integrationpluginshelly.cpp" line="640"/>
         <source>Roller shutter mode can&apos;t be mixed with relay mode. Please configure both connected devices to control a shutter or relays.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="636"/>
-        <location filename="../integrationpluginshelly.cpp" line="641"/>
+        <location filename="../integrationpluginshelly.cpp" line="645"/>
+        <location filename="../integrationpluginshelly.cpp" line="650"/>
         <source>For using a roller shutter, one channel must be set to up, the other to down.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="652"/>
+        <location filename="../integrationpluginshelly.cpp" line="663"/>
         <source>Error creating MQTT channel. Please check MQTT server settings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="691"/>
+        <location filename="../integrationpluginshelly.cpp" line="704"/>
         <source>Username and password not set correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="693"/>
+        <location filename="../integrationpluginshelly.cpp" line="706"/>
         <source>Error connecting to Shelly device.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginshelly.cpp" line="702"/>
+        <location filename="../integrationpluginshelly.cpp" line="715"/>
         <source>Unexpected data received from Shelly device.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -665,7 +665,7 @@ The name of the plugin shelly ({6162773b-0435-408c-a4f8-7860d38031a9})</extracom
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/shelly/plugininfo.h" line="728"/>
-        <source>Shelly Dimmer</source>
+        <source>Shelly Dimmer / Dimmer 2</source>
         <extracomment>The name of the ThingClass ({3a1d6fc1-c623-4b45-9c81-1573fcc15f99})</extracomment>
         <translation type="unfinished"></translation>
     </message>

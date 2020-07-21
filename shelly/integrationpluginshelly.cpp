@@ -199,7 +199,7 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
         } else if (info->thingClassId() == shellyRgbw2ThingClassId) {
             namePattern = QRegExp("^shellyrgbw2-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyDimmerThingClassId) {
-            namePattern = QRegExp("^shellydimmer-[0-9A-Z]+$");
+            namePattern = QRegExp("^shellydimmer(2)?-[0-9A-Z]+$");
         } else if (info->thingClassId() == shelly25ThingClassId) {
             namePattern = QRegExp("^shellyswitch25-[0-9A-Z]+$");
         }
