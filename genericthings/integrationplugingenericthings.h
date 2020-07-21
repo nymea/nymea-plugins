@@ -32,6 +32,7 @@
 #define INTEGRATIONPLUGINGENERICTHINGS_H
 
 #include "integrations/integrationplugin.h"
+#include <QTimer>
 
 class IntegrationPluginGenericThings: public IntegrationPlugin
 {
@@ -42,11 +43,27 @@ class IntegrationPluginGenericThings: public IntegrationPlugin
 
 public:
     explicit IntegrationPluginGenericThings();
+    void init() override;
     void setupThing(ThingSetupInfo *info) override;
     void executeAction(ThingActionInfo *info) override;
+    void thingRemoved(Thing *thing) override;
 
 private:
     double mapDoubleValue(double value, double fromMin, double fromMax, double toMin, double toMax);
+
+    QHash<Thing *, QTimer *> m_extendedBlindPercentageTimer;
+    QHash<Thing *, QTimer *> m_venetianBlindAngleTimer;
+    QHash<Thing *, uint> m_extendedBlindTargetPercentage;
+    QHash<Thing *, int> m_venetianBlindTargetAngle;
+
+    enum BlindState {
+        BlindStateOpening,
+        BlindStateClosing,
+        BlindStateStopped
+    };
+    void setBlindState(BlindState state, Thing *thing);
+    void moveBlindToPercentage(Action action, Thing *thing);
+    void moveBlindToAngle(Action action, Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINGENERICTHINGS_H
