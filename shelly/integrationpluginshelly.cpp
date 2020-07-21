@@ -71,7 +71,6 @@ IntegrationPluginShelly::IntegrationPluginShelly()
 
     m_connectedDeviceParamTypeMap[shelly1ThingClassId] = shelly1ThingConnectedDeviceParamTypeId;
     m_connectedDeviceParamTypeMap[shelly1pmThingClassId] = shelly1pmThingConnectedDeviceParamTypeId;
-    m_connectedDeviceParamTypeMap[shellyPlugThingClassId] = shellyPlugThingConnectedDeviceParamTypeId;
     m_connectedDeviceParamTypeMap[shelly25ThingClassId] = shelly25ThingConnectedDevice1ParamTypeId;
 
     m_connectedDevice2ParamTypeMap[shelly25ThingClassId] = shelly25ThingConnectedDevice2ParamTypeId;
