@@ -371,20 +371,17 @@ void HomeConnect::getStatus(const QString &haid)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Get status: Recieved invalide JSON object";
+            qCDebug(dcHomeConnect()) << "Get status: Received invalide JSON object";
             return;
         }
-        QHash<QString, QString> statusList;
+        QHash<QString, QVariant> statusList;
         qCDebug(dcHomeConnect()) << "Get status" << data.toJson();
         QVariantList statusVariantList= data.toVariant().toMap().value("data").toMap().value("status").toList();
         Q_FOREACH(QVariant status, statusVariantList) {
             QVariantMap map = status.toMap();
-            if (map.value("key") == "BSH.Common.Status.OperationState") {
-                qCDebug(dcHomeConnect()) << map.value("value").toString();
-            }
-            statusList.insert(map.value("key").toString(), map.value("value").toString());
+            statusList.insert(map.value("key").toString(), map.value("value"));
         }
-        emit receivedStatus(haid, statusList);
+        emit receivedStatusList(haid, statusList);
     });
 }
 
@@ -413,7 +410,7 @@ void HomeConnect::getSettings(const QString &haid)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Get settings: Recieved invalide JSON object";
+            qCDebug(dcHomeConnect()) << "Get settings: Received invalide JSON object";
             return;
         }
         qCDebug(dcHomeConnect()) << "Get settings" << data.toJson();
@@ -422,6 +419,47 @@ void HomeConnect::getSettings(const QString &haid)
             qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
         } else if (data.toVariant().toMap().contains("error")) {
             qCWarning(dcHomeConnect()) << "Get settings" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+        }
+    });
+}
+
+void HomeConnect::connectEventStream()
+{
+    QUuid commandId = QUuid::createUuid();
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/events");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "text/event-stream");
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::readyRead, this, [this, reply]{
+
+        QJsonParseError error;
+        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCDebug(dcHomeConnect()) << "Event stream: Received invalide JSON object";
+            return;
+        }
+        if (data.toVariant().toMap().contains("items")) {
+            QList<Event> events;
+            QVariantList itemsList = data.toVariant().toMap().value("items").toList();
+            Q_FOREACH(QVariant item, itemsList) {
+                QVariantMap map = item.toMap();
+                Event event;
+                event.key = map["key"].toString();
+                event.uri = map["uri"].toString();
+                event.name = map["uri"].toString();
+                event.value  = map["value"];
+                event.unit = map["unit"].toString();
+                event.timestamp  = map["timestamp"].toInt();
+                events.append(event);
+            }
+            emit receivedEvents(events);
+        } else if (data.toVariant().toMap().contains("error")) {
+            qCWarning(dcHomeConnect()) << "Event stream error" << data.toVariant().toMap().value("error");
         }
     });
 }
@@ -450,7 +488,7 @@ QUuid HomeConnect::sendCommand(const QString &haid, const QString &command)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Send command: Recieved invalide JSON object";
+            qCDebug(dcHomeConnect()) << "Send command: Received invalide JSON object";
             return;
         }
         qCDebug(dcHomeConnect()) << "Send command" << data.toJson();

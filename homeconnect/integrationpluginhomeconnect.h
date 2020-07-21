@@ -72,6 +72,12 @@ private:
 
     QHash<ThingClassId, ParamTypeId> m_idParamTypeIds;
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_doorStateStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_localControlStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_remoteControlActivationStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_remoteStartAllowanceStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_operationStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_doorStateTypeIds;
 
     HomeConnect *createHomeConnection();
 
@@ -81,6 +87,7 @@ private slots:
     void onRequestExecuted(QUuid requestId, bool success);
     void onReceivedHomeAppliances(QList<HomeConnect::HomeAppliance> appliances);
     void onReceivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
+    void onReceivedEvents(const QList<HomeConnect::Event> events);
 };
 
 #endif // INTEGRATIONPLUGINHOMECONNECT_H

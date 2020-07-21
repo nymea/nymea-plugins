@@ -77,6 +77,25 @@ public:
 
     };
 
+    /*
+      "key": "Cooking.Oven.Option.SetpointTemperature",
+      "name": "Target temperature for the oven",
+      "uri": "/api/homeappliances/BOSCH-HNG6764B6-0000000011FF/programs/active/options/Cooking.Oven.Option.SetpointTemperature",
+      "timestamp": 1556793979,
+      "level": "hint",
+      "handling": "none",
+      "value": 200,
+      "unit": "°C"
+    */
+    struct Event {
+        QString key;
+        QString name;
+        QString uri;
+        int timestamp;
+        QVariant value;
+        QString unit;
+    };
+
     HomeConnect(NetworkAccessManager *networkmanager, const QByteArray &clientKey, const QByteArray &clientSecret, bool simulationMode = false, QObject *parent = nullptr);
     QByteArray accessToken();
     QByteArray refreshToken();
@@ -96,6 +115,7 @@ public:
     void getStatus(const QString &haid);
     void getSettings(const QString &haid);
 
+    void connectEventStream();
     QUuid sendCommand(const QString &haid, const QString &command); //commands "BSH.Common.Command.ResumeProgram" & "PauseProgram"
 
 private:
@@ -122,8 +142,9 @@ signals:
     void authenticationStatusChanged(bool authenticated);
     void commandExecuted(QUuid commandId,bool success);
 
-    void receivedStatus(const QString &haId, const QHash<QString, QVariant> &statusList);
+    void receivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
     void receivedHomeAppliances(const QList<HomeAppliance> &appliances);
     void receivedAvailablePrograms();
+    void receivedEvents(const QList<Event> events);
 };
 #endif // HOMECONNECT_H
