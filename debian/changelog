@@ -1,8 +1,22 @@
-nymea-plugins (0.22.0) UNRELEASED; urgency=medium
+nymea-plugins (0.22.0) xenial; urgency=medium
 
+  [ Michael Zanetti ]
   * 
+  * Make use of generic IO support in smart plugs
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Thu, 09 Jul 2020 18:49:36 +0200
+  [ Bernhard Trinnes ]
+  * New plugin: Solar-Log
+
+  [ Michael Zanetti ]
+  * Shelly: Add support for the Shelly Dimmer 2
+
+  [ Bernhard Trinnes ]
+  * Generic Things: Add venetian blind
+
+  [ Michael Zanetti ]
+  * Bump version to 0.22
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 21 Jul 2020 10:22:13 +0200
 
 nymea-plugins (0.21.1) xenial; urgency=medium
 
