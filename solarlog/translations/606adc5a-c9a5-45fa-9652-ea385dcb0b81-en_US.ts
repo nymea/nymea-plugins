@@ -188,7 +188,7 @@ The name of the StateType ({5d6d5ba5-ebc3-42ce-9d08-802da694b4da}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="171"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="174"/>
         <source>Power AC</source>
-        <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: pac, ID: {0bf515d8-0f48-4eba-9255-f774d68c80fe})
+        <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: currentPower, ID: {0bf515d8-0f48-4eba-9255-f774d68c80fe})
 ----------
 The name of the StateType ({0bf515d8-0f48-4eba-9255-f774d68c80fe}) of ThingClass solarlog</extracomment>
         <translation type="unfinished"></translation>
@@ -263,7 +263,7 @@ The name of the StateType ({9a77662a-2034-4031-8e7a-1e6347089d97}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="225"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/solarlog/plugininfo.h" line="228"/>
         <source>Yield total</source>
-        <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: yieldTotal, ID: {3afb6ea1-fef8-4c17-8307-c7547a7a6f3c})
+        <extracomment>The name of the ParamType (ThingClass: solarlog, EventType: totalEnergyProduced, ID: {3afb6ea1-fef8-4c17-8307-c7547a7a6f3c})
 ----------
 The name of the StateType ({3afb6ea1-fef8-4c17-8307-c7547a7a6f3c}) of ThingClass solarlog</extracomment>
         <translation type="unfinished"></translation>

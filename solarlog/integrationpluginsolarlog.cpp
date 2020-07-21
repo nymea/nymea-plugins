@@ -125,7 +125,7 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
 
         QVariantMap map = data.toVariant().toMap().value("801").toMap().value("170").toMap();
         thing->setStateValue(solarlogLastupdateStateTypeId, map.value(QString::number(JsonObjectNumbers::LastUpdateTime)));
-        thing->setStateValue(solarlogPacStateTypeId, (map.value(QString::number(JsonObjectNumbers::Pac)).toDouble()/1000.00));
+        thing->setStateValue(solarlogTotalPowerEventTypeId, (map.value(QString::number(JsonObjectNumbers::Pac)).toDouble()/1000.00));
         thing->setStateValue(solarlogPdcStateTypeId, (map.value(QString::number(JsonObjectNumbers::Pdc)).toDouble()/1000.00));
         thing->setStateValue(solarlogUacStateTypeId, map.value(QString::number(JsonObjectNumbers::Uac)));
         thing->setStateValue(solarlogDcVoltageStateTypeId, map.value(QString::number(JsonObjectNumbers::DCVoltage)));
@@ -133,7 +133,7 @@ void IntegrationPluginSolarLog::getData(Thing *thing)
         thing->setStateValue(solarlogYieldYesterdayStateTypeId, (map.value(QString::number(JsonObjectNumbers::YieldYesterday)).toDouble()/1000.00));
         thing->setStateValue(solarlogYieldMonthStateTypeId, (map.value(QString::number(JsonObjectNumbers::YieldMonth)).toDouble()/1000.00));
         thing->setStateValue(solarlogYieldYearStateTypeId, (map.value(QString::number(JsonObjectNumbers::YieldYear)).toDouble()/1000.00));
-        thing->setStateValue(solarlogYieldTotalStateTypeId, (map.value(QString::number(JsonObjectNumbers::YieldTotal)).toDouble()/1000.00));
+        thing->setStateValue(solarlogTotalEnergyProducedStateTypeId, (map.value(QString::number(JsonObjectNumbers::YieldTotal)).toDouble()/1000.00));
         thing->setStateValue(solarlogCurrentTotalConsumptionStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsPac)));
         thing->setStateValue(solarlogConsYieldDayStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldDay)));
         thing->setStateValue(solarlogConsYieldYesterdayStateTypeId, map.value(QString::number(JsonObjectNumbers::ConsYieldYesterday)));

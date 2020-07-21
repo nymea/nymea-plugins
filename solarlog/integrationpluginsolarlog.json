@@ -13,7 +13,7 @@
                     "name": "solarlog",
                     "displayName": "Solar-Log",
                     "createMethods": [ "user", "discovery" ],
-                    "interfaces": [ "connectable" ],
+                    "interfaces": ["extendedsmartmeterproducer", "connectable" ],
                     "paramTypes": [
                         {
                             "id": "84bd8a41-2411-4bb0-87a9-ab7e01044b10",
@@ -44,7 +44,7 @@
                         },
                         {
                             "id": "0bf515d8-0f48-4eba-9255-f774d68c80fe",
-                            "name": "pac",
+                            "name": "currentPower",
                             "displayName": "Power AC",
                             "displayNameEvent": "Power AC changed",
                             "type": "double",
@@ -116,7 +116,7 @@
                         },
                         {
                             "id": "3afb6ea1-fef8-4c17-8307-c7547a7a6f3c",
-                            "name": "yieldTotal",
+                            "name": "totalEnergyProduced",
                             "displayName": "Yield total",
                             "displayNameEvent": "Yield total changed",
                             "type": "double",
