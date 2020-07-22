@@ -73,8 +73,10 @@ public:
         QString unit;
     };
 
-    struct Status {
-
+    struct Option {
+        QString key;
+        QVariant value;
+        QString unit;
     };
 
     /*
@@ -102,20 +104,29 @@ public:
     void setSimulationMode(bool simulation);
 
     QUrl getLoginUrl(const QUrl &redirectUrl, const QString &scope);
-    void checkStatusCode(int status, const QByteArray &payload);
+
     void getAccessTokenFromRefreshToken(const QByteArray &refreshToken);
     void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
 
-    void getHomeAppliances();
-    void getHomeAppliance(const QString &haid);
+    // DEFAULT
+    void getHomeAppliances(); // Get all home appliances which are paired with the logged-in user account.
+    void getHomeAppliance(const QString &haid); //Get a specfic home appliances which are paired with the logged-in user account.
 
-    void getProgramsAvailable(const QString &haId);
+    // PROGRAMS
+    void getProgramsAvailable(const QString &haId); //Get all programs which are currently available on the given home appliance
+    void getProgramsActive(const QString &haId);    //Get program which is currently executed
+    void getProgramsSelected(const QString &haId);  //Get the program which is currently selected
     void getProgramsActiveOption(const QString &haId, const QString &optionKey);
+    QUuid startProgram(const QString &haId, const QString &programKey, QList<Option> options);
 
+    // STATUS EVENTS
     void getStatus(const QString &haid);
+    void connectEventStream();
+
+    // SETTINGS
     void getSettings(const QString &haid);
 
-    void connectEventStream();
+    // COMMANDS
     QUuid sendCommand(const QString &haid, const QString &command); //commands "BSH.Common.Command.ResumeProgram" & "PauseProgram"
 
 private:
@@ -134,6 +145,7 @@ private:
     NetworkAccessManager *m_networkManager = nullptr;
     QTimer *m_tokenRefreshTimer = nullptr;
 
+    bool checkStatusCode(int status, const QByteArray &payload);
 private slots:
     void onRefreshTimeout();
 
@@ -142,9 +154,12 @@ signals:
     void authenticationStatusChanged(bool authenticated);
     void commandExecuted(QUuid commandId,bool success);
 
-    void receivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
     void receivedHomeAppliances(const QList<HomeAppliance> &appliances);
-    void receivedAvailablePrograms();
-    void receivedEvents(const QList<Event> events);
+    void receivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
+    void receivedAvailablePrograms(const QString &haId, const QStringList &programs);
+    void receivedSettings(const QString &haId, const QHash<QString, QVariant> &settings);
+    void receivedActiveProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
+    void receivedSelectedProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
+    void receivedEvents(const QList<Event> &events);
 };
 #endif // HOMECONNECT_H

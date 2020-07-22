@@ -43,11 +43,9 @@ HomeConnect::HomeConnect(NetworkAccessManager *networkmanager,  const QByteArray
     m_networkManager(networkmanager)
 
 {
-    if(!m_tokenRefreshTimer) {
-        m_tokenRefreshTimer = new QTimer(this);
-        m_tokenRefreshTimer->setSingleShot(true);
-        connect(m_tokenRefreshTimer, &QTimer::timeout, this, &HomeConnect::onRefreshTimeout);
-    }
+    m_tokenRefreshTimer = new QTimer(this);
+    m_tokenRefreshTimer->setSingleShot(true);
+    connect(m_tokenRefreshTimer, &QTimer::timeout, this, &HomeConnect::onRefreshTimeout);
     setSimulationMode(simulationMode);
 }
 
@@ -109,9 +107,15 @@ void HomeConnect::onRefreshTimeout()
     getAccessTokenFromRefreshToken(m_refreshToken);
 }
 
-void HomeConnect::checkStatusCode(int status, const QByteArray &payload)
+bool HomeConnect::checkStatusCode(int status, const QByteArray &payload)
 {
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(payload);
+    //TODO emit (dis)connected, (un)authenticated,
+    QJsonParseError error;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
+    if (error.error != QJsonParseError::NoError) {
+        qCWarning(dcHomeConnect()) << "Received invalide JSON object";
+        return false;
+    }
 
     switch (status){
     case 400:
@@ -126,16 +130,17 @@ void HomeConnect::checkStatusCode(int status, const QByteArray &payload)
                 qWarning(dcHomeConnect()) << "Expired authorization code.";
             }
         }
-        return;
+        return false;
     case 401:
         qWarning(dcHomeConnect()) << "Client does not have permission to use this API.";
-        return;
+        return false;
     case 405:
         qWarning(dcHomeConnect()) << "Wrong HTTP method used.";
-        return;
+        return false;
     default:
         break;
     }
+    return true;
 }
 
 void HomeConnect::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
@@ -174,7 +179,6 @@ void HomeConnect::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
             qCDebug(dcHomeConnect()) << "Received invalide JSON object" << data.toJson();
             return;
         }
-        qCDebug(dcHomeConnect()) << "get access token from refresh token" << data.toJson();
 
         if(!data.toVariant().toMap().contains("access_token")) {
             emit authenticationStatusChanged(false);
@@ -233,10 +237,7 @@ void HomeConnect::getAccessTokenFromAuthorizationCode(const QByteArray &authoriz
             emit authenticationStatusChanged(false);
             return;
         }
-        qCDebug(dcHomeConnect()) << "Access token:" << jsonDoc.toVariant().toMap().value("access_token").toString();
         m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
-
-        qCDebug(dcHomeConnect()) << "Refresh token:" << jsonDoc.toVariant().toMap().value("refresh_token").toString();
         m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();
 
         if (jsonDoc.toVariant().toMap().contains("expires_in")) {
@@ -262,36 +263,30 @@ void HomeConnect::getHomeAppliances()
     request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
 
     QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply](){
-        reply->deleteLater();
 
-        QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Get home appliances: Recieved invalide JSON object";
-            return;
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray rawData = reply->readAll();
+        checkStatusCode(status, rawData);
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
+
+        QList<HomeAppliance> appliances;
+        foreach (const QVariant &variant, dataMap.value("homeappliances").toList()) {
+            QVariantMap obj = variant.toMap();
+            HomeAppliance appliance;
+            appliance.name = obj["name"].toString();
+            appliance.brand = obj["brand"].toString();
+            appliance.vib = obj["vib"].toString();
+            appliance.type = obj["type"].toString();
+            appliance.homeApplianceId = obj["haId"].toString();
+            appliance.enumber = obj["enumber"].toString();
+            appliance.connected = obj["connected"].toBool();
+            appliances.append(appliance);
         }
-        qCDebug(dcHomeConnect()) << "Get home appliances" << data.toJson();
-        if (data.toVariant().toMap().contains("data")) {
-            QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
-            QList<HomeAppliance> appliances;
-            foreach (const QVariant &variant, dataMap.value("homeappliances").toList()) {
-                QVariantMap obj = variant.toMap();
-                HomeAppliance appliance;
-                appliance.name = obj["name"].toString();
-                appliance.brand = obj["brand"].toString();
-                appliance.vib = obj["vib"].toString();
-                appliance.type = obj["type"].toString();
-                appliance.homeApplianceId = obj["haId"].toString();
-                appliance.enumber = obj["enumber"].toString();
-                appliance.connected = obj["connected"].toBool();
-                appliances.append(appliance);
-            }
-            if (!appliances.isEmpty())
-                emit receivedHomeAppliances(appliances);
-        } else if (data.toVariant().toMap().contains("error")) {
-            qCWarning(dcHomeConnect()) << "Get home appliences" << data.toVariant().toMap().value("error").toMap().value("description").toString();
-        }
+        if (!appliances.isEmpty())
+            emit receivedHomeAppliances(appliances);
+
     });
 }
 
@@ -306,16 +301,80 @@ void HomeConnect::getProgramsAvailable(const QString &haId)
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply]{
+    connect(reply, &QNetworkReply::finished, this, [this, haId, reply]{
 
-        QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcHomeConnect()) << "Get programs available: Recieved invalide JSON object";
-            return;
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray rawData = reply->readAll();
+        checkStatusCode(status, rawData);
+
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
+        qCDebug(dcHomeConnect()) << "Get programs available" << dataMap;
+        QVariantList programList = dataMap.value("programs").toList();
+        QStringList programs;
+        Q_FOREACH(QVariant var, programList) {
+            if (var.toMap().contains("key")) {
+                programs.append(var.toMap().value("key").toString());
+            }
         }
-        qCDebug(dcHomeConnect()) << "Get programs available" << data.toJson();
+        if (!programs.isEmpty())
+            emit receivedAvailablePrograms(haId, programs);
+    });
+}
 
+void HomeConnect::getProgramsActive(const QString &haId)
+{
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/active");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, haId, reply]{
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray rawData = reply->readAll();
+        checkStatusCode(status, rawData);
+
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
+
+        qCDebug(dcHomeConnect()) << "Get programs active" << dataMap;
+        QString key = dataMap.value("key").toString();
+        QHash<QString, QVariant> options;
+        Q_FOREACH(QVariant var, dataMap.value("options").toList()) {
+            options.insert(var.toMap().value("key").toString(), var.toMap().value("value"));
+        }
+        emit receivedActiveProgram(haId, key, options);
+    });
+}
+
+void HomeConnect::getProgramsSelected(const QString &haId)
+{
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/selected");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, haId, reply]{
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray rawData = reply->readAll();
+        checkStatusCode(status, rawData);
+
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
+        qCDebug(dcHomeConnect()) << "Get program selected" << dataMap;
+        QString key = dataMap.value("key").toString();
+        QHash<QString, QVariant> options;
+        Q_FOREACH(QVariant var, dataMap.value("options").toList()) {
+            options.insert(var.toMap().value("key").toString(), var.toMap().value("value"));
+        }
+        emit receivedSelectedProgram(haId, key, options);
     });
 }
 
@@ -332,20 +391,61 @@ void HomeConnect::getProgramsActiveOption(const QString &haId, const QString &op
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply]{
 
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray rawData = reply->readAll();
+        checkStatusCode(status, rawData);
+
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
+        qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
+    });
+}
+
+QUuid HomeConnect::startProgram(const QString &haId, const QString &programKey, QList<HomeConnect::Option> options)
+{
+    QUuid commandId = QUuid::createUuid();
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/active");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QJsonDocument doc;
+    QJsonObject data;
+    data.insert("key", programKey);
+    QJsonArray optionsArray;
+    Q_FOREACH(Option option, options) {
+        QJsonObject optionObject;
+        optionObject["key"] = option.key;
+        optionObject["value"] = option.value.toString();
+        optionObject["unit"] = option.unit;
+        optionsArray.append(optionObject);
+    }
+    data.insert("options", optionsArray);
+    QJsonObject obj;
+    obj.insert("data", data);
+    doc.setObject(obj);
+    QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
+
+        //TODO check status
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Get home appliances: Recieved invalide JSON object";
+            qCDebug(dcHomeConnect()) << "Start program: Received invalide JSON object";
             return;
         }
-        qCDebug(dcHomeConnect()) << "Get home appliances" << data.toJson();
+        qCDebug(dcHomeConnect()) << "Start program response" << data.toJson();
         if (data.toVariant().toMap().contains("data")) {
             QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
             qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
         } else if (data.toVariant().toMap().contains("error")) {
-            qCWarning(dcHomeConnect()) << "Get home appliences" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+            qCWarning(dcHomeConnect()) << "Start program" << data.toVariant().toMap().value("error").toMap().value("description").toString();
         }
+        emit commandExecuted(commandId, true);
     });
+    return commandId;
 }
 
 void HomeConnect::getStatus(const QString &haid)
@@ -361,27 +461,20 @@ void HomeConnect::getStatus(const QString &haid)
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, haid, reply]{
 
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray rawData = reply->readAll();
+        checkStatusCode(status, rawData);
 
-        // Remote control activation state
-        // Remote start allowance state
-        // Local control state
-        // Operation state
-        // Door state
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
 
-        QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Get status: Received invalide JSON object";
-            return;
-        }
         QHash<QString, QVariant> statusList;
-        qCDebug(dcHomeConnect()) << "Get status" << data.toJson();
-        QVariantList statusVariantList= data.toVariant().toMap().value("data").toMap().value("status").toList();
+        QVariantList statusVariantList= dataMap.value("status").toList();
         Q_FOREACH(QVariant status, statusVariantList) {
             QVariantMap map = status.toMap();
             statusList.insert(map.value("key").toString(), map.value("value"));
         }
-        emit receivedStatusList(haid, statusList);
+        if (!statusList.isEmpty())
+            emit receivedStatusList(haid, statusList);
     });
 }
 
@@ -405,27 +498,25 @@ void HomeConnect::getSettings(const QString &haid)
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply]{
+    connect(reply, &QNetworkReply::finished, this, [this, haid, reply]{
 
-        QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Get settings: Received invalide JSON object";
-            return;
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray rawData = reply->readAll();
+        checkStatusCode(status, rawData);
+
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
+        QVariantList settingsList = dataMap.value("settings").toList();
+        QHash<QString, QVariant> settings;
+        Q_FOREACH(QVariant var, settingsList) {
+            settings.insert(var.toMap().value("key").toString(), var.toMap().value("value"));
         }
-        qCDebug(dcHomeConnect()) << "Get settings" << data.toJson();
-        if (data.toVariant().toMap().contains("data")) {
-            QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
-            qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
-        } else if (data.toVariant().toMap().contains("error")) {
-            qCWarning(dcHomeConnect()) << "Get settings" << data.toVariant().toMap().value("error").toMap().value("description").toString();
-        }
+        if (!settings.isEmpty())
+            emit receivedSettings(haid, settings);
     });
 }
 
 void HomeConnect::connectEventStream()
 {
-    QUuid commandId = QUuid::createUuid();
     QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/events");
 
     QNetworkRequest request(url);
@@ -443,6 +534,7 @@ void HomeConnect::connectEventStream()
             qCDebug(dcHomeConnect()) << "Event stream: Received invalide JSON object";
             return;
         }
+        qCDebug(dcHomeConnect()) << "Event" << data.toJson();
         if (data.toVariant().toMap().contains("items")) {
             QList<Event> events;
             QVariantList itemsList = data.toVariant().toMap().value("items").toList();
@@ -485,6 +577,7 @@ QUuid HomeConnect::sendCommand(const QString &haid, const QString &command)
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
 
+        //TODO check status
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {

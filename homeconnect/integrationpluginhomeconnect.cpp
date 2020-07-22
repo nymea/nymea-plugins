@@ -40,35 +40,70 @@
 
 IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
 {
+    m_idParamTypeIds.insert(ovenThingClassId, ovenThingIdParamTypeId);
     m_idParamTypeIds.insert(fridgeThingClassId, fridgeThingIdParamTypeId);
     m_idParamTypeIds.insert(dryerThingClassId, dryerThingIdParamTypeId);
     m_idParamTypeIds.insert(coffeMakerThingClassId, coffeMakerThingIdParamTypeId);
     m_idParamTypeIds.insert(dishwasherThingClassId, dishwasherThingIdParamTypeId);
     m_idParamTypeIds.insert(washerThingClassId, washerThingIdParamTypeId);
-    m_idParamTypeIds.insert(ovenThingClassId, ovenThingIdParamTypeId);
     m_idParamTypeIds.insert(cookTopThingClassId, cookTopThingIdParamTypeId);
     m_idParamTypeIds.insert(hoodThingClassId, hoodThingIdParamTypeId);
     m_idParamTypeIds.insert(cleaningRobotThingClassId, cleaningRobotThingIdParamTypeId);
 
+    m_connectedStateTypeIds.insert(ovenThingClassId, ovenConnectedStateTypeId);
     m_connectedStateTypeIds.insert(fridgeThingClassId, fridgeConnectedStateTypeId);
     m_connectedStateTypeIds.insert(dryerThingClassId, dryerConnectedStateTypeId);
     m_connectedStateTypeIds.insert(coffeMakerThingClassId, coffeMakerConnectedStateTypeId);
     m_connectedStateTypeIds.insert(dishwasherThingClassId, dishwasherConnectedStateTypeId);
     m_connectedStateTypeIds.insert(washerThingClassId, washerConnectedStateTypeId);
-    m_connectedStateTypeIds.insert(ovenThingClassId, ovenConnectedStateTypeId);
     m_connectedStateTypeIds.insert(cookTopThingClassId, cookTopConnectedStateTypeId);
     m_connectedStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotConnectedStateTypeId);
     m_connectedStateTypeIds.insert(hoodThingClassId, hoodConnectedStateTypeId);
 
     m_localControlStateTypeIds.insert(ovenThingClassId, ovenLocalControlStateStateTypeId);
+    //m_localControlStateTypeIds.insert(fridgeThingClassId, fridgeLocalControlStateStateTypeId);
+    //m_localControlStateTypeIds.insert(dryerThingClassId, dryerLocalControlStateTypeId);
+    m_localControlStateTypeIds.insert(coffeMakerThingClassId, coffeMakerLocalControlStateStateTypeId);
+    //m_localControlStateTypeIds.insert(dishwasherThingClassId, dishwasherLocalControlStateStateTypeId);
+    m_localControlStateTypeIds.insert(washerThingClassId, washerLocalControlStateStateTypeId);
+    //m_localControlStateTypeIds.insert(cookTopThingClassId, cookTopLocalControlStateStateTypeId);
+    //m_localControlStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotLocalControlStateStateTypeId);
+    //m_localControlStateTypeIds.insert(hoodThingClassId, hoodLocalControlStateStateTypeId);
 
     m_remoteStartAllowanceStateTypeIds.insert(ovenThingClassId, ovenRemoteStartAllowanceStateStateTypeId);
+    //m_remoteStartAllowanceStateTypeIds.insert(fridgeThingClassId, fridgeRemoteStartAllowanceStateStateTypeId);
+    m_remoteStartAllowanceStateTypeIds.insert(dryerThingClassId, dryerRemoteStartAllowanceStateStateTypeId);
+    m_remoteStartAllowanceStateTypeIds.insert(coffeMakerThingClassId, coffeMakerRemoteStartAllowanceStateStateTypeId);
+    m_remoteStartAllowanceStateTypeIds.insert(dishwasherThingClassId, dishwasherRemoteStartAllowanceStateStateTypeId);
+    m_remoteStartAllowanceStateTypeIds.insert(washerThingClassId, washerRemoteStartAllowanceStateStateTypeId);
+    //m_remoteStartAllowanceStateTypeIds.insert(cookTopThingClassId, cookTopRemoteStartAllowanceStateStateTypeId);
+    //m_remoteStartAllowanceStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotRemoteStartAllowanceStateStateTypeId);
+    //m_remoteStartAllowanceStateTypeIds.insert(hoodThingClassId, hoodRemoteStartAllowanceStateStateTypeId);
 
     m_remoteControlActivationStateTypeIds.insert(ovenThingClassId, ovenRemoteControlActivationStateStateTypeId);
+    //m_remoteControlActivationStateTypeIds.insert(fridgeThingClassId, fridgeRemoteControlActivationStateStateTypeId);
+    m_remoteControlActivationStateTypeIds.insert(dryerThingClassId, dryerRemoteControlActivationStateStateTypeId);
+    //m_remoteControlActivationStateTypeIds.insert(coffeMakerThingClassId, coffeMakerRemoteControlActivationStateStateTypeId);
+    m_remoteControlActivationStateTypeIds.insert(dishwasherThingClassId, dishwasherRemoteControlActivationStateStateTypeId);
+    m_remoteControlActivationStateTypeIds.insert(washerThingClassId, washerRemoteControlActivationStateStateTypeId);
+    //m_remoteControlActivationStateTypeIds.insert(cookTopThingClassId, cookTopRemoteControlActivationStateStateTypeId);
+    //m_remoteControlActivationStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotRemoteControlActivationStateStateTypeId);
+    //m_remoteControlActivationStateTypeIds.insert(hoodThingClassId, hoodRemoteControlActivationStateStateTypeId);
 
+    m_doorStateTypeIds.insert(dishwasherThingClassId, dishwasherDoorStateEventTypeId);
+    m_doorStateTypeIds.insert(washerThingClassId, washerDoorStateEventTypeId);
+    m_doorStateTypeIds.insert(dryerThingClassId, dryerDoorStateEventTypeId);
     m_doorStateTypeIds.insert(ovenThingClassId, ovenDoorStateEventTypeId);
 
     m_operationStateTypeIds.insert(ovenThingClassId, ovenOperationStateEventTypeId);
+    //m_operationStateTypeIds.insert(fridgeThingClassId, fridgeOperationStateEventTypeId);
+    m_operationStateTypeIds.insert(dryerThingClassId, dryerOperationStateEventTypeId);
+    m_operationStateTypeIds.insert(coffeMakerThingClassId, coffeMakerOperationStateEventTypeId);
+    m_operationStateTypeIds.insert(dishwasherThingClassId, dishwasherOperationStateEventTypeId);
+    m_operationStateTypeIds.insert(washerThingClassId, washerOperationStateEventTypeId);
+    //m_operationStateTypeIds.insert(cookTopThingClassId, cookTopOperationStateEventTypeId);
+    //m_operationStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotOperationStateEventTypeId);
+    //m_operationStateTypeIds.insert(hoodThingClassId, hoodOperationStateEventTypeId);
 }
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
@@ -147,12 +182,6 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             //Fresh device setup, has already a fresh access token
             qCDebug(dcHomeConnect()) << "HomeConnect OAuth setup complete";
             homeConnect = m_setupHomeConnectConnections.take(thing->id());
-            connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
-            connect(homeConnect, &HomeConnect::commandExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
-            connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
-            connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
-            connect(homeConnect, &HomeConnect::receivedStatusList, this, &IntegrationPluginHomeConnect::onReceivedStatusList);
-            //TODO add settings received
             m_homeConnectConnections.insert(thing, homeConnect);
             info->finish(Thing::ThingErrorNoError);
         } else {
@@ -160,17 +189,20 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             pluginStorage()->beginGroup(thing->id().toString());
             QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
             pluginStorage()->endGroup();
-
             homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", simulationMode,  this);
-            connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
-            connect(homeConnect, &HomeConnect::commandExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
-            connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
-            connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
-            connect(homeConnect, &HomeConnect::receivedStatusList, this, &IntegrationPluginHomeConnect::onReceivedStatusList);
-            //TODO add settings received
             homeConnect->getAccessTokenFromRefreshToken(refreshToken);
             m_asyncSetup.insert(homeConnect, info);
         }
+        connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
+        connect(homeConnect, &HomeConnect::commandExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
+        connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
+        connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
+        connect(homeConnect, &HomeConnect::receivedStatusList, this, &IntegrationPluginHomeConnect::onReceivedStatusList);
+        connect(homeConnect, &HomeConnect::receivedActiveProgram, this, &IntegrationPluginHomeConnect::onReceivedActiveProgram);
+        connect(homeConnect, &HomeConnect::receivedSelectedProgram, this, &IntegrationPluginHomeConnect::onReceivedSelectedProgram);
+        connect(homeConnect, &HomeConnect::receivedSettings, this, &IntegrationPluginHomeConnect::onReceivedSettings);
+        connect(homeConnect, &HomeConnect::receivedEvents, this, &IntegrationPluginHomeConnect::onReceivedEvents);
+
     } else if ((thing->thingClassId() == dryerThingClassId) ||
                (thing->thingClassId() == fridgeThingClassId) ||
                (thing->thingClassId() == washerThingClassId) ||
@@ -225,6 +257,12 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
                     continue;
                 }
                 homeConnect->getHomeAppliances();
+                Q_FOREACH(Thing *childThing, myThings().filterByParentId(thing->id())) {
+                    QString haId = thing->paramValue(m_idParamTypeIds.value(childThing->thingClassId())).toString();
+                    homeConnect->getSettings(haId);
+                    homeConnect->getProgramsActive(haId);
+                    homeConnect->getProgramsSelected(haId);
+                }
             }
         });
     }
@@ -232,8 +270,10 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
     if (thing->thingClassId() == homeConnectConnectionThingClassId) {
         HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
         homeConnect->getHomeAppliances();
+        homeConnect->connectEventStream();
         thing->setStateValue(homeConnectConnectionConnectedStateTypeId, true);
         thing->setStateValue(homeConnectConnectionLoggedInStateTypeId, true);
+        //TODO set login username
     } else if ((thing->thingClassId() == dryerThingClassId) ||
                (thing->thingClassId() == fridgeThingClassId) ||
                (thing->thingClassId() == washerThingClassId) ||
@@ -242,7 +282,7 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
                (thing->thingClassId() == ovenThingClassId) ||
                (thing->thingClassId() == hoodThingClassId) ||
                (thing->thingClassId() == cleaningRobotThingClassId) ||
-               (thing->thingClassId() == cookTopThingClassId)){
+               (thing->thingClassId() == cookTopThingClassId)) {
         Thing *parentThing = myThings().findById(thing->parentId());
         if (!parentThing)
             qCWarning(dcHomeConnect()) << "Could not find parent with Id" << thing->parentId().toString();
@@ -253,6 +293,8 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
         } else {
             homeConnect->getStatus(haId);
             homeConnect->getSettings(haId);
+            homeConnect->getProgramsActive(haId);
+            homeConnect->getProgramsSelected(haId);
         }
     } else {
         Q_ASSERT_X(false, "postSetupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
@@ -307,25 +349,43 @@ void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
 
 void IntegrationPluginHomeConnect::browseThing(BrowseResult *result)
 {
-    Q_UNUSED(result)
     Thing *thing = result->thing();
     qCDebug(dcHomeConnect()) << "Browse thing called " << thing->name();
 
-    if (thing->thingClassId() == ovenThingClassId) {
-        HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
-        if (!homeConnect)
-            return;
-        QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
-        homeConnect->getProgramsAvailable(haid);
-        //connect(homeConnect, &HomeConnect::re)
-    }
+    HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
+    if (!homeConnect)
+        return;
+    QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+    homeConnect->getProgramsAvailable(haid);
+    connect(homeConnect, &HomeConnect::receivedAvailablePrograms, result, [result, this] (const QString &haId, const QStringList programs) {
+        if(result->thing()->paramValue(m_idParamTypeIds.value(result->thing()->id())).toString() == haId) {
+            Q_FOREACH(QString program, programs) {
+                BrowserItem item;
+                item.setExecutable(true);
+                item.setDisplayName(program);
+                result->addItem(item);
+            }
+            result->finish(Thing::ThingErrorNoError);
+        }
+    });
 }
 
 void IntegrationPluginHomeConnect::browserItem(BrowserItemResult *result)
 {
-    Q_UNUSED(result)
     Thing *thing = result->thing();
     qCDebug(dcHomeConnect()) << "Browse item called " << thing->name();
+
+    HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
+    if (!homeConnect)
+        return;
+    QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+    homeConnect->getProgramsAvailable(haid);
+    connect(homeConnect, &HomeConnect::receivedAvailablePrograms, result, [result, this] (const QString &haid, const QStringList &programs) {
+        if (result->thing()->paramValue(m_idParamTypeIds.value(result->thing()->thingClassId())).toString() == haid) {
+            if (programs.contains(result->item().id()))
+                result->finish(Thing::ThingErrorNoError);
+        }
+    });
 }
 
 void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
@@ -333,6 +393,14 @@ void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
     Q_UNUSED(info)
     Thing *thing = info->thing();
     qCDebug(dcHomeConnect()) << "Execute browse item called " << thing->name();
+
+    HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
+    if (!homeConnect)
+        return;
+    QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+    QList<HomeConnect::Option> options;
+    //TODO add options like set temperature or start time
+    homeConnect->startProgram(haid, info->browserAction().itemId(), options);
 }
 
 void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
@@ -389,7 +457,7 @@ void IntegrationPluginHomeConnect::onRequestExecuted(QUuid requestId, bool succe
     }
 }
 
-void IntegrationPluginHomeConnect::onReceivedHomeAppliances(QList<HomeConnect::HomeAppliance> appliances)
+void IntegrationPluginHomeConnect::onReceivedHomeAppliances(const QList<HomeConnect::HomeAppliance> &appliances)
 {
     HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
     Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
@@ -399,19 +467,6 @@ void IntegrationPluginHomeConnect::onReceivedHomeAppliances(QList<HomeConnect::H
     ThingDescriptors desciptors;
     Q_FOREACH(HomeConnect::HomeAppliance appliance, appliances) {
         ThingClassId thingClassId;
-        /*Oven,
-        Dishwasher,
-        Washer,
-        Dryer,
-        WasherDryer,
-        FridgeFreezer,
-        Refrigerator,
-        Freezer,
-        WineCooler,
-        CoffeeMaker,
-        Hood,
-        CleaningRobot,
-        CookProcessor*/
 
         if (appliance.type.contains("Oven", Qt::CaseInsensitive)) {
             thingClassId = ovenThingClassId;
@@ -431,6 +486,17 @@ void IntegrationPluginHomeConnect::onReceivedHomeAppliances(QList<HomeConnect::H
             thingClassId = coffeMakerThingClassId;
         } else if (appliance.type.contains("Dryer", Qt::CaseInsensitive)) {
             thingClassId = dryerThingClassId;
+        } else if (appliance.type.contains("CookTop", Qt::CaseInsensitive)) {
+            thingClassId = cookTopThingClassId;
+        } else if (appliance.type.contains("Hood", Qt::CaseInsensitive)) {
+            thingClassId = hoodThingClassId;
+        } else if (appliance.type.contains("CleaningRobot", Qt::CaseInsensitive)) {
+            thingClassId = cleaningRobotThingClassId;
+        } else if (appliance.type.contains("CookProcessor", Qt::CaseInsensitive)) {
+            thingClassId = cookProcessorThingClassId;
+        } else if (appliance.type.contains("WasherDryer", Qt::CaseInsensitive)) {
+            thingClassId = washerThingClassId;
+            //FIXME add washerdryer thing classid
         } else {
             qCWarning(dcHomeConnect()) << "Unknown thing type" << appliance.type;
             continue;
@@ -461,7 +527,9 @@ void IntegrationPluginHomeConnect::onReceivedStatusList(const QString &haId, con
         return;
 
     Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
+
         if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
+
             if (statusList.contains("BSH.Common.Status.LocalControlActive")) {
                 if (m_localControlStateTypeIds.contains(thing->thingClassId())) {
                     thing->setStateValue(m_localControlStateTypeIds.value(thing->thingClassId()), statusList.value("BSH.Common.Status.LocalControlActive").toBool());
@@ -487,11 +555,187 @@ void IntegrationPluginHomeConnect::onReceivedStatusList(const QString &haId, con
                     thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), statusList.value("BSH.Common.Status.OperationState").toString().split('.').last());
                 }
             }
+            break;
         }
     }
 }
 
-void IntegrationPluginHomeConnect::onReceivedEvents(const QList<HomeConnect::Event> events)
+void IntegrationPluginHomeConnect::onReceivedEvents(const QList<HomeConnect::Event> &events)
 {
-    Q_UNUSED(events)
+    Q_FOREACH(HomeConnect::Event event, events) {
+        qCDebug(dcHomeConnect()) << "Received event" << event.key << event.uri << event.name;
+
+        if (event.key == "BSH.Common.Root.SelectedProgram") {
+
+        }
+        if (event.key == "BSH.Common.Root.SelectedProgram") {
+
+        }
+        if (event.key == "BSH.Common.Option.ProgramProgress") {
+
+        }
+    /*
+     * BSH.Common.Root.SelectedProgram
+     * BSH.Common.Root.ActiveProgram
+     * Cooking.Oven.Option.SetpointTemperature
+     * BSH.Common.Option.Duration
+     * Cooking.Oven.Option.FastPreHeat
+     * BSH.Common.Option.StartInRelative
+     * LaundryCare.Washer.Option.Temperature
+     * LaundryCare.Washer.Option.SpinSpeed
+     * LaundryCare.Dryer.Option.DryingTarget
+     * ConsumerProducts.CoffeeMaker.Option.BeanAmount
+     * ConsumerProducts.CoffeeMaker.Option.FillQuantity
+     * ConsumerProducts.CoffeeMaker.Option.CoffeeTemperature
+     * Cooking.Common.Option.Hood.VentingLevel
+     * Cooking.Common.Option.Hood.IntensiveLevel
+     * ConsumerProducts.CleaningRobot.Option.ReferenceMapId
+     * ConsumerProducts.CleaningRobot.Option.CleaningMode
+     * BSH.Common.Option.ElapsedProgramTime
+     * BSH.Common.Option.RemainingProgramTime
+     * BSH.Common.Option.ProgramProgress
+     * ConsumerProducts.CleaningRobot.Option.ProcessPhase
+     * BSH.Common.Setting.PowerState
+     * BSH.Common.Setting.TemperatureUnit
+     * BSH.Common.Setting.LiquidVolumeUnit
+     * Cooking.Common.Setting.Lighting
+     * Cooking.Common.Setting.LightingBrightness
+     * BSH.Common.Setting.AmbientLightEnabled
+     * BSH.Common.Setting.AmbientLightBrightness
+     * BSH.Common.Setting.AmbientLightColor
+     * BSH.Common.Setting.AmbientLightCustomColor
+     * Refrigeration.FridgeFreezer.Setting.SetpointTemperatureFreezer
+     * Refrigeration.FridgeFreezer.Setting.SetpointTemperatureRefrigerator
+     * Refrigeration.Common.Setting.BottleCooler.SetpointTemperature
+     * Refrigeration.Common.Setting.ChillerLeft.SetpointTemperature
+     * Refrigeration.Common.Setting.ChillerCommon.SetpointTemperature
+Refrigeration.Common.Setting.ChillerRight.SetpointTemperature 	NOTIFY
+Refrigeration.Common.Setting.WineCompartment.SetpointTemperature 	NOTIFY
+Refrigeration.Common.Setting.WineCompartment2.SetpointTemperature 	NOTIFY
+Refrigeration.Common.Setting.WineCompartment3.SetpointTemperature 	NOTIFY
+Refrigeration.FridgeFreezer.Setting.SuperModeFreezer 	NOTIFY
+Refrigeration.FridgeFreezer.Setting.SuperModeRefrigerator 	NOTIFY
+Refrigeration.Common.Setting.EcoMode 	NOTIFY
+Refrigeration.Common.Setting.SabbathMode 	NOTIFY
+Refrigeration.Common.Setting.VacationMode 	NOTIFY
+Refrigeration.Common.Setting.FreshMode 	NOTIFY
+ConsumerProducts.CleaningRobot.Setting.CurrentMap 	NOTIFY
+ConsumerProducts.CleaningRobot.Setting.NameOfMap1 	NOTIFY
+ConsumerProducts.CleaningRobot.Setting.NameOfMap2 	NOTIFY
+ConsumerProducts.CleaningRobot.Setting.NameOfMap3 	NOTIFY
+ConsumerProducts.CleaningRobot.Setting.NameOfMap4 	NOTIFY
+ConsumerProducts.CleaningRobot.Setting.NameOfMap5 	NOTIFY
+BSH.Common.Status.RemoteControlActive 	STATUS
+BSH.Common.Status.RemoteControlStartAllowed 	STATUS
+BSH.Common.Status.LocalControlActive 	STATUS
+BSH.Common.Status.OperationState 	STATUS
+BSH.Common.Status.DoorState 	STATUS
+BSH.Common.Status.BatteryLevel 	STATUS
+BSH.Common.Status.BatteryChargingState 	STATUS
+BSH.Common.Status.ChargingConnection 	STATUS
+BSH.Common.Status.Video.CameraState 	STATUS
+ConsumerProducts.CleaningRobot.Status.LastSelectedMap 	STATUS
+ConsumerProducts.CleaningRobot.Status.DustBoxInserted 	STATUS
+ConsumerProducts.CleaningRobot.Status.Lost 	STATUS
+ConsumerProducts.CleaningRobot.Status.Lifted 	STATUS
+BSH.Common.Event.ProgramAborted
+BSH.Common.Event.ProgramFinished
+BSH.Common.Event.AlarmClockElapsed 	EVENT
+Cooking.Oven.Event.PreheatFinished 	EVENT
+ConsumerProducts.CoffeeMaker.Event.BeanContainerEmpty 	EVENT
+ConsumerProducts.CoffeeMaker.Event.WaterTankEmpty 	EVENT
+ConsumerProducts.CoffeeMaker.Event.DripTrayFull 	EVENT
+Refrigeration.FridgeFreezer.Event.DoorAlarmFreezer 	EVENT
+Refrigeration.FridgeFreezer.Event.DoorAlarmRefrigerator 	EVENT
+Refrigeration.FridgeFreezer.Event.TemperatureAlarmFreezer 	EVENT
+ConsumerProducts.CleaningRobot.Event.EmptyDustBoxAndCleanFilter 	EVENT
+ConsumerProducts.CleaningRobot.Event.RobotIsStuck
+ConsumerProducts.CleaningRobot.Event.DockingStationNotFound
+*/
+    }
+}
+
+void IntegrationPluginHomeConnect::onReceivedActiveProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options)
+{
+    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
+    Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
+    if (!parentThing)
+        return;
+
+    Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
+        if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
+            qCDebug(dcHomeConnect()) << "Received active program" << thing->name() << key << options;
+            if (thing->thingClassId() == ovenThingClassId) {
+                if (key.contains("Cooking.Oven.Program.HeatingMode")) {
+                    thing->setStateValue(ovenActiveProgramStateTypeId, key.split('.').last());
+                    thing->setStateValue(ovenTargetTemperatureStateTypeId, options.value("Cooking.Oven.Option.SetpointTemperature").toInt());
+                    thing->setStateValue(ovenTargetTemperatureStateTypeId, options.value("BSH.Common.Option.Duration").toInt());
+                }
+            }
+        }
+        break;
+    }
+}
+
+void IntegrationPluginHomeConnect::onReceivedSelectedProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options)
+{
+    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
+    Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
+    if (!parentThing)
+        return;
+
+    Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
+        if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
+            qCDebug(dcHomeConnect()) << "Received active program" << thing->name() << key << options;
+            if (thing->thingClassId() == ovenThingClassId) {
+                if (key.contains("Cooking.Oven.Program.HeatingMode")) {
+                    thing->setStateValue(ovenSelectedProgramStateTypeId, key.split('.').last());
+                    thing->setStateValue(ovenTargetTemperatureStateTypeId, options.value("Cooking.Oven.Option.SetpointTemperature").toInt());
+                    thing->setStateValue(ovenTargetTemperatureStateTypeId, options.value("BSH.Common.Option.Duration").toInt());
+                }
+            }
+        }
+        break;
+    }
+}
+
+void IntegrationPluginHomeConnect::onReceivedSettings(const QString &haId, const QHash<QString, QVariant> &settings)
+{
+    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
+    Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
+    if (!parentThing)
+        return;
+
+    Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
+        if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
+            qCDebug(dcHomeConnect()) << "Received setting" << thing->name() << settings;
+            if (settings.contains("BSH.Common.Setting.PowerState")) {
+                //TODO set power state
+            }
+            //BSH.Common.Setting.TemperatureUnit
+            //BSH.Common.Setting.LiquidVolumeUnit
+            //Refrigeration.FridgeFreezer.Setting.SetpointTemperatureRefrigerator
+            //Refrigeration.FridgeFreezer.Setting.SetpointTemperatureFreezer
+            //Refrigeration.Common.Setting.BottleCooler.SetpointTemperature
+            //Refrigeration.Common.Setting.ChillerLeft.SetpointTemperature
+            //Refrigeration.Common.Setting.ChillerCommon.SetpointTemperature
+            //Refrigeration.Common.Setting.ChillerRight.SetpointTemperature
+            //Refrigeration.Common.Setting.WineCompartment.SetpointTemperature
+            //Refrigeration.Common.Setting.WineCompartment2.SetpointTemperature
+            //Refrigeration.Common.Setting.WineCompartment3.SetpointTemperature
+            //Refrigeration.FridgeFreezer.Setting.SuperModeRefrigerator
+            //Refrigeration.FridgeFreezer.Setting.SuperModeFreezer
+            //Refrigeration.Common.Setting.EcoMode
+            //Refrigeration.Common.Setting.SabbathMode
+            //Refrigeration.Common.Setting.VacationMode
+            //Refrigeration.Common.Setting.FreshMode
+            //Cooking.Common.Setting.Lighting
+            //Cooking.Common.Setting.LightingBrightness
+            //BSH.Common.Setting.AmbientLightEnabled
+            //BSH.Common.Setting.AmbientLightBrightness
+            //BSH.Common.Setting.AmbientLightColor
+            //BSH.Common.Setting.AmbientLightCustomColor
+        }
+        break;
+    }
 }

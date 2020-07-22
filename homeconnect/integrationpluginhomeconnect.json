@@ -147,6 +147,49 @@
                             "writable": true,
                             "unit": "DegreeCelsius",
                             "type": "int"
+                        },
+                        {
+                            "id": "1dcf634c-04c1-4415-9656-06f5b61bde17",
+                            "name": "currentTemperature",
+                            "displayName": "Current temperature",
+                            "displayNameEvent": "Current temperature changed",
+                            "defaultValue": 0,
+                            "unit": "DegreeCelsius",
+                            "type": "int"
+                        },
+                        {
+                            "id": "3527a28d-e4df-481b-a8b6-88717b77c7a6",
+                            "name": "duration",
+                            "displayName": "Duration",
+                            "displayNameEvent": "Duration changed",
+                            "defaultValue": 0,
+                            "unit": "Seconds",
+                            "type": "int"
+                        },
+                        {
+                            "id": "85a333dc-0e0b-454c-9c9a-d14dd6484275",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "2e6f27bb-371a-44a4-b057-51f765bdeb86",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "474d9ca0-6842-4a1b-9655-e147df923459",
+                            "name": "activeProgram",
+                            "displayName": "Active program",
+                            "displayNameEvent": "Active program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
@@ -407,7 +450,7 @@
                 {
                     "id": "6cbf309d-bde8-4e6e-ad6d-b85c8fc1843f",
                     "name": "fridge",
-                    "displayName": "Fridge",
+                    "displayName": "Fridge Freezer",
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
@@ -440,6 +483,54 @@
                                 "Open",
                                 "Closed"
                             ]
+                        },
+                        {
+                            "id": "bc13977e-0ea1-4804-af00-311ae62c6c06",
+                            "name": "fridgeTemperature",
+                            "displayName": "Fridge temperature",
+                            "displayNameEvent": "Fridge temperature changed",
+                            "defaultValue": 0,
+                            "type": "int",
+                            "minValue": 2,
+                            "maxValue": 8,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "5a1a8665-835b-4909-8f79-42874c5c4643",
+                            "name": "fridgeTemperatureSetting",
+                            "displayName": "Fridge temperature setting",
+                            "displayNameEvent": "Fridge temperature setting changed",
+                            "displayNameAction": "Set fridge temperature setting",
+                            "defaultValue": 0,
+                            "type": "int",
+                            "minValue": 2,
+                            "maxValue": 8,
+                            "writable": true,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "523adac4-a98a-49b5-96d4-d506831aeab7",
+                            "name": "freezerTemperature",
+                            "displayName": "Freezer temperature",
+                            "displayNameEvent": "Freezer temperature changed",
+                            "defaultValue": -18,
+                            "type": "int",
+                            "minValue": -24,
+                            "maxValue": -16,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "081ceedc-7c09-4cd9-8015-13a59ce653bf",
+                            "name": "freezerTemperatureSetting",
+                            "displayName": "Freezer temperature setting",
+                            "displayNameEvent": "Freezer temperature setting changed",
+                            "displayNameAction": "Set freezer temperature setting",
+                            "defaultValue": -18,
+                            "type": "int",
+                            "minValue": -24,
+                            "maxValue": -16,
+                            "writable": true,
+                            "unit": "DegreeCelsius"
                         }
                     ]
                 },
