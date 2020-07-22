@@ -37,6 +37,7 @@
 #include <QNetworkReply>
 #include <QUrlQuery>
 #include <QJsonDocument>
+#include <QDateTime>
 
 IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
 {
@@ -96,40 +97,28 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_doorStateTypeIds.insert(ovenThingClassId, ovenDoorStateStateTypeId);
 
     m_operationStateTypeIds.insert(ovenThingClassId, ovenOperationStateStateTypeId);
-    //m_operationStateTypeIds.insert(fridgeThingClassId, fridgeOperationStateStateTypeId);
     m_operationStateTypeIds.insert(dryerThingClassId, dryerOperationStateStateTypeId);
     m_operationStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerOperationStateStateTypeId);
     m_operationStateTypeIds.insert(dishwasherThingClassId, dishwasherOperationStateStateTypeId);
     m_operationStateTypeIds.insert(washerThingClassId, washerOperationStateStateTypeId);
-    //m_operationStateTypeIds.insert(cookTopThingClassId, cookTopOperationStateStateTypeId);
-    //m_operationStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotOperationStateStateTypeId);
-    //m_operationStateTypeIds.insert(hoodThingClassId, hoodOperationStateStateTypeId);
 
     m_selectedProgramStateTypeIds.insert(ovenThingClassId, ovenSelectedProgramStateTypeId);
-    //m_selectedProgramStateTypeIds.insert(fridgeThingClassId, fridgeSelectedProgramStateTypeId);
     m_selectedProgramStateTypeIds.insert(dryerThingClassId, dryerSelectedProgramStateTypeId);
     m_selectedProgramStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerSelectedProgramStateTypeId);
     m_selectedProgramStateTypeIds.insert(dishwasherThingClassId, dishwasherSelectedProgramStateTypeId);
     m_selectedProgramStateTypeIds.insert(washerThingClassId, washerSelectedProgramStateTypeId);
-    //m_selectedProgramStateTypeIds.insert(cookTopThingClassId, cookTopSelectedProgramStateTypeId);
-    //m_selectedProgramStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotSelectedProgramStateTypeId);
-    //m_selectedProgramStateTypeIds.insert(hoodThingClassId, hoodSelectedProgramStateTypeId);
-
-    m_activeProgramStateTypeIds.insert(ovenThingClassId, ovenActiveProgramStateTypeId);
-    //m_activeProgramStateTypeIds.insert(fridgeThingClassId, fridgeActiveProgramStateTypeId);
-    m_activeProgramStateTypeIds.insert(dryerThingClassId, dryerActiveProgramStateTypeId);
-    m_activeProgramStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerActiveProgramStateTypeId);
-    m_activeProgramStateTypeIds.insert(dishwasherThingClassId, dishwasherActiveProgramStateTypeId);
-    m_activeProgramStateTypeIds.insert(washerThingClassId, washerActiveProgramStateTypeId);
-    //m_activeProgramStateTypeIds.insert(cookTopThingClassId, cookTopActiveProgramStateTypeId);
-    //m_activeProgramStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotActiveProgramStateTypeId);
-    //m_activeProgramStateTypeIds.insert(hoodThingClassId, hoodActiveProgramStateTypeId);
 
     m_progressStateTypeIds.insert(ovenThingClassId, ovenProgressStateTypeId);
     m_progressStateTypeIds.insert(dryerThingClassId, dryerProgressStateTypeId);
     m_progressStateTypeIds.insert(dishwasherThingClassId, dishwasherProgressStateTypeId);
     m_progressStateTypeIds.insert(washerThingClassId, washerProgressStateTypeId);
     m_progressStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerProgressStateTypeId);
+
+    m_endTimerStateTypeIds.insert(ovenThingClassId, ovenEndTimeStateTypeId);
+
+    m_pauseActionTypeIds.insert(ovenThingClassId, ovenPauseActionTypeId);
+    m_resumeActionTypeIds.insert(ovenThingClassId, ovenResumeActionTypeId);
+
 }
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
@@ -224,7 +213,6 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
         connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, &IntegrationPluginHomeConnect::onAuthenticationStatusChanged);
         connect(homeConnect, &HomeConnect::receivedHomeAppliances, this, &IntegrationPluginHomeConnect::onReceivedHomeAppliances);
         connect(homeConnect, &HomeConnect::receivedStatusList, this, &IntegrationPluginHomeConnect::onReceivedStatusList);
-        connect(homeConnect, &HomeConnect::receivedActiveProgram, this, &IntegrationPluginHomeConnect::onReceivedActiveProgram);
         connect(homeConnect, &HomeConnect::receivedSelectedProgram, this, &IntegrationPluginHomeConnect::onReceivedSelectedProgram);
         connect(homeConnect, &HomeConnect::receivedSettings, this, &IntegrationPluginHomeConnect::onReceivedSettings);
         connect(homeConnect, &HomeConnect::receivedEvents, this, &IntegrationPluginHomeConnect::onReceivedEvents);
@@ -287,7 +275,6 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
                     QString haId = childThing->paramValue(m_idParamTypeIds.value(childThing->thingClassId())).toString();
                     homeConnect->getStatus(haId);
                     homeConnect->getSettings(haId);
-                    homeConnect->getProgramsActive(haId);
                     homeConnect->getProgramsSelected(haId);
                 }
             }
@@ -320,7 +307,6 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
         } else {
             homeConnect->getStatus(haId);
             homeConnect->getSettings(haId);
-            homeConnect->getProgramsActive(haId);
             homeConnect->getProgramsSelected(haId);
         }
     } else {
@@ -332,24 +318,30 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
 {
     Thing *thing = info->thing();
     Action action = info->action();
-    if (thing->thingClassId() == homeConnectConnectionThingClassId) {
-        Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+    HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
+    if (!homeConnect) {
+        return info->finish(Thing::ThingErrorHardwareNotAvailable);
+    }
+    QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
 
-    } else if (thing->thingClassId() == ovenThingClassId) {
-        HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
-        QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+    if (m_pauseActionTypeIds.values().contains(action.actionTypeId())) {
         QUuid requestId;
-        if (action.actionTypeId() == ovenPauseActionTypeId) {
-            requestId = homeConnect->sendCommand(haid, "BSH.Common.Command.PauseProgram");
-        } else if (action.actionTypeId() == ovenResumeActionTypeId) {
-            requestId = homeConnect->sendCommand(haid, "BSH.Common.Command.ResumeProgram");
-        } else {
-            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
-        }
+        requestId = homeConnect->sendCommand(haid, "BSH.Common.Command.PauseProgram");
         m_pendingActions.insert(requestId, info);
         connect(info, &ThingActionInfo::aborted, [requestId, this] {
             m_pendingActions.remove(requestId);
         });
+    } else if (m_resumeActionTypeIds.values().contains(action.actionTypeId())) {
+        QUuid requestId;
+        requestId = homeConnect->sendCommand(haid, "BSH.Common.Command.ResumeProgram");
+        m_pendingActions.insert(requestId, info);
+        connect(info, &ThingActionInfo::aborted, [requestId, this] {
+            m_pendingActions.remove(requestId);
+        });
+    } else if (thing->thingClassId() == ovenThingClassId) {
+        //set temperature
+    } else if (thing->thingClassId() == coffeeMakerThingClassId) {
+
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -436,9 +428,10 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
     qCDebug(dcHomeConnect()) << thing->name() << key.split('.').last() << value;
     // PROGRAM CHANGES
     if (key == "BSH.Common.Root.SelectedProgram") {
-        thing->setStateValue(m_selectedProgramStateTypeIds.value(thing->thingClassId()), value.toString().split('.').last());
+        if (m_selectedProgramStateTypeIds.contains(thing->thingClassId())) {
+            thing->setStateValue(m_selectedProgramStateTypeIds.value(thing->thingClassId()), value.toString().split('.').last());
+        }
     } else if (key == "BSH.Common.Root.ActiveProgram") {
-        thing->setStateValue(m_activeProgramStateTypeIds.value(thing->thingClassId()), value.toString().split('.').last());
 
         // Option Changes
     } else if (key == "Cooking.Oven.Option.SetpointTemperature") {
@@ -464,6 +457,8 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         // Program Progress Changes
     } else if (key == "BSH.Common.Option.ElapsedProgramTime") {
     } else if (key == "BSH.Common.Option.RemainingProgramTime") {
+        QString time = QDateTime::fromMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch()+(value.toInt()*1000)).time().toString();
+        thing->setStateValue(m_endTimerStateTypeIds.value(thing->thingClassId()), time);
     } else if (key == "BSH.Common.Option.ProgramProgress") {
         if (m_progressStateTypeIds.contains(thing->thingClassId())) {
             thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), value);
@@ -674,7 +669,6 @@ void IntegrationPluginHomeConnect::onReceivedEvents(HomeConnect::EventType event
             case HomeConnect::EventTypeEvent:
             case HomeConnect::EventTypeNotify: {
                 Q_FOREACH(HomeConnect::Event event, events) {
-                    qCDebug(dcHomeConnect()) << "Received event" << event.key << event.uri << event.name;
                     parseKey(thing, event.key, event.value);
                 }
             } break;
@@ -684,55 +678,6 @@ void IntegrationPluginHomeConnect::onReceivedEvents(HomeConnect::EventType event
             case HomeConnect::EventTypeDepaired: {
                 //TODO remove device
             } break;
-            }
-            break;
-        }
-    }
-}
-
-void IntegrationPluginHomeConnect::onReceivedActiveProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options)
-{
-    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
-    Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
-    if (!parentThing)
-        return;
-
-    Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
-        if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
-
-            Q_FOREACH(QString key, options.keys()) {
-                parseKey(thing, key, options.value(key));
-            }
-            if (thing->thingClassId() == ovenThingClassId) {
-                if (key.contains("Cooking.Oven.Program.HeatingMode")) {
-                    thing->setStateValue(ovenActiveProgramStateTypeId, key.split('.').last());
-                } else {
-                    qCWarning(dcHomeConnect()) << "Oven unhandled program type" << key;
-                }
-            } else if (thing->thingClassId() == washerThingClassId) {
-                if (key.contains("LaundryCare.Washer.Program")) {
-                    thing->setStateValue(washerActiveProgramStateTypeId, key.split('.').last());
-                } else {
-                    qCWarning(dcHomeConnect()) << "Washer unhandled program type" << key;
-                }
-            } else if (thing->thingClassId() == dishwasherThingClassId) {
-                if (key.contains("Dishcare.Dishwasher.Program")) {
-                    thing->setStateValue(dishwasherActiveProgramStateTypeId, key.split('.').last());
-                } else {
-                    qCWarning(dcHomeConnect()) << "Dishwasher unhandled program type" << key;
-                }
-            } else if (thing->thingClassId() == dryerThingClassId) {
-                if (key.contains("LaundryCare.Dryer.Program")) {
-                    thing->setStateValue(dryerActiveProgramStateTypeId, key.split('.').last());
-                } else {
-                    qCWarning(dcHomeConnect()) << "Dryer unhandled program type" << key;
-                }
-            } else if (thing->thingClassId() == coffeeMakerThingClassId) {
-                if (key.contains("ConsumerProducts.CoffeeMaker.Program")) {
-                    thing->setStateValue(coffeeMakerActiveProgramStateTypeId, key.split('.').last());
-                } else {
-                    qCWarning(dcHomeConnect()) << "Coffee maker unhandled program type" << key;
-                }
             }
             break;
         }
