@@ -309,8 +309,6 @@ void HomeConnect::getPrograms(const QString &haId)
         checkStatusCode(status, rawData);
 
         QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
-
-        qCDebug(dcHomeConnect()) << "Get programs available" << rawData;
         QVariantList programList = dataMap.value("programs").toList();
         QStringList programs;
         Q_FOREACH(QVariant var, programList) {
@@ -341,8 +339,6 @@ void HomeConnect::getProgramsAvailable(const QString &haId)
         checkStatusCode(status, rawData);
 
         QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
-
-        qCDebug(dcHomeConnect()) << "Get programs available" << rawData;
         QVariantList programList = dataMap.value("programs").toList();
         QStringList programs;
         Q_FOREACH(QVariant var, programList) {
@@ -372,19 +368,17 @@ void HomeConnect::getProgramsActive(const QString &haId)
         QByteArray rawData = reply->readAll();
         checkStatusCode(status, rawData);
 
-        qCDebug(dcHomeConnect()) << "Get programs active" << rawData;
         QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
-
         QHash<QString, QVariant> options;
         if (map.contains("data")) {
             QString key = map.value("data").toMap().value("key").toString();
             Q_FOREACH(QVariant var, map.value("data").toMap().value("options").toList()) {
                 options.insert(var.toMap().value("key").toString(), var.toMap().value("value"));
             }
-            emit receivedSelectedProgram(haId, key, options);
+            emit receivedActiveProgram(haId, key, options);
         } else if (map.contains("error")) {
             QString key = map.value("error").toMap().value("key").toString();
-            emit receivedSelectedProgram(haId, key, options);
+            emit receivedActiveProgram(haId, key, options);
         }
     });
 }
@@ -406,9 +400,7 @@ void HomeConnect::getProgramsSelected(const QString &haId)
         QByteArray rawData = reply->readAll();
         checkStatusCode(status, rawData);
 
-        qCDebug(dcHomeConnect()) << "Get program selected" << rawData;
         QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
-
         QHash<QString, QVariant> options;
         if (map.contains("data")) {
             QString key = map.value("data").toMap().value("key").toString();
@@ -511,7 +503,6 @@ void HomeConnect::getStatus(const QString &haid)
         checkStatusCode(status, rawData);
 
         QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
-
         QHash<QString, QVariant> statusList;
         QVariantList statusVariantList= dataMap.value("status").toList();
         Q_FOREACH(QVariant status, statusVariantList) {
@@ -548,7 +539,6 @@ void HomeConnect::getSettings(const QString &haid)
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         QByteArray rawData = reply->readAll();
         checkStatusCode(status, rawData);
-        qCDebug(dcHomeConnect()) << "Get settings" << rawData;
         QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
         QVariantList settingsList = dataMap.value("settings").toList();
         QHash<QString, QVariant> settings;
@@ -581,8 +571,6 @@ void HomeConnect::connectEventStream()
         QJsonDocument data;
         QString haId;
         EventType eventType;
-
-        qCDebug(dcHomeConnect()) << "Event reveived" << rawData;
         Q_FOREACH(QByteArray line, rawData) {
             if (line.startsWith("data")) {
                 if (checkStatusCode(status, line.remove(0,6)))

@@ -184,11 +184,11 @@
                             "type": "QString"
                         },
                         {
-                            "id": "474d9ca0-6842-4a1b-9655-e147df923459",
-                            "name": "activeProgram",
-                            "displayName": "Active program",
-                            "displayNameEvent": "Active program changed",
-                            "defaultValue": "None",
+                            "id": "6e828e48-3634-4d92-9dee-2c03a51c7189",
+                            "name": "endTime",
+                            "displayName": "End time",
+                            "displayNameEvent": "End time changed",
+                            "defaultValue": "00:00:00",
                             "type": "QString"
                         }
                     ],
@@ -292,14 +292,6 @@
                             "displayNameEvent": "Selected program changed",
                             "defaultValue": "None",
                             "type": "QString"
-                        },
-                        {
-                            "id": "5f4cc1a2-a9d9-4358-9fcd-d09078a38638",
-                            "name": "activeProgram",
-                            "displayName": "Active program",
-                            "displayNameEvent": "Active program changed",
-                            "defaultValue": "None",
-                            "type": "QString"
                         }
                     ]
                 },
@@ -392,12 +384,51 @@
                             "type": "QString"
                         },
                         {
-                            "id": "52ce0862-aa9d-41fa-8d14-6fdb11b82d89",
-                            "name": "activeProgram",
-                            "displayName": "Active program",
-                            "displayNameEvent": "Active program changed",
-                            "defaultValue": "None",
-                            "type": "QString"
+                            "id": "714a12bc-63a5-4423-aad9-47d77f41ae47",
+                            "name": "strength",
+                            "displayName": "Strength",
+                            "displayNameEvent": "Strength changed",
+                            "displayNameAction": "Set strength",
+                            "defaultValue": "Normal",
+                            "writable": true,
+                            "type": "QString",
+                            "possibleValues": [
+                                "Very Mild",
+                                "Mild",
+                                "Normal",
+                                "Strong",
+                                "Very Strong",
+                                "Double Shot",
+                                "Double Shot+",
+                                "Double Shot++"
+                            ]
+                        },
+                        {
+                            "id": "b3aea372-bc51-4e92-b92f-5b9613c20a9c",
+                            "name": "fillQuantity",
+                            "displayName": "Fill quantity",
+                            "displayNameEvent": "Fill quantity changed",
+                            "displayNameAction": "Set fill quantity",
+                            "defaultValue": "60",
+                            "type": "int",
+                            "minValue": 35,
+                            "maxValue": 60,
+                            "writable": true
+                        },
+                        {
+                            "id": "29dc7edb-c34f-41da-9d2a-e46bda34885b",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "displayNameAction": "Set temperature",
+                            "defaultValue": "Normal",
+                            "possibleValues": [
+                                "Normal",
+                                "High",
+                                "Very high"
+                            ],
+                            "type": "QString",
+                            "writable": true
                         }
                     ]
                 },
@@ -497,14 +528,6 @@
                             "name": "selectedProgram",
                             "displayName": "Selected program",
                             "displayNameEvent": "Selected program changed",
-                            "defaultValue": "None",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "cde9357e-5e6c-49ff-82d5-a69150b64978",
-                            "name": "activeProgram",
-                            "displayName": "Active program",
-                            "displayNameEvent": "Active program changed",
                             "defaultValue": "None",
                             "type": "QString"
                         }
@@ -705,14 +728,6 @@
                             "name": "selectedProgram",
                             "displayName": "Selected program",
                             "displayNameEvent": "Selected program changed",
-                            "defaultValue": "None",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "d4abaabe-933f-4b55-8065-ba1f612dce90",
-                            "name": "activeProgram",
-                            "displayName": "Active program",
-                            "displayNameEvent": "Active program changed",
                             "defaultValue": "None",
                             "type": "QString"
                         },
