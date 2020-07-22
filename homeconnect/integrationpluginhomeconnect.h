@@ -80,8 +80,11 @@ private:
     QHash<ThingClassId, StateTypeId> m_doorStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_activeProgramStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_selectedProgramStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_progressStateTypeIds;
 
     HomeConnect *createHomeConnection();
+
+    void parseKey(Thing *thing, const QString &key, const QVariant &value);
 
 private slots:
     void onConnectionChanged(bool connected);
@@ -89,7 +92,7 @@ private slots:
     void onRequestExecuted(QUuid requestId, bool success);
     void onReceivedHomeAppliances(const QList<HomeConnect::HomeAppliance> &appliances);
     void onReceivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
-    void onReceivedEvents(const QList<HomeConnect::Event> &events);
+    void onReceivedEvents(HomeConnect::EventType eventType, const QString &haId, const QList<HomeConnect::Event> &events);
     void onReceivedActiveProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
     void onReceivedSelectedProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
     void onReceivedSettings(const QString &haId, const QHash<QString, QVariant> &settings);

@@ -372,15 +372,20 @@ void HomeConnect::getProgramsActive(const QString &haId)
         QByteArray rawData = reply->readAll();
         checkStatusCode(status, rawData);
 
-        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
-
         qCDebug(dcHomeConnect()) << "Get programs active" << rawData;
-        QString key = dataMap.value("key").toString();
+        QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
+
         QHash<QString, QVariant> options;
-        Q_FOREACH(QVariant var, dataMap.value("options").toList()) {
-            options.insert(var.toMap().value("key").toString(), var.toMap().value("value"));
+        if (map.contains("data")) {
+            QString key = map.value("data").toMap().value("key").toString();
+            Q_FOREACH(QVariant var, map.value("data").toMap().value("options").toList()) {
+                options.insert(var.toMap().value("key").toString(), var.toMap().value("value"));
+            }
+            emit receivedSelectedProgram(haId, key, options);
+        } else if (map.contains("error")) {
+            QString key = map.value("error").toMap().value("key").toString();
+            emit receivedSelectedProgram(haId, key, options);
         }
-        emit receivedActiveProgram(haId, key, options);
     });
 }
 
@@ -401,14 +406,20 @@ void HomeConnect::getProgramsSelected(const QString &haId)
         QByteArray rawData = reply->readAll();
         checkStatusCode(status, rawData);
 
-        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
         qCDebug(dcHomeConnect()) << "Get program selected" << rawData;
-        QString key = dataMap.value("key").toString();
+        QVariantMap map = QJsonDocument::fromJson(rawData).toVariant().toMap();
+
         QHash<QString, QVariant> options;
-        Q_FOREACH(QVariant var, dataMap.value("options").toList()) {
-            options.insert(var.toMap().value("key").toString(), var.toMap().value("value"));
+        if (map.contains("data")) {
+            QString key = map.value("data").toMap().value("key").toString();
+            Q_FOREACH(QVariant var, map.value("data").toMap().value("options").toList()) {
+                options.insert(var.toMap().value("key").toString(), var.toMap().value("value"));
+            }
+            emit receivedSelectedProgram(haId, key, options);
+        } else if (map.contains("error")) {
+            QString key = map.value("error").toMap().value("key").toString();
+            emit receivedSelectedProgram(haId, key, options);
         }
-        emit receivedSelectedProgram(haId, key, options);
     });
 }
 
@@ -537,7 +548,7 @@ void HomeConnect::getSettings(const QString &haid)
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         QByteArray rawData = reply->readAll();
         checkStatusCode(status, rawData);
-
+        qCDebug(dcHomeConnect()) << "Get settings" << rawData;
         QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap().value("data").toMap();
         QVariantList settingsList = dataMap.value("settings").toList();
         QHash<QString, QVariant> settings;
@@ -559,16 +570,50 @@ void HomeConnect::connectEventStream()
     request.setRawHeader("accept", "text/event-stream");
 
     QNetworkReply *reply = m_networkManager->get(request);
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, [reply, this] {
+        reply->deleteLater();
+        QTimer::singleShot(5000, this, [this] {connectEventStream();}); //try to reconnect every 5 seconds
+    });
     connect(reply, &QNetworkReply::readyRead, this, [this, reply]{
 
-        QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Event stream: Received invalide JSON object";
-            return;
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArrayList rawData = reply->readAll().split('\n');
+        QJsonDocument data;
+        QString haId;
+        EventType eventType;
+
+        qCDebug(dcHomeConnect()) << "Event reveived" << rawData;
+        Q_FOREACH(QByteArray line, rawData) {
+            if (line.startsWith("data")) {
+                if (checkStatusCode(status, line.remove(0,6)))
+                    data = QJsonDocument::fromJson(line);
+            } else if (line.startsWith("id")) {
+                haId = line.split(':').last().trimmed();
+            } else if (line.startsWith("event")) {
+                QString eventString = line.split(':').last().trimmed();
+                if (eventString == "KEEP-ALIVE") {
+                    eventType = EventTypeKeepAlive;
+                } else if (eventString == "STATUS") {
+                    eventType = EventTypeStatus;
+                } else if (eventString == "EVENT") {
+                    eventType = EventTypeEvent;
+                } else if (eventString == "NOTIFY") {
+                    eventType = EventTypeNotify;
+                } else if (eventString == "DISCONNECTED") {
+                    eventType = EventTypeDisconnected;
+                } else if (eventString == "CONNECTED") {
+                    eventType = EventTypeConnected;
+                } else if (eventString == "PAIRED") {
+                    eventType = EventTypePaired;
+                } else if (eventString == "DEPAIRED") {
+                    eventType = EventTypeDepaired;
+                } else {
+                    qCWarning(dcHomeConnect()) << "Unhandled event type" << eventString;
+                    return;
+                }
+            }
         }
-        qCDebug(dcHomeConnect()) << "Event" << data.toJson();
+
         if (data.toVariant().toMap().contains("items")) {
             QList<Event> events;
             QVariantList itemsList = data.toVariant().toMap().value("items").toList();
@@ -583,7 +628,8 @@ void HomeConnect::connectEventStream()
                 event.timestamp  = map["timestamp"].toInt();
                 events.append(event);
             }
-            emit receivedEvents(events);
+            if (!events.isEmpty())
+                emit receivedEvents(eventType, haId, events);
         } else if (data.toVariant().toMap().contains("error")) {
             qCWarning(dcHomeConnect()) << "Event stream error" << data.toVariant().toMap().value("error");
         }

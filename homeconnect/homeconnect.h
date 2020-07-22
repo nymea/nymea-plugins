@@ -41,6 +41,17 @@ class HomeConnect : public QObject
 {
     Q_OBJECT
 public:
+    enum EventType {
+        EventTypeKeepAlive,
+        EventTypeStatus,
+        EventTypeEvent,
+        EventTypeNotify,
+        EventTypeDisconnected,
+        EventTypeConnected,
+        EventTypePaired,
+        EventTypeDepaired
+    };
+
     enum Type {
         Oven,
         Dishwasher,
@@ -162,6 +173,6 @@ signals:
     void receivedSettings(const QString &haId, const QHash<QString, QVariant> &settings);
     void receivedActiveProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
     void receivedSelectedProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
-    void receivedEvents(const QList<Event> &events);
+    void receivedEvents(EventType eventType, const QString &haId, const QList<Event> &events);
 };
 #endif // HOMECONNECT_H
