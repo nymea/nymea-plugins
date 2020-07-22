@@ -85,9 +85,12 @@ private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
     void onRequestExecuted(QUuid requestId, bool success);
-    void onReceivedHomeAppliances(QList<HomeConnect::HomeAppliance> appliances);
+    void onReceivedHomeAppliances(const QList<HomeConnect::HomeAppliance> &appliances);
     void onReceivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
-    void onReceivedEvents(const QList<HomeConnect::Event> events);
+    void onReceivedEvents(const QList<HomeConnect::Event> &events);
+    void onReceivedActiveProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
+    void onReceivedSelectedProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
+    void onReceivedSettings(const QString &haId, const QHash<QString, QVariant> &settings);
 };
 
 #endif // INTEGRATIONPLUGINHOMECONNECT_H
