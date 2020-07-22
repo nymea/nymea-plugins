@@ -113,6 +113,7 @@ public:
     void getHomeAppliance(const QString &haid); //Get a specfic home appliances which are paired with the logged-in user account.
 
     // PROGRAMS
+    void getPrograms(const QString &haId); //Get all programs of a given home appliance
     void getProgramsAvailable(const QString &haId); //Get all programs which are currently available on the given home appliance
     void getProgramsActive(const QString &haId);    //Get program which is currently executed
     void getProgramsSelected(const QString &haId);  //Get the program which is currently selected
@@ -156,6 +157,7 @@ signals:
 
     void receivedHomeAppliances(const QList<HomeAppliance> &appliances);
     void receivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);
+    void receivedPrograms(const QString &haId, const QStringList &programs);
     void receivedAvailablePrograms(const QString &haId, const QStringList &programs);
     void receivedSettings(const QString &haId, const QHash<QString, QVariant> &settings);
     void receivedActiveProgram(const QString &haId, const QString &key, const QHash<QString, QVariant> &options);
