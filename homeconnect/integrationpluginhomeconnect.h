@@ -78,6 +78,8 @@ private:
     QHash<ThingClassId, StateTypeId> m_remoteStartAllowanceStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_operationStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_doorStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_activeProgramStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_selectedProgramStateTypeIds;
 
     HomeConnect *createHomeConnection();
 

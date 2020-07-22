@@ -43,7 +43,7 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_idParamTypeIds.insert(ovenThingClassId, ovenThingIdParamTypeId);
     m_idParamTypeIds.insert(fridgeThingClassId, fridgeThingIdParamTypeId);
     m_idParamTypeIds.insert(dryerThingClassId, dryerThingIdParamTypeId);
-    m_idParamTypeIds.insert(coffeMakerThingClassId, coffeMakerThingIdParamTypeId);
+    m_idParamTypeIds.insert(coffeeMakerThingClassId, coffeeMakerThingIdParamTypeId);
     m_idParamTypeIds.insert(dishwasherThingClassId, dishwasherThingIdParamTypeId);
     m_idParamTypeIds.insert(washerThingClassId, washerThingIdParamTypeId);
     m_idParamTypeIds.insert(cookTopThingClassId, cookTopThingIdParamTypeId);
@@ -53,7 +53,7 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_connectedStateTypeIds.insert(ovenThingClassId, ovenConnectedStateTypeId);
     m_connectedStateTypeIds.insert(fridgeThingClassId, fridgeConnectedStateTypeId);
     m_connectedStateTypeIds.insert(dryerThingClassId, dryerConnectedStateTypeId);
-    m_connectedStateTypeIds.insert(coffeMakerThingClassId, coffeMakerConnectedStateTypeId);
+    m_connectedStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerConnectedStateTypeId);
     m_connectedStateTypeIds.insert(dishwasherThingClassId, dishwasherConnectedStateTypeId);
     m_connectedStateTypeIds.insert(washerThingClassId, washerConnectedStateTypeId);
     m_connectedStateTypeIds.insert(cookTopThingClassId, cookTopConnectedStateTypeId);
@@ -63,7 +63,7 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_localControlStateTypeIds.insert(ovenThingClassId, ovenLocalControlStateStateTypeId);
     //m_localControlStateTypeIds.insert(fridgeThingClassId, fridgeLocalControlStateStateTypeId);
     //m_localControlStateTypeIds.insert(dryerThingClassId, dryerLocalControlStateTypeId);
-    m_localControlStateTypeIds.insert(coffeMakerThingClassId, coffeMakerLocalControlStateStateTypeId);
+    m_localControlStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerLocalControlStateStateTypeId);
     //m_localControlStateTypeIds.insert(dishwasherThingClassId, dishwasherLocalControlStateStateTypeId);
     m_localControlStateTypeIds.insert(washerThingClassId, washerLocalControlStateStateTypeId);
     //m_localControlStateTypeIds.insert(cookTopThingClassId, cookTopLocalControlStateStateTypeId);
@@ -73,7 +73,7 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_remoteStartAllowanceStateTypeIds.insert(ovenThingClassId, ovenRemoteStartAllowanceStateStateTypeId);
     //m_remoteStartAllowanceStateTypeIds.insert(fridgeThingClassId, fridgeRemoteStartAllowanceStateStateTypeId);
     m_remoteStartAllowanceStateTypeIds.insert(dryerThingClassId, dryerRemoteStartAllowanceStateStateTypeId);
-    m_remoteStartAllowanceStateTypeIds.insert(coffeMakerThingClassId, coffeMakerRemoteStartAllowanceStateStateTypeId);
+    m_remoteStartAllowanceStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerRemoteStartAllowanceStateStateTypeId);
     m_remoteStartAllowanceStateTypeIds.insert(dishwasherThingClassId, dishwasherRemoteStartAllowanceStateStateTypeId);
     m_remoteStartAllowanceStateTypeIds.insert(washerThingClassId, washerRemoteStartAllowanceStateStateTypeId);
     //m_remoteStartAllowanceStateTypeIds.insert(cookTopThingClassId, cookTopRemoteStartAllowanceStateStateTypeId);
@@ -83,27 +83,47 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_remoteControlActivationStateTypeIds.insert(ovenThingClassId, ovenRemoteControlActivationStateStateTypeId);
     //m_remoteControlActivationStateTypeIds.insert(fridgeThingClassId, fridgeRemoteControlActivationStateStateTypeId);
     m_remoteControlActivationStateTypeIds.insert(dryerThingClassId, dryerRemoteControlActivationStateStateTypeId);
-    //m_remoteControlActivationStateTypeIds.insert(coffeMakerThingClassId, coffeMakerRemoteControlActivationStateStateTypeId);
+    //m_remoteControlActivationStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerRemoteControlActivationStateStateTypeId);
     m_remoteControlActivationStateTypeIds.insert(dishwasherThingClassId, dishwasherRemoteControlActivationStateStateTypeId);
     m_remoteControlActivationStateTypeIds.insert(washerThingClassId, washerRemoteControlActivationStateStateTypeId);
     //m_remoteControlActivationStateTypeIds.insert(cookTopThingClassId, cookTopRemoteControlActivationStateStateTypeId);
     //m_remoteControlActivationStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotRemoteControlActivationStateStateTypeId);
     //m_remoteControlActivationStateTypeIds.insert(hoodThingClassId, hoodRemoteControlActivationStateStateTypeId);
 
-    m_doorStateTypeIds.insert(dishwasherThingClassId, dishwasherDoorStateEventTypeId);
-    m_doorStateTypeIds.insert(washerThingClassId, washerDoorStateEventTypeId);
-    m_doorStateTypeIds.insert(dryerThingClassId, dryerDoorStateEventTypeId);
-    m_doorStateTypeIds.insert(ovenThingClassId, ovenDoorStateEventTypeId);
+    m_doorStateTypeIds.insert(dishwasherThingClassId, dishwasherDoorStateStateTypeId);
+    m_doorStateTypeIds.insert(washerThingClassId, washerDoorStateStateTypeId);
+    m_doorStateTypeIds.insert(dryerThingClassId, dryerDoorStateStateTypeId);
+    m_doorStateTypeIds.insert(ovenThingClassId, ovenDoorStateStateTypeId);
 
-    m_operationStateTypeIds.insert(ovenThingClassId, ovenOperationStateEventTypeId);
-    //m_operationStateTypeIds.insert(fridgeThingClassId, fridgeOperationStateEventTypeId);
-    m_operationStateTypeIds.insert(dryerThingClassId, dryerOperationStateEventTypeId);
-    m_operationStateTypeIds.insert(coffeMakerThingClassId, coffeMakerOperationStateEventTypeId);
-    m_operationStateTypeIds.insert(dishwasherThingClassId, dishwasherOperationStateEventTypeId);
-    m_operationStateTypeIds.insert(washerThingClassId, washerOperationStateEventTypeId);
-    //m_operationStateTypeIds.insert(cookTopThingClassId, cookTopOperationStateEventTypeId);
-    //m_operationStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotOperationStateEventTypeId);
-    //m_operationStateTypeIds.insert(hoodThingClassId, hoodOperationStateEventTypeId);
+    m_operationStateTypeIds.insert(ovenThingClassId, ovenOperationStateStateTypeId);
+    //m_operationStateTypeIds.insert(fridgeThingClassId, fridgeOperationStateStateTypeId);
+    m_operationStateTypeIds.insert(dryerThingClassId, dryerOperationStateStateTypeId);
+    m_operationStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerOperationStateStateTypeId);
+    m_operationStateTypeIds.insert(dishwasherThingClassId, dishwasherOperationStateStateTypeId);
+    m_operationStateTypeIds.insert(washerThingClassId, washerOperationStateStateTypeId);
+    //m_operationStateTypeIds.insert(cookTopThingClassId, cookTopOperationStateStateTypeId);
+    //m_operationStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotOperationStateStateTypeId);
+    //m_operationStateTypeIds.insert(hoodThingClassId, hoodOperationStateStateTypeId);
+
+    m_selectedProgramStateTypeIds.insert(ovenThingClassId, ovenSelectedProgramStateTypeId);
+    //m_selectedProgramStateTypeIds.insert(fridgeThingClassId, fridgeSelectedProgramStateTypeId);
+    m_selectedProgramStateTypeIds.insert(dryerThingClassId, dryerSelectedProgramStateTypeId);
+    m_selectedProgramStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerSelectedProgramStateTypeId);
+    m_selectedProgramStateTypeIds.insert(dishwasherThingClassId, dishwasherSelectedProgramStateTypeId);
+    m_selectedProgramStateTypeIds.insert(washerThingClassId, washerSelectedProgramStateTypeId);
+    //m_selectedProgramStateTypeIds.insert(cookTopThingClassId, cookTopSelectedProgramStateTypeId);
+    //m_selectedProgramStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotSelectedProgramStateTypeId);
+    //m_selectedProgramStateTypeIds.insert(hoodThingClassId, hoodSelectedProgramStateTypeId);
+
+    m_activeProgramStateTypeIds.insert(ovenThingClassId, ovenActiveProgramStateTypeId);
+    //m_activeProgramStateTypeIds.insert(fridgeThingClassId, fridgeActiveProgramStateTypeId);
+    m_activeProgramStateTypeIds.insert(dryerThingClassId, dryerActiveProgramStateTypeId);
+    m_activeProgramStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerActiveProgramStateTypeId);
+    m_activeProgramStateTypeIds.insert(dishwasherThingClassId, dishwasherActiveProgramStateTypeId);
+    m_activeProgramStateTypeIds.insert(washerThingClassId, washerActiveProgramStateTypeId);
+    //m_activeProgramStateTypeIds.insert(cookTopThingClassId, cookTopActiveProgramStateTypeId);
+    //m_activeProgramStateTypeIds.insert(cleaningRobotThingClassId, cleaningRobotActiveProgramStateTypeId);
+    //m_activeProgramStateTypeIds.insert(hoodThingClassId, hoodActiveProgramStateTypeId);
 }
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
@@ -207,7 +227,7 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
                (thing->thingClassId() == fridgeThingClassId) ||
                (thing->thingClassId() == washerThingClassId) ||
                (thing->thingClassId() == dishwasherThingClassId) ||
-               (thing->thingClassId() == coffeMakerThingClassId) ||
+               (thing->thingClassId() == coffeeMakerThingClassId) ||
                (thing->thingClassId() == ovenThingClassId) ||
                (thing->thingClassId() == hoodThingClassId) ||
                (thing->thingClassId() == cleaningRobotThingClassId) ||
@@ -278,7 +298,7 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
                (thing->thingClassId() == fridgeThingClassId) ||
                (thing->thingClassId() == washerThingClassId) ||
                (thing->thingClassId() == dishwasherThingClassId) ||
-               (thing->thingClassId() == coffeMakerThingClassId) ||
+               (thing->thingClassId() == coffeeMakerThingClassId) ||
                (thing->thingClassId() == ovenThingClassId) ||
                (thing->thingClassId() == hoodThingClassId) ||
                (thing->thingClassId() == cleaningRobotThingClassId) ||
@@ -355,14 +375,15 @@ void IntegrationPluginHomeConnect::browseThing(BrowseResult *result)
     HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
     if (!homeConnect)
         return;
-    QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+    QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
     homeConnect->getProgramsAvailable(haid);
     connect(homeConnect, &HomeConnect::receivedAvailablePrograms, result, [result, this] (const QString &haId, const QStringList programs) {
-        if(result->thing()->paramValue(m_idParamTypeIds.value(result->thing()->id())).toString() == haId) {
+        if(result->thing()->paramValue(m_idParamTypeIds.value(result->thing()->thingClassId())).toString() == haId) {
             Q_FOREACH(QString program, programs) {
                 BrowserItem item;
                 item.setExecutable(true);
-                item.setDisplayName(program);
+                item.setDisplayName(program.split('.').last());
+                item.setId(program);
                 result->addItem(item);
             }
             result->finish(Thing::ThingErrorNoError);
@@ -378,7 +399,7 @@ void IntegrationPluginHomeConnect::browserItem(BrowserItemResult *result)
     HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
     if (!homeConnect)
         return;
-    QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+    QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
     homeConnect->getProgramsAvailable(haid);
     connect(homeConnect, &HomeConnect::receivedAvailablePrograms, result, [result, this] (const QString &haid, const QStringList &programs) {
         if (result->thing()->paramValue(m_idParamTypeIds.value(result->thing()->thingClassId())).toString() == haid) {
@@ -397,7 +418,7 @@ void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
     HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
     if (!homeConnect)
         return;
-    QString haid = thing->stateValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+    QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
     QList<HomeConnect::Option> options;
     //TODO add options like set temperature or start time
     homeConnect->startProgram(haid, info->browserAction().itemId(), options);
@@ -483,7 +504,7 @@ void IntegrationPluginHomeConnect::onReceivedHomeAppliances(const QList<HomeConn
         } else if (appliance.type.contains("WineCooler", Qt::CaseInsensitive)) {
             thingClassId = fridgeThingClassId;
         } else if (appliance.type.contains("CoffeeMaker", Qt::CaseInsensitive)) {
-            thingClassId = coffeMakerThingClassId;
+            thingClassId = coffeeMakerThingClassId;
         } else if (appliance.type.contains("Dryer", Qt::CaseInsensitive)) {
             thingClassId = dryerThingClassId;
         } else if (appliance.type.contains("CookTop", Qt::CaseInsensitive)) {
@@ -568,15 +589,13 @@ void IntegrationPluginHomeConnect::onReceivedEvents(const QList<HomeConnect::Eve
         if (event.key == "BSH.Common.Root.SelectedProgram") {
 
         }
-        if (event.key == "BSH.Common.Root.SelectedProgram") {
+        if (event.key == "BSH.Common.Root.ActiveProgram") {
 
         }
         if (event.key == "BSH.Common.Option.ProgramProgress") {
 
         }
-    /*
-     * BSH.Common.Root.SelectedProgram
-     * BSH.Common.Root.ActiveProgram
+        /*
      * Cooking.Oven.Option.SetpointTemperature
      * BSH.Common.Option.Duration
      * Cooking.Oven.Option.FastPreHeat
@@ -692,6 +711,34 @@ void IntegrationPluginHomeConnect::onReceivedSelectedProgram(const QString &haId
                     thing->setStateValue(ovenSelectedProgramStateTypeId, key.split('.').last());
                     thing->setStateValue(ovenTargetTemperatureStateTypeId, options.value("Cooking.Oven.Option.SetpointTemperature").toInt());
                     thing->setStateValue(ovenTargetTemperatureStateTypeId, options.value("BSH.Common.Option.Duration").toInt());
+                }
+            } else if (thing->thingClassId() == washerThingClassId) {
+                if (key.contains("LaundryCare.Washer.Program")) {
+                    thing->setStateValue(washerSelectedProgramStateTypeId, key.split('.').last());
+                    thing->setStateValue(washerTemperatureStateTypeId, options.value("LaundryCare.Washer.Option.Temperature").toInt());
+                    thing->setStateValue(washerSpinSpeedStateTypeId, options.value("LaundryCare.Washer.Option.SpinSpeed").toInt());
+                }
+            } else if (thing->thingClassId() == dishwasherThingClassId) {
+                if (key.contains("Dishcare.Dishwasher.Program")) {
+                    thing->setStateValue(dishwasherSelectedProgramStateTypeId, key.split('.').last());
+                    //BSH.Common.Option.StartInRelative
+                }
+            } else if (thing->thingClassId() == dryerThingClassId) {
+                if (key.contains("LaundryCare.Dryer.Program")) {
+                    thing->setStateValue(dryerSelectedProgramStateTypeId, key.split('.').last());
+                    /*
+                        LaundryCare.Dryer.Option.DryingTarget
+                        BSH.Common.Option.Duration
+                    */
+                }
+            } else if (thing->thingClassId() == coffeeMakerThingClassId) {
+                if (key.contains("ConsumerProducts.CoffeeMaker.Program")) {
+                    thing->setStateValue(coffeeMakerSelectedProgramStateTypeId, key.split('.').last());
+                    /*                     //TODO
+                     * ConsumerProducts.CoffeeMaker.Option.BeanAmount
+                     * ConsumerProducts.CoffeeMaker.Option.FillQuantity
+                     * ConsumerProducts.CoffeeMaker.Option.CoffeeTemperature
+                    */
                 }
             }
         }

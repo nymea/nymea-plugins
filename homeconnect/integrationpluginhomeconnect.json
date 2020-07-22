@@ -275,13 +275,38 @@
                             "displayNameEvent": "Remote start allowance changed",
                             "defaultValue": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "f0484744-a180-4a14-9c84-f49a489e3510",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "692ea106-557c-4870-b569-ab82a4909b2c",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "5f4cc1a2-a9d9-4358-9fcd-d09078a38638",
+                            "name": "activeProgram",
+                            "displayName": "Active program",
+                            "displayNameEvent": "Active program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
                         }
                     ]
                 },
                 {
                     "id": "f6b39ce2-8276-4db7-b2a3-4a04cafacbb9",
-                    "name": "coffeMaker",
-                    "displayName": "Coffe Maker",
+                    "name": "coffeeMaker",
+                    "displayName": "Coffee Maker",
                     "interfaces": ["connectable"],
                     "createMethods": ["auto"],
                     "browsable": true,
@@ -348,6 +373,31 @@
                             "displayNameEvent": "Remote start allowance changed",
                             "defaultValue": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "a121f86a-ab69-4be9-bbe2-631e2210fee7",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "648e3a8e-74c4-41e8-bcbb-dd8b5757d375",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "52ce0862-aa9d-41fa-8d14-6fdb11b82d89",
+                            "name": "activeProgram",
+                            "displayName": "Active program",
+                            "displayNameEvent": "Active program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
                         }
                     ]
                 },
@@ -432,6 +482,31 @@
                             "displayNameEvent": "Remote start allowance changed",
                             "defaultValue": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "eaf84b93-bacd-42b1-afaf-a890c8b2a099",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "4ad5424c-6ccd-4e29-9aba-41f960618401",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "cde9357e-5e6c-49ff-82d5-a69150b64978",
+                            "name": "activeProgram",
+                            "displayName": "Active program",
+                            "displayNameEvent": "Active program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
@@ -615,6 +690,47 @@
                             "displayNameEvent": "Remote start allowance changed",
                             "defaultValue": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "312d817d-3384-41fb-a8ba-15c137844ee0",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "d10066ad-0ad3-49d2-a3c3-ee6002c1a18d",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "d4abaabe-933f-4b55-8065-ba1f612dce90",
+                            "name": "activeProgram",
+                            "displayName": "Active program",
+                            "displayNameEvent": "Active program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "29ed9597-2ace-48f5-91bc-171ac2601bfc",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "defaultValue": "Unknown",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "ab65bfa0-37d8-4df6-80f0-80377a43a520",
+                            "name": "spinSpeed",
+                            "displayName": "Spin speed",
+                            "displayNameEvent": "Spin speed changed",
+                            "defaultValue": "Unknown",
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
