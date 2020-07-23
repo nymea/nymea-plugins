@@ -485,6 +485,27 @@ QUuid HomeConnect::startProgram(const QString &haId, const QString &programKey, 
     return commandId;
 }
 
+QUuid HomeConnect::stopProgram(const QString &haId)
+{
+    QUuid commandId = QUuid::createUuid();
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/active");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+
+    QNetworkReply *reply = m_networkManager->deleteResource(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray rawData = reply->readAll();
+        emit commandExecuted(commandId, checkStatusCode(status, rawData));
+    });
+    return commandId;
+}
+
 void HomeConnect::getStatus(const QString &haid)
 {
     QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haid+"/status");
@@ -566,19 +587,16 @@ void HomeConnect::connectEventStream()
     });
     connect(reply, &QNetworkReply::readyRead, this, [this, reply]{
 
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        QByteArrayList rawData = reply->readAll().split('\n');
-        QJsonDocument data;
-        QString haId;
-        EventType eventType;
-        Q_FOREACH(QByteArray line, rawData) {
-            if (line.startsWith("data")) {
-                if (checkStatusCode(status, line.remove(0,6)))
-                    data = QJsonDocument::fromJson(line);
-            } else if (line.startsWith("id")) {
-                haId = line.split(':').last().trimmed();
-            } else if (line.startsWith("event")) {
-                QString eventString = line.split(':').last().trimmed();
+        while (reply->canReadLine()) {
+            QJsonDocument data;
+            QString haId;
+            EventType eventType;
+
+            QByteArray eventTypeLine = reply->readLine();
+            if (eventTypeLine == "\n")
+                continue;
+            if (eventTypeLine.startsWith("event")) {
+                QString eventString = eventTypeLine.split(':').last().trimmed();
                 if (eventString == "KEEP-ALIVE") {
                     eventType = EventTypeKeepAlive;
                 } else if (eventString == "STATUS") {
@@ -599,27 +617,45 @@ void HomeConnect::connectEventStream()
                     qCWarning(dcHomeConnect()) << "Unhandled event type" << eventString;
                     return;
                 }
-            }
-        }
+                QByteArray dataLine = reply->readLine();
+                if (dataLine.startsWith("data")) {
+                    data = QJsonDocument::fromJson(dataLine.remove(0,6));
 
-        if (data.toVariant().toMap().contains("items")) {
-            QList<Event> events;
-            QVariantList itemsList = data.toVariant().toMap().value("items").toList();
-            Q_FOREACH(QVariant item, itemsList) {
-                QVariantMap map = item.toMap();
-                Event event;
-                event.key = map["key"].toString();
-                event.uri = map["uri"].toString();
-                event.name = map["uri"].toString();
-                event.value  = map["value"];
-                event.unit = map["unit"].toString();
-                event.timestamp  = map["timestamp"].toInt();
-                events.append(event);
+                    QByteArray idLine = reply->readLine();
+                    if (idLine.startsWith("id")) {
+                        haId = idLine.split(':').last().trimmed();
+                    } else {
+                        qCWarning(dcHomeConnect()) << "Id line: Unexpected line" << eventTypeLine;
+                        continue;
+                    }
+                } else {
+                    qCWarning(dcHomeConnect()) << "Data Line: Unexpected line" << eventTypeLine;
+                    continue;
+                }
+            } else {
+                qCWarning(dcHomeConnect()) << "Event type: Unexpected line" << eventTypeLine;
+                continue;
             }
-            if (!events.isEmpty())
-                emit receivedEvents(eventType, haId, events);
-        } else if (data.toVariant().toMap().contains("error")) {
-            qCWarning(dcHomeConnect()) << "Event stream error" << data.toVariant().toMap().value("error");
+
+            if (data.toVariant().toMap().contains("items")) {
+                QList<Event> events;
+                QVariantList itemsList = data.toVariant().toMap().value("items").toList();
+                Q_FOREACH(QVariant item, itemsList) {
+                    QVariantMap map = item.toMap();
+                    Event event;
+                    event.key = map["key"].toString();
+                    event.uri = map["uri"].toString();
+                    event.name = map["uri"].toString();
+                    event.value  = map["value"];
+                    event.unit = map["unit"].toString();
+                    event.timestamp  = map["timestamp"].toInt();
+                    events.append(event);
+                }
+                if (!events.isEmpty())
+                    emit receivedEvents(eventType, haId, events);
+            } else if (data.toVariant().toMap().contains("error")) {
+                qCWarning(dcHomeConnect()) << "Event stream error" << data.toVariant().toMap().value("error");
+            }
         }
     });
 }

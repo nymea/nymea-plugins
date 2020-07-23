@@ -130,6 +130,7 @@ public:
     void getProgramsSelected(const QString &haId);  //Get the program which is currently selected
     void getProgramsActiveOption(const QString &haId, const QString &optionKey);
     QUuid startProgram(const QString &haId, const QString &programKey, QList<Option> options);
+    QUuid stopProgram(const QString &haId);
 
     // STATUS EVENTS
     void getStatus(const QString &haid);

@@ -9,6 +9,13 @@
             "displayName": "Simulation mode",
             "defaultValue": false,
             "type": "bool"
+        },
+        {
+            "id": "37c6cbee-4ce6-4f8c-91ad-9f6f89b6c032",
+            "name": "controlEnabled",
+            "displayName": "Control enabled",
+            "defaultValue": false,
+            "type": "bool"
         }
     ],
     "vendors": [
@@ -162,9 +169,11 @@
                             "name": "duration",
                             "displayName": "Duration",
                             "displayNameEvent": "Duration changed",
+                            "displayNameAction": "Set duration",
                             "defaultValue": 0,
-                            "unit": "Seconds",
-                            "type": "int"
+                            "unit": "Minutes",
+                            "type": "int",
+                            "writable": true
                         },
                         {
                             "id": "85a333dc-0e0b-454c-9c9a-d14dd6484275",
@@ -195,13 +204,25 @@
                     "actionTypes": [
                         {
                             "id": "c7b9b467-6ac5-4870-8874-da977fa30987",
-                            "name": "pause",
-                            "displayName": "Pause"
+                            "name": "start",
+                            "displayName": "Start"
                         },
                         {
                             "id": "0467aeed-b275-4e5f-a288-1a600465b582",
-                            "name": "resume",
-                            "displayName": "Resume"
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "aa3372df-5be7-499a-8246-9c4319a2c080",
+                            "name": "preheatFinished",
+                            "displayName": "Preheat finished"
+                        },
+                        {
+                            "id": "3067c6e8-33b3-4a87-ae41-09f28e8a0c1e",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
                         }
                     ]
                 },
@@ -292,6 +313,45 @@
                             "displayNameEvent": "Selected program changed",
                             "defaultValue": "None",
                             "type": "QString"
+                        },
+                        {
+                            "id": "27de74b5-265a-4c9f-bd3e-f58ab5c81a1f",
+                            "name": "startTime",
+                            "displayName": "Start time",
+                            "displayNameEvent": "Start time changed",
+                            "displayNameAction": "Set start time",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "type": "int",
+                            "unit": "Minutes",
+                            "writable": true
+                        },
+                        {
+                            "id": "f61cd171-2e8e-434c-98f9-e7fc7df1c928",
+                            "name": "endTime",
+                            "displayName": "End time",
+                            "displayNameEvent": "End time changed",
+                            "defaultValue": "00:00:00",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "7dc1e238-cdc2-42e8-9a2a-e93d497966d9",
+                            "name": "start",
+                            "displayName": "Start"
+                        },
+                        {
+                            "id": "c2c7e1bd-bf0f-4ded-93e0-e4d770f03f6f",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "509e62c1-8121-4f8e-b847-e5e8083d6c1b",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
                         }
                     ]
                 },
@@ -430,6 +490,35 @@
                             "type": "QString",
                             "writable": true
                         }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "025f7cb5-83a7-40d3-9628-05eda18f5568",
+                            "name": "start",
+                            "displayName": "Start"
+                        },
+                        {
+                            "id": "12f5b09e-a23a-43ee-ba4b-8b0f34792496",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "9e641015-67bd-4879-aa58-7b6849c58178",
+                            "name": "beanContainerEmpty",
+                            "displayName": "Bean container empty"
+                        },
+                        {
+                            "id": "2ea6dd16-86ad-4e55-9281-ae55646eb869",
+                            "name": "waterTankEmpty",
+                            "displayName": "Water tank empty"
+                        },
+                        {
+                            "id": "1f360c77-01a5-411c-b347-aa3f0a5c9ba5",
+                            "name": "dripTrayFull",
+                            "displayName": "Drip tray full"
+                        }
                     ]
                 },
                 {
@@ -530,18 +619,33 @@
                             "displayNameEvent": "Selected program changed",
                             "defaultValue": "None",
                             "type": "QString"
+                        },
+                        {
+                            "id": "6586f2d9-daec-43fa-8f7f-f3afc9d70046",
+                            "name": "endTime",
+                            "displayName": "End time",
+                            "displayNameEvent": "End time changed",
+                            "defaultValue": "00:00:00",
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "aedd85a6-0f9a-4bc4-b2ba-90ba11d1a955",
-                            "name": "pause",
-                            "displayName": "Pause"
+                            "name": "start",
+                            "displayName": "Start"
                         },
                         {
                             "id": "8c9923f6-2a2d-48bb-aaf4-5f887565c58a",
-                            "name": "resume",
-                            "displayName": "Resume"
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "09c6269d-015f-4f83-895f-9dea1ac11c43",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
                         }
                     ]
                 },
@@ -629,6 +733,23 @@
                             "maxValue": -16,
                             "writable": true,
                             "unit": "DegreeCelsius"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "1c2ca8d8-3d51-4303-b749-93dc71b1a696",
+                            "name": "doorAlarmRefrigerator",
+                            "displayName": "Door alarm refrigerator"
+                        },
+                        {
+                            "id": "702e6401-6dd1-4c29-9bb7-36173284b6ab",
+                            "name": "doorAlarmFreezer",
+                            "displayName": "Door alarm freezer"
+                        },
+                        {
+                            "id": "b4e68a37-0d38-4ae0-babb-3c8e3bc4cf6c",
+                            "name": "temperatureAlarmFreezer",
+                            "displayName": "Temperature alarm freezer"
                         }
                     ]
                 },
@@ -746,18 +867,26 @@
                             "displayNameEvent": "Spin speed changed",
                             "defaultValue": "Unknown",
                             "type": "QString"
+                        },
+                        {
+                            "id": "e9b93ad1-fe9e-4ba2-ac7c-9407fa80c846",
+                            "name": "endTime",
+                            "displayName": "End time",
+                            "displayNameEvent": "End time changed",
+                            "defaultValue": "00:00:00",
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
                         {
                             "id": "c87d6825-f37d-4da6-8545-945bd589dbc2",
-                            "name": "pause",
-                            "displayName": "Pause"
+                            "name": "start",
+                            "displayName": "Start"
                         },
                         {
                             "id": "044582ca-30e6-4d37-9377-809fb5fa120a",
-                            "name": "resume",
-                            "displayName": "Resume"
+                            "name": "stop",
+                            "displayName": "Stop"
                         }
                     ]
                 },
@@ -839,6 +968,23 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "35548e9e-5c41-40e1-add6-e6d2911d4a2a",
+                            "name": "emptyDustBoxAndCleanFilter",
+                            "displayName": "Empty dust box and clean filter"
+                        },
+                        {
+                            "id": "e55cb32a-a8ee-4f1d-958e-f15ae0ad6c42",
+                            "name": "robotIsStuck",
+                            "displayName": "Robot is stuck"
+                        },
+                        {
+                            "id": "4507655c-bc98-4437-acba-8ce701ba7b5f",
+                            "name": "dockingStationNotFound",
+                            "displayName": "Docking station not found"
                         }
                     ]
                 },

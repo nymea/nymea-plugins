@@ -69,6 +69,7 @@ private:
     QHash<Thing *, HomeConnect *> m_homeConnectConnections;
 
     QHash<QUuid, ThingActionInfo *> m_pendingActions;
+    QHash<Thing *, QString> m_selectedProgram;
 
     QHash<ThingClassId, ParamTypeId> m_idParamTypeIds;
 
@@ -83,8 +84,8 @@ private:
     QHash<ThingClassId, StateTypeId> m_progressStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_endTimerStateTypeIds;
 
-    QHash<ThingClassId, StateTypeId> m_resumeActionTypeIds;
-    QHash<ThingClassId, ActionTypeId> m_pauseActionTypeIds;
+    QHash<ThingClassId, ActionTypeId> m_startActionTypeIds;
+    QHash<ThingClassId, ActionTypeId> m_stopActionTypeIds;
 
     HomeConnect *createHomeConnection();
 
