@@ -111,15 +111,15 @@ public:
 
     void listLights();
     void listScenes();
-    int setPower(const QString &lightId, bool power, int duration = 5);
-    int setBrightnesss(const QString &lightId, int brightness, int duration = 5);
-    int setColor(const QString &lightId, QColor color, int duration = 5);
-    int setColorTemperature(const QString &lightId, int kelvin, int duration = 5);
-    int setInfrared(const QString &lightId, int infrared, int duration = 5);
+    int setPower(const QString &lightId, bool power, int duration = 0);
+    int setBrightnesss(const QString &lightId, int brightness, int duration = 0);
+    int setColor(const QString &lightId, QColor color, int duration = 0);
+    int setColorTemperature(const QString &lightId, int kelvin, int duration = 0);
+    int setInfrared(const QString &lightId, int infrared, int duration = 0);
 
     int activateScene(const QString &sceneId);
 
-    int setEffect(const QString &lightId, Effect effect, QColor color);
+    int setEffect(const QString &lightId, Effect effect, QColor color = "#FFFFFF");
 
 private:
     NetworkAccessManager *m_networkManager = nullptr;

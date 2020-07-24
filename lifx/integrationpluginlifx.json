@@ -129,9 +129,6 @@
                             "possibleValues": [
                                 "None",
                                 "Breathe",
-                                "Move",
-                                "Morph",
-                                "Flame",
                                 "Pulse"
                             ],
                             "writable": true
@@ -196,24 +193,6 @@
                             "defaultValue": 170,
                             "minValue": 153,
                             "maxValue": 500,
-                            "writable": true
-                        },
-                        {
-                            "id": "be47c474-eca1-479e-9393-68281a43d72a",
-                            "name": "effect",
-                            "displayName": "Effect",
-                            "displayNameEvent": "Effect changed",
-                            "displayNameAction": "Set effect",
-                            "type": "QString",
-                            "defaultValue": "None",
-                            "possibleValues": [
-                                "None",
-                                "Breathe",
-                                "Move",
-                                "Morph",
-                                "Flame",
-                                "Pulse"
-                            ],
                             "writable": true
                         }
                     ]

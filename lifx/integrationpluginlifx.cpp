@@ -334,7 +334,7 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
             connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             m_asyncActions.insert(requestId, info);
         } else if (action.actionTypeId() == colorBulbColorTemperatureActionTypeId) {
-            int colorTemperature = 6500 - (action.param(colorBulbColorTemperatureActionColorTemperatureParamTypeId).value().toUInt() * -11.12);
+            int colorTemperature = 6500 - (action.param(colorBulbColorTemperatureActionColorTemperatureParamTypeId).value().toUInt() * 8); //range 2500 to 6500 kelvin
             if (!thing->stateValue(colorBulbPowerStateTypeId).toBool()){
                 if (cloudDevice) {
                     lifxCloud->setPower(lightId, true);
@@ -358,25 +358,19 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
                     lifx->setPower(true);
                 }
             }
-            QString effectString = action.param(colorBulbColorTemperatureActionColorTemperatureParamTypeId).value().toString();
+            QString effectString = action.param(colorBulbEffectActionEffectParamTypeId).value().toString();
             int requestId;
             LifxCloud::Effect effect;
             if (effectString == "None") {
                 effect = LifxCloud::EffectNone;
             } else if (effectString == "Breathe") {
                 effect = LifxCloud::EffectBreathe;
-            } else if (effectString == "Move") {
-                effect = LifxCloud::EffectMove;
-            }  else if (effectString == "Morph") {
-                effect = LifxCloud::EffectMove;
-            }  else if (effectString == "Flame") {
-                effect = LifxCloud::EffectMove;
             } else if (effectString == "Pulse") {
-                effect = LifxCloud::EffectMove;
+                effect = LifxCloud::EffectPulse;
             }
             if (cloudDevice) {
-                QColor color = QColor(thing->stateValue(colorBulbColorStateTypeId).toString());
-                requestId = lifxCloud->setEffect(lightId, effect, color);
+                //QColor color = QColor(thing->stateValue(colorBulbColorStateTypeId).toString());
+                requestId = lifxCloud->setEffect(lightId, effect, "#FFFFFF");
             } else {
                 qCWarning(dcLifx()) << "LAN devices are not yet supported";
                 info->finish(Thing::ThingErrorHardwareNotAvailable);
@@ -412,39 +406,6 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
                 requestId = lifxCloud->setBrightnesss(lightId, brightness);
             } else {
                 requestId = lifx->setBrightness(brightness);
-            }
-            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
-            m_asyncActions.insert(requestId, info);
-        } else if (action.actionTypeId() == dimmableBulbEffectStateTypeId) {
-            if (!thing->stateValue(colorBulbPowerStateTypeId).toBool()){
-                if (cloudDevice) {
-                    lifxCloud->setPower(lightId, true);
-                }  else {
-                    lifx->setPower(true);
-                }
-            }
-            QString effectString = action.param(dimmableBulbColorTemperatureActionColorTemperatureParamTypeId).value().toString();
-            int requestId;
-            LifxCloud::Effect effect;
-            if (effectString == "None") {
-                effect = LifxCloud::EffectNone;
-            } else if (effectString == "Breathe") {
-                effect = LifxCloud::EffectBreathe;
-            } else if (effectString == "Move") {
-                effect = LifxCloud::EffectMove;
-            }  else if (effectString == "Morph") {
-                effect = LifxCloud::EffectMove;
-            }  else if (effectString == "Flame") {
-                effect = LifxCloud::EffectMove;
-            } else if (effectString == "Pulse") {
-                effect = LifxCloud::EffectMove;
-            }
-            if (cloudDevice) {
-                requestId = lifxCloud->setEffect(lightId, effect, QColor("0xffffff"));
-            } else {
-                qCWarning(dcLifx()) << "LAN devices are not yet supported";
-                info->finish(Thing::ThingErrorHardwareNotAvailable);
-                return;
             }
             connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_asyncActions.remove(requestId);});
             m_asyncActions.insert(requestId, info);

@@ -34,6 +34,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QUrl>
+#include <QUrlQuery>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -236,14 +237,16 @@ int LifxCloud::setEffect(const QString &lightId, LifxCloud::Effect effect, QColo
     }
     int requestId = qrand();
     QNetworkRequest request;
-    QJsonObject payload;
+    QUrlQuery params;
     switch (effect) {
     case LifxCloud::EffectNone:
         request.setUrl(QUrl(QString("https://api.lifx.com/v1/lights/id:%1/effects/off").arg(lightId)));
         break;
     case LifxCloud::EffectBreathe:
         request.setUrl(QUrl(QString("https://api.lifx.com/v1/lights/id:%1/effects/breathe").arg(lightId)));
-        payload["color"] = color.name();
+        params.addQueryItem("color", color.name().trimmed());
+        params.addQueryItem("period", "2");
+        params.addQueryItem("cycles", "3");
         break;
     case LifxCloud::EffectMove:
         request.setUrl(QUrl(QString("https://api.lifx.com/v1/lights/id:%1/effects/move").arg(lightId)));
@@ -256,19 +259,21 @@ int LifxCloud::setEffect(const QString &lightId, LifxCloud::Effect effect, QColo
         break;
     case LifxCloud::EffectPulse:
         request.setUrl(QUrl(QString("https://api.lifx.com/v1/lights/id:%1/effects/pulse").arg(lightId)));
-        payload["color"] = color.name();
+        params.addQueryItem("color", color.name().trimmed());
+        params.addQueryItem("period", "2");
+        params.addQueryItem("cycles", "3");
         break;
     }
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded.");
     request.setRawHeader("Authorization","Bearer "+m_authorizationToken);
-    QJsonDocument doc;
-    doc.setObject(payload);
-    QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
+    qCDebug(dcLifx()) << "Set effect request" << request.url() << params.toString().toUtf8();
+
+    QNetworkReply *reply = m_networkManager->post(request, params.toString().toUtf8());
     connect(reply, &QNetworkReply::finished, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [requestId, reply,  this] {
 
         QByteArray rawData = reply->readAll();
-        qCDebug(dcLifx()) << "Got set state reply" << rawData;
+        qCDebug(dcLifx()) << "Got set effect reply" << rawData;
         emit requestExecuted(requestId, checkHttpStatusCode(reply));
     });
     return requestId;
