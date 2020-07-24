@@ -8,8 +8,12 @@
         <translation>LIFX Server ist nicht erreichbar</translation>
     </message>
     <message>
-        <source>This token is invalid.</source>
-        <translation>Der Token ist ungültig</translation>
+        <source>Please enter your user name and token. Get the token from https://cloud.lifx.com/settings</source>
+        <translation>Bitte geben Sie Ihren Lifx Benutzernamen und Token ein. Holen Sie sich Ihren Token von https://cloud.lifx.com/settings</translation>
+    </message>
+    <message>
+        <source>The token is invalid.</source>
+        <translation>Der Token ist ungültig.</translation>
     </message>
 </context>
 <context>
@@ -140,9 +144,7 @@ The name of the ActionType ({dd7d7e70-5552-4531-8789-2d0f750488be}) of ThingClas
     </message>
     <message>
         <source>Set effect</source>
-        <extracomment>The name of the ActionType ({be47c474-eca1-479e-9393-68281a43d72a}) of ThingClass dimmableBulb
-----------
-The name of the ActionType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass colorBulb</extracomment>
+        <extracomment>The name of the ActionType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass colorBulb</extracomment>
         <translation>Setze Effekt</translation>
     </message>
     <message>
@@ -154,13 +156,7 @@ The name of the ActionType ({12de3f8f-2454-4057-aa12-9290296fdbdd}) of ThingClas
     </message>
     <message>
         <source>Effect</source>
-        <extracomment>The name of the ParamType (ThingClass: dimmableBulb, ActionType: effect, ID: {be47c474-eca1-479e-9393-68281a43d72a})
-----------
-The name of the ParamType (ThingClass: dimmableBulb, EventType: effect, ID: {be47c474-eca1-479e-9393-68281a43d72a})
-----------
-The name of the StateType ({be47c474-eca1-479e-9393-68281a43d72a}) of ThingClass dimmableBulb
-----------
-The name of the ParamType (ThingClass: colorBulb, ActionType: effect, ID: {65f88396-2958-480e-b0be-c4695400a343})
+        <extracomment>The name of the ParamType (ThingClass: colorBulb, ActionType: effect, ID: {65f88396-2958-480e-b0be-c4695400a343})
 ----------
 The name of the ParamType (ThingClass: colorBulb, EventType: effect, ID: {65f88396-2958-480e-b0be-c4695400a343})
 ----------
@@ -169,9 +165,7 @@ The name of the StateType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass
     </message>
     <message>
         <source>Effect changed</source>
-        <extracomment>The name of the EventType ({be47c474-eca1-479e-9393-68281a43d72a}) of ThingClass dimmableBulb
-----------
-The name of the EventType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass colorBulb</extracomment>
+        <extracomment>The name of the EventType ({65f88396-2958-480e-b0be-c4695400a343}) of ThingClass colorBulb</extracomment>
         <translation>Effekt geändert</translation>
     </message>
     <message>
