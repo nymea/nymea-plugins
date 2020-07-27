@@ -69,7 +69,7 @@ void FroniusMeter::updateThingInfo(const QByteArray &data)
     QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcFronius()) << "FroniusMeter: Failed to parse JSON data" << data << ":" << error.errorString();
-        pluginThing()->setStateValue(inverterConnectedStateTypeId,false);
+        pluginThing()->setStateValue(meterConnectedStateTypeId, false);
         return;
     }
 
@@ -79,7 +79,7 @@ void FroniusMeter::updateThingInfo(const QByteArray &data)
 
     //Add Smart meter with following states: „PowerReal_P_Sum“, „EnergyReal_WAC_Sum_Produced“, „EnergyReal_WAC_Sum_Consumed“
 
-    // Set the inverter thing state
+    // Set the meter thing state
     if (dataMap.contains("PowerReal_P_Sum")) {
         pluginThing()->setStateValue(meterCurrentPowerStateTypeId, dataMap.value("PowerReal_P_Sum").toInt());
     }
