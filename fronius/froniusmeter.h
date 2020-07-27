@@ -42,7 +42,7 @@ public:
 
     QString activity() const;
     void setActivity(const QString &activity);
-    Thing* inverterThing() const;
+
     QUrl updateUrl();
     void updateThingInfo(const QByteArray &data);
     QUrl activityUrl();

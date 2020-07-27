@@ -72,7 +72,7 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, [this, info, thing, reply]() {
+        connect(reply, &QNetworkReply::finished, info, [this, info, thing, reply]() {
             QByteArray data = reply->readAll();
 
             if (reply->error() != QNetworkReply::NoError) {
@@ -97,111 +97,24 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 
             info->finish(Thing::ThingErrorNoError);
         });
-        //Async Setup
-    } else if (thing->thingClassId() == inverterThingClassId) {
 
-        FroniusInverter *newInverter = new FroniusInverter(thing,this);
-        newInverter->setDeviceId(thing->paramValue(inverterThingIdParamTypeId).toString());
-        newInverter->setBaseUrl(thing->paramValue(inverterThingBaseParamTypeId).toString());
-        newInverter->setHostAddress(thing->paramValue(inverterThingHostParamTypeId).toString());
-
-        m_froniusInverters.insert(newInverter,thing);
-
-        // get inverter unique ID
-        QUrl requestUrl;
-        requestUrl.setScheme("http");
-        requestUrl.setHost(newInverter->hostAddress());
-        requestUrl.setPath(newInverter->baseUrl() + "GetInverterInfo.cgi");
-
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, [this, info, newInverter, reply]() {
-            QByteArray data = reply->readAll();
-            reply->deleteLater();
-
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Network request error:" << reply->error() << reply->errorString();
-                info->finish(Thing::ThingErrorHardwareNotAvailable, "Device not reachable");
-                return;
-            }
-
-            // Convert the rawdata to a json document
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-            if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Failed to parse JSON data" << data << ":" << error.errorString();
-                info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
-                return;
-            }
-
-            // Check reply information
-            QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
-            // check for thing id in reply
-            if (dataMap.contains(newInverter->deviceId())) {
-                qCDebug(dcFronius()) << "Found Thing with unique:" << dataMap.value(newInverter->deviceId()).toMap().value("UniqueID").toString();
-                newInverter->setUniqueId(dataMap.value(newInverter->deviceId()).toMap().value("UniqueID").toString());
-                newInverter->pluginThing()->setParamValue(inverterThingUniqueIdParamTypeId,newInverter->uniqueId());
-                qCDebug(dcFronius()) << "Stored unique ID:" << newInverter->uniqueId();
-            }
-            info->finish(Thing::ThingErrorNoError);
-        });
-        // Async Setup
-    } else if (thing->thingClassId() == storageThingClassId) {
-
-        FroniusStorage *newStorage = new FroniusStorage(thing, this);
-        newStorage->setDeviceId(thing->paramValue(storageThingIdParamTypeId).toString());
-        newStorage->setBaseUrl(thing->paramValue(storageThingBaseParamTypeId).toString());
-        newStorage->setHostAddress(thing->paramValue(storageThingHostParamTypeId).toString());
-        m_froniusStorages.insert(newStorage,thing);
-
-        // Get storage manufacturer and maximum capacity
-        QUrlQuery query;
-        QUrl requestUrl;
-        requestUrl.setScheme("http");
-        requestUrl.setHost(newStorage->hostAddress());
-        requestUrl.setPath(newStorage->baseUrl() + "GetStorageRealtimeData.cgi");
-        query.addQueryItem("Scope","Device");
-        query.addQueryItem("DeviceId", newStorage->deviceId());
-        requestUrl.setQuery(query);
-        qCDebug(dcFronius()) << "Get Storage Data at address" << requestUrl.toString();
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
-        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, [this, info, newStorage, reply]() {
-            QByteArray data = reply->readAll();
-
-            if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Network request error:" << reply->error() << reply->errorString();
-                info->finish(Thing::ThingErrorNoError);
-                return;
-            }
-
-            // Convert the rawdata to a json document
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-            if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcFronius()) << "Fronius: Failed to parse JSON data" << data << ":" << error.errorString();
-                info->finish(Thing::ThingErrorHardwareFailure, tr("Please try again"));
-                return;
-            }
-
-            // Create StorageInfo list map
-            QVariantMap storageInfoMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap().value("Controller").toMap();
-
-            newStorage->pluginThing()->setParamValue(storageThingManufacturerParamTypeId, storageInfoMap.value("Details").toMap().value("Manufacturer").toString());
-            newStorage->pluginThing()->setParamValue(storageThingCapacityParamTypeId, storageInfoMap.value("Capacity_Maximum").toInt());
-            info->finish(Thing::ThingErrorNoError);
-        });
-        //Async Setup
-    } else if (thing->thingClassId() == meterThingClassId) {
-
-        FroniusMeter *newMeter = new FroniusMeter(thing, this);;
-        newMeter->setDeviceId(thing->paramValue(meterThingIdParamTypeId).toString());
-        newMeter->setBaseUrl(thing->paramValue(meterThingBaseParamTypeId).toString());
-        newMeter->setHostAddress(thing->paramValue(meterThingHostParamTypeId).toString());
-
-        m_froniusMeters.insert(newMeter, thing);
-        info->finish(Thing::ThingErrorNoError);
-        //Async setup
+    } else if ((thing->thingClassId() == inverterThingClassId) ||
+               (thing->thingClassId() == meterThingClassId)    ||
+               (thing->thingClassId() == storageThingClassId)) {
+        Thing *loggerThing = myThings().findById(thing->parentId());
+        if (!loggerThing) {
+            qCWarning(dcFronius()) << "Could not find Logger Thing for thing " << thing->name();
+            return info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
+        }
+        if (!loggerThing->setupComplete()) {
+            //wait for the parent to finish the setup process
+            connect(loggerThing, &Thing::setupStatusChanged, info, [this, info, loggerThing] {
+                if (loggerThing->setupComplete())
+                    setupChild(info, loggerThing);
+            });
+            return;
+        }
+        setupChild(info, loggerThing);
     } else {
         Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -230,12 +143,11 @@ void IntegrationPluginFronius::postSetupThing(Thing *thing)
 
     if (thing->thingClassId() == dataloggerThingClassId) {
         searchNewThings(m_froniusLoggers.key(thing));
+        thing->setStateValue(dataloggerConnectedStateTypeId, true);
         updateThingStates(thing);
-    } else if (thing->thingClassId() == inverterThingClassId) {
-        updateThingStates(thing);
-    } else if (thing->thingClassId() == meterThingClassId) {
-        updateThingStates(thing);
-    } else if (thing->thingClassId() == storageThingClassId) {
+    } else if ((thing->thingClassId() == inverterThingClassId) ||
+               (thing->thingClassId() == meterThingClassId)    ||
+               (thing->thingClassId() == storageThingClassId)) {
         updateThingStates(thing);
     } else {
         Q_ASSERT_X(false, "postSetupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
@@ -301,7 +213,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
     if(thing->thingClassId() == inverterThingClassId) {
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusInverters.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, [this, thing, reply]() {
+        connect(reply, &QNetworkReply::finished, this, [this, thing, reply]() {
 
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
@@ -314,7 +226,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
         });
         QNetworkReply *next_reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusInverters.key(thing)->activityUrl()));
         connect(next_reply, &QNetworkReply::finished, next_reply, &QNetworkReply::deleteLater);
-        connect(next_reply, &QNetworkReply::finished, [this, thing, next_reply]() {
+        connect(next_reply, &QNetworkReply::finished, this, [this, thing, next_reply]() {
             if (next_reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << next_reply->error() << next_reply->errorString() << next_reply->request().url();
                 return;
@@ -327,7 +239,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
     } else if (thing->thingClassId() == dataloggerThingClassId) {
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusLoggers.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, [this, thing, reply]() {
+        connect(reply, &QNetworkReply::finished, this, [this, thing, reply]() {
 
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
@@ -342,7 +254,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
     } else if (thing->thingClassId() == meterThingClassId) {
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusMeters.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, [this, thing, reply]() {
+        connect(reply, &QNetworkReply::finished, this, [this, thing, reply]() {
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
                 return;
@@ -356,7 +268,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
     } else if (thing->thingClassId() == storageThingClassId) {
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusStorages.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, [this, thing, reply]() {
+        connect(reply, &QNetworkReply::finished, this, [this, thing, reply]() {
 
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
@@ -369,7 +281,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
         });
         QNetworkReply *next_reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusStorages.key(thing)->activityUrl()));
         connect(next_reply, &QNetworkReply::finished, next_reply, &QNetworkReply::deleteLater);
-        connect(next_reply, &QNetworkReply::finished, [this, thing, next_reply]() {
+        connect(next_reply, &QNetworkReply::finished, this, [this, thing, next_reply]() {
             next_reply->deleteLater();
             if (next_reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << next_reply->error() << next_reply->errorString() << next_reply->request().url();
@@ -401,7 +313,7 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, [this, logger, reply]() {
+    connect(reply, &QNetworkReply::finished, this, [this, logger, reply]() {
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
@@ -432,14 +344,11 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
         QVariantMap inverterMap = bodyMap.value("Data").toMap().value("Inverter").toMap();
         foreach (QString inverterId, inverterMap.keys()) {
             //check if thing already connected to logger
-            if(!existingThing(inverterThingIdParamTypeId,inverterId)) {
+            if(!thingExists(inverterThingIdParamTypeId,inverterId)) {
                 QString thingName = loggerThing->name() + " Inverter " + inverterId;
                 ThingDescriptor descriptor(inverterThingClassId, thingName, "Fronius Solar Inverter", loggerThing->id());
                 ParamList params;
-                params.append(Param(inverterThingHostParamTypeId, m_froniusLoggers.key(loggerThing)->hostAddress()));
-                params.append(Param(inverterThingBaseParamTypeId, m_froniusLoggers.key(loggerThing)->baseUrl()));
                 params.append(Param(inverterThingIdParamTypeId, inverterId));
-                params.append(Param(inverterThingUniqueIdParamTypeId, ""));
                 descriptor.setParams(params);
                 thingDescriptors.append(descriptor);
             }
@@ -449,14 +358,11 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
         QVariantMap meterMap = bodyMap.value("Data").toMap().value("Meter").toMap();
         foreach (QString meterId, meterMap.keys()) {
             //check if thing already connected to logger
-            if(!existingThing(meterThingIdParamTypeId, meterId)) {
+            if(!thingExists(meterThingIdParamTypeId, meterId)) {
                 QString thingName = loggerThing->name() + " Meter " + meterId;
                 ThingDescriptor descriptor(meterThingClassId, thingName, "Fronius Solar Meter", loggerThing->id());
                 ParamList params;
-                params.append(Param(meterThingHostParamTypeId, m_froniusLoggers.key(loggerThing)->hostAddress()));
-                params.append(Param(meterThingBaseParamTypeId, m_froniusLoggers.key(loggerThing)->baseUrl()));
                 params.append(Param(meterThingIdParamTypeId, meterId));
-                params.append(Param(meterThingUniqueIdParamTypeId, meterMap.value(meterId).toMap().value("Serial").toString()));
                 descriptor.setParams(params);
                 thingDescriptors.append(descriptor);
             }
@@ -466,16 +372,13 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
         QVariantMap storageMap = bodyMap.value("Data").toMap().value("Storage").toMap();
         foreach (QString storageId, storageMap.keys()) {
             //check if thing already connected to logger
-            if(!existingThing(storageThingIdParamTypeId,storageId)) {
+            if(!thingExists(storageThingIdParamTypeId,storageId)) {
                 QString thingName = loggerThing->name() + " Storage " + storageId;
                 ThingDescriptor descriptor(storageThingClassId, thingName, "Fronius Solar Storage", loggerThing->id());
                 ParamList params;
                 params.append(Param(storageThingManufacturerParamTypeId, ""));
                 params.append(Param(storageThingCapacityParamTypeId, ""));
-                params.append(Param(storageThingHostParamTypeId, m_froniusLoggers.key(loggerThing)->hostAddress()));
-                params.append(Param(storageThingBaseParamTypeId, m_froniusLoggers.key(loggerThing)->baseUrl()));
                 params.append(Param(storageThingIdParamTypeId, storageId));
-                params.append(Param(storageThingUniqueIdParamTypeId, storageMap.value(storageId).toMap().value("Serial").toString()));
                 descriptor.setParams(params);
                 thingDescriptors.append(descriptor);
             }
@@ -503,7 +406,7 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
     });
 }
 
-bool IntegrationPluginFronius::existingThing(ParamTypeId thingParamId, QString thingId)
+bool IntegrationPluginFronius::thingExists(ParamTypeId thingParamId, QString thingId)
 {
     foreach(Thing *thing, myThings()) {
         if(thing->paramValue(thingParamId).toString() == thingId) {
@@ -513,3 +416,106 @@ bool IntegrationPluginFronius::existingThing(ParamTypeId thingParamId, QString t
     return false;
 }
 
+void IntegrationPluginFronius::setupChild(ThingSetupInfo *info, Thing *loggerThing)
+{
+    Thing *thing = info->thing();
+
+    if (thing->thingClassId() == storageThingClassId) {
+        FroniusStorage *newStorage = new FroniusStorage(thing, this);
+        newStorage->setDeviceId(thing->paramValue(storageThingIdParamTypeId).toString());
+        newStorage->setBaseUrl(m_froniusLoggers.key(loggerThing)->baseUrl());
+        newStorage->setHostAddress(m_froniusLoggers.key(loggerThing)->hostAddress());
+
+        // Get storage manufacturer and maximum capacity
+        QUrlQuery query;
+        QUrl requestUrl;
+        requestUrl.setScheme("http");
+        requestUrl.setHost(newStorage->hostAddress());
+        requestUrl.setPath(newStorage->baseUrl() + "GetStorageRealtimeData.cgi");
+        query.addQueryItem("Scope","Device");
+        query.addQueryItem("DeviceId", newStorage->deviceId());
+        requestUrl.setQuery(query);
+        qCDebug(dcFronius()) << "Get Storage Data at address" << requestUrl.toString();
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [this, info, newStorage, reply]() {
+            QByteArray data = reply->readAll();
+
+            if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcFronius()) << "Fronius: Network request error:" << reply->error() << reply->errorString();
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+
+            // Convert the rawdata to a json document
+            QJsonParseError error;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCWarning(dcFronius()) << "Fronius: Failed to parse JSON data" << data << ":" << error.errorString();
+                info->finish(Thing::ThingErrorHardwareFailure, tr("Please try again"));
+                return;
+            }
+
+            // Create StorageInfo list map
+            QVariantMap storageInfoMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap().value("Controller").toMap();
+
+            newStorage->pluginThing()->setParamValue(storageThingManufacturerParamTypeId, storageInfoMap.value("Details").toMap().value("Manufacturer").toString());
+            newStorage->pluginThing()->setParamValue(storageThingCapacityParamTypeId, storageInfoMap.value("Capacity_Maximum").toInt());
+            m_froniusStorages.insert(newStorage, info->thing());
+            info->finish(Thing::ThingErrorNoError);
+        });
+    } else if (thing->thingClassId() == inverterThingClassId) {
+        FroniusInverter *newInverter = new FroniusInverter(thing,this);
+        newInverter->setDeviceId(thing->paramValue(inverterThingIdParamTypeId).toString());
+        newInverter->setBaseUrl(m_froniusLoggers.key(loggerThing)->baseUrl());
+        newInverter->setHostAddress(m_froniusLoggers.key(loggerThing)->hostAddress());
+
+        // get inverter unique ID
+        QUrl requestUrl;
+        requestUrl.setScheme("http");
+        requestUrl.setHost(newInverter->hostAddress());
+        requestUrl.setPath(newInverter->baseUrl() + "GetInverterInfo.cgi");
+
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [this, info, newInverter, reply]() {
+            QByteArray data = reply->readAll();
+            reply->deleteLater();
+
+            if (reply->error() != QNetworkReply::NoError) {
+                qCWarning(dcFronius()) << "Fronius: Network request error:" << reply->error() << reply->errorString();
+                info->finish(Thing::ThingErrorHardwareNotAvailable, "Device not reachable");
+                return;
+            }
+
+            // Convert the rawdata to a json document
+            QJsonParseError error;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCWarning(dcFronius()) << "Fronius: Failed to parse JSON data" << data << ":" << error.errorString();
+                info->finish(Thing::ThingErrorHardwareNotAvailable, "Please try again");
+                return;
+            }
+
+            // Check reply information
+            QVariantMap dataMap = jsonDoc.toVariant().toMap().value("Body").toMap().value("Data").toMap();
+            // check for thing id in reply
+            if (dataMap.contains(newInverter->deviceId())) {
+                qCDebug(dcFronius()) << "Found Thing with unique:" << dataMap.value(newInverter->deviceId()).toMap().value("UniqueID").toString();
+                newInverter->setUniqueId(dataMap.value(newInverter->deviceId()).toMap().value("UniqueID").toString());
+                qCDebug(dcFronius()) << "Stored unique ID:" << newInverter->uniqueId();
+            }
+
+            m_froniusInverters.insert(newInverter, info->thing());
+            info->finish(Thing::ThingErrorNoError);
+        });
+    } else if (thing->thingClassId() == meterThingClassId) {
+        FroniusMeter *newMeter = new FroniusMeter(thing, this);;
+        newMeter->setDeviceId(thing->paramValue(meterThingIdParamTypeId).toString());
+        newMeter->setBaseUrl(m_froniusLoggers.key(loggerThing)->baseUrl());
+        newMeter->setHostAddress(m_froniusLoggers.key(loggerThing)->hostAddress());
+
+        m_froniusMeters.insert(newMeter, thing);
+        info->finish(Thing::ThingErrorNoError);
+    }
+}

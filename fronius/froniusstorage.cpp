@@ -48,16 +48,6 @@ void FroniusStorage::setChargingState(const QString &charging_state)
     m_charging_state = charging_state;
 }
 
-int FroniusStorage::charge() const
-{
-    return m_charge;
-}
-
-void FroniusStorage::setCharge(const int &charge)
-{
-    m_charge = charge;
-}
-
 QUrl FroniusStorage::updateUrl()
 {
     QUrl requestUrl;

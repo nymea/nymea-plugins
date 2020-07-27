@@ -44,9 +44,6 @@ public:
     QString charging_state() const;
     void setChargingState(const QString &charging_state);
 
-    int charge() const;
-    void setCharge(const int &charge);
-
     QUrl updateUrl();
     void updateThingInfo(const QByteArray &data);
     QUrl activityUrl();
@@ -55,6 +52,5 @@ public:
 private:
     QString  m_charging_state;
     int      m_charge;
-
 };
 #endif // FRONIUSSTORAGE_H
