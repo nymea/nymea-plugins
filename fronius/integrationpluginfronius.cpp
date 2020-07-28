@@ -73,11 +73,8 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
 
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, this, [this, info, thing, reply] {
-            if (!info) {
-                qCWarning(dcFronius()) << "Setup info vanished ignoring network reply";
-                return;
-            }
+        connect(reply, &QNetworkReply::finished, info, [this, info, thing, reply] {
+
             QByteArray data = reply->readAll();
 
             if (reply->error() != QNetworkReply::NoError) {
@@ -113,11 +110,7 @@ void IntegrationPluginFronius::setupThing(ThingSetupInfo *info)
         }
         if (!loggerThing->setupComplete()) {
             //wait for the parent to finish the setup process
-            connect(loggerThing, &Thing::setupStatusChanged, this, [this, info, loggerThing] {
-                if (!info) {
-                    qCWarning(dcFronius()) << "Setup info vanished ignoring setup";
-                    return;
-                }
+            connect(loggerThing, &Thing::setupStatusChanged, info, [this, info, loggerThing] {
 
                 if (loggerThing->setupComplete())
                     setupChild(info, loggerThing);
@@ -236,7 +229,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
         });
         QNetworkReply *next_reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusInverters.key(thing)->activityUrl()));
         connect(next_reply, &QNetworkReply::finished, next_reply, &QNetworkReply::deleteLater);
-        connect(next_reply, &QNetworkReply::finished, this, [this, thing, next_reply] {
+        connect(next_reply, &QNetworkReply::finished, thing, [this, thing, next_reply] {
             if (next_reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << next_reply->error() << next_reply->errorString() << next_reply->request().url();
                 return;
@@ -264,7 +257,7 @@ void IntegrationPluginFronius::updateThingStates(Thing *thing)
     } else if (thing->thingClassId() == meterThingClassId) {
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(m_froniusMeters.key(thing)->updateUrl()));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, this, [this, thing, reply]() {
+        connect(reply, &QNetworkReply::finished, thing, [this, thing, reply]() {
             if (reply->error() != QNetworkReply::NoError) {
                 qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
                 return;
@@ -323,7 +316,7 @@ void IntegrationPluginFronius::searchNewThings(FroniusLogger *logger)
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, logger, reply]() {
+    connect(reply, &QNetworkReply::finished, logger, [this, logger, reply]() {
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcFronius()) << "Network request error:" << reply->error() << reply->errorString() << reply->request().url();
@@ -448,12 +441,8 @@ void IntegrationPluginFronius::setupChild(ThingSetupInfo *info, Thing *loggerThi
         qCDebug(dcFronius()) << "Get Storage Data at address" << requestUrl.toString();
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, this, [this, info, newStorage, reply]() {
+        connect(reply, &QNetworkReply::finished, info, [this, info, newStorage, reply]() {
 
-            if (!info) {
-                qCWarning(dcFronius()) << "Setup info vanished ignoring network reply";
-                return;
-            }
             QByteArray data = reply->readAll();
 
             if (reply->error() != QNetworkReply::NoError) {
@@ -493,11 +482,7 @@ void IntegrationPluginFronius::setupChild(ThingSetupInfo *info, Thing *loggerThi
 
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(requestUrl));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, this, [this, info, newInverter, reply]() {
-            if (!info) {
-                qCWarning(dcFronius()) << "Setup info vanished ignoring network reply";
-                return;
-            }
+        connect(reply, &QNetworkReply::finished, info, [this, info, newInverter, reply]() {
 
             QByteArray data = reply->readAll();
 
