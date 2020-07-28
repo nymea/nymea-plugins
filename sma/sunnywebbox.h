@@ -28,42 +28,63 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINSMA_H
-#define INTEGRATIONPLUGINSMA_H
+#ifndef SUNNYWEBBOX_H
+#define SUNNYWEBBOX_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
-#include "sunnywebbox.h"
+#include "integrations/thing.h"
 
-#include <QDebug>
+#include <QObject>
 #include <QHostAddress>
 #include <QUdpSocket>
 
-
-class IntegrationPluginSma: public IntegrationPlugin {
+class SunnyWebBox : public QObject
+{
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginsma.json")
-    Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit IntegrationPluginSma();
+    struct Overview {
+        int power;
+        double dailyYield;
+        int totalYield;
+        QString status;
+        QString error;
+    };
 
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void thingRemoved(Thing *thing) override;
+    struct Device {
+        QString key;
+        QString name;
+        QList<Device> childrens;
+    };
 
-private slots:
-    void onRefreshTimer();
+    explicit SunnyWebBox(QUdpSocket *udpSocket, QObject *parrent = 0);
+
+    int getPlantOverview();
+    int getDevices();
+    int getProcessDataChannels(const QString &deviceKey);
+    int getProcessData(const QStringList &deviceKeys);
+    int getParameterChannels(const QString &deviceKey);
+    int getParameters(const QStringList &deviceKeys);
+
+    void setHostAddress();
+    QHostAddress hostAddress();
 
 private:
-    PluginTimer *m_refreshTimer = nullptr;
-    QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<Thing *, ThingSetupInfo *> m_asyncSetup;
+    int m_port =  34268;
+    QHostAddress m_hostAddresss;
     QUdpSocket *m_udpSocket = nullptr;
 
-    SunnyWebBox * createSunnyWebBoxConnection(Thing *thing);
-    void setupChild(ThingSetupInfo *info, Thing *parentThing);
-    void getData(Thing *thing);
+    int sendMessage(const QString &procedure);
+    int sendMessage(const QString &procedure, const QJsonObject &params);
+
+public slots:
+    void onDatagramReceived(const QByteArray &data);
+    void parseMessageReponse(int messageId, const QString &messageType, const QVariantMap &result);
+
+signals:
+    void connectedChanged(bool connected);
+    void messageResponseReceived(int messageId, const QString &messageType, const QVariantMap &result);
+    void plantOverviewReceived(int messageId, Overview overview);
+    void devicesReceived(int messageId, QList<Device> devices);
 };
 
-#endif // INTEGRATIONPLUGINSMA_H
+#endif // SUNNYWEBBOX_H

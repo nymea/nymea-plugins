@@ -1,0 +1,164 @@
+{
+    "id": "b8442bbf-9d3f-4aa2-9443-b3a31ae09bac",
+    "name": "sma",
+    "displayName": "SMA",
+    "vendors": [
+        {
+            "id": "16d5a4a3-36d5-46c0-b7dd-df166ddf5981",
+            "name": "Sma",
+            "displayName": "SMA",
+            "thingClasses": [
+                {
+                    "id": "49304127-ce9b-45dd-8511-05030a4ac003",
+                    "name": "sunnyWebBox",
+                    "displayName": "Sunny WebBox",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["gateway"],
+                    "paramTypes": [
+                        {
+                            "id": "864d4162-e3ce-48b8-b8ac-c1b971b52d42",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type": "QString",
+                            "inputType": "IPv4Address",
+                            "defaultValue": "192.168.0.168"
+                        },
+                        {
+                            "id": "a6df3d28-1b02-42dd-8301-81754c47e55f",
+                            "name": "id",
+                            "displayName": "Device ID",
+                            "type": "QString",
+                            "defaultValue": "-",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "c05e6a1a-252c-4f2b-8b31-09cf113d01c1",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ff4ff872-2f0f-4ca4-9fe2-220eeaf16cc2",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "16f34c5c-8dbb-4dcc-9faa-4b782d57226c",
+                            "name": "dayEnergy",
+                            "displayName": "Day energy",
+                            "displayNameEvent": "Day energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "0bb4e227-7e38-49ca-9b32-ce4621c9305b",
+                            "name": "totalEnergy",
+                            "displayName": "Total energy",
+                            "displayNameEvent": "Total energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "1974550b-6059-4b0e-83f4-70177e20dac3",
+                            "name": "mode",
+                            "displayName": "Mode",
+                            "displayNameEvent": "Mode changed",
+                            "type": "QString",
+                            "defaultValue": "MPP"
+                        },
+                        {
+                            "id": "4e64f9ca-7e5a-4897-8035-6f2ae88fde89",
+                            "name": "error",
+                            "displayName": "Error",
+                            "displayNameEvent": "Error changed",
+                            "type": "QString",
+                            "defaultValue": "None"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "15fc3dac-1868-4490-ba41-7c2f545926ad",
+                            "name": "searchDevices",
+                            "displayName": "Search new devices"
+                        }
+                    ]
+                },
+                {
+                    "id": "9cb72321-042e-4912-b23e-18516b6bbe96",
+                    "name": "inverter",
+                    "displayName": "Solar Inverter",
+                    "createMethods": ["auto"],
+                    "interfaces" : ["extendedsmartmeterproducer", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "f43e8159-7337-4bd0-ba74-b6630e554e43",
+                            "name": "id",
+                            "displayName": "Device ID",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                             "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "eda29c50-73ac-40e0-9c92-26fee352e688",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "a804eabf-d5b8-4c83-84e4-8ec994875950",
+                            "name": "currentPower",
+                            "displayName": "Current power",
+                            "displayNameEvent": "Current Power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": "0"
+                        },
+                        {
+                            "id": "cd3a0abc-37cc-4f9c-8ff2-c7ccc2513880",
+                            "name": "eday",
+                            "displayName": "Energy of current day",
+                            "displayNameEvent": "Energy of day changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": "0"
+                        },
+                        {
+                            "id": "341596ec-690b-4bf6-b6ed-0f92fa1c7d6c",
+                            "name": "eyear",
+                            "displayName": "Energy of current year",
+                            "displayNameEvent": "Energy of year changed",
+                            "type": "int",
+                            "unit": "KiloWattHour",
+                            "defaultValue": "0"
+                        },
+                        {
+                            "id": "6b6c1ddb-692f-400f-8b8d-38e0e0ae34ba",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Energy total",
+                            "displayNameEvent": "Energy total changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": "0"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
