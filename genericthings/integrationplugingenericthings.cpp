@@ -190,6 +190,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
         int timeframe = thing->setting(extendedSmartMeterConsumerSettingsImpulseTimeframeParamTypeId).toInt();
         smartMeterTimer->setInterval(timeframe * 1000);
         m_smartMeterTimer.insert(thing, smartMeterTimer);
+        smartMeterTimer->start();
         connect(thing, &Thing::settingChanged, smartMeterTimer, [smartMeterTimer] (const ParamTypeId &paramTypeId, const QVariant &value) {
             if (paramTypeId == extendedSmartMeterConsumerSettingsImpulseTimeframeParamTypeId) {
                 smartMeterTimer->setInterval(value.toInt() * 1000);
@@ -198,7 +199,8 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
 
         connect(smartMeterTimer, &QTimer::timeout, thing, [this, smartMeterTimer, thing] {
             double impulsePerKwh = thing->setting(extendedSmartMeterConsumerSettingsImpulsePerKwhParamTypeId).toDouble();
-            double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(smartMeterTimer->interval()/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
+            int interval = smartMeterTimer->interval()/1000;
+            double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(interval/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
             thing->setStateValue(extendedSmartMeterConsumerCurrentPowerStateTypeId, power*1000);
             m_pulsesPerTimeframe.insert(thing, 0);
         });
