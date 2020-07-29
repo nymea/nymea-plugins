@@ -568,30 +568,38 @@ The name of the StateType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass
         <translation>Energie geändert</translation>
     </message>
     <message>
-        <source>Extended smart meter consumer</source>
-        <extracomment>The name of the ThingClass ({c3123967-f741-4fe1-a0d4-9a3e405d7e52})</extracomment>
-        <translation>Erweiterter Smart-Meter Verbraucher</translation>
-    </message>
-    <message>
         <source>Impulse/kWh</source>
         <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, Type: settings, ID: {c361732b-68eb-447e-a434-e84031231871})</extracomment>
         <translation>Impulse/kWh</translation>
     </message>
     <message>
-        <source>S0 impulse</source>
-        <extracomment>The name of the ActionType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer
+        <source>Impulse input</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, ActionType: impulseInput, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
 ----------
-The name of the EventType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
-        <translation>S0 Impulse</translation>
-    </message>
-    <message>
-        <source>S0 input</source>
-        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, ActionType: s0Input, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
-----------
-The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: s0Input, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
+The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: impulseInput, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
 ----------
 The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
-        <translation>S0 Input</translation>
+        <translation>Impulseingang</translation>
+    </message>
+    <message>
+        <source>Impulse input changed</source>
+        <extracomment>The name of the EventType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation>Impulseingang geändert</translation>
+    </message>
+    <message>
+        <source>Set impulse input</source>
+        <extracomment>The name of the ActionType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation>Setze Impulseingang</translation>
+    </message>
+    <message>
+        <source>Timeframe for power calculation</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, Type: settings, ID: {73c9acc3-8f76-40d7-a79b-a1f08bb308d4})</extracomment>
+        <translation>Zeitfenster für Leistungsberechnung</translation>
+    </message>
+    <message>
+        <source>Impulse based energy meter</source>
+        <extracomment>The name of the ThingClass ({c3123967-f741-4fe1-a0d4-9a3e405d7e52})</extracomment>
+        <translation>Impulsbasierter Energiezähler</translation>
     </message>
 </context>
 <context>

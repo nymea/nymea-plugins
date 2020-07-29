@@ -50,13 +50,13 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
-    PluginTimer *m_smartMeterTimer = nullptr;
     QHash<Thing *, int> m_pulsesPerTimeframe;
 
     double mapDoubleValue(double value, double fromMin, double fromMax, double toMin, double toMax);
 
     QHash<Thing *, QTimer *> m_extendedBlindPercentageTimer;
     QHash<Thing *, QTimer *> m_venetianBlindAngleTimer;
+    QHash<Thing *, QTimer *> m_smartMeterTimer;
     QHash<Thing *, uint> m_extendedBlindTargetPercentage;
     QHash<Thing *, int> m_venetianBlindTargetAngle;
 
