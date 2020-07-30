@@ -34,98 +34,38 @@
 #include "QJsonDocument"
 #include "QJsonObject"
 
-SunnyWebBox::SunnyWebBox(QUdpSocket *udpSocket, QObject *parrent) :
+SunnyWebBox::SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAddress &hostAddress,  QObject *parrent) :
     QObject(parrent),
-    m_udpSocket(udpSocket)
+    m_hostAddresss(hostAddress),
+    m_communication(communication)
 {
-    connect(m_udpSocket, &QUdpSocket::stateChanged, this, [this](QAbstractSocket::SocketState state) {
-        emit connectedChanged((state == QAbstractSocket::SocketState::ConnectedState));
-    });
-
-    connect(m_udpSocket, &QUdpSocket::readyRead, this, [this] {
-        //m_udpSocket->readDatagram(QByteArray())
-        qCDebug(dcSma()) << "Received datagram" << m_udpSocket->readAll();
-    });
+    //TODO connect communication with socket state;
+    connect(m_communication, &SunnyWebBoxCommunication::messageReceived, this, &SunnyWebBox::onMessageReceived);
 }
 
 int SunnyWebBox::getPlantOverview()
 {
-    return sendMessage("GetPlantOverview");
+    return m_communication->sendMessage(m_hostAddresss, "GetPlantOverview");
 }
 
 int SunnyWebBox::getDevices()
 {
-    return sendMessage("GetDevices");
+    return m_communication->sendMessage(m_hostAddresss, "GetDevices");
 }
 
 int SunnyWebBox::getProcessDataChannels(const QString &deviceId)
 {
     QJsonObject params;
     params["device"] = deviceId;
-    return sendMessage("GetProcessDataChannels", params);
+    return m_communication->sendMessage(m_hostAddresss, "GetProcessDataChannels", params);
 }
 
-int SunnyWebBox::sendMessage(const QString &procedure)
+void SunnyWebBox::onMessageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result)
 {
-    int requestId = qrand();
-
-    QJsonDocument doc;
-    QJsonObject obj;
-    obj["version"] = "1.0";
-    obj["proc"] = procedure;
-    obj["id"] = requestId;
-    obj["format"] = "JSON";
-    m_udpSocket->writeDatagram(doc.toJson(), m_hostAddresss, m_port);
-    return requestId;
-}
-
-int SunnyWebBox::sendMessage(const QString &procedure, const QJsonObject &params)
-{
-    int requestId = qrand();
-
-    QJsonDocument doc;
-    QJsonObject obj;
-    obj["version"] = "1.0";
-    obj["proc"] = procedure;
-    obj["id"] = requestId;
-    obj["format"] = "JSON";
-    if (!params.isEmpty()) {
-        obj.insert("params", params);
-    }
-    m_udpSocket->writeDatagram(doc.toJson(), m_hostAddresss, m_port);
-    return requestId;
-}
-
-void SunnyWebBox::onDatagramReceived(const QByteArray &data)
-{
-    QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
-    if (error.error != QJsonParseError::NoError) {
-        qCWarning(dcSma()) << "Could not parse JSON" << error.errorString();
-        return;
-    }
-    if (!doc.isObject()) {
-        qCWarning(dcSma()) << "JSON is not an Object";
-        return;
-    }
-    QVariantMap map = doc.toVariant().toMap();
-    if (map["version"] != "1.0") {
-        qCWarning(dcSma()) << "API version not supported" << map["version"];
+    if (address != m_hostAddresss) {
         return;
     }
 
-    if (map.contains("proc") && map.contains("result")) {
-        QString requestType = map["proc"].toString();
-        int requestId = map["id"].toInt();
-        QVariantMap result = map.value("result").toMap();
-        emit messageResponseReceived(requestId, requestType, result);
-    } else {
-        qCWarning(dcSma()) << "Missing proc or result value";
-    }
-}
-
-void SunnyWebBox::parseMessageReponse(int messageId, const QString &messageType, const QVariantMap &result)
-{
     if (messageType == "GetPlantOverview") {
         Overview overview;
         QVariantList overviewList = result.value("overview").toList();

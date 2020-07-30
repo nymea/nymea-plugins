@@ -32,6 +32,7 @@
 #define SUNNYWEBBOX_H
 
 #include "integrations/thing.h"
+#include "sunnywebboxcommunication.h"
 
 #include <QObject>
 #include <QHostAddress>
@@ -56,7 +57,7 @@ public:
         QList<Device> childrens;
     };
 
-    explicit SunnyWebBox(QUdpSocket *udpSocket, QObject *parrent = 0);
+    explicit SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAddress &hostAddress, QObject *parrent = 0);
 
     int getPlantOverview();
     int getDevices();
@@ -69,20 +70,17 @@ public:
     QHostAddress hostAddress();
 
 private:
-    int m_port =  34268;
-    QHostAddress m_hostAddresss;
-    QUdpSocket *m_udpSocket = nullptr;
 
-    int sendMessage(const QString &procedure);
-    int sendMessage(const QString &procedure, const QJsonObject &params);
+    QHostAddress m_hostAddresss;
+    SunnyWebBoxCommunication *m_communication = nullptr;
 
 public slots:
     void onDatagramReceived(const QByteArray &data);
-    void parseMessageReponse(int messageId, const QString &messageType, const QVariantMap &result);
+    void onMessageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result);
 
 signals:
     void connectedChanged(bool connected);
-    void messageResponseReceived(int messageId, const QString &messageType, const QVariantMap &result);
+
     void plantOverviewReceived(int messageId, Overview overview);
     void devicesReceived(int messageId, QList<Device> devices);
 };

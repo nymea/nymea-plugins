@@ -36,12 +36,25 @@ IntegrationPluginSma::IntegrationPluginSma()
 
 }
 
+void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
+{
+    if (info->thingClassId() == sunnyWebBoxThingClassId) {
+
+        info->finish(Thing::ThingErrorNoError);
+    }
+}
+
 void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    if (!m_udpSocket) {
-        m_udpSocket = new QUdpSocket(this);
+    if (!m_sunnyWebBoxCommunication) {
+        m_sunnyWebBoxCommunication = new SunnyWebBoxCommunication(this);
+    }
+
+    if (!m_refreshTimer) {
+        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
     }
 
     if (thing->thingClassId() == sunnyWebBoxThingClassId) {
@@ -54,6 +67,10 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
                 return;
             }
         }
+        SunnyWebBox *sunnyWebBox = new SunnyWebBox(m_sunnyWebBoxCommunication, QHostAddress(thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()), this);
+        m_sunnyWebBoxes.insert(thing, sunnyWebBox);
+        //TODO m_asyncSetup
+        return info->finish(Thing::ThingErrorNoError);
 
     } else if (thing->thingClassId() == inverterThingClassId) {
         Thing *parentThing = myThings().findById(thing->parentId());
@@ -84,6 +101,26 @@ void IntegrationPluginSma::postSetupThing(Thing *thing)
             return;
         sunnyWebBox->getDevices();
     } else if (thing->thingClassId() == inverterThingClassId) {
+
+    }
+}
+
+void IntegrationPluginSma::executeAction(ThingActionInfo *info)
+{
+    Thing *thing = info->thing();
+    Action action = info->action();
+
+    if (thing->thingClassId() == sunnyWebBoxThingClassId) {
+        SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
+        if (!sunnyWebBox)
+            return;
+        if (action.actionTypeId() == sunnyWebBoxSearchDevicesActionTypeId) {
+            sunnyWebBox->getDevices();
+        } else {
+            //Unhandled actionTypeId
+        }
+    } else {
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
 }
 
@@ -94,16 +131,58 @@ void IntegrationPluginSma::thingRemoved(Thing *thing)
     }
 
     if (myThings().filterByThingClassId(sunnyWebBoxThingClassId).isEmpty()) {
-        m_udpSocket->deleteLater();
-        m_udpSocket = nullptr;
+        m_sunnyWebBoxCommunication->deleteLater();
+        m_sunnyWebBoxCommunication = nullptr;
     }
+}
+
+void IntegrationPluginSma::onRefreshTimer()
+{
+    Q_FOREACH(SunnyWebBox *sunnyWebBox, m_sunnyWebBoxes) {
+        sunnyWebBox->getPlantOverview();
+    }
+}
+
+void IntegrationPluginSma::onPlantOverviewReceived(int messageId, SunnyWebBox::Overview overview)
+{
+    Q_UNUSED(messageId)
+
+    Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
+    if (!thing)
+        return;
+
+    thing->setStateValue(sunnyWebBoxConnectedStateTypeId, true);
+    thing->setStateValue(sunnyWebBoxCurrentPowerStateTypeId, overview.power);
+    thing->setStateValue(sunnyWebBoxDayEnergyStateTypeId, overview.dailyYield);
+    thing->setStateValue(sunnyWebBoxTotalEnergyStateTypeId, overview.totalYield);
+    thing->setStateValue(sunnyWebBoxModeStateTypeId, overview.status);
+    if (!overview.error.isEmpty()){
+        qCDebug(dcSma()) << "Received error" << overview.error;
+        thing->setStateValue(sunnyWebBoxErrorStateTypeId, overview.error);
+    }
+}
+
+void IntegrationPluginSma::onDevicesReceived(int messageId, QList<SunnyWebBox::Device> devices)
+{
+    Q_UNUSED(messageId)
+
+    Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
+    if (!thing)
+        return;
+
+    ThingDescriptors descriptors;
+    Q_FOREACH(SunnyWebBox::Device device, devices){
+        ThingDescriptor descriptor(inverterThingClassId, device.name, device.key ,thing->id());
+        descriptors.append(descriptor);
+    }
+    emit autoThingsAppeared(descriptors);
 }
 
 SunnyWebBox * IntegrationPluginSma::createSunnyWebBoxConnection(Thing *thing)
 {
-    SunnyWebBox *sunnyWebBox = new SunnyWebBox(m_udpSocket, this);
+    SunnyWebBox *sunnyWebBox = new SunnyWebBox(m_sunnyWebBoxCommunication, QHostAddress(thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()), this);
     m_sunnyWebBoxes.insert(thing, sunnyWebBox);
-    //connect();
+    connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
     return sunnyWebBox;
 }
 

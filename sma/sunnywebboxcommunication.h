@@ -28,48 +28,31 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINSMA_H
-#define INTEGRATIONPLUGINSMA_H
+#ifndef SUNNYWEBBOXCOMMUNICATION_H
+#define SUNNYWEBBOXCOMMUNICATION_H
 
-#include "integrations/integrationplugin.h"
-#include "plugintimer.h"
-#include "sunnywebbox.h"
-#include "sunnywebboxcommunication.h"
-
-#include <QDebug>
-#include <QHostAddress>
+#include <QObject>
 #include <QUdpSocket>
 
-
-class IntegrationPluginSma: public IntegrationPlugin {
+class SunnyWebBoxCommunication : public QObject
+{
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginsma.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginSma();
+    explicit SunnyWebBoxCommunication(QObject *parent = nullptr);
 
-    void discoverThings(ThingDiscoveryInfo *info) override;
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void executeAction(ThingActionInfo *info) override;
-    void thingRemoved(Thing *thing) override;
-
-private slots:
-    void onRefreshTimer();
-
-    void onPlantOverviewReceived(int messageId, SunnyWebBox::Overview overview);
-    void onDevicesReceived(int messageId, QList<SunnyWebBox::Device> devices);
+    int sendMessage(const QHostAddress &address, const QString &procedure);
+    int sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params);
 
 private:
-    PluginTimer *m_refreshTimer = nullptr;
-    QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<Thing *, ThingSetupInfo *> m_asyncSetup;
-    SunnyWebBoxCommunication *m_sunnyWebBoxCommunication = nullptr;
+    int m_port =  34268;
+    QUdpSocket *m_udpSocket;
 
-    SunnyWebBox * createSunnyWebBoxConnection(Thing *thing);
-    void setupChild(ThingSetupInfo *info, Thing *parentThing);
-    void getData(Thing *thing);
+    void datagramReceived(const QHostAddress &address, const QByteArray &data);
+
+signals:
+    void socketConnected(bool connected);
+    void messageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result);
+
 };
 
-#endif // INTEGRATIONPLUGINSMA_H
+#endif // SUNNYWEBBOXCOMMUNICATION_H
