@@ -414,6 +414,15 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
+    if (action.actionTypeId() == shellyRollerPercentageActionTypeId) {
+        Thing *parentDevice = myThings().findById(thing->parentId());
+        MqttChannel *channel = m_mqttChannels.value(parentDevice);
+        QString shellyId = parentDevice->paramValue(m_idParamTypeMap.value(parentDevice->thingClassId())).toString();
+        channel->publish("shellies/" + shellyId + "/roller/0/command/pos", QByteArray::number(action.param(shellyRollerPercentageActionPercentageParamTypeId).value().toInt()));
+        info->finish(Thing::ThingErrorNoError);
+        return;
+    }
+
     qCWarning(dcShelly()) << "Unhandled execute action call for device" << thing;
 }
 
