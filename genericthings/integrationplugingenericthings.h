@@ -59,6 +59,8 @@ private:
     QHash<Thing *, QTimer *> m_smartMeterTimer;
     QHash<Thing *, uint> m_extendedBlindTargetPercentage;
     QHash<Thing *, int> m_venetianBlindTargetAngle;
+    QHash<Thing *, QTimer *> m_statefulGaragePercentageTimer;
+    QHash<Thing *, uint> m_statefulGarageTargetPercentage;
 
     enum BlindState {
         BlindStateOpening,
