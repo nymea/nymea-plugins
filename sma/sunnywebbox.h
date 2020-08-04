@@ -64,14 +64,24 @@ public:
         QString unit;
     };
 
+    struct Parameter {
+        QString meta;
+        QString name;
+        QString unit;
+        double min;
+        double max;
+        double value;
+    };
+
     explicit SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAddress &hostAddress, QObject *parrent = 0);
 
-    int getPlantOverview();
-    int getDevices();
-    int getProcessDataChannels(const QString &deviceKey);
-    int getProcessData(const QStringList &deviceKeys);
-    int getParameterChannels(const QString &deviceKey);
-    int getParameters(const QStringList &deviceKeys);
+    int getPlantOverview(); // Returns an object with the following plant data: PAC, E-TODAY, E-TOTAL, MODE, ERROR
+    int getDevices(); //Returns a hierarchical list of all detected plant devices.
+    int getProcessDataChannels(const QString &deviceKey); //Returns a list with the meta names of the available process data channels for a particular device type.
+    int getProcessData(const QStringList &deviceKeys); //Returns process data for up to 5 devices per request.
+    int getParameterChannels(const QString &deviceKey); //Returns a list with the meta names of the available parameter channels for a particular device type
+    int getParameters(const QStringList &deviceKeys); //Returns the parameter values of up to 5 devices
+    int setParameters(const QString &deviceKeys, const QHash<QString, QVariant> &channels); //Sets parameter values
 
     void setHostAddress();
     QHostAddress hostAddress();
@@ -90,8 +100,10 @@ signals:
 
     void plantOverviewReceived(int messageId, Overview overview);
     void devicesReceived(int messageId, QList<Device> devices);
+    void processDataChannelsReceived(int messageId, const QString &deviceKey, QStringList processDataChanels);
     void processDataReceived(int messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
     void parameterChannelsReceived(int messageId, const QString &deviceKey, QStringList parameterChannels);
+    void parametersReceived(int messageId, const QString &deviceKey, const QList<Parameter> &parameters);
 };
 
 #endif // SUNNYWEBBOX_H

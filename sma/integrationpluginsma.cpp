@@ -180,6 +180,7 @@ void IntegrationPluginSma::onDevicesReceived(int messageId, QList<SunnyWebBox::D
 
 void IntegrationPluginSma::onProcessDataReceived(int messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels)
 {
+    Q_UNUSED(messageId)
     Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
     if (!thing)
         return;

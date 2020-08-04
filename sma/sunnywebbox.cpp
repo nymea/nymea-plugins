@@ -33,6 +33,7 @@
 
 #include "QJsonDocument"
 #include "QJsonObject"
+#include "QJsonArray"
 
 SunnyWebBox::SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAddress &hostAddress,  QObject *parrent) :
     QObject(parrent),
@@ -58,6 +59,25 @@ int SunnyWebBox::getProcessDataChannels(const QString &deviceId)
     QJsonObject params;
     params["device"] = deviceId;
     return m_communication->sendMessage(m_hostAddresss, "GetProcessDataChannels", params);
+}
+
+int SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString, QVariant> &channels)
+{
+    QJsonObject paramsObj;
+    QJsonArray devicesArray;
+    QJsonObject deviceObj;
+    deviceObj["key"] = deviceKey;
+    QJsonArray channelsArray;
+    Q_FOREACH(QString key, channels.keys()) {
+        QJsonObject channelObj;
+        channelObj["meta"] = key;
+        channelObj["value"] = channels.value(key).toString();
+        channelsArray.append(channelObj);
+    }
+    deviceObj["channels"] = channelsArray;
+    devicesArray.append(deviceObj);
+    paramsObj["devices"] = devicesArray;
+    return m_communication->sendMessage(m_hostAddresss, "SetParameter", paramsObj);
 }
 
 void SunnyWebBox::onMessageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result)
@@ -106,16 +126,52 @@ void SunnyWebBox::onMessageReceived(const QHostAddress &address, int messageId, 
         }
         if (!devices.isEmpty())
             emit devicesReceived(messageId, devices);
-    } else if (messageType == "GetProcessDataChannels") {
+    } else if (messageType == "GetProcessDataChannels" ||
+               messageType == "GetProDataChannels") {
+        Q_FOREACH(QString deviceKey, result.keys()) {
+            QStringList processDataChannels = result.value(deviceKey).toStringList();
+            if (!processDataChannels.isEmpty())
+                emit processDataChannelsReceived(messageId, deviceKey, processDataChannels);
+        }
     } else if (messageType == "GetProcessData") {
+        QList<Device> devices;
+        QVariantList devicesList = result.value("devices").toList();
+        Q_FOREACH(QVariant value, devicesList) {
+
+            QString key = value.toMap().value("key").toString();
+            QVariantList channelsList =  value.toMap().value("channels").toList();
+            QHash<QString, QVariant> channels;
+            Q_FOREACH(QVariant channel, channelsList) {
+                channels.insert(channel.toMap().value("meta").toString(), channel.toMap().value("value"));
+            }
+            emit processDataReceived(messageId, key, channels);
+        }
     } else if (messageType == "GetParameterChannels") {
         Q_FOREACH(QString deviceKey, result.keys()) {
             QStringList parameterChannels = result.value(deviceKey).toStringList();
             if (!parameterChannels.isEmpty())
                 emit parameterChannelsReceived(messageId, deviceKey, parameterChannels);
         }
-    } else if (messageType == "GetParameter") {
-    } else if (messageType == "SetParameter") {
+    } else if (messageType == "GetParameter"|| messageType == "SetParameter") {
+        QList<Device> devices;
+        QVariantList devicesList = result.value("devices").toList();
+        Q_FOREACH(QVariant value, devicesList) {
+
+            QString key = value.toMap().value("key").toString();
+            QVariantList channelsList =  value.toMap().value("channels").toList();
+            QList<Parameter> parameters;
+            Q_FOREACH(QVariant channel, channelsList) {
+               Parameter parameter;
+               parameter.meta = channel.toMap().value("meta").toString();
+               parameter.name = channel.toMap().value("name").toString();
+               parameter.unit = channel.toMap().value("unit").toString();
+               parameter.min = channel.toMap().value("min").toDouble();
+               parameter.max = channel.toMap().value("max").toDouble();
+               parameter.value = channel.toMap().value("value").toDouble();
+               parameters.append(parameter);
+            }
+            emit parametersReceived(messageId, key, parameters);
+        }
     } else {
         qCWarning(dcSma()) << "Unknown message type" << messageType;
     }
