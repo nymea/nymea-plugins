@@ -178,11 +178,42 @@ void IntegrationPluginSma::onDevicesReceived(int messageId, QList<SunnyWebBox::D
     emit autoThingsAppeared(descriptors);
 }
 
+void IntegrationPluginSma::onProcessDataReceived(int messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels)
+{
+    Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
+    if (!thing)
+        return;
+
+    qCDebug(dcSma()) << "Process data received" << deviceKey;
+
+    Q_FOREACH(Thing *childThing, myThings().filterByParentId(thing->id())) {
+        if (childThing->paramValue(inverterThingIdParamTypeId).toString() == deviceKey) {
+            if (channels.contains("E-Total")) {
+                //TODO set total energy
+            }
+            break;
+        }
+    }
+}
+
+void IntegrationPluginSma::onParameterChannelsReceived(int messageId, const QString &deviceKey, QStringList parameterChannels)
+{
+    Q_UNUSED(messageId)
+
+    Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
+    if (!thing)
+        return;
+
+    qCDebug(dcSma()) << "Parameter channels received" << deviceKey << parameterChannels;
+}
+
 SunnyWebBox * IntegrationPluginSma::createSunnyWebBoxConnection(Thing *thing)
 {
     SunnyWebBox *sunnyWebBox = new SunnyWebBox(m_sunnyWebBoxCommunication, QHostAddress(thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()), this);
     m_sunnyWebBoxes.insert(thing, sunnyWebBox);
     connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
+    connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
+    //connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
     return sunnyWebBox;
 }
 

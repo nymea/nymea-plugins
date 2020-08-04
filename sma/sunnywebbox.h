@@ -57,6 +57,13 @@ public:
         QList<Device> childrens;
     };
 
+    struct Channel {
+        QString meta;
+        QString name;
+        QVariant value;
+        QString unit;
+    };
+
     explicit SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAddress &hostAddress, QObject *parrent = 0);
 
     int getPlantOverview();
@@ -83,6 +90,8 @@ signals:
 
     void plantOverviewReceived(int messageId, Overview overview);
     void devicesReceived(int messageId, QList<Device> devices);
+    void processDataReceived(int messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
+    void parameterChannelsReceived(int messageId, const QString &deviceKey, QStringList parameterChannels);
 };
 
 #endif // SUNNYWEBBOX_H

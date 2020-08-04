@@ -109,6 +109,11 @@ void SunnyWebBox::onMessageReceived(const QHostAddress &address, int messageId, 
     } else if (messageType == "GetProcessDataChannels") {
     } else if (messageType == "GetProcessData") {
     } else if (messageType == "GetParameterChannels") {
+        Q_FOREACH(QString deviceKey, result.keys()) {
+            QStringList parameterChannels = result.value(deviceKey).toStringList();
+            if (!parameterChannels.isEmpty())
+                emit parameterChannelsReceived(messageId, deviceKey, parameterChannels);
+        }
     } else if (messageType == "GetParameter") {
     } else if (messageType == "SetParameter") {
     } else {

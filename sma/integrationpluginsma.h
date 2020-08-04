@@ -60,6 +60,8 @@ private slots:
 
     void onPlantOverviewReceived(int messageId, SunnyWebBox::Overview overview);
     void onDevicesReceived(int messageId, QList<SunnyWebBox::Device> devices);
+    void onProcessDataReceived(int messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
+    void onParameterChannelsReceived(int messageId, const QString &deviceKey, QStringList parameterChannels);
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
