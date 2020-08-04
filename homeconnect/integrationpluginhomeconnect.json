@@ -453,14 +453,14 @@
                             "writable": true,
                             "type": "QString",
                             "possibleValues": [
-                                "Very Mild",
+                                "Very mild",
                                 "Mild",
                                 "Normal",
                                 "Strong",
-                                "Very Strong",
-                                "Double Shot",
-                                "Double Shot+",
-                                "Double Shot++"
+                                "Very strong",
+                                "Double shot",
+                                "Double shot +",
+                                "Double shot ++"
                             ]
                         },
                         {
@@ -471,8 +471,8 @@
                             "displayNameAction": "Set fill quantity",
                             "defaultValue": "60",
                             "type": "int",
-                            "minValue": 35,
-                            "maxValue": 60,
+                            "minValue": 30,
+                            "maxValue": 400,
                             "writable": true
                         },
                         {
@@ -518,6 +518,11 @@
                             "id": "1f360c77-01a5-411c-b347-aa3f0a5c9ba5",
                             "name": "dripTrayFull",
                             "displayName": "Drip tray full"
+                        },
+                        {
+                            "id": "f8c7a26a-221a-454c-a2b0-ef8064e467f3",
+                            "name": "programFinished",
+                           "displayName": "Program finished"
                         }
                     ]
                 },

@@ -81,6 +81,7 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_doorStateTypeIds.insert(washerThingClassId, washerDoorStateStateTypeId);
     m_doorStateTypeIds.insert(dryerThingClassId, dryerDoorStateStateTypeId);
     m_doorStateTypeIds.insert(ovenThingClassId, ovenDoorStateStateTypeId);
+    m_doorStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerDoorStateStateTypeId);
 
     m_operationStateTypeIds.insert(ovenThingClassId, ovenOperationStateStateTypeId);
     m_operationStateTypeIds.insert(dryerThingClassId, dryerOperationStateStateTypeId);
@@ -112,6 +113,9 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_stopActionTypeIds.insert(dryerThingClassId, dryerStopActionTypeId);
     m_stopActionTypeIds.insert(dishwasherThingClassId, dishwasherStopActionTypeId);
 
+    m_programFinishedEventTypeIds.insert(ovenThingClassId, ovenProgramFinishedEventTypeId);
+    m_programFinishedEventTypeIds.insert(dryerThingClassId, dryerProgramFinishedEventTypeId);
+    m_programFinishedEventTypeIds.insert(coffeeMakerThingClassId, coffeeMakerProgramFinishedEventTypeId);
 }
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
@@ -122,7 +126,7 @@ void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
         bool controlEnabled =  configValue(homeConnectPluginControlEnabledParamTypeId).toBool();
 
         HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", simulationMode, this);
-        QString scope = "IdentifyAppliance Monitor Settings";
+        QString scope = "IdentifyAppliance Monitor Settings Dishwasher Washer Dryer WasherDryer Refrigerator Freezer WineCooler CoffeeMaker Hood CookProcessor";
         if (controlEnabled)
             scope.append(" Control");
         QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), scope);
@@ -312,7 +316,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
         });
     } else if (m_stopActionTypeIds.values().contains(action.actionTypeId())) {
         QUuid requestId;
-        requestId = homeConnect->sendCommand(haid, "BSH.Common.Command.ResumeProgram");
+        requestId = homeConnect->stopProgram(haid);
         m_pendingActions.insert(requestId, info);
         connect(info, &ThingActionInfo::aborted, [requestId, this] {
             m_pendingActions.remove(requestId);
@@ -320,7 +324,23 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
     } else if (thing->thingClassId() == ovenThingClassId) {
         //set temperature
     } else if (thing->thingClassId() == coffeeMakerThingClassId) {
-
+        if (action.actionTypeId() == coffeeMakerTemperatureActionTypeId) {
+            //TODO
+        } else if (action.actionTypeId() == coffeeMakerStrengthActionTypeId) {
+            //TODO
+        } else if (action.actionTypeId() == coffeeMakerFillQuantityActionTypeId) {
+            //TODO
+        }
+    } else if (thing->thingClassId() == fridgeThingClassId) {
+        if (action.actionTypeId() == fridgeFridgeTemperatureSettingActionTypeId) {
+            //TODO
+        } else if (action.actionTypeId() == fridgeFreezerTemperatureSettingActionTypeId) {
+            //TODO
+        }
+    } else if (thing->thingClassId() == dishwasherThingClassId) {
+        if (action.actionTypeId() == dishwasherStartTimeActionTypeId) {
+            //TODO
+        }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -401,6 +421,11 @@ void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
 void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, const QVariant &value)
 {
     qCDebug(dcHomeConnect()) << thing->name() << key.split('.').last() << value;
+
+    if (key.contains(".Setting.")){
+        parseSettingKey(thing, key, value);
+        return;
+    }
     // PROGRAM CHANGES
     if (key == "BSH.Common.Root.SelectedProgram") {
         if (m_selectedProgramStateTypeIds.contains(thing->thingClassId())) {
@@ -423,11 +448,58 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
     } else if (key == "LaundryCare.Dryer.Option.DryingTarget") {
         //TODO
     } else if (key == "ConsumerProducts.CoffeeMaker.Option.BeanAmount") {
-        //TODO
+        QString beanAmount = value.toString().split(".").last();
+        if (beanAmount == "VeryMild") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Very mild");
+        } else if (beanAmount == "Mild") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Mild");
+        } else if (beanAmount == "MildPlus") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Mild +");
+        } else if (beanAmount == "Normal") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Normal");
+        } else if (beanAmount == "NormalPlus") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Normal +");
+        } else if (beanAmount == "Strong") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Strong");
+        } else if (beanAmount == "StrongPlus") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Strong +");
+        } else if (beanAmount == "VeryStrong") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Very strong");
+        } else if (beanAmount == "VeryStringPlus") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Very strong +");
+        } else if (beanAmount == "ExtraStrong") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Extra strong");
+        } else if (beanAmount == "DoubleShot") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Double shot");
+        } else if (beanAmount == "DoubleShotPlus") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Double shot +");
+        } else if (beanAmount == "DoubleShotPlusPlus") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Double shot ++");
+        } else if (beanAmount == "TripleShot") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Triple shot");
+        } else if (beanAmount == "TripleShotPlus") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Triple shot +");
+        } else if (beanAmount == "CoffeeGround") {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Coffee ground");
+        }
+
     } else if (key == "ConsumerProducts.CoffeeMaker.Option.FillQuantity") {
-        //TODO
+        thing->setStateValue(coffeeMakerFillQuantityStateTypeId, value);
     } else if (key == "ConsumerProducts.CoffeeMaker.Option.CoffeeTemperature") {
-        //TODO
+        QString temperature = value.toString().split(".").last();
+        if (temperature == "88C" ||
+                temperature == "90C" ||
+                temperature == "92C") {
+            thing->setStateValue(coffeeMakerTemperatureStateTypeId, "Normal");
+        } else if (temperature == "92C" ||
+                   temperature == "94C") {
+            thing->setStateValue(coffeeMakerTemperatureStateTypeId, "High");
+        } else if (temperature == "95C" ||
+                   temperature == "96C") {
+            thing->setStateValue(coffeeMakerTemperatureStateTypeId, "Very high");
+        } else {
+            qCDebug(dcHomeConnect()) << "Unkown Coffee temperature string" << temperature;
+        }
     } else if (key == "Cooking.Common.Option.Hood.VentingLevel") {
         //TODO
     } else if (key == "Cooking.Common.Option.Hood.IntensiveLevel") {
@@ -449,13 +521,30 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         if (m_operationStateTypeIds.contains(thing->thingClassId())) {
             thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), value.toString().split('.').last());
         }
+        if (value.toString().split('.').last().contains("Finished")) {
+            //apparently the finished event is not emitted by HomeConnect so this will hopefully do the trick
+            if (m_programFinishedEventTypeIds.contains(thing->thingClassId())) {
+                emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
+            }
+            if (m_progressStateTypeIds.contains(thing->thingClassId())) {
+                thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), 0);
+            }
+        }
         // Program Progress Events
     } else if (key == "BSH.Common.Event.ProgramAborted") {
-        //TODO emit programfinished for all things
-        emitEvent(Event(ovenProgramFinishedEventTypeId, thing->id()));
+        if (m_programFinishedEventTypeIds.contains(thing->thingClassId())) {
+            emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
+        }
+        if (m_progressStateTypeIds.contains(thing->thingClassId())) {
+            thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), 0);
+        }
     } else if (key == "BSH.Common.Event.ProgramFinished") {
-        //TODO emit programfinished for all things
-        emitEvent(Event(ovenProgramFinishedEventTypeId, thing->id()));
+        if (m_programFinishedEventTypeIds.contains(thing->thingClassId())) {
+            emitEvent(Event(m_programFinishedEventTypeIds.value(thing->thingClassId()), thing->id()));
+        }
+        if (m_progressStateTypeIds.contains(thing->thingClassId())) {
+            thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), 0);
+        }
     } else if (key == "BSH.Common.Event.AlarmClockElapsed") {
     } else if (key == "Cooking.Oven.Event.PreheatFinished") {
         emitEvent(Event(ovenPreheatFinishedEventTypeId, thing->id()));
@@ -504,6 +593,37 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         thing->setStateValue(ovenCurrentTemperatureStateTypeId, value);
     } else {
         qCWarning(dcHomeConnect()) << "Parse key: unknown key" << key;
+    }
+}
+
+void IntegrationPluginHomeConnect::parseSettingKey(Thing *thing, const QString &key, const QVariant &value)
+{
+    if (key.contains("BSH.Common.Setting.PowerState")) {
+    } else if (key.contains("BSH.Common.Setting.TemperatureUnit")) {
+    } else if (key.contains("BSH.Common.Setting.LiquidVolumeUnit")) {
+    } else if (key.contains("Refrigeration.FridgeFreezer.Setting.SetpointTemperatureRefrigerator")) {
+        thing->setStateValue(fridgeFridgeTemperatureSettingStateTypeId, value);
+    } else if (key.contains("Refrigeration.FridgeFreezer.Setting.SetpointTemperatureFreezer")) {
+        thing->setStateValue(fridgeFreezerTemperatureStateTypeId, value);
+    } else if (key.contains("Refrigeration.Common.Setting.BottleCooler.SetpointTemperature")) {
+    } else if (key.contains("Refrigeration.Common.Setting.ChillerLeft.SetpointTemperature")) {
+    } else if (key.contains("Refrigeration.Common.Setting.ChillerCommon.SetpointTemperature")) {
+    } else if (key.contains("Refrigeration.Common.Setting.ChillerRight.SetpointTemperature")) {
+    } else if (key.contains("Refrigeration.Common.Setting.WineCompartment.SetpointTemperature")) {
+    } else if (key.contains("Refrigeration.Common.Setting.WineCompartment2.SetpointTemperature")) {
+    } else if (key.contains("Refrigeration.Common.Setting.WineCompartment3.SetpointTemperature")) {
+    } else if (key.contains("Refrigeration.FridgeFreezer.Setting.SuperModeRefrigerator")) {
+    } else if (key.contains("Refrigeration.FridgeFreezer.Setting.SuperModeFreezer")) {
+    } else if (key.contains("Refrigeration.Common.Setting.EcoMode")) {
+    } else if (key.contains("Refrigeration.Common.Setting.SabbathMode")) {
+    } else if (key.contains("Refrigeration.Common.Setting.VacationMode")) {
+    } else if (key.contains("Refrigeration.Common.Setting.FreshMode")) {
+    } else if (key.contains("Cooking.Common.Setting.Lighting")) {
+    } else if (key.contains("Cooking.Common.Setting.LightingBrightness")) {
+    } else if (key.contains("BSH.Common.Setting.AmbientLightEnabled")) {
+    } else if (key.contains("BSH.Common.Setting.AmbientLightBrightness")) {
+    } else if (key.contains("BSH.Common.Setting.AmbientLightColor")) {
+    } else if (key.contains("BSH.Common.Setting.AmbientLightCustomColor")) {
     }
 }
 
@@ -726,32 +846,9 @@ void IntegrationPluginHomeConnect::onReceivedSettings(const QString &haId, const
     Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
         if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
             qCDebug(dcHomeConnect()) << "Received setting" << thing->name() << settings;
-            if (settings.contains("BSH.Common.Setting.PowerState")) {
-                //TODO set power state
+            Q_FOREACH(QString setting, settings.keys()) {
+                parseSettingKey(thing, setting, settings.value(setting));
             }
-            //BSH.Common.Setting.TemperatureUnit
-            //BSH.Common.Setting.LiquidVolumeUnit
-            //Refrigeration.FridgeFreezer.Setting.SetpointTemperatureRefrigerator
-            //Refrigeration.FridgeFreezer.Setting.SetpointTemperatureFreezer
-            //Refrigeration.Common.Setting.BottleCooler.SetpointTemperature
-            //Refrigeration.Common.Setting.ChillerLeft.SetpointTemperature
-            //Refrigeration.Common.Setting.ChillerCommon.SetpointTemperature
-            //Refrigeration.Common.Setting.ChillerRight.SetpointTemperature
-            //Refrigeration.Common.Setting.WineCompartment.SetpointTemperature
-            //Refrigeration.Common.Setting.WineCompartment2.SetpointTemperature
-            //Refrigeration.Common.Setting.WineCompartment3.SetpointTemperature
-            //Refrigeration.FridgeFreezer.Setting.SuperModeRefrigerator
-            //Refrigeration.FridgeFreezer.Setting.SuperModeFreezer
-            //Refrigeration.Common.Setting.EcoMode
-            //Refrigeration.Common.Setting.SabbathMode
-            //Refrigeration.Common.Setting.VacationMode
-            //Refrigeration.Common.Setting.FreshMode
-            //Cooking.Common.Setting.Lighting
-            //Cooking.Common.Setting.LightingBrightness
-            //BSH.Common.Setting.AmbientLightEnabled
-            //BSH.Common.Setting.AmbientLightBrightness
-            //BSH.Common.Setting.AmbientLightColor
-            //BSH.Common.Setting.AmbientLightCustomColor
         }
         break;
     }
