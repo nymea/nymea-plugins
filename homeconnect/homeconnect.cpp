@@ -446,6 +446,7 @@ QUuid HomeConnect::startProgram(const QString &haId, const QString &programKey, 
     request.setRawHeader("Authorization", "Bearer "+m_accessToken);
     request.setRawHeader("Accept-Language", "en-US");
     request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/vnd.bsh.sdk.v1+json");
 
     QJsonDocument doc;
     QJsonObject data;

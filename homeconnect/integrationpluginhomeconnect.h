@@ -87,9 +87,12 @@ private:
     QHash<ThingClassId, ActionTypeId> m_startActionTypeIds;
     QHash<ThingClassId, ActionTypeId> m_stopActionTypeIds;
 
+    QHash<ThingClassId, EventTypeId> m_programFinishedEventTypeIds;
+
     HomeConnect *createHomeConnection();
 
     void parseKey(Thing *thing, const QString &key, const QVariant &value);
+    void parseSettingKey(Thing *thing, const QString &key, const QVariant &value);
 
 private slots:
     void onConnectionChanged(bool connected);
