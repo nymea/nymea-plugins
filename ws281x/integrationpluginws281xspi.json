@@ -1,0 +1,85 @@
+{
+    "name": "ws281xspi",
+    "displayName": "Ws281xspi",
+    "id": "2a1be833-4457-4bd3-bd96-ea74b62e6348",
+    "vendors": [
+        {
+            "name": "ws281xspi",
+            "displayName": "Ws281xspi",
+            "id": "599337a2-cfc8-4ced-952b-ded34e2f4cf7",
+            "thingClasses": [
+                {
+                    "name": "ws281xspi",
+                    "displayName": "Ws281xspi",
+                    "id": "e19c2e0f-4252-481d-9005-7b103bfacf12",
+                    "setupMethod": "JustAdd",
+                    "createMethods": ["User"],
+                    "interfaces": [ ],
+                    "paramTypes": [
+                        {
+                            "id": "701790ef-2dd8-4166-a18f-0af20877d25c",
+                            "name": "spiPin",
+                            "displayName": "SPI Pin",
+                            "defaultValue": 10,
+                            "type": "int",
+                            "allowedValues": [
+                                10
+                            ]
+                        },
+                        {
+                            "id": "9c2d0d6a-7dd8-4f2e-9363-63b9e3d89254",
+                            "name": "length",
+                            "displayName": "Length",
+                            "defaultValue": 8,
+                            "type": "int"
+                        }
+                    ],
+                    "settingsTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7fc8b313-8609-46a1-a7c2-2a61993825b6",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "defaultValue": "255",
+                            "type": "int",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brightness",
+                            "writable": true
+                        },
+                        {
+                            "id": "24644623-f7d4-47e6-a259-c564a7721b9e",
+                            "name": "color",
+                            "displayName": "Color",
+                            "defaultValue": "#ffffff",
+                            "type": "QColor",
+                            "displayNameEvent": "Color changed",
+                            "displayNameAction": "Set color",
+                            "writable": true
+                        },
+                        {
+
+                            "id": "23cb9794-f637-4861-a885-2237b80aacb9",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+
+                    ],
+                    "eventTypes": [
+
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+

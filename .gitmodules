@@ -1,0 +1,3 @@
+[submodule "ws281x/rpi_ws281x"]
+	path = ws281x/rpi_ws281x
+	url = https://github.com/jgarff/rpi_ws281x
