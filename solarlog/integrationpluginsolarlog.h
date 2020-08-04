@@ -28,49 +28,56 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINTADO_H
-#define INTEGRATIONPLUGINTADO_H
+#ifndef INTEGRATIONPLUGINSOLARLOG_H
+#define INTEGRATIONPLUGINSOLARLOG_H
 
-#include "plugintimer.h"
 #include "integrations/integrationplugin.h"
-#include "network/oauth2.h"
-#include "tado.h"
+#include "plugintimer.h"
 
-#include <QHash>
-#include <QTimer>
+#include <QDebug>
+#include <QHostAddress>
+#include <QUrlQuery>
 
-class IntegrationPluginTado : public IntegrationPlugin
-{
+
+class IntegrationPluginSolarLog: public IntegrationPlugin {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationplugintado.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginsolarlog.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit IntegrationPluginTado();
-    void startPairing(ThingPairingInfo *info) override;
-    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
+    enum JsonObjectNumbers{
+        LastUpdateTime = 100,
+        Pac,
+        Pdc,
+        Uac,
+        DCVoltage,
+        YieldDay,
+        YieldYesterday,
+        YieldMonth,
+        YieldYear,
+        YieldTotal,
+        ConsPac,
+        ConsYieldDay,
+        ConsYieldYesterday,
+        ConsYieldMonth,
+        ConsYieldYear,
+        ConsYieldTotal,
+        TotalPower
+    };
+    explicit IntegrationPluginSolarLog();
+
     void setupThing(ThingSetupInfo *info) override;
-    void thingRemoved(Thing *thing) override;
     void postSetupThing(Thing *thing) override;
-    void executeAction(ThingActionInfo *info) override;
-
-private:
-    PluginTimer *m_pluginTimer = nullptr;
-    QHash<ThingId, Tado*> m_unfinishedTadoAccounts;
-
-    QHash<ThingId, Tado*> m_tadoAccounts;
-    QHash<QUuid, ThingActionInfo *> m_asyncActions;
+    void thingRemoved(Thing *thing) override;
 
 private slots:
-    void onPluginTimer();
+    void onRefreshTimer();
 
-    void onConnectionChanged(bool connected);
-    void onAuthenticationStatusChanged(bool authenticated);
-    void onRequestExecuted(QUuid requestId, bool success);
-    void onHomesReceived(QList<Tado::Home> homes);
-    void onZonesReceived(const QString &homeId, QList<Tado::Zone> zones);
-    void onZoneStateReceived(const QString &homeId,const QString &zoneId, Tado::ZoneState sate);
-    void onOverlayReceived(const QString &homeId, const QString &zoneId, const Tado::Overlay &overlay);
+private:
+    PluginTimer *m_refreshTimer = nullptr;
+    QHash<Thing *, ThingSetupInfo *> m_asyncSetup;
+
+    void getData(Thing *thing);
 };
 
-#endif // INTEGRATIONPLUGINTADO_H
+#endif // INTEGRATIONPLUGINSOLARLOG_H

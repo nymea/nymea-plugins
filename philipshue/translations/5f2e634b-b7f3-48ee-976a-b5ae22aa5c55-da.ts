@@ -6,53 +6,53 @@
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="220"/>
         <source>Please press the button on the Hue Bridge within 30 seconds before you continue</source>
-        <translation type="unfinished">Tryk på knappen påHue Bridge inden for 30 sekunder, før du fortsætter</translation>
+        <translation>Tryk på knappen på Hue Bridge inden for 30 sekunder, før du fortsætter</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="249"/>
         <source>Not authenticated to bridge. Please reconfigure the bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ikke godkendt til bridge. Konfigurer venligst bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="556"/>
         <source>Error connecting to hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fejl ved forbindelse til hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="566"/>
         <location filename="../integrationpluginphilipshue.cpp" line="829"/>
         <source>Received unexpected data from hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Modtog uventede data fra hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="577"/>
         <source>An error happened pairing the hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der opstod en fejl ved parring af hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="585"/>
         <source>The hue bridge has rejected the connection request.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hue bridge har afvist forbindelsesanmodningen.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="819"/>
         <source>Error sending command to hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fejl ved afsendelse af kommando til hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="839"/>
         <source>An unexpected error happened when sending the command to the hue bridge.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der opstod en uventet fejl, når du sendte kommandoen til hue bridge.</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1336"/>
         <source>Philips Hue Motion sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue Motion sensor</translation>
     </message>
     <message>
         <location filename="../integrationpluginphilipshue.cpp" line="1350"/>
         <source>Philips Hue Outdoor sensor</source>
-        <translation type="unfinished"></translation>
+        <translation>Philips Hue Outdoor sensor</translation>
     </message>
 </context>
 <context>
@@ -154,19 +154,19 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="296"/>
         <source>Hue Motion Sensor</source>
         <extracomment>The name of the ThingClass ({25b79fff-4b88-4af8-b06c-2fe246238790})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Motion Sensor</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="305"/>
         <source>Hue Smart Button</source>
         <extracomment>The name of the ThingClass ({1e34a056-9f37-4741-b249-a5eca7a4ab4e})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Hue Smart Button</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="353"/>
         <source>Long pressed</source>
         <extracomment>The name of the EventType ({25803922-37f1-47c8-ac00-2d3acb9eb634}) of ThingClass smartButton</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Langt presset</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="356"/>
@@ -175,7 +175,7 @@ The name of the EventType ({15794d26-fde8-4a61-8f83-d7830534975f}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: tap, Type: thing, ID: {62d92175-db3a-4da2-a72b-f58f34cb6911})
 ----------
 The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {9271179f-5fe1-4005-9f97-ccde33b1b2c4})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Model ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="440"/>
@@ -184,7 +184,7 @@ The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {9271179f-5
         <extracomment>The name of the ParamType (ThingClass: tap, Type: thing, ID: {5eca2b24-8986-4487-bc12-50e91d023d97})
 ----------
 The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {54744fcc-c052-4c16-a857-fbe0b791e538})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Sensor ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="509"/>
@@ -193,7 +193,7 @@ The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {54744fcc-c
         <extracomment>The name of the ParamType (ThingClass: motionSensor, Type: settings, ID: {beedc4af-c107-4c53-be25-fd01a349fd35})
 ----------
 The name of the ParamType (ThingClass: outdoorSensor, Type: settings, ID: {21d461b2-b4dd-4a70-b3d5-aaedc88605a4})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Tidsperiode</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="515"/>
@@ -202,7 +202,7 @@ The name of the ParamType (ThingClass: outdoorSensor, Type: settings, ID: {21d46
         <extracomment>The name of the ParamType (ThingClass: tap, Type: thing, ID: {eace85b9-5369-466f-89eb-46c4de718305})
 ----------
 The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {7221aacc-1420-43f2-a05a-448a0f783713})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Type</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="521"/>
@@ -211,7 +211,7 @@ The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {7221aacc-1
         <extracomment>The name of the ParamType (ThingClass: tap, Type: thing, ID: {25cf4167-6c28-4497-9fa9-3d02faf4f3ed})
 ----------
 The name of the ParamType (ThingClass: smartButton, Type: thing, ID: {2378a06d-b748-445b-94e2-4dd885a54f22})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>UUID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/philipshue/plugininfo.h" line="683"/>

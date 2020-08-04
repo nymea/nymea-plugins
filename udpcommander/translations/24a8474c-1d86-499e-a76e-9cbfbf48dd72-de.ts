@@ -6,7 +6,7 @@
     <message>
         <location filename="../integrationpluginudpcommander.cpp" line="52"/>
         <source>Error opening UDP port.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Öffnen des UDP-Ports.</translation>
     </message>
 </context>
 <context>
@@ -24,7 +24,7 @@ The name of the plugin UdpCommander ({24a8474c-1d86-499e-a76e-9cbfbf48dd72})</ex
         <location filename="../../../build-nymea-plugins-Desktop-Debug/udpcommander/plugininfo.h" line="61"/>
         <source>nymea</source>
         <extracomment>The name of the vendor ({2062d64d-3232-433c-88bc-0d33c0ba2ba6})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>nymea</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/udpcommander/plugininfo.h" line="58"/>

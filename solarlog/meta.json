@@ -1,0 +1,12 @@
+{
+    "title": "Solar-Log",
+    "tagline": "Integrates Solar-Log with nymea.",
+    "icon": "solarlog.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+    ]
+}
