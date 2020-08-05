@@ -160,10 +160,12 @@ void HueLight::updateStates(const QVariantMap &statesMap)
     // alert (none, select, lselect)
     setAlert(statesMap.value("alert").toString());
     setBrigtness(statesMap.value("bri").toInt());
-    setCt(statesMap.value("ct").toInt());
     setPower(statesMap.value("on").toBool());
     setSat(statesMap.value("sat").toInt());
     setHue(statesMap.value("hue").toInt());
+    if (statesMap.contains("ct")) {
+        setCt(statesMap.value("ct").toInt());
+    }
     if (!statesMap.value("xy").toList().isEmpty())
         setXy(QPointF(statesMap.value("xy").toList().first().toFloat(), statesMap.value("xy").toList().last().toFloat()));
 
