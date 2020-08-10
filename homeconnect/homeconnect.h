@@ -129,6 +129,8 @@ public:
     void getProgramsActive(const QString &haId);    //Get program which is currently executed
     void getProgramsSelected(const QString &haId);  //Get the program which is currently selected
     void getProgramsActiveOption(const QString &haId, const QString &optionKey);
+    QUuid selectProgram(const QString &haId, const QString &programKey, QList<Option> options);
+    QUuid setSelectedProgramOptions(const QString &haId, QList<Option> options);
     QUuid startProgram(const QString &haId, const QString &programKey, QList<Option> options);
     QUuid stopProgram(const QString &haId);
 
@@ -165,7 +167,7 @@ private slots:
 signals:
     void connectionChanged(bool connected);
     void authenticationStatusChanged(bool authenticated);
-    void commandExecuted(QUuid commandId,bool success);
+    void commandExecuted(const QUuid &commandId, bool success);
 
     void receivedHomeAppliances(const QList<HomeAppliance> &appliances);
     void receivedStatusList(const QString &haId, const QHash<QString, QVariant> &statusList);

@@ -89,6 +89,8 @@ private:
 
     QHash<ThingClassId, EventTypeId> m_programFinishedEventTypeIds;
 
+    QHash<QString, QString> m_coffeeStrengthTypes;
+
     HomeConnect *createHomeConnection();
 
     void parseKey(Thing *thing, const QString &key, const QVariant &value);

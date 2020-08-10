@@ -437,6 +437,118 @@ void HomeConnect::getProgramsActiveOption(const QString &haId, const QString &op
     });
 }
 
+QUuid HomeConnect::selectProgram(const QString &haId, const QString &programKey, QList<HomeConnect::Option> options)
+{
+    QUuid commandId = QUuid::createUuid();
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/selected");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/vnd.bsh.sdk.v1+json");
+
+    QJsonDocument doc;
+    QJsonObject data;
+    data.insert("key", programKey);
+    if (!options.isEmpty()) {
+        QJsonArray optionsArray;
+        Q_FOREACH(Option option, options) {
+            QJsonObject optionObject;
+            optionObject["key"] = option.key;
+            optionObject["value"] = option.value.toString();
+            if (!option.unit.isEmpty())
+                optionObject["unit"] = option.unit;
+            optionsArray.append(optionObject);
+        }
+        data.insert("options", optionsArray);
+    }
+    QJsonObject obj;
+    obj.insert("data", data);
+    doc.setObject(obj);
+    QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status != 204) {
+            emit commandExecuted(commandId, false);
+            QByteArray rawData = reply->readAll();
+            qCDebug(dcHomeConnect()) << "Selected program" << rawData;
+            QJsonParseError error;
+            QJsonDocument data = QJsonDocument::fromJson(rawData, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCDebug(dcHomeConnect()) << "Selected program: Received invalide JSON object";
+                return;
+            }
+            if (data.toVariant().toMap().contains("error")) {
+                qCWarning(dcHomeConnect()) << "Start program" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+                return;
+            }
+        } else {
+            emit commandExecuted(commandId, true);
+        }
+    });
+    return commandId;
+}
+
+QUuid HomeConnect::setSelectedProgramOptions(const QString &haId, QList<HomeConnect::Option> options)
+{
+    if (options.isEmpty())
+        return "";
+
+    QUuid commandId = QUuid::createUuid();
+    QUrl url = QUrl(m_baseControlUrl+"/api/homeappliances/"+haId+"/programs/selected/options");
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Accept-Language", "en-US");
+    request.setRawHeader("accept", "application/vnd.bsh.sdk.v1+json");
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/vnd.bsh.sdk.v1+json");
+
+    QJsonDocument doc;
+    QVariantMap data;
+    QVariantList optionsArray;
+    Q_FOREACH(Option option, options) {
+        QVariantMap optionObject;
+        optionObject["key"] = option.key;
+        optionObject["value"] = option.value;
+        if (!option.unit.isEmpty())
+            optionObject["unit"] = option.unit;
+        optionsArray.append(optionObject);
+    }
+    data.insert("options", optionsArray);
+    QVariantMap obj;
+    obj.insert("data", data);
+    doc.setObject(QJsonObject::fromVariantMap(obj));
+    qCDebug(dcHomeConnect()) << "Selected Program Options" << doc.toJson();
+
+    QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status != 204) {
+            emit commandExecuted(commandId, false);
+            QByteArray rawData = reply->readAll();
+            qCDebug(dcHomeConnect()) << "Selected program" << rawData;
+            QJsonParseError error;
+            QJsonDocument data = QJsonDocument::fromJson(rawData, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCDebug(dcHomeConnect()) << "Selected program options: Received invalide JSON object";
+                return;
+            }
+            if (data.toVariant().toMap().contains("error")) {
+                qCWarning(dcHomeConnect()) << "Selected program options:" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+                return;
+            }
+        } else {
+            emit commandExecuted(commandId, true);
+        }
+    });
+    return commandId;
+}
+
 QUuid HomeConnect::startProgram(const QString &haId, const QString &programKey, QList<HomeConnect::Option> options)
 {
     QUuid commandId = QUuid::createUuid();
@@ -456,7 +568,8 @@ QUuid HomeConnect::startProgram(const QString &haId, const QString &programKey, 
         QJsonObject optionObject;
         optionObject["key"] = option.key;
         optionObject["value"] = option.value.toString();
-        optionObject["unit"] = option.unit;
+        if (!option.unit.isEmpty())
+            optionObject["unit"] = option.unit;
         optionsArray.append(optionObject);
     }
     data.insert("options", optionsArray);
@@ -467,21 +580,22 @@ QUuid HomeConnect::startProgram(const QString &haId, const QString &programKey, 
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
 
-        //TODO check status
-        QJsonParseError error;
-        QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
-        if (error.error != QJsonParseError::NoError) {
-            qCDebug(dcHomeConnect()) << "Start program: Received invalide JSON object";
-            return;
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status != 204) {
+            emit commandExecuted(commandId, false);
+            QJsonParseError error;
+            QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCDebug(dcHomeConnect()) << "Start program: Received invalide JSON object";
+                return;
+            }
+            qCDebug(dcHomeConnect()) << "Start program response" << data.toJson();
+            if (data.toVariant().toMap().contains("error")) {
+                qCWarning(dcHomeConnect()) << "Start program" << data.toVariant().toMap().value("error").toMap().value("description").toString();
+            }
+        } else {
+            emit commandExecuted(commandId, true);
         }
-        qCDebug(dcHomeConnect()) << "Start program response" << data.toJson();
-        if (data.toVariant().toMap().contains("data")) {
-            QVariantMap dataMap = data.toVariant().toMap().value("data").toMap();
-            qCDebug(dcHomeConnect()) << "key" << dataMap.value("key").toString() << "value" << dataMap.value("value").toString() << dataMap.value("unit").toString();
-        } else if (data.toVariant().toMap().contains("error")) {
-            qCWarning(dcHomeConnect()) << "Start program" << data.toVariant().toMap().value("error").toMap().value("description").toString();
-        }
-        emit commandExecuted(commandId, true);
     });
     return commandId;
 }
@@ -500,9 +614,13 @@ QUuid HomeConnect::stopProgram(const QString &haId)
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
 
+
         int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        QByteArray rawData = reply->readAll();
-        emit commandExecuted(commandId, checkStatusCode(status, rawData));
+        if (status != 204) {
+            emit commandExecuted(commandId, false);
+        } else {
+            emit commandExecuted(commandId, true);
+        }
     });
     return commandId;
 }
