@@ -205,7 +205,18 @@
                         {
                             "id": "c7b9b467-6ac5-4870-8874-da977fa30987",
                             "name": "start",
-                            "displayName": "Start"
+                            "displayName": "Start",
+                            "paramTypes": [
+                                {
+                                    "id": "27de74b5-265a-4c9f-bd3e-f58ab5c81a1f",
+                                    "name": "startTime",
+                                    "displayName": "Start time",
+                                    "defaultValue": 0,
+                                    "minValue": 0,
+                                    "type": "int",
+                                    "unit": "Minutes"
+                                }
+                            ]
                         },
                         {
                             "id": "0467aeed-b275-4e5f-a288-1a600465b582",
@@ -315,18 +326,6 @@
                             "type": "QString"
                         },
                         {
-                            "id": "27de74b5-265a-4c9f-bd3e-f58ab5c81a1f",
-                            "name": "startTime",
-                            "displayName": "Start time",
-                            "displayNameEvent": "Start time changed",
-                            "displayNameAction": "Set start time",
-                            "defaultValue": 0,
-                            "minValue": 0,
-                            "type": "int",
-                            "unit": "Minutes",
-                            "writable": true
-                        },
-                        {
                             "id": "f61cd171-2e8e-434c-98f9-e7fc7df1c928",
                             "name": "endTime",
                             "displayName": "End time",
@@ -339,7 +338,18 @@
                         {
                             "id": "7dc1e238-cdc2-42e8-9a2a-e93d497966d9",
                             "name": "start",
-                            "displayName": "Start"
+                            "displayName": "Start",
+                            "paramTypes": [
+                                {
+                                    "id": "9b87bcc9-4d0d-4cd8-bd14-c2e48ef8cb1f",
+                                    "name": "startTime",
+                                    "displayName": "Start time",
+                                    "defaultValue": 0,
+                                    "minValue": 0,
+                                    "type": "int",
+                                    "unit": "Minutes"
+                                }
+                            ]
                         },
                         {
                             "id": "c2c7e1bd-bf0f-4ded-93e0-e4d770f03f6f",
@@ -946,6 +956,41 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "a7680cc1-528c-47ac-a917-d9f3866e9504",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "d1cf12ef-c0e9-452f-99bf-5e65a4dd622c",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "09e73cec-5b98-4d31-86fb-cd671f210196",
+                            "name": "ventingLevel",
+                            "displayName": "Venting level",
+                            "displayNameEvent": "Venting level changed",
+                            "defaultValue": 0,
+                            "type": "int"
                         }
                     ]
                 },
@@ -973,6 +1018,25 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "ac2b896e-d7ff-4b17-affa-ad5bdc486640",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
                         }
                     ],
                     "eventTypes": [
@@ -1017,6 +1081,25 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "9aed899f-09cc-4f20-965a-9724372a1093",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
                         }
                     ]
                 }

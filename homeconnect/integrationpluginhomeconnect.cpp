@@ -102,20 +102,42 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_progressStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerProgressStateTypeId);
 
     m_endTimerStateTypeIds.insert(ovenThingClassId, ovenEndTimeStateTypeId);
+    m_endTimerStateTypeIds.insert(washerThingClassId, washerEndTimeStateTypeId);
+    m_endTimerStateTypeIds.insert(dryerThingClassId, dryerEndTimeStateTypeId);
+    m_endTimerStateTypeIds.insert(dishwasherThingClassId, dishwasherEndTimeStateTypeId);
 
     m_startActionTypeIds.insert(ovenThingClassId, ovenStartActionTypeId);
     m_startActionTypeIds.insert(washerThingClassId, washerStartActionTypeId);
     m_startActionTypeIds.insert(dryerThingClassId, dryerStartActionTypeId);
     m_startActionTypeIds.insert(dishwasherThingClassId, dishwasherStartActionTypeId);
+    m_startActionTypeIds.insert(coffeeMakerThingClassId, coffeeMakerStartActionTypeId);
 
     m_stopActionTypeIds.insert(ovenThingClassId, ovenStopActionTypeId);
     m_stopActionTypeIds.insert(washerThingClassId, washerStopActionTypeId);
     m_stopActionTypeIds.insert(dryerThingClassId, dryerStopActionTypeId);
     m_stopActionTypeIds.insert(dishwasherThingClassId, dishwasherStopActionTypeId);
+    m_stopActionTypeIds.insert(coffeeMakerThingClassId, coffeeMakerStopActionTypeId);
 
     m_programFinishedEventTypeIds.insert(ovenThingClassId, ovenProgramFinishedEventTypeId);
     m_programFinishedEventTypeIds.insert(dryerThingClassId, dryerProgramFinishedEventTypeId);
     m_programFinishedEventTypeIds.insert(coffeeMakerThingClassId, coffeeMakerProgramFinishedEventTypeId);
+
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.VeryMild", "Very mild");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.Mild", "Mild");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.MildPlus", "Mild +");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.Normal", "Normal");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.NormalPlug", "Normal +");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.Strong", "Strong");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.StrongPlus", "Strong +");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.VeryStrong", "Very strong");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.VeryStrongPlus", "Very strong +");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.ExtraStrong", "Extra strong");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.DoubleShot", "Double shot");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.DoubleShotPlus", "Double shot +");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.DoubleShotPlusPlus", "Double shot ++");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.TribleShot", "Trible shot");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.TribleShotPlus", "Trible shot +");
+    m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.CoffeeGround", "Coffee ground");
 }
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
@@ -306,15 +328,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
     }
     QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
 
-    if (m_startActionTypeIds.values().contains(action.actionTypeId())) {
-        QUuid requestId;
-        QList<HomeConnect::Option> options;
-        requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), options);
-        m_pendingActions.insert(requestId, info);
-        connect(info, &ThingActionInfo::aborted, [requestId, this] {
-            m_pendingActions.remove(requestId);
-        });
-    } else if (m_stopActionTypeIds.values().contains(action.actionTypeId())) {
+    if (m_stopActionTypeIds.values().contains(action.actionTypeId())) {
         QUuid requestId;
         requestId = homeConnect->stopProgram(haid);
         m_pendingActions.insert(requestId, info);
@@ -322,14 +336,83 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             m_pendingActions.remove(requestId);
         });
     } else if (thing->thingClassId() == ovenThingClassId) {
-        //set temperature
+        if (action.actionTypeId() ==  ovenStartActionTypeId) {
+            if (!m_selectedProgram.contains(thing)) {
+                homeConnect->getProgramsSelected(haid);
+                return info->finish(Thing::ThingErrorMissingParameter, tr("Please select a program first"));
+            }
+            QUuid requestId;
+            HomeConnect::Option startTime;
+            startTime.key = "BSH.Common.Option.StartInRelative";
+            startTime.unit = "seconds";
+            startTime.value = action.param(dishwasherStartActionStartTimeParamTypeId).value().toInt() * 60;
+            requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>() << startTime);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        }
     } else if (thing->thingClassId() == coffeeMakerThingClassId) {
         if (action.actionTypeId() == coffeeMakerTemperatureActionTypeId) {
-            //TODO
+            QUuid requestId;
+            QList<HomeConnect::Option> options;
+            HomeConnect::Option coffeeTemperature;
+            coffeeTemperature.key = "ConsumerProducts.CoffeeMaker.Option.CoffeeTemperature";
+            if (action.param(coffeeMakerTemperatureActionTemperatureParamTypeId).value().toString() == "Normal") {
+                coffeeTemperature.value = "ConsumerProducts.CoffeeMaker.EnumType.CoffeeTemperature.90C";
+            } else if (action.param(coffeeMakerTemperatureActionTemperatureParamTypeId).value().toString() == "High") {
+                coffeeTemperature.value = "ConsumerProducts.CoffeeMaker.EnumType.CoffeeTemperature.94C";
+            } else if (action.param(coffeeMakerTemperatureActionTemperatureParamTypeId).value().toString() == "Very high") {
+                coffeeTemperature.value = "ConsumerProducts.CoffeeMaker.EnumType.CoffeeTemperature.95C";
+            }
+            options.append(coffeeTemperature);
+            requestId = homeConnect->setSelectedProgramOptions(haid, options);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+
         } else if (action.actionTypeId() == coffeeMakerStrengthActionTypeId) {
-            //TODO
+            QUuid requestId;
+            QList<HomeConnect::Option> options;
+            HomeConnect::Option beanAmount;
+            beanAmount.key = "ConsumerProducts.CoffeeMaker.Option.BeanAmount";
+            QString coffeeStrength = action.param(coffeeMakerStrengthActionStrengthParamTypeId).value().toString();
+            if (m_coffeeStrengthTypes.values().contains(coffeeStrength)) {
+                beanAmount.value = m_coffeeStrengthTypes.key(coffeeStrength);
+            } else {
+                qCWarning(dcHomeConnect()) << "Unhandled coffee strength action param" << coffeeStrength;
+            }
+            options.append(beanAmount);
+            requestId = homeConnect->setSelectedProgramOptions(haid, options);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+
         } else if (action.actionTypeId() == coffeeMakerFillQuantityActionTypeId) {
-            //TODO
+            QUuid requestId;
+            QList<HomeConnect::Option> options;
+            HomeConnect::Option fillQuantity;
+            fillQuantity.key = "ConsumerProducts.CoffeeMaker.Option.FillQuantity";
+            fillQuantity.unit = "ml";
+            fillQuantity.value = qRound(action.param(coffeeMakerFillQuantityActionFillQuantityParamTypeId).value().toInt()/10.00)*10;
+            options.append(fillQuantity);
+            requestId = homeConnect->setSelectedProgramOptions(haid, options);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        } else if (action.actionTypeId() == coffeeMakerStartActionTypeId) {
+            if (!m_selectedProgram.contains(thing)) {
+                homeConnect->getProgramsSelected(haid);
+                return info->finish(Thing::ThingErrorMissingParameter, tr("Please select a program first"));
+            }
+            QUuid requestId;
+            requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>());
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
         }
     } else if (thing->thingClassId() == fridgeThingClassId) {
         if (action.actionTypeId() == fridgeFridgeTemperatureSettingActionTypeId) {
@@ -338,8 +421,22 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             //TODO
         }
     } else if (thing->thingClassId() == dishwasherThingClassId) {
-        if (action.actionTypeId() == dishwasherStartTimeActionTypeId) {
-            //TODO
+        if (action.actionTypeId() == dishwasherStartActionTypeId) {
+            if (!m_selectedProgram.contains(thing)) {
+                homeConnect->getProgramsSelected(haid);
+                return info->finish(Thing::ThingErrorMissingParameter, tr("Please select a program first"));
+            }
+            QUuid requestId;
+            HomeConnect::Option startTime;
+            startTime.key = "BSH.Common.Option.StartInRelative";
+            startTime.unit = "seconds";
+            startTime.value = action.param(dishwasherStartActionStartTimeParamTypeId).value().toInt() * 60;
+            requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>() << startTime);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
@@ -405,7 +502,6 @@ void IntegrationPluginHomeConnect::browserItem(BrowserItemResult *result)
 
 void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
 {
-    Q_UNUSED(info)
     Thing *thing = info->thing();
     qCDebug(dcHomeConnect()) << "Execute browse item called " << thing->name();
 
@@ -413,9 +509,19 @@ void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
     if (!homeConnect)
         return;
     QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
-    QList<HomeConnect::Option> options;
-    //TODO add options like set temperature or start time
-    homeConnect->startProgram(haid, info->browserAction().itemId(), options);
+
+    QUuid requestId = homeConnect->selectProgram(haid, info->browserAction().itemId(), QList<HomeConnect::Option> ());
+    m_selectedProgram.insert(thing, info->browserAction().itemId());
+
+    connect(homeConnect, &HomeConnect::commandExecuted, info, [requestId, info] (const QUuid &commandId, bool success) {
+        if (requestId == commandId) {
+            if (success) {
+                info->finish(Thing::ThingErrorNoError);
+            } else {
+                info->finish(Thing::ThingErrorHardwareNotAvailable);
+            }
+        }
+    });
 }
 
 void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, const QVariant &value)
@@ -431,8 +537,8 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         if (m_selectedProgramStateTypeIds.contains(thing->thingClassId())) {
             thing->setStateValue(m_selectedProgramStateTypeIds.value(thing->thingClassId()), value.toString().split('.').last());
         }
+        m_selectedProgram.insert(thing, value.toString());
     } else if (key == "BSH.Common.Root.ActiveProgram") {
-
         // Option Changes
     } else if (key == "Cooking.Oven.Option.SetpointTemperature") {
         thing->setStateValue(ovenTargetTemperatureStateTypeId, value);
@@ -448,41 +554,12 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
     } else if (key == "LaundryCare.Dryer.Option.DryingTarget") {
         //TODO
     } else if (key == "ConsumerProducts.CoffeeMaker.Option.BeanAmount") {
-        QString beanAmount = value.toString().split(".").last();
-        if (beanAmount == "VeryMild") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Very mild");
-        } else if (beanAmount == "Mild") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Mild");
-        } else if (beanAmount == "MildPlus") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Mild +");
-        } else if (beanAmount == "Normal") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Normal");
-        } else if (beanAmount == "NormalPlus") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Normal +");
-        } else if (beanAmount == "Strong") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Strong");
-        } else if (beanAmount == "StrongPlus") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Strong +");
-        } else if (beanAmount == "VeryStrong") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Very strong");
-        } else if (beanAmount == "VeryStringPlus") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Very strong +");
-        } else if (beanAmount == "ExtraStrong") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Extra strong");
-        } else if (beanAmount == "DoubleShot") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Double shot");
-        } else if (beanAmount == "DoubleShotPlus") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Double shot +");
-        } else if (beanAmount == "DoubleShotPlusPlus") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Double shot ++");
-        } else if (beanAmount == "TripleShot") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Triple shot");
-        } else if (beanAmount == "TripleShotPlus") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Triple shot +");
-        } else if (beanAmount == "CoffeeGround") {
-            thing->setStateValue(coffeeMakerStrengthStateTypeId, "Coffee ground");
+        QString beanAmount = value.toString();
+        if (m_coffeeStrengthTypes.contains(beanAmount)) {
+            thing->setStateValue(coffeeMakerStrengthStateTypeId, m_coffeeStrengthTypes.value(beanAmount));
+        } else {
+            qCWarning(dcHomeConnect()) << "Unhandled bean amount" << beanAmount;
         }
-
     } else if (key == "ConsumerProducts.CoffeeMaker.Option.FillQuantity") {
         thing->setStateValue(coffeeMakerFillQuantityStateTypeId, value);
     } else if (key == "ConsumerProducts.CoffeeMaker.Option.CoffeeTemperature") {
