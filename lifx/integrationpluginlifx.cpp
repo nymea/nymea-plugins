@@ -360,7 +360,7 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
             }
             QString effectString = action.param(colorBulbEffectActionEffectParamTypeId).value().toString();
             int requestId;
-            LifxCloud::Effect effect;
+            LifxCloud::Effect effect = LifxCloud::EffectNone;
             if (effectString == "None") {
                 effect = LifxCloud::EffectNone;
             } else if (effectString == "Breathe") {
