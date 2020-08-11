@@ -151,7 +151,6 @@
                             "defaultValue": 180,
                             "minValue": 30,
                             "maxValue": 250,
-                            "writable": true,
                             "unit": "DegreeCelsius",
                             "type": "int"
                         },
@@ -172,8 +171,7 @@
                             "displayNameAction": "Set duration",
                             "defaultValue": 0,
                             "unit": "Minutes",
-                            "type": "int",
-                            "writable": true
+                            "type": "int"
                         },
                         {
                             "id": "85a333dc-0e0b-454c-9c9a-d14dd6484275",
@@ -199,29 +197,6 @@
                             "displayNameEvent": "End time changed",
                             "defaultValue": "00:00:00",
                             "type": "QString"
-                        }
-                    ],
-                    "actionTypes": [
-                        {
-                            "id": "c7b9b467-6ac5-4870-8874-da977fa30987",
-                            "name": "start",
-                            "displayName": "Start",
-                            "paramTypes": [
-                                {
-                                    "id": "27de74b5-265a-4c9f-bd3e-f58ab5c81a1f",
-                                    "name": "startTime",
-                                    "displayName": "Start time",
-                                    "defaultValue": 0,
-                                    "minValue": 0,
-                                    "type": "int",
-                                    "unit": "Minutes"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "0467aeed-b275-4e5f-a288-1a600465b582",
-                            "name": "stop",
-                            "displayName": "Stop"
                         }
                     ],
                     "eventTypes": [
@@ -737,7 +712,6 @@
                             "type": "int",
                             "minValue": 2,
                             "maxValue": 8,
-                            "writable": true,
                             "unit": "DegreeCelsius"
                         },
                         {
@@ -761,7 +735,6 @@
                             "type": "int",
                             "minValue": -24,
                             "maxValue": -16,
-                            "writable": true,
                             "unit": "DegreeCelsius"
                         }
                     ],
