@@ -106,13 +106,11 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_endTimerStateTypeIds.insert(dryerThingClassId, dryerEndTimeStateTypeId);
     m_endTimerStateTypeIds.insert(dishwasherThingClassId, dishwasherEndTimeStateTypeId);
 
-    m_startActionTypeIds.insert(ovenThingClassId, ovenStartActionTypeId);
     m_startActionTypeIds.insert(washerThingClassId, washerStartActionTypeId);
     m_startActionTypeIds.insert(dryerThingClassId, dryerStartActionTypeId);
     m_startActionTypeIds.insert(dishwasherThingClassId, dishwasherStartActionTypeId);
     m_startActionTypeIds.insert(coffeeMakerThingClassId, coffeeMakerStartActionTypeId);
 
-    m_stopActionTypeIds.insert(ovenThingClassId, ovenStopActionTypeId);
     m_stopActionTypeIds.insert(washerThingClassId, washerStopActionTypeId);
     m_stopActionTypeIds.insert(dryerThingClassId, dryerStopActionTypeId);
     m_stopActionTypeIds.insert(dishwasherThingClassId, dishwasherStopActionTypeId);
@@ -336,21 +334,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             m_pendingActions.remove(requestId);
         });
     } else if (thing->thingClassId() == ovenThingClassId) {
-        if (action.actionTypeId() ==  ovenStartActionTypeId) {
-            if (!m_selectedProgram.contains(thing)) {
-                homeConnect->getProgramsSelected(haid);
-                return info->finish(Thing::ThingErrorMissingParameter, tr("Please select a program first"));
-            }
-            QUuid requestId;
-            HomeConnect::Option startTime;
-            startTime.key = "BSH.Common.Option.StartInRelative";
-            startTime.unit = "seconds";
-            startTime.value = action.param(dishwasherStartActionStartTimeParamTypeId).value().toInt() * 60;
-            requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>() << startTime);
-            connect(info, &ThingActionInfo::aborted, [requestId, this] {
-                m_pendingActions.remove(requestId);
-            });
-        }
+        //Oven control is only allowed with an additional agreement with home connect
     } else if (thing->thingClassId() == coffeeMakerThingClassId) {
         if (action.actionTypeId() == coffeeMakerTemperatureActionTypeId) {
             QUuid requestId;
@@ -415,11 +399,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             });
         }
     } else if (thing->thingClassId() == fridgeThingClassId) {
-        if (action.actionTypeId() == fridgeFridgeTemperatureSettingActionTypeId) {
-            //TODO
-        } else if (action.actionTypeId() == fridgeFreezerTemperatureSettingActionTypeId) {
-            //TODO
-        }
+        //Fridge control is only allowed with an additional agreement with home connect
     } else if (thing->thingClassId() == dishwasherThingClassId) {
         if (action.actionTypeId() == dishwasherStartActionTypeId) {
             if (!m_selectedProgram.contains(thing)) {
@@ -432,7 +412,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             startTime.unit = "seconds";
             startTime.value = action.param(dishwasherStartActionStartTimeParamTypeId).value().toInt() * 60;
             requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>() << startTime);
-             m_pendingActions.insert(requestId, info);
+            m_pendingActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
@@ -484,6 +464,12 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
                 m_pendingActions.remove(requestId);
             });
         }
+    } else if (thing->thingClassId() == cleaningRobotThingClassId) {
+        //Home Connect: Program support is planned to be released in 2020.
+    } else if (thing->thingClassId() == cookTopThingClassId) {
+        //Home Connect: Program support is planned to be released in 2020.
+    } else if (thing->thingClassId() == hoodThingClassId) {
+        //Home Connect: Program support is planned to be released in 2020.
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
