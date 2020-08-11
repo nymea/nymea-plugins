@@ -291,7 +291,7 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
         homeConnect->connectEventStream();
         thing->setStateValue(homeConnectConnectionConnectedStateTypeId, true);
         thing->setStateValue(homeConnectConnectionLoggedInStateTypeId, true);
-        //TODO set login username
+        //TBD Set user name
     } else if ((thing->thingClassId() == dryerThingClassId) ||
                (thing->thingClassId() == fridgeThingClassId) ||
                (thing->thingClassId() == washerThingClassId) ||
@@ -432,11 +432,57 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             startTime.unit = "seconds";
             startTime.value = action.param(dishwasherStartActionStartTimeParamTypeId).value().toInt() * 60;
             requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>() << startTime);
+             m_pendingActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, [requestId, this] {
                 m_pendingActions.remove(requestId);
             });
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+    } else if (thing->thingClassId() == washerThingClassId) {
+        if (action.actionTypeId() == washerStartActionTypeId) {
+            if (!m_selectedProgram.contains(thing)) {
+                homeConnect->getProgramsSelected(haid);
+                return info->finish(Thing::ThingErrorMissingParameter, tr("Please select a program first"));
+            }
+            QUuid requestId;
+            requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>());
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        }
+    } else if (thing->thingClassId() == dryerThingClassId) {
+        if (action.actionTypeId() == dryerStartActionTypeId) {
+            if (!m_selectedProgram.contains(thing)) {
+                homeConnect->getProgramsSelected(haid);
+                return info->finish(Thing::ThingErrorMissingParameter, tr("Please select a program first"));
+            }
+            QUuid requestId;
+            requestId = homeConnect->startProgram(haid, m_selectedProgram.value(thing), QList<HomeConnect::Option>());
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
+        } else if (action.actionTypeId() == dryerDryingTargetActionTypeId) {
+            QUuid requestId;
+            QList<HomeConnect::Option> options;
+            HomeConnect::Option dryingTarget;
+            dryingTarget.key = "LaundryCare.Dryer.Option.DryingTarget";
+            QString target = action.param(dryerDryingTargetActionDryingTargetParamTypeId).value().toString();
+            if (target == "Iron dry") {
+                dryingTarget.value = "LaundryCare.Dryer.EnumType.DryingTarget.IronDry";
+            } else if (target == "Cupboard dry") {
+                dryingTarget.value = "LaundryCare.Dryer.EnumType.DryingTarget.CupboardDry";
+            } else if (target == "Cupboard dry plus") {
+                dryingTarget.value = "LaundryCare.Dryer.EnumType.DryingTarget.CupboardDryPlus";
+            }
+            options.append(dryingTarget);
+            requestId = homeConnect->setSelectedProgramOptions(haid, options);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [requestId, this] {
+                m_pendingActions.remove(requestId);
+            });
         }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
@@ -448,6 +494,8 @@ void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
     qCDebug(dcHomeConnect) << "Delete " << thing->name();
     if (thing->thingClassId() == homeConnectConnectionThingClassId) {
         m_homeConnectConnections.take(thing)->deleteLater();
+    } else {
+        m_selectedProgram.remove(thing);
     }
 
     if (myThings().empty()) {
@@ -546,13 +594,18 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         thing->setStateValue(ovenDurationStateTypeId, value);
     } else if (key == "Cooking.Oven.Option.FastPreHeat") {
     } else if (key == "BSH.Common.Option.StartInRelative") {
-        //TODO
     } else if (key == "LaundryCare.Washer.Option.Temperature") {
-        thing->setStateValue(washerTemperatureStateTypeId, value);
+        thing->setStateValue(washerTemperatureStateTypeId, value.toString().split('.').last()); // Cold, 20, 40, 60°C
     } else if (key == "LaundryCare.Washer.Option.SpinSpeed") {
-        thing->setStateValue(washerSpinSpeedStateTypeId, value);
+        thing->setStateValue(washerSpinSpeedStateTypeId, value.toString().split('.').last()); // Off, 400, 600, 800
     } else if (key == "LaundryCare.Dryer.Option.DryingTarget") {
-        //TODO
+        if (value.toString() == "LaundryCare.Dryer.EnumType.DryingTarget.IronDry") {
+            thing->setStateValue(dryerDryingTargetStateTypeId, "Iron dry");
+        } else if (value.toString() == "LaundryCare.Dryer.EnumType.DryingTarget.CupboardDry") {
+            thing->setStateValue(dryerDryingTargetStateTypeId, "Cupboard dry");
+        } else if (value.toString() == "LaundryCare.Dryer.EnumType.DryingTarget.CupboardDryPlus") {
+            thing->setStateValue(dryerDryingTargetStateTypeId, "Cupboard dry plus");
+        }
     } else if (key == "ConsumerProducts.CoffeeMaker.Option.BeanAmount") {
         QString beanAmount = value.toString();
         if (m_coffeeStrengthTypes.contains(beanAmount)) {
@@ -596,7 +649,26 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
     } else if (key == "ConsumerProducts.CleaningRobot.Option.ProcessPhase") {
     } else if (key == "BSH.Common.Status.OperationState") {
         if (m_operationStateTypeIds.contains(thing->thingClassId())) {
-            thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), value.toString().split('.').last());
+            QString operationState = value.toString();
+            if (operationState == "BSH.Common.EnumType.OperationState.Inactive") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Inactive");
+            } else if (operationState == "BSH.Common.EnumType.OperationState.Ready") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Ready");
+            } else if (operationState == "BSH.Common.EnumType.OperationState.DelayedStart") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Delayed start");
+            } else if (operationState == "BSH.Common.EnumType.OperationState.Run") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Run");
+            } else if (operationState == "BSH.Common.EnumType.OperationState.Pause") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Pause");
+            } else if (operationState == "BSH.Common.EnumType.OperationState.ActionRequired") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Action required");
+            } else if (operationState == "BSH.Common.EnumType.OperationState.Finished") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Finished");
+            } else if (operationState == "BSH.Common.EnumType.OperationState.Error") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Error");
+            } else if (operationState == "BSH.Common.EnumType.OperationState.Aborting") {
+                thing->setStateValue(m_operationStateTypeIds.value(thing->thingClassId()), "Aborting");
+            }
         }
         if (value.toString().split('.').last().contains("Finished")) {
             //apparently the finished event is not emitted by HomeConnect so this will hopefully do the trick
@@ -797,7 +869,7 @@ void IntegrationPluginHomeConnect::onReceivedHomeAppliances(const QList<HomeConn
             thingClassId = cookProcessorThingClassId;
         } else if (appliance.type.contains("WasherDryer", Qt::CaseInsensitive)) {
             thingClassId = washerThingClassId;
-            //FIXME add washerdryer thing classid
+            //To improve add washerdryer thing classid
         } else {
             qCWarning(dcHomeConnect()) << "Unknown thing type" << appliance.type;
             continue;
@@ -829,6 +901,7 @@ void IntegrationPluginHomeConnect::onReceivedStatusList(const QString &haId, con
 
     Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
         if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
+            qCDebug(dcHomeConnect()) << "Received status list device" << thing->name();
             Q_FOREACH(QString key, statusList.keys()) {
                 parseKey(thing, key, statusList.value(key));
             }
@@ -887,29 +960,13 @@ void IntegrationPluginHomeConnect::onReceivedSelectedProgram(const QString &haId
 
     Q_FOREACH(Thing *thing, myThings().filterByParentId(parentThing->id())) {
         if (thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString() == haId) {
-            if (thing->thingClassId() == ovenThingClassId) {
-                if (key.contains("Cooking.Oven.Program.HeatingMode")) {
-                    thing->setStateValue(ovenSelectedProgramStateTypeId, key.split('.').last());
-                }
-            } else if (thing->thingClassId() == washerThingClassId) {
-                if (key.contains("LaundryCare.Washer.Program")) {
-                    thing->setStateValue(washerSelectedProgramStateTypeId, key.split('.').last());
-                }
-            } else if (thing->thingClassId() == dishwasherThingClassId) {
-                if (key.contains("Dishcare.Dishwasher.Program")) {
-                    thing->setStateValue(dishwasherSelectedProgramStateTypeId, key.split('.').last());
-                }
-            } else if (thing->thingClassId() == dryerThingClassId) {
-                if (key.contains("LaundryCare.Dryer.Program")) {
-                    thing->setStateValue(dryerSelectedProgramStateTypeId, key.split('.').last());
-                }
-            } else if (thing->thingClassId() == coffeeMakerThingClassId) {
-                if (key.contains("ConsumerProducts.CoffeeMaker.Program")) {
-                    thing->setStateValue(coffeeMakerSelectedProgramStateTypeId, key.split('.').last());
-                }
+            qCDebug(dcHomeConnect()) << "Received selected program" << key << "device" << thing->name();
+            if (m_selectedProgramStateTypeIds.contains(thing->thingClassId())) {
+                thing->setStateValue(m_selectedProgramStateTypeIds.value(thing->thingClassId()), key.split('.').last());
             }
+            m_selectedProgram.insert(thing, key);
+            break;
         }
-        break;
     }
 }
 
@@ -926,7 +983,7 @@ void IntegrationPluginHomeConnect::onReceivedSettings(const QString &haId, const
             Q_FOREACH(QString setting, settings.keys()) {
                 parseSettingKey(thing, setting, settings.value(setting));
             }
+            break;
         }
-        break;
     }
 }
