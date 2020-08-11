@@ -636,6 +636,21 @@
                             "type": "QString"
                         },
                         {
+                            "id": "829c1ec6-5b5a-490a-b487-52287eab91ba",
+                            "name": "dryingTarget",
+                            "displayName": "Drying target",
+                            "displayNameEvent": "Drying target changed",
+                            "displayNameAction": "Set drying target",
+                            "defaultValue": "Iron dry",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Iron dry",
+                                "Cupboard dry",
+                                "Cupboard dry plus"
+                            ],
+                            "writable": true
+                        },
+                        {
                             "id": "6586f2d9-daec-43fa-8f7f-f3afc9d70046",
                             "name": "endTime",
                             "displayName": "End time",

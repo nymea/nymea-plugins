@@ -449,23 +449,23 @@ QUuid HomeConnect::selectProgram(const QString &haId, const QString &programKey,
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/vnd.bsh.sdk.v1+json");
 
     QJsonDocument doc;
-    QJsonObject data;
+    QVariantMap data;
     data.insert("key", programKey);
     if (!options.isEmpty()) {
-        QJsonArray optionsArray;
+        QVariantList optionsArray;
         Q_FOREACH(Option option, options) {
-            QJsonObject optionObject;
+            QVariantMap optionObject;
             optionObject["key"] = option.key;
-            optionObject["value"] = option.value.toString();
+            optionObject["value"] = option.value;
             if (!option.unit.isEmpty())
                 optionObject["unit"] = option.unit;
             optionsArray.append(optionObject);
         }
         data.insert("options", optionsArray);
     }
-    QJsonObject obj;
+    QVariantMap obj;
     obj.insert("data", data);
-    doc.setObject(obj);
+    doc.setObject(QJsonObject::fromVariantMap(obj));
     QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
@@ -561,21 +561,21 @@ QUuid HomeConnect::startProgram(const QString &haId, const QString &programKey, 
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/vnd.bsh.sdk.v1+json");
 
     QJsonDocument doc;
-    QJsonObject data;
+    QVariantMap data;
     data.insert("key", programKey);
-    QJsonArray optionsArray;
+    QVariantList optionsArray;
     Q_FOREACH(Option option, options) {
-        QJsonObject optionObject;
+        QVariantMap optionObject;
         optionObject["key"] = option.key;
-        optionObject["value"] = option.value.toString();
+        optionObject["value"] = option.value;
         if (!option.unit.isEmpty())
             optionObject["unit"] = option.unit;
         optionsArray.append(optionObject);
     }
     data.insert("options", optionsArray);
-    QJsonObject obj;
+    QVariantMap obj;
     obj.insert("data", data);
-    doc.setObject(obj);
+    doc.setObject(QJsonObject::fromVariantMap(obj));
     QNetworkReply *reply = m_networkManager->put(request, doc.toJson());
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, commandId, reply]{
