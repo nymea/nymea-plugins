@@ -110,7 +110,7 @@ void IntegrationPluginLifx::startPairing(ThingPairingInfo *info)
     QUrl url("https://api.lifx.com/v1");
     QNetworkReply *reply = m_networkManager->get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, info, [this, reply, info] {
+    connect(reply, &QNetworkReply::finished, info, [reply, info] {
 
         if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("LIFX server is not reachable."));
@@ -271,8 +271,8 @@ void IntegrationPluginLifx::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
     bool cloudDevice = false;
-    LifxLan *lifx;
-    LifxCloud *lifxCloud;
+    LifxLan *lifx = nullptr;
+    LifxCloud *lifxCloud = nullptr;
 
     if (m_lifxLanConnections.contains(thing)) {
         // Local connection first
