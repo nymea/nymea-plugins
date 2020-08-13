@@ -148,29 +148,29 @@ void LifxLan::sendMessage(const LifxLan::Message &message)
 
 
     //ADD RESERVED SECTION a reserved section of 48 bits (6 bytes)
-    header.append(6, 0x00); //that must be all zeros.
+    //header.append(6, '\x00'); //that must be all zeros.
 
     //ADD ACK and RES
-    header.append(2, 0x01);
+    //header.append(2, '\x01');
 
     //ADD SEQUENCE NUMBER 1Byte
-    header.append(m_sequenceNumber++);
+    //header.append(m_sequenceNumber++);
 
     //Protocol header. which begins with 64 reserved bits (8 bytes). Set these all to zero.
-    header.append(8, 0x00); //that must be all zeros.
+    //header.append(8, '\x00'); //that must be all zeros.
 
     //ADD MESSAGE TYPE
-    header.append(static_cast<uint16_t>(LightMessages::SetColor));
+    //header.append(static_cast<uint16_t>(LightMessages::SetColor));
 
     // Finally another reserved field of 16 bits (2 bytes).
-    header.append(2, 0x00);
+    //header.append(2, '\x00');
 
     //ADD SIZE
-    header.append(((static_cast<uint16_t>(header.length()+1) & 0xff00) >> 8));
-    header.append((static_cast<uint16_t>(header.length()+1) & 0x00ff));
+    //header.append(((static_cast<uint16_t>(header.length()+1) & 0xff00) >> 8));
+    //header.append((static_cast<uint16_t>(header.length()+1) & 0x00ff));
 
     //Finally another reserved field of 16 bits (2 bytes).
-    header.append(2, '0');
+    //header.append(2, '\x00');
 
     QByteArray fullMessage;
     //fullMessage = QByteArray::fromHex("0x310000340000000000000000000000000000000000000000000000000000000066000000005555FFFFFFFFAC0D00040000"); // test message - set all lights green
