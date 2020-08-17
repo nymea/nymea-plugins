@@ -749,7 +749,7 @@
                             "type": "bool",
                             "defaultValue": false,
                             "writable": true,
-                            "ioType": "digitalInput"
+                            "ioType": "digitalOutput"
                         }
                     ]
                 }
