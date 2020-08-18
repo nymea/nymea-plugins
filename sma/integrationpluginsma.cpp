@@ -48,7 +48,7 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
         connect(discovery, &Discovery::finished, info, [this, info](const QList<Host> &hosts) {
             qCDebug(dcSma()) << "Discovery finished. Found" << hosts.count() << "devices";
             foreach (const Host &host, hosts) {
-                if (host.hostName().contains("SMA Regelsysteme Gmbh")){
+                if (host.hostName().contains("SMA")){
                     ThingDescriptor descriptor(info->thingClassId(), host.hostName(), host.address() + " (" + host.macAddress() + ")");
 
                     foreach (Thing *existingThing, myThings()) {
@@ -67,7 +67,6 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
             }
             info->finish(Thing::ThingErrorNoError);
         });
-        info->finish(Thing::ThingErrorNoError);
     }
 }
 
@@ -95,8 +94,14 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             }
         }
         SunnyWebBox *sunnyWebBox = new SunnyWebBox(m_sunnyWebBoxCommunication, QHostAddress(thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()), this);
+        connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
+        connect(sunnyWebBox, &SunnyWebBox::devicesReceived, this, &IntegrationPluginSma::onDevicesReceived);
+        connect(sunnyWebBox, &SunnyWebBox::processDataReceived, this, &IntegrationPluginSma::onProcessDataReceived);
+        connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
         m_sunnyWebBoxes.insert(thing, sunnyWebBox);
-        //TODO m_asyncSetup
+        connect(info, &ThingSetupInfo::aborted, this, [thing, this] { m_sunnyWebBoxes.remove(thing);});
+        int requestId = sunnyWebBox->getPlantOverview();
+        m_asyncSetup.insert(requestId, info);
         return info->finish(Thing::ThingErrorNoError);
 
     } else if (thing->thingClassId() == inverterThingClassId) {
@@ -142,9 +147,11 @@ void IntegrationPluginSma::executeAction(ThingActionInfo *info)
         if (!sunnyWebBox)
             return;
         if (action.actionTypeId() == sunnyWebBoxSearchDevicesActionTypeId) {
-            sunnyWebBox->getDevices();
+            int requestId = sunnyWebBox->getDevices();
+            m_asyncActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, info, [requestId, this] {m_asyncActions.remove(requestId);});
         } else {
-            //Unhandled actionTypeId
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
@@ -172,12 +179,16 @@ void IntegrationPluginSma::onRefreshTimer()
 
 void IntegrationPluginSma::onPlantOverviewReceived(int messageId, SunnyWebBox::Overview overview)
 {
-    Q_UNUSED(messageId)
+    if (m_asyncSetup.contains(messageId)) {
+        ThingSetupInfo *info = m_asyncSetup.value(messageId);
+        info->finish(Thing::ThingErrorNoError);
+    }
 
     Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
     if (!thing)
         return;
 
+    qCDebug(dcSma()) << "Plant overview received" << overview.status;
     thing->setStateValue(sunnyWebBoxConnectedStateTypeId, true);
     thing->setStateValue(sunnyWebBoxCurrentPowerStateTypeId, overview.power);
     thing->setStateValue(sunnyWebBoxDayEnergyStateTypeId, overview.dailyYield);
@@ -191,7 +202,11 @@ void IntegrationPluginSma::onPlantOverviewReceived(int messageId, SunnyWebBox::O
 
 void IntegrationPluginSma::onDevicesReceived(int messageId, QList<SunnyWebBox::Device> devices)
 {
-    Q_UNUSED(messageId)
+    if (m_asyncActions.contains(messageId)) {
+        ThingActionInfo *info = m_asyncActions.value(messageId);
+        info->finish(Thing::ThingErrorNoError);
+    }
+
 
     Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
     if (!thing)

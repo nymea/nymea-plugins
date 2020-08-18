@@ -55,6 +55,7 @@ SunnyWebBoxCommunication::SunnyWebBoxCommunication(QObject *parent) : QObject(pa
                 qCWarning(dcSma()) << "Error reading pending datagram";
             }
         }
+        datagramReceived(address, data);
     });
 }
 
@@ -68,6 +69,7 @@ int SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QSt
     obj["proc"] = procedure;
     obj["id"] = requestId;
     obj["format"] = "JSON";
+    qCDebug(dcSma()) << "Send message" << doc.toJson() << address << m_port;
     m_udpSocket->writeDatagram(doc.toJson(), address, m_port);
     return requestId;
 }
@@ -85,12 +87,14 @@ int SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QSt
     if (!params.isEmpty()) {
         obj.insert("params", params);
     }
+    qCDebug(dcSma()) << "Send message" << doc.toJson() << address << m_port;
     m_udpSocket->writeDatagram(doc.toJson(), address, m_port);
     return requestId;
 }
 
 void SunnyWebBoxCommunication::datagramReceived(const QHostAddress &address, const QByteArray &data)
 {
+    qCDebug(dcSma()) << "Datagram received" << data;
     QJsonParseError error;
     QJsonDocument doc = QJsonDocument::fromJson(data, &error);
     if (error.error != QJsonParseError::NoError) {

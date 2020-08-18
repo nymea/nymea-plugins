@@ -67,7 +67,8 @@ private slots:
 private:
     PluginTimer *m_refreshTimer = nullptr;
     QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<Thing *, ThingSetupInfo *> m_asyncSetup;
+    QHash<int, ThingSetupInfo *> m_asyncSetup;
+    QHash<int, ThingActionInfo *> m_asyncActions;
     SunnyWebBoxCommunication *m_sunnyWebBoxCommunication = nullptr;
 
     SunnyWebBox *createSunnyWebBoxConnection(Thing *thing);
