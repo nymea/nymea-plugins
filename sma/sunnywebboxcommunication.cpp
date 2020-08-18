@@ -60,10 +60,11 @@ SunnyWebBoxCommunication::SunnyWebBoxCommunication(QObject *parent) : QObject(pa
 
 QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure)
 {
-    QString requestId = QUuid::createUuid().toString().remove('{').left(14);
+    QString requestId = QUuid::createUuid().toString().remove('{').remove('-').left(14);
 
     QJsonDocument doc;
     QJsonObject obj;
+    obj.insert("params", QJsonObject());
     obj["format"] = "JSON";
     obj["id"] = requestId;
     obj["proc"] = procedure;
@@ -71,20 +72,27 @@ QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const
     doc.setObject(obj);
     QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
     qCDebug(dcSma()) << "Send message" << data << address << m_port;
-    m_udpSocket->writeDatagram(data, address, m_port);
+    if(m_messageQueue.value(address).isEmpty()) {
+        m_udpSocket->writeDatagram(data, address, m_port);
+    } else {
+        if (m_messageQueue[address].length() < 40) {
+            m_messageQueue[address].append(data);
+        } else {
+            qCDebug(dcSma()) << "Message queue overflow";
+            return "";
+        }
+    }
     return requestId;
 }
 
 QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
 {
-    QString requestId = QUuid::createUuid().toString().remove('{').left(14);
+    QString requestId = QUuid::createUuid().toString().remove('{').remove('-').left(14);
 
     QJsonDocument doc;
     QJsonObject obj;
 
-    if (!params.isEmpty()) {
-        obj.insert("params", params);
-    }
+    obj.insert("params", params);
     obj["format"] = "JSON";
     obj["id"] = requestId;
     obj["proc"] = procedure;
@@ -92,12 +100,27 @@ QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const
     doc.setObject(obj);
     QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
     qCDebug(dcSma()) << "Send message" << data << address << m_port;
-    m_udpSocket->writeDatagram(data, address, m_port);
+    if(m_messageQueue.value(address).isEmpty()) {
+        m_udpSocket->writeDatagram(data, address, m_port);
+    } else {
+        if (m_messageQueue[address].length() < 40) {
+            m_messageQueue[address].append(data);
+        } else {
+            qCDebug(dcSma()) << "Message queue overflow";
+            return "";
+        }
+    }
     return requestId;
 }
 
 void SunnyWebBoxCommunication::datagramReceived(const QHostAddress &address, const QByteArray &data)
 {
+    if(!m_messageQueue.value(address).isEmpty()) {
+        QByteArray data = m_messageQueue[address].takeFirst();
+        qCDebug(dcSma()) << "Send message from queue" << data << address << m_port;
+        m_udpSocket->writeDatagram(data, address, m_port);
+    }
+
     QList<QByteArray> arrayList = data.split('\x00');
     QByteArray cleanData;
     Q_FOREACH(QByteArray i, arrayList) {

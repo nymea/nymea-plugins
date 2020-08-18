@@ -148,6 +148,9 @@ void IntegrationPluginSma::executeAction(ThingActionInfo *info)
             return;
         if (action.actionTypeId() == sunnyWebBoxSearchDevicesActionTypeId) {
             QString requestId = sunnyWebBox->getDevices();
+            if (requestId.isEmpty()) {
+                return info->finish(Thing::ThingErrorHardwareNotAvailable);
+            }
             m_asyncActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, info, [requestId, this] {m_asyncActions.remove(requestId);});
         } else {

@@ -46,6 +46,7 @@ public:
 private:
     int m_port =  34268;
     QUdpSocket *m_udpSocket;
+    QHash<QHostAddress, QList<QByteArray>> m_messageQueue;
 
     void datagramReceived(const QHostAddress &address, const QByteArray &data);
 
