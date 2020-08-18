@@ -35,6 +35,7 @@
 #include "plugintimer.h"
 #include "sunnywebbox.h"
 #include "sunnywebboxcommunication.h"
+#include "discovery.h"
 
 #include <QDebug>
 #include <QHostAddress>

@@ -40,6 +40,33 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
 {
     if (info->thingClassId() == sunnyWebBoxThingClassId) {
 
+        Discovery *discovery = new Discovery(this);
+        discovery->discoverHosts(25);
+
+        // clean up discovery object when this discovery info is deleted
+        connect(info, &ThingDiscoveryInfo::destroyed, discovery, &Discovery::deleteLater);
+        connect(discovery, &Discovery::finished, info, [this, info](const QList<Host> &hosts) {
+            qCDebug(dcSma()) << "Discovery finished. Found" << hosts.count() << "devices";
+            foreach (const Host &host, hosts) {
+                if (host.hostName().contains("SMA Regelsysteme Gmbh")){
+                    ThingDescriptor descriptor(info->thingClassId(), host.hostName(), host.address() + " (" + host.macAddress() + ")");
+
+                    foreach (Thing *existingThing, myThings()) {
+                        if (existingThing->paramValue(sunnyWebBoxThingMacAddressParamTypeId).toString() == host.macAddress()) {
+                            descriptor.setThingId(existingThing->id());
+                            break;
+                        }
+                    }
+                    ParamList params;
+                    params << Param(sunnyWebBoxThingMacAddressParamTypeId, host.macAddress());
+                    params << Param(sunnyWebBoxThingHostParamTypeId, host.address());
+                    descriptor.setParams(params);
+
+                    info->addThingDescriptor(descriptor);
+                }
+            }
+            info->finish(Thing::ThingErrorNoError);
+        });
         info->finish(Thing::ThingErrorNoError);
     }
 }

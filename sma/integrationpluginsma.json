@@ -24,11 +24,11 @@
                             "defaultValue": "192.168.0.168"
                         },
                         {
-                            "id": "a6df3d28-1b02-42dd-8301-81754c47e55f",
-                            "name": "id",
-                            "displayName": "Device ID",
+                            "id": "03f32361-4e13-4597-a346-af8d16a986b3",
+                            "name": "macAddress",
+                            "displayName": "hardware address",
                             "type": "QString",
-                            "defaultValue": "-",
+                            "inputType": "TextLine",
                             "readOnly": true
                         }
                     ],
