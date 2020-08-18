@@ -59,16 +59,16 @@ public:
 private slots:
     void onRefreshTimer();
 
-    void onPlantOverviewReceived(const QUuid &messageId, SunnyWebBox::Overview overview);
-    void onDevicesReceived(const QUuid &messageId, QList<SunnyWebBox::Device> devices);
-    void onProcessDataReceived(const QUuid &messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
-    void onParameterChannelsReceived(const QUuid &messageId, const QString &deviceKey, QStringList parameterChannels);
+    void onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview);
+    void onDevicesReceived(const QString &messageId, QList<SunnyWebBox::Device> devices);
+    void onProcessDataReceived(const QString &messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
+    void onParameterChannelsReceived(const QString &messageId, const QString &deviceKey, QStringList parameterChannels);
 
 private:
     PluginTimer *m_refreshTimer = nullptr;
     QHash<Thing *, SunnyWebBox *> m_sunnyWebBoxes;
-    QHash<QUuid, ThingSetupInfo *> m_asyncSetup;
-    QHash<QUuid, ThingActionInfo *> m_asyncActions;
+    QHash<QString, ThingSetupInfo *> m_asyncSetup;
+    QHash<QString, ThingActionInfo *> m_asyncActions;
     SunnyWebBoxCommunication *m_sunnyWebBoxCommunication = nullptr;
 
     SunnyWebBox *createSunnyWebBoxConnection(Thing *thing);

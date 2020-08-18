@@ -100,7 +100,7 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
         connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
         m_sunnyWebBoxes.insert(thing, sunnyWebBox);
         connect(info, &ThingSetupInfo::aborted, this, [thing, this] { m_sunnyWebBoxes.remove(thing);});
-        QUuid requestId = sunnyWebBox->getPlantOverview();
+        QString requestId = sunnyWebBox->getPlantOverview();
         m_asyncSetup.insert(requestId, info);
         return info->finish(Thing::ThingErrorNoError);
 
@@ -147,7 +147,7 @@ void IntegrationPluginSma::executeAction(ThingActionInfo *info)
         if (!sunnyWebBox)
             return;
         if (action.actionTypeId() == sunnyWebBoxSearchDevicesActionTypeId) {
-            QUuid requestId = sunnyWebBox->getDevices();
+            QString requestId = sunnyWebBox->getDevices();
             m_asyncActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, info, [requestId, this] {m_asyncActions.remove(requestId);});
         } else {
@@ -177,7 +177,7 @@ void IntegrationPluginSma::onRefreshTimer()
     }
 }
 
-void IntegrationPluginSma::onPlantOverviewReceived(const QUuid &messageId, SunnyWebBox::Overview overview)
+void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview)
 {
     if (m_asyncSetup.contains(messageId)) {
         ThingSetupInfo *info = m_asyncSetup.value(messageId);
@@ -200,7 +200,7 @@ void IntegrationPluginSma::onPlantOverviewReceived(const QUuid &messageId, Sunny
     }
 }
 
-void IntegrationPluginSma::onDevicesReceived(const QUuid &messageId, QList<SunnyWebBox::Device> devices)
+void IntegrationPluginSma::onDevicesReceived(const QString &messageId, QList<SunnyWebBox::Device> devices)
 {
     if (m_asyncActions.contains(messageId)) {
         ThingActionInfo *info = m_asyncActions.value(messageId);
@@ -221,7 +221,7 @@ void IntegrationPluginSma::onDevicesReceived(const QUuid &messageId, QList<Sunny
     emit autoThingsAppeared(descriptors);
 }
 
-void IntegrationPluginSma::onProcessDataReceived(const QUuid &messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels)
+void IntegrationPluginSma::onProcessDataReceived(const QString &messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels)
 {
     Q_UNUSED(messageId)
     Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
@@ -240,7 +240,7 @@ void IntegrationPluginSma::onProcessDataReceived(const QUuid &messageId, const Q
     }
 }
 
-void IntegrationPluginSma::onParameterChannelsReceived(const QUuid &messageId, const QString &deviceKey, QStringList parameterChannels)
+void IntegrationPluginSma::onParameterChannelsReceived(const QString &messageId, const QString &deviceKey, QStringList parameterChannels)
 {
     Q_UNUSED(messageId)
 

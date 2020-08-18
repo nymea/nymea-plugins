@@ -33,6 +33,7 @@
 
 #include "QJsonDocument"
 #include "QJsonObject"
+#include <QUuid>
 
 SunnyWebBoxCommunication::SunnyWebBoxCommunication(QObject *parent) : QObject(parent)
 {
@@ -57,14 +58,14 @@ SunnyWebBoxCommunication::SunnyWebBoxCommunication(QObject *parent) : QObject(pa
     });
 }
 
-QUuid SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure)
+QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure)
 {
-    QUuid requestId = QUuid::createUuid();
+    QString requestId = QUuid::createUuid().toString().remove('{').left(14);
 
     QJsonDocument doc;
     QJsonObject obj;
     obj["format"] = "JSON";
-    obj["id"] = requestId.toString().remove('{').remove('}');
+    obj["id"] = requestId;
     obj["proc"] = procedure;
     obj["version"] = "1.0";
     doc.setObject(obj);
@@ -74,9 +75,9 @@ QUuid SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const Q
     return requestId;
 }
 
-QUuid SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
+QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
 {
-    QUuid requestId = QUuid::createUuid();
+    QString requestId = QUuid::createUuid().toString().remove('{').left(14);
 
     QJsonDocument doc;
     QJsonObject obj;
@@ -85,7 +86,7 @@ QUuid SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const Q
         obj.insert("params", params);
     }
     obj["format"] = "JSON";
-    obj["id"] = requestId.toString().remove('{').remove('}');
+    obj["id"] = requestId;
     obj["proc"] = procedure;
     obj["version"] = "1.0";
     doc.setObject(obj);
@@ -122,7 +123,7 @@ void SunnyWebBoxCommunication::datagramReceived(const QHostAddress &address, con
 
     if (map.contains("proc") && map.contains("result")) {
         QString requestType = map["proc"].toString();
-        QUuid requestId = QUuid(map["id"].toString());
+        QString requestId = map["id"].toString();
         QVariantMap result = map.value("result").toMap();
         emit messageReceived(address, requestId, requestType, result);
     } else {
