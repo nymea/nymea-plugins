@@ -33,6 +33,7 @@
 
 #include "pi16adcchannel.h"
 #include "ads1115channel.h"
+#include "mcp342xchannel.h"
 
 #include <hardware/i2c/i2cmanager.h>
 
@@ -113,6 +114,18 @@ void IntegrationPluginI2CDevices::discoverThings(ThingDiscoveryInfo *info)
                 ParamList params;
                 params << Param(ads1115ThingI2cPortParamTypeId, scanResult.portName);
                 params << Param(ads1115ThingI2cAddressParamTypeId, scanResult.address);
+                descriptor.setParams(params);
+                info->addThingDescriptor(descriptor);
+            }
+        }
+
+        if (info->thingClassId() == mcp342xThingClassId) {
+            // The MCP3423 && MCP3424 have selectable addresses from 0x68 to 0x6f
+            if (scanResult.address >= 0x68 && scanResult.address <= 0x6f) {
+                ThingDescriptor descriptor(mcp342xThingClassId, "MCP3422/MCP3423/MCP3424", QString("%1: 0x%2").arg(scanResult.portName).arg(scanResult.address, 0, 16));
+                ParamList params;
+                params << Param(mcp342xThingI2cPortParamTypeId, scanResult.portName);
+                params << Param(mcp342xThingI2cAddressParamTypeId, scanResult.address);
                 descriptor.setParams(params);
                 info->addThingDescriptor(descriptor);
             }
@@ -200,6 +213,35 @@ void IntegrationPluginI2CDevices::setupThing(ThingSetupInfo *info)
         }
         info->finish(Thing::ThingErrorNoError);
     }
+
+    if (info->thing()->thingClassId() == mcp342xThingClassId) {
+        QString i2cPortName = info->thing()->paramValue(mcp342xThingI2cPortParamTypeId).toString();
+        int i2cAddress = info->thing()->paramValue(mcp342xThingI2cAddressParamTypeId).toInt();
+        int gainParam = info->thing()->paramValue(mcp342xThingInputGainParamTypeId).toInt();
+        int channel = 1;
+        MCP342XChannel *mcp342x = new MCP342XChannel(i2cPortName, i2cAddress, channel, MCP342XChannel::Gain(gainParam), this);
+        if (!hardwareManager()->i2cManager()->open(mcp342x)) {
+            delete mcp342x;
+            info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Failed to open I2C port."));
+            return;
+        }
+
+        Thing *thing = info->thing();
+        connect(mcp342x, &MCP342XChannel::readingAvailable, thing, [this, thing](const QByteArray &data){
+            if (data.length() != 2) {
+                qCWarning(dcI2cDevices()) << "Error reading from" << thing;
+                return;
+            }
+            //const int max = 32768;
+            //int value = static_cast<qint16>(data[0]) * 256 + static_cast<qint16>(data[1]);
+            //double transformedValue = qMin(1.0 * value / max, 1.0);
+            //thing->setStateValue(m_ads1115ChannelMap.value(i), transformedValue);
+            //thing->setStateValue(m_ads1115OvervoltageMap.value(i), value > 32768);
+        });
+        hardwareManager()->i2cManager()->startReading(mcp342x, 5000);
+        m_i2cDevices.insert(mcp342x, thing);
+    }
+    info->finish(Thing::ThingErrorNoError);
 }
 
 void IntegrationPluginI2CDevices::thingRemoved(Thing *thing)

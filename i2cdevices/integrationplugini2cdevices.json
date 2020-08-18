@@ -451,6 +451,45 @@
                     ]
                 }
             ]
+        },
+        {
+            "id": "05a342c1-2f38-469f-a79e-5961b0600ca3",
+            "name": "microchipTechnology",
+            "displayName": "Microchip Technology",
+            "thingClasses": [
+                {
+                    "id": "74250c34-1aff-4d8f-82f8-825041f11ae3",
+                    "name": "mcp342x",
+                    "displayName": "mcp3422/mcp3423/mcp3424",
+                    "createMethods": ["user", "discovery"],
+                    "setupMethod": "justAdd",
+                    "paramTypes": [
+                        {
+                            "id": "22af4227-805b-4211-b4be-6d7bce5f03a8",
+                            "name": "i2cPort",
+                            "displayName": "I2C port",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "c1a518b6-0139-42f5-bd0e-5bea56f29ac6",
+                            "name": "i2cAddress",
+                            "displayName": "I2C address",
+                            "type": "int"
+                        },
+                        {
+                            "id": "e58821d2-248d-40e6-b7f5-be517c293d9d",
+                            "name": "inputGain",
+                            "displayName": "Input gain",
+                            "type": "double",
+                            "allowedValues": [ 8, 4, 2, 1 ],
+                            "unit": "Volt",
+                            "defaultValue": 4.096
+                        }
+                    ],
+                    "stateTypes": [
+                    ]
+                }
+            ]
         }
     ]
 }
