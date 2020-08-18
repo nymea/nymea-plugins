@@ -70,7 +70,7 @@ private:
     QHash<Thing *, ThingSetupInfo *> m_asyncSetup;
     SunnyWebBoxCommunication *m_sunnyWebBoxCommunication = nullptr;
 
-    SunnyWebBox * createSunnyWebBoxConnection(Thing *thing);
+    SunnyWebBox *createSunnyWebBoxConnection(Thing *thing);
     void setupChild(ThingSetupInfo *info, Thing *parentThing);
     void getData(Thing *thing);
 };
