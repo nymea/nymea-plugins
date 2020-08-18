@@ -37,7 +37,7 @@
 SunnyWebBoxCommunication::SunnyWebBoxCommunication(QObject *parent) : QObject(parent)
 {
     m_udpSocket = new QUdpSocket(this);
-    m_udpSocket->bind(QHostAddress::LocalHost, m_port);
+    m_udpSocket->bind(QHostAddress::Any, m_port);
 
     connect(m_udpSocket, &QUdpSocket::stateChanged, this, [this](QAbstractSocket::SocketState state) {
         emit socketConnected(state == QAbstractSocket::SocketState::ConnectedState);
@@ -48,12 +48,10 @@ SunnyWebBoxCommunication::SunnyWebBoxCommunication(QObject *parent) : QObject(pa
         QHostAddress address;
         quint16 port;
         QByteArray data;
-        while (m_udpSocket->hasPendingDatagrams()) {
-            qCDebug(dcSma()) << "Received datagram";
-            int receivedBytes = m_udpSocket->readDatagram(data.data(), 1000, &address, &port);
-            if (receivedBytes == -1) {
-                qCWarning(dcSma()) << "Error reading pending datagram";
-            }
+        data.resize(m_udpSocket->pendingDatagramSize());
+        int receivedBytes = m_udpSocket->readDatagram(data.data(), data.size(), &address, &port);
+        if (receivedBytes == -1) {
+            qCWarning(dcSma()) << "Error reading pending datagram";
         }
         datagramReceived(address, data);
     });
@@ -69,6 +67,7 @@ int SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QSt
     obj["proc"] = procedure;
     obj["id"] = requestId;
     obj["format"] = "JSON";
+    doc.setObject(obj);
     qCDebug(dcSma()) << "Send message" << doc.toJson() << address << m_port;
     m_udpSocket->writeDatagram(doc.toJson(), address, m_port);
     return requestId;
@@ -87,6 +86,7 @@ int SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QSt
     if (!params.isEmpty()) {
         obj.insert("params", params);
     }
+    doc.setObject(obj);
     qCDebug(dcSma()) << "Send message" << doc.toJson() << address << m_port;
     m_udpSocket->writeDatagram(doc.toJson(), address, m_port);
     return requestId;
