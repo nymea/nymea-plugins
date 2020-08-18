@@ -61,6 +61,21 @@ int SunnyWebBox::getProcessDataChannels(const QString &deviceId)
     return m_communication->sendMessage(m_hostAddresss, "GetProcessDataChannels", params);
 }
 
+int SunnyWebBox::getProcessData(const QStringList &deviceKeys)
+{
+    Q_UNUSED(deviceKeys)
+}
+
+int SunnyWebBox::getParameterChannels(const QString &deviceKey)
+{
+    Q_UNUSED(deviceKey)
+}
+
+int SunnyWebBox::getParameters(const QStringList &deviceKeys)
+{
+    Q_UNUSED(deviceKeys)
+}
+
 int SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString, QVariant> &channels)
 {
     QJsonObject paramsObj;
@@ -78,6 +93,16 @@ int SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString, QV
     devicesArray.append(deviceObj);
     paramsObj["devices"] = devicesArray;
     return m_communication->sendMessage(m_hostAddresss, "SetParameter", paramsObj);
+}
+
+void SunnyWebBox::setHostAddress(const QHostAddress &address)
+{
+    m_hostAddresss = address;
+}
+
+QHostAddress SunnyWebBox::hostAddress()
+{
+    return m_hostAddresss;
 }
 
 void SunnyWebBox::onMessageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result)

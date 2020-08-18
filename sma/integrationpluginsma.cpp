@@ -250,3 +250,8 @@ void IntegrationPluginSma::setupChild(ThingSetupInfo *info, Thing *parentThing)
     Q_UNUSED(info)
     Q_UNUSED(parentThing)
 }
+
+void IntegrationPluginSma::getData(Thing *thing)
+{
+    Q_UNUSED(thing)
+}

@@ -83,7 +83,7 @@ public:
     int getParameters(const QStringList &deviceKeys); //Returns the parameter values of up to 5 devices
     int setParameters(const QString &deviceKeys, const QHash<QString, QVariant> &channels); //Sets parameter values
 
-    void setHostAddress();
+    void setHostAddress(const QHostAddress &address);
     QHostAddress hostAddress();
 
 private:
@@ -92,7 +92,6 @@ private:
     SunnyWebBoxCommunication *m_communication = nullptr;
 
 public slots:
-    void onDatagramReceived(const QByteArray &data);
     void onMessageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result);
 
 signals:
