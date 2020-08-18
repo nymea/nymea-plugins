@@ -44,31 +44,31 @@ SunnyWebBox::SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAdd
     connect(m_communication, &SunnyWebBoxCommunication::messageReceived, this, &SunnyWebBox::onMessageReceived);
 }
 
-int SunnyWebBox::getPlantOverview()
+QUuid SunnyWebBox::getPlantOverview()
 {
     return m_communication->sendMessage(m_hostAddresss, "GetPlantOverview");
 }
 
-int SunnyWebBox::getDevices()
+QUuid SunnyWebBox::getDevices()
 {
     return m_communication->sendMessage(m_hostAddresss, "GetDevices");
 }
 
-int SunnyWebBox::getProcessDataChannels(const QString &deviceId)
+QUuid SunnyWebBox::getProcessDataChannels(const QString &deviceId)
 {
     QJsonObject params;
     params["device"] = deviceId;
     return m_communication->sendMessage(m_hostAddresss, "GetProcessDataChannels", params);
 }
 
-int SunnyWebBox::getProcessData(const QStringList &deviceKeys)
+QUuid SunnyWebBox::getProcessData(const QStringList &deviceKeys)
 {
     QJsonObject params;
-    params["device"] = deviceKeys.first(); //TODO
+    params["device"] = deviceKeys.first();
     return m_communication->sendMessage(m_hostAddresss, "GetProcessData", params);
 }
 
-int SunnyWebBox::getParameterChannels(const QString &deviceKey)
+QUuid SunnyWebBox::getParameterChannels(const QString &deviceKey)
 {
     QJsonObject paramsObj;
     QJsonArray devicesArray;
@@ -79,7 +79,7 @@ int SunnyWebBox::getParameterChannels(const QString &deviceKey)
     return m_communication->sendMessage(m_hostAddresss, "GetParameterChannels", paramsObj);
 }
 
-int SunnyWebBox::getParameters(const QStringList &deviceKeys)
+QUuid SunnyWebBox::getParameters(const QStringList &deviceKeys)
 {
     QJsonObject paramsObj;
     QJsonArray devicesArray;
@@ -90,7 +90,7 @@ int SunnyWebBox::getParameters(const QStringList &deviceKeys)
     return m_communication->sendMessage(m_hostAddresss, "GetParameter", paramsObj);
 }
 
-int SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString, QVariant> &channels)
+QUuid SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString, QVariant> &channels)
 {
     QJsonObject paramsObj;
     QJsonArray devicesArray;
@@ -119,7 +119,7 @@ QHostAddress SunnyWebBox::hostAddress()
     return m_hostAddresss;
 }
 
-void SunnyWebBox::onMessageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result)
+void SunnyWebBox::onMessageReceived(const QHostAddress &address, const QUuid &messageId, const QString &messageType, const QVariantMap &result)
 {
     if (address != m_hostAddresss) {
         return;

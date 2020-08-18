@@ -33,6 +33,7 @@
 
 #include <QObject>
 #include <QUdpSocket>
+#include <QUuid>
 
 class SunnyWebBoxCommunication : public QObject
 {
@@ -40,8 +41,8 @@ class SunnyWebBoxCommunication : public QObject
 public:
     explicit SunnyWebBoxCommunication(QObject *parent = nullptr);
 
-    int sendMessage(const QHostAddress &address, const QString &procedure);
-    int sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params);
+    QUuid sendMessage(const QHostAddress &address, const QString &procedure);
+    QUuid sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params);
 
 private:
     int m_port =  34268;
@@ -51,7 +52,7 @@ private:
 
 signals:
     void socketConnected(bool connected);
-    void messageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result);
+    void messageReceived(const QHostAddress &address, QUuid messageId, const QString &messageType, const QVariantMap &result);
 
 };
 

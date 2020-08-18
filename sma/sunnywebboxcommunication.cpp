@@ -57,46 +57,55 @@ SunnyWebBoxCommunication::SunnyWebBoxCommunication(QObject *parent) : QObject(pa
     });
 }
 
-int SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure)
+QUuid SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure)
 {
-    int requestId = qrand();
+    QUuid requestId = QUuid::createUuid();
 
     QJsonDocument doc;
     QJsonObject obj;
-    obj["version"] = "1.0";
-    obj["proc"] = procedure;
-    obj["id"] = requestId;
     obj["format"] = "JSON";
+    obj["id"] = requestId.toString().remove('{').remove('}');
+    obj["proc"] = procedure;
+    obj["version"] = "1.0";
     doc.setObject(obj);
-    qCDebug(dcSma()) << "Send message" << doc.toJson() << address << m_port;
-    m_udpSocket->writeDatagram(doc.toJson(), address, m_port);
+    QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
+    qCDebug(dcSma()) << "Send message" << data << address << m_port;
+    m_udpSocket->writeDatagram(data, address, m_port);
     return requestId;
 }
 
-int SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
+QUuid SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
 {
-    int requestId = qrand();
+    QUuid requestId = QUuid::createUuid();
 
     QJsonDocument doc;
     QJsonObject obj;
-    obj["version"] = "1.0";
-    obj["proc"] = procedure;
-    obj["id"] = requestId;
-    obj["format"] = "JSON";
+
     if (!params.isEmpty()) {
         obj.insert("params", params);
     }
+    obj["format"] = "JSON";
+    obj["id"] = requestId.toString().remove('{').remove('}');
+    obj["proc"] = procedure;
+    obj["version"] = "1.0";
     doc.setObject(obj);
-    qCDebug(dcSma()) << "Send message" << doc.toJson() << address << m_port;
-    m_udpSocket->writeDatagram(doc.toJson(), address, m_port);
+    QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
+    qCDebug(dcSma()) << "Send message" << data << address << m_port;
+    m_udpSocket->writeDatagram(data, address, m_port);
     return requestId;
 }
 
 void SunnyWebBoxCommunication::datagramReceived(const QHostAddress &address, const QByteArray &data)
 {
-    qCDebug(dcSma()) << "Datagram received" << data;
+    QList<QByteArray> arrayList = data.split('\x00');
+    QByteArray cleanData;
+    Q_FOREACH(QByteArray i, arrayList) {
+        //Removing all '\0' characters
+        cleanData.append(i);
+    }
+    qCDebug(dcSma()) << "Datagram received" << cleanData;
     QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
+    QJsonDocument doc = QJsonDocument::fromJson(cleanData, &error);
     if (error.error != QJsonParseError::NoError) {
         qCWarning(dcSma()) << "Could not parse JSON" << error.errorString();
         return;
@@ -113,7 +122,7 @@ void SunnyWebBoxCommunication::datagramReceived(const QHostAddress &address, con
 
     if (map.contains("proc") && map.contains("result")) {
         QString requestType = map["proc"].toString();
-        int requestId = map["id"].toInt();
+        QUuid requestId = QUuid(map["id"].toString());
         QVariantMap result = map.value("result").toMap();
         emit messageReceived(address, requestId, requestType, result);
     } else {

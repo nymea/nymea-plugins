@@ -75,13 +75,13 @@ public:
 
     explicit SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAddress &hostAddress, QObject *parrent = 0);
 
-    int getPlantOverview(); // Returns an object with the following plant data: PAC, E-TODAY, E-TOTAL, MODE, ERROR
-    int getDevices(); //Returns a hierarchical list of all detected plant devices.
-    int getProcessDataChannels(const QString &deviceKey); //Returns a list with the meta names of the available process data channels for a particular device type.
-    int getProcessData(const QStringList &deviceKeys); //Returns process data for up to 5 devices per request.
-    int getParameterChannels(const QString &deviceKey); //Returns a list with the meta names of the available parameter channels for a particular device type
-    int getParameters(const QStringList &deviceKeys); //Returns the parameter values of up to 5 devices
-    int setParameters(const QString &deviceKeys, const QHash<QString, QVariant> &channels); //Sets parameter values
+    QUuid getPlantOverview(); // Returns an object with the following plant data: PAC, E-TODAY, E-TOTAL, MODE, ERROR
+    QUuid getDevices(); //Returns a hierarchical list of all detected plant devices.
+    QUuid getProcessDataChannels(const QString &deviceKey); //Returns a list with the meta names of the available process data channels for a particular device type.
+    QUuid getProcessData(const QStringList &deviceKeys); //Returns process data for up to 5 devices per request.
+    QUuid getParameterChannels(const QString &deviceKey); //Returns a list with the meta names of the available parameter channels for a particular device type
+    QUuid getParameters(const QStringList &deviceKeys); //Returns the parameter values of up to 5 devices
+    QUuid setParameters(const QString &deviceKeys, const QHash<QString, QVariant> &channels); //Sets parameter values
 
     void setHostAddress(const QHostAddress &address);
     QHostAddress hostAddress();
@@ -92,17 +92,17 @@ private:
     SunnyWebBoxCommunication *m_communication = nullptr;
 
 public slots:
-    void onMessageReceived(const QHostAddress &address, int messageId, const QString &messageType, const QVariantMap &result);
+    void onMessageReceived(const QHostAddress &address, const QUuid &messageId, const QString &messageType, const QVariantMap &result);
 
 signals:
     void connectedChanged(bool connected);
 
-    void plantOverviewReceived(int messageId, Overview overview);
-    void devicesReceived(int messageId, QList<Device> devices);
-    void processDataChannelsReceived(int messageId, const QString &deviceKey, QStringList processDataChanels);
-    void processDataReceived(int messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
-    void parameterChannelsReceived(int messageId, const QString &deviceKey, QStringList parameterChannels);
-    void parametersReceived(int messageId, const QString &deviceKey, const QList<Parameter> &parameters);
+    void plantOverviewReceived(const QUuid &messageId, Overview overview);
+    void devicesReceived(const QUuid &messageId, QList<Device> devices);
+    void processDataChannelsReceived(const QUuid &messageId, const QString &deviceKey, QStringList processDataChanels);
+    void processDataReceived(const QUuid &messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
+    void parameterChannelsReceived(const QUuid &messageId, const QString &deviceKey, QStringList parameterChannels);
+    void parametersReceived(const QUuid &messageId, const QString &deviceKey, const QList<Parameter> &parameters);
 };
 
 #endif // SUNNYWEBBOX_H
