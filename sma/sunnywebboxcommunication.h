@@ -34,16 +34,19 @@
 #include <QObject>
 #include <QUdpSocket>
 
+#include "network/networkaccessmanager.h"
+
 class SunnyWebBoxCommunication : public QObject
 {
     Q_OBJECT
 public:
-    explicit SunnyWebBoxCommunication(QObject *parent = nullptr);
+    explicit SunnyWebBoxCommunication(NetworkAccessManager *networkAccessManager, QObject *parent = nullptr);
 
     QString sendMessage(const QHostAddress &address, const QString &procedure);
     QString sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params);
 
 private:
+    NetworkAccessManager *m_networkManager;
     int m_port =  34268;
     bool m_messageResponsePending = false;
     QUdpSocket *m_udpSocket;

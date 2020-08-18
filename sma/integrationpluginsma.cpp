@@ -75,11 +75,11 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (!m_sunnyWebBoxCommunication) {
-        m_sunnyWebBoxCommunication = new SunnyWebBoxCommunication(this);
+        m_sunnyWebBoxCommunication = new SunnyWebBoxCommunication(hardwareManager()->networkManager(), this);
     }
 
     if (!m_refreshTimer) {
-        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+        m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
         connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
     }
 
