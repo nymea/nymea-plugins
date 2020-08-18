@@ -45,6 +45,7 @@ public:
 
 private:
     int m_port =  34268;
+    bool m_messageResponsePending = false;
     QUdpSocket *m_udpSocket;
     QHash<QHostAddress, QList<QByteArray>> m_messageQueue;
 

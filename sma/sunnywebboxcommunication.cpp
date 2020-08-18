@@ -34,6 +34,7 @@
 #include "QJsonDocument"
 #include "QJsonObject"
 #include <QUuid>
+#include <QTimer>
 
 SunnyWebBoxCommunication::SunnyWebBoxCommunication(QObject *parent) : QObject(parent)
 {
@@ -72,13 +73,14 @@ QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const
     doc.setObject(obj);
     QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
     qCDebug(dcSma()) << "Send message" << data << address << m_port;
-    if(m_messageQueue.value(address).isEmpty()) {
+    if(m_messageResponsePending) {
         m_udpSocket->writeDatagram(data, address, m_port);
+        m_messageResponsePending = true;
     } else {
         if (m_messageQueue[address].length() < 40) {
             m_messageQueue[address].append(data);
         } else {
-            qCDebug(dcSma()) << "Message queue overflow";
+            qCWarning(dcSma()) << "Message queue overflow";
             return "";
         }
     }
@@ -100,8 +102,9 @@ QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const
     doc.setObject(obj);
     QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
     qCDebug(dcSma()) << "Send message" << data << address << m_port;
-    if(m_messageQueue.value(address).isEmpty()) {
+    if(m_messageResponsePending) {
         m_udpSocket->writeDatagram(data, address, m_port);
+        m_messageResponsePending = true;
     } else {
         if (m_messageQueue[address].length() < 40) {
             m_messageQueue[address].append(data);
@@ -118,9 +121,11 @@ void SunnyWebBoxCommunication::datagramReceived(const QHostAddress &address, con
     if(!m_messageQueue.value(address).isEmpty()) {
         QByteArray data = m_messageQueue[address].takeFirst();
         qCDebug(dcSma()) << "Send message from queue" << data << address << m_port;
-        m_udpSocket->writeDatagram(data, address, m_port);
+        //The interval between two queries should not be less than 30 seconds.
+        QTimer::singleShot(3000, this, [this, data, address]{m_udpSocket->writeDatagram(data, address, m_port);});
+    } else {
+        m_messageResponsePending = false;
     }
-
     QList<QByteArray> arrayList = data.split('\x00');
     QByteArray cleanData;
     Q_FOREACH(QByteArray i, arrayList) {
