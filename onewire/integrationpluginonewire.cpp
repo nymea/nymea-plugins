@@ -139,9 +139,12 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
         }
         connect(m_owfsInterface, &Owfs::devicesDiscovered, this, &IntegrationPluginOneWire::onOneWireDevicesDiscovered);
         return info->finish(Thing::ThingErrorNoError);
-    }
 
-    if (thing->thingClassId() == temperatureSensorThingClassId) {
+    } else if (thing->thingClassId() == temperatureSensorThingClassId) {
+
+        if (!m_w1Interface) {
+            m_w1Interface = new W1(this);
+        }
 
         qCDebug(dcOneWire) << "Setup one wire temperature sensor" << thing->params();
         if (m_owfsInterface) { //in case the child was setup before the interface
@@ -155,18 +158,16 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
         } else {
             return info->finish(Thing::ThingErrorHardwareNotAvailable, tr("No 1-Wire interface available"));
         }
-    }
 
-    if (thing->thingClassId() == singleChannelSwitchThingClassId) {
+    } else if (thing->thingClassId() == singleChannelSwitchThingClassId) {
         qCDebug(dcOneWire) << "Setup one wire switch" << thing->params();
         if (!m_owfsInterface) {
             QByteArray address = thing->paramValue(singleChannelSwitchThingAddressParamTypeId).toByteArray();
             thing->setStateValue(singleChannelSwitchDigitalOutputStateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_A));
         }
         return info->finish(Thing::ThingErrorNoError);
-    }
 
-    if (thing->thingClassId() == dualChannelSwitchThingClassId) {
+    } else if (thing->thingClassId() == dualChannelSwitchThingClassId) {
         qCDebug(dcOneWire) << "Setup one wire dual switch" << thing->params();
         if (!m_owfsInterface) {
             QByteArray address = thing->paramValue(dualChannelSwitchThingAddressParamTypeId).toByteArray();
@@ -174,9 +175,8 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
             thing->setStateValue(dualChannelSwitchDigitalOutput2StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_B));
         }
         return info->finish(Thing::ThingErrorNoError);
-    }
 
-    if (thing->thingClassId() == eightChannelSwitchThingClassId) {
+    } else if (thing->thingClassId() == eightChannelSwitchThingClassId) {
         qCDebug(dcOneWire) << "Setup one wire eight channel switch" << thing->params();
         if (!m_owfsInterface) {
             QByteArray address = thing->paramValue(eightChannelSwitchThingAddressParamTypeId).toByteArray();
@@ -190,8 +190,9 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
             thing->setStateValue(eightChannelSwitchDigitalOutput8StateTypeId, m_owfsInterface->getSwitchOutput(address, Owfs::SwitchChannel::PIO_H));
         }
         return info->finish(Thing::ThingErrorNoError);
+    } else {
+        return info->finish(Thing::ThingErrorThingNotFound);
     }
-    return info->finish(Thing::ThingErrorThingNotFound);
 }
 
 void IntegrationPluginOneWire::postSetupThing(Thing *thing)
@@ -285,6 +286,11 @@ void IntegrationPluginOneWire::thingRemoved(Thing *thing)
         return;
     }
 
+    if (myThings().filterByThingClassId(temperatureSensorThingClassId).isEmpty()) {
+        m_w1Interface->deleteLater();
+        m_w1Interface = nullptr;
+    }
+
     if (myThings().empty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
         m_pluginTimer = nullptr;
@@ -305,8 +311,12 @@ void IntegrationPluginOneWire::onPluginTimer()
 
         if (thing->thingClassId() == temperatureSensorThingClassId) {
             QByteArray address = thing->paramValue(temperatureSensorThingAddressParamTypeId).toByteArray();
-
-            double temperature = m_owfsInterface->getTemperature(address);
+            double temperature = 0;
+            if (m_owfsInterface) {
+               temperature = m_owfsInterface->getTemperature(address);
+            } else if (m_w1Interface) {
+                temperature = m_w1Interface->getTemperature(address);
+             }
             thing->setStateValue(temperatureSensorTemperatureStateTypeId, temperature);
         }
 

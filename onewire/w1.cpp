@@ -46,25 +46,16 @@ QStringList W1::discoverDevices()
         qCDebug(dcOneWire()) << "W1 kernel not loaded";
         return deviceList;
     }
-    w1SysFSDir.setFilter(QDir::Dirs | QDir::NoSymLinks);
+    w1SysFSDir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
     w1SysFSDir.setSorting(QDir::Name);
 
     QFileInfoList list = w1SysFSDir.entryInfoList();
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
-        qCDebug(dcOneWire()) << "Found W1 bus master" << fileInfo.fileName() << fileInfo.filePath();
-        m_w1BusMasters.append(QDir(fileInfo.filePath()));
-    }
-
-    Q_FOREACH(QDir busMaster, m_w1BusMasters) {
-        busMaster.setFilter(QDir::Dirs | QDir::NoSymLinks);
-        busMaster.setSorting(QDir::Name);
-        QFileInfoList list = busMaster.entryInfoList();
-        for (int i = 0; i < list.size(); ++i) {
-            QFileInfo fileInfo = list.at(i);
+        if(fileInfo.fileName()[2] == '-') {
+            qCDebug(dcOneWire()) << "Found one wire device" << fileInfo.filePath();
             deviceList.append(fileInfo.fileName());
         }
-
     }
     return deviceList;
 }
@@ -77,15 +68,20 @@ bool W1::interfaceIsAvailable()
 
 double W1::getTemperature(const QString &address)
 {
-    Q_FOREACH(QDir busMaster, m_w1BusMasters) {
-        QDir temperatureSensor(busMaster.dirName()+address);
-        if (temperatureSensor.exists()) {
-            qCDebug(dcOneWire()) << "Temperature" << address;
-            QFile temperature(temperatureSensor.dirName()+"/temperature");
-            if (!temperature.open(QIODevice::ReadOnly | QIODevice::Text))
-                return 0;
-            return temperature.readLine().toInt()/1000.00;
+    QDir temperatureSensor("/sys/bus/w1/devices/"+address);
+    if (temperatureSensor.exists()) {
+        qCDebug(dcOneWire()) << "Temperature" << address;
+        QFile temperature(temperatureSensor.dirName()+"/temperature");
+        if (!temperature.exists()) {
+            qCWarning(dcOneWire()) << "Directory doesn't exist" << temperature.fileName();
         }
+        if (!temperature.open(QIODevice::ReadOnly | QIODevice::Text)){
+            qCWarning(dcOneWire()) << "Could not open file" << temperature.fileName();
+            return 0;
+        }
+        return temperature.readLine().toInt()/1000.00;
+    } else {
+        qCWarning(dcOneWire()) << "Could not find device" << temperatureSensor;
     }
     return 0;
 }
