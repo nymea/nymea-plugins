@@ -27,8 +27,8 @@
                         {
                             "id": "d0ded173-c382-4ee3-8e24-3647b4e16afa",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -71,16 +71,16 @@
                         {
                             "id": "32305a16-b042-4574-8bd7-ad99d9e8e5da",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },
                         {
                             "id": "b04ee2a5-9b27-4ffc-9e12-7e05f5a41690",
                             "name": "temperature",
-                            "displayName": "temperature",
-                            "displayNameEvent": "temperature changed",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -114,8 +114,8 @@
                         {
                             "id": "16bae8e8-bfe1-4648-9018-f6ce610f4236",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -158,8 +158,8 @@
                         {
                             "id": "fb6e63db-316b-4959-a349-0ff58a679f71",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -213,8 +213,8 @@
                         {
                             "id": "b99585e0-5147-46e3-9474-fba555bac68a",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },

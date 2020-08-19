@@ -86,7 +86,7 @@ double W1::getTemperature(const QString &address)
         }
         return temperature.readLine().toInt()/1000.00;
     } else {
-        qCWarning(dcOneWire()) << "Could not find device" << temperatureSensor;
+        qCWarning(dcOneWire()) << "Could not find device" << temperatureSensor.currentPath();
     }
     return 0;
 }
