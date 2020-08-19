@@ -11,7 +11,7 @@
                 {
                     "id": "c36c68d9-6182-4ae1-972d-b8b5e0cf185f",
                     "name": "oneWireInterface",
-                    "displayName": "One wire interface",
+                    "displayName": "OWFS interface",
                     "interfaces": ["gateway"],
                     "createMethods": ["user"],
                     "paramTypes": [

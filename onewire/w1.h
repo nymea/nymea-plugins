@@ -41,17 +41,12 @@ class W1 : public QObject
 public:
 
     explicit W1(QObject *parent = nullptr);
-    ~W1();
 
-    QString getPath();
     QStringList discoverDevices();
     bool interfaceIsAvailable();
-
     double getTemperature(const QString &address);
 
-    QList<QDir> m_w1BusMasters;
-
 private:
-    QByteArray m_path;
+    QList<QDir> m_w1BusMasters;
 };
 #endif // W1_H
