@@ -28,41 +28,30 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINONEWIRE_H
-#define INTEGRATIONPLUGINONEWIRE_H
+#ifndef W1_H
+#define W1_H
 
-#include "plugintimer.h"
-#include "integrations/integrationplugin.h"
-#include "owfs.h"
-#include "w1.h"
+#include <QObject>
+#include <QDir>
+#include <QFile>
 
-#include <QHash>
-
-class IntegrationPluginOneWire : public IntegrationPlugin
+class W1 : public QObject
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginonewire.json")
-    Q_INTERFACES(IntegrationPlugin)
-
 public:
-    explicit IntegrationPluginOneWire();
 
-    void discoverThings(ThingDiscoveryInfo *info) override;
-    void setupThing(ThingSetupInfo *info) override;
-    void postSetupThing(Thing *thing) override;
-    void executeAction(ThingActionInfo *info) override;
-    void thingRemoved(Thing *thing) override;
+    explicit W1(QObject *parent = nullptr);
+    ~W1();
+
+    QString getPath();
+    QStringList discoverDevices();
+    bool interfaceIsAvailable();
+
+    double getTemperature(const QString &address);
+
+    QList<QDir> m_w1BusMasters;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
-    Owfs *m_owfsInterface = nullptr;
-    W1 *m_w1Interface = nullptr;
-
-    QHash<Thing*, ThingDiscoveryInfo*> m_runningDiscoveries;
-
-private slots:
-    void onPluginTimer();
-    void onOneWireDevicesDiscovered(QList<Owfs::OwfsDevice> devices);
+    QByteArray m_path;
 };
-
-#endif // INTEGRATIONPLUGINONEWIRE_H
+#endif // W1_H

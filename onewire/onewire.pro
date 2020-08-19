@@ -8,10 +8,11 @@ LIBS +=      \
 
 SOURCES += \
     integrationpluginonewire.cpp \
-    onewire.cpp \
+    owfs.cpp \
+    w1.cpp \
 
 HEADERS += \
     integrationpluginonewire.h \
-    onewire.h \
-
+    owfs.h \
+    w1.h \
 
