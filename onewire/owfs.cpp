@@ -111,11 +111,16 @@ bool Owfs::discoverDevices()
 bool Owfs::interfaceIsAvailable()
 {
     return true;
+    //TODO
+    //QByteArray fullPath;
+    //fullPath.append(m_path);
+    //if(OW_present(fullPath) < 0)
+    //   return false;
+    //return true;
 }
 
 bool Owfs::isConnected(const QByteArray &address)
 {
-    Q_UNUSED(address)
     QByteArray fullPath;
     fullPath.append(m_path);
     fullPath.append(address);

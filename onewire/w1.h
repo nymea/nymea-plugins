@@ -44,6 +44,7 @@ public:
 
     QStringList discoverDevices();
     bool interfaceIsAvailable();
+    bool deviceAvailable(const QString &address);
     double getTemperature(const QString &address);
 
 private:

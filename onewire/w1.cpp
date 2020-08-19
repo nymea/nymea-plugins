@@ -66,12 +66,17 @@ bool W1::interfaceIsAvailable()
     return w1SysFSDir.exists();
 }
 
+bool W1::deviceAvailable(const QString &address)
+{
+   QDir temperatureSensor("/sys/bus/w1/devices/"+address);
+   return temperatureSensor.exists();
+}
+
 double W1::getTemperature(const QString &address)
 {
     QDir temperatureSensor("/sys/bus/w1/devices/"+address);
     if (temperatureSensor.exists()) {
-        qCDebug(dcOneWire()) << "Temperature" << address;
-        QFile temperature(temperatureSensor.dirName()+"/temperature");
+        QFile temperature(temperatureSensor.path() +"/temperature");
         if (!temperature.exists()) {
             qCWarning(dcOneWire()) << "Directory doesn't exist" << temperature.fileName();
         }
