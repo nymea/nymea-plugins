@@ -695,6 +695,122 @@
                     ]
                 },
                 {
+                    "id": "9a8d804b-d1dc-450a-8c41-be491e5cdda0",
+                    "name": "pressureSensor",
+                    "displayName": "Generic pressure sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["pressuresensor"],
+                    "settingsTypes": [
+                        {
+                            "id": "035e2619-f9c2-4e8f-95dd-f124ad9402d0",
+                            "name": "minPressure",
+                            "displayName": "Minimum pressure",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "MilliBar"
+                        },
+                        {
+                            "id": "06e21251-8b4f-44a1-8504-6b51f8526bd0",
+                            "name": "maxPressure",
+                            "displayName": "Maximum pressure",
+                            "type": "double",
+                            "defaultValue": 2000,
+                            "unit": "MilliBar"
+                        },
+                        {
+                            "id": "021a17d8-9e5e-4dd6-835d-1a3e1ffd6b23",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e645a979-1465-4592-b8b0-f4c123db0800",
+                            "name": "pressure",
+                            "displayName": "Pressure",
+                            "displayNameEvent": "Pressure changed",
+                            "type": "double",
+                            "unit": "MilliBar",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "c320577c-371a-442b-ac80-b692ff2064c9",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "a58a2dae-4148-4a4d-ab34-2a11124454a0",
+                    "name": "co2Sensor",
+                    "displayName": "Generic CO2 sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["co2Sensor"],
+                    "settingsTypes": [
+                        {
+                            "id": "a0d8a6ec-599a-4ded-ae03-2950561f0b72",
+                            "name": "minCO2",
+                            "displayName": "Minimum CO2",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "PartsPerMillion"
+                        },
+                        {
+                            "id": "a3029bee-8b13-4aed-8ebd-eaceb603f8ef",
+                            "name": "maxCO2",
+                            "displayName": "Maximum CO2",
+                            "type": "double",
+                            "defaultValue": 2000,
+                            "unit": "PartsPerMillion"
+                        },
+                        {
+                            "id": "236831a8-a455-4e38-a9cd-eabbebaa3f67",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "755c4c7f-093e-41dd-a38d-9ee18c9890d6",
+                            "name": "co2",
+                            "displayName": "CO2",
+                            "displayNameEvent": "CO2 changed",
+                            "type": "double",
+                            "unit": "PartsPerMillion",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "7dc765f8-fa9b-4199-8f21-49ed452f226d",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
                     "id": "c3123967-f741-4fe1-a0d4-9a3e405d7e52",
                     "name": "extendedSmartMeterConsumer",
                     "displayName": "Impulse based energy meter",

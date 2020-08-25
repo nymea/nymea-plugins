@@ -491,6 +491,36 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
+    } else if (thing->thingClassId() == pressureSensorThingClassId) {
+        if (action.actionTypeId() == pressureSensorInputActionTypeId) {
+            double value = info->action().param(pressureSensorInputActionInputParamTypeId).value().toDouble();
+            thing->setStateValue(pressureSensorInputStateTypeId, value);
+            double min = info->thing()->setting(pressureSensorSettingsMinPressureParamTypeId).toDouble();
+            double max = info->thing()->setting(pressureSensorSettingsMaxPressureParamTypeId).toDouble();
+            double newValue = mapDoubleValue(value, 0, 100, min, max);
+            double roundingFactor = qPow(10, info->thing()->setting(pressureSensorSettingsAccuracyParamTypeId).toInt());
+            newValue = qRound(newValue * roundingFactor) / roundingFactor;
+            thing->setStateValue(pressureSensorPressureStateTypeId, newValue);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+    } else if (thing->thingClassId() == co2SensorThingClassId) {
+        if (action.actionTypeId() == co2SensorInputActionTypeId) {
+            double value = info->action().param(co2SensorInputActionInputParamTypeId).value().toDouble();
+            thing->setStateValue(co2SensorInputStateTypeId, value);
+            double min = info->thing()->setting(co2SensorSettingsMinCO2ParamTypeId).toDouble();
+            double max = info->thing()->setting(co2SensorSettingsMaxCO2ParamTypeId).toDouble();
+            double newValue = mapDoubleValue(value, 0, 100, min, max);
+            double roundingFactor = qPow(10, info->thing()->setting(co2SensorSettingsAccuracyParamTypeId).toInt());
+            newValue = qRound(newValue * roundingFactor) / roundingFactor;
+            thing->setStateValue(co2SensorCo2StateTypeId, newValue);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
     } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
         if (action.actionTypeId() == extendedSmartMeterConsumerImpulseInputActionTypeId) {
             bool value = info->action().param(extendedSmartMeterConsumerImpulseInputActionImpulseInputParamTypeId).value().toBool();
