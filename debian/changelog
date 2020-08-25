@@ -1,6 +1,23 @@
-nymea-plugins (0.23.0) UNRELEASED; urgency=medium
+nymea-plugins (0.23.0) xenial; urgency=medium
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Thu, 23 Jul 2020 17:34:12 +0200
+  [ Bernhard Trinnes ]
+  * New Plugin: Fronius
+
+  [ Simon Stürz ]
+  * UsbRelay: Fix initialization of udev device watcher if no matching
+    device is connected
+
+  [ Bernhard Trinnes ]
+  * Generic things: Add extended smart meter
+
+  [ Michael Zanetti ]
+  * Bump version to 0.23
+  * Awattar: The token is not needed any more for AT
+  * Generic Things: Add generic pressure and co2 sensors
+  * Shelly: Allow setting the roller shutter percentage
+  * Generic Things: Add generic garagedoors
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 25 Aug 2020 17:40:14 +0200
 
 nymea-plugins (0.22.0) xenial; urgency=medium
 
