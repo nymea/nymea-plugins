@@ -133,16 +133,16 @@
                 {
                     "id": "40aa9f3c-a23c-4f7f-8786-fcf3554f3e19",
                     "name": "extendedBlind",
-                    "displayName": "Generic extended blind",
+                    "displayName": "Generic blind with position control",
                     "createMethods": ["user"],
                     "interfaces": ["extendedblind"],
                     "settingsTypes": [
                         {
                             "id": "27a95b8d-7f97-441b-a3be-0646c517cb06",
-                            "name": "closingTime",
-                            "displayName": "Closing time [MilliSecond]",
+                            "name": "closingDuration",
+                            "displayName": "Closing duration [ms]",
                             "type": "uint",
-                            "minValue": 1,
+                            "minValue": 1000,
                             "defaultValue": 5000
                         }
                     ],
@@ -231,16 +231,16 @@
                     "settingsTypes": [
                         {
                             "id": "4c0bf07d-aaab-4f67-af65-00ceaefbaa84",
-                            "name": "closingTime",
-                            "displayName": "Closing time [MilliSecond]",
-                            "minValue": 1,
+                            "name": "closingDuration",
+                            "displayName": "Closing duration [ms]",
+                            "minValue": 1000,
                             "type": "uint",
                             "defaultValue": 5000
                         },
                         {
                             "id": "6c8340bf-7fd3-43e3-a75b-dfa2f6426e11",
                             "name": "angleTime",
-                            "displayName": "Angle end to end time [MilliSecond]",
+                            "displayName": "Angle end to end time [ms]",
                             "minValue": 1,
                             "type": "uint",
                             "defaultValue": 1000
@@ -393,6 +393,167 @@
                             "id": "cf5303f1-67c7-4cef-b11c-eb9de6fc8a87",
                             "name": "close",
                             "displayName": "Close"
+                        }
+                    ]
+                },
+                {
+                    "id": "d6699a12-f4a6-4c50-951c-f4f1cd0501dc",
+                    "name": "impulseGaragedooor",
+                    "displayName": "Impulse based garage door",
+                    "createMethods": ["user"],
+                    "interfaces": ["impulsegaragedoor"],
+                    "settingsTypes": [
+                        {
+                            "id": "962b356c-e975-4d33-b114-10f655eaf74c",
+                            "name": "impulseDuration",
+                            "displayName": "Impulse duration",
+                            "type": "uint",
+                            "defaultValue": "200"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "ff5461c6-70fc-435e-8424-96fa59ed321e",
+                            "name": "triggerImpulse",
+                            "displayName": "Operate"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5ccaf0aa-01a4-441f-b6ca-18940da096a5",
+                            "name": "impulse",
+                            "displayName": "Impulse",
+                            "displayNameEvent": "Impulse changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "572403b1-bc22-4620-8170-53147a546033",
+                    "name": "simpleGaragedoor",
+                    "displayName": "Simple garage door",
+                    "createMethods": ["user"],
+                    "interfaces": ["simplegaragedoor"],
+                    "actionTypes": [
+                        {
+                            "id": "3edb25af-ad51-495b-9ac9-ab97669339b7",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "1111c0ed-69b6-480c-9fd5-15292600d4f4",
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "f346766f-44ee-452b-bb9c-e89ec0f56016",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "fcd421eb-54f2-4195-bdef-ffa69e9dcc57",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "44ef060a-e6fc-4f33-84d2-b24ac7d31ff1",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "id": "7341e689-4495-4422-851a-3e7c790394b8",
+                    "name": "extendedStatefulGaragedoor",
+                    "displayName": "Garage door with position control",
+                    "createMethods": ["user"],
+                    "interfaces": ["extendedstatefulgaragedoor"],
+                    "settingsTypes": [
+                        {
+                            "id": "04fb7724-a870-4df9-a79e-fab693931238",
+                            "name": "openingDuration",
+                            "displayName": "Opening duration [ms]",
+                            "type": "uint",
+                            "minValue": 1000,
+                            "defaultValue": 5000
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "0cc74edb-7116-47cf-953a-409933f26557",
+                            "name": "state",
+                            "displayName": "State",
+                            "displayNameEvent": "State changed",
+                            "type": "QString",
+                            "possibleValues": ["open", "closed", "opening", "closing", "intermediate"],
+                            "defaultValue": "closed"
+                        },
+                        {
+                            "id": "963bed3d-2ccb-4dd0-b609-c7e9f25d32d6",
+                            "name": "moving",
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "f9244c14-0bc9-49ce-90a5-437e66245594",
+                            "name": "percentage",
+                            "displayName": "Open position",
+                            "displayNameEvent": "Open position changed",
+                            "displayNameAction": "Set open position",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "ecc799c7-4d74-4d1f-94e5-2d74e77493ae",
+                            "name": "openingOutput",
+                            "displayName": "Opening output",
+                            "displayNameEvent": "Opening output changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "e1c14bcd-6131-494b-8dd1-46738e9c8f5e",
+                            "name": "closingOutput",
+                            "displayName": "Closing output",
+                            "displayNameEvent": "Closing output changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "4a3a3b88-47e9-436f-86be-b5955f3fc2f7",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "2420fcdb-03d3-4edb-aa89-e3b93c7d6d18",
+                            "name": "close",
+                            "displayName": "Close"
+                        },
+                        {
+                            "id": "109c3eaf-26a0-4121-8be2-1363253178fd",
+                            "name": "stop",
+                            "displayName": "Stop"
                         }
                     ]
                 },

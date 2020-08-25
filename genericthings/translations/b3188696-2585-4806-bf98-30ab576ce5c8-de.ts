@@ -5,7 +5,11 @@
     <name>GenericThings</name>
     <message>
         <source>Accuracy (decimal places)</source>
-        <extracomment>The name of the ParamType (ThingClass: moistureSensor, Type: settings, ID: {3c967a68-9951-4c9a-b019-79b913e762b6})
+        <extracomment>The name of the ParamType (ThingClass: co2Sensor, Type: settings, ID: {236831a8-a455-4e38-a9cd-eabbebaa3f67})
+----------
+The name of the ParamType (ThingClass: pressureSensor, Type: settings, ID: {021a17d8-9e5e-4dd6-835d-1a3e1ffd6b23})
+----------
+The name of the ParamType (ThingClass: moistureSensor, Type: settings, ID: {3c967a68-9951-4c9a-b019-79b913e762b6})
 ----------
 The name of the ParamType (ThingClass: humiditySensor, Type: settings, ID: {38064841-6121-4862-a639-08fb0b778511})
 ----------
@@ -27,13 +31,12 @@ The name of the StateType ({fcb700c4-5da8-4385-85b0-6616e807974e}) of ThingClass
         <translation>Winkel geändert</translation>
     </message>
     <message>
-        <source>Angle end to end time [MilliSecond]</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
-        <translation>End- zu Endwinkelzeit</translation>
-    </message>
-    <message>
         <source>Close</source>
-        <extracomment>The name of the ActionType ({cf5303f1-67c7-4cef-b11c-eb9de6fc8a87}) of ThingClass shutter
+        <extracomment>The name of the ActionType ({2420fcdb-03d3-4edb-aa89-e3b93c7d6d18}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the ActionType ({1111c0ed-69b6-480c-9fd5-15292600d4f4}) of ThingClass simpleGaragedoor
+----------
+The name of the ActionType ({cf5303f1-67c7-4cef-b11c-eb9de6fc8a87}) of ThingClass shutter
 ----------
 The name of the ActionType ({1c71f050-f6cb-4929-9c9d-7c262f77c143}) of ThingClass venetianBlind
 ----------
@@ -46,7 +49,15 @@ The name of the ActionType ({53b5ba77-9a34-4cd6-ad24-fb01fc465f98}) of ThingClas
     </message>
     <message>
         <source>Closing output</source>
-        <extracomment>The name of the ParamType (ThingClass: shutter, ActionType: closingOutput, ID: {1c35df0e-4c41-455f-893a-0145377952a0})
+        <extracomment>The name of the ParamType (ThingClass: extendedStatefulGaragedoor, EventType: closingOutput, ID: {e1c14bcd-6131-494b-8dd1-46738e9c8f5e})
+----------
+The name of the StateType ({e1c14bcd-6131-494b-8dd1-46738e9c8f5e}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the ParamType (ThingClass: simpleGaragedoor, EventType: closingOutput, ID: {44ef060a-e6fc-4f33-84d2-b24ac7d31ff1})
+----------
+The name of the StateType ({44ef060a-e6fc-4f33-84d2-b24ac7d31ff1}) of ThingClass simpleGaragedoor
+----------
+The name of the ParamType (ThingClass: shutter, ActionType: closingOutput, ID: {1c35df0e-4c41-455f-893a-0145377952a0})
 ----------
 The name of the ParamType (ThingClass: shutter, EventType: closingOutput, ID: {1c35df0e-4c41-455f-893a-0145377952a0})
 ----------
@@ -79,7 +90,11 @@ The name of the StateType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClass
     </message>
     <message>
         <source>Closing output changed</source>
-        <extracomment>The name of the EventType ({1c35df0e-4c41-455f-893a-0145377952a0}) of ThingClass shutter
+        <extracomment>The name of the EventType ({e1c14bcd-6131-494b-8dd1-46738e9c8f5e}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the EventType ({44ef060a-e6fc-4f33-84d2-b24ac7d31ff1}) of ThingClass simpleGaragedoor
+----------
+The name of the EventType ({1c35df0e-4c41-455f-893a-0145377952a0}) of ThingClass shutter
 ----------
 The name of the EventType ({84dd2fa1-85fe-47f3-9e32-e6083432d39c}) of ThingClass venetianBlind
 ----------
@@ -89,13 +104,6 @@ The name of the EventType ({9b673430-572d-4a9c-85d3-dafadbe541cd}) of ThingClass
 ----------
 The name of the EventType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClass awning</extracomment>
         <translation>Ausgang Schließen geändert</translation>
-    </message>
-    <message>
-        <source>Closing time [MilliSecond]</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
-----------
-The name of the ParamType (ThingClass: extendedBlind, Type: settings, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
-        <translation>Schließdauer [Millisekunden]</translation>
     </message>
     <message>
         <source>Generic Things</source>
@@ -111,11 +119,6 @@ The name of the ParamType (ThingClass: extendedBlind, Type: settings, ID: {27a95
         <source>Generic blind</source>
         <extracomment>The name of the ThingClass ({17ee3657-6ad8-4ae2-8959-3cf66cec8d13})</extracomment>
         <translation>Generische Beschattung</translation>
-    </message>
-    <message>
-        <source>Generic extended blind</source>
-        <extracomment>The name of the ThingClass ({40aa9f3c-a23c-4f7f-8786-fcf3554f3e19})</extracomment>
-        <translation>Generische erweiterte Beschattung</translation>
     </message>
     <message>
         <source>Generic heating</source>
@@ -181,7 +184,19 @@ The name of the StateType ({925225d9-2965-444a-9c42-63c2873700fb}) of ThingClass
     </message>
     <message>
         <source>Input value</source>
-        <extracomment>The name of the ParamType (ThingClass: moistureSensor, ActionType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
+        <extracomment>The name of the ParamType (ThingClass: co2Sensor, ActionType: input, ID: {7dc765f8-fa9b-4199-8f21-49ed452f226d})
+----------
+The name of the ParamType (ThingClass: co2Sensor, EventType: input, ID: {7dc765f8-fa9b-4199-8f21-49ed452f226d})
+----------
+The name of the StateType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
+----------
+The name of the ParamType (ThingClass: pressureSensor, ActionType: input, ID: {c320577c-371a-442b-ac80-b692ff2064c9})
+----------
+The name of the ParamType (ThingClass: pressureSensor, EventType: input, ID: {c320577c-371a-442b-ac80-b692ff2064c9})
+----------
+The name of the StateType ({c320577c-371a-442b-ac80-b692ff2064c9}) of ThingClass pressureSensor
+----------
+The name of the ParamType (ThingClass: moistureSensor, ActionType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
 ----------
 The name of the ParamType (ThingClass: moistureSensor, EventType: input, ID: {ce64a425-d990-4fc1-966b-be6de445792b})
 ----------
@@ -202,7 +217,11 @@ The name of the StateType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass
     </message>
     <message>
         <source>Input value changed</source>
-        <extracomment>The name of the EventType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
+        <extracomment>The name of the EventType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
+----------
+The name of the EventType ({c320577c-371a-442b-ac80-b692ff2064c9}) of ThingClass pressureSensor
+----------
+The name of the EventType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
 ----------
 The name of the EventType ({a8223e65-e704-4f84-9bbe-d8fc42597047}) of ThingClass humiditySensor
 ----------
@@ -241,7 +260,11 @@ The name of the EventType ({fed37466-1264-4ac1-84fd-aff3a1f7ff04}) of ThingClass
     </message>
     <message>
         <source>Moving</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, EventType: moving, ID: {6234c07e-4200-4f2c-8cbd-bff24c38c243})
+        <extracomment>The name of the ParamType (ThingClass: extendedStatefulGaragedoor, EventType: moving, ID: {963bed3d-2ccb-4dd0-b609-c7e9f25d32d6})
+----------
+The name of the StateType ({963bed3d-2ccb-4dd0-b609-c7e9f25d32d6}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the ParamType (ThingClass: venetianBlind, EventType: moving, ID: {6234c07e-4200-4f2c-8cbd-bff24c38c243})
 ----------
 The name of the StateType ({6234c07e-4200-4f2c-8cbd-bff24c38c243}) of ThingClass venetianBlind
 ----------
@@ -252,14 +275,20 @@ The name of the StateType ({941d1e1f-8dd7-4493-812f-6cefefd88c2e}) of ThingClass
     </message>
     <message>
         <source>Moving changed</source>
-        <extracomment>The name of the EventType ({6234c07e-4200-4f2c-8cbd-bff24c38c243}) of ThingClass venetianBlind
+        <extracomment>The name of the EventType ({963bed3d-2ccb-4dd0-b609-c7e9f25d32d6}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the EventType ({6234c07e-4200-4f2c-8cbd-bff24c38c243}) of ThingClass venetianBlind
 ----------
 The name of the EventType ({941d1e1f-8dd7-4493-812f-6cefefd88c2e}) of ThingClass extendedBlind</extracomment>
         <translation>Bewegung geändert</translation>
     </message>
     <message>
         <source>Open</source>
-        <extracomment>The name of the ActionType ({9deb662d-2378-4345-a898-8742d41e43c1}) of ThingClass shutter
+        <extracomment>The name of the ActionType ({4a3a3b88-47e9-436f-86be-b5955f3fc2f7}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the ActionType ({3edb25af-ad51-495b-9ac9-ab97669339b7}) of ThingClass simpleGaragedoor
+----------
+The name of the ActionType ({9deb662d-2378-4345-a898-8742d41e43c1}) of ThingClass shutter
 ----------
 The name of the ActionType ({3e728e50-3d45-4035-b215-1e604cf3159b}) of ThingClass venetianBlind
 ----------
@@ -272,7 +301,15 @@ The name of the ActionType ({979e9c51-5a93-4635-85e3-01874306b229}) of ThingClas
     </message>
     <message>
         <source>Opening output</source>
-        <extracomment>The name of the ParamType (ThingClass: shutter, ActionType: openingOutput, ID: {cc547728-b309-4695-b355-49748ef2521c})
+        <extracomment>The name of the ParamType (ThingClass: extendedStatefulGaragedoor, EventType: openingOutput, ID: {ecc799c7-4d74-4d1f-94e5-2d74e77493ae})
+----------
+The name of the StateType ({ecc799c7-4d74-4d1f-94e5-2d74e77493ae}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the ParamType (ThingClass: simpleGaragedoor, EventType: openingOutput, ID: {fcd421eb-54f2-4195-bdef-ffa69e9dcc57})
+----------
+The name of the StateType ({fcd421eb-54f2-4195-bdef-ffa69e9dcc57}) of ThingClass simpleGaragedoor
+----------
+The name of the ParamType (ThingClass: shutter, ActionType: openingOutput, ID: {cc547728-b309-4695-b355-49748ef2521c})
 ----------
 The name of the ParamType (ThingClass: shutter, EventType: openingOutput, ID: {cc547728-b309-4695-b355-49748ef2521c})
 ----------
@@ -305,7 +342,11 @@ The name of the StateType ({4bb951a4-ea23-4cf0-9269-41d2c4eaf5a4}) of ThingClass
     </message>
     <message>
         <source>Opening output changed</source>
-        <extracomment>The name of the EventType ({cc547728-b309-4695-b355-49748ef2521c}) of ThingClass shutter
+        <extracomment>The name of the EventType ({ecc799c7-4d74-4d1f-94e5-2d74e77493ae}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the EventType ({fcd421eb-54f2-4195-bdef-ffa69e9dcc57}) of ThingClass simpleGaragedoor
+----------
+The name of the EventType ({cc547728-b309-4695-b355-49748ef2521c}) of ThingClass shutter
 ----------
 The name of the EventType ({6041dacf-5303-4dc0-ba3c-7ecaa438f2dd}) of ThingClass venetianBlind
 ----------
@@ -422,7 +463,11 @@ The name of the ActionType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClas
     </message>
     <message>
         <source>Set input value</source>
-        <extracomment>The name of the ActionType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
+        <extracomment>The name of the ActionType ({7dc765f8-fa9b-4199-8f21-49ed452f226d}) of ThingClass co2Sensor
+----------
+The name of the ActionType ({c320577c-371a-442b-ac80-b692ff2064c9}) of ThingClass pressureSensor
+----------
+The name of the ActionType ({ce64a425-d990-4fc1-966b-be6de445792b}) of ThingClass moistureSensor
 ----------
 The name of the ActionType ({a8223e65-e704-4f84-9bbe-d8fc42597047}) of ThingClass humiditySensor
 ----------
@@ -508,7 +553,11 @@ The name of the EventType ({ff6f2565-2a2e-4d34-b10f-d3f73b676399}) of ThingClass
     </message>
     <message>
         <source>Stop</source>
-        <extracomment>The name of the ActionType ({db5f3332-1f4e-4f9e-84d2-93c5d7de315c}) of ThingClass shutter
+        <extracomment>The name of the ActionType ({109c3eaf-26a0-4121-8be2-1363253178fd}) of ThingClass extendedStatefulGaragedoor
+----------
+The name of the ActionType ({f346766f-44ee-452b-bb9c-e89ec0f56016}) of ThingClass simpleGaragedoor
+----------
+The name of the ActionType ({db5f3332-1f4e-4f9e-84d2-93c5d7de315c}) of ThingClass shutter
 ----------
 The name of the ActionType ({6e3eeb5d-d7ed-4175-9795-e76451e0a00b}) of ThingClass venetianBlind
 ----------
@@ -601,13 +650,153 @@ The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass
         <extracomment>The name of the ThingClass ({c3123967-f741-4fe1-a0d4-9a3e405d7e52})</extracomment>
         <translation>Impulsbasierter Energiezähler</translation>
     </message>
+    <message>
+        <source>Angle end to end time [ms]</source>
+        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Closing duration [ms]</source>
+        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
+----------
+The name of the ParamType (ThingClass: extendedBlind, Type: settings, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Garage door with position control</source>
+        <extracomment>The name of the ThingClass ({7341e689-4495-4422-851a-3e7c790394b8})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic blind with position control</source>
+        <extracomment>The name of the ThingClass ({40aa9f3c-a23c-4f7f-8786-fcf3554f3e19})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Impulse</source>
+        <extracomment>The name of the ParamType (ThingClass: impulseGaragedooor, EventType: impulse, ID: {5ccaf0aa-01a4-441f-b6ca-18940da096a5})
+----------
+The name of the StateType ({5ccaf0aa-01a4-441f-b6ca-18940da096a5}) of ThingClass impulseGaragedooor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Impulse based garage door</source>
+        <extracomment>The name of the ThingClass ({d6699a12-f4a6-4c50-951c-f4f1cd0501dc})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Impulse changed</source>
+        <extracomment>The name of the EventType ({5ccaf0aa-01a4-441f-b6ca-18940da096a5}) of ThingClass impulseGaragedooor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Impulse duration</source>
+        <extracomment>The name of the ParamType (ThingClass: impulseGaragedooor, Type: settings, ID: {962b356c-e975-4d33-b114-10f655eaf74c})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open position</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedStatefulGaragedoor, ActionType: percentage, ID: {f9244c14-0bc9-49ce-90a5-437e66245594})
+----------
+The name of the ParamType (ThingClass: extendedStatefulGaragedoor, EventType: percentage, ID: {f9244c14-0bc9-49ce-90a5-437e66245594})
+----------
+The name of the StateType ({f9244c14-0bc9-49ce-90a5-437e66245594}) of ThingClass extendedStatefulGaragedoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open position changed</source>
+        <extracomment>The name of the EventType ({f9244c14-0bc9-49ce-90a5-437e66245594}) of ThingClass extendedStatefulGaragedoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opening duration [ms]</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedStatefulGaragedoor, Type: settings, ID: {04fb7724-a870-4df9-a79e-fab693931238})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operate</source>
+        <extracomment>The name of the ActionType ({ff5461c6-70fc-435e-8424-96fa59ed321e}) of ThingClass impulseGaragedooor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set open position</source>
+        <extracomment>The name of the ActionType ({f9244c14-0bc9-49ce-90a5-437e66245594}) of ThingClass extendedStatefulGaragedoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simple garage door</source>
+        <extracomment>The name of the ThingClass ({572403b1-bc22-4620-8170-53147a546033})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>State</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedStatefulGaragedoor, EventType: state, ID: {0cc74edb-7116-47cf-953a-409933f26557})
+----------
+The name of the StateType ({0cc74edb-7116-47cf-953a-409933f26557}) of ThingClass extendedStatefulGaragedoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>State changed</source>
+        <extracomment>The name of the EventType ({0cc74edb-7116-47cf-953a-409933f26557}) of ThingClass extendedStatefulGaragedoor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CO2</source>
+        <extracomment>The name of the ParamType (ThingClass: co2Sensor, EventType: co2, ID: {755c4c7f-093e-41dd-a38d-9ee18c9890d6})
+----------
+The name of the StateType ({755c4c7f-093e-41dd-a38d-9ee18c9890d6}) of ThingClass co2Sensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CO2 changed</source>
+        <extracomment>The name of the EventType ({755c4c7f-093e-41dd-a38d-9ee18c9890d6}) of ThingClass co2Sensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic CO2 sensor</source>
+        <extracomment>The name of the ThingClass ({a58a2dae-4148-4a4d-ab34-2a11124454a0})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generic pressure sensor</source>
+        <extracomment>The name of the ThingClass ({9a8d804b-d1dc-450a-8c41-be491e5cdda0})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum CO2</source>
+        <extracomment>The name of the ParamType (ThingClass: co2Sensor, Type: settings, ID: {a3029bee-8b13-4aed-8ebd-eaceb603f8ef})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum pressure</source>
+        <extracomment>The name of the ParamType (ThingClass: pressureSensor, Type: settings, ID: {06e21251-8b4f-44a1-8504-6b51f8526bd0})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum CO2</source>
+        <extracomment>The name of the ParamType (ThingClass: co2Sensor, Type: settings, ID: {a0d8a6ec-599a-4ded-ae03-2950561f0b72})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Minimum pressure</source>
+        <extracomment>The name of the ParamType (ThingClass: pressureSensor, Type: settings, ID: {035e2619-f9c2-4e8f-95dd-f124ad9402d0})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pressure</source>
+        <extracomment>The name of the ParamType (ThingClass: pressureSensor, EventType: pressure, ID: {e645a979-1465-4592-b8b0-f4c123db0800})
+----------
+The name of the StateType ({e645a979-1465-4592-b8b0-f4c123db0800}) of ThingClass pressureSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pressure changed</source>
+        <extracomment>The name of the EventType ({e645a979-1465-4592-b8b0-f4c123db0800}) of ThingClass pressureSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IntegrationPluginGenericThings</name>
-    <message>
-        <source>Invalid closing time</source>
-        <translation>Ungültige Schließzeit</translation>
-    </message>
     <message>
         <source>Invalid closing or angle time</source>
         <translation>Ungültige Schließ- oder Winkelstellzeit</translation>

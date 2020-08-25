@@ -45,15 +45,12 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == extendedBlindThingClassId) {
-        uint closingTime = thing->setting(extendedBlindSettingsClosingTimeParamTypeId).toUInt();
-        if (closingTime == 0) {
-            return info->finish(Thing::ThingErrorSetupFailed, tr("Invalid closing time"));
-        }
+        uint closingDuration = thing->setting(extendedBlindSettingsClosingDurationParamTypeId).toUInt();
         QTimer* timer = new QTimer(this);
-        timer->setInterval(closingTime/100.00); // closing timer / 100 to update on every percent
+        timer->setInterval(closingDuration/100.00); // closing timer / 100 to update on every percent
         m_extendedBlindPercentageTimer.insert(thing, timer);
         connect(thing, &Thing::settingChanged, thing, [timer] (const ParamTypeId &paramTypeId, const QVariant &value) {
-            if (paramTypeId == extendedBlindSettingsClosingTimeParamTypeId) {
+            if (paramTypeId == extendedBlindSettingsClosingDurationParamTypeId) {
                 timer->setInterval(value.toUInt()/100.00);
             }
         });
@@ -91,7 +88,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
             }
         });
     } else if (info->thing()->thingClassId() == venetianBlindThingClassId) {
-        uint closingTime = thing->setting(venetianBlindSettingsClosingTimeParamTypeId).toUInt();
+        uint closingTime = thing->setting(venetianBlindSettingsClosingDurationParamTypeId).toUInt();
         uint angleTime = thing->setting(venetianBlindSettingsAngleTimeParamTypeId).toUInt();
         if (closingTime < angleTime) {
             return info->finish(Thing::ThingErrorSetupFailed, tr("Invalid closing or angle time"));
@@ -142,7 +139,7 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
         angleTimer->setInterval(angleTime/180.00); // -90 to 90 degree -> 180 degree total
         m_venetianBlindAngleTimer.insert(thing, angleTimer);
         connect(thing, &Thing::settingChanged, thing, [closingTimer, angleTimer] (const ParamTypeId &paramTypeId, const QVariant &value) {
-            if (paramTypeId == venetianBlindSettingsClosingTimeParamTypeId) {
+            if (paramTypeId == venetianBlindSettingsClosingDurationParamTypeId) {
                 closingTimer->setInterval(value.toUInt()/100.00);
             } else if (paramTypeId == venetianBlindSettingsAngleTimeParamTypeId) {
                 angleTimer->setInterval(value.toUInt()/180.00);
@@ -203,6 +200,48 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
             double power = (m_pulsesPerTimeframe.value(thing)/impulsePerKwh)/(interval/3600.00); // Power = Energy/Time; Energy = Impulses/ImpPerkWh
             thing->setStateValue(extendedSmartMeterConsumerCurrentPowerStateTypeId, power*1000);
             m_pulsesPerTimeframe.insert(thing, 0);
+        });
+    } else if (thing->thingClassId() == extendedStatefulGaragedoorThingClassId) {
+        uint openingDuration = thing->setting(extendedStatefulGaragedoorSettingsOpeningDurationParamTypeId).toUInt();
+        QTimer* timer = new QTimer(this);
+        timer->setInterval(openingDuration/100.00); // closing timer / 100 to update on every percent
+        m_statefulGaragePercentageTimer.insert(thing, timer);
+        connect(thing, &Thing::settingChanged, thing, [timer] (const ParamTypeId &paramTypeId, const QVariant &value) {
+            if (paramTypeId == extendedStatefulGaragedoorSettingsOpeningDurationParamTypeId) {
+                timer->setInterval(value.toUInt()/100.00);
+            }
+        });
+        connect(timer, &QTimer::timeout, this, [thing, timer, this] {
+            uint currentPercentage = thing->stateValue(extendedStatefulGaragedoorPercentageStateTypeId).toUInt();
+            uint targetPercentage = m_statefulGarageTargetPercentage.value(thing);
+
+            if (currentPercentage < targetPercentage) {
+                currentPercentage++;
+                thing->setStateValue(extendedStatefulGaragedoorPercentageStateTypeId, currentPercentage);
+                thing->setStateValue(extendedStatefulGaragedoorStateStateTypeId, "closing");
+                thing->setStateValue(extendedStatefulGaragedoorMovingStateTypeId, true);
+                thing->setStateValue(extendedStatefulGaragedoorOpeningOutputStateTypeId, false);
+                thing->setStateValue(extendedStatefulGaragedoorClosingOutputStateTypeId, true);
+
+            } else if (currentPercentage > targetPercentage) {
+                currentPercentage--;
+                thing->setStateValue(extendedStatefulGaragedoorPercentageStateTypeId, currentPercentage);
+                thing->setStateValue(extendedStatefulGaragedoorStateStateTypeId, "opening");
+                thing->setStateValue(extendedStatefulGaragedoorMovingStateTypeId, true);
+                thing->setStateValue(extendedStatefulGaragedoorOpeningOutputStateTypeId, true);
+                thing->setStateValue(extendedStatefulGaragedoorClosingOutputStateTypeId, false);
+
+            }
+
+            if (currentPercentage == targetPercentage){
+                QString state = currentPercentage == 100 ? "open" : currentPercentage == 0 ? "closed" : "intermediate";
+                thing->setStateValue(extendedStatefulGaragedoorStateStateTypeId, state);
+                thing->setStateValue(extendedStatefulGaragedoorMovingStateTypeId, false);
+                thing->setStateValue(extendedStatefulGaragedoorOpeningOutputStateTypeId, false);
+                thing->setStateValue(extendedStatefulGaragedoorClosingOutputStateTypeId, false);
+                qCDebug(dcGenericThings()) << "Stopping garage timer";
+                timer->stop();
+            }
         });
     }
     info->finish(Thing::ThingErrorNoError);
@@ -536,6 +575,57 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
+    } else if (thing->thingClassId() == impulseGaragedooorThingClassId) {
+        if (action.actionTypeId() == impulseGaragedooorTriggerImpulseActionTypeId) {
+            uint duration = thing->setting(impulseGaragedooorSettingsImpulseDurationParamTypeId).toUInt();
+            thing->setStateValue(impulseGaragedooorImpulseStateTypeId, true);
+            QTimer::singleShot(duration, thing, [thing](){
+                thing->setStateValue(impulseGaragedooorImpulseStateTypeId, false);
+            });
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+    } else if (thing->thingClassId() == simpleGaragedoorThingClassId) {
+        if (action.actionTypeId() == simpleGaragedoorOpenActionTypeId) {
+            thing->setStateValue(simpleGaragedoorClosingOutputStateTypeId, false);
+            thing->setStateValue(simpleGaragedoorOpeningOutputStateTypeId, true);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == simpleGaragedoorCloseActionTypeId) {
+            thing->setStateValue(simpleGaragedoorOpeningOutputStateTypeId, false);
+            thing->setStateValue(simpleGaragedoorClosingOutputStateTypeId, true);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == simpleGaragedoorStopActionTypeId) {
+            thing->setStateValue(simpleGaragedoorClosingOutputStateTypeId, false);
+            thing->setStateValue(simpleGaragedoorOpeningOutputStateTypeId, false);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+    } else if (thing->thingClassId() == extendedStatefulGaragedoorThingClassId) {
+        if (action.actionTypeId() == extendedStatefulGaragedoorOpenActionTypeId) {
+            m_statefulGarageTargetPercentage[thing] = 0;
+            m_statefulGaragePercentageTimer[thing]->start();
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == extendedStatefulGaragedoorCloseActionTypeId) {
+            m_statefulGarageTargetPercentage[thing] = 100;
+            m_statefulGaragePercentageTimer[thing]->start();
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == extendedStatefulGaragedoorStopActionTypeId) {
+            m_statefulGarageTargetPercentage[thing] = thing->stateValue(extendedStatefulGaragedoorPercentageStateTypeId).toUInt();
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
