@@ -28,7 +28,7 @@ The name of the StateType ({fcb700c4-5da8-4385-85b0-6616e807974e}) of ThingClass
     </message>
     <message>
         <source>Angle end to end time [MilliSecond]</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: thing, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
+        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
         <translation>End- zu Endwinkelzeit</translation>
     </message>
     <message>
@@ -92,9 +92,9 @@ The name of the EventType ({59bfd575-709f-4e43-9726-de26e6d4ca8b}) of ThingClass
     </message>
     <message>
         <source>Closing time [MilliSecond]</source>
-        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: thing, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
+        <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
 ----------
-The name of the ParamType (ThingClass: extendedBlind, Type: thing, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
+The name of the ParamType (ThingClass: extendedBlind, Type: settings, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
         <translation>Schließdauer [Millisekunden]</translation>
     </message>
     <message>
@@ -340,7 +340,11 @@ The name of the EventType ({181df603-d45f-4d3d-a358-97aa3e4ac0bd}) of ThingClass
     </message>
     <message>
         <source>Power</source>
-        <extracomment>The name of the ParamType (ThingClass: ventilation, ActionType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: currentPower, ID: {5983d714-5f80-42d8-bee2-9228b6382b3b})
+----------
+The name of the StateType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass extendedSmartMeterConsumer
+----------
+The name of the ParamType (ThingClass: ventilation, ActionType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
 ----------
 The name of the ParamType (ThingClass: ventilation, EventType: power, ID: {846711b7-ea5a-4c66-a267-001c60406509})
 ----------
@@ -379,7 +383,9 @@ The name of the StateType ({018038d7-1d02-4b17-8fe3-babca044b087}) of ThingClass
     </message>
     <message>
         <source>Power changed</source>
-        <extracomment>The name of the EventType ({409b635e-a754-4b5c-b3f0-d1c5a0fb3f03}) of ThingClass heating
+        <extracomment>The name of the EventType ({5983d714-5f80-42d8-bee2-9228b6382b3b}) of ThingClass extendedSmartMeterConsumer
+----------
+The name of the EventType ({409b635e-a754-4b5c-b3f0-d1c5a0fb3f03}) of ThingClass heating
 ----------
 The name of the EventType ({8b6e4a67-6522-408b-b676-8d2f09ed2d54}) of ThingClass light
 ----------
@@ -548,6 +554,63 @@ The name of the EventType ({0212a287-c5ae-4644-8803-adfdd8caeb9a}) of ThingClass
         <source>nymea</source>
         <extracomment>The name of the vendor ({2062d64d-3232-433c-88bc-0d33c0ba2ba6})</extracomment>
         <translation>nymea</translation>
+    </message>
+    <message>
+        <source>Energy</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: totalEnergyConsumed, ID: {5821edb7-e6cb-4e5a-9d0b-3375126d3367})
+----------
+The name of the StateType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation>Energie</translation>
+    </message>
+    <message>
+        <source>Energy changed</source>
+        <extracomment>The name of the EventType ({5821edb7-e6cb-4e5a-9d0b-3375126d3367}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation>Energie geändert</translation>
+    </message>
+    <message>
+        <source>Impulse/kWh</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, Type: settings, ID: {c361732b-68eb-447e-a434-e84031231871})</extracomment>
+        <translation>Impulse/kWh</translation>
+    </message>
+    <message>
+        <source>Impulse input</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, ActionType: impulseInput, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
+----------
+The name of the ParamType (ThingClass: extendedSmartMeterConsumer, EventType: impulseInput, ID: {9cd7e5ca-f8f8-48d5-9785-911ae75158c3})
+----------
+The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation>Impulseingang</translation>
+    </message>
+    <message>
+        <source>Impulse input changed</source>
+        <extracomment>The name of the EventType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation>Impulseingang geändert</translation>
+    </message>
+    <message>
+        <source>Set impulse input</source>
+        <extracomment>The name of the ActionType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass extendedSmartMeterConsumer</extracomment>
+        <translation>Setze Impulseingang</translation>
+    </message>
+    <message>
+        <source>Timeframe for power calculation</source>
+        <extracomment>The name of the ParamType (ThingClass: extendedSmartMeterConsumer, Type: settings, ID: {73c9acc3-8f76-40d7-a79b-a1f08bb308d4})</extracomment>
+        <translation>Zeitfenster für Leistungsberechnung</translation>
+    </message>
+    <message>
+        <source>Impulse based energy meter</source>
+        <extracomment>The name of the ThingClass ({c3123967-f741-4fe1-a0d4-9a3e405d7e52})</extracomment>
+        <translation>Impulsbasierter Energiezähler</translation>
+    </message>
+</context>
+<context>
+    <name>IntegrationPluginGenericThings</name>
+    <message>
+        <source>Invalid closing time</source>
+        <translation>Ungültige Schließzeit</translation>
+    </message>
+    <message>
+        <source>Invalid closing or angle time</source>
+        <translation>Ungültige Schließ- oder Winkelstellzeit</translation>
     </message>
 </context>
 </TS>

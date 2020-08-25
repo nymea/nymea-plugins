@@ -693,6 +693,65 @@
                             "ioType": "analogOutput"
                         }
                     ]
+                },
+                {
+                    "id": "c3123967-f741-4fe1-a0d4-9a3e405d7e52",
+                    "name": "extendedSmartMeterConsumer",
+                    "displayName": "Impulse based energy meter",
+                    "createMethods": ["user"],
+                    "interfaces": ["extendedsmartmeterconsumer"],
+                    "settingsTypes": [
+                        {
+                            "id": "c361732b-68eb-447e-a434-e84031231871",
+                            "name": "impulsePerKwh",
+                            "displayName": "Impulse/kWh",
+                            "type": "int",
+                            "minValue": 1,
+                            "maxValue": 1000000,
+                            "defaultValue": 1000
+                        },
+                        {
+                            "id": "73c9acc3-8f76-40d7-a79b-a1f08bb308d4",
+                            "name": "impulseTimeframe",
+                            "displayName": "Timeframe for power calculation",
+                            "type": "int",
+                            "unit": "Seconds",
+                            "minValue": 1,
+                            "maxValue": 600,
+                            "defaultValue": 10
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5983d714-5f80-42d8-bee2-9228b6382b3b",
+                            "name": "currentPower",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "unit": "Watt"
+                        },
+                        {
+                            "id": "5821edb7-e6cb-4e5a-9d0b-3375126d3367",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Energy",
+                            "displayNameEvent": "Energy changed",
+                            "type": "double",
+                            "defaultValue": 0.00,
+                            "unit": "KiloWattHour"
+                        },
+                        {
+                            "id": "9cd7e5ca-f8f8-48d5-9785-911ae75158c3",
+                            "name": "impulseInput",
+                            "displayName": "Impulse input",
+                            "displayNameEvent": "Impulse input changed",
+                            "displayNameAction": "Set impulse input",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        }
+                    ]
                 }
             ]
         }
