@@ -69,40 +69,6 @@ IntegrationPluginAwattar::~IntegrationPluginAwattar()
 {
 }
 
-void IntegrationPluginAwattar::startPairing(ThingPairingInfo *info)
-{
-    info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter your token for awattar.com"));
-}
-
-void IntegrationPluginAwattar::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
-{
-    Q_UNUSED(username)
-
-    QByteArray data = QString(secret + ":").toUtf8().toBase64();
-    QString header = "Basic " + data;
-    QNetworkRequest request(QUrl("https://api.awattar.com/v1/marketdata"));
-    request.setRawHeader("Authorization", header.toLocal8Bit());
-    request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
-    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, info, [this, reply, info, secret](){
-        reply->deleteLater();
-
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        // check HTTP status code
-        if (status != 200) {
-            //: Error setting up thing with invalid token
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("This token is not valid."));
-            return;
-        }
-
-        pluginStorage()->beginGroup(info->thingId().toString());
-        pluginStorage()->setValue("token", secret);
-        pluginStorage()->endGroup();
-        info->finish(Thing::ThingErrorNoError);
-    });
-}
-
 void IntegrationPluginAwattar::setupThing(ThingSetupInfo *info)
 {
     qCDebug(dcAwattar) << "Setup thing" << info->thing()->name() << info->thing()->params();
@@ -134,14 +100,7 @@ void IntegrationPluginAwattar::onPluginTimer()
 
 void IntegrationPluginAwattar::requestPriceData(Thing* thing, ThingSetupInfo *setup)
 {
-    pluginStorage()->beginGroup(thing->id().toString());
-    QString token = pluginStorage()->value("token").toString();
-    pluginStorage()->endGroup();
-
-    QByteArray data = QString(token + ":").toUtf8().toBase64();
-    QString header = "Basic " + data;
     QNetworkRequest request(QUrl(m_serverUrls.value(thing->thingClassId())));
-    request.setRawHeader("Authorization", header.toLocal8Bit());
     request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, thing, [this, reply, thing, setup](){

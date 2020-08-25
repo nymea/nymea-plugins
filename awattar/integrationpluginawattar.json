@@ -13,7 +13,7 @@
                     "displayName": "aWATTar AT",
                     "name": "awattarAT",
                     "createMethods": ["user"],
-                    "setupMethod": "displaypin",
+                    "setupMethod": "justAdd",
                     "interfaces": ["connectable"],
                     "stateTypes": [
                         {
