@@ -1,0 +1,13 @@
+{
+    "title": "Fronius",
+    "tagline": "Connect to Fronius Solar devices.",
+    "icon": "fronius.png",
+    "stability": "community",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+    	
+    ]
+}

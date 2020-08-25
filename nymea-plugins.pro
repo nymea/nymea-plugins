@@ -19,6 +19,7 @@ PLUGIN_DIRS = \
     elgato              \
     eq-3                \
     flowercare          \
+    fronius             \
     genericelements     \
     genericthings       \
     gpio                \
