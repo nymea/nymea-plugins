@@ -901,8 +901,12 @@
                             "name": "percentage",
                             "displayName": "Position",
                             "displayNameEvent": "Position changed",
+                            "displayNameAction": "Set position",
                             "type": "int",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
                         }
                     ],
                     "actionTypes": [
