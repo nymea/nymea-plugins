@@ -56,19 +56,10 @@ void IntegrationPluginNanoleaf::discoverThings(ThingDiscoveryInfo *info)
         ThingDescriptor descriptor(lightPanelsThingClassId, entry.name(), address.toString());
         ParamList params;
 
-        QString serialNo;
-        QString model;
-        QString firmwareVersion;
+        QString serialNo = entry.txt("id");
+        QString model = entry.txt("md");
+        QString firmwareVersion = entry.txt("srcvers");
 
-        foreach (QString value, entry.txt()) {
-            if (value.contains("id=")) {
-                serialNo = value.split("=").last();
-            } else if (value.contains("md=")) {
-                model = value.split("=").last();
-            } else if (value.contains("srcvers=")) {
-                firmwareVersion = value.split("=").last();
-            }
-        }
         if (serialNumbers.contains(serialNo)) {
             continue; //To avoid duplicated devices
         }
