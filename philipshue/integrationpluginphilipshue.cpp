@@ -83,20 +83,18 @@ void IntegrationPluginPhilipsHue::init()
 
     m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_hue._tcp");
     connect(m_zeroConfBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=](const ZeroConfServiceEntry &entry){
-        foreach (Thing *thing, myThings().filterByThingClassId(bridgeThingClassId)) {
-            QString thingId = thing->paramValue(bridgeThingIdParamTypeId).toString();
-            if (entry.protocol() == QAbstractSocket::IPv4Protocol) {
-
-                foreach (const QString &txtEntry, entry.txt()) {
-                    QStringList parts = txtEntry.split('=');
-                    if (parts.length() == 2 && parts.first() == "bridgeid" && parts.last().toLower() == thingId) {
-                        thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
-                        HueBridge *bridge = m_bridges.key(thing);
-                        bridge->setHostAddress(entry.hostAddress());
-                    }
-                }
-            }
+        if (entry.protocol() == QAbstractSocket::IPv4Protocol) {
+            return;
         }
+        QString bridgeId = normalizeBridgeId(entry.txt("bridgeid"));
+        Thing *thing = bridgeForBridgeId(bridgeId);
+        if (!thing) {
+            qCDebug(dcPhilipsHue()) << "We don't know this bridge yet...";
+            return;
+        }
+        thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
+        HueBridge *bridge = m_bridges.key(thing);
+        bridge->setHostAddress(entry.hostAddress());
     });
 }
 
@@ -130,21 +128,7 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
             continue;
         }
 
-        QString id;
-        foreach (const QString &txt, entry.txt()) {
-            QString field = txt.split("=").first();
-            QString value = txt.split("=").last();
-            if (field == "bridgeid") {
-                id = value.toLower();
-                break;
-            }
-        }
-
-        // For some reason the UPnP api returns serial numbers withouot a "fffe" in the middle. For backwards compatiblity adjust to that
-        if (id.indexOf("fffe") == 6) {
-            id.remove(6, 4);
-        }
-
+        QString id = normalizeBridgeId(entry.txt("bridgeid"));
         QHostAddress address = entry.hostAddress();
 
         ParamList params;
@@ -232,20 +216,13 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
         }
 
         foreach (const QVariant &bridgeVariant, jsonDoc.toVariant().toList()) {
-
-
             QVariantMap bridgeMap = bridgeVariant.toMap();
             ThingDescriptor descriptor(bridgeThingClassId, "Philips Hue Bridge", bridgeMap.value("internalipaddress").toString());
             ParamList params;
-            QString bridgeId = bridgeMap.value("id").toString().toLower();
+            QString bridgeId = normalizeBridgeId(bridgeMap.value("id").toString());
             QString address = bridgeMap.value("internalipaddress").toString();
-
-            // For some reason the UPnP api returns serial numbers withouot a "fffe" in the middle. For backwards compatiblity adjust to that
-            if (bridgeId.indexOf("fffe") == 6) {
-                bridgeId.remove(6, 4);
-            }
-            params.append(Param(bridgeThingHostParamTypeId, address));
             params.append(Param(bridgeThingIdParamTypeId, bridgeId));
+            params.append(Param(bridgeThingHostParamTypeId, address));
             descriptor.setParams(params);
             qCDebug(dcPhilipsHue()) << "N-UPnP: Found Hue bridge:" << bridgeId << address;
             discovery->results.append(descriptor);
@@ -794,6 +771,20 @@ void IntegrationPluginPhilipsHue::onDeviceNameChanged()
     if (m_remotes.values().contains(thing)) {
         setRemoteName(thing);
     }
+}
+
+QString IntegrationPluginPhilipsHue::normalizeBridgeId(const QString &bridgeId)
+{
+    // For some reason the hue apis return slightly different bridge ids:
+    // * UPnP api returns serial numbers withouot a "fffe" in the middle
+    // * N-UPnP and ZeroConf do have such a "fffe" in them.
+    // Let's normalize it to something that's save to compare.
+
+    QString ret = bridgeId.toLower();
+    if (bridgeId.indexOf("fffe") == 6) {
+        ret.remove(6, 4);
+    }
+    return ret;
 }
 
 void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
