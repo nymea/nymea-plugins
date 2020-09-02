@@ -37,26 +37,26 @@
 #include <QNetworkRequest>
 #include <QJsonDocument>
 
+#include "huebridge.h"
+
+
 class HueDevice : public QObject
 {
     Q_OBJECT
 public:
-    explicit HueDevice(QObject *parent = nullptr);
+    explicit HueDevice(HueBridge *bridge, QObject *parent = nullptr);
 
     int id() const;
     void setId(const int &id);
 
+    QHostAddress hostAddress() const;
+    QString apiKey() const;
+
     QString name() const;
     void setName(const QString &name);
 
-    QHostAddress hostAddress() const;
-    void setHostAddress(const QHostAddress hostAddress);
-
     QString uuid();
     void setUuid(const QString &uuid);
-
-    QString apiKey() const;
-    void setApiKey(const QString &apiKey);
 
     QString modelId() const;
     void setModelId(const QString &modelId);
@@ -73,10 +73,9 @@ public:
     static QString getBaseUuid(const QString &uuid);
 
 private:
+    HueBridge *m_bridge = nullptr;
     int m_id;
     QString m_name;
-    QHostAddress m_hostAddress;
-    QString m_apiKey;
     QString m_modelId;
     QString m_uuid;
     QString m_type;

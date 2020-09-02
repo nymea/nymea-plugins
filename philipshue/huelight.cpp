@@ -31,8 +31,8 @@
 #include "huelight.h"
 #include "extern-plugininfo.h"
 
-HueLight::HueLight(QObject *parent) :
-    HueDevice(parent)
+HueLight::HueLight(HueBridge *bridge, QObject *parent) :
+    HueDevice(bridge, parent)
 {
 }
 
@@ -215,9 +215,9 @@ void HueLight::processActionResponse(const QVariantList &responseList)
     emit stateChanged();
 }
 
-QPair<QNetworkRequest, QByteArray> HueLight::createSetPowerRequest(const bool &power)
+QPair<QNetworkRequest, QByteArray> HueLight::createSetPowerRequest(bool power)
 {
-    qCDebug(dcPhilipsHue()) << "Create power request" << power;
+    qCDebug(dcPhilipsHue()) << "Creating power request for power" << (power ? "on" : "off");
 
     QVariantMap requestMap;
     requestMap.insert("on", power);
@@ -232,7 +232,7 @@ QPair<QNetworkRequest, QByteArray> HueLight::createSetPowerRequest(const bool &p
 
 QPair<QNetworkRequest, QByteArray> HueLight::createSetColorRequest(const QColor &color)
 {
-    qCDebug(dcPhilipsHue()) << "Create color request" << color.toRgb();
+    qCDebug(dcPhilipsHue()) << "Creating color request" << color.toRgb();
 
     QVariantMap requestMap;
     requestMap.insert("hue", color.hue() * 65535 / 360);
@@ -247,9 +247,9 @@ QPair<QNetworkRequest, QByteArray> HueLight::createSetColorRequest(const QColor 
     return QPair<QNetworkRequest, QByteArray>(request, jsonDoc.toJson());
 }
 
-QPair<QNetworkRequest, QByteArray> HueLight::createSetBrightnessRequest(const int &brightness)
+QPair<QNetworkRequest, QByteArray> HueLight::createSetBrightnessRequest(int brightness)
 {
-    qCDebug(dcPhilipsHue()) << "Create brightness request" << brightness;
+    qCDebug(dcPhilipsHue()) << "Creating brightness request" << brightness;
 
     QVariantMap requestMap;
     requestMap.insert("bri", brightness);
@@ -269,7 +269,7 @@ QPair<QNetworkRequest, QByteArray> HueLight::createSetBrightnessRequest(const in
 
 QPair<QNetworkRequest, QByteArray> HueLight::createSetEffectRequest(const QString &effect)
 {
-    qCDebug(dcPhilipsHue()) << "Create effect request" << effect;
+    qCDebug(dcPhilipsHue()) << "Creating effect request" << effect;
 
     QVariantMap requestMap;
     if (effect == "none") {
@@ -286,9 +286,9 @@ QPair<QNetworkRequest, QByteArray> HueLight::createSetEffectRequest(const QStrin
     return QPair<QNetworkRequest, QByteArray>(request, jsonDoc.toJson());
 }
 
-QPair<QNetworkRequest, QByteArray> HueLight::createSetTemperatureRequest(const int &colorTemp)
+QPair<QNetworkRequest, QByteArray> HueLight::createSetTemperatureRequest(int colorTemp)
 {
-    qCDebug(dcPhilipsHue()) << "Create color temperature request" << colorTemp;
+    qCDebug(dcPhilipsHue()) << "Creating color temperature request" << colorTemp;
 
     QVariantMap requestMap;
     requestMap.insert("ct", colorTemp);
@@ -304,7 +304,7 @@ QPair<QNetworkRequest, QByteArray> HueLight::createSetTemperatureRequest(const i
 
 QPair<QNetworkRequest, QByteArray> HueLight::createFlashRequest(const QString &alert)
 {
-    qCDebug(dcPhilipsHue()) << "Create flash request" << alert;
+    qCDebug(dcPhilipsHue()) << "Creating flash request" << alert;
 
     QVariantMap requestMap;
     if (alert == "flash") {

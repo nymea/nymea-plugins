@@ -53,7 +53,7 @@ public:
         ColorModeCT
     };
 
-    explicit HueLight(QObject *parent = 0);
+    explicit HueLight(HueBridge* bridge, QObject *parent = nullptr);
 
     bool power() const;
     void setPower(const bool &power);
@@ -89,11 +89,11 @@ public:
     void processActionResponse(const QVariantList &responseList);
 
     // create action requests
-    QPair<QNetworkRequest, QByteArray> createSetPowerRequest(const bool &power);
+    QPair<QNetworkRequest, QByteArray> createSetPowerRequest(bool power);
     QPair<QNetworkRequest, QByteArray> createSetColorRequest(const QColor &color);
-    QPair<QNetworkRequest, QByteArray> createSetBrightnessRequest(const int &brightness);
+    QPair<QNetworkRequest, QByteArray> createSetBrightnessRequest(int brightness);
     QPair<QNetworkRequest, QByteArray> createSetEffectRequest(const QString &effect);
-    QPair<QNetworkRequest, QByteArray> createSetTemperatureRequest(const int &colorTemp);
+    QPair<QNetworkRequest, QByteArray> createSetTemperatureRequest(int colorTemp);
     QPair<QNetworkRequest, QByteArray> createFlashRequest(const QString &alert);
 
 private:
