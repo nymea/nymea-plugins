@@ -1,0 +1,11 @@
+{
+    "title": "Sunposition",
+    "tagline": "Calculate the current angle to the sun",
+    "icon": "sunpos.svg",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+    ],
+    "categories": [
+    ]
+}
