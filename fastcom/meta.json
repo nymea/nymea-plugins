@@ -1,0 +1,13 @@
+{
+    "title": "fast.com",
+    "tagline": "Monitor your internet connection speed",
+    "icon": "fastcom.svg",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "cloud"
+    ],
+    "categories": [
+        "online-service"
+    ]
+}
