@@ -49,6 +49,7 @@ PLUGIN_DIRS = \
     simulation          \
     snapd               \
     sonos               \
+    sunposition         \
     tado                \
     tasmota             \
     tcpcommander        \
