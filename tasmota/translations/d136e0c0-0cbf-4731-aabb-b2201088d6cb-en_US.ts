@@ -247,5 +247,59 @@ The name of the ActionType ({c9c9c569-e224-4f63-abed-782cba04d61b}) of ThingClas
         <extracomment>The name of the ThingClass ({70ae35db-68bf-42d7-872a-85582d27d128})</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Signal strength</source>
+        <extracomment>The name of the ParamType (ThingClass: tasmotaBlinds, EventType: signalStrength, ID: {dc58b863-1e84-4469-b226-cd4349d82050})
+----------
+The name of the StateType ({dc58b863-1e84-4469-b226-cd4349d82050}) of ThingClass tasmotaBlinds
+----------
+The name of the ParamType (ThingClass: tasmotaShutter, EventType: signalStrength, ID: {1de7fac2-87f1-4c2b-9286-1b0895c5ac49})
+----------
+The name of the StateType ({1de7fac2-87f1-4c2b-9286-1b0895c5ac49}) of ThingClass tasmotaShutter
+----------
+The name of the ParamType (ThingClass: tasmotaLight, EventType: signalStrength, ID: {dcc39f5e-6bcb-4c04-910e-8dd5f9ad5402})
+----------
+The name of the StateType ({dcc39f5e-6bcb-4c04-910e-8dd5f9ad5402}) of ThingClass tasmotaLight
+----------
+The name of the ParamType (ThingClass: tasmotaSwitch, EventType: signalStrength, ID: {34e54234-d2d6-4c93-8d52-bada19e5ff23})
+----------
+The name of the StateType ({34e54234-d2d6-4c93-8d52-bada19e5ff23}) of ThingClass tasmotaSwitch
+----------
+The name of the ParamType (ThingClass: sonoff_quad, EventType: signalStrength, ID: {d80d8f37-f3c0-4364-998b-312339fd1fa8})
+----------
+The name of the StateType ({d80d8f37-f3c0-4364-998b-312339fd1fa8}) of ThingClass sonoff_quad
+----------
+The name of the ParamType (ThingClass: sonoff_tri, EventType: signalStrength, ID: {08b4ec84-1aec-4e68-a3b4-ae251b8cbe6d})
+----------
+The name of the StateType ({08b4ec84-1aec-4e68-a3b4-ae251b8cbe6d}) of ThingClass sonoff_tri
+----------
+The name of the ParamType (ThingClass: sonoff_dual, EventType: signalStrength, ID: {3d6a567f-d266-4711-bcf1-3ac1f53abadb})
+----------
+The name of the StateType ({3d6a567f-d266-4711-bcf1-3ac1f53abadb}) of ThingClass sonoff_dual
+----------
+The name of the ParamType (ThingClass: sonoff_basic, EventType: signalStrength, ID: {f70e202a-c178-4fbe-a778-713220d11b23})
+----------
+The name of the StateType ({f70e202a-c178-4fbe-a778-713220d11b23}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal strength changed</source>
+        <extracomment>The name of the EventType ({dc58b863-1e84-4469-b226-cd4349d82050}) of ThingClass tasmotaBlinds
+----------
+The name of the EventType ({1de7fac2-87f1-4c2b-9286-1b0895c5ac49}) of ThingClass tasmotaShutter
+----------
+The name of the EventType ({dcc39f5e-6bcb-4c04-910e-8dd5f9ad5402}) of ThingClass tasmotaLight
+----------
+The name of the EventType ({34e54234-d2d6-4c93-8d52-bada19e5ff23}) of ThingClass tasmotaSwitch
+----------
+The name of the EventType ({d80d8f37-f3c0-4364-998b-312339fd1fa8}) of ThingClass sonoff_quad
+----------
+The name of the EventType ({08b4ec84-1aec-4e68-a3b4-ae251b8cbe6d}) of ThingClass sonoff_tri
+----------
+The name of the EventType ({3d6a567f-d266-4711-bcf1-3ac1f53abadb}) of ThingClass sonoff_dual
+----------
+The name of the EventType ({f70e202a-c178-4fbe-a778-713220d11b23}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>
