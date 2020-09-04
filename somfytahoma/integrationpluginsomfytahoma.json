@@ -72,7 +72,7 @@
                     "name": "rollershutter",
                     "displayName": "Roller Shutter",
                     "createMethods": ["auto"],
-                    "interfaces": ["extendedshutter", "wirelessconnectable"],
+                    "interfaces": ["extendedshutter", "wirelesssignalstrength"],
                     "paramTypes": [
                         {
                             "id": "b3d20d6a-f4e1-4959-ab06-3d271ba5c3dc",
@@ -144,7 +144,7 @@
                     "name": "venetianblind",
                     "displayName": "Venetian Blind",
                     "createMethods": ["auto"],
-                    "interfaces": ["venetianblind", "wirelessconnectable"],
+                    "interfaces": ["venetianblind", "wirelesssignalstrength"],
                     "paramTypes": [
                         {
                             "id": "e2541b7b-fbfa-4659-87b1-35d8993714c9",
