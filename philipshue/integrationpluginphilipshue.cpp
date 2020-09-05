@@ -877,7 +877,7 @@ void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
         } else if (action.actionTypeId() == bridgeCheckForUpdatesActionTypeId) {
             QPair<QNetworkRequest, QByteArray> request = bridge->createCheckUpdatesRequest();
             reply = hardwareManager()->networkManager()->put(request.first, request.second);
-        } else if (action.actionTypeId() == bridgeUpgradeActionTypeId) {
+        } else if (action.actionTypeId() == bridgePerformUpdateActionTypeId) {
             QPair<QNetworkRequest, QByteArray> request = bridge->createUpgradeRequest();
             reply = hardwareManager()->networkManager()->put(request.first, request.second);
         }
@@ -1679,24 +1679,38 @@ void IntegrationPluginPhilipsHue::processBridgeRefreshResponse(Thing *thing, con
     // mark bridge as reachable
     bridgeReachableChanged(thing, true);
     thing->setStateValue(bridgeApiVersionStateTypeId, configMap.value("apiversion").toString());
-    thing->setStateValue(bridgeSoftwareVersionStateTypeId, configMap.value("swversion").toString());
+    thing->setStateValue(bridgeCurrentVersionStateTypeId, configMap.value("swversion").toString());
 
-    int updateStatus = configMap.value("swupdate").toMap().value("updatestate").toInt();
-    switch (updateStatus) {
-    case 0:
-        thing->setStateValue(bridgeUpdateStatusStateTypeId, "Up to date");
-        break;
-    case 1:
-        thing->setStateValue(bridgeUpdateStatusStateTypeId, "Downloading updates");
-        break;
-    case 2:
-        thing->setStateValue(bridgeUpdateStatusStateTypeId, "Updates ready to install");
-        break;
-    case 3:
-        thing->setStateValue(bridgeUpdateStatusStateTypeId, "Installing updates");
-        break;
-    default:
-        break;
+    HueBridge *bridge = m_bridges.key(thing);
+    if (bridge->apiVersion() < "1.20") {
+        int updateStatus = configMap.value("swupdate").toMap().value("updatestate").toInt();
+        switch (updateStatus) {
+        case 0:
+            thing->setStateValue(bridgeUpdateStatusStateTypeId, "idle");
+            break;
+        case 1:
+            thing->setStateValue(bridgeUpdateStatusStateTypeId, "idle");
+            break;
+        case 2:
+            thing->setStateValue(bridgeUpdateStatusStateTypeId, "available");
+            break;
+        case 3:
+            thing->setStateValue(bridgeUpdateStatusStateTypeId, "updating");
+            break;
+        default:
+            break;
+        }
+    } else {
+        QString updateStatus = configMap.value("swupdate2").toMap().value("state").toString();
+        QHash<QString, QString> mapping = {
+            {"unknown", "idle"},
+            {"noupdates", "idle"},
+            {"transferring", "idle"},
+            {"anyreadytoinstall", "available"},
+            {"allreadytoinstall", "available"},
+            {"installing", "updating"}
+        };
+        thing->setStateValue(bridgeUpdateStatusStateTypeId, mapping.value(updateStatus));
     }
 
     discoverBridgeDevices(m_bridges.key(thing));

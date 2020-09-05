@@ -13,7 +13,7 @@
                     "name": "shelly1",
                     "displayName": "Shelly 1",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "gateway", "wirelessconnectable" ],
+                    "interfaces": [ "gateway", "wirelessconnectable", "update" ],
                     "paramTypes": [
                         {
                             "id": "1d301dc0-5e48-473f-a611-8e407289e545",
@@ -63,6 +63,31 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 100
+                        },
+                        {
+                            "id": "68bf3780-8f7f-4ecb-8498-830e257c192c",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "e033cca0-03fa-4b2e-9d7b-d4a2c8ffbb8c",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "6e794011-d184-4ab2-9c3a-3b2205880cbc",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ],
                     "actionTypes": [
@@ -70,6 +95,11 @@
                             "id": "b4067d54-36c5-4d30-bbc3-c8c712d6fd32",
                             "name": "reboot",
                             "displayName": "Reboot"
+                        },
+                        {
+                            "id": "6f814339-9a48-4027-a3f8-760742ff22ba",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
                         }
                     ]
                 },
@@ -78,7 +108,7 @@
                     "name": "shelly1pm",
                     "displayName": "Shelly 1PM",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "gateway", "wirelessconnectable" ],
+                    "interfaces": [ "gateway", "wirelessconnectable", "update" ],
                     "paramTypes": [
                         {
                             "id": "6df5db8a-4e27-49e5-8cf9-78cb8497d831",
@@ -128,6 +158,31 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 100
+                        },
+                        {
+                            "id": "a290c9ad-356c-4387-9d82-2bf522643e16",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "681f3a7e-d981-4cb2-a7dc-b889a9393276",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "bd77d5f6-4958-4a8a-98f5-25931333a5d3",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ],
                     "actionTypes": [
@@ -135,6 +190,11 @@
                             "id": "3133cf3d-729d-4f36-9a6d-1eeecb07edde",
                             "name": "reboot",
                             "displayName": "Reboot"
+                        },
+                        {
+                            "id": "edc735dd-8c6b-4f76-b05b-32c934b4fe3b",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
                         }
                     ]
                 },
@@ -143,7 +203,7 @@
                     "name": "shelly25",
                     "displayName": "Shelly 2.5",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "gateway", "wirelessconnectable" ],
+                    "interfaces": [ "gateway", "wirelessconnectable", "update" ],
                     "paramTypes": [
                         {
                             "id": "d79de2fa-81dd-440f-80b8-f1f71149d1f2",
@@ -201,6 +261,31 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 100
+                        },
+                        {
+                            "id": "0f03f1f3-5575-4375-9889-499a172c66c4",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "69f6cb77-1775-4d94-8592-798fdc26a9fc",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "eb8ce8b3-979f-4661-a0ed-d31d3e217e77",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ],
                     "actionTypes": [
@@ -208,6 +293,11 @@
                             "id": "4085a6a0-746f-490d-9e38-897c24f866b6",
                             "name": "reboot",
                             "displayName": "Reboot"
+                        },
+                        {
+                            "id": "14a24bc3-8215-430e-b4ff-e25ccee29691",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
                         }
                     ]
                 },
@@ -216,7 +306,7 @@
                     "name": "shellyPlug",
                     "displayName": "Shelly Plug/PlugS",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "powersocket", "extendedsmartmeterconsumer", "wirelessconnectable" ],
+                    "interfaces": [ "powersocket", "extendedsmartmeterconsumer", "wirelessconnectable", "update" ],
                     "paramTypes": [
                         {
                             "id": "bd5679fc-b761-4a56-a472-97717418c425",
@@ -297,6 +387,31 @@
                             "type": "double",
                             "unit": "Watt",
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "ccec3806-cc48-42cf-94d7-811ff569d407",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "5b286e92-ec05-4a70-8813-646b63995213",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "ccf9d5e9-e89d-4dda-ae99-2f3e9c4e7948",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ],
                     "actionTypes": [
@@ -304,6 +419,11 @@
                             "id": "7dc03565-d7cb-4add-ba08-b751ce0821d5",
                             "name": "reboot",
                             "displayName": "Reboot"
+                        },
+                        {
+                            "id": "140026a6-2d16-4a0c-9ba9-dea0740584fd",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
                         }
                     ]
                 },
@@ -312,7 +432,7 @@
                     "name": "shellyRgbw2",
                     "displayName": "Shelly RGBW2",
                     "createMethods": ["discovery"],
-                    "interfaces": ["colorlight", "wirelessconnectable"],
+                    "interfaces": ["colorlight", "wirelessconnectable", "update"],
                     "paramTypes": [
                         {
                             "id": "2b0cd1b2-1648-4e0d-85d2-34aa9b9b835e",
@@ -407,6 +527,31 @@
                             "type": "double",
                             "defaultValue": 0,
                             "unit": "Watt"
+                        },
+                        {
+                            "id": "3d22110c-db53-4420-8e0f-314555484926",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "8f2fd109-553a-48df-9b08-6a7fdcba46c1",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "e0d58e73-8a36-4f36-901b-f6be6a84942d",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ],
                     "actionTypes": [
@@ -414,6 +559,11 @@
                             "id": "1390811d-dc71-4d89-a6e1-a808e03225f9",
                             "name": "reboot",
                             "displayName": "Reboot"
+                        },
+                        {
+                            "id": "abca86b9-74b0-4a17-a8ee-89811b5981a0",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
                         }
                     ]
                 },
@@ -422,7 +572,7 @@
                     "name": "shellyDimmer",
                     "displayName": "Shelly Dimmer / Dimmer 2",
                     "createMethods": ["discovery"],
-                    "interfaces": ["dimmablelight", "wirelessconnectable"],
+                    "interfaces": ["dimmablelight", "wirelessconnectable", "update"],
                     "paramTypes": [
                         {
                             "id": "32e328be-2357-4d94-b438-3fe1ae94d97b",
@@ -496,6 +646,31 @@
                             "type": "double",
                             "defaultValue": 0,
                             "unit": "Watt"
+                        },
+                        {
+                            "id": "8d3b3d63-86f1-46cb-92ef-d27c0d9d0a4e",
+                            "name": "updateStatus",
+                            "displayName": "Firmware update status",
+                            "displayNameEvent": "Firmware update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "2fac7af0-1aa0-4e8d-b3fb-584b49647887",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": "1.0"
+                        },
+                        {
+                            "id": "e6418140-db00-4f9b-a7fc-bf4a56a3a8a7",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": "1.0"
                         }
                     ],
                     "actionTypes": [
@@ -503,6 +678,11 @@
                             "id": "dca1d1bb-b377-41b8-ac26-579060448fd7",
                             "name": "reboot",
                             "displayName": "Reboot"
+                        },
+                        {
+                            "id": "893031b8-9abd-4a83-8da4-ea57acb621ad",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
                         }
                     ]
                 },
