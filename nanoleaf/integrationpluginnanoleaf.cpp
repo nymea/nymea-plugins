@@ -91,8 +91,14 @@ void IntegrationPluginNanoleaf::confirmPairing(ThingPairingInfo *info, const QSt
 {
     Q_UNUSED(username)
     Q_UNUSED(secret)
-    QHostAddress address = getHostAddress(info->params().paramValue(lightPanelsThingSerialNoParamTypeId).toString());
-    uint port = getPort(info->params().paramValue(lightPanelsThingSerialNoParamTypeId).toString());
+    QString serialNumber =  info->params().paramValue(lightPanelsThingSerialNoParamTypeId).toString();
+    QHostAddress address = getHostAddress(serialNumber);
+    if (address.isNull()) {
+        qCWarning(dcNanoleaf()) << "Could not find any device with serial number" << serialNumber;
+        return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Cloud not find device."));
+    }
+    uint port = getPort(serialNumber);
+    qCDebug(dcNanoleaf()) << "ConfirmPairing: Creating Nanoleaf connection with address" << address << "and port" << port;
     Nanoleaf *nanoleaf = createNanoleafConnection(address, port);
     nanoleaf->addUser(); //push button pairing
     m_unfinishedNanoleafConnections.insert(info->thingId(), nanoleaf);
@@ -124,8 +130,14 @@ void IntegrationPluginNanoleaf::setupThing(ThingSetupInfo *info)
             return info->finish(Thing::ThingErrorNoError);
         } else {
             // This setupDevice is called after a (re)start, with an already added thing
-            QHostAddress address = getHostAddress(thing->paramValue(lightPanelsThingSerialNoParamTypeId).toString());
-            int port = getPort(thing->paramValue(lightPanelsThingSerialNoParamTypeId).toString());
+            QString serialNumber = thing->paramValue(lightPanelsThingSerialNoParamTypeId).toString();
+            QHostAddress address = getHostAddress(serialNumber);
+            if (address.isNull()) {
+                qCWarning(dcNanoleaf()) << "Could not find any device with serial number" << serialNumber;
+                return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Cloud not find device."));
+            }
+            int port = getPort(serialNumber);
+            qCDebug(dcNanoleaf()) << "SetupThing: Creating Nanoleaf connection with address" << address << "and port" << port;
             nanoleaf = createNanoleafConnection(address, port);
             nanoleaf->setAuthToken(token);
             nanoleaf->getControllerInfo(); //This is just to check if the thing is available
@@ -263,13 +275,8 @@ QHostAddress IntegrationPluginNanoleaf::getHostAddress(const QString &serialNumb
 {
     ZeroConfServiceEntry entry;
     foreach (const ZeroConfServiceEntry &e, m_zeroconfBrowser->serviceEntries()) {
-        QString entrySerialNo;
-        foreach (QString value, entry.txt()) {
-            if (value.contains("id=")) {
-                entrySerialNo = value.split("=").last();
-                break;
-            }
-        }
+        QString entrySerialNo = e.txt("id");
+
         if (serialNumber == entrySerialNo) {
             entry = e;
             break;
@@ -282,13 +289,7 @@ uint IntegrationPluginNanoleaf::getPort(const QString &serialNumber)
 {
     ZeroConfServiceEntry entry;
     foreach (const ZeroConfServiceEntry &e, m_zeroconfBrowser->serviceEntries()) {
-        QString entrySerialNo;
-        foreach (QString value, entry.txt()) {
-            if (value.contains("id=")) {
-                entrySerialNo = value.split("=").last();
-                break;
-            }
-        }
+        QString entrySerialNo = e.txt("id");
         if (serialNumber == entrySerialNo) {
             entry = e;
             break;

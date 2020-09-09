@@ -4,22 +4,28 @@
 <context>
     <name>IntegrationPluginNanoleaf</name>
     <message>
-        <location filename="../integrationpluginnanoleaf.cpp" line="96"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="87"/>
         <source>On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnanoleaf.cpp" line="421"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="98"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="137"/>
+        <source>Cloud not find device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginnanoleaf.cpp" line="413"/>
         <source>Color temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnanoleaf.cpp" line="424"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="416"/>
         <source>Hue/Saturation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnanoleaf.cpp" line="427"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="419"/>
         <source>Effect</source>
         <translation type="unfinished"></translation>
     </message>
