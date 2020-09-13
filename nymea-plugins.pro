@@ -26,7 +26,6 @@ PLUGIN_DIRS = \
     i2cdevices          \
     httpcommander       \
     homeconnect         \
-    intertechno         \
     keba                \
     kodi                \
     lgsmarttv           \
