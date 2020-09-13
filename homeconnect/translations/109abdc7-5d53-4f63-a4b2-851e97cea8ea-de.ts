@@ -900,7 +900,7 @@ The name of the StateType ({ab65bfa0-37d8-4df6-80f0-80377a43a520}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="973"/>
         <source>Spin speed changed</source>
         <extracomment>The name of the EventType ({ab65bfa0-37d8-4df6-80f0-80377a43a520}) of ThingClass washer</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Umdrehungsgeschwindigkeit geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="976"/>
@@ -915,13 +915,13 @@ The name of the ActionType ({aedd85a6-0f9a-4bc4-b2ba-90ba11d1a955}) of ThingClas
 The name of the ActionType ({025f7cb5-83a7-40d3-9628-05eda18f5568}) of ThingClass coffeeMaker
 ----------
 The name of the ActionType ({7dc1e238-cdc2-42e8-9a2a-e93d497966d9}) of ThingClass dishwasher</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="988"/>
         <source>Start time</source>
         <extracomment>The name of the ParamType (ThingClass: dishwasher, ActionType: start, ID: {9b87bcc9-4d0d-4cd8-bd14-c2e48ef8cb1f})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Startzeit</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="991"/>
@@ -936,7 +936,7 @@ The name of the ActionType ({8c9923f6-2a2d-48bb-aaf4-5f887565c58a}) of ThingClas
 The name of the ActionType ({12f5b09e-a23a-43ee-ba4b-8b0f34792496}) of ThingClass coffeeMaker
 ----------
 The name of the ActionType ({c2c7e1bd-bf0f-4ded-93e0-e4d770f03f6f}) of ThingClass dishwasher</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Stopp</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1003"/>
@@ -948,13 +948,13 @@ The name of the ActionType ({c2c7e1bd-bf0f-4ded-93e0-e4d770f03f6f}) of ThingClas
 The name of the ParamType (ThingClass: coffeeMaker, EventType: strength, ID: {714a12bc-63a5-4423-aad9-47d77f41ae47})
 ----------
 The name of the StateType ({714a12bc-63a5-4423-aad9-47d77f41ae47}) of ThingClass coffeeMaker</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Stärke</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1012"/>
         <source>Strength changed</source>
         <extracomment>The name of the EventType ({714a12bc-63a5-4423-aad9-47d77f41ae47}) of ThingClass coffeeMaker</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Stärke geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1015"/>
@@ -963,13 +963,13 @@ The name of the StateType ({714a12bc-63a5-4423-aad9-47d77f41ae47}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: oven, EventType: targetTemperature, ID: {f3f5f257-5887-4d64-b61a-8179424912b3})
 ----------
 The name of the StateType ({f3f5f257-5887-4d64-b61a-8179424912b3}) of ThingClass oven</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zieltemperatur</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1021"/>
         <source>Target temperature changed</source>
         <extracomment>The name of the EventType ({f3f5f257-5887-4d64-b61a-8179424912b3}) of ThingClass oven</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zieltemperatur geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1024"/>
@@ -987,13 +987,13 @@ The name of the ParamType (ThingClass: coffeeMaker, ActionType: temperature, ID:
 The name of the ParamType (ThingClass: coffeeMaker, EventType: temperature, ID: {29dc7edb-c34f-41da-9d2a-e46bda34885b})
 ----------
 The name of the StateType ({29dc7edb-c34f-41da-9d2a-e46bda34885b}) of ThingClass coffeeMaker</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1039"/>
         <source>Temperature alarm freezer</source>
         <extracomment>The name of the EventType ({b4e68a37-0d38-4ae0-babb-3c8e3bc4cf6c}) of ThingClass fridge</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Alarmtemperatur Gefrierschrank</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1042"/>
@@ -1002,7 +1002,7 @@ The name of the StateType ({29dc7edb-c34f-41da-9d2a-e46bda34885b}) of ThingClass
         <extracomment>The name of the EventType ({29ed9597-2ace-48f5-91bc-171ac2601bfc}) of ThingClass washer
 ----------
 The name of the EventType ({29dc7edb-c34f-41da-9d2a-e46bda34885b}) of ThingClass coffeeMaker</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1048"/>
@@ -1011,13 +1011,13 @@ The name of the EventType ({29dc7edb-c34f-41da-9d2a-e46bda34885b}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: homeConnectConnection, EventType: userDisplayName, ID: {5d3b2396-6528-47c2-b5a4-f751531bccea})
 ----------
 The name of the StateType ({5d3b2396-6528-47c2-b5a4-f751531bccea}) of ThingClass homeConnectConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1054"/>
         <source>User name changed</source>
         <extracomment>The name of the EventType ({5d3b2396-6528-47c2-b5a4-f751531bccea}) of ThingClass homeConnectConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1057"/>
@@ -1026,25 +1026,25 @@ The name of the StateType ({5d3b2396-6528-47c2-b5a4-f751531bccea}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: hood, EventType: ventingLevel, ID: {09e73cec-5b98-4d31-86fb-cd671f210196})
 ----------
 The name of the StateType ({09e73cec-5b98-4d31-86fb-cd671f210196}) of ThingClass hood</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lüftungsstufe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1063"/>
         <source>Venting level changed</source>
         <extracomment>The name of the EventType ({09e73cec-5b98-4d31-86fb-cd671f210196}) of ThingClass hood</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Lüftungsstufe geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1066"/>
         <source>Washer</source>
         <extracomment>The name of the ThingClass ({aaec390e-a61f-40ea-b42c-80f69428690b})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Waschmaschine</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/homeconnect/plugininfo.h" line="1069"/>
         <source>Water tank empty</source>
         <extracomment>The name of the EventType ({2ea6dd16-86ad-4e55-9281-ae55646eb869}) of ThingClass coffeeMaker</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Wasserbehälter leer</translation>
     </message>
 </context>
 </TS>
