@@ -28,18 +28,18 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef ONEWIRE_H
-#define ONEWIRE_H
+#ifndef OWFS_H
+#define OWFS_H
 
 #include "owcapi.h"
 
 #include <QObject>
 
-class OneWire : public QObject
+class Owfs : public QObject
 {
     Q_OBJECT
 public:
-    enum OneWireProperty {
+    enum OwfsProperty {
         Address,    //The entire 64-bit unique ID
         Crc,        //The 8-bit error correction
         Family,     //The 8-bit family code
@@ -59,15 +59,15 @@ public:
         PIO_H
     };
 
-    struct OneWireDevice {
+    struct OwfsDevice {
         QByteArray address;
         int family;
         QByteArray id;
         QByteArray type;
     };
 
-    explicit OneWire(QObject *parent = nullptr);
-    ~OneWire();
+    explicit Owfs(QObject *parent = nullptr);
+    ~Owfs();
     bool init(const QByteArray &owfsInitArguments);
 
     QByteArray getPath();
@@ -87,7 +87,7 @@ private:
     void setValue(const QByteArray &address, const QByteArray &deviceType, const QByteArray &value);
 
 signals:
-    void devicesDiscovered(QList<OneWireDevice> devices);
+    void devicesDiscovered(QList<OwfsDevice> devices);
 };
 
-#endif // ONEWIRE_H
+#endif // OWFS_H

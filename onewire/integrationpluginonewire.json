@@ -11,7 +11,7 @@
                 {
                     "id": "c36c68d9-6182-4ae1-972d-b8b5e0cf185f",
                     "name": "oneWireInterface",
-                    "displayName": "One wire interface",
+                    "displayName": "OWFS interface",
                     "interfaces": ["gateway"],
                     "createMethods": ["user"],
                     "paramTypes": [
@@ -27,8 +27,8 @@
                         {
                             "id": "d0ded173-c382-4ee3-8e24-3647b4e16afa",
                             "name": "connected",
-                            "displayName": "connected",
-                            "displayNameEvent": "connected changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "defaultValue": false,
                             "type": "bool"
                         },
@@ -69,10 +69,18 @@
                     ],
                     "stateTypes": [
                         {
+                            "id": "32305a16-b042-4574-8bd7-ad99d9e8e5da",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
                             "id": "b04ee2a5-9b27-4ffc-9e12-7e05f5a41690",
                             "name": "temperature",
-                            "displayName": "temperature",
-                            "displayNameEvent": "temperature changed",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
                             "defaultValue": 0
@@ -102,7 +110,15 @@
                             "readOnly": true
                         }
                     ],
-                    "stateTypes": [
+                    "stateTypes": [                      
+                        {
+                            "id": "16bae8e8-bfe1-4648-9018-f6ce610f4236",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
                         {
                             "id": "ca10a9fd-e4e0-4608-a2d2-6a4ce9644f40",
                             "name": "digitalOutput",
@@ -139,6 +155,14 @@
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "fb6e63db-316b-4959-a349-0ff58a679f71",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
                         {
                             "id": "f8b6b4a7-355c-4580-a676-8a4d0d619ff9",
                             "name": "digitalOutput1",
@@ -186,6 +210,14 @@
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "b99585e0-5147-46e3-9474-fba555bac68a",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
                         {
                             "id": "78fa12c0-246c-4112-8be6-5943d3c3cda5",
                             "name": "digitalOutput1",
