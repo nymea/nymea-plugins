@@ -47,6 +47,14 @@
 #include "network/zeroconf/zeroconfservicebrowser.h"
 #include "platform/platformzeroconfcontroller.h"
 
+// Maps update status strings: Shelly <-> nymea
+static QHash<QString, QString> updateStatusMap = {
+    {"idle", "idle"},
+    {"pending", "available"},
+    {"updating", "updating"},
+    {"unknown", "idle"}
+};
+
 IntegrationPluginShelly::IntegrationPluginShelly()
 {
     // Device param types
@@ -145,6 +153,27 @@ IntegrationPluginShelly::IntegrationPluginShelly()
 
     m_brightnessStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2BrightnessStateTypeId;
     m_brightnessStateTypeMap[shellyDimmerThingClassId] = shellyDimmerBrightnessStateTypeId;
+
+    m_updateStatusStateTypesMap[shelly1ThingClassId] = shelly1UpdateStatusStateTypeId;
+    m_updateStatusStateTypesMap[shelly1pmThingClassId] = shelly1pmUpdateStatusStateTypeId;
+    m_updateStatusStateTypesMap[shelly25ThingClassId] = shelly25UpdateStatusStateTypeId;
+    m_updateStatusStateTypesMap[shellyPlugThingClassId] = shellyPlugUpdateStatusStateTypeId;
+    m_updateStatusStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2UpdateStatusStateTypeId;
+    m_updateStatusStateTypesMap[shellyDimmerThingClassId] = shellyDimmerUpdateStatusStateTypeId;
+
+    m_currentVersionStateTypesMap[shelly1ThingClassId] = shelly1CurrentVersionStateTypeId;
+    m_currentVersionStateTypesMap[shelly1pmThingClassId] = shelly1pmCurrentVersionStateTypeId;
+    m_currentVersionStateTypesMap[shelly25ThingClassId] = shelly25CurrentVersionStateTypeId;
+    m_currentVersionStateTypesMap[shellyPlugThingClassId] = shellyPlugCurrentVersionStateTypeId;
+    m_currentVersionStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2CurrentVersionStateTypeId;
+    m_currentVersionStateTypesMap[shellyDimmerThingClassId] = shellyDimmerCurrentVersionStateTypeId;
+
+    m_availableVersionStateTypesMap[shelly1ThingClassId] = shelly1AvailableVersionStateTypeId;
+    m_availableVersionStateTypesMap[shelly1pmThingClassId] = shelly1pmAvailableVersionStateTypeId;
+    m_availableVersionStateTypesMap[shelly25ThingClassId] = shelly25AvailableVersionStateTypeId;
+    m_availableVersionStateTypesMap[shellyPlugThingClassId] = shellyPlugAvailableVersionStateTypeId;
+    m_availableVersionStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2AvailableVersionStateTypeId;
+    m_availableVersionStateTypesMap[shellyDimmerThingClassId] = shellyDimmerAvailableVersionStateTypeId;
 
     // Actions and their params
     m_rebootActionTypeMap[shelly1RebootActionTypeId] = shelly1ThingClassId;
@@ -301,6 +330,13 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
+    if (m_updateActionTypesMap.contains(action.actionTypeId())) {
+        MqttChannel *channel = m_mqttChannels.value(thing);
+        QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
+        channel->publish(QString("shellies/%1/command").arg(shellyId), "update_fw");
+        info->finish(Thing::ThingErrorNoError);
+    }
+
     if (m_powerActionTypesMap.contains(action.actionTypeId())) {
         // If the main shelly has a power action (e.g. Shelly Plug, there is no parentId)
         Thing *parentDevice = thing->parentId().isNull() ? thing : myThings().findById(thing->parentId());
@@ -375,7 +411,6 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
-    qCDebug(dcShelly()) << "Power action";
     if (m_dimmablePowerActionTypesMap.contains(action.actionTypeId())) {
         MqttChannel *channel = m_mqttChannels.value(thing);
         QString shellyId = info->thing()->paramValue(m_idParamTypeMap.value(info->thing()->thingClassId())).toString();
@@ -484,7 +519,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         return;
     }
 
-    qCDebug(dcShelly()) << "Publish received from" << thing->name() << topic << payload;
+    qCDebug(dcShelly()) << "Publish received from" << thing->name() << topic;
 
     QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
     if (topic == "shellies/" + shellyId + "/info") {
@@ -495,8 +530,10 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             qCWarning(dcShelly()) << qUtf8Printable(payload);
             return;
         }
+        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
         QVariantMap data = jsonDoc.toVariant().toMap();
 
+        // Wifi signal strength
         int signalStrength = -1;
         if (data.value("wifi_sta").toMap().contains("rssi")) {
             int rssi = data.value("wifi_sta").toMap().value("rssi").toInt();
@@ -506,9 +543,17 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         foreach (Thing *child, myThings().filterByParentId(thing->id())) {
             child->setStateValue(m_signalStrengthStateTypesMap.value(child->thingClassId()), signalStrength);
         }
+
+        // Firmware update
+        QString updateStatus = updateStatusMap.value(data.value("update").toMap().value("status").toString());
+        thing->setStateValue(m_updateStatusStateTypesMap.value(thing->thingClassId()), updateStatus);
+        thing->setStateValue(m_currentVersionStateTypesMap.value(thing->thingClassId()), data.value("update").toMap().value("old_version").toString());
+        thing->setStateValue(m_availableVersionStateTypesMap.value(thing->thingClassId()), data.value("update").toMap().value("new_version").toString());
     }
 
+
     if (topic.startsWith("shellies/" + shellyId + "/input/")) {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         int channel = topic.split("/").last().toInt();
         // "1" or "0"
         // Emit event button pressed
@@ -525,6 +570,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     QRegExp topicMatcher = QRegExp("shellies/" + shellyId + "/relay/[0-1]");
     if (topicMatcher.exactMatch(topic)) {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         bool on = payload == "on";
@@ -547,6 +593,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/power");
     if (topicMatcher.exactMatch(topic)) {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         double power = payload.toDouble();
@@ -565,6 +612,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/energy");
     if (topicMatcher.exactMatch(topic)) {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         // W/min => kW/h
@@ -583,6 +631,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/color/0") {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         bool on = payload == "on";
         if (m_powerStateTypeMap.contains(thing->thingClassId())) {
             thing->setStateValue(m_powerStateTypeMap.value(thing->thingClassId()), on);
@@ -590,6 +639,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/color/0/status") {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
         if (error.error != QJsonParseError::NoError) {
@@ -612,6 +662,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/light/0") {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         bool on = payload == "on";
         if (m_powerStateTypeMap.contains(thing->thingClassId())) {
             thing->setStateValue(m_powerStateTypeMap.value(thing->thingClassId()), on);
@@ -625,6 +676,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             qCWarning(dcShelly()) << "Error parsing JSON from Shelly:" << error.error << error.errorString() << payload;
             return;
         }
+        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
         QVariantMap statusMap = jsonDoc.toVariant().toMap();
         if (m_brightnessStateTypeMap.contains(thing->thingClassId())) {
             int brightness = statusMap.value("brightness").toInt();
@@ -633,6 +685,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/light/0/power") {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         if (m_currentPowerStateTypeMap.contains(thing->thingClassId())) {
             double power = payload.toDouble();
             thing->setStateValue(m_currentPowerStateTypeMap.value(thing->thingClassId()), power);
@@ -640,12 +693,14 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/roller/0") {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         // Roller shutters are always child devices...
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedshutter")) {
             child->setStateValue(shellyRollerMovingStateTypeId, payload != "stop");
         }
     }
     if (topic == "shellies/" + shellyId + "/roller/0/pos") {
+        qCDebug(dcShelly()) << "Payload:" << payload;
         // Roller shutters are always child devices...
         int pos = payload.toInt();
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedshutter")) {
@@ -660,7 +715,7 @@ void IntegrationPluginShelly::updateStatus()
         MqttChannel *channel = m_mqttChannels.value(thing);
         QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
         qCDebug(dcShelly()) << "Requesting announcement" << QString("shellies/%1/info").arg(shellyId);
-        channel->publish(QString("shellies/command").arg(shellyId), "announce");
+        channel->publish(QString("shellies/%1/command").arg(shellyId), "announce");
     }
 }
 
