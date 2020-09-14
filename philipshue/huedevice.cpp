@@ -30,8 +30,9 @@
 
 #include "huedevice.h"
 
-HueDevice::HueDevice(QObject *parent) :
-    QObject(parent)
+HueDevice::HueDevice(HueBridge *bridge, QObject *parent) :
+    QObject(parent),
+    m_bridge(bridge)
 {
 
 }
@@ -46,6 +47,16 @@ void HueDevice::setId(const int &id)
     m_id = id;
 }
 
+QHostAddress HueDevice::hostAddress() const
+{
+    return m_bridge->hostAddress();
+}
+
+QString HueDevice::apiKey() const
+{
+    return m_bridge->apiKey();
+}
+
 QString HueDevice::name() const
 {
     return m_name;
@@ -56,16 +67,6 @@ void HueDevice::setName(const QString &name)
     m_name = name;
 }
 
-QHostAddress HueDevice::hostAddress() const
-{
-    return m_hostAddress;
-}
-
-void HueDevice::setHostAddress(const QHostAddress hostAddress)
-{
-    m_hostAddress = hostAddress;
-}
-
 QString HueDevice::uuid()
 {
     return m_uuid;
@@ -74,16 +75,6 @@ QString HueDevice::uuid()
 void HueDevice::setUuid(const QString &uuid)
 {
     m_uuid = uuid;
-}
-
-QString HueDevice::apiKey() const
-{
-    return m_apiKey;
-}
-
-void HueDevice::setApiKey(const QString &apiKey)
-{
-    m_apiKey = apiKey;
 }
 
 QString HueDevice::modelId() const

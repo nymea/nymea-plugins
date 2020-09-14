@@ -83,20 +83,22 @@ void IntegrationPluginPhilipsHue::init()
 
     m_zeroConfBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_hue._tcp");
     connect(m_zeroConfBrowser, &ZeroConfServiceBrowser::serviceEntryAdded, this, [=](const ZeroConfServiceEntry &entry){
-        foreach (Thing *thing, myThings().filterByThingClassId(bridgeThingClassId)) {
-            QString thingId = thing->paramValue(bridgeThingIdParamTypeId).toString();
-            if (entry.protocol() == QAbstractSocket::IPv4Protocol) {
-
-                foreach (const QString &txtEntry, entry.txt()) {
-                    QStringList parts = txtEntry.split('=');
-                    if (parts.length() == 2 && parts.first() == "bridgeid" && parts.last().toLower() == thingId) {
-                        thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
-                        HueBridge *bridge = m_bridges.key(thing);
-                        bridge->setHostAddress(entry.hostAddress());
-                    }
-                }
-            }
+        qCDebug(dcPhilipsHue()) << "service entry added!" << entry;
+        if (entry.protocol() != QAbstractSocket::IPv4Protocol) {
+            return;
         }
+        QString bridgeId = normalizeBridgeId(entry.txt("bridgeid"));
+        Thing *thing = bridgeForBridgeId(bridgeId);
+        if (!thing) {
+            qCDebug(dcPhilipsHue()) << "We don't know this bridge yet...";
+            return;
+        }
+        thing->setParamValue(bridgeThingHostParamTypeId, entry.hostAddress().toString());
+        pluginStorage()->beginGroup(thing->id().toString());
+        pluginStorage()->setValue("hostCache", entry.hostAddress().toString());
+        pluginStorage()->endGroup();
+        HueBridge *bridge = m_bridges.key(thing);
+        bridge->setHostAddress(entry.hostAddress());
     });
 }
 
@@ -130,21 +132,7 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
             continue;
         }
 
-        QString id;
-        foreach (const QString &txt, entry.txt()) {
-            QString field = txt.split("=").first();
-            QString value = txt.split("=").last();
-            if (field == "bridgeid") {
-                id = value.toLower();
-                break;
-            }
-        }
-
-        // For some reason the UPnP api returns serial numbers withouot a "fffe" in the middle. For backwards compatiblity adjust to that
-        if (id.indexOf("fffe") == 6) {
-            id.remove(6, 4);
-        }
-
+        QString id = normalizeBridgeId(entry.txt("bridgeid"));
         QHostAddress address = entry.hostAddress();
 
         ParamList params;
@@ -232,20 +220,13 @@ void IntegrationPluginPhilipsHue::discoverThings(ThingDiscoveryInfo *info)
         }
 
         foreach (const QVariant &bridgeVariant, jsonDoc.toVariant().toList()) {
-
-
             QVariantMap bridgeMap = bridgeVariant.toMap();
             ThingDescriptor descriptor(bridgeThingClassId, "Philips Hue Bridge", bridgeMap.value("internalipaddress").toString());
             ParamList params;
-            QString bridgeId = bridgeMap.value("id").toString().toLower();
+            QString bridgeId = normalizeBridgeId(bridgeMap.value("id").toString());
             QString address = bridgeMap.value("internalipaddress").toString();
-
-            // For some reason the UPnP api returns serial numbers withouot a "fffe" in the middle. For backwards compatiblity adjust to that
-            if (bridgeId.indexOf("fffe") == 6) {
-                bridgeId.remove(6, 4);
-            }
-            params.append(Param(bridgeThingHostParamTypeId, address));
             params.append(Param(bridgeThingIdParamTypeId, bridgeId));
+            params.append(Param(bridgeThingHostParamTypeId, address));
             descriptor.setParams(params);
             qCDebug(dcPhilipsHue()) << "N-UPnP: Found Hue bridge:" << bridgeId << address;
             discovery->results.append(descriptor);
@@ -305,6 +286,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
 
         pluginStorage()->beginGroup(thing->id().toString());
         QString apiKey = pluginStorage()->value("apiKey").toString();
+        QString hostCache = pluginStorage()->value("hostCache").toString();
         pluginStorage()->endGroup();
 
         // For legacy reasons we might not have the api key in the pluginstorage yet. Check if there is a key in the thing params.
@@ -320,18 +302,34 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
             info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Not authenticated to bridge. Please reconfigure the bridge."));
             return;
         }
-        HueBridge *bridge;
-        if (m_bridges.values().contains(thing)) {
-            qCDebug(dcPhilipsHue()) << "Re-Discovery, not creating new bridge" << thing->name();
-            bridge = m_bridges.key(thing);
-            bridge->setApiKey(apiKey);
-            bridge->setHostAddress(QHostAddress(thing->paramValue(bridgeThingHostParamTypeId).toString()));
-        } else {
+        HueBridge *bridge = m_bridges.key(thing);
+        if (!bridge) {
             bridge = new HueBridge(this);
-            bridge->setId(thing->paramValue(bridgeThingIdParamTypeId).toString());
-            bridge->setApiKey(apiKey);
-            bridge->setHostAddress(QHostAddress(thing->paramValue(bridgeThingHostParamTypeId).toString()));
             m_bridges.insert(bridge, thing);
+        }
+        bridge->setApiKey(apiKey);
+
+        QHostAddress zeroconfAddress;
+        foreach (const ZeroConfServiceEntry &entry, m_zeroConfBrowser->serviceEntries()) {
+            if (entry.protocol() == QAbstractSocket::IPv4Protocol && normalizeBridgeId(entry.txt("bridgeid")) == thing->paramValue(bridgeThingIdParamTypeId).toString()) {
+                zeroconfAddress = entry.hostAddress();
+            }
+        }
+        if (!zeroconfAddress.isNull()) {
+            qCDebug(dcPhilipsHue()) << "Using IP address from zeroconf:" << zeroconfAddress.toString();
+            bridge->setHostAddress(zeroconfAddress);
+            pluginStorage()->beginGroup(thing->id().toString());
+            pluginStorage()->setValue("hostCache", zeroconfAddress.toString());
+            pluginStorage()->endGroup();
+        } else if (!hostCache.isEmpty()) {
+            qCDebug(dcPhilipsHue()) << "Using last known IP:" << hostCache;
+            bridge->setHostAddress(QHostAddress(hostCache));
+        } else {
+            // Let's keep this for now for backward compatibility... But probably can go away at some point.
+            // Bridge v1 didn't have zeroconf...
+            QString host = thing->paramValue(bridgeThingHostParamTypeId).toString();
+            qCDebug(dcPhilipsHue()) << "Using IP from params:" << host;
+            bridge->setHostAddress(QHostAddress(host));
         }
         discoverBridgeDevices(bridge);
         return info->finish(Thing::ThingErrorNoError);
@@ -345,15 +343,11 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
         return;
     }
 
-
     // Hue color light
     if (thing->thingClassId() == colorLightThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue color light" << thing->params();
 
-        HueBridge *bridge = m_bridges.key(myThings().findById(thing->parentId()));
-        HueLight *hueLight = new HueLight(this);
-        hueLight->setHostAddress(bridge->hostAddress());
-        hueLight->setApiKey(bridge->apiKey());
+        HueLight *hueLight = new HueLight(bridge, this);
         hueLight->setId(thing->paramValue(colorLightThingLightIdParamTypeId).toInt());
         hueLight->setModelId(thing->paramValue(colorLightThingModelIdParamTypeId).toString());
         hueLight->setUuid(thing->paramValue(colorLightThingUuidParamTypeId).toString());
@@ -371,10 +365,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == colorTemperatureLightThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue color temperature light" << thing->params();
 
-        HueBridge *bridge = m_bridges.key(myThings().findById(thing->parentId()));
-        HueLight *hueLight = new HueLight(this);
-        hueLight->setHostAddress(bridge->hostAddress());
-        hueLight->setApiKey(bridge->apiKey());
+        HueLight *hueLight = new HueLight(bridge, this);
         hueLight->setId(thing->paramValue(colorTemperatureLightThingLightIdParamTypeId).toInt());
         hueLight->setModelId(thing->paramValue(colorTemperatureLightThingModelIdParamTypeId).toString());
         hueLight->setUuid(thing->paramValue(colorTemperatureLightThingUuidParamTypeId).toString());
@@ -392,10 +383,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == dimmableLightThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue white light" << thing->params();
 
-        HueBridge *bridge = m_bridges.key(myThings().findById(thing->parentId()));
-        HueLight *hueLight = new HueLight(this);
-        hueLight->setHostAddress(bridge->hostAddress());
-        hueLight->setApiKey(bridge->apiKey());
+        HueLight *hueLight = new HueLight(bridge, this);
 
         // Migrate thing parameters after changing param type UUIDs in 0.14.
         QMap<QString, ParamTypeId> migrationMap;
@@ -438,10 +426,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == remoteThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue remote" << thing->params() << thing->thingClassId();
 
-        HueBridge *bridge = m_bridges.key(myThings().findById(thing->parentId()));
-        HueRemote *hueRemote = new HueRemote(this);
-        hueRemote->setHostAddress(bridge->hostAddress());
-        hueRemote->setApiKey(bridge->apiKey());
+        HueRemote *hueRemote = new HueRemote(bridge, this);
 
         // Migrate thing parameters after changing param type UUIDs in 0.14.
         QMap<QString, ParamTypeId> migrationMap;
@@ -481,7 +466,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
 
     // Hue tap
     if (thing->thingClassId() == tapThingClassId) {
-        HueRemote *hueTap = new HueRemote(this);
+        HueRemote *hueTap = new HueRemote(bridge, this);
         hueTap->setName(thing->name());
         hueTap->setId(thing->paramValue(tapThingSensorIdParamTypeId).toInt());
         hueTap->setModelId(thing->paramValue(tapThingModelIdParamTypeId).toString());
@@ -496,7 +481,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
 
     // Hue smart button
     if (thing->thingClassId() == smartButtonThingClassId) {
-        HueRemote *smartButton = new HueRemote(this);
+        HueRemote *smartButton = new HueRemote(bridge, this);
         smartButton->setName(thing->name());
         smartButton->setId(thing->paramValue(smartButtonThingSensorIdParamTypeId).toInt());
         smartButton->setModelId(thing->paramValue(smartButtonThingModelIdParamTypeId).toString());
@@ -513,7 +498,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == motionSensorThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue motion sensor" << thing->params();
 
-        HueIndoorSensor *motionSensor = new HueIndoorSensor(this);
+        HueIndoorSensor *motionSensor = new HueIndoorSensor(bridge, this);
         motionSensor->setTimeout(thing->setting(motionSensorSettingsTimeoutParamTypeId).toUInt());
         motionSensor->setUuid(thing->paramValue(motionSensorThingUuidParamTypeId).toString());
         motionSensor->setModelId(thing->paramValue(motionSensorThingModelIdParamTypeId).toString());
@@ -545,7 +530,7 @@ void IntegrationPluginPhilipsHue::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == outdoorSensorThingClassId) {
         qCDebug(dcPhilipsHue) << "Setup Hue Outdoor sensor" << thing->params();
 
-        HueMotionSensor *outdoorSensor = new HueOutdoorSensor(this);
+        HueMotionSensor *outdoorSensor = new HueOutdoorSensor(bridge, this);
         outdoorSensor->setTimeout(thing->setting(outdoorSensorSettingsTimeoutParamTypeId).toUInt());
         outdoorSensor->setUuid(thing->paramValue(outdoorSensorThingUuidParamTypeId).toString());
         outdoorSensor->setModelId(thing->paramValue(outdoorSensorThingModelIdParamTypeId).toString());
@@ -794,6 +779,20 @@ void IntegrationPluginPhilipsHue::onDeviceNameChanged()
     if (m_remotes.values().contains(thing)) {
         setRemoteName(thing);
     }
+}
+
+QString IntegrationPluginPhilipsHue::normalizeBridgeId(const QString &bridgeId)
+{
+    // For some reason the hue apis return slightly different bridge ids:
+    // * UPnP api returns serial numbers withouot a "fffe" in the middle
+    // * N-UPnP and ZeroConf do have such a "fffe" in them.
+    // Let's normalize it to something that's save to compare.
+
+    QString ret = bridgeId.toLower();
+    if (bridgeId.indexOf("fffe") == 6) {
+        ret.remove(6, 4);
+    }
+    return ret;
 }
 
 void IntegrationPluginPhilipsHue::executeAction(ThingActionInfo *info)
@@ -1263,7 +1262,7 @@ void IntegrationPluginPhilipsHue::refreshSensors(HueBridge *bridge)
 void IntegrationPluginPhilipsHue::discoverBridgeDevices(HueBridge *bridge)
 {
     Thing *thing = m_bridges.value(bridge);
-    qCDebug(dcPhilipsHue) << "Discover bridge devices" << bridge->hostAddress();
+    qCDebug(dcPhilipsHue) << "Asking bridge for new devices" << bridge->hostAddress();
 
     QPair<QNetworkRequest, QByteArray> lightsRequest = bridge->createDiscoverLightsRequest();
     QNetworkReply *lightsReply = hardwareManager()->networkManager()->get(lightsRequest.first);
@@ -1279,7 +1278,7 @@ void IntegrationPluginPhilipsHue::discoverBridgeDevices(HueBridge *bridge)
 void IntegrationPluginPhilipsHue::searchNewDevices(HueBridge *bridge, const QString &serialNumber)
 {
     Thing *thing = m_bridges.value(bridge);
-    qCDebug(dcPhilipsHue) << "Discover bridge devices" << bridge->hostAddress();
+    qCDebug(dcPhilipsHue) << "Triggering ZigBee scan on bridge" << bridge->hostAddress();
 
     QPair<QNetworkRequest, QByteArray> request = bridge->createSearchLightsRequest(serialNumber);
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request.first, request.second);
@@ -1431,6 +1430,12 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
         return;
     }
 
+    HueBridge *bridge = m_bridges.key(thing);
+    if (!bridge) {
+        qCWarning(dcPhilipsHue()) << "Received a reply for a bridge we don't have any more.";
+        return;
+    }
+
     // Create sensors if not already added
     QVariantMap sensorsMap = jsonDoc.toVariant().toMap();
     QHash<QString, HueMotionSensor *> motionSensors;
@@ -1511,9 +1516,9 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
                     // Create an outdoor sensor
                     HueMotionSensor *motionSensor = nullptr;
                     if (model == "SML001") {
-                        motionSensor = new HueIndoorSensor(this);
+                        motionSensor = new HueIndoorSensor(bridge, this);
                     } else {
-                        motionSensor = new HueOutdoorSensor(this);
+                        motionSensor = new HueOutdoorSensor(bridge, this);
                     }
                     motionSensor->setModelId(model);
                     motionSensor->setUuid(baseUuid);
@@ -1534,9 +1539,9 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
                     // Create an outdoor sensor
                     HueMotionSensor *motionSensor = nullptr;
                     if (model == "SML001") {
-                        motionSensor = new HueIndoorSensor(this);
+                        motionSensor = new HueIndoorSensor(bridge, this);
                     } else {
-                        motionSensor = new HueOutdoorSensor(this);
+                        motionSensor = new HueOutdoorSensor(bridge, this);
                     }
                     motionSensor->setModelId(model);
                     motionSensor->setUuid(baseUuid);
@@ -1557,9 +1562,9 @@ void IntegrationPluginPhilipsHue::processBridgeSensorDiscoveryResponse(Thing *th
                     // Create an outdoor sensor
                     HueMotionSensor *motionSensor = nullptr;
                     if (model == "SML001") {
-                        motionSensor = new HueIndoorSensor(this);
+                        motionSensor = new HueIndoorSensor(bridge, this);
                     } else {
-                        motionSensor = new HueOutdoorSensor(this);
+                        motionSensor = new HueOutdoorSensor(bridge, this);
                     }
                     motionSensor->setModelId(model);
                     motionSensor->setUuid(baseUuid);

@@ -44,7 +44,7 @@ class HueRemote : public HueDevice
 {
     Q_OBJECT
 public:
-    explicit HueRemote(QObject *parent = nullptr);
+    explicit HueRemote(HueBridge *bridge, QObject *parent = nullptr);
 
     int battery() const;
     void setBattery(const int &battery);
