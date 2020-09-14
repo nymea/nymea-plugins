@@ -1,0 +1,12 @@
+{
+    "title": "Somfy Tahoma",
+    "tagline": "Control Somfy smart home devices through the Somfy Tahoma box.",
+    "icon": "somfy.svg",
+    "stability": "community",
+    "offline": false,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+    ]
+}
