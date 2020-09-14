@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="de">
 <context>
     <name>IntegrationPluginOneWire</name>
     <message>
         <location filename="../integrationpluginonewire.cpp" line="57"/>
         <source>No one wire interface initialized. Please set up a one wire interface first.</source>
-        <translation type="unfinished"></translation>
+        <translation>Es wurde keine OWFS Schnittstelle initialisiert. Bitte richten Sie zuerst eine OWFS Schnittstelle ein.</translation>
     </message>
     <message>
         <location filename="../integrationpluginonewire.cpp" line="110"/>
         <source>All configured one wire interfaces are set up to automatically add new devices.</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle konfigurierten OWFS-Schnittstellen sind so eingerichtet, dass automatisch neue Geräte hinzugefügt werden.</translation>
     </message>
     <message>
         <location filename="../integrationpluginonewire.cpp" line="129"/>
         <source>There can only be one one wire interface per system.</source>
         <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Es kann nur eine One-Wire-Schnittstelle pro System geben.</translation>
     </message>
     <message>
         <location filename="../integrationpluginonewire.cpp" line="138"/>
         <source>Error initializing one wire interface.</source>
         <extracomment>Error setting up thing</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Fehler beim Initialisieren der One-Wire-Schnittstelle.</translation>
     </message>
     <message>
         <location filename="../integrationpluginonewire.cpp" line="160"/>
         <source>No 1-Wire interface available</source>
-        <translation type="unfinished"></translation>
+        <translation>Keine One-Wire-Schnittstelle verfügbar</translation>
     </message>
 </context>
 <context>
@@ -37,19 +37,19 @@
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="114"/>
         <source>1-channel switch</source>
         <extracomment>The name of the ThingClass ({6db42501-5451-4aac-9525-5f886b3188e2})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>1-Kanal Schalter</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="117"/>
         <source>2-channel switch</source>
         <extracomment>The name of the ThingClass ({023f2b93-61e1-4422-97f5-3d5c14a6628f})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>2-Kanal Schalter</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="120"/>
         <source>8-channel switch</source>
         <extracomment>The name of the ThingClass ({71691119-3bda-4424-b853-1a00f21086e1})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>8-Kanal Schalter</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="123"/>
@@ -64,7 +64,7 @@ The name of the ParamType (ThingClass: dualChannelSwitch, Type: thing, ID: {b9a1
 The name of the ParamType (ThingClass: singleChannelSwitch, Type: thing, ID: {c9d6b7fd-fa21-473a-b5ed-9c5227749f06})
 ----------
 The name of the ParamType (ThingClass: temperatureSensor, Type: thing, ID: {b4368f34-d9bb-496f-84ba-091bd4b6a332})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Adresse</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="135"/>
@@ -76,13 +76,13 @@ The name of the ParamType (ThingClass: temperatureSensor, Type: thing, ID: {b436
 The name of the ParamType (ThingClass: oneWireInterface, EventType: autoAdd, ID: {64baf50e-8ed4-4526-8b92-7e4662d6fa39})
 ----------
 The name of the StateType ({64baf50e-8ed4-4526-8b92-7e4662d6fa39}) of ThingClass oneWireInterface</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Automatisches hinzufügen von One-Wire-Geräten</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="144"/>
         <source>Auto add one wire devices changed</source>
         <extracomment>The name of the EventType ({64baf50e-8ed4-4526-8b92-7e4662d6fa39}) of ThingClass oneWireInterface</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Automatisches hinzufügen von One-Wire-Geräten geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="147"/>
@@ -115,7 +115,7 @@ The name of the StateType ({32305a16-b042-4574-8bd7-ad99d9e8e5da}) of ThingClass
 The name of the ParamType (ThingClass: oneWireInterface, EventType: connected, ID: {d0ded173-c382-4ee3-8e24-3647b4e16afa})
 ----------
 The name of the StateType ({d0ded173-c382-4ee3-8e24-3647b4e16afa}) of ThingClass oneWireInterface</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="177"/>
@@ -133,7 +133,7 @@ The name of the EventType ({16bae8e8-bfe1-4648-9018-f6ce610f4236}) of ThingClass
 The name of the EventType ({32305a16-b042-4574-8bd7-ad99d9e8e5da}) of ThingClass temperatureSensor
 ----------
 The name of the EventType ({d0ded173-c382-4ee3-8e24-3647b4e16afa}) of ThingClass oneWireInterface</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Verbunden geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="192"/>
@@ -145,7 +145,7 @@ The name of the EventType ({d0ded173-c382-4ee3-8e24-3647b4e16afa}) of ThingClass
 The name of the ParamType (ThingClass: singleChannelSwitch, EventType: digitalOutput, ID: {ca10a9fd-e4e0-4608-a2d2-6a4ce9644f40})
 ----------
 The name of the StateType ({ca10a9fd-e4e0-4608-a2d2-6a4ce9644f40}) of ThingClass singleChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="201"/>
@@ -166,7 +166,7 @@ The name of the ParamType (ThingClass: dualChannelSwitch, ActionType: digitalOut
 The name of the ParamType (ThingClass: dualChannelSwitch, EventType: digitalOutput1, ID: {f8b6b4a7-355c-4580-a676-8a4d0d619ff9})
 ----------
 The name of the StateType ({f8b6b4a7-355c-4580-a676-8a4d0d619ff9}) of ThingClass dualChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 1</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="219"/>
@@ -175,7 +175,7 @@ The name of the StateType ({f8b6b4a7-355c-4580-a676-8a4d0d619ff9}) of ThingClass
         <extracomment>The name of the EventType ({78fa12c0-246c-4112-8be6-5943d3c3cda5}) of ThingClass eightChannelSwitch
 ----------
 The name of the EventType ({f8b6b4a7-355c-4580-a676-8a4d0d619ff9}) of ThingClass dualChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 1 geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="225"/>
@@ -196,7 +196,7 @@ The name of the ParamType (ThingClass: dualChannelSwitch, ActionType: digitalOut
 The name of the ParamType (ThingClass: dualChannelSwitch, EventType: digitalOutput2, ID: {82a78aed-5994-4af5-aecb-1806be5de1f3})
 ----------
 The name of the StateType ({82a78aed-5994-4af5-aecb-1806be5de1f3}) of ThingClass dualChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 2</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="243"/>
@@ -205,7 +205,7 @@ The name of the StateType ({82a78aed-5994-4af5-aecb-1806be5de1f3}) of ThingClass
         <extracomment>The name of the EventType ({c7d2f4a8-2b13-4a48-81a8-72f4908c775b}) of ThingClass eightChannelSwitch
 ----------
 The name of the EventType ({82a78aed-5994-4af5-aecb-1806be5de1f3}) of ThingClass dualChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 2 geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="249"/>
@@ -217,13 +217,13 @@ The name of the EventType ({82a78aed-5994-4af5-aecb-1806be5de1f3}) of ThingClass
 The name of the ParamType (ThingClass: eightChannelSwitch, EventType: digitalOutput3, ID: {4b2ac595-eba9-4364-8cd7-00ff8bccda5a})
 ----------
 The name of the StateType ({4b2ac595-eba9-4364-8cd7-00ff8bccda5a}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 3</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="258"/>
         <source>Digital output 3 changed</source>
         <extracomment>The name of the EventType ({4b2ac595-eba9-4364-8cd7-00ff8bccda5a}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 3 geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="261"/>
@@ -235,13 +235,13 @@ The name of the StateType ({4b2ac595-eba9-4364-8cd7-00ff8bccda5a}) of ThingClass
 The name of the ParamType (ThingClass: eightChannelSwitch, EventType: digitalOutput4, ID: {bbbd1863-ef04-4687-803d-3c9ccdfc8d8f})
 ----------
 The name of the StateType ({bbbd1863-ef04-4687-803d-3c9ccdfc8d8f}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 4</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="270"/>
         <source>Digital output 4 changed</source>
         <extracomment>The name of the EventType ({bbbd1863-ef04-4687-803d-3c9ccdfc8d8f}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 4 geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="273"/>
@@ -253,13 +253,13 @@ The name of the StateType ({bbbd1863-ef04-4687-803d-3c9ccdfc8d8f}) of ThingClass
 The name of the ParamType (ThingClass: eightChannelSwitch, EventType: digitalOutput5, ID: {50855d2b-a700-4030-8674-fee00cc0b4e2})
 ----------
 The name of the StateType ({50855d2b-a700-4030-8674-fee00cc0b4e2}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 5</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="282"/>
         <source>Digital output 5 changed</source>
         <extracomment>The name of the EventType ({50855d2b-a700-4030-8674-fee00cc0b4e2}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 5 geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="285"/>
@@ -271,13 +271,13 @@ The name of the StateType ({50855d2b-a700-4030-8674-fee00cc0b4e2}) of ThingClass
 The name of the ParamType (ThingClass: eightChannelSwitch, EventType: digitalOutput6, ID: {a91ce593-09ba-4754-8a2e-e3f507313585})
 ----------
 The name of the StateType ({a91ce593-09ba-4754-8a2e-e3f507313585}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 6</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="294"/>
         <source>Digital output 6 changed</source>
         <extracomment>The name of the EventType ({a91ce593-09ba-4754-8a2e-e3f507313585}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 6 geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="297"/>
@@ -289,13 +289,13 @@ The name of the StateType ({a91ce593-09ba-4754-8a2e-e3f507313585}) of ThingClass
 The name of the ParamType (ThingClass: eightChannelSwitch, EventType: digitalOutput7, ID: {5f46047c-b00d-486f-b169-b738fbc89cdb})
 ----------
 The name of the StateType ({5f46047c-b00d-486f-b169-b738fbc89cdb}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 7</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="306"/>
         <source>Digital output 7 changed</source>
         <extracomment>The name of the EventType ({5f46047c-b00d-486f-b169-b738fbc89cdb}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 7 geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="309"/>
@@ -307,55 +307,55 @@ The name of the StateType ({5f46047c-b00d-486f-b169-b738fbc89cdb}) of ThingClass
 The name of the ParamType (ThingClass: eightChannelSwitch, EventType: digitalOutput8, ID: {63334a17-0847-4f53-8007-1b5e72b88aa8})
 ----------
 The name of the StateType ({63334a17-0847-4f53-8007-1b5e72b88aa8}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 8</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="318"/>
         <source>Digital output 8 changed</source>
         <extracomment>The name of the EventType ({63334a17-0847-4f53-8007-1b5e72b88aa8}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang 8 geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="321"/>
         <source>Digital output changed</source>
         <extracomment>The name of the EventType ({ca10a9fd-e4e0-4608-a2d2-6a4ce9644f40}) of ThingClass singleChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Digitaler Ausgang geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="324"/>
         <source>OWFS init arguments</source>
         <extracomment>The name of the ParamType (ThingClass: oneWireInterface, Type: thing, ID: {a0e773ff-fd19-499e-96f0-830168229cd3})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>OWFS-Init-Argumente</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="327"/>
         <source>OWFS interface</source>
         <extracomment>The name of the ThingClass ({c36c68d9-6182-4ae1-972d-b8b5e0cf185f})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>OWFS Schnittstelle</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="330"/>
         <source>One Wire</source>
         <extracomment>The name of the plugin OneWire ({2c697fb7-0645-466d-9cb9-aa1922c85bee})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>One Wire</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="333"/>
         <source>One wire</source>
         <extracomment>The name of the vendor ({cecc5fae-29cf-40c0-b1f8-0af2dc8e8a63})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>One Wire</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="336"/>
         <source>Set auto add mode</source>
         <extracomment>The name of the ActionType ({64baf50e-8ed4-4526-8b92-7e4662d6fa39}) of ThingClass oneWireInterface</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze automatischen Add-Modus</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="339"/>
         <source>Set digital output</source>
         <extracomment>The name of the ActionType ({ca10a9fd-e4e0-4608-a2d2-6a4ce9644f40}) of ThingClass singleChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="342"/>
@@ -364,7 +364,7 @@ The name of the StateType ({63334a17-0847-4f53-8007-1b5e72b88aa8}) of ThingClass
         <extracomment>The name of the ActionType ({78fa12c0-246c-4112-8be6-5943d3c3cda5}) of ThingClass eightChannelSwitch
 ----------
 The name of the ActionType ({f8b6b4a7-355c-4580-a676-8a4d0d619ff9}) of ThingClass dualChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang 1</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="348"/>
@@ -373,43 +373,43 @@ The name of the ActionType ({f8b6b4a7-355c-4580-a676-8a4d0d619ff9}) of ThingClas
         <extracomment>The name of the ActionType ({c7d2f4a8-2b13-4a48-81a8-72f4908c775b}) of ThingClass eightChannelSwitch
 ----------
 The name of the ActionType ({82a78aed-5994-4af5-aecb-1806be5de1f3}) of ThingClass dualChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang 2</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="354"/>
         <source>Set digital output 3</source>
         <extracomment>The name of the ActionType ({4b2ac595-eba9-4364-8cd7-00ff8bccda5a}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang 3</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="357"/>
         <source>Set digital output 4</source>
         <extracomment>The name of the ActionType ({bbbd1863-ef04-4687-803d-3c9ccdfc8d8f}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang 4</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="360"/>
         <source>Set digital output 5</source>
         <extracomment>The name of the ActionType ({50855d2b-a700-4030-8674-fee00cc0b4e2}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang 5</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="363"/>
         <source>Set digital output 6</source>
         <extracomment>The name of the ActionType ({a91ce593-09ba-4754-8a2e-e3f507313585}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang 6</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="366"/>
         <source>Set digital output 7</source>
         <extracomment>The name of the ActionType ({5f46047c-b00d-486f-b169-b738fbc89cdb}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang 7</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="369"/>
         <source>Set digital output 8</source>
         <extracomment>The name of the ActionType ({63334a17-0847-4f53-8007-1b5e72b88aa8}) of ThingClass eightChannelSwitch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze digitalen Ausgang 8</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="372"/>
@@ -418,19 +418,19 @@ The name of the ActionType ({82a78aed-5994-4af5-aecb-1806be5de1f3}) of ThingClas
         <extracomment>The name of the ParamType (ThingClass: temperatureSensor, EventType: temperature, ID: {b04ee2a5-9b27-4ffc-9e12-7e05f5a41690})
 ----------
 The name of the StateType ({b04ee2a5-9b27-4ffc-9e12-7e05f5a41690}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="378"/>
         <source>Temperature Sensor</source>
         <extracomment>The name of the ThingClass ({e13beb24-953c-48b3-9262-7cde31d42ef5})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Termperatursensor</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="381"/>
         <source>Temperature changed</source>
         <extracomment>The name of the EventType ({b04ee2a5-9b27-4ffc-9e12-7e05f5a41690}) of ThingClass temperatureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Temperatur geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/onewire/plugininfo.h" line="384"/>
@@ -445,7 +445,7 @@ The name of the ParamType (ThingClass: dualChannelSwitch, Type: thing, ID: {b71e
 The name of the ParamType (ThingClass: singleChannelSwitch, Type: thing, ID: {6efc8cb6-81ae-45c0-8910-708401d1ba68})
 ----------
 The name of the ParamType (ThingClass: temperatureSensor, Type: thing, ID: {5005822d-6a32-4bb8-9b77-f79da7382f76})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Typ</translation>
     </message>
 </context>
 </TS>
