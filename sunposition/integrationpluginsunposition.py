@@ -22,6 +22,7 @@ def init():
             logger.log("Updating thing", thing.name, "Angle:", angle)
             thing.setStateValue(sunPositionAngleStateTypeId, angle)
 
+
 def deinit():
     global loopRunning
     loopRunning = False
