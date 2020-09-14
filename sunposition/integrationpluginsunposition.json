@@ -1,0 +1,47 @@
+{
+    "id": "30ff7e8f-4c67-4a8a-8b49-94c64bcbbe8a2",
+    "name": "sunPosition",
+    "displayName": "Sun Position",
+    "vendors": [
+        {
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "name": "nymea",
+            "displayName": "nymea GmbH",
+            "thingClasses": [
+                {
+                    "id": "a79bc8cb-89bc-4227-9b7c-70130d26ad34",
+                    "name": "sunPosition",
+                    "displayName": "Sun Position",
+                    "createMethods": ["discovery", "user"],
+                    "paramTypes": [
+                        {
+                            "id": "cc321533-787a-4fba-9abe-7b73e588ac5d",
+                            "name": "latitude",
+                            "displayName": "Latitude",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "1b0bbf53-634a-42ed-b3b3-c058ef1e015c",
+                            "name": "longitude",
+                            "displayName": "Longitude",
+                            "type": "double",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5c2f5149-5152-4e0e-b372-3d3edd302306",
+                            "name": "angle",
+                            "displayName": "Sun angle",
+                            "displayNameEvent": "Sun angle changed",
+                            "type": "double",
+                            "unit": "Degree",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
