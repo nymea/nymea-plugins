@@ -1,3 +1,20 @@
+nymea-plugins (0.23.1) xenial; urgency=medium
+
+  [ Bernhard Trinnes ]
+  * Nanoleaf: Fix IPv6
+
+  [ Michael Zanetti ]
+  * Hue: Don't set invalid states to the hue color light
+
+  [ Bernhard Trinnes ]
+  * OneWire PlugIn: Add W1 support
+
+  [ Michael Zanetti ]
+  * AnelElektronik: Fix actions and add generic IO types
+  * Hue: Don't falsely emit button presses at startup
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 14 Sep 2020 12:40:49 +0200
+
 nymea-plugins (0.23.0) xenial; urgency=medium
 
   [ Bernhard Trinnes ]
