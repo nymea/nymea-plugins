@@ -1,7 +1,31 @@
-nymea-plugins (0.24.0) UNRELEASED; urgency=medium
+nymea-plugins (0.24.0) xenial; urgency=medium
 
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Tue, 01 Sep 2020 12:23:46 +0200
+  [ Bernhard Trinnes ]
+  * New  Plugin: LIFX
+  * New Plugin: Home Connect
+  * Nanoleaf: Fix IPv6
+
+  [ Michael Zanetti ]
+  * Hue: Don't set invalid states to the hue color light
+
+  [ Bernhard Trinnes ]
+  * OneWire PlugIn: Add W1 support
+
+  [ Christian Fetzer ]
+  * New plugin: somfytahoma
+
+  [ Michael Zanetti ]
+  * 0.24
+  * AnelElektronik: Fix actions and add generic IO types
+  * PhilipsHue: Fix automatic rediscovery of the bridge if it changes IP
+  * New Plugin: Sun position
+  * New Plugin: Fastcom
+  * Make use of the wirelessconnectable interface
+  * Shelly & Hue: Implement update interface
+  * Hue: Don't falsely emit button presses at startup
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 14 Sep 2020 23:36:46 +0200
 
 nymea-plugins (0.23.0) xenial; urgency=medium
 
