@@ -104,7 +104,7 @@
                     "id": "0edba26c-96ab-44fb-a6a2-c0574d19630e",
                     "name": "colorLight",
                     "displayName": "Hue color light",
-                    "interfaces": ["colorlight", "colortemperaturelight", "alert", "connectable"],
+                    "interfaces": ["colorlight", "colortemperaturelight", "alert", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -233,7 +233,7 @@
                     "id": "35f749f7-b60a-4922-bd25-1bdd2eddcbe3",
                     "name": "colorTemperatureLight",
                     "displayName": "Hue color temperature light",
-                    "interfaces": ["colortemperaturelight", "alert", "connectable"],
+                    "interfaces": ["colortemperaturelight", "alert", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -337,7 +337,7 @@
                     "id": "4fa568ef-7a3a-422b-b0c0-206d37cb4eed",
                     "name": "dimmableLight",
                     "displayName": "Hue dimmable light",
-                    "interfaces": ["dimmablelight", "alert", "connectable"],
+                    "interfaces": ["dimmablelight", "alert", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -429,7 +429,7 @@
                     "id": "bb482d39-67ef-46dc-88e9-7b181d642b28",
                     "name": "remote",
                     "displayName": "Hue Remote",
-                    "interfaces": ["longpressmultibutton", "batterylevel", "connectable"],
+                    "interfaces": ["longpressmultibutton", "batterylevel", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -526,7 +526,7 @@
                     "id": "1e34a056-9f37-4741-b249-a5eca7a4ab4e",
                     "name": "smartButton",
                     "displayName": "Hue Smart Button",
-                    "interfaces": ["longpressbutton", "connectable"],
+                    "interfaces": ["longpressbutton", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -605,7 +605,7 @@
                     "id": "2b8c1fb8-67ee-42e9-947b-16e0a09f0d4e",
                     "name": "tap",
                     "displayName": "Hue Tap",
-                    "interfaces": ["multibutton", "connectable"],
+                    "interfaces": ["multibutton", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -669,7 +669,7 @@
                     "id": "32dc6390-600f-4eb4-b349-cc2d6796a82a",
                     "name": "outdoorSensor",
                     "displayName": "Hue Outdoor Sensor",
-                    "interfaces": ["presencesensor", "temperaturesensor", "lightsensor", "batterylevel", "connectable"],
+                    "interfaces": ["presencesensor", "temperaturesensor", "lightsensor", "batterylevel", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -812,7 +812,7 @@
                     "id": "25b79fff-4b88-4af8-b06c-2fe246238790",
                     "name": "motionSensor",
                     "displayName": "Hue Motion Sensor",
-                    "interfaces": ["presencesensor", "temperaturesensor", "lightsensor", "batterylevel", "connectable"],
+                    "interfaces": ["presencesensor", "temperaturesensor", "lightsensor", "batterylevel", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
