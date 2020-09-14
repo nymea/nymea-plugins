@@ -76,6 +76,8 @@ private:
     QHash<QUuid, BrowserActionInfo *> m_asyncBrowserItem;
 
     Nanoleaf *createNanoleafConnection(const QHostAddress &address, int port);
+    QHostAddress getHostAddress(const QString &serialNumber);
+    uint getPort(const QString &serialNumber);
 
 public slots:
     void onAuthTokenReceived(const QString &token);
