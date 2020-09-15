@@ -565,15 +565,6 @@
                     ],
                     "paramTypes": [
                         {
-                            "id": "ff7f0b1c-e3ad-44ac-9bbd-71cd2715126c",
-                            "name": "channel",
-                            "displayName": "Channel",
-                            "type": "uint",
-                            "defaultValue": 1
-                        }
-                    ],
-                    "paramTypes": [
-                        {
                             "id": "5e7c6ed5-fe9c-4e27-ad1e-e96886f3c09b",
                             "name": "channel",
                             "displayName": "Channel",
