@@ -1,0 +1,3 @@
+google/integrationplugingoogle.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/google/
+google/integrationplugingoogle.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/google/
+google/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/google/

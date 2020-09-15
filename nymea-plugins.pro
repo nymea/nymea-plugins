@@ -23,6 +23,7 @@ PLUGIN_DIRS = \
     fronius             \
     genericelements     \
     genericthings       \
+    google              \
     gpio                \
     i2cdevices          \
     httpcommander       \

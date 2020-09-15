@@ -1,0 +1,50 @@
+{
+    "id": "",
+    "name": "google",
+    "displayName": "Google services",
+    "vendors": [
+        {
+            "id": "",
+            "name": "google",
+            "displayName": "Google",
+            "thingClasses": [
+                {
+                    "id": "",
+                    "name": "account",
+                    "displayName": "Account",
+                    "createMethods": [""],
+                    "setupMethod": "",
+                    "interfaces": ["account"],
+                    "stateTypes": [
+                        {
+                            "id": "",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "",
+                            "name": "username",
+                            "displayName": "Username",
+                            "displayNameEvent": "Username changed",
+                            "type": "QString",
+                            "defaultValue": "-"
+                        },
+                        {
+                            "id": "",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
