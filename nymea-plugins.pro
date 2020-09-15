@@ -28,6 +28,7 @@ PLUGIN_DIRS = \
     fronius             \
     garadget            \
     goecharger          \
+    google              \
     gpio                \
     i2cdevices          \
     httpcommander       \
