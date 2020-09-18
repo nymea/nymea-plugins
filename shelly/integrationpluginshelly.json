@@ -428,6 +428,149 @@
                     ]
                 },
                 {
+                    "id": "a4557bcc-bdae-4178-b774-5881a8ae490a",
+                    "name": "shellyi3",
+                    "displayName": "Shelly i3",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "longpressmultibutton", "wirelessconnectable", "update" ],
+                    "paramTypes": [
+                        {
+                            "id": "12431172-432b-496e-a6b7-7465753a0bd9",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "34a20277-bf0c-4fd5-8ae1-b3019681fa82",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "ccc56409-1424-4bf7-8dac-84431c3e7a84",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9b17b10d-07ee-4a3d-813f-ef37e79e7241",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "61e98cc9-4449-4fb2-818e-692303244ce2",
+                            "name": "input1",
+                            "displayName": "Input 1",
+                            "displayNameEvent": "Input 1 changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType" : "digitalInput"
+                        },
+                        {
+                            "id": "04497ff2-a231-4d3d-adeb-66275a3b128b",
+                            "name": "input2",
+                            "displayName": "Input 2",
+                            "displayNameEvent": "Input 2 changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType" : "digitalInput"
+                        },
+                        {
+                            "id": "5895fc2d-19a4-40c2-8522-7c4462e55a3e",
+                            "name": "input3",
+                            "displayName": "Input 3",
+                            "displayNameEvent": "Input 3 changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType" : "digitalInput"
+                        },
+                        {
+                            "id": "889d7f2c-488c-4c91-905d-8669125d5c8b",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "33e7d186-7c6b-4c4e-89c3-80362ef76615",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "c3ff6d31-7301-412f-9aff-72ac36ba83c9",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "79648810-b2f4-4aa5-902f-2875242e7bf8",
+                            "name": "pressed",
+                            "displayName": "Pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "146313a1-cfb6-4732-a1be-86ec575bcbdb",
+                                    "name": "buttonName",
+                                    "displayName": "Button Name",
+                                    "type": "QString"
+                                },
+                                {
+                                    "id": "0ed31339-7457-443c-b6e3-3b8ce3fc2bd8",
+                                    "name": "pressCount",
+                                    "displayName": "Press Count",
+                                    "type": "int"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "bb966833-a7a6-4ad7-b5f5-057b38ebb036",
+                            "name": "longPressed",
+                            "displayName": "Long Pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "99683cf9-930e-4f10-94f2-73bb32092639",
+                                    "name": "buttonName",
+                                    "displayName": "Button Name",
+                                    "type": "QString"
+                                },
+                                {
+                                    "id": "866d6db6-e989-4b19-93c3-cc4aa7453c9e",
+                                    "name": "pressCount",
+                                    "displayName": "Press Count",
+                                    "type": "int"
+                                }
+                            ]
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "162e7791-6890-4075-8e57-a4c15b9359bb",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        },
+                        {
+                            "id": "1c677ecb-c54e-4c95-a3f7-e68fabeeda08",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
                     "id": "17f24cec-e6ed-4abd-9d42-60999f391dba",
                     "name": "shellyRgbw2",
                     "displayName": "Shelly RGBW2",
