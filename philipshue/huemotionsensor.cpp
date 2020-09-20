@@ -33,8 +33,8 @@
 
 #include <QtMath>
 
-HueMotionSensor::HueMotionSensor(QObject *parent) :
-    HueDevice(parent)
+HueMotionSensor::HueMotionSensor(HueBridge *bridge, QObject *parent) :
+    HueDevice(bridge, parent)
 {
     m_timeout.setInterval(10000);
     connect(&m_timeout, &QTimer::timeout, this, [this](){
