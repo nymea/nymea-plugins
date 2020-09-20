@@ -28,21 +28,21 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include "onewire.h"
+#include "owfs.h"
 #include "extern-plugininfo.h"
 
-OneWire::OneWire(QObject *parent) :
+Owfs::Owfs(QObject *parent) :
     QObject(parent)
 {
 
 }
 
-OneWire::~OneWire()
+Owfs::~Owfs()
 {
     OW_finish();
 }
 
-bool OneWire::init(const QByteArray &owfsInitArguments)
+bool Owfs::init(const QByteArray &owfsInitArguments)
 {
     //QByteArray initArguments;
     //Test OWFS arguments
@@ -52,6 +52,9 @@ bool OneWire::init(const QByteArray &owfsInitArguments)
     //Test i2c
     //initArguments.append("--i2c=ALL:ALL");
 
+    // W1 Kernel Module
+    //inifArguments.append("--w1");
+
     if (OW_init(owfsInitArguments) < 0) {
         qWarning(dcOneWire()) << "ERROR initialising one wire" << strerror(errno);
         return false;
@@ -60,7 +63,7 @@ bool OneWire::init(const QByteArray &owfsInitArguments)
     return true;
 }
 
-bool OneWire::discoverDevices()
+bool Owfs::discoverDevices()
 {
     char *dirBuffer = nullptr;
     size_t dirLength ;
@@ -75,7 +78,7 @@ bool OneWire::discoverDevices()
     dirMembers = QByteArray(dirBuffer, dirLength).split(',');
     free(dirBuffer);
 
-    QList<OneWireDevice> oneWireDevices;
+    QList<OwfsDevice> owfsDevices;
     foreach(QByteArray member, dirMembers) {
 
         /* Other system members:
@@ -93,26 +96,31 @@ bool OneWire::discoverDevices()
         if (family != 0) {
             member.remove(member.indexOf('/'), 1);
             QByteArray type;
-            OneWireDevice thing;
+            OwfsDevice thing;
             thing.family = family;
             thing.address = member;
             thing.id = member.split('.').last();
             thing.type = getValue(member, "type");
-            oneWireDevices.append(thing);
+            owfsDevices.append(thing);
         }
     }
-    emit devicesDiscovered(oneWireDevices);
+    emit devicesDiscovered(owfsDevices);
     return true;
 }
 
-bool OneWire::interfaceIsAvailable()
+bool Owfs::interfaceIsAvailable()
 {
     return true;
+    //TODO
+    //QByteArray fullPath;
+    //fullPath.append(m_path);
+    //if(OW_present(fullPath) < 0)
+    //   return false;
+    //return true;
 }
 
-bool OneWire::isConnected(const QByteArray &address)
+bool Owfs::isConnected(const QByteArray &address)
 {
-    Q_UNUSED(address)
     QByteArray fullPath;
     fullPath.append(m_path);
     fullPath.append(address);
@@ -125,7 +133,7 @@ bool OneWire::isConnected(const QByteArray &address)
 /* Takes a path and filename and prints the 1-wire value */
 /* makes sure the bridging "/" in the path is correct */
 /* watches for total length and free allocated space */
-QByteArray OneWire::getValue(const QByteArray &address, const QByteArray &type)
+QByteArray Owfs::getValue(const QByteArray &address, const QByteArray &type)
 {
     char * getBuffer ;
     size_t getLength ;
@@ -150,7 +158,7 @@ QByteArray OneWire::getValue(const QByteArray &address, const QByteArray &type)
     return value;
 }
 
-void OneWire::setValue(const QByteArray &address, const QByteArray &type, const QByteArray &value)
+void Owfs::setValue(const QByteArray &address, const QByteArray &type, const QByteArray &value)
 {
     Q_UNUSED(value)
     QByteArray devicePath;
@@ -167,20 +175,20 @@ void OneWire::setValue(const QByteArray &address, const QByteArray &type, const 
     }
 }
 
-double OneWire::getTemperature(const QByteArray &address)
+double Owfs::getTemperature(const QByteArray &address)
 {
     QByteArray temperature = getValue(address, "temperature");
     qDebug(dcOneWire()) << "Temperature" << temperature << temperature.replace(',','.').toDouble();
     return temperature.toDouble();
 }
 
-QByteArray OneWire::getType(const QByteArray &address)
+QByteArray Owfs::getType(const QByteArray &address)
 {
     QByteArray type = getValue(address, "type");
     return type;
 }
 
-bool OneWire::getSwitchOutput(const QByteArray &address, SwitchChannel channel)
+bool Owfs::getSwitchOutput(const QByteArray &address, SwitchChannel channel)
 {
     QByteArray c;
     c.append("PIO.");
@@ -215,7 +223,7 @@ bool OneWire::getSwitchOutput(const QByteArray &address, SwitchChannel channel)
     return state.toInt();
 }
 
-bool OneWire::getSwitchInput(const QByteArray &address, SwitchChannel channel)
+bool Owfs::getSwitchInput(const QByteArray &address, SwitchChannel channel)
 {
     QByteArray c;
     c.append("sensed.");
@@ -250,7 +258,7 @@ bool OneWire::getSwitchInput(const QByteArray &address, SwitchChannel channel)
     return state.toInt();
 }
 
-void OneWire::setSwitchOutput(const QByteArray &address, SwitchChannel channel, bool state)
+void Owfs::setSwitchOutput(const QByteArray &address, SwitchChannel channel, bool state)
 {
     QByteArray c;
     c.append("PIO.");
