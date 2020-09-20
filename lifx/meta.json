@@ -1,0 +1,13 @@
+{
+    "title": "LIFX",
+    "tagline": "Control LIFX light bulbs.",
+    "icon": "lifx.png",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "light"
+    ]
+}
