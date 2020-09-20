@@ -34,6 +34,7 @@
 #include "integrations/integrationplugin.h"
 
 class ZeroConfServiceBrowser;
+class PluginTimer;
 
 class MqttChannel;
 
@@ -60,6 +61,8 @@ private slots:
     void onClientDisconnected(MqttChannel* channel);
     void onPublishReceived(MqttChannel* channel, const QString &topic, const QByteArray &payload);
 
+    void updateStatus();
+
 private:
     void setupShellyGateway(ThingSetupInfo *info);
     void setupShellyChild(ThingSetupInfo *info);
@@ -68,6 +71,7 @@ private:
 
 private:
     ZeroConfServiceBrowser *m_zeroconfBrowser = nullptr;
+    PluginTimer *m_timer = nullptr;
 
     QHash<Thing*, MqttChannel*> m_mqttChannels;
 
@@ -79,6 +83,7 @@ private:
     QHash<ThingClassId, ParamTypeId> m_channelParamTypeMap;
 
     QHash<ThingClassId, StateTypeId> m_connectedStateTypesMap;
+    QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypesMap;
     QHash<ThingClassId, StateTypeId> m_powerStateTypeMap;
     QHash<ThingClassId, StateTypeId> m_currentPowerStateTypeMap;
     QHash<ThingClassId, StateTypeId> m_totalEnergyConsumedStateTypeMap;
