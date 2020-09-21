@@ -24,9 +24,8 @@ nymea-plugins (0.24.0) xenial; urgency=medium
   * Make use of the wirelessconnectable interface
   * Shelly & Hue: Implement update interface
   * Hue: Don't falsely emit button presses at startup
-  * Shelly: Clean up a copy/paste error in the plugin JSON
 
- -- Jenkins <jenkins@nymea.io>  Mon, 21 Sep 2020 00:23:23 +0200
+ -- Jenkins <jenkins@nymea.io>  Mon, 14 Sep 2020 23:36:46 +0200
 
 nymea-plugins (0.23.0) xenial; urgency=medium
 
