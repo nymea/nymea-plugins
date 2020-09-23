@@ -1,0 +1,232 @@
+{
+    "name": "SomfyTahoma",
+    "displayName": "Somfy Tahoma",
+    "id": "4e8be1c1-daa8-4e21-9e85-b2372ab1a450",
+    "vendors": [
+        {
+            "name": "Somfy",
+            "displayName": "Somfy",
+            "id": "4e42a22a-ccfb-4677-89e3-f7fa16bf6be0",
+            "thingClasses": [
+                {
+                    "id": "fedd72b8-547d-4e4f-b73e-71344a8ba0c1",
+                    "name": "tahoma",
+                    "displayName": "Tahoma Account",
+                    "createMethods": ["user"],
+                    "setupMethod": "userandpassword",
+                    "interfaces": ["account"],
+                    "stateTypes": [
+                        {
+                            "id": "10ebf650-a93a-4ee3-945b-fba10d4e35a5",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "97fefa85-db79-4efd-8d83-4a15d72996e1",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "type": "bool",
+                            "displayNameEvent": "Login state changed",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "75609987-be60-4932-94f6-ead791b5fa58",
+                            "name": "userDisplayName",
+                            "displayName": "User display name",
+                            "type": "QString",
+                            "displayNameEvent": "User display name changed",
+                            "defaultValue": ""
+                        }
+                    ]
+                },
+                {
+                    "id": "6c09e0b9-f0cc-4dea-9994-9e039eff78f1",
+                    "name": "gateway",
+                    "displayName": "Tahoma Gateway",
+                    "createMethods": ["auto"],
+                    "interfaces": ["gateway"],
+                    "paramTypes": [
+                        {
+                            "id": "e321a7d6-6dcb-4a37-baf1-c7008f2d5bdb",
+                            "displayName": "Gateway Id",
+                            "name": "gatewayId",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "18ba7fb7-c9e8-4c61-86b3-a8d3b825ed00",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "6b187fe0-a987-462d-90ac-c48efc0d0fc0",
+                    "name": "rollershutter",
+                    "displayName": "Roller Shutter",
+                    "createMethods": ["auto"],
+                    "interfaces": ["extendedshutter", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "b3d20d6a-f4e1-4959-ab06-3d271ba5c3dc",
+                            "displayName": "Device URL",
+                            "name": "deviceUrl",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f954ffc7-a6aa-4d30-aee0-0484631c3344",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "writable": true,
+                            "displayNameAction": "Set percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "fa9446ba-da30-4d49-8fb6-f410ecc7dba0",
+                            "name": "moving",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed"
+                        },
+                        {
+                            "id": "67594d96-47a2-4360-a1b8-79e4f22f9ed0",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Signal strength changed",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "7a49865d-5ea5-43be-b61f-4e454c48e87e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a0460180-e799-4bc6-83ba-11731ef124a3",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "cbccf714-1188-4ac9-9c91-17fe2c99acb3",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "baf377c6-9fba-44cf-9f14-af0101f874b5",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
+                },
+                {
+                    "id": "c7160205-d864-4194-b418-060fff60f0cb",
+                    "name": "venetianblind",
+                    "displayName": "Venetian Blind",
+                    "createMethods": ["auto"],
+                    "interfaces": ["venetianblind", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "e2541b7b-fbfa-4659-87b1-35d8993714c9",
+                            "displayName": "Device URL",
+                            "name": "deviceUrl",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "77ca50db-42a7-4434-83e2-8b5fc4438924",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "writable": true,
+                            "displayNameAction": "Set percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "079c7a80-8a1c-4fd7-b40c-6800120c70fb",
+                            "name": "angle",
+                            "displayName": "Angle",
+                            "type": "int",
+                            "unit": "Degree",
+                            "displayNameEvent": "Angle changed",
+                            "writable": true,
+                            "displayNameAction": "Set angle",
+                            "defaultValue": 0,
+                            "minValue": -90,
+                            "maxValue": 90
+                        },
+                        {
+                            "id": "48d5de0a-11ab-4801-94e4-a1dd458c341d",
+                            "name": "moving",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed"
+                        },
+                        {
+                            "id": "aee4f4e3-3445-441d-bdbb-631b0c5db942",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Signal strength changed",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "57361115-edbe-49fb-9847-408b571d3108",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "004e7294-59e6-498b-a0aa-e58eaeefdf2b",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "31b07407-65ef-4fd1-880b-b5d9f69a9d07",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "1a9707e7-9d64-4237-b150-234edcfed12a",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
+                }
+
+
+            ]
+        }
+    ]
+}
