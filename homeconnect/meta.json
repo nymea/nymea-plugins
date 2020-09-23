@@ -1,0 +1,12 @@
+{
+    "title": "Home Connect",
+    "tagline": "Connect to Home Connect devices.",
+    "icon": "homeconnect.png",
+    "stability": "consumer",
+    "offline": false,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+    ]
+}
