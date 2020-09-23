@@ -240,7 +240,7 @@ void IntegrationPluginAnel::confirmPairing(ThingPairingInfo *info, const QString
     QNetworkRequest request;
     request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
     request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
-    qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << password;
+    qCDebug(dcAnelElektronik()) << "ConfirmPairing fetching:" << request.url() << request.rawHeader("Authorization");
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [this, info, reply, username, password](){
@@ -307,7 +307,7 @@ void IntegrationPluginAnel::executeAction(ThingActionInfo *info)
             QString ipAddress = parentDevice->paramValue(m_ipAddressParamTypeIdMap.value(parentDevice->thingClassId())).toString();
             int port = parentDevice->paramValue(m_portParamTypeIdMap.value(parentDevice->thingClassId())).toInt();
 
-            pluginStorage()->beginGroup(thing->id().toString());
+            pluginStorage()->beginGroup(parentDevice->id().toString());
             QString username = pluginStorage()->value("username").toString();
             QString password = pluginStorage()->value("password").toString();
             pluginStorage()->endGroup();
@@ -318,6 +318,7 @@ void IntegrationPluginAnel::executeAction(ThingActionInfo *info)
             request.setHeader(QNetworkRequest::ContentTypeHeader, "text/plain");
             QByteArray data = QString("F%1=%2").arg(thing->paramValue(socketThingNumberParamTypeId).toString(), action.param(socketPowerActionPowerParamTypeId).value().toBool() == true ? "1" : "0").toUtf8();
             QNetworkReply *reply = hardwareManager()->networkManager()->post(request, data);
+            qCDebug(dcAnelElektronik()) << "Requesting:" << url.toString() << request.rawHeader("Authorization");
             connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
             connect(reply, &QNetworkReply::finished, info, [reply, info](){
                 if (reply->error() != QNetworkReply::NoError) {
@@ -445,7 +446,7 @@ void IntegrationPluginAnel::setupAdvDevice(ThingSetupInfo *info)
     QNetworkRequest request;
     request.setUrl(QUrl(QString("http://%1:%2/strg.cfg").arg(ipAddress).arg(port)));
     request.setRawHeader("Authorization", "Basic " + QString("%1:%2").arg(username).arg(password).toUtf8().toBase64());
-    qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization") << username << password;
+    qCDebug(dcAnelElektronik()) << "SetupDevice fetching:" << request.url() << request.rawHeader("Authorization");
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [this, info, reply](){
