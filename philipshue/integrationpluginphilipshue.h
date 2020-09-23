@@ -87,6 +87,9 @@ private slots:
     void onDeviceNameChanged();
 
 private:
+    QString normalizeBridgeId(const QString &bridgeId);
+
+private:
     class DiscoveryJob {
     public:
         UpnpDiscoveryReply* upnpReply;

@@ -29,6 +29,7 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "huebridge.h"
+#include <QJsonDocument>
 
 HueBridge::HueBridge(QObject *parent) :
     QObject(parent),
@@ -115,16 +116,6 @@ int HueBridge::zigbeeChannel() const
 void HueBridge::setZigbeeChannel(const int &zigbeeChannel)
 {
     m_zigbeeChannel = zigbeeChannel;
-}
-
-QList<HueLight *> HueBridge::lights() const
-{
-    return m_lights;
-}
-
-void HueBridge::addLight(HueLight *light)
-{
-    m_lights.append(light);
 }
 
 QPair<QNetworkRequest, QByteArray> HueBridge::createDiscoverLightsRequest()
