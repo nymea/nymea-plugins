@@ -51,6 +51,10 @@ IntegrationPluginTPLink::IntegrationPluginTPLink()
     m_connectedStateTypesMap[kasaPlug110ThingClassId] = kasaPlug110ConnectedStateTypeId;
     m_connectedStateTypesMap[kasaSwitch200ThingClassId] = kasaSwitch200ConnectedStateTypeId;
 
+    m_signalStrengthStateTypesMap[kasaPlug100ThingClassId] = kasaPlug100SignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[kasaPlug110ThingClassId] = kasaPlug110SignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[kasaSwitch200ThingClassId] = kasaSwitch200SignalStrengthStateTypeId;
+
     m_powerStatetTypesMap[kasaPlug100ThingClassId] = kasaPlug100PowerStateTypeId;
     m_powerStatetTypesMap[kasaPlug110ThingClassId] = kasaPlug110PowerStateTypeId;
     m_powerStatetTypesMap[kasaSwitch200ThingClassId] = kasaSwitch200PowerStateTypeId;
@@ -367,11 +371,16 @@ void IntegrationPluginTPLink::connectToDevice(Thing *thing, const QHostAddress &
                     int relayState = systemMap.value("get_sysinfo").toMap().value("relay_state").toInt();
                     StateTypeId powerStateTypeId = m_powerStatetTypesMap.value(thing->thingClassId());
                     thing->setStateValue(powerStateTypeId, relayState == 1 ? true : false);
+                    StateTypeId signalStrengthStateTypeId = m_signalStrengthStateTypesMap.value(thing->thingClassId());
+                    int rssi = systemMap.value("get_sysinfo").toMap().value("rssi").toInt();
+                    int signalStrength = qMax(0, qMin(1000, 2 * (rssi + 100)));
+                    thing->setStateValue(signalStrengthStateTypeId, signalStrength);
 
                     QString alias = systemMap.value("get_sysinfo").toMap().value("alias").toString();
                     if (thing->name() != alias) {
                         thing->setName(alias);
                     }
+
 
                     if (job.actionInfo) {
                         job.actionInfo->finish(Thing::ThingErrorNoError);
