@@ -571,7 +571,6 @@
                     ]
                 },
                 {
-<<<<<<< HEAD
                     "id": "a4557bcc-bdae-4178-b774-5881a8ae490a",
                     "name": "shellyi3",
                     "displayName": "Shelly i3",
@@ -715,8 +714,6 @@
                     ]
                 },
                 {
-=======
->>>>>>> add-shelly-i3
                     "id": "17f24cec-e6ed-4abd-9d42-60999f391dba",
                     "name": "shellyRgbw2",
                     "displayName": "Shelly RGBW2",
