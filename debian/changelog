@@ -24,10 +24,15 @@ nymea-plugins (0.24.0) xenial; urgency=medium
   * Make use of the wirelessconnectable interface
   * Shelly & Hue: Implement update interface
   * Hue: Don't falsely emit button presses at startup
+<<<<<<< HEAD
   * Shelly: Clean up a copy/paste error in the plugin JSON
   * SolarLog: Fix units in json
 
  -- Jenkins <jenkins@nymea.io>  Thu, 24 Sep 2020 01:10:30 +0200
+=======
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 14 Sep 2020 23:36:46 +0200
+>>>>>>> add-shelly-i3
 
 nymea-plugins (0.23.0) xenial; urgency=medium
 

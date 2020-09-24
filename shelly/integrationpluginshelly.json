@@ -571,6 +571,7 @@
                     ]
                 },
                 {
+<<<<<<< HEAD
                     "id": "a4557bcc-bdae-4178-b774-5881a8ae490a",
                     "name": "shellyi3",
                     "displayName": "Shelly i3",
@@ -714,6 +715,8 @@
                     ]
                 },
                 {
+=======
+>>>>>>> add-shelly-i3
                     "id": "17f24cec-e6ed-4abd-9d42-60999f391dba",
                     "name": "shellyRgbw2",
                     "displayName": "Shelly RGBW2",
@@ -1115,6 +1118,15 @@
                             "allowedValues": ["on", "off", "last", "switch"],
                             "defaultValue": "off",
                             "type": "QString"
+                        }
+                    ],
+                    "paramTypes": [
+                        {
+                            "id": "ff7f0b1c-e3ad-44ac-9bbd-71cd2715126c",
+                            "name": "channel",
+                            "displayName": "Channel",
+                            "type": "uint",
+                            "defaultValue": 1
                         }
                     ],
                     "paramTypes": [
