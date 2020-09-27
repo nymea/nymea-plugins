@@ -109,6 +109,16 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
                             descriptor.setParams(ParamList() << Param(venetianblindThingDeviceUrlParamTypeId, deviceUrl));
                             unknownDevices.append(descriptor);
                         }
+                    } else if (type == QStringLiteral("GarageDoor")) {
+                        Thing *thing = myThings().findByParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, deviceUrl));
+                        if (thing) {
+                            qCDebug(dcSomfyTahoma()) << "Found existing garage door:" << label << deviceUrl;
+                        } else {
+                            qCInfo(dcSomfyTahoma()) << "Found new garage door:" << label << deviceUrl;
+                            ThingDescriptor descriptor(garagedoorThingClassId, label, QString(), accountId);
+                            descriptor.setParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, deviceUrl));
+                            unknownDevices.append(descriptor);
+                        }
                     } else {
                         qCInfo(dcSomfyTahoma()) << "Found unsupperted Somfy device:" << label << type << deviceUrl;
                     }
@@ -123,7 +133,8 @@ void IntegrationPluginSomfyTahoma::setupThing(ThingSetupInfo *info)
 
     else if (info->thing()->thingClassId() == gatewayThingClassId ||
              info->thing()->thingClassId() == rollershutterThingClassId ||
-             info->thing()->thingClassId() == venetianblindThingClassId) {
+             info->thing()->thingClassId() == venetianblindThingClassId ||
+             info->thing()->thingClassId() == garagedoorThingClassId) {
         info->finish(Thing::ThingErrorNoError);
     }
 }
@@ -145,6 +156,9 @@ void IntegrationPluginSomfyTahoma::postSetupThing(Thing *thing)
         deviceUrl = QUrl(thing->paramValue(rollershutterThingDeviceUrlParamTypeId).toString());
     } else if (thing->thingClassId() == venetianblindThingClassId) {
         deviceUrl = QUrl(thing->paramValue(venetianblindThingDeviceUrlParamTypeId).toString());
+    }
+    else if (thing->thingClassId() == garagedoorThingClassId) {
+           deviceUrl = QUrl(thing->paramValue(garagedoorThingDeviceUrlParamTypeId).toString());
     }
     if (!deviceUrl.isEmpty()) {
         Thing *gateway = myThings().findByParams(ParamList() << Param(gatewayThingGatewayIdParamTypeId, deviceUrl.host()));
@@ -255,6 +269,11 @@ void IntegrationPluginSomfyTahoma::handleEvents(const QVariantList &eventList)
                     thing->setStateValue(venetianblindMovingStateTypeId, true);
                     things.append(thing);
                 }
+                thing = myThings().findByParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, action.toMap()["deviceURL"]));
+                if (thing) {
+                    thing->setStateValue(garagedoorMovingStateTypeId, true);
+                    things.append(thing);
+                }
             }
             qCDebug(dcSomfyTahoma()) << "ExecutionRegisteredEvent" << eventMap["execId"];
             m_currentExecutions.insert(eventMap["execId"].toString(), things);
@@ -266,6 +285,8 @@ void IntegrationPluginSomfyTahoma::handleEvents(const QVariantList &eventList)
                     thing->setStateValue(rollershutterMovingStateTypeId, false);
                 } else if (thing->thingClassId() == venetianblindThingClassId) {
                     thing->setStateValue(venetianblindMovingStateTypeId, false);
+                } else if (thing->thingClassId() == garagedoorThingClassId) {
+                    thing->setStateValue(garagedoorMovingStateTypeId, false);
                 }
             }
 
@@ -350,6 +371,30 @@ void IntegrationPluginSomfyTahoma::updateThingStates(const QString &deviceUrl, c
         }
         return;
     }
+    thing = myThings().findByParams(ParamList() << Param(garagedoorThingDeviceUrlParamTypeId, deviceUrl));
+    if (thing) {
+        foreach (const QVariant &stateVariant, stateList) {
+            QVariantMap stateMap = stateVariant.toMap();
+            if (stateMap["name"] == "core:ClosureState") {
+                thing->setStateValue(garagedoorPercentageStateTypeId, stateMap["value"]);
+                if (stateMap["value"] == 100) {
+                    thing->setStateValue(garagedoorStateStateTypeId, "closed");
+                } else if (stateMap["value"] == 0) {
+                    thing->setStateValue(garagedoorStateStateTypeId, "open");
+                } else {
+                    thing->setStateValue(garagedoorStateStateTypeId, "intermediate");
+                }
+            } else if (stateMap["name"] == "core:StatusState") {
+                thing->setStateValue(garagedoorConnectedStateTypeId, stateMap["value"] == "available");
+                pluginStorage()->beginGroup(thing->id().toString());
+                pluginStorage()->setValue("connected", stateMap["value"] == "available");
+                pluginStorage()->endGroup();
+            } else if (stateMap["name"] == "core:RSSILevelState") {
+                thing->setStateValue(garagedoorSignalStrengthStateTypeId, stateMap["value"]);
+            }
+        }
+        return;
+    }
 }
 
 void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
@@ -389,6 +434,18 @@ void IntegrationPluginSomfyTahoma::executeAction(ThingActionInfo *info)
         } else if (info->action().actionTypeId() == venetianblindCloseActionTypeId) {
             actionName = "close";
         } else if (info->action().actionTypeId() == venetianblindStopActionTypeId) {
+            actionName = "stop";
+        }
+    } else if (info->thing()->thingClassId() == garagedoorThingClassId) {
+        deviceUrl = info->thing()->paramValue(garagedoorThingDeviceUrlParamTypeId).toString();
+        if (info->action().actionTypeId() == garagedoorPercentageActionTypeId) {
+            actionName = "setClosure";
+            actionParameters = { info->action().param(garagedoorPercentageActionPercentageParamTypeId).value().toInt() };
+        } else if (info->action().actionTypeId() == garagedoorOpenActionTypeId) {
+            actionName = "open";
+        } else if (info->action().actionTypeId() == garagedoorCloseActionTypeId) {
+            actionName = "close";
+        } else if (info->action().actionTypeId() == garagedoorStopActionTypeId) {
             actionName = "stop";
         }
     }
@@ -433,6 +490,8 @@ void IntegrationPluginSomfyTahoma::markDisconnected(Thing *thing)
         thing->setStateValue(rollershutterConnectedStateTypeId, false);
     } else if (thing->thingClassId() == venetianblindThingClassId) {
         thing->setStateValue(venetianblindConnectedStateTypeId, false);
+    } else if (thing->thingClassId() == garagedoorThingClassId) {
+        thing->setStateValue(garagedoorConnectedStateTypeId, false);
     }
     foreach (Thing *child, myThings().filterByParentId(thing->id())) {
         markDisconnected(child);
@@ -449,6 +508,8 @@ void IntegrationPluginSomfyTahoma::restoreChildConnectedState(Thing *thing)
             thing->setStateValue(rollershutterConnectedStateTypeId, pluginStorage()->value("connected").toBool());
         } else if (thing->thingClassId() == venetianblindThingClassId) {
             thing->setStateValue(venetianblindConnectedStateTypeId, pluginStorage()->value("connected").toBool());
+        } else if (thing->thingClassId() == garagedoorThingClassId) {
+            thing->setStateValue(garagedoorConnectedStateTypeId, pluginStorage()->value("connected").toBool());
         }
     }
     pluginStorage()->endGroup();

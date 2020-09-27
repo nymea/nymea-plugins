@@ -223,9 +223,88 @@
                             "displayName": "Close"
                         }
                     ]
+                },
+                {
+                    "id": "cb206d74-b13c-4466-98c6-070b19ebd23a",
+                    "name": "garagedoor",
+                    "displayName": "Garage Door",
+                    "createMethods": ["auto"],
+                    "interfaces": ["extendedstatefulgaragedoor", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "974710eb-5da4-4b3e-8c4f-ba60e8af31b3",
+                            "displayName": "Device URL",
+                            "name": "deviceUrl",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "284816aa-842b-4a86-bb4e-ef5353b76762",
+                            "name": "percentage",
+                            "displayName": "Percentage",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Percentage changed",
+                            "writable": true,
+                            "displayNameAction": "Set percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "07175175-f95d-4cd9-a398-9aab8232c2a9",
+                            "name": "moving",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "displayName": "Moving",
+                            "displayNameEvent": "Moving changed"
+                        },
+                        {
+                            "id": "0a194091-3073-4912-9d84-f1d52c8534bd",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "displayNameEvent": "Signal strength changed",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "5a32cbd3-bc1c-4724-ae53-9f36cb75bf84",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "type": "bool",
+                            "displayNameEvent": "Connetion state changed",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "12af28f1-475e-4d05-9bbb-adbb86dcd69c",
+                            "name": "state",
+                            "displayName": "State",
+                            "type": "QString",
+                            "possibleValues": ["open", "closed", "opening", "closing", "intermediate"],
+                            "displayNameEvent": "State changed",
+                            "defaultValue": "closed"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "5738edd9-a1d1-4031-8505-85a919afe6f7",
+                            "name": "open",
+                            "displayName": "Open"
+                        },
+                        {
+                            "id": "75e345b8-0a25-4ba6-ba83-f2611252f87f",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        },
+                        {
+                            "id": "1e6552e3-8eb0-4070-b9cf-13fd13671eef",
+                            "name": "close",
+                            "displayName": "Close"
+                        }
+                    ]
                 }
-
-
             ]
         }
     ]
