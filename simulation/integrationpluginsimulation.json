@@ -120,7 +120,8 @@
                             "displayName": "Active",
                             "displayNameEvent": "Motion detected",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
                         },
                         {
                             "id": "4d66c81e-6293-4997-9685-8b44d7e5c1bd",
@@ -1064,7 +1065,8 @@
                             "displayName": "Closed",
                             "displayNameEvent": "Closed changed",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
                         },
                         {
                             "id": "4979b1a8-7f1e-4b65-9c35-187045c42a8f",
