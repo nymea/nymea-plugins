@@ -2,14 +2,14 @@ include(../plugins.pri)
 
 QT += network
 
-TARGET = $$qtLibraryTarget(nymea_devicepluginyeelight)
+TARGET = $$qtLibraryTarget(nymea_integrationpluginyeelight)
 
 SOURCES += \
-    devicepluginyeelight.cpp \
+    integrationpluginyeelight.cpp \
     yeelight.cpp \
     ssdp.cpp \
 
 HEADERS += \
-    devicepluginyeelight.h \
+    integrationpluginyeelight.h \
     yeelight.h \
     ssdp.h \
