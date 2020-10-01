@@ -7,7 +7,7 @@
             "name": "Yeelight",
             "displayName": "Yeelight",
             "id": "74011456-0a0f-4e43-bd94-bf4bb69593a4",
-            "deviceClasses": [
+            "thingClasses": [
                 {
                     "id": "7d801b71-0aee-4b5d-ae62-a950473b20f5",
                     "name": "colorBulb",
