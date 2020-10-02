@@ -1,0 +1,13 @@
+{
+    "title": "Yeelight",
+    "tagline": "Control Yeelight light bulbs.",
+    "icon": "yeelight.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "network"
+    ],
+    "categories": [
+        "light"
+    ]
+}

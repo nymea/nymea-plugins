@@ -1,15 +1,4 @@
-include(../plugins.pri)
+TEMPLATE = aux
 
-QT += network
-
-TARGET = $$qtLibraryTarget(nymea_integrationpluginyeelight)
-
-SOURCES += \
-    integrationpluginyeelight.cpp \
-    yeelight.cpp \
-    ssdp.cpp \
-
-HEADERS += \
-    integrationpluginyeelight.h \
-    yeelight.h \
-    ssdp.h \
+OTHER_FILES = integrationpluginyeelight.py \
+    integrationpluginyeelight.json
