@@ -112,7 +112,7 @@ The name of the StateType ({7be2b61e-3f59-4b92-b2bb-50d027bb92ff}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/snapd/plugininfo.h" line="129"/>
         <source>Set channel</source>
         <extracomment>The name of the ActionType ({7be2b61e-3f59-4b92-b2bb-50d027bb92ff}) of ThingClass snap</extracomment>
-        <translation>Imposta canale </translation>
+        <translation>Imposta canale</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/snapd/plugininfo.h" line="189"/>

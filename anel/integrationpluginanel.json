@@ -255,7 +255,8 @@
                             "displayNameAction": "Set power",
                             "writable": true,
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 }

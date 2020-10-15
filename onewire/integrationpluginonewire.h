@@ -33,7 +33,8 @@
 
 #include "plugintimer.h"
 #include "integrations/integrationplugin.h"
-#include "onewire.h"
+#include "owfs.h"
+#include "w1.h"
 
 #include <QHash>
 
@@ -54,13 +55,14 @@ public:
 
 private:
     PluginTimer *m_pluginTimer = nullptr;
-    OneWire *m_oneWireInterface = nullptr;
+    Owfs *m_owfsInterface = nullptr;
+    W1 *m_w1Interface = nullptr;
 
     QHash<Thing*, ThingDiscoveryInfo*> m_runningDiscoveries;
 
 private slots:
     void onPluginTimer();
-    void onOneWireDevicesDiscovered(QList<OneWire::OneWireDevice> devices);
+    void onOneWireDevicesDiscovered(QList<Owfs::OwfsDevice> devices);
 };
 
 #endif // INTEGRATIONPLUGINONEWIRE_H

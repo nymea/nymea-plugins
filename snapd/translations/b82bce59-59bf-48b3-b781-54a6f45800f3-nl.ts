@@ -19,7 +19,7 @@
         <location filename="../../../build-nymea-plugins-Desktop-Debug/snapd/plugininfo.h" line="66"/>
         <source>Automatic daily refresh schedule</source>
         <extracomment>The name of the ParamType (ThingClass: snapd, Type: plugin, ID: {d2e697d1-9a68-4666-bf40-8d70fa694eec})</extracomment>
-        <translation>Automatisch dagelijks vernieuwingsschema </translation>
+        <translation>Automatisch dagelijks vernieuwingsschema</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/snapd/plugininfo.h" line="69"/>

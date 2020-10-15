@@ -1,3 +1,61 @@
+nymea-plugins (0.23.1) xenial; urgency=medium
+
+  [ Bernhard Trinnes ]
+  * Nanoleaf: Fix IPv6
+
+  [ Michael Zanetti ]
+  * Hue: Don't set invalid states to the hue color light
+
+  [ Bernhard Trinnes ]
+  * OneWire PlugIn: Add W1 support
+
+  [ Michael Zanetti ]
+  * AnelElektronik: Fix actions and add generic IO types
+  * Hue: Don't falsely emit button presses at startup
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 14 Sep 2020 12:40:49 +0200
+
+nymea-plugins (0.23.0) xenial; urgency=medium
+
+  [ Bernhard Trinnes ]
+  * New Plugin: Fronius
+
+  [ Simon Stürz ]
+  * UsbRelay: Fix initialization of udev device watcher if no matching
+    device is connected
+
+  [ Bernhard Trinnes ]
+  * Generic things: Add extended smart meter
+
+  [ Michael Zanetti ]
+  * Bump version to 0.23
+  * Awattar: The token is not needed any more for AT
+  * Generic Things: Add generic pressure and co2 sensors
+  * Shelly: Allow setting the roller shutter percentage
+  * Generic Things: Add generic garagedoors
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 25 Aug 2020 17:40:14 +0200
+
+nymea-plugins (0.22.0) xenial; urgency=medium
+
+  [ Michael Zanetti ]
+  * 
+  * Make use of generic IO support in smart plugs
+
+  [ Bernhard Trinnes ]
+  * New plugin: Solar-Log
+
+  [ Michael Zanetti ]
+  * Shelly: Add support for the Shelly Dimmer 2
+
+  [ Bernhard Trinnes ]
+  * Generic Things: Add venetian blind
+
+  [ Michael Zanetti ]
+  * Bump version to 0.22
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 21 Jul 2020 10:22:13 +0200
+
 nymea-plugins (0.21.1) xenial; urgency=medium
 
   [ Bernhard Trinnes ]

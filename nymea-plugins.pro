@@ -19,6 +19,7 @@ PLUGIN_DIRS = \
     elgato              \
     eq-3                \
     flowercare          \
+    fronius             \
     genericelements     \
     genericthings       \
     gpio                \
@@ -40,6 +41,7 @@ PLUGIN_DIRS = \
     philipshue          \
     pushbullet          \
     shelly              \
+    solarlog            \
     systemmonitor       \
     remotessh           \
     senic               \

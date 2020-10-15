@@ -193,14 +193,6 @@
                             "readOnly": true
                         },
                         {
-                            "id": "9686b1ca-e71f-4e62-beb0-6a20f21550e9",
-                            "name": "connectedDevice",
-                            "displayName": "Connected device",
-                            "type": "QString",
-                            "allowedValues": ["Generic", "Light"],
-                            "defaultValue": "Generic"
-                        },
-                        {
                             "id": "42797a00-1591-4021-8f4c-2a170189911b",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -241,7 +233,8 @@
                             "displayNameAction": "Turn on or off",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "962fec29-6be0-452e-87c5-5ff71435c40f",
@@ -372,7 +365,7 @@
                 {
                     "id": "3a1d6fc1-c623-4b45-9c81-1573fcc15f99",
                     "name": "shellyDimmer",
-                    "displayName": "Shelly Dimmer",
+                    "displayName": "Shelly Dimmer / Dimmer 2",
                     "createMethods": ["discovery"],
                     "interfaces": ["dimmablelight", "connectable"],
                     "paramTypes": [
@@ -908,8 +901,12 @@
                             "name": "percentage",
                             "displayName": "Position",
                             "displayNameEvent": "Position changed",
+                            "displayNameAction": "Set position",
                             "type": "int",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
                         }
                     ],
                     "actionTypes": [

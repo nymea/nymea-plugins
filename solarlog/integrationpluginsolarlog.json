@@ -1,0 +1,194 @@
+{
+    "id": "606adc5a-c9a5-45fa-9652-ea385dcb0b81",
+    "name": "solarlog",
+    "displayName": "Solar-Log",
+    "vendors": [
+        {
+            "id": "0cf5f437-abf0-4396-92d4-be94d616c667",
+            "name": "solarlog",
+            "displayName": "Solar-Log",
+            "thingClasses": [
+                {
+                    "id": "1374b47e-5555-4ec1-b2cd-6474048dd30c",
+                    "name": "solarlog",
+                    "displayName": "Solar-Log",
+                    "createMethods": [ "user", "discovery" ],
+                    "interfaces": ["extendedsmartmeterproducer", "connectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "84bd8a41-2411-4bb0-87a9-ab7e01044b10",
+                            "name": "host",
+                            "displayName": "Address",
+                            "type": "QString",
+                            "inputType": "TextLine",
+                            "defaultValue": "solar-log"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "eb9f8575-71e3-42a9-aa4d-ffea9586cc4f",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "b944c513-a7f0-4bc1-941e-aae9849557fe",
+                            "name": "lastupdate",
+                            "displayName": "Last update",
+                            "displayNameEvent": "Last update changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "0bf515d8-0f48-4eba-9255-f774d68c80fe",
+                            "name": "currentPower",
+                            "displayName": "Power AC",
+                            "displayNameEvent": "Power AC changed",
+                            "type": "double",
+                            "unit": "KiloWatt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e4183a70-c848-447a-962a-f19dc5974140",
+                            "name": "pdc",
+                            "displayName": "Power DC",
+                            "displayNameEvent": "Power DC changed",
+                            "type": "double",
+                            "unit": "KiloWatt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "7dc46b2e-5fba-4cc6-a159-09472cdfac62",
+                            "name": "uac",
+                            "displayName": "AC voltage",
+                            "displayNameEvent": "AC voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "bb891a05-59d8-4a3b-a0ea-b63af58558f7",
+                            "name": "dcVoltage",
+                            "displayName": "DC voltage",
+                            "displayNameEvent": "DC voltage changed",
+                            "type": "double",
+                            "unit": "Volt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "53ed041a-e3c3-4ae5-9a79-1cd7ad82e9a8",
+                            "name": "yieldDay",
+                            "displayName": "Yield day",
+                            "displayNameEvent": "Yield day changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "bd96d0b3-e921-49eb-8b34-0b3be5bb27fa",
+                            "name": "yieldYesterday",
+                            "displayName": "Yield yesterday",
+                            "displayNameEvent": "Yield yesterday changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "9a77662a-2034-4031-8e7a-1e6347089d97",
+                            "name": "yieldMonth",
+                            "displayName": "Yield month",
+                            "displayNameEvent": "Yield month changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "d18169ce-deeb-4f7b-b737-818a91760041",
+                            "name": "yieldYear",
+                            "displayName": "Yield year",
+                            "displayNameEvent": "Yield year changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "3afb6ea1-fef8-4c17-8307-c7547a7a6f3c",
+                            "name": "totalEnergyProduced",
+                            "displayName": "Yield total",
+                            "displayNameEvent": "Yield total changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "5b665247-278a-4b59-9046-add40763e937",
+                            "name": "currentTotalConsumption",
+                            "displayName": "Current total power consumption",
+                            "displayNameEvent": "Current total power consumption changed",
+                            "type": "double",
+                            "unit": "KiloWatt",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "40ff1d14-a5d2-4fdb-919c-58dfbcdca123",
+                            "name": "consYieldDay",
+                            "displayName": "Energy consumption day",
+                            "displayNameEvent": "Energy consumption day changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "5d6d5ba5-ebc3-42ce-9d08-802da694b4da",
+                            "name": "consYieldYesterday",
+                            "displayName": "Energy consumption yesterday",
+                            "displayNameEvent": "Energy consumption yesterday changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "a45a557a-a937-4382-8ef5-76f1ff5940e4",
+                            "name": "consYieldMonth",
+                            "displayName": "Energy consumption month",
+                            "displayNameEvent": "Energy consumption month changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "1d42619b-3a50-4bde-b325-67a8014332ef",
+                            "name": "consYieldYear",
+                            "displayName": "Energy consumption year",
+                            "displayNameEvent": "Energy consumption year changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "34f60062-5dec-45ed-9a27-4fbc083cb36e",
+                            "name": "consYieldTotal",
+                            "displayName": "Energy consumption total",
+                            "displayNameEvent": "Energy consumption total changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "0aa21401-2a3d-4149-803b-f0ba8c66b2f7",
+                            "name": "totalPower",
+                            "displayName": "Installed generator power",
+                            "displayNameEvent": "Installed generator power changed",
+                            "type": "double",
+                            "unit": "KiloWatt",
+                            "defaultValue": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

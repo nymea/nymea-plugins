@@ -4,22 +4,28 @@
 <context>
     <name>IntegrationPluginNanoleaf</name>
     <message>
-        <location filename="../integrationpluginnanoleaf.cpp" line="97"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="87"/>
         <source>On the Nanoleaf controller, hold the on-off button for 5-7 seconds until the LED starts flashing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnanoleaf.cpp" line="369"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="98"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="137"/>
+        <source>Cloud not find device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../integrationpluginnanoleaf.cpp" line="413"/>
         <source>Color temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnanoleaf.cpp" line="372"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="416"/>
         <source>Hue/Saturation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnanoleaf.cpp" line="375"/>
+        <location filename="../integrationpluginnanoleaf.cpp" line="419"/>
         <source>Effect</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27,21 +33,15 @@
 <context>
     <name>Nanoleaf</name>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="58"/>
-        <source>Address</source>
-        <extracomment>The name of the ParamType (ThingClass: lightPanels, Type: thing, ID: {ff57079f-d5ab-4511-8a5c-0726e7b82af6})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="61"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="56"/>
         <source>Alert</source>
         <extracomment>The name of the ActionType ({47a6a1a1-fb90-4f24-be8c-b4dba0aaaa84}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="64"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="67"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="70"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="59"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="62"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="65"/>
         <source>Brightness</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, ActionType: brightness, ID: {4e5d6460-d42e-4b7c-a8f3-6e953451c1ef})
 ----------
@@ -51,15 +51,15 @@ The name of the StateType ({4e5d6460-d42e-4b7c-a8f3-6e953451c1ef}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="73"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="68"/>
         <source>Brightness changed</source>
         <extracomment>The name of the EventType ({4e5d6460-d42e-4b7c-a8f3-6e953451c1ef}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="76"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="79"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="82"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="71"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="74"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="77"/>
         <source>Color</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, ActionType: color, ID: {d4a52cdc-93b2-44fc-a36c-ae65f1d98f2e})
 ----------
@@ -69,14 +69,14 @@ The name of the StateType ({d4a52cdc-93b2-44fc-a36c-ae65f1d98f2e}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="85"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="80"/>
         <source>Color changed</source>
         <extracomment>The name of the EventType ({d4a52cdc-93b2-44fc-a36c-ae65f1d98f2e}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="88"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="91"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="83"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="86"/>
         <source>Color mode</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, EventType: colorMode, ID: {bdd2ea1e-9ef9-4967-9678-2c601b826199})
 ----------
@@ -84,15 +84,15 @@ The name of the StateType ({bdd2ea1e-9ef9-4967-9678-2c601b826199}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="94"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="89"/>
         <source>Color mode changed</source>
         <extracomment>The name of the EventType ({bdd2ea1e-9ef9-4967-9678-2c601b826199}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="97"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="100"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="103"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="92"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="95"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="98"/>
         <source>Color temperature</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, ActionType: colorTemperature, ID: {41248127-844b-40be-87e6-38aee48b6687})
 ----------
@@ -102,14 +102,14 @@ The name of the StateType ({41248127-844b-40be-87e6-38aee48b6687}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="106"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="101"/>
         <source>Color temperature changed</source>
         <extracomment>The name of the EventType ({41248127-844b-40be-87e6-38aee48b6687}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="109"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="112"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="104"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="107"/>
         <source>Effect name</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, EventType: effectName, ID: {57f9831e-1b98-41c1-a21c-6073ff327237})
 ----------
@@ -117,32 +117,32 @@ The name of the StateType ({57f9831e-1b98-41c1-a21c-6073ff327237}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="115"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="110"/>
         <source>Effect name changed</source>
         <extracomment>The name of the EventType ({57f9831e-1b98-41c1-a21c-6073ff327237}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="118"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="113"/>
         <source>Firmware version</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, Type: thing, ID: {1b85eebe-3b1a-49a9-bddb-2175d6599b95})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="121"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="116"/>
         <source>Light panels</source>
         <extracomment>The name of the ThingClass ({d44ee383-9fa5-4751-babd-1129ac20896a})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="124"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="119"/>
         <source>Model</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, Type: thing, ID: {353d3c71-0ad2-40d5-99f6-cc305e2073f1})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="127"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="130"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="122"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="125"/>
         <source>Nanoleaf</source>
         <extracomment>The name of the vendor ({3d7fdaa6-7896-419b-8be3-c90c42bcac7f})
 ----------
@@ -150,15 +150,9 @@ The name of the plugin Nanoleaf ({360867ec-1594-498d-8182-fbab1fe17489})</extrac
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="133"/>
-        <source>Port</source>
-        <extracomment>The name of the ParamType (ThingClass: lightPanels, Type: thing, ID: {ba4fd45b-990d-480a-859d-fff7ffba3ba4})</extracomment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="136"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="139"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="142"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="128"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="131"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="134"/>
         <source>Power</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, ActionType: power, ID: {44bee9ec-513d-4834-991a-ee9ae69d9f2a})
 ----------
@@ -168,14 +162,14 @@ The name of the StateType ({44bee9ec-513d-4834-991a-ee9ae69d9f2a}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="145"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="137"/>
         <source>Power changed</source>
         <extracomment>The name of the EventType ({44bee9ec-513d-4834-991a-ee9ae69d9f2a}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="148"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="151"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="140"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="143"/>
         <source>Reachable</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, EventType: connected, ID: {a3102107-a825-4ec8-a9ec-b2c2a9fb5c89})
 ----------
@@ -183,37 +177,37 @@ The name of the StateType ({a3102107-a825-4ec8-a9ec-b2c2a9fb5c89}) of ThingClass
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="154"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="146"/>
         <source>Reachable changed</source>
         <extracomment>The name of the EventType ({a3102107-a825-4ec8-a9ec-b2c2a9fb5c89}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="157"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="149"/>
         <source>Serial number</source>
         <extracomment>The name of the ParamType (ThingClass: lightPanels, Type: thing, ID: {18be4a5f-e2c2-4070-bc3e-ea9fe64f2276})</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="160"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="152"/>
         <source>Set brightness</source>
         <extracomment>The name of the ActionType ({4e5d6460-d42e-4b7c-a8f3-6e953451c1ef}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="163"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="155"/>
         <source>Set color</source>
         <extracomment>The name of the ActionType ({d4a52cdc-93b2-44fc-a36c-ae65f1d98f2e}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="166"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="158"/>
         <source>Set color temperature</source>
         <extracomment>The name of the ActionType ({41248127-844b-40be-87e6-38aee48b6687}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="169"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/nanoleaf/plugininfo.h" line="161"/>
         <source>Set power</source>
         <extracomment>The name of the ActionType ({44bee9ec-513d-4834-991a-ee9ae69d9f2a}) of ThingClass lightPanels</extracomment>
         <translation type="unfinished"></translation>

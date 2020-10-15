@@ -103,7 +103,7 @@ private:
     quint16 m_hue;
     quint8 m_sat;
     QPointF m_xy;
-    quint16 m_ct;
+    quint16 m_ct = 153;
     QString m_alert;
     QString m_effect;
     ColorMode m_colorMode;

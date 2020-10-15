@@ -4,23 +4,12 @@
 <context>
     <name>IntegrationPluginAwattar</name>
     <message>
-        <location filename="../integrationpluginawattar.cpp" line="74"/>
-        <source>Please enter your token for awattar.com</source>
-        <translation>Bitte gib Dein aWATTar.com Token ein</translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginawattar.cpp" line="95"/>
-        <source>This token is not valid.</source>
-        <extracomment>Error setting up thing with invalid token</extracomment>
-        <translation>Dieses Token ist ungültig.</translation>
-    </message>
-    <message>
-        <location filename="../integrationpluginawattar.cpp" line="155"/>
+        <location filename="../integrationpluginawattar.cpp" line="114"/>
         <source>Error getting data from server.</source>
         <translation>Fehler beim Laden der Daten vom Server.</translation>
     </message>
     <message>
-        <location filename="../integrationpluginawattar.cpp" line="167"/>
+        <location filename="../integrationpluginawattar.cpp" line="126"/>
         <source>The server returned unexpected data.</source>
         <translation>Der Server liefert unerwartete Daten.</translation>
     </message>

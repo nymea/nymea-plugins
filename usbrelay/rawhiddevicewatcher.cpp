@@ -84,17 +84,7 @@ RawHidDeviceWatcher::RawHidDeviceWatcher(QObject *parent) : QObject(parent)
 
     udev_enumerate_add_match_subsystem(enumerate, "hidraw");
     udev_enumerate_scan_devices(enumerate);
-
     devices = udev_enumerate_get_list_entry(enumerate);
-    if (!devices) {
-        qCWarning(dcUsbRelay()) << "Failed to get hidraw devices from udev enumerate.";
-        udev_monitor_unref(m_monitor);
-        m_monitor = nullptr;
-        udev_unref(m_udev);
-        m_udev = nullptr;
-        return;
-    }
-
     udev_list_entry_foreach(dev_list_entry, devices) {
         struct udev_device *thing;
         const char *path;
