@@ -107,13 +107,13 @@ The name of the ParamType (ThingClass: tcpOutput, Type: thing, ID: {bee8b151-815
         <extracomment>The name of the ParamType (ThingClass: tcpInput, EventType: triggered, ID: {97d7ee8c-d9db-40b4-9855-4ceecd64c411})
 ----------
 The name of the ParamType (ThingClass: tcpOutput, ActionType: trigger, ID: {6604c852-6b24-4707-b8e5-1ddd8032efcc})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/tcpcommander/plugininfo.h" line="88"/>
         <source>TCP Input</source>
         <extracomment>The name of the ThingClass ({bc40e84a-69c4-4fd2-beb0-bd65f19aa8ff})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>TCP input</translation>
     </message>
 </context>
 </TS>
