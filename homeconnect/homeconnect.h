@@ -121,7 +121,6 @@ public:
 
     // DEFAULT
     void getHomeAppliances(); // Get all home appliances which are paired with the logged-in user account.
-    void getHomeAppliance(const QString &haid); //Get a specfic home appliances which are paired with the logged-in user account.
 
     // PROGRAMS
     void getPrograms(const QString &haId); //Get all programs of a given home appliance

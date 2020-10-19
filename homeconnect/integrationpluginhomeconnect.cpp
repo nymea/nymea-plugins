@@ -144,8 +144,9 @@ void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
 
         bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
         bool controlEnabled =  configValue(homeConnectPluginControlEnabledParamTypeId).toBool();
-
-        HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", simulationMode, this);
+        QByteArray clientKey = apiKeyStorage()->requestKey("homeconnect").data("clientKey");
+        QByteArray clientSecret = apiKeyStorage()->requestKey("homeconnect").data("clientSecret");
+        HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), clientKey, clientSecret, simulationMode, this);
         QString scope = "IdentifyAppliance Monitor Settings Dishwasher Washer Dryer WasherDryer Refrigerator Freezer WineCooler CoffeeMaker Hood CookProcessor";
         if (controlEnabled)
             scope.append(" Control");
@@ -224,7 +225,9 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             pluginStorage()->beginGroup(thing->id().toString());
             QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
             pluginStorage()->endGroup();
-            homeConnect = new HomeConnect(hardwareManager()->networkManager(), "423713AB3EDA5B44BCE6E7B3546C43DADCB27A156C681E30455250637B2213DB", "AE182EA9F1CB99416DFD62CE61BF6DCDB3BB7D4697B58D4499D3792EC9F7412D", simulationMode,  this);
+            QByteArray clientKey = apiKeyStorage()->requestKey("homeconnect").data("clientKey");
+            QByteArray clientSecret = apiKeyStorage()->requestKey("homeconnect").data("clientSecret");
+            homeConnect = new HomeConnect(hardwareManager()->networkManager(), clientKey, clientSecret, simulationMode,  this);
             homeConnect->getAccessTokenFromRefreshToken(refreshToken);
             m_asyncSetup.insert(homeConnect, info);
         }

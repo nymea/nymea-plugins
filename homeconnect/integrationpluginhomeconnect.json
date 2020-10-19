@@ -18,6 +18,7 @@
             "type": "bool"
         }
     ],
+    "apiKeys": ["homeconnect"],
     "vendors": [
         {
             "id": "43cfb7a4-402f-4315-86b5-ce095697fd13",
