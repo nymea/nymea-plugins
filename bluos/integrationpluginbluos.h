@@ -76,8 +76,6 @@ private:
     QHash<QUuid, BrowserItemResult *> m_asyncBrowseItemResults;
 
 private slots:
-    void onPluginTimer();
-
     void onConnectionChanged(bool connected);
     void onStatusResponseReceived(const BluOS::StatusResponse &status);
     void onActionExecuted(QUuid actionId, bool success);
