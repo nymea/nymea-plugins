@@ -56,28 +56,18 @@ public:
 
     void thingRemoved(Thing *thing) override;
 
-private:
-    PluginTimer *m_pluginTimer = nullptr;
-    QHash<QNetworkReply *, Thing *> m_weatherReplies;
+private slots:
+    void updateApiKey();
 
+private:
     QString m_apiKey;
+    PluginTimer *m_pluginTimer = nullptr;
 
     void update(Thing *thing);
     void searchAutodetect(ThingDiscoveryInfo *info);
     void search(QString searchString, ThingDiscoveryInfo *info);
     void searchGeoLocation(double lat, double lon, const QString &country, ThingDiscoveryInfo *info);
-
-    void processAutodetectResponse(QByteArray data);
-    void processSearchResponse(QByteArray data);
-    void processGeoSearchResponse(QByteArray data);
-
     void processSearchResults(const QList<QVariantMap> &cityList, ThingDiscoveryInfo *info);
-    void processWeatherData(const QByteArray &data, Thing *thing);
-
-private slots:
-    void networkManagerReplyReady();
-    void onPluginTimer();
-
 };
 
 #endif // INTEGRATIONPLUGINOPENWEATHERMAP_H
