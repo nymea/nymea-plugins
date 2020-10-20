@@ -45,9 +45,19 @@
 // Python project: https://github.com/PaulAnnekov/tuyaha
 // JS project: https://github.com/unparagoned/cloudtuya
 
+// API limits seem to be 120 for query and 600 for discovery. Adding some seconds to be on the save side.
+const int queryInterval = 130;
+const int discoveryInterval = 610;
+
 IntegrationPluginTuya::IntegrationPluginTuya(QObject *parent): IntegrationPlugin(parent)
 {
+    m_devIdParamTypeIdsMap[tuyaClosableThingClassId] = tuyaClosableThingIdParamTypeId;
+    m_devIdParamTypeIdsMap[tuyaSwitchThingClassId] = tuyaSwitchThingIdParamTypeId;
 
+    m_connectedStateTypeIdsMap[tuyaClosableThingClassId] = tuyaClosableConnectedStateTypeId;
+    m_connectedStateTypeIdsMap[tuyaSwitchThingClassId] = tuyaSwitchConnectedStateTypeId;
+
+    m_powerStateTypeIdsMap[tuyaSwitchThingClassId] = tuyaSwitchPowerStateTypeId;
 }
 
 IntegrationPluginTuya::~IntegrationPluginTuya()
@@ -106,16 +116,30 @@ void IntegrationPluginTuya::setupThing(ThingSetupInfo *info)
 void IntegrationPluginTuya::postSetupThing(Thing *thing)
 {
     if (thing->thingClassId() == tuyaCloudThingClassId) {
-        updateChildDevices(thing);
+        updateChildDevices(thing);        
+    } else {
+        queryDevice(thing);
+    }
 
-        if (!m_pluginTimer) {
-            m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(5);
-            connect(m_pluginTimer, &PluginTimer::timeout, this, [this](){
-                foreach (Thing *d, myThings().filterByThingClassId(tuyaCloudThingClassId)) {
-                    updateChildDevices(d);
+
+    if (!m_pluginTimerQuery) {
+        m_pluginTimerQuery = hardwareManager()->pluginTimerManager()->registerTimer(queryInterval);
+        connect(m_pluginTimerQuery, &PluginTimer::timeout, this, [this](){
+            foreach (Thing *d, myThings().filterByThingClassId(tuyaCloudThingClassId)) {
+                foreach (Thing *child, myThings().filterByParentId(d->id())) {
+                    queryDevice(child);
                 }
-            });
-        }
+            }
+        });
+    }
+
+    if (!m_pluginTimerDiscovery) {
+        m_pluginTimerDiscovery = hardwareManager()->pluginTimerManager()->registerTimer(discoveryInterval);
+        connect(m_pluginTimerDiscovery, &PluginTimer::timeout, this, [this](){
+            foreach (Thing *d, myThings().filterByThingClassId(tuyaCloudThingClassId)) {
+                updateChildDevices(d);
+            }
+        });
     }
 }
 
@@ -126,8 +150,10 @@ void IntegrationPluginTuya::thingRemoved(Thing *thing)
     }
 
     if (myThings().isEmpty()) {
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-        m_pluginTimer = nullptr;
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimerDiscovery);
+        m_pluginTimerDiscovery = nullptr;
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimerQuery);
+        m_pluginTimerQuery = nullptr;
     }
 }
 
@@ -211,7 +237,9 @@ void IntegrationPluginTuya::executeAction(ThingActionInfo *info)
         QString devId = info->thing()->paramValue(tuyaSwitchThingIdParamTypeId).toString();
         controlTuyaSwitch(devId, "turnOnOff", on ? "1" : "0", info);
         connect(info, &ThingActionInfo::finished, [info, on](){
-            info->thing()->setStateValue(tuyaSwitchPowerStateTypeId, on);
+            if (info->status() == Thing::ThingErrorNoError) {
+                info->thing()->setStateValue(tuyaSwitchPowerStateTypeId, on);
+            }
         });
         return;
     }
@@ -330,6 +358,8 @@ void IntegrationPluginTuya::updateChildDevices(Thing *thing)
 
     QJsonDocument jsonDoc = QJsonDocument::fromVariant(data);
 
+    qCDebug(dcTuya()) << "Requesting:" << url.toString() << qUtf8Printable(jsonDoc.toJson());
+
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, [reply](){reply->deleteLater();});
     connect(reply, &QNetworkReply::finished, thing, [this, thing, reply](){
@@ -348,9 +378,17 @@ void IntegrationPluginTuya::updateChildDevices(Thing *thing)
 
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         if (!dataMap.contains("payload") || !dataMap.value("payload").toMap().contains("devices")) {
-            qCWarning(dcTuya()) << "Invalid data from Tuya cloud:" << jsonDoc.toJson();
+            qCWarning(dcTuya()) << "Invalid data from Tuya cloud:" << qUtf8Printable(jsonDoc.toJson());
             return;
         }
+
+        qCDebug(dcTuya()) << "Discovery result:" << qUtf8Printable(jsonDoc.toJson());
+
+        // OK. We have good data. let's cache it
+        pluginStorage()->beginGroup(thing->id().toString());
+        pluginStorage()->setValue("DiscoveryCache", data);
+        pluginStorage()->endGroup();
+
         QVariantList devices = dataMap.value("payload").toMap().value("devices").toList();
 
         qCDebug(dcTuya())  << "Devices fetched";
@@ -403,6 +441,73 @@ void IntegrationPluginTuya::updateChildDevices(Thing *thing)
         }
     });
 
+}
+
+void IntegrationPluginTuya::queryDevice(Thing *thing)
+{
+    qCDebug(dcTuya()) << "QueryDevice" << thing;
+
+    QString devId = thing->paramValue(m_devIdParamTypeIdsMap.value(thing->thingClassId())).toString();
+
+    qCDebug(dcTuya()) << thing->name() << "Updating child devices";
+    pluginStorage()->beginGroup(thing->parentId().toString());
+    QString accesToken = pluginStorage()->value("accessToken").toString();
+    pluginStorage()->endGroup();
+
+    QUrl url("http://px1.tuyaeu.com/homeassistant/skill");
+
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QVariantMap header;
+    header.insert("name", "QueryDevice");
+    header.insert("namespace", "query");
+    header.insert("payloadVersion", 1);
+
+    QVariantMap payload;
+    payload.insert("accessToken", accesToken);
+    payload.insert("devId", devId);
+
+    QVariantMap data;
+    data.insert("header", header);
+    data.insert("payload", payload);
+
+    QJsonDocument jsonDoc = QJsonDocument::fromVariant(data);
+
+    qCDebug(dcTuya()) << "Requesting:" << url.toString() << qUtf8Printable(jsonDoc.toJson());
+
+    QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
+    connect(reply, &QNetworkReply::finished, [reply](){reply->deleteLater();});
+    connect(reply, &QNetworkReply::finished, thing, [this, thing, reply](){
+        if (reply->error() !=  QNetworkReply::NoError) {
+            qCWarning(dcTuya()) << "Error fetching devices from Tuya cloud" << reply->error();
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcTuya()) << "Json parser error updating child devices" << error.errorString() << data;
+            return;
+        }
+
+        QVariantMap result = jsonDoc.toVariant().toMap();
+        if (result.value("header").toMap().value("code").toString() != "SUCCESS") {
+            qCWarning(dcTuya()) << "Error quering tuya device" << thing->name() << qUtf8Printable(jsonDoc.toJson());
+            // Fall through to mark thing as offline
+        }
+
+        bool connected = result.value("payload").toMap().value("data").toMap().value("online").toBool();
+        bool state = result.value("payload").toMap().value("data").toMap().value("state").toBool();
+        qCDebug(dcTuya()) << "Device" << thing->name() << "is online:" << connected << "on:" << state;
+
+        thing->setStateValue(m_connectedStateTypeIdsMap.value(thing->thingClassId()), connected);
+
+        if (m_powerStateTypeIdsMap.contains(thing->thingClassId())) {
+            thing->setStateValue(m_powerStateTypeIdsMap.value(thing->thingClassId()), state);
+        }
+    });
 }
 
 void IntegrationPluginTuya::controlTuyaSwitch(const QString &devId, const QString &command, const QString &value, ThingActionInfo *info)
