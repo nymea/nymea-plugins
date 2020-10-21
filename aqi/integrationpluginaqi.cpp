@@ -38,50 +38,13 @@ IntegrationPluginAqi::IntegrationPluginAqi()
 
 }
 
-void IntegrationPluginAqi::startPairing(ThingPairingInfo *info)
-{
-    NetworkAccessManager *network = hardwareManager()->networkManager();
-    QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://api.waqi.info")));
-    connect(reply, &QNetworkReply::finished, this, [reply, info] {
-        reply->deleteLater();
-
-        if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
-            info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Air quality index server is not reachable."));
-        } else {
-            info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter your API token for Air Quality Index"));
-        }
-    });
-}
-
-void IntegrationPluginAqi::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret)
-{
-    Q_UNUSED(username)
-
-    QNetworkRequest request(QUrl("https://api.waqi.info/feed/here/?token="+secret));
-    QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
-    connect(reply, &QNetworkReply::finished, info, [this, reply, info, secret](){
-        reply->deleteLater();
-
-        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        // check HTTP status code
-        if (status != 200) {
-            //: Error setting up device with invalid token
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("This token is not valid."));
-            return;
-        }
-
-        pluginStorage()->beginGroup(info->thingId().toString());
-        pluginStorage()->setValue("apiKey", secret);
-        pluginStorage()->endGroup();
-        info->finish(Thing::ThingErrorNoError);
-    });
-}
-
 void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
 {
     if (!m_aqiConnection) {
-        QString apiKey = "74d31bb5ad9bcdeaed48097418b55188cb56d450"; //temporary key for discovery
+        QString apiKey = apiKeyStorage()->requestKey("aqi").data("apiKey");
+        if (apiKey.isEmpty()) {
+            return info->finish(Thing::ThingErrorHardwareNotAvailable, tr("No API key is set."));
+        }
         m_aqiConnection = new AirQualityIndex(hardwareManager()->networkManager(), apiKey, this);
         connect(m_aqiConnection, &AirQualityIndex::requestExecuted, this, &IntegrationPluginAqi::onRequestExecuted);
         connect(m_aqiConnection, &AirQualityIndex::dataReceived, this, &IntegrationPluginAqi::onAirQualityDataReceived);
@@ -105,9 +68,7 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
 {
     if (info->thing()->thingClassId() == airQualityIndexThingClassId) {
         if (!m_aqiConnection) {
-            pluginStorage()->beginGroup(info->thing()->id().toString());
-            QString apiKey = pluginStorage()->value("apiKey").toString();
-            pluginStorage()->endGroup();
+            QString apiKey = apiKeyStorage()->requestKey("aqi").data("apiKey");
             m_aqiConnection = new AirQualityIndex(hardwareManager()->networkManager(), apiKey, this);
             connect(m_aqiConnection, &AirQualityIndex::requestExecuted, this, &IntegrationPluginAqi::onRequestExecuted);
             connect(m_aqiConnection, &AirQualityIndex::dataReceived, this, &IntegrationPluginAqi::onAirQualityDataReceived);
@@ -128,11 +89,6 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
         } else {
             // An AQI connection might be setup because of an discovery request
             // or because there is already another thing using the connection
-            // In any case the API key is being updated to avoid using the discovery key.
-            pluginStorage()->beginGroup(info->thing()->id().toString());
-            QString apiKey = pluginStorage()->value("apiKey").toString();
-            pluginStorage()->endGroup();
-            m_aqiConnection->setApiKey(apiKey);
             info->finish(Thing::ThingErrorNoError);
         }
     } else {
