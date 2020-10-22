@@ -1,12 +1,12 @@
 {
     "name": "AirQualityIndex",
-    "displayName": "AirQualityIndex",
+    "displayName": "Air quality index",
     "id": "57d69b76-4d2d-41ec-bef6-949a79ffbe6b",
     "apiKeys": ["aqi"],
     "vendors": [
         {
             "name": "airQualityIndex",
-            "displayName": "Air Quality Index",
+            "displayName": "Air quality index",
             "id": "6c8e2ded-0a33-4e77-b76c-ea02168741ec",
             "thingClasses": [
                 {
