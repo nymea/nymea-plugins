@@ -36,20 +36,21 @@
 
 IntegrationPluginAqi::IntegrationPluginAqi()
 {
+    connect(this, &IntegrationPluginAqi::configValueChanged, this, [this] (const ParamTypeId &paramTypeId, const QVariant &value) {
 
+        if (paramTypeId == airQualityIndexPluginApiKeyParamTypeId && m_aqiConnection) {
+            if (!value.toString().isEmpty())
+                m_aqiConnection->setApiKey(value.toString());
+        }
+    });
 }
 
 void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
 {
     if (!m_aqiConnection) {
-        QString apiKey = getApiKey();
-        if (apiKey.isEmpty())
+        if(createAqiConnection()) {
             return info->finish(Thing::ThingErrorHardwareNotAvailable,  QT_TR_NOOP("API key is not available."));
-        m_aqiConnection = new AirQualityIndex(hardwareManager()->networkManager(), apiKey, this);
-        connect(m_aqiConnection, &AirQualityIndex::requestExecuted, this, &IntegrationPluginAqi::onRequestExecuted);
-        connect(m_aqiConnection, &AirQualityIndex::dataReceived, this, &IntegrationPluginAqi::onAirQualityDataReceived);
-        connect(m_aqiConnection, &AirQualityIndex::stationsReceived, this, &IntegrationPluginAqi::onAirQualityStationsReceived);
-
+        }
         connect(info, &ThingDiscoveryInfo::aborted, [this] {
             if (myThings().filterByThingClassId(airQualityIndexThingClassId).isEmpty()) {
                 m_aqiConnection->deleteLater();
@@ -68,16 +69,11 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
 {
     if (info->thing()->thingClassId() == airQualityIndexThingClassId) {
         if (!m_aqiConnection) {
-            QString apiKey = getApiKey();
-            if (apiKey.isEmpty())
+            if(createAqiConnection()) {
                 return info->finish(Thing::ThingErrorHardwareNotAvailable,  QT_TR_NOOP("API key is not available."));
-            m_aqiConnection = new AirQualityIndex(hardwareManager()->networkManager(), apiKey, this);
-            connect(m_aqiConnection, &AirQualityIndex::requestExecuted, this, &IntegrationPluginAqi::onRequestExecuted);
-            connect(m_aqiConnection, &AirQualityIndex::dataReceived, this, &IntegrationPluginAqi::onAirQualityDataReceived);
-            connect(m_aqiConnection, &AirQualityIndex::stationsReceived, this, &IntegrationPluginAqi::onAirQualityStationsReceived);
-
-            QString longitude = info->thing()->paramValue(airQualityIndexThingLongitudeParamTypeId).toString();
-            QString latitude = info->thing()->paramValue(airQualityIndexThingLatitudeParamTypeId).toString();
+            }
+            double longitude = info->thing()->paramValue(airQualityIndexThingLongitudeParamTypeId).toDouble();
+            double latitude = info->thing()->paramValue(airQualityIndexThingLatitudeParamTypeId).toDouble();
             QUuid requestId = m_aqiConnection->getDataByGeolocation(latitude, longitude);
             m_asyncSetups.insert(requestId, info);
 
@@ -108,8 +104,8 @@ void IntegrationPluginAqi::postSetupThing(Thing *thing)
             return;
         }
 
-        QString longitude = thing->paramValue(airQualityIndexThingLongitudeParamTypeId).toString();
-        QString latitude = thing->paramValue(airQualityIndexThingLatitudeParamTypeId).toString();
+        double longitude = thing->paramValue(airQualityIndexThingLongitudeParamTypeId).toDouble();
+        double latitude = thing->paramValue(airQualityIndexThingLatitudeParamTypeId).toDouble();
         QUuid requestId = m_aqiConnection->getDataByGeolocation(latitude, longitude);
         m_asyncRequests.insert(requestId, thing->id());
     }
@@ -120,25 +116,22 @@ void IntegrationPluginAqi::postSetupThing(Thing *thing)
     }
 }
 
-QString IntegrationPluginAqi::getApiKey()
+bool IntegrationPluginAqi::createAqiConnection()
 {
-    QString apiKey;
-    QSettings settings(NymeaSettings::settingsPath() + "/nymead.conf", QSettings::IniFormat);
-    settings.beginGroup("aqi");
-    if (settings.contains("apiKey")) {
-        apiKey = settings.value("apiKey").toString();
-        QString printedCopy = apiKey;
-        qCDebug(dcAirQualityIndex()) << "Using custom API key:" << printedCopy.replace(printedCopy.length() - 10, 10, "**********");
-    }
-    settings.endGroup();
+    QString apiKey = configValue(airQualityIndexPluginApiKeyParamTypeId).toString();
 
     if (apiKey.isEmpty()) {
         apiKey = apiKeyStorage()->requestKey("aqi").data("apiKey");
     }
     if (apiKey.isEmpty()) {
         qCWarning(dcAirQualityIndex()) << "Could not find any API key for AQI";
+        return false;
     }
-    return apiKey;
+    m_aqiConnection = new AirQualityIndex(hardwareManager()->networkManager(), apiKey, this);
+    connect(m_aqiConnection, &AirQualityIndex::requestExecuted, this, &IntegrationPluginAqi::onRequestExecuted);
+    connect(m_aqiConnection, &AirQualityIndex::dataReceived, this, &IntegrationPluginAqi::onAirQualityDataReceived);
+    connect(m_aqiConnection, &AirQualityIndex::stationsReceived, this, &IntegrationPluginAqi::onAirQualityStationsReceived);
+    return true;
 }
 
 void IntegrationPluginAqi::thingRemoved(Thing *thing)
@@ -239,8 +232,8 @@ void IntegrationPluginAqi::onPluginTimer()
 
     foreach (Thing *thing, myThings().filterByThingClassId(airQualityIndexThingClassId)) {
 
-        QString longitude = thing->paramValue(airQualityIndexThingLongitudeParamTypeId).toString();
-        QString latitude = thing->paramValue(airQualityIndexThingLatitudeParamTypeId).toString();
+        double longitude = thing->paramValue(airQualityIndexThingLongitudeParamTypeId).toDouble();
+        double latitude = thing->paramValue(airQualityIndexThingLatitudeParamTypeId).toDouble();
         QUuid requestId = m_aqiConnection->getDataByGeolocation(latitude, longitude);
         m_asyncRequests.insert(requestId, thing->id());
     }

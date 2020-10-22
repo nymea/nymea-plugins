@@ -73,7 +73,7 @@ public:
     void setApiKey(const QString &apiKey);
     QUuid searchByName(const QString &name);
     QUuid getDataByIp();
-    QUuid getDataByGeolocation(const QString &lat, const QString &lng);
+    QUuid getDataByGeolocation(double lat, double lng);
 
 private:
     NetworkAccessManager *m_networkAccessManager;

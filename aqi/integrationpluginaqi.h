@@ -63,6 +63,7 @@ private:
     QHash<QUuid, ThingSetupInfo *> m_asyncSetups;
     QHash<QUuid, ThingId> m_asyncRequests;
     QString getApiKey();
+    bool createAqiConnection();
 
 private slots:
     void onPluginTimer();
