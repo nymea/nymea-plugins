@@ -62,6 +62,7 @@ private:
     QHash<QUuid, ThingDiscoveryInfo *> m_asyncDiscovery;
     QHash<QUuid, ThingSetupInfo *> m_asyncSetups;
     QHash<QUuid, ThingId> m_asyncRequests;
+    QString getApiKey();
 
 private slots:
     void onPluginTimer();

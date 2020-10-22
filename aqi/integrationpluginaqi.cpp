@@ -30,6 +30,7 @@
 
 #include "integrationpluginaqi.h"
 #include "plugininfo.h"
+#include "nymeasettings.h"
 
 #include <QNetworkAccessManager>
 
@@ -41,10 +42,9 @@ IntegrationPluginAqi::IntegrationPluginAqi()
 void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
 {
     if (!m_aqiConnection) {
-        QString apiKey = apiKeyStorage()->requestKey("aqi").data("apiKey");
-        if (apiKey.isEmpty()) {
-            return info->finish(Thing::ThingErrorHardwareNotAvailable, tr("No API key is set."));
-        }
+        QString apiKey = getApiKey();
+        if (apiKey.isEmpty())
+            return info->finish(Thing::ThingErrorHardwareNotAvailable,  QT_TR_NOOP("API key is not available."));
         m_aqiConnection = new AirQualityIndex(hardwareManager()->networkManager(), apiKey, this);
         connect(m_aqiConnection, &AirQualityIndex::requestExecuted, this, &IntegrationPluginAqi::onRequestExecuted);
         connect(m_aqiConnection, &AirQualityIndex::dataReceived, this, &IntegrationPluginAqi::onAirQualityDataReceived);
@@ -68,7 +68,9 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
 {
     if (info->thing()->thingClassId() == airQualityIndexThingClassId) {
         if (!m_aqiConnection) {
-            QString apiKey = apiKeyStorage()->requestKey("aqi").data("apiKey");
+            QString apiKey = getApiKey();
+            if (apiKey.isEmpty())
+                return info->finish(Thing::ThingErrorHardwareNotAvailable,  QT_TR_NOOP("API key is not available."));
             m_aqiConnection = new AirQualityIndex(hardwareManager()->networkManager(), apiKey, this);
             connect(m_aqiConnection, &AirQualityIndex::requestExecuted, this, &IntegrationPluginAqi::onRequestExecuted);
             connect(m_aqiConnection, &AirQualityIndex::dataReceived, this, &IntegrationPluginAqi::onAirQualityDataReceived);
@@ -116,6 +118,27 @@ void IntegrationPluginAqi::postSetupThing(Thing *thing)
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(60);
         connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginAqi::onPluginTimer);
     }
+}
+
+QString IntegrationPluginAqi::getApiKey()
+{
+    QString apiKey;
+    QSettings settings(NymeaSettings::settingsPath() + "/nymead.conf", QSettings::IniFormat);
+    settings.beginGroup("aqi");
+    if (settings.contains("apiKey")) {
+        apiKey = settings.value("apiKey").toString();
+        QString printedCopy = apiKey;
+        qCDebug(dcAirQualityIndex()) << "Using custom API key:" << printedCopy.replace(printedCopy.length() - 10, 10, "**********");
+    }
+    settings.endGroup();
+
+    if (apiKey.isEmpty()) {
+        apiKey = apiKeyStorage()->requestKey("aqi").data("apiKey");
+    }
+    if (apiKey.isEmpty()) {
+        qCWarning(dcAirQualityIndex()) << "Could not find any API key for AQI";
+    }
+    return apiKey;
 }
 
 void IntegrationPluginAqi::thingRemoved(Thing *thing)
