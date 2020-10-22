@@ -272,5 +272,10 @@ The name of the StateType ({c4366608-2511-428b-964e-2ad9e37f8f3c}) of ThingClass
         <source>Everyone should avoid all outdoor exertion</source>
         <translation>Jeder sollte jede Anstrengung im Freien vermeiden.</translation>
     </message>
+    <message>
+        <location filename="../integrationpluginaqi.cpp" line="254"/>
+        <source>Air quality index server not available, please check your internet connection.</source>
+        <translation>Air quality index Server nicht verfügbar, bitte überprüfe die Internetverbindung.</translation>
+    </message>
 </context>
 </TS>

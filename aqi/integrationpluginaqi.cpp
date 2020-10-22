@@ -248,7 +248,12 @@ void IntegrationPluginAqi::onPluginTimer()
 
 void IntegrationPluginAqi::onRequestExecuted(QUuid requestId, bool success)
 {
-    qCDebug(dcAirQualityIndex()) << "Request executd, requestId:" << requestId << "Success:" << success << "is an async request:" << m_asyncRequests.contains(requestId);
+    qCDebug(dcAirQualityIndex()) << "Request executed, requestId:" << requestId << "Success:" << success << "is an async request:" << m_asyncRequests.contains(requestId);
+    if (m_asyncDiscovery.contains(requestId) && !success) {
+        ThingDiscoveryInfo *info = m_asyncDiscovery.take(requestId);
+        info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Air quality index server not available, please check your internet connection."));
+    }
+
     if (m_asyncRequests.contains(requestId)) {
 
         Thing *thing = myThings().findById(m_asyncRequests.value(requestId));
