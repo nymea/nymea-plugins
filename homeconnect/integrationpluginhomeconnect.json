@@ -16,6 +16,20 @@
             "displayName": "Control enabled",
             "defaultValue": false,
             "type": "bool"
+        },
+        {
+            "id": "19cedaab-b8a0-4cab-80c7-0cae5fce124d",
+            "name": "customClientKey",
+            "displayName": "Custom client key",
+            "defaultValue": "",
+            "type": "QString"
+        },
+        {
+            "id": "49b828ab-f495-4332-900b-99a9d37565b1",
+            "name": "customClientSecret",
+            "displayName": "Custom client secret",
+            "defaultValue": "",
+            "type": "QString"
         }
     ],
     "apiKeys": ["homeconnect"],
@@ -27,8 +41,8 @@
             "thingClasses": [
                 {
                     "id": "babc1a39-730a-4516-95bf-ff51a8ce887a",
-                    "name": "homeConnectConnection",
-                    "displayName": "Home Connect connection",
+                    "name": "homeConnectAccount",
+                    "displayName": "Home Connect account",
                     "interfaces": ["account"],
                     "createMethods": ["user"],
                     "setupMethod": "oauth",
@@ -66,7 +80,7 @@
                     "id": "96845b7d-4c20-43a0-a810-ec505df3ee88",
                     "name": "oven",
                     "displayName": "Oven",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["connectable", "closablesensor"],
                     "createMethods": ["auto"],
                     "browsable": true,
                     "paramTypes": [
@@ -90,15 +104,11 @@
                         },
                         {
                             "id": "e892ca9e-5b31-41f5-a568-44474091f0f6",
-                            "name": "doorState",
-                            "displayName": "Door state",
-                            "displayNameEvent": "Door state changed",
-                            "defaultValue": "Open",
-                            "type": "QString",
-                            "possibleValues": [
-                                "Open",
-                                "Closed"
-                            ]
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         },
                         {
                             "id": "c9f9bd33-513f-4834-a504-c2c1611fb4be",
@@ -241,15 +251,11 @@
                         },
                         {
                             "id": "8cbb3746-7e04-4fc8-93eb-b774b606a057",
-                            "name": "doorState",
-                            "displayName": "Door state",
-                            "displayNameEvent": "Door state changed",
-                            "defaultValue": "Open",
-                            "type": "QString",
-                            "possibleValues": [
-                                "Open",
-                                "Closed"
-                            ]
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         },
                         {
                             "id": "2b45fbfc-d3d7-4dd4-91f8-4a789405246e",
@@ -369,15 +375,11 @@
                         },
                         {
                             "id": "5011efa7-9915-4ecc-b717-6ced369abcb7",
-                            "name": "doorState",
-                            "displayName": "Door state",
-                            "displayNameEvent": "Door state changed",
-                            "defaultValue": "Open",
-                            "type": "QString",
-                            "possibleValues": [
-                                "Open",
-                                "Closed"
-                            ]
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         },
                         {
                             "id": "693fc8d2-d9a9-4109-b8c5-f3d22091500c",
@@ -540,16 +542,11 @@
                         },
                         {
                             "id": "81aa609e-69c0-4d5c-98f0-46e6f14c7eaa",
-                            "name": "doorState",
-                            "displayName": "Door state",
-                            "displayNameEvent": "Door state changed",
-                            "defaultValue": "Open",
-                            "type": "QString",
-                            "possibleValues": [
-                                "Open",
-                                "Closed",
-                                "Locked"
-                            ]
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         },
                         {
                             "id": "52fde732-ed14-437e-8fbf-461d2ed19654",
@@ -682,15 +679,11 @@
                         },
                         {
                             "id": "99bba70c-5ead-4076-8b71-720a931668a4",
-                            "name": "doorState",
-                            "displayName": "Door state",
-                            "displayNameEvent": "Door state changed",
-                            "defaultValue": "Open",
-                            "type": "QString",
-                            "possibleValues": [
-                                "Open",
-                                "Closed"
-                            ]
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         },
                         {
                             "id": "bc13977e-0ea1-4804-af00-311ae62c6c06",
@@ -785,16 +778,11 @@
                         },
                         {
                             "id": "99296e86-09bf-4b74-b122-ee82b6bfdb62",
-                            "name": "doorState",
-                            "displayName": "Door state",
-                            "displayNameEvent": "Door state changed",
-                            "defaultValue": "Open",
-                            "type": "QString",
-                            "possibleValues": [
-                                "Open",
-                                "Closed",
-                                "Locked"
-                            ]
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
                         },
                         {
                             "id": "2ad3e2f8-c955-4e1d-b394-1e71a16f03bb",

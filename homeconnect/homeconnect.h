@@ -159,7 +159,13 @@ private:
     NetworkAccessManager *m_networkManager = nullptr;
     QTimer *m_tokenRefreshTimer = nullptr;
 
-    bool checkStatusCode(int status, const QByteArray &payload);
+    void setAuthenticated(bool state);
+    void setConnected(bool state);
+
+    bool m_authenticated = false;
+    bool m_connected = false;
+
+    bool checkStatusCode(QNetworkReply *reply, const QByteArray &rawData);
 private slots:
     void onRefreshTimeout();
 

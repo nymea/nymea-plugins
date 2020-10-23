@@ -1,6 +1,6 @@
 # Home Connect
 
-Connects your Home Connect home appliences to nymea.
+Connects your Home Connect home appliances to nymea.
 
 ## Supported Things
 

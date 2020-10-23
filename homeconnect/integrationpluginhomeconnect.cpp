@@ -77,11 +77,11 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_remoteControlActivationStateTypeIds.insert(dishwasherThingClassId, dishwasherRemoteControlActivationStateStateTypeId);
     m_remoteControlActivationStateTypeIds.insert(washerThingClassId, washerRemoteControlActivationStateStateTypeId);
 
-    m_doorStateTypeIds.insert(dishwasherThingClassId, dishwasherDoorStateStateTypeId);
-    m_doorStateTypeIds.insert(washerThingClassId, washerDoorStateStateTypeId);
-    m_doorStateTypeIds.insert(dryerThingClassId, dryerDoorStateStateTypeId);
-    m_doorStateTypeIds.insert(ovenThingClassId, ovenDoorStateStateTypeId);
-    m_doorStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerDoorStateStateTypeId);
+    m_doorStateTypeIds.insert(dishwasherThingClassId, dishwasherClosedStateTypeId);
+    m_doorStateTypeIds.insert(washerThingClassId, washerClosedStateTypeId);
+    m_doorStateTypeIds.insert(dryerThingClassId, dryerClosedStateTypeId);
+    m_doorStateTypeIds.insert(ovenThingClassId, ovenClosedStateTypeId);
+    m_doorStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerClosedStateTypeId);
 
     m_operationStateTypeIds.insert(ovenThingClassId, ovenOperationStateStateTypeId);
     m_operationStateTypeIds.insert(dryerThingClassId, dryerOperationStateStateTypeId);
@@ -140,21 +140,29 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
 
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
 {
-    if (info->thingClassId() == homeConnectConnectionThingClassId) {
+    if (info->thingClassId() == homeConnectAccountThingClassId) {
 
         bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
         bool controlEnabled =  configValue(homeConnectPluginControlEnabledParamTypeId).toBool();
-        QByteArray clientKey = apiKeyStorage()->requestKey("homeconnect").data("clientKey");
-        QByteArray clientSecret = apiKeyStorage()->requestKey("homeconnect").data("clientSecret");
+        QByteArray clientKey = configValue(homeConnectPluginCustomClientKeyParamTypeId).toByteArray();
+        QByteArray clientSecret = configValue(homeConnectPluginCustomClientSecretParamTypeId).toByteArray();
+        if (clientKey.isEmpty() || clientSecret.isEmpty()) {
+            clientKey = apiKeyStorage()->requestKey("homeconnect").data("clientKey");
+            clientSecret = apiKeyStorage()->requestKey("homeconnect").data("clientSecret");
+        }
+        if (clientKey.isEmpty() || clientSecret.isEmpty()) {
+            info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client key and/or seceret is not available."));
+            return;
+        }
         HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), clientKey, clientSecret, simulationMode, this);
         QString scope = "IdentifyAppliance Monitor Settings Dishwasher Washer Dryer WasherDryer Refrigerator Freezer WineCooler CoffeeMaker Hood CookProcessor";
         if (controlEnabled)
             scope.append(" Control");
         QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), scope);
         qCDebug(dcHomeConnect()) << "HomeConnect url:" << url;
+        m_setupHomeConnectConnections.insert(info->thingId(), homeConnect);
         info->setOAuthUrl(url);
         info->finish(Thing::ThingErrorNoError);
-        m_setupHomeConnectConnections.insert(info->thingId(), homeConnect);
     } else {
         qCWarning(dcHomeConnect()) << "Unhandled pairing metod!";
         info->finish(Thing::ThingErrorCreationMethodNotSupported);
@@ -165,7 +173,7 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
 {
     Q_UNUSED(username);
 
-    if (info->thingClassId() == homeConnectConnectionThingClassId) {
+    if (info->thingClassId() == homeConnectAccountThingClassId) {
         qCDebug(dcHomeConnect()) << "Redirect url is" << secret;
         QUrl url(secret);
         QUrlQuery query(url);
@@ -175,7 +183,6 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
         if (!homeConnect) {
             qWarning(dcHomeConnect()) << "No HomeConnect connection found for device:"  << info->thingName();
             m_setupHomeConnectConnections.remove(info->thingId());
-            homeConnect->deleteLater();
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
@@ -211,7 +218,7 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    if (thing->thingClassId() == homeConnectConnectionThingClassId) {
+    if (thing->thingClassId() == homeConnectAccountThingClassId) {
         bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
         HomeConnect *homeConnect;
         if (m_setupHomeConnectConnections.keys().contains(thing->id())) {
@@ -225,8 +232,20 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             pluginStorage()->beginGroup(thing->id().toString());
             QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
             pluginStorage()->endGroup();
-            QByteArray clientKey = apiKeyStorage()->requestKey("homeconnect").data("clientKey");
-            QByteArray clientSecret = apiKeyStorage()->requestKey("homeconnect").data("clientSecret");
+            if (refreshToken.isEmpty()) {
+                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Refresh token is not available."));
+                return;
+            }
+            QByteArray clientKey = configValue(homeConnectPluginCustomClientKeyParamTypeId).toByteArray();
+            QByteArray clientSecret = configValue(homeConnectPluginCustomClientSecretParamTypeId).toByteArray();
+            if (clientKey.isEmpty() || clientSecret.isEmpty()) {
+                clientKey = apiKeyStorage()->requestKey("homeconnect").data("clientKey");
+                clientSecret = apiKeyStorage()->requestKey("homeconnect").data("clientSecret");
+            }
+            if (clientKey.isEmpty() || clientSecret.isEmpty()) {
+                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client key and/or seceret is not available."));
+                return;
+            }
             homeConnect = new HomeConnect(hardwareManager()->networkManager(), clientKey, clientSecret, simulationMode,  this);
             homeConnect->getAccessTokenFromRefreshToken(refreshToken);
             m_asyncSetup.insert(homeConnect, info);
@@ -269,14 +288,14 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
     if (!m_pluginTimer60sec) {
         m_pluginTimer60sec = hardwareManager()->pluginTimerManager()->registerTimer(60);
         connect(m_pluginTimer60sec, &PluginTimer::timeout, this, [this]() {
-            foreach (Thing *thing, myThings().filterByThingClassId(homeConnectConnectionThingClassId)) {
+            Q_FOREACH (Thing *thing, myThings().filterByThingClassId(homeConnectAccountThingClassId)) {
                 HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
                 if (!homeConnect) {
                     qWarning(dcHomeConnect()) << "No HomeConnect account found for" << thing->name();
                     continue;
                 }
                 homeConnect->getHomeAppliances();
-                Q_FOREACH(Thing *childThing, myThings().filterByParentId(thing->id())) {
+                Q_FOREACH (Thing *childThing, myThings().filterByParentId(thing->id())) {
                     QString haId = childThing->paramValue(m_idParamTypeIds.value(childThing->thingClassId())).toString();
                     homeConnect->getStatus(haId);
                     homeConnect->getSettings(haId);
@@ -286,12 +305,12 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
         });
     }
 
-    if (thing->thingClassId() == homeConnectConnectionThingClassId) {
+    if (thing->thingClassId() == homeConnectAccountThingClassId) {
         HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
         homeConnect->getHomeAppliances();
         homeConnect->connectEventStream();
-        thing->setStateValue(homeConnectConnectionConnectedStateTypeId, true);
-        thing->setStateValue(homeConnectConnectionLoggedInStateTypeId, true);
+        thing->setStateValue(homeConnectAccountConnectedStateTypeId, true);
+        thing->setStateValue(homeConnectAccountLoggedInStateTypeId, true);
         //TBD Set user name
     } else if ((thing->thingClassId() == dryerThingClassId) ||
                (thing->thingClassId() == fridgeThingClassId) ||
@@ -481,7 +500,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
 void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
 {
     qCDebug(dcHomeConnect) << "Delete " << thing->name();
-    if (thing->thingClassId() == homeConnectConnectionThingClassId) {
+    if (thing->thingClassId() == homeConnectAccountThingClassId) {
         m_homeConnectConnections.take(thing)->deleteLater();
     } else {
         m_selectedProgram.remove(thing);
@@ -546,7 +565,6 @@ void IntegrationPluginHomeConnect::executeBrowserItem(BrowserActionInfo *info)
     if (!homeConnect)
         return;
     QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
-
     QUuid requestId = homeConnect->selectProgram(haid, info->browserAction().itemId(), QList<HomeConnect::Option> ());
     m_selectedProgram.insert(thing, info->browserAction().itemId());
 
@@ -581,8 +599,8 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         thing->setStateValue(ovenTargetTemperatureStateTypeId, value);
     } else if (key == "BSH.Common.Option.Duration") {
         thing->setStateValue(ovenDurationStateTypeId, value);
-    } else if (key == "Cooking.Oven.Option.FastPreHeat") {
-    } else if (key == "BSH.Common.Option.StartInRelative") {
+        //} else if (key == "Cooking.Oven.Option.FastPreHeat") {
+        //} else if (key == "BSH.Common.Option.StartInRelative") {
     } else if (key == "LaundryCare.Washer.Option.Temperature") {
         thing->setStateValue(washerTemperatureStateTypeId, value.toString().split('.').last()); // Cold, 20, 40, 60°C
     } else if (key == "LaundryCare.Washer.Option.SpinSpeed") {
@@ -620,14 +638,13 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
             qCDebug(dcHomeConnect()) << "Unkown Coffee temperature string" << temperature;
         }
     } else if (key == "Cooking.Common.Option.Hood.VentingLevel") {
-        //TODO
-    } else if (key == "Cooking.Common.Option.Hood.IntensiveLevel") {
-        //TODO
-    } else if (key == "ConsumerProducts.CleaningRobot.Option.ReferenceMapId") {
-    } else if (key == "ConsumerProducts.CleaningRobot.Option.CleaningMode") {
+        thing->setStateValue(hoodVentingLevelStateTypeId, value);
+        //} else if (key == "Cooking.Common.Option.Hood.IntensiveLevel") {
+        //} else if (key == "ConsumerProducts.CleaningRobot.Option.ReferenceMapId") {
+        //} else if (key == "ConsumerProducts.CleaningRobot.Option.CleaningMode") {
 
         // Program Progress Changes
-    } else if (key == "BSH.Common.Option.ElapsedProgramTime") {
+        //} else if (key == "BSH.Common.Option.ElapsedProgramTime") {
     } else if (key == "BSH.Common.Option.RemainingProgramTime") {
         QString time = QDateTime::fromMSecsSinceEpoch(QDateTime::currentMSecsSinceEpoch()+(value.toInt()*1000)).time().toString();
         thing->setStateValue(m_endTimerStateTypeIds.value(thing->thingClassId()), time);
@@ -635,7 +652,7 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         if (m_progressStateTypeIds.contains(thing->thingClassId())) {
             thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), value);
         }
-    } else if (key == "ConsumerProducts.CleaningRobot.Option.ProcessPhase") {
+        //} else if (key == "ConsumerProducts.CleaningRobot.Option.ProcessPhase") {
     } else if (key == "BSH.Common.Status.OperationState") {
         if (m_operationStateTypeIds.contains(thing->thingClassId())) {
             QString operationState = value.toString();
@@ -683,12 +700,11 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         if (m_progressStateTypeIds.contains(thing->thingClassId())) {
             thing->setStateValue(m_progressStateTypeIds.value(thing->thingClassId()), 0);
         }
-    } else if (key == "BSH.Common.Event.AlarmClockElapsed") {
+        //} else if (key == "BSH.Common.Event.AlarmClockElapsed") {
     } else if (key == "Cooking.Oven.Event.PreheatFinished") {
         emitEvent(Event(ovenPreheatFinishedEventTypeId, thing->id()));
         // Home Appliance State Changes
-    } else if (key == "BSH.Common.Setting.PowerState") {
-        //Ignore
+        //} else if (key == "BSH.Common.Setting.PowerState") {
     } else if (key == "BSH.Common.Status.RemoteControlActive") {
         if (m_remoteControlActivationStateTypeIds.contains(thing->thingClassId())) {
             thing->setStateValue(m_remoteControlActivationStateTypeIds.value(thing->thingClassId()), value);
@@ -703,7 +719,7 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
         }
     } else if (key == "BSH.Common.Status.DoorState") {
         if (m_doorStateTypeIds.contains(thing->thingClassId())) {
-            thing->setStateValue(m_doorStateTypeIds.value(thing->thingClassId()), value.toString().split('.').last());
+            thing->setStateValue(m_doorStateTypeIds.value(thing->thingClassId()), value.toString().split('.').last() != "Open");
         }
 
         // Home Appliance Events
@@ -736,32 +752,33 @@ void IntegrationPluginHomeConnect::parseKey(Thing *thing, const QString &key, co
 
 void IntegrationPluginHomeConnect::parseSettingKey(Thing *thing, const QString &key, const QVariant &value)
 {
-    if (key.contains("BSH.Common.Setting.PowerState")) {
-    } else if (key.contains("BSH.Common.Setting.TemperatureUnit")) {
-    } else if (key.contains("BSH.Common.Setting.LiquidVolumeUnit")) {
-    } else if (key.contains("Refrigeration.FridgeFreezer.Setting.SetpointTemperatureRefrigerator")) {
+    if (key.contains("Refrigeration.FridgeFreezer.Setting.SetpointTemperatureRefrigerator")) {
         thing->setStateValue(fridgeFridgeTemperatureSettingStateTypeId, value);
     } else if (key.contains("Refrigeration.FridgeFreezer.Setting.SetpointTemperatureFreezer")) {
         thing->setStateValue(fridgeFreezerTemperatureStateTypeId, value);
-    } else if (key.contains("Refrigeration.Common.Setting.BottleCooler.SetpointTemperature")) {
-    } else if (key.contains("Refrigeration.Common.Setting.ChillerLeft.SetpointTemperature")) {
-    } else if (key.contains("Refrigeration.Common.Setting.ChillerCommon.SetpointTemperature")) {
-    } else if (key.contains("Refrigeration.Common.Setting.ChillerRight.SetpointTemperature")) {
-    } else if (key.contains("Refrigeration.Common.Setting.WineCompartment.SetpointTemperature")) {
-    } else if (key.contains("Refrigeration.Common.Setting.WineCompartment2.SetpointTemperature")) {
-    } else if (key.contains("Refrigeration.Common.Setting.WineCompartment3.SetpointTemperature")) {
-    } else if (key.contains("Refrigeration.FridgeFreezer.Setting.SuperModeRefrigerator")) {
-    } else if (key.contains("Refrigeration.FridgeFreezer.Setting.SuperModeFreezer")) {
-    } else if (key.contains("Refrigeration.Common.Setting.EcoMode")) {
-    } else if (key.contains("Refrigeration.Common.Setting.SabbathMode")) {
-    } else if (key.contains("Refrigeration.Common.Setting.VacationMode")) {
-    } else if (key.contains("Refrigeration.Common.Setting.FreshMode")) {
-    } else if (key.contains("Cooking.Common.Setting.Lighting")) {
-    } else if (key.contains("Cooking.Common.Setting.LightingBrightness")) {
-    } else if (key.contains("BSH.Common.Setting.AmbientLightEnabled")) {
-    } else if (key.contains("BSH.Common.Setting.AmbientLightBrightness")) {
-    } else if (key.contains("BSH.Common.Setting.AmbientLightColor")) {
-    } else if (key.contains("BSH.Common.Setting.AmbientLightCustomColor")) {
+        // For future improvements
+        //} else if (key.contains("BSH.Common.Setting.PowerState")) {
+        //} else if (key.contains("BSH.Common.Setting.TemperatureUnit")) {
+        //} else if (key.contains("BSH.Common.Setting.LiquidVolumeUnit")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.BottleCooler.SetpointTemperature")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.ChillerLeft.SetpointTemperature")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.ChillerCommon.SetpointTemperature")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.ChillerRight.SetpointTemperature")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.WineCompartment.SetpointTemperature")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.WineCompartment2.SetpointTemperature")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.WineCompartment3.SetpointTemperature")) {
+        //} else if (key.contains("Refrigeration.FridgeFreezer.Setting.SuperModeRefrigerator")) {
+        //} else if (key.contains("Refrigeration.FridgeFreezer.Setting.SuperModeFreezer")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.EcoMode")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.SabbathMode")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.VacationMode")) {
+        //} else if (key.contains("Refrigeration.Common.Setting.FreshMode")) {
+        //} else if (key.contains("Cooking.Common.Setting.Lighting")) {
+        //} else if (key.contains("Cooking.Common.Setting.LightingBrightness")) {
+        //} else if (key.contains("BSH.Common.Setting.AmbientLightEnabled")) {
+        //} else if (key.contains("BSH.Common.Setting.AmbientLightBrightness")) {
+        //} else if (key.contains("BSH.Common.Setting.AmbientLightColor")) {
+        //} else if (key.contains("BSH.Common.Setting.AmbientLightCustomColor")) {
     }
 }
 
@@ -771,7 +788,7 @@ void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
     Thing *thing = m_homeConnectConnections.key(homeConnect);
     if (!thing)
         return;
-    thing->setStateValue(homeConnectConnectionConnectedStateTypeId, connected);
+    thing->setStateValue(homeConnectAccountConnectedStateTypeId, connected);
     if (!connected) {
         Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
             child->setStateValue(m_connectedStateTypeIds.value(child->thingClassId()), connected);
@@ -796,7 +813,7 @@ void IntegrationPluginHomeConnect::onAuthenticationStatusChanged(bool authentica
         if (!thing)
             return;
 
-        thing->setStateValue(homeConnectConnectionLoggedInStateTypeId, authenticated);
+        thing->setStateValue(homeConnectAccountLoggedInStateTypeId, authenticated);
         if (!authenticated) {
             //refresh access token needs to be refreshed
             pluginStorage()->beginGroup(thing->id().toString());
