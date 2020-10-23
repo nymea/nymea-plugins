@@ -32,16 +32,10 @@ inform you what precautions should be taken.
 ## Requirements
 
 * Valid "Air Quality Index" API Key
-    * This might be provided through the nymea community API Key provider or an own key in the nymead.conf file.
+    * This might be provided through the nymea community API Key provider or by setting a custom API Key in the plug-in settings.
 * The package "nymea-plugin-airqualityindex" must be installed
 * Internet connection
 
 ## More
 
 More about the different Air Quality Levels: https://www.airnow.gov/index.cfm?action=aqibasics.aqi
-
-Personal API Key settings in 'nymead.conf':
-'''
-[aqi]
-apiKey="123456789abcdfgh"
-'''

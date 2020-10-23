@@ -202,6 +202,14 @@ bool AirQualityIndex::parseData(QUuid requestId, const QByteArray &data)
         qCWarning(dcAirQualityIndex()) << "Received invalide JSON object";
         return false;
     }
+
+    if (doc.toVariant().toMap().contains("status")) {
+        if (doc.toVariant().toMap().value("status") == "error") {
+            qCWarning(dcAirQualityIndex()) << "Server responded with error:" << doc.toVariant().toMap().value("data").toString();
+            return false;
+        }
+    }
+
     Station station;
     station.aqi =  doc.toVariant().toMap().value("data").toMap().value("aqi").toInt();
     station.idx =  doc.toVariant().toMap().value("data").toMap().value("idx").toInt();

@@ -5,13 +5,7 @@
     <name>AirQualityIndex</name>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="68"/>
-        <source>API key</source>
-        <extracomment>The name of the ParamType (ThingClass: airQualityIndex, Type: plugin, ID: {b6861adb-7ed5-445f-b500-4df9eab866ef})</extracomment>
-        <translation>API-Key</translation>
-    </message>
-    <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="71"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="74"/>
         <source>Air quality</source>
         <extracomment>The name of the ParamType (ThingClass: airQualityIndex, EventType: airQuality, ID: {33a3329a-4117-4488-aa18-91c76056ed6e})
 ----------
@@ -19,15 +13,15 @@ The name of the StateType ({33a3329a-4117-4488-aa18-91c76056ed6e}) of ThingClass
         <translation>Luftqualität</translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="77"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="74"/>
         <source>Air quality changed</source>
         <extracomment>The name of the EventType ({33a3329a-4117-4488-aa18-91c76056ed6e}) of ThingClass airQualityIndex</extracomment>
         <translation>Luftqualität geändert</translation>
     </message>
     <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="77"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="80"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="83"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="86"/>
         <source>Air quality index</source>
         <extracomment>The name of the ThingClass ({23ea32c9-38b0-4155-bacc-3afa8c09f6ee})
 ----------
@@ -37,8 +31,8 @@ The name of the plugin AirQualityIndex ({57d69b76-4d2d-41ec-bef6-949a79ffbe6b})<
         <translation>Air quality index</translation>
     </message>
     <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="86"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="89"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="92"/>
         <source>Carbon monoxide level (CO)</source>
         <extracomment>The name of the ParamType (ThingClass: airQualityIndex, EventType: co, ID: {54ac72f3-6444-46a8-a43d-210c2a6fbfb5})
 ----------
@@ -46,14 +40,14 @@ The name of the StateType ({54ac72f3-6444-46a8-a43d-210c2a6fbfb5}) of ThingClass
         <translation>Kohlenmonoxidgehalt (CO)</translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="95"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="92"/>
         <source>Carbon monoxide level (CO) changed</source>
         <extracomment>The name of the EventType ({54ac72f3-6444-46a8-a43d-210c2a6fbfb5}) of ThingClass airQualityIndex</extracomment>
         <translation>Kohlenmonoxidgehalt (CO) geändert</translation>
     </message>
     <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="95"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="98"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="101"/>
         <source>Cautionary statement</source>
         <extracomment>The name of the ParamType (ThingClass: airQualityIndex, EventType: cautionaryStatement, ID: {cfece671-4e88-4c49-9456-e3f8f7c79ab3})
 ----------
@@ -61,14 +55,14 @@ The name of the StateType ({cfece671-4e88-4c49-9456-e3f8f7c79ab3}) of ThingClass
         <translation>Warnhinweis</translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="104"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="101"/>
         <source>Cautionary statement changed</source>
         <extracomment>The name of the EventType ({cfece671-4e88-4c49-9456-e3f8f7c79ab3}) of ThingClass airQualityIndex</extracomment>
         <translation>Warnhinweis geändert</translation>
     </message>
     <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="104"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="107"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="110"/>
         <source>Coarse dust particles pollution level (PM10)</source>
         <extracomment>The name of the ParamType (ThingClass: airQualityIndex, EventType: pm10, ID: {24b41ec4-e26b-4dfb-b52c-8e2b1bbdafc6})
 ----------
@@ -76,14 +70,14 @@ The name of the StateType ({24b41ec4-e26b-4dfb-b52c-8e2b1bbdafc6}) of ThingClass
         <translation>Verschmutzungsgrad der groben Staubpartikel (PM10)</translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="113"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="110"/>
         <source>Coarse dust particles pollution level (PM10) changed</source>
         <extracomment>The name of the EventType ({24b41ec4-e26b-4dfb-b52c-8e2b1bbdafc6}) of ThingClass airQualityIndex</extracomment>
         <translation>Verschmutzungsgrad der groben Staubpartikel (PM10) geändert</translation>
     </message>
     <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="113"/>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="116"/>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="119"/>
         <source>Connected</source>
         <extracomment>The name of the ParamType (ThingClass: airQualityIndex, EventType: connected, ID: {7b9135cd-2461-4d33-b2b3-3dc600983895})
 ----------
@@ -91,10 +85,16 @@ The name of the StateType ({7b9135cd-2461-4d33-b2b3-3dc600983895}) of ThingClass
         <translation>Verbunden</translation>
     </message>
     <message>
-        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="122"/>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="119"/>
         <source>Connected changed</source>
         <extracomment>The name of the EventType ({7b9135cd-2461-4d33-b2b3-3dc600983895}) of ThingClass airQualityIndex</extracomment>
         <translation>Verbunden geändert</translation>
+    </message>
+    <message>
+        <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="122"/>
+        <source>Custom API key</source>
+        <extracomment>The name of the ParamType (ThingClass: airQualityIndex, Type: plugin, ID: {b6861adb-7ed5-445f-b500-4df9eab866ef})</extracomment>
+        <translation type="unfinished">Benutzerdefinierter API Key</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/aqi/plugininfo.h" line="125"/>
@@ -247,39 +247,39 @@ The name of the StateType ({c4366608-2511-428b-964e-2ad9e37f8f3c}) of ThingClass
 <context>
     <name>IntegrationPluginAqi</name>
     <message>
-        <location filename="../integrationpluginaqi.cpp" line="52"/>
-        <location filename="../integrationpluginaqi.cpp" line="73"/>
+        <location filename="../integrationpluginaqi.cpp" line="54"/>
+        <location filename="../integrationpluginaqi.cpp" line="75"/>
         <source>API key is not available.</source>
         <translation>API-Key ist nicht verfügbar.</translation>
     </message>
     <message>
-        <location filename="../integrationpluginaqi.cpp" line="179"/>
+        <location filename="../integrationpluginaqi.cpp" line="181"/>
         <source>None</source>
         <translation>Keine</translation>
     </message>
     <message>
-        <location filename="../integrationpluginaqi.cpp" line="182"/>
-        <location filename="../integrationpluginaqi.cpp" line="185"/>
+        <location filename="../integrationpluginaqi.cpp" line="184"/>
+        <location filename="../integrationpluginaqi.cpp" line="187"/>
         <source>Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion.</source>
         <translation>Aktive Kinder und Erwachsene sowie Menschen mit Atemwegserkrankungen wie Asthma sollten eine längere Belastung im Freien begrenzen.</translation>
     </message>
     <message>
-        <location filename="../integrationpluginaqi.cpp" line="188"/>
+        <location filename="../integrationpluginaqi.cpp" line="190"/>
         <source>Active children and adults, and people with respiratory disease, such as asthma, should avoid prolonged outdoor exertion; everyone else, especially children, should limit prolonged outdoor exertion</source>
         <translation>Aktive Kinder und Erwachsene sowie Menschen mit Atemwegserkrankungen wie Asthma sollten eine längere Anstrengung im Freien vermeiden. Alle anderen, insbesondere Kinder, sollten längere Belastungen im Freien begrenzen</translation>
     </message>
     <message>
-        <location filename="../integrationpluginaqi.cpp" line="191"/>
+        <location filename="../integrationpluginaqi.cpp" line="193"/>
         <source>Active children and adults, and people with respiratory disease, such as asthma, should avoid all outdoor exertion; everyone else, especially children, should limit outdoor exertion.</source>
         <translation>Aktive Kinder und Erwachsene sowie Menschen mit Atemwegserkrankungen wie Asthma sollten jede Anstrengung im Freien vermeiden. Alle anderen, insbesondere Kinder, sollten die Anstrengung im Freien einschränken.</translation>
     </message>
     <message>
-        <location filename="../integrationpluginaqi.cpp" line="194"/>
+        <location filename="../integrationpluginaqi.cpp" line="196"/>
         <source>Everyone should avoid all outdoor exertion</source>
         <translation>Jeder sollte jede Anstrengung im Freien vermeiden.</translation>
     </message>
     <message>
-        <location filename="../integrationpluginaqi.cpp" line="247"/>
+        <location filename="../integrationpluginaqi.cpp" line="249"/>
         <source>Air quality index server not available, please check your internet connection.</source>
         <translation>Air quality index Server nicht verfügbar, bitte überprüfe die Internetverbindung.</translation>
     </message>

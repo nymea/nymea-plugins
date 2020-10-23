@@ -39,8 +39,10 @@ IntegrationPluginAqi::IntegrationPluginAqi()
     connect(this, &IntegrationPluginAqi::configValueChanged, this, [this] (const ParamTypeId &paramTypeId, const QVariant &value) {
 
         if (paramTypeId == airQualityIndexPluginApiKeyParamTypeId && m_aqiConnection) {
-            if (!value.toString().isEmpty())
+            if (!value.toString().isEmpty()) {
+                qCDebug(dcAirQualityIndex()) << "Custom API key updated";
                 m_aqiConnection->setApiKey(value.toString());
+            }
         }
     });
 }
@@ -48,7 +50,7 @@ IntegrationPluginAqi::IntegrationPluginAqi()
 void IntegrationPluginAqi::discoverThings(ThingDiscoveryInfo *info)
 {
     if (!m_aqiConnection) {
-        if(createAqiConnection()) {
+        if(!createAqiConnection()) {
             return info->finish(Thing::ThingErrorHardwareNotAvailable,  QT_TR_NOOP("API key is not available."));
         }
         connect(info, &ThingDiscoveryInfo::aborted, [this] {
@@ -69,7 +71,7 @@ void IntegrationPluginAqi::setupThing(ThingSetupInfo *info)
 {
     if (info->thing()->thingClassId() == airQualityIndexThingClassId) {
         if (!m_aqiConnection) {
-            if(createAqiConnection()) {
+            if(!createAqiConnection()) {
                 return info->finish(Thing::ThingErrorHardwareNotAvailable,  QT_TR_NOOP("API key is not available."));
             }
             double longitude = info->thing()->paramValue(airQualityIndexThingLongitudeParamTypeId).toDouble();

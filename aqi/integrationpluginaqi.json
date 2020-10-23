@@ -6,7 +6,7 @@
         {
             "id": "b6861adb-7ed5-445f-b500-4df9eab866ef",
             "name": "apiKey",
-            "displayName": "API key",
+            "displayName": "Custom API key",
             "type": "QString",
             "defaultValue": ""
         }
