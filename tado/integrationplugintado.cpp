@@ -100,7 +100,7 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    if (thing->thingClassId() == tadoConnectionThingClassId) {
+    if (thing->thingClassId() == tadoAccountThingClassId) {
 
         qCDebug(dcTado) << "Setup tado connection" << thing->name() << thing->params();
         Tado *tado;
@@ -155,8 +155,18 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
         return;
 
     } else if (thing->thingClassId() == zoneThingClassId) {
-        qCDebug(dcTado) << "Setup tado thermostat" << thing->params();
-        return info->finish(Thing::ThingErrorNoError);
+        qCDebug(dcTado) << "Setup Tado zone" << thing->params();
+        Thing *parentThing = myThings().findById(thing->parentId());
+        if(parentThing->setupComplete()) {
+            return info->finish(Thing::ThingErrorNoError);
+        } else {
+            connect(parentThing, &Thing::setupStatusChanged, info, [parentThing, info]{
+                if (parentThing->setupComplete()) {
+                    info->finish(Thing::ThingErrorNoError);
+                }
+            });
+        }
+
     } else {
         qCWarning(dcTado()) << "Unhandled thing class in setupDevice";
         return info->finish(Thing::ThingErrorThingClassNotFound);
@@ -165,7 +175,7 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginTado::thingRemoved(Thing *thing)
 {
-    if (thing->thingClassId() == tadoConnectionThingClassId) {
+    if (thing->thingClassId() == tadoAccountThingClassId) {
         Tado *tado = m_tadoAccounts.take(thing->id());
         tado->deleteLater();
     }
@@ -183,11 +193,11 @@ void IntegrationPluginTado::postSetupThing(Thing *thing)
         connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginTado::onPluginTimer);
     }
 
-    if (thing->thingClassId() == tadoConnectionThingClassId) {
+    if (thing->thingClassId() == tadoAccountThingClassId) {
         Tado *tado = m_tadoAccounts.value(thing->id());
-        thing->setStateValue(tadoConnectionUserDisplayNameStateTypeId, tado->username());
-        thing->setStateValue(tadoConnectionLoggedInStateTypeId, true);
-        thing->setStateValue(tadoConnectionConnectedStateTypeId, true);
+        thing->setStateValue(tadoAccountUserDisplayNameStateTypeId, tado->username());
+        thing->setStateValue(tadoAccountLoggedInStateTypeId, true);
+        thing->setStateValue(tadoAccountConnectedStateTypeId, true);
         tado->getHomes();
 
     } else if (thing->thingClassId() == zoneThingClassId) {
@@ -261,16 +271,22 @@ void IntegrationPluginTado::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginTado::onPluginTimer()
 {
-    foreach (Thing *thing, myThings().filterByThingClassId(zoneThingClassId)) {
-        Tado *tado = m_tadoAccounts.value(thing->parentId());
-        if (!tado){
-            qCWarning(dcTado()) << "Could not find any Tado connection to Zone" << thing->name();
-            continue;
+    Q_FOREACH(Tado *tado, m_tadoAccounts){
+        ThingId accountThingId = m_tadoAccounts.key(tado);
+        if (!tado->authenticated()) {
+            pluginStorage()->beginGroup(accountThingId.toString());
+            QString password = pluginStorage()->value("password").toString();
+            pluginStorage()->endGroup();
+            tado->getToken(password);
+        } else {
+            Q_FOREACH(Thing *thing, myThings().filterByParentId(accountThingId)) {
+                if (thing->thingClassId() == zoneThingClassId) {
+                    QString homeId = thing->paramValue(zoneThingHomeIdParamTypeId).toString();
+                    QString zoneId = thing->paramValue(zoneThingZoneIdParamTypeId).toString();
+                    tado->getZoneState(homeId, zoneId);
+                }
+            }
         }
-
-        QString homeId = thing->paramValue(zoneThingHomeIdParamTypeId).toString();
-        QString zoneId = thing->paramValue(zoneThingZoneIdParamTypeId).toString();
-        tado->getZoneState(homeId, zoneId);
     }
 }
 
@@ -282,10 +298,14 @@ void IntegrationPluginTado::onConnectionChanged(bool connected)
         Thing *thing = myThings().findById(m_tadoAccounts.key(tado));
         if (!thing)
             return;
-        thing->setStateValue(tadoConnectionConnectedStateTypeId, connected);
+        thing->setStateValue(tadoAccountConnectedStateTypeId, connected);
 
-        foreach(Thing *zoneThing, myThings().filterByParentId(thing->id())) {
-            zoneThing->setStateValue(zoneConnectedStateTypeId, connected);
+        if (!connected) {
+            Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
+                if (child->thingClassId() == zoneThingClassId) {
+                    child->setStateValue(zoneConnectedStateTypeId, connected);
+                }
+            }
         }
     }
 }
@@ -300,17 +320,13 @@ void IntegrationPluginTado::onAuthenticationStatusChanged(bool authenticated)
             qCWarning(dcTado()) << "OnAuthenticationChanged no thing found by ID" << m_tadoAccounts.key(tado);
             return;
         }
-        thing->setStateValue(tadoConnectionLoggedInStateTypeId, authenticated);
-
+        thing->setStateValue(tadoAccountLoggedInStateTypeId, authenticated);
         if (!authenticated) {
-            QTimer::singleShot(5000, tado, [this, tado, thing] {
-                if (!tado->connected()) {
-                    pluginStorage()->beginGroup(thing->id().toString());
-                    QString password = pluginStorage()->value("password").toString();
-                    pluginStorage()->endGroup();
-                    tado->getToken(password);
+            Q_FOREACH(Thing *child, myThings().filterByParentId(thing->id())) {
+                if (child->thingClassId() == zoneThingClassId) {
+                    child->setStateValue(zoneConnectedStateTypeId, authenticated);
                 }
-            });
+            }
         }
     }
 }

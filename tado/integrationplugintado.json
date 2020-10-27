@@ -10,8 +10,8 @@
             "thingClasses": [
                 {
                     "id": "69be7d15-5658-4442-872e-42abbd8bff81",
-                    "name": "tadoConnection",
-                    "displayName": "Tado Connection",
+                    "name": "tadoAccount",
+                    "displayName": "Tado account",
                     "interfaces": ["account"],
                     "createMethods": ["user"],
                     "setupMethod": "userandpassword",
@@ -19,8 +19,8 @@
                         {
                             "id": "2f79bc1d-27ed-480a-b583-728363c83ea6",
                             "name": "connected",
-                            "displayName": "Available",
-                            "displayNameEvent": "Available changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false
                         },
@@ -77,8 +77,8 @@
                         {
                             "id": "9f45a703-6a15-447c-a77a-0df731cda48e",
                             "name": "connected",
-                            "displayName": "Available",
-                            "displayNameEvent": "Available changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false
                         },
