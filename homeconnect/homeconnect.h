@@ -172,6 +172,8 @@ private slots:
 signals:
     void connectionChanged(bool connected);
     void authenticationStatusChanged(bool authenticated);
+    void receivedRefreshToken(const QByteArray &refreshToken);
+    void receivedAccessToken(const QByteArray &accessToken);
     void commandExecuted(const QUuid &commandId, bool success);
 
     void receivedHomeAppliances(const QList<HomeAppliance> &appliances);

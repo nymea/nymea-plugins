@@ -5,20 +5,20 @@
     <name>IntegrationPluginHomeConnect</name>
     <message>
         <location filename="../integrationpluginhomeconnect.cpp" line="154"/>
-        <location filename="../integrationpluginhomeconnect.cpp" line="246"/>
+        <location filename="../integrationpluginhomeconnect.cpp" line="235"/>
         <source>Client key and/or seceret is not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginhomeconnect.cpp" line="236"/>
+        <location filename="../integrationpluginhomeconnect.cpp" line="225"/>
         <source>Refresh token is not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginhomeconnect.cpp" line="414"/>
-        <location filename="../integrationpluginhomeconnect.cpp" line="429"/>
-        <location filename="../integrationpluginhomeconnect.cpp" line="448"/>
-        <location filename="../integrationpluginhomeconnect.cpp" line="461"/>
+        <location filename="../integrationpluginhomeconnect.cpp" line="403"/>
+        <location filename="../integrationpluginhomeconnect.cpp" line="418"/>
+        <location filename="../integrationpluginhomeconnect.cpp" line="437"/>
+        <location filename="../integrationpluginhomeconnect.cpp" line="450"/>
         <source>Please select a program first</source>
         <translation type="unfinished"></translation>
     </message>

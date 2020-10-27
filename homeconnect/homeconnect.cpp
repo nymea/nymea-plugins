@@ -224,6 +224,7 @@ void HomeConnect::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
             return;
         }
         m_accessToken = data.toVariant().toMap().value("access_token").toByteArray();
+        emit receivedAccessToken(m_accessToken);
 
         if (data.toVariant().toMap().contains("expires_in")) {
             int expireTime = data.toVariant().toMap().value("expires_in").toInt();
@@ -279,7 +280,9 @@ void HomeConnect::getAccessTokenFromAuthorizationCode(const QByteArray &authoriz
             return;
         }
         m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
+        receivedAccessToken(m_accessToken);
         m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();
+        receivedRefreshToken(m_refreshToken);
 
         if (jsonDoc.toVariant().toMap().contains("expires_in")) {
             int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();

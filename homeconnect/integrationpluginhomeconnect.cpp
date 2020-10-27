@@ -188,19 +188,8 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
         }
         qCDebug(dcHomeConnect()) << "Authorization code" << authorizationCode;
         homeConnect->getAccessTokenFromAuthorizationCode(authorizationCode);
-        connect(homeConnect, &HomeConnect::authenticationStatusChanged, this, [info, this](bool authenticated){
-            HomeConnect *homeConnect = static_cast<HomeConnect *>(sender());
-
-            if(!authenticated) {
-                qWarning(dcHomeConnect()) << "Authentication process failed";
-                m_setupHomeConnectConnections.remove(info->thingId());
-                homeConnect->deleteLater();
-                info->finish(Thing::ThingErrorSetupFailed);
-                return;
-            }
-            QByteArray accessToken = homeConnect->accessToken();
-            QByteArray refreshToken = homeConnect->refreshToken();
-            qCDebug(dcHomeConnect()) << "Token:" << accessToken << refreshToken;
+        connect(homeConnect, &HomeConnect::receivedRefreshToken, info, [info, this](const QByteArray &refreshToken){
+            qCDebug(dcHomeConnect()) << "Token:" << refreshToken;
 
             pluginStorage()->beginGroup(info->thingId().toString());
             pluginStorage()->setValue("refresh_token", refreshToken);
