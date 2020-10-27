@@ -63,13 +63,6 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
 {
     qCDebug(dcTado()) << "Confirm pairing" << username << "Network manager available" << hardwareManager()->networkManager()->available();
     Tado *tado = new Tado(hardwareManager()->networkManager(), username, this);
-    connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
-    connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
-    connect(tado, &Tado::connectionChanged, this, &IntegrationPluginTado::onConnectionChanged);
-    connect(tado, &Tado::homesReceived, this, &IntegrationPluginTado::onHomesReceived);
-    connect(tado, &Tado::zonesReceived, this, &IntegrationPluginTado::onZonesReceived);
-    connect(tado, &Tado::zoneStateReceived, this, &IntegrationPluginTado::onZoneStateReceived);
-    connect(tado, &Tado::overlayReceived, this, &IntegrationPluginTado::onOverlayReceived);
     m_unfinishedTadoAccounts.insert(info->thingId(), tado);
 
     connect(info, &ThingPairingInfo::aborted, this, [info, tado, this]() {
@@ -78,11 +71,16 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
         tado->deleteLater();
     });
 
-    connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error){
+    connect(tado, &Tado::connectionError, info, [info] (QNetworkReply::NetworkError error){
         if (error != QNetworkReply::NetworkError::NoError){
-            info->finish(Thing::ThingErrorSetupFailed);
+            qCWarning(dcTado()) << "Confirm pairing failed" << error;
+            info->finish(Thing::ThingErrorSetupFailed, tr("Connection error"));
         }
         // info->finish(success) will be called after the token has been received
+    });
+
+    connect(tado, &Tado::apiCredentialsReceived, info, [password, tado] {
+        tado->getToken(password);
     });
 
     connect(tado, &Tado::tokenReceived, info, [this, info, username, password](Tado::Token token) {
@@ -95,7 +93,7 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
 
         info->finish(Thing::ThingErrorNoError);
     });
-    tado->getToken(password);
+    tado->getApiCredentials();
 }
 
 void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
@@ -109,7 +107,7 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
         if (m_unfinishedTadoAccounts.contains(thing->id())) {
             tado = m_unfinishedTadoAccounts.take(thing->id());
             m_tadoAccounts.insert(thing->id(), tado);
-            return info->finish(Thing::ThingErrorNoError);
+            info->finish(Thing::ThingErrorNoError);
         } else {
             pluginStorage()->beginGroup(thing->id().toString());
             QString username = pluginStorage()->value("username").toString();
@@ -117,14 +115,6 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             pluginStorage()->endGroup();
 
             tado = new Tado(hardwareManager()->networkManager(), username, this);
-            connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
-            connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
-            connect(tado, &Tado::connectionChanged, this, &IntegrationPluginTado::onConnectionChanged);
-            connect(tado, &Tado::homesReceived, this, &IntegrationPluginTado::onHomesReceived);
-            connect(tado, &Tado::zonesReceived, this, &IntegrationPluginTado::onZonesReceived);
-            connect(tado, &Tado::zoneStateReceived, this, &IntegrationPluginTado::onZoneStateReceived);
-            connect(tado, &Tado::overlayReceived, this, &IntegrationPluginTado::onOverlayReceived);
-
             m_tadoAccounts.insert(thing->id(), tado);
             connect(info, &ThingSetupInfo::aborted, [info, this] {
                 if (m_tadoAccounts.contains(info->thing()->id())) {
@@ -133,7 +123,11 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
                 }
             });
 
-            connect(tado, &Tado::tokenReceived, info, [this, info, tado](Tado::Token token) {
+            connect(tado, &Tado::apiCredentialsReceived, info, [password, tado] {
+                tado->getToken(password);
+            });
+
+            connect(tado, &Tado::tokenReceived, info, [ info](Tado::Token token) {
                 Q_UNUSED(token)
 
                 qCDebug(dcTado()) << "Token received, account setup successfull";
@@ -141,18 +135,7 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
             });
 
             connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error){
-                if (error == QNetworkReply::NetworkError::HostNotFoundError) {
-                    QTimer::singleShot(2000, info, [info, this] {
-
-                        pluginStorage()->beginGroup(info->thing()->id().toString());
-                        QString password = pluginStorage()->value("password").toString();
-                        pluginStorage()->endGroup();
-                        if (m_tadoAccounts.contains(info->thing()->id())) {
-                            Tado *tado = m_tadoAccounts.take(info->thing()->id());
-                            tado->getToken(password);
-                        }
-                    });
-                } else if (error != QNetworkReply::NetworkError::NoError){
+                if (error != QNetworkReply::NetworkError::NoError){
                     if (m_tadoAccounts.contains(info->thing()->id())) {
                         Tado *tado = m_tadoAccounts.take(info->thing()->id());
                         tado->deleteLater();
@@ -160,15 +143,23 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
                     info->finish(Thing::ThingErrorSetupFailed);
                 }
             });
-            tado->getToken(password);
+            tado->getApiCredentials();
         }
+        connect(tado, &Tado::authenticationStatusChanged, this, &IntegrationPluginTado::onAuthenticationStatusChanged);
+        connect(tado, &Tado::requestExecuted, this, &IntegrationPluginTado::onRequestExecuted);
+        connect(tado, &Tado::connectionChanged, this, &IntegrationPluginTado::onConnectionChanged);
+        connect(tado, &Tado::homesReceived, this, &IntegrationPluginTado::onHomesReceived);
+        connect(tado, &Tado::zonesReceived, this, &IntegrationPluginTado::onZonesReceived);
+        connect(tado, &Tado::zoneStateReceived, this, &IntegrationPluginTado::onZoneStateReceived);
+        connect(tado, &Tado::overlayReceived, this, &IntegrationPluginTado::onOverlayReceived);
+        return;
 
     } else if (thing->thingClassId() == zoneThingClassId) {
         qCDebug(dcTado) << "Setup tado thermostat" << thing->params();
         return info->finish(Thing::ThingErrorNoError);
     } else {
-        return info->finish(Thing::ThingErrorThingClassNotFound);
         qCWarning(dcTado()) << "Unhandled thing class in setupDevice";
+        return info->finish(Thing::ThingErrorThingClassNotFound);
     }
 }
 
