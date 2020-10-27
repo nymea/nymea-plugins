@@ -227,7 +227,7 @@
                     "id": "bb0fcd0b-9594-4368-99d9-3ad5e5a8136b",
                     "name": "dishwasher",
                     "displayName": "Dishwasher",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["connectable", "closablesensor"],
                     "createMethods": ["auto"],
                     "browsable": true,
                     "paramTypes": [
@@ -351,7 +351,7 @@
                     "id": "f6b39ce2-8276-4db7-b2a3-4a04cafacbb9",
                     "name": "coffeeMaker",
                     "displayName": "Coffee Maker",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["connectable", "closablesensor"],
                     "createMethods": ["auto"],
                     "browsable": true,
                     "paramTypes": [
@@ -518,7 +518,7 @@
                     "id": "f360cc43-41fc-454a-b6df-09ec0a66c22a",
                     "name": "dryer",
                     "displayName": "Dryer",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["connectable", "closablesensor"],
                     "createMethods": ["auto"],
                     "browsable": true,
                     "paramTypes": [
@@ -656,7 +656,7 @@
                     "id": "6cbf309d-bde8-4e6e-ad6d-b85c8fc1843f",
                     "name": "fridge",
                     "displayName": "Fridge Freezer",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["connectable", "closablesensor"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -754,7 +754,7 @@
                     "id": "aaec390e-a61f-40ea-b42c-80f69428690b",
                     "name": "washer",
                     "displayName": "Washer",
-                    "interfaces": ["connectable"],
+                    "interfaces": ["connectable", "closablesensor"],
                     "createMethods": ["auto"],
                     "browsable": true,
                     "paramTypes": [

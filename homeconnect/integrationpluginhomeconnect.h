@@ -60,8 +60,7 @@ public:
     void executeBrowserItem(BrowserActionInfo *info) override;
 
 private:
-    PluginTimer *m_pluginTimer5sec = nullptr;
-    PluginTimer *m_pluginTimer60sec = nullptr;
+    PluginTimer *m_pluginTimer15min = nullptr;
 
     QHash<HomeConnect *, ThingSetupInfo *> m_asyncSetup;
 
@@ -93,6 +92,7 @@ private:
 
     void parseKey(Thing *thing, const QString &key, const QVariant &value);
     void parseSettingKey(Thing *thing, const QString &key, const QVariant &value);
+    bool checkIfActionIsPossible(ThingActionInfo *info);
 
 private slots:
     void onConnectionChanged(bool connected);

@@ -82,6 +82,7 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
     m_doorStateTypeIds.insert(dryerThingClassId, dryerClosedStateTypeId);
     m_doorStateTypeIds.insert(ovenThingClassId, ovenClosedStateTypeId);
     m_doorStateTypeIds.insert(coffeeMakerThingClassId, coffeeMakerClosedStateTypeId);
+    m_doorStateTypeIds.insert(fridgeThingClassId, fridgeClosedStateTypeId);
 
     m_operationStateTypeIds.insert(ovenThingClassId, ovenOperationStateStateTypeId);
     m_operationStateTypeIds.insert(dryerThingClassId, dryerOperationStateStateTypeId);
@@ -248,15 +249,7 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
         connect(homeConnect, &HomeConnect::receivedSettings, this, &IntegrationPluginHomeConnect::onReceivedSettings);
         connect(homeConnect, &HomeConnect::receivedEvents, this, &IntegrationPluginHomeConnect::onReceivedEvents);
 
-    } else if ((thing->thingClassId() == dryerThingClassId) ||
-               (thing->thingClassId() == fridgeThingClassId) ||
-               (thing->thingClassId() == washerThingClassId) ||
-               (thing->thingClassId() == dishwasherThingClassId) ||
-               (thing->thingClassId() == coffeeMakerThingClassId) ||
-               (thing->thingClassId() == ovenThingClassId) ||
-               (thing->thingClassId() == hoodThingClassId) ||
-               (thing->thingClassId() == cleaningRobotThingClassId) ||
-               (thing->thingClassId() == cookTopThingClassId)) {
+    } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());
         if (parentThing->setupComplete()) {
             info->finish(Thing::ThingErrorNoError);
@@ -274,9 +267,9 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
 {
-    if (!m_pluginTimer60sec) {
-        m_pluginTimer60sec = hardwareManager()->pluginTimerManager()->registerTimer(60);
-        connect(m_pluginTimer60sec, &PluginTimer::timeout, this, [this]() {
+    if (!m_pluginTimer15min) {
+        m_pluginTimer15min = hardwareManager()->pluginTimerManager()->registerTimer(60*15);
+        connect(m_pluginTimer15min, &PluginTimer::timeout, this, [this]() {
             Q_FOREACH (Thing *thing, myThings().filterByThingClassId(homeConnectAccountThingClassId)) {
                 HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
                 if (!homeConnect) {
@@ -301,15 +294,7 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
         thing->setStateValue(homeConnectAccountConnectedStateTypeId, true);
         thing->setStateValue(homeConnectAccountLoggedInStateTypeId, true);
         //TBD Set user name
-    } else if ((thing->thingClassId() == dryerThingClassId) ||
-               (thing->thingClassId() == fridgeThingClassId) ||
-               (thing->thingClassId() == washerThingClassId) ||
-               (thing->thingClassId() == dishwasherThingClassId) ||
-               (thing->thingClassId() == coffeeMakerThingClassId) ||
-               (thing->thingClassId() == ovenThingClassId) ||
-               (thing->thingClassId() == hoodThingClassId) ||
-               (thing->thingClassId() == cleaningRobotThingClassId) ||
-               (thing->thingClassId() == cookTopThingClassId)) {
+    } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());
         if (!parentThing)
             qCWarning(dcHomeConnect()) << "Could not find parent with Id" << thing->parentId().toString();
@@ -432,6 +417,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
         }
     } else if (thing->thingClassId() == washerThingClassId) {
         if (action.actionTypeId() == washerStartActionTypeId) {
+
             if (!m_selectedProgram.contains(thing)) {
                 homeConnect->getProgramsSelected(haid);
                 return info->finish(Thing::ThingErrorMissingParameter, tr("Please select a program first"));
@@ -496,9 +482,9 @@ void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
     }
 
     if (myThings().empty()) {
-        if (m_pluginTimer60sec) {
-            hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer60sec);
-            m_pluginTimer60sec = nullptr;
+        if (m_pluginTimer15min) {
+            hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer15min);
+            m_pluginTimer15min = nullptr;
         }
     }
 }
@@ -539,8 +525,10 @@ void IntegrationPluginHomeConnect::browserItem(BrowserItemResult *result)
     homeConnect->getProgramsAvailable(haid);
     connect(homeConnect, &HomeConnect::receivedAvailablePrograms, result, [result, this] (const QString &haid, const QStringList &programs) {
         if (result->thing()->paramValue(m_idParamTypeIds.value(result->thing()->thingClassId())).toString() == haid) {
-            if (programs.contains(result->item().id()))
+            if (programs.contains(result->item().id())) {
+                result->item().setDisplayName(result->item().id());
                 result->finish(Thing::ThingErrorNoError);
+            }
         }
     });
 }
@@ -769,6 +757,46 @@ void IntegrationPluginHomeConnect::parseSettingKey(Thing *thing, const QString &
         //} else if (key.contains("BSH.Common.Setting.AmbientLightColor")) {
         //} else if (key.contains("BSH.Common.Setting.AmbientLightCustomColor")) {
     }
+}
+
+bool IntegrationPluginHomeConnect::checkIfActionIsPossible(ThingActionInfo *info)
+{
+    Thing *thing = info->thing();
+
+    if (m_connectedStateTypeIds.contains(thing->thingClassId())) {
+        if(!thing->stateValue(m_connectedStateTypeIds.value(thing->thingClassId())).toBool()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, tr("Appliance ist not connected."));
+            return false;
+        }
+    }
+    if (m_remoteStartAllowanceStateTypeIds.contains(thing->thingClassId())) {
+        if (!thing->stateValue(m_remoteStartAllowanceStateTypeIds.value(thing->thingClassId())).toBool()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, tr("Remote start is not activated."));
+            return false;
+        }
+    }
+
+    if (m_remoteControlActivationStateTypeIds.contains(thing->thingClassId())) {
+        if (!thing->stateValue(m_remoteControlActivationStateTypeIds.value(thing->thingClassId())).toBool()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, tr("Remote control is not activated."));
+            return false;
+        }
+    }
+
+    if (m_doorStateTypeIds.contains(thing->thingClassId())) {
+        if (!thing->stateValue(m_doorStateTypeIds.value(thing->thingClassId())).toBool()) {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, tr("Door is not closed."));
+            return false;
+        }
+    }
+
+    if (m_operationStateTypeIds.contains(thing->thingClassId())) {
+        if (thing->stateValue(m_operationStateTypeIds.value(thing->thingClassId())).toString() != "Ready") {
+            info->finish(Thing::ThingErrorHardwareNotAvailable, tr("Appliance not ready."));
+            return false;
+        }
+    }
+    return true;
 }
 
 void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
