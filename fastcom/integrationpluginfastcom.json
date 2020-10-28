@@ -1,0 +1,83 @@
+{
+    "id": "142bdfae-43b1-4915-8906-99949e0a6f85",
+    "name": "fastcom",
+    "displayName": "fast.com speed test",
+    "vendors": [
+        {
+            "id": "8ff41f1e-0aa4-4b86-a959-2c54dc9c716c",
+            "name": "fastcom",
+            "displayName": "fast.com",
+            "thingClasses": [
+                {
+                    "id": "dcd2d320-18b2-4655-8188-dd46a1c27360",
+                    "name": "speedtest",
+                    "displayName": "Internet connection speed test",
+                    "createMethods": ["user"],
+                    "setupMethod": "justAdd",
+                    "settingsTypes": [
+                        {
+                            "id": "12646890-9335-4c4e-ada2-ac9e603c4f2c",
+                            "name": "interval",
+                            "displayName": "Interval for speed tests",
+                            "type": "uint",
+                            "unit": "Minutes",
+                            "defaultValue": 60
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "c29dcc25-40b1-4db8-a8ad-6552b2813ee8",
+                            "name": "testCompleted",
+                            "displayName": "Test run completed",
+                            "paramTypes": [
+                                {
+                                    "id": "3d101deb-a3b7-451c-ad07-02ff38afd617",
+                                    "name": "result",
+                                    "displayName": "Test result",
+                                    "type": "double",
+                                    "defaultValue": 0
+                                }
+                            ]
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "07c2bddd-6e5c-4fa0-a114-9393adb6cb65",
+                            "name": "lastResult",
+                            "displayName": "Last result",
+                            "displayNameEvent": "Last result changed",
+                            "type": "double",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "9ad90ce5-3d66-4469-8d04-4e6bfc132db4",
+                            "name": "testRunning",
+                            "displayName": "Test is running",
+                            "displayNameEvent": "Test started or stopped",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "7f77a7cf-3ba1-4119-959d-9d652449d1fb",
+                            "name": "runTest",
+                            "displayName": "Run test",
+                            "paramTypes": [
+                                {
+                                    "id": "af5f3b43-2c60-4330-a82d-20b98fac9096",
+                                    "name": "duration",
+                                    "displayName": "Duration",
+                                    "type": "int",
+                                    "unit": "Seconds",
+                                    "defaultValue": 15
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
