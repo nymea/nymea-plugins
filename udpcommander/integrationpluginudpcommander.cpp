@@ -116,15 +116,16 @@ void IntegrationPluginUdpCommander::readPendingDatagrams()
     while (socket->hasPendingDatagrams()) {
         datagram.resize(socket->pendingDatagramSize());
         socket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+        qCDebug(dcUdpCommander()) << "Incoming datatram" << datagram << "on" << thing->name() << "from" << sender.toString() << senderPort;
+
+        Event ev = Event(udpReceiverTriggeredEventTypeId, thing->id());
+        ParamList params;
+        params.append(Param(udpReceiverTriggeredEventDataParamTypeId, datagram));
+        ev.setParams(params);
+        emit emitEvent(ev);
+
+        // Send response for verification
+        socket->writeDatagram("OK\n", sender, senderPort);
     }
 
-    qCDebug(dcUdpCommander()) << thing->name() << "got command from" << sender.toString() << senderPort;
-    Event ev = Event(udpReceiverTriggeredEventTypeId, thing->id());
-    ParamList params;
-    params.append(Param(udpReceiverTriggeredEventDataParamTypeId, datagram));
-    ev.setParams(params);
-    emit emitEvent(ev);
-
-    // Send response for verification
-    socket->writeDatagram("OK\n", sender, senderPort);
 }
