@@ -45,7 +45,7 @@ DeviceMonitor::DeviceMonitor(const QString &name, const QString &macAddress, con
     connect(m_arpLookupProcess, SIGNAL(finished(int)), this, SLOT(arpLookupFinished(int)));
 
     m_arpingProcess = new QProcess(this);
-    m_arpingProcess->setReadChannelMode(QProcess::MergedChannels);
+    m_arpingProcess->setProcessChannelMode(QProcess::MergedChannels);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     // Actually we'd need this fix on older platforms too, but it's hard to figure this out without this API...
     connect(m_arpingProcess, &QProcess::errorOccurred, this, [this](QProcess::ProcessError error) {
@@ -58,7 +58,7 @@ DeviceMonitor::DeviceMonitor(const QString &name, const QString &macAddress, con
     connect(m_arpingProcess, SIGNAL(finished(int)), this, SLOT(arpingFinished(int)));
 
     m_pingProcess = new QProcess(this);
-    m_pingProcess->setReadChannelMode(QProcess::MergedChannels);
+    m_pingProcess->setProcessChannelMode(QProcess::MergedChannels);
     connect(m_pingProcess, SIGNAL(finished(int)), this, SLOT(pingFinished(int)));
 }
 

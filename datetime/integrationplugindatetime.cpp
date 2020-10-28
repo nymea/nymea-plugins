@@ -415,8 +415,8 @@ void IntegrationPluginDateTime::onDayChanged(const QDateTime &dateTime)
     m_todayDevice->setStateValue(todayMonthStateTypeId, dateTime.date().month());
     m_todayDevice->setStateValue(todayYearStateTypeId, dateTime.date().year());
     m_todayDevice->setStateValue(todayWeekdayStateTypeId, dateTime.date().dayOfWeek());
-    m_todayDevice->setStateValue(todayWeekdayNameStateTypeId, dateTime.date().longDayName(dateTime.date().dayOfWeek()));
-    m_todayDevice->setStateValue(todayMonthNameStateTypeId, dateTime.date().longMonthName(dateTime.date().month()));
+    m_todayDevice->setStateValue(todayWeekdayNameStateTypeId, QLocale().dayName(dateTime.date().dayOfWeek()));
+    m_todayDevice->setStateValue(todayMonthNameStateTypeId, QLocale().monthName(dateTime.date().month()));
     if(dateTime.date().dayOfWeek() == 6 || dateTime.date().dayOfWeek() == 7){
         m_todayDevice->setStateValue(todayWeekendStateTypeId, true);
     }else{
