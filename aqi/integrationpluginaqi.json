@@ -1,11 +1,21 @@
 {
     "name": "AirQualityIndex",
-    "displayName": "AirQualityIndex",
+    "displayName": "Air quality index",
     "id": "57d69b76-4d2d-41ec-bef6-949a79ffbe6b",
+    "paramTypes": [
+        {
+            "id": "b6861adb-7ed5-445f-b500-4df9eab866ef",
+            "name": "apiKey",
+            "displayName": "Custom API key",
+            "type": "QString",
+            "defaultValue": ""
+        }
+    ],
+    "apiKeys": ["aqi"],
     "vendors": [
         {
             "name": "airQualityIndex",
-            "displayName": "Air Quality Index",
+            "displayName": "Air quality index",
             "id": "6c8e2ded-0a33-4e77-b76c-ea02168741ec",
             "thingClasses": [
                 {
@@ -14,22 +24,21 @@
                     "displayName": "Air quality index",
                     "interfaces": ["windspeedsensor", "humiditysensor", "pressuresensor", "temperaturesensor", "connectable"],
                     "createMethods": ["discovery", "user"],
-                    "setupMethod": "displaypin",
                     "paramTypes": [
-                    {
-                        "id": "afd5803b-6c98-44d7-9f4a-45e91cfb062e",
-                        "name": "latitude",
-                        "displayName": "Latitude",
-                        "type": "QString",
-                        "inputType": "TextLine"
-                    },
-                    {
-                        "id": "4800d78e-a367-41f7-9bf6-7c81d40ce19a",
-                        "name": "longitude",
-                        "displayName": "Longitude",
-                        "type": "QString",
-                        "inputType": "TextLine"
-                    }
+                        {
+                            "id": "afd5803b-6c98-44d7-9f4a-45e91cfb062e",
+                            "name": "latitude",
+                            "displayName": "Latitude",
+                            "type": "double",
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "4800d78e-a367-41f7-9bf6-7c81d40ce19a",
+                            "name": "longitude",
+                            "displayName": "Longitude",
+                            "type": "double",
+                            "defaultValue": 0.00
+                        }
                     ],
                     "stateTypes": [
                         {

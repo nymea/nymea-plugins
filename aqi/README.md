@@ -29,13 +29,13 @@ Besides the air pollution level the plug-in also states a cautionary statement.
 Both states can be used to let nymea notify you about the pollution level and
 inform you what precautions should be taken.
 
-## Requirments
+## Requirements
 
 * Valid "Air Quality Index" API Key
+    * This might be provided through the nymea community API Key provider or by setting a custom API Key in the plug-in settings.
 * The package "nymea-plugin-airqualityindex" must be installed
 * Internet connection
 
 ## More
 
 More about the different Air Quality Levels: https://www.airnow.gov/index.cfm?action=aqibasics.aqi
-
