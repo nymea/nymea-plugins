@@ -12,7 +12,7 @@
                     "id": "642aa4c7-19aa-45ed-ba06-aa1ae6c9edf7",
                     "name": "bridge",
                     "displayName": "Hue gateway",
-                    "interfaces": ["gateway"],
+                    "interfaces": ["gateway", "update"],
                     "createMethods": ["discovery"],
                     "setupMethod": "pushButton",
                     "browsable": true,
@@ -52,26 +52,21 @@
                             "type": "QString"
                         },
                         {
-                            "id": "4c707b18-6604-4e6d-b6bc-4e27769c2adc",
-                            "name": "softwareVersion",
-                            "displayName": "software version",
-                            "displayNameEvent": "software version changed",
-                            "defaultValue": "-",
-                            "type": "QString"
-                        },
-                        {
                             "id": "16a126f3-0cef-4931-bb2b-9e1b49bec7fc",
                             "name": "updateStatus",
                             "displayName": "update status",
                             "displayNameEvent": "update status changed",
                             "type": "QString",
-                            "defaultValue": "Up to date",
-                            "possibleValues": [
-                                "Up to date",
-                                "Downloading updates",
-                                "Updates ready to install",
-                                "Installing updates"
-                            ]
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "4c707b18-6604-4e6d-b6bc-4e27769c2adc",
+                            "name": "currentVersion",
+                            "displayName": "Software version",
+                            "displayNameEvent": "Software version changed",
+                            "defaultValue": "-",
+                            "type": "QString"
                         }
                     ],
                     "actionTypes": [
@@ -95,7 +90,7 @@
                         },
                         {
                             "id": "6dfbc7c0-7372-42f6-82ba-e777cb32dc4c",
-                            "name": "upgrade",
+                            "name": "performUpdate",
                             "displayName": "Upgrade bridge"
                         }
                     ]
