@@ -48,7 +48,7 @@
                             "displayName": "Power AC",
                             "displayNameEvent": "Power AC changed",
                             "type": "double",
-                            "unit": "KiloWatt",
+                            "unit": "Watt",
                             "defaultValue": 0
                         },
                         {
@@ -57,7 +57,7 @@
                             "displayName": "Power DC",
                             "displayNameEvent": "Power DC changed",
                             "type": "double",
-                            "unit": "KiloWatt",
+                            "unit": "Watt",
                             "defaultValue": 0
                         },
                         {
@@ -129,7 +129,7 @@
                             "displayName": "Current total power consumption",
                             "displayNameEvent": "Current total power consumption changed",
                             "type": "double",
-                            "unit": "KiloWatt",
+                            "unit": "Watt",
                             "defaultValue": 0
                         },
                         {
@@ -183,7 +183,7 @@
                             "displayName": "Installed generator power",
                             "displayNameEvent": "Installed generator power changed",
                             "type": "double",
-                            "unit": "KiloWatt",
+                            "unit": "Watt",
                             "defaultValue": 0
                         }
                     ]
