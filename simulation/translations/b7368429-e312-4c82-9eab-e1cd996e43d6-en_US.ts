@@ -96,7 +96,9 @@ The name of the EventType ({10c735fd-7b81-484a-a148-76ea0da840f0}) of ThingClass
     </message>
     <message>
         <source>Battery level changed</source>
-        <extracomment>The name of the EventType ({6a7ecb09-135c-4be2-8c36-f2a71711ea05}) of ThingClass gardenSensor
+        <extracomment>The name of the EventType ({4979b1a8-7f1e-4b65-9c35-187045c42a8f}) of ThingClass contactSensor
+----------
+The name of the EventType ({6a7ecb09-135c-4be2-8c36-f2a71711ea05}) of ThingClass gardenSensor
 ----------
 The name of the EventType ({30fd9fd9-1a6b-4698-93ac-6b2a1ba18500}) of ThingClass battery
 ----------
@@ -107,7 +109,9 @@ The name of the EventType ({45c0de32-b519-47d7-9f82-e5f09d1542d4}) of ThingClass
     </message>
     <message>
         <source>Battery critical changed</source>
-        <extracomment>The name of the EventType ({68d818fd-ad8a-411d-95b1-811991535fe2}) of ThingClass gardenSensor
+        <extracomment>The name of the EventType ({8d87413f-b625-4b77-aa95-2029b4bfb741}) of ThingClass contactSensor
+----------
+The name of the EventType ({68d818fd-ad8a-411d-95b1-811991535fe2}) of ThingClass gardenSensor
 ----------
 The name of the EventType ({4857f2b4-0840-4c7e-82ff-bd881ae32cf9}) of ThingClass battery
 ----------
@@ -273,7 +277,11 @@ The name of the EventType ({be0291ff-6041-433b-9121-a30ca4426b22}) of ThingClass
     </message>
     <message>
         <source>Battery</source>
-        <extracomment>The name of the ParamType (ThingClass: gardenSensor, EventType: batteryLevel, ID: {6a7ecb09-135c-4be2-8c36-f2a71711ea05})
+        <extracomment>The name of the ParamType (ThingClass: contactSensor, EventType: batteryLevel, ID: {4979b1a8-7f1e-4b65-9c35-187045c42a8f})
+----------
+The name of the StateType ({4979b1a8-7f1e-4b65-9c35-187045c42a8f}) of ThingClass contactSensor
+----------
+The name of the ParamType (ThingClass: gardenSensor, EventType: batteryLevel, ID: {6a7ecb09-135c-4be2-8c36-f2a71711ea05})
 ----------
 The name of the StateType ({6a7ecb09-135c-4be2-8c36-f2a71711ea05}) of ThingClass gardenSensor
 ----------
@@ -439,7 +447,11 @@ The name of the StateType ({10c735fd-7b81-484a-a148-76ea0da840f0}) of ThingClass
     </message>
     <message>
         <source>Battery critical</source>
-        <extracomment>The name of the ParamType (ThingClass: gardenSensor, EventType: batteryCritical, ID: {68d818fd-ad8a-411d-95b1-811991535fe2})
+        <extracomment>The name of the ParamType (ThingClass: contactSensor, EventType: batteryCritical, ID: {8d87413f-b625-4b77-aa95-2029b4bfb741})
+----------
+The name of the StateType ({8d87413f-b625-4b77-aa95-2029b4bfb741}) of ThingClass contactSensor
+----------
+The name of the ParamType (ThingClass: gardenSensor, EventType: batteryCritical, ID: {68d818fd-ad8a-411d-95b1-811991535fe2})
 ----------
 The name of the StateType ({68d818fd-ad8a-411d-95b1-811991535fe2}) of ThingClass gardenSensor
 ----------
@@ -954,6 +966,35 @@ The name of the StateType ({f892f660-87ff-458a-bfa0-5af08591233e}) of ThingClass
     <message>
         <source>Cotent</source>
         <extracomment>The name of the ParamType (ThingClass: barcodeScanner, EventType: codeScanned, ID: {d76c1a34-ee9a-4363-80bb-2042639311c7})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Available</source>
+        <extracomment>The name of the ParamType (ThingClass: contactSensor, EventType: connected, ID: {47789719-e300-4d0d-b861-42f24af38103})
+----------
+The name of the StateType ({47789719-e300-4d0d-b861-42f24af38103}) of ThingClass contactSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Available changed</source>
+        <extracomment>The name of the EventType ({47789719-e300-4d0d-b861-42f24af38103}) of ThingClass contactSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Closed</source>
+        <extracomment>The name of the ParamType (ThingClass: contactSensor, EventType: closed, ID: {bb02bb10-a933-4833-8a1d-40dda41691b2})
+----------
+The name of the StateType ({bb02bb10-a933-4833-8a1d-40dda41691b2}) of ThingClass contactSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Closed changed</source>
+        <extracomment>The name of the EventType ({bb02bb10-a933-4833-8a1d-40dda41691b2}) of ThingClass contactSensor</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Door/window sensor</source>
+        <extracomment>The name of the ThingClass ({14f6c41c-b1ba-4d83-b1b2-d764a62c8eed})</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

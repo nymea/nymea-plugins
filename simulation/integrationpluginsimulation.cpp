@@ -71,7 +71,8 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
             thing->thingClassId() == rollerShutterThingClassId ||
             thing->thingClassId() == fingerPrintSensorThingClassId ||
             thing->thingClassId() == thermostatThingClassId ||
-            thing->thingClassId() == barcodeScannerThingClassId) {
+            thing->thingClassId() == barcodeScannerThingClassId ||
+            thing->thingClassId() == contactSensorThingClassId) {
         m_simulationTimers.insert(thing, new QTimer(thing));
         connect(m_simulationTimers[thing], &QTimer::timeout, this, &IntegrationPluginSimulation::simulationTimerTimeout);
     }
@@ -79,6 +80,10 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
         m_simulationTimers.value(thing)->start(10000);
     }
     if (thing->thingClassId() == barcodeScannerThingClassId) {
+        m_simulationTimers.value(thing)->start(10000);
+    }
+
+    if (thing->thingClassId() == contactSensorThingClassId) {
         m_simulationTimers.value(thing)->start(10000);
     }
     info->finish(Thing::ThingErrorNoError);
@@ -738,5 +743,17 @@ void IntegrationPluginSimulation::simulationTimerTimeout()
         ParamList params = ParamList() << Param(barcodeScannerCodeScannedEventContentParamTypeId, code);
         Event event(barcodeScannerCodeScannedEventTypeId, thing->id(), params);
         emit emitEvent(event);
+    } else if (thing->thingClassId() == contactSensorThingClassId) {
+       thing->setStateValue(contactSensorClosedStateTypeId, !thing->stateValue(contactSensorClosedStateTypeId).toBool());
+       thing->setStateValue(contactSensorBatteryLevelStateTypeId, thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt()-1);
+
+       if (thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt() == 0) {
+           thing->setStateValue(contactSensorBatteryLevelStateTypeId, 100);
+           thing->setStateValue(contactSensorBatteryCriticalStateTypeId, false);
+       } else if (thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt() <= 20) {
+           thing->setStateValue(contactSensorBatteryCriticalStateTypeId, true);
+       } else {
+           thing->setStateValue(contactSensorBatteryCriticalStateTypeId, false);
+       }
     }
 }
