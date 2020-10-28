@@ -62,11 +62,17 @@ signals:
 private:
     void refreshAccessToken(Thing *thing);
     void updateChildDevices(Thing *thing);
+    void queryDevice(Thing *thing);
 
     void controlTuyaSwitch(const QString &devId, const QString &command, const QString &value, ThingActionInfo *info);
 
     QHash<ThingId, QTimer*> m_tokenExpiryTimers;
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_pluginTimerQuery = nullptr;
+    PluginTimer *m_pluginTimerDiscovery = nullptr;
+
+    QHash<ThingClassId, ParamTypeId> m_devIdParamTypeIdsMap;
+    QHash<ThingClassId, StateTypeId> m_connectedStateTypeIdsMap;
+    QHash<ThingClassId, StateTypeId> m_powerStateTypeIdsMap;
 };
 
 #endif // INTEGRATIONPLUGINTUYA_H
