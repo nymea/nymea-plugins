@@ -292,14 +292,17 @@ void IntegrationPluginOneWire::executeAction(ThingActionInfo *info)
 void IntegrationPluginOneWire::thingRemoved(Thing *thing)
 {
     if (thing->thingClassId() == oneWireInterfaceThingClassId) {
-        m_owfsInterface->deleteLater();
-        m_owfsInterface = nullptr;
-        return;
+        if (m_owfsInterface) {
+            m_owfsInterface->deleteLater();
+            m_owfsInterface = nullptr;
+        }
     }
 
     if (myThings().filterByThingClassId(temperatureSensorThingClassId).isEmpty()) {
-        m_w1Interface->deleteLater();
-        m_w1Interface = nullptr;
+        if(m_w1Interface) {
+            m_w1Interface->deleteLater();
+            m_w1Interface = nullptr;
+        }
     }
 
     if (myThings().empty()) {
@@ -337,12 +340,12 @@ void IntegrationPluginOneWire::onPluginTimer()
             double temperature = 0;
             bool connected = false;
 
-            if (myThings().findById(thing->parentId())->thingClassId() == oneWireInterfaceThingClassId) {
+            if (!thing->parentId().isNull()) {
                 if (m_owfsInterface) {
                     temperature = m_owfsInterface->getTemperature(address);
                     connected = m_owfsInterface->isConnected(address);
                 } else {
-                    qCWarning(dcOneWire()) << "onPlugInTimer: OWFS interface not setup yet for thing" << thing->name();
+                    qCWarning(dcOneWire()) << "onPlugInTimer: OWFS interface not setup for thing" << thing->name();
                 }
 
             } else {
