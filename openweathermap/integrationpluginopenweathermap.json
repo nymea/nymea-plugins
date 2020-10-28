@@ -2,6 +2,16 @@
     "name": "OpenWeatherMap",
     "displayName": "OpenWeatherMap",
     "id": "bc6af567-2338-41d5-aac1-462dec6e4783",
+    "apiKeys": ["openweathermap"],
+    "paramTypes": [
+        {
+            "id": "71d075c3-4c4f-4864-99be-42a3121ce196",
+            "name": "customApiKey",
+            "displayName": "Custom API key",
+            "type": "QString",
+            "defaultValue": ""
+        }
+    ],
     "vendors": [
         {
             "name": "openWeatherMap",
