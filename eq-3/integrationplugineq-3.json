@@ -65,7 +65,7 @@
                     "id": "ffbfec5d-06e8-4082-b62b-92cc5c3e8c4e",
                     "name": "wallThermostat",
                     "displayName": "Max! Wall Thermostat",
-                    "interfaces": ["heating", "thermostat", "temperaturesensor", "battery", "connectable"],
+                    "interfaces": ["heating", "thermostat", "temperaturesensor", "battery", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -272,7 +272,7 @@
                     "id": "f80d9481-4827-45ee-a013-b97b22412d92",
                     "name": "radiatorThermostat",
                     "displayName": "Max! Radiator Thermostat",
-                    "interfaces": ["heating", "thermostat", "battery", "connectable"],
+                    "interfaces": ["heating", "thermostat", "battery", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -533,7 +533,7 @@
                     "id": "3c51327b-a823-4479-bd4b-f4ba64267ed8",
                     "name": "eqivaBluetooth",
                     "displayName": "Eqiva Bluetooth Smart Radiator Thermostat",
-                    "interfaces": ["heating", "thermostat", "connectable", "battery"],
+                    "interfaces": ["heating", "thermostat", "wirelessconnectable", "battery"],
                     "createMethods": ["discovery"],
                     "setupMethod": "JustAdd",
                     "paramTypes": [
