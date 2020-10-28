@@ -152,8 +152,10 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
             if (parentThing->setupComplete()) {
                 setupOwfsTemperatureSensor(info);
             } else {
-                connect(parentThing, &Thing::setupStatusChanged, [info, this] {
-                    setupOwfsTemperatureSensor(info);
+                connect(parentThing, &Thing::setupStatusChanged, info, [info, parentThing, this] {
+                    if (parentThing->setupComplete()) {
+                        setupOwfsTemperatureSensor(info);
+                    }
                 });
             }
         } else {
