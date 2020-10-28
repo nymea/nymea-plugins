@@ -31,8 +31,8 @@
 #include "hueremote.h"
 #include "extern-plugininfo.h"
 
-HueRemote::HueRemote(QObject *parent) :
-    HueDevice(parent)
+HueRemote::HueRemote(HueBridge *bridge, QObject *parent) :
+    HueDevice(bridge, parent)
 {
 }
 

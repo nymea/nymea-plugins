@@ -41,7 +41,7 @@ class HueMotionSensor : public HueDevice
 {
     Q_OBJECT
 public:
-    explicit HueMotionSensor(QObject *parent = nullptr);
+    explicit HueMotionSensor(HueBridge *bridge, QObject *parent = nullptr);
     virtual ~HueMotionSensor() = default;
 
     void setTimeout(int timeout);
@@ -115,7 +115,7 @@ class HueIndoorSensor: public HueMotionSensor
 {
     Q_OBJECT
 public:
-    HueIndoorSensor(QObject *parent = nullptr): HueMotionSensor(parent) {}
+    HueIndoorSensor(HueBridge *bridge, QObject *parent = nullptr): HueMotionSensor(bridge, parent) {}
 
     StateTypeId connectedStateTypeId() const override { return motionSensorConnectedStateTypeId; }
     StateTypeId temperatureStateTypeId() const override { return motionSensorTemperatureStateTypeId; }
@@ -131,7 +131,7 @@ class HueOutdoorSensor: public HueMotionSensor
 {
     Q_OBJECT
 public:
-    HueOutdoorSensor(QObject *parent = nullptr): HueMotionSensor(parent) {}
+    HueOutdoorSensor(HueBridge *bridge, QObject *parent = nullptr): HueMotionSensor(bridge, parent) {}
 
     StateTypeId connectedStateTypeId() const override { return outdoorSensorConnectedStateTypeId; }
     StateTypeId temperatureStateTypeId() const override { return outdoorSensorTemperatureStateTypeId; }
