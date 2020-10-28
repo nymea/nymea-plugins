@@ -143,26 +143,33 @@ void IntegrationPluginOneWire::setupThing(ThingSetupInfo *info)
     } else if (thing->thingClassId() == temperatureSensorThingClassId) {
 
         qCDebug(dcOneWire) << "Setup one wire temperature sensor" << thing->params();
-        QString address = thing->paramValue(temperatureSensorThingAddressParamTypeId).toByteArray();
-        if (myThings().findById(thing->parentId())->thingClassId() == oneWireInterfaceThingClassId) {
-            if (m_owfsInterface) {
-                thing->setStateValue(temperatureSensorConnectedStateTypeId,  m_owfsInterface->isConnected(address.toUtf8()));
-                thing->setStateValue(temperatureSensorTemperatureStateTypeId, m_owfsInterface->getTemperature(address.toUtf8()));
-                return info->finish(Thing::ThingErrorNoError);
+        if (!thing->parentId().isNull()) {
+            // If there is a parent then it is from an OWFS interface
+            Thing *parentThing = myThings().findById(thing->parentId());
+            if (!parentThing) {
+                qCWarning(dcOneWire()) << "Could not find parent thing for" << thing->name();
+            }
+            if (parentThing->setupComplete()) {
+                setupOwfsTemperatureSensor(info);
             } else {
-                //OWFS Interface is not yet initialized try a setup in 3 seconds
-                QTimer::singleShot(3000, this, [this, info]{setupThing(info);});
+                connect(parentThing, &Thing::setupStatusChanged, info, [info, parentThing, this] {
+                    if (parentThing->setupComplete()) {
+                        setupOwfsTemperatureSensor(info);
+                    }
+                });
             }
         } else {
             if (!m_w1Interface) {
                 m_w1Interface = new W1(this);
             }
             if (m_w1Interface->interfaceIsAvailable()) {
+                QString address = thing->paramValue(temperatureSensorThingAddressParamTypeId).toString();
                 thing->setStateValue(temperatureSensorConnectedStateTypeId,  m_w1Interface->deviceAvailable(address));
                 thing->setStateValue(temperatureSensorTemperatureStateTypeId, m_w1Interface->getTemperature(address));
                 return info->finish(Thing::ThingErrorNoError);
             } else {
                 qCWarning(dcOneWire()) << "W1 interface is not available";
+                return info->finish(Thing::ThingErrorHardwareNotAvailable);
             }
         }
 
@@ -287,19 +294,36 @@ void IntegrationPluginOneWire::executeAction(ThingActionInfo *info)
 void IntegrationPluginOneWire::thingRemoved(Thing *thing)
 {
     if (thing->thingClassId() == oneWireInterfaceThingClassId) {
-        m_owfsInterface->deleteLater();
-        m_owfsInterface = nullptr;
-        return;
+        if (m_owfsInterface) {
+            m_owfsInterface->deleteLater();
+            m_owfsInterface = nullptr;
+        }
     }
 
     if (myThings().filterByThingClassId(temperatureSensorThingClassId).isEmpty()) {
-        m_w1Interface->deleteLater();
-        m_w1Interface = nullptr;
+        if(m_w1Interface) {
+            m_w1Interface->deleteLater();
+            m_w1Interface = nullptr;
+        }
     }
 
     if (myThings().empty()) {
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
         m_pluginTimer = nullptr;
+    }
+}
+
+void IntegrationPluginOneWire::setupOwfsTemperatureSensor(ThingSetupInfo *info)
+{
+    Thing *thing = info->thing();
+    QByteArray address = thing->paramValue(temperatureSensorThingAddressParamTypeId).toByteArray();
+    if (m_owfsInterface) {
+        thing->setStateValue(temperatureSensorConnectedStateTypeId,  m_owfsInterface->isConnected(address));
+        thing->setStateValue(temperatureSensorTemperatureStateTypeId, m_owfsInterface->getTemperature(address));
+        return info->finish(Thing::ThingErrorNoError);
+    } else {
+        qCWarning(dcOneWire()) << "OWFS interface is not available";
+        return info->finish(Thing::ThingErrorHardwareNotAvailable);
     }
 }
 
@@ -318,12 +342,12 @@ void IntegrationPluginOneWire::onPluginTimer()
             double temperature = 0;
             bool connected = false;
 
-            if (myThings().findById(thing->parentId())->thingClassId() == oneWireInterfaceThingClassId) {
+            if (!thing->parentId().isNull()) {
                 if (m_owfsInterface) {
                     temperature = m_owfsInterface->getTemperature(address);
                     connected = m_owfsInterface->isConnected(address);
                 } else {
-                    qCWarning(dcOneWire()) << "onPlugInTimer: OWFS interface not setup yet for thing" << thing->name();
+                    qCWarning(dcOneWire()) << "onPlugInTimer: OWFS interface not setup for thing" << thing->name();
                 }
 
             } else {

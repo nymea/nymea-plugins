@@ -60,6 +60,8 @@ private:
 
     QHash<Thing*, ThingDiscoveryInfo*> m_runningDiscoveries;
 
+    void setupOwfsTemperatureSensor(ThingSetupInfo *info);
+
 private slots:
     void onPluginTimer();
     void onOneWireDevicesDiscovered(QList<Owfs::OwfsDevice> devices);
