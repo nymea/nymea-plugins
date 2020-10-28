@@ -49,6 +49,7 @@ PLUGIN_DIRS = \
     serialportcommander \
     simulation          \
     snapd               \
+    somfytahoma         \
     sonos               \
     tado                \
     tasmota             \
