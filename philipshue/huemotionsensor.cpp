@@ -48,8 +48,12 @@ HueMotionSensor::HueMotionSensor(QObject *parent) :
 
 void HueMotionSensor::setTimeout(int timeout)
 {
-    // The sensor keeps emitting presence = true for 10 secs, let's subtract that time from the timeout to compensate
-    m_timeout.setInterval(qMax(timeout - 9, 1)* 1000);
+    // Once the sensor detects a motion it will keep emitting presence = true once a second for 10 secs.
+    // Let's subtract 9 seconds from the timeout to compensate for that but keep it greater than 2 secs
+    // to be sure to wait long enough even if the notification from the sensor takes little longer than
+    // 1 second due to network latency.
+    qCDebug(dcPhilipsHue()) << "Motion sensor timeout changed to:" << timeout;
+    m_timeout.setInterval(qMax(timeout - 9, 2)* 1000);
 }
 
 int HueMotionSensor::temperatureSensorId() const
