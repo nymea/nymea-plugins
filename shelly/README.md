@@ -9,6 +9,7 @@ The currently supported devices are:
 * Shelly Plug / PlugS
 * Shelly RGBW2
 * Shelly Dimmer / Dimmer 2
+* Shelly Button 1
 
 ## Requirements
 Shelly devices communicate with via MQTT. This means, in order to add Shelly devices to nymea, the nymea instance is required
@@ -25,6 +26,11 @@ choose "Light" here. Optionally, a username and password can be set. If the Shel
 authentication, the username and password here must match the ones set on the Shelly. NOTE: If the Shelly is not configured
 to require a login yet, but credentials are entered during setup, the Shelly device will be configured to require authentication
 from now on and this login will be required also for the web interface of the Shelly device.
+
+### Note for the Shelly Button 1
+It is recommended to keep the Shelly Button 1 plugged into a power source during setup and configuration. Without a power source
+it will shut down right after a button press which might interrupt the setup. However, once set up, the Shelly Button 1 will work
+perfectly fine in the low power mode.
 
 ## Plugin properties
 When adding a Shelly device that is meant to be installed in walls and has connectors to switches, a new Gateway type device 
