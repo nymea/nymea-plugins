@@ -65,6 +65,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_idParamTypeMap[shellyDimmerThingClassId] = shellyDimmerThingIdParamTypeId;
     m_idParamTypeMap[shelly25ThingClassId] = shelly25ThingIdParamTypeId;
     m_idParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingIdParamTypeId;
+    m_idParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingIdParamTypeId;
 
     m_usernameParamTypeMap[shelly1ThingClassId] = shelly1ThingUsernameParamTypeId;
     m_usernameParamTypeMap[shelly1pmThingClassId] = shelly1pmThingUsernameParamTypeId;
@@ -73,6 +74,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_usernameParamTypeMap[shellyDimmerThingClassId] = shellyDimmerThingUsernameParamTypeId;
     m_usernameParamTypeMap[shelly25ThingClassId] = shelly25ThingUsernameParamTypeId;
     m_usernameParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingUsernameParamTypeId;
+    m_usernameParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingUsernameParamTypeId;
 
     m_passwordParamTypeMap[shelly1ThingClassId] = shelly1ThingPasswordParamTypeId;
     m_passwordParamTypeMap[shelly1pmThingClassId] = shelly1pmThingPasswordParamTypeId;
@@ -81,6 +83,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_passwordParamTypeMap[shellyDimmerThingClassId] = shellyDimmerThingPasswordParamTypeId;
     m_passwordParamTypeMap[shelly25ThingClassId] = shelly25ThingPasswordParamTypeId;
     m_passwordParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingPasswordParamTypeId;
+    m_passwordParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingPasswordParamTypeId;
 
     m_connectedDeviceParamTypeMap[shelly1ThingClassId] = shelly1ThingConnectedDeviceParamTypeId;
     m_connectedDeviceParamTypeMap[shelly1pmThingClassId] = shelly1pmThingConnectedDeviceParamTypeId;
@@ -104,6 +107,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_connectedStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2ConnectedStateTypeId;
     m_connectedStateTypesMap[shellyDimmerThingClassId] = shellyDimmerConnectedStateTypeId;
     m_connectedStateTypesMap[shellyButton1ThingClassId] = shellyButton1ConnectedStateTypeId;
+    m_connectedStateTypesMap[shellyEm3ThingClassId] = shellyEm3ConnectedStateTypeId;
     m_connectedStateTypesMap[shellySwitchThingClassId] = shellySwitchConnectedStateTypeId;
     m_connectedStateTypesMap[shellyGenericThingClassId] = shellyGenericConnectedStateTypeId;
     m_connectedStateTypesMap[shellyLightThingClassId] = shellyLightConnectedStateTypeId;
@@ -120,6 +124,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_signalStrengthStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2SignalStrengthStateTypeId;
     m_signalStrengthStateTypesMap[shellyDimmerThingClassId] = shellyDimmerSignalStrengthStateTypeId;
     m_signalStrengthStateTypesMap[shellyButton1ThingClassId] = shellyButton1SignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyEm3ThingClassId] = shellyEm3SignalStrengthStateTypeId;
     m_signalStrengthStateTypesMap[shellySwitchThingClassId] = shellySwitchSignalStrengthStateTypeId;
     m_signalStrengthStateTypesMap[shellyGenericThingClassId] = shellyGenericSignalStrengthStateTypeId;
     m_signalStrengthStateTypesMap[shellyLightThingClassId] = shellyLightSignalStrengthStateTypeId;
@@ -138,6 +143,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_powerStateTypeMap[shellyGenericPMThingClassId] = shellyGenericPMPowerStateTypeId;
     m_powerStateTypeMap[shellyLightPMThingClassId] = shellyLightPMPowerStateTypeId;
     m_powerStateTypeMap[shellySocketPMThingClassId] = shellySocketPMPowerStateTypeId;
+    m_powerStateTypeMap[shellyEm3ThingClassId] = shellyEm3PowerStateTypeId;
 
     m_currentPowerStateTypeMap[shellyPlugThingClassId] = shellyPlugCurrentPowerStateTypeId;
     m_currentPowerStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2CurrentPowerStateTypeId;
@@ -146,12 +152,14 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_currentPowerStateTypeMap[shellyLightPMThingClassId] = shellyLightPMCurrentPowerStateTypeId;
     m_currentPowerStateTypeMap[shellySocketPMThingClassId] = shellySocketPMCurrentPowerStateTypeId;
     m_currentPowerStateTypeMap[shellyRollerThingClassId] = shellyRollerCurrentPowerStateTypeId;
+    m_currentPowerStateTypeMap[shellyEm3ThingClassId] = shellyEm3CurrentPowerStateTypeId;
 
     m_totalEnergyConsumedStateTypeMap[shellyPlugThingClassId] = shellyPlugTotalEnergyConsumedStateTypeId;
     m_totalEnergyConsumedStateTypeMap[shellyGenericPMThingClassId] = shellyGenericPMTotalEnergyConsumedStateTypeId;
     m_totalEnergyConsumedStateTypeMap[shellyLightPMThingClassId] = shellyLightPMTotalEnergyConsumedStateTypeId;
     m_totalEnergyConsumedStateTypeMap[shellySocketPMThingClassId] = shellySocketPMTotalEnergyConsumedStateTypeId;
     m_totalEnergyConsumedStateTypeMap[shellyRollerThingClassId] = shellyRollerTotalEnergyConsumedStateTypeId;
+    m_totalEnergyConsumedStateTypeMap[shellyEm3ThingClassId] = shellyEm3TotalEnergyConsumedStateTypeId;
 
     m_colorStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2ColorStateTypeId;
     m_colorTemperatureStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2ColorTemperatureStateTypeId;
@@ -166,6 +174,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_updateStatusStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2UpdateStatusStateTypeId;
     m_updateStatusStateTypesMap[shellyDimmerThingClassId] = shellyDimmerUpdateStatusStateTypeId;
     m_updateStatusStateTypesMap[shellyButton1ThingClassId] = shellyButton1UpdateStatusStateTypeId;
+    m_updateStatusStateTypesMap[shellyEm3ThingClassId] = shellyEm3UpdateStatusStateTypeId;
 
     m_currentVersionStateTypesMap[shelly1ThingClassId] = shelly1CurrentVersionStateTypeId;
     m_currentVersionStateTypesMap[shelly1pmThingClassId] = shelly1pmCurrentVersionStateTypeId;
@@ -174,6 +183,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_currentVersionStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2CurrentVersionStateTypeId;
     m_currentVersionStateTypesMap[shellyDimmerThingClassId] = shellyDimmerCurrentVersionStateTypeId;
     m_currentVersionStateTypesMap[shellyButton1ThingClassId] = shellyButton1CurrentVersionStateTypeId;
+    m_currentVersionStateTypesMap[shellyEm3ThingClassId] = shellyEm3CurrentVersionStateTypeId;
 
     m_availableVersionStateTypesMap[shelly1ThingClassId] = shelly1AvailableVersionStateTypeId;
     m_availableVersionStateTypesMap[shelly1pmThingClassId] = shelly1pmAvailableVersionStateTypeId;
@@ -182,6 +192,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_availableVersionStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2AvailableVersionStateTypeId;
     m_availableVersionStateTypesMap[shellyDimmerThingClassId] = shellyDimmerAvailableVersionStateTypeId;
     m_availableVersionStateTypesMap[shellyButton1ThingClassId] = shellyButton1AvailableVersionStateTypeId;
+    m_availableVersionStateTypesMap[shellyEm3ThingClassId] = shellyEm3AvailableVersionStateTypeId;
 
     m_batteryLevelStateTypeMap[shellyButton1ThingClassId] = shellyButton1BatteryLevelStateTypeId;
 
@@ -202,6 +213,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_powerActionTypesMap[shellyGenericPMPowerActionTypeId] = shellyGenericPMThingClassId;
     m_powerActionTypesMap[shellyLightPMPowerActionTypeId] = shellyLightPMThingClassId;
     m_powerActionTypesMap[shellySocketPMPowerActionTypeId] = shellySocketPMThingClassId;
+    m_powerActionTypesMap[shellyEm3PowerActionTypeId] = shellyEm3ThingClassId;
 
     m_powerActionParamTypesMap[shellyPlugPowerActionTypeId] = shellyPlugPowerActionPowerParamTypeId;
     m_powerActionParamTypesMap[shellyGenericPowerActionTypeId] = shellyGenericPowerActionPowerParamTypeId;
@@ -210,6 +222,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_powerActionParamTypesMap[shellyGenericPMPowerActionTypeId] = shellyGenericPMPowerActionPowerParamTypeId;
     m_powerActionParamTypesMap[shellyLightPMPowerActionTypeId] = shellyLightPMPowerActionPowerParamTypeId;
     m_powerActionParamTypesMap[shellySocketPMPowerActionTypeId] = shellySocketPMPowerActionPowerParamTypeId;
+    m_powerActionParamTypesMap[shellyEm3PowerActionTypeId] = shellyEm3PowerActionPowerParamTypeId;
 
     m_colorPowerActionTypesMap[shellyRgbw2PowerActionTypeId] = shellyRgbw2ThingClassId;
     m_colorPowerActionParamTypesMap[shellyRgbw2PowerActionPowerParamTypeId] = shellyRgbw2PowerActionTypeId;
@@ -240,6 +253,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_updateActionTypesMap[shellyRgbw2PerformUpdateActionTypeId] = shellyRgbw2ThingClassId;
     m_updateActionTypesMap[shellyDimmerPerformUpdateActionTypeId] = shellyDimmerThingClassId;
     m_updateActionTypesMap[shellyButton1PerformUpdateActionTypeId] = shellyButton1ThingClassId;
+    m_updateActionTypesMap[shellyEm3PerformUpdateActionTypeId] = shellyEm3ThingClassId;
 }
 
 IntegrationPluginShelly::~IntegrationPluginShelly()
@@ -270,6 +284,8 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegExp("^shellyswitch25-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyButton1ThingClassId) {
             namePattern = QRegExp("^shellybutton1-[0-9-A-Z]+$");
+        } else if (info->thingClassId() == shellyEm3ThingClassId) {
+            namePattern = QRegExp("^shellyem3-[0-9A-Z]+$");
         }
         if (!entry.name().contains(namePattern)) {
             continue;
@@ -306,13 +322,7 @@ void IntegrationPluginShelly::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    if (thing->thingClassId() == shelly1ThingClassId
-            || thing->thingClassId() == shelly1pmThingClassId
-            || thing->thingClassId() == shellyPlugThingClassId
-            || thing->thingClassId() == shellyRgbw2ThingClassId
-            || thing->thingClassId() == shellyDimmerThingClassId
-            || thing->thingClassId() == shelly25ThingClassId
-            || thing->thingClassId() == shellyButton1ThingClassId) {
+    if (m_idParamTypeMap.contains(thing->thingClassId())) {
         setupShellyGateway(info);
         return;
     }
@@ -486,6 +496,14 @@ void IntegrationPluginShelly::executeAction(ThingActionInfo *info)
         return;
     }
 
+    if (action.actionTypeId() == shellyEm3ResetActionTypeId) {
+        MqttChannel *channel = m_mqttChannels.value(thing);
+        QString shellyId = thing->paramValue(shellyEm3ThingIdParamTypeId).toString();
+        channel->publish("shellies/" + shellyId + "/command", "reset_data");
+        info->finish(Thing::ThingErrorNoError);
+        return;
+    }
+
     if (action.actionTypeId() == shellyRollerCalibrateActionTypeId) {
         Thing *parentDevice = myThings().findById(thing->parentId());
         MqttChannel *channel = m_mqttChannels.value(parentDevice);
@@ -543,7 +561,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         return;
     }
 
-    qCDebug(dcShelly()) << "Publish received from" << thing->name() << topic << payload;
+    qCDebug(dcShelly()) << "Publish received from" << thing->name() << topic;
 
     QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
     if (topic == "shellies/" + shellyId + "/info") {
@@ -554,7 +572,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             qCWarning(dcShelly()) << qUtf8Printable(payload);
             return;
         }
-        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
+//        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
         QVariantMap data = jsonDoc.toVariant().toMap();
 
         // Wifi signal strength
@@ -756,6 +774,65 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             ParamTypeId paramTypeId = eventTypeId == shellyButton1PressedEventTypeId ? shellyButton1PressedEventButtonNameParamTypeId : shellyButton1LongPressedEventButtonNameParamTypeId;
             QString param = QString::number(event.length());
             thing->emitEvent(eventTypeId, ParamList() << Param(paramTypeId, param));
+        }
+    }
+
+    topicMatcher = QRegExp("shellies/" + shellyId + "/emeter/[0-2]/.*");
+    if (topicMatcher.exactMatch(topic) && thing->thingClassId() == shellyEm3ThingClassId) {
+        int channel = topic.split('/').at(3).toInt();
+        QString stateName = topic.split('/').at(4);
+        QVariant value = payload;
+        QHash<int, QHash<QString, StateTypeId>> channelMap;
+        QHash<QString, StateTypeId> stateTypeIdMap;
+        stateTypeIdMap["power"] = shellyEm3PhaseAPowerStateTypeId;
+        stateTypeIdMap["pf"] = shellyEm3PhaseAPowerFactorStateTypeId;
+        stateTypeIdMap["current"] = shellyEm3PhaseACurrentStateTypeId;
+        stateTypeIdMap["voltage"] = shellyEm3PhaseAVoltageStateTypeId;
+        stateTypeIdMap["total"] = shellyEm3PhaseATotalEnergyConsumedStateTypeId;
+        stateTypeIdMap["total_returned"] = shellyEm3PhaseATotalEnergyReturnedStateTypeId;
+        channelMap[0] = stateTypeIdMap;
+        stateTypeIdMap["power"] = shellyEm3PhaseBPowerStateTypeId;
+        stateTypeIdMap["pf"] = shellyEm3PhaseBPowerFactorStateTypeId;
+        stateTypeIdMap["current"] = shellyEm3PhaseBCurrentStateTypeId;
+        stateTypeIdMap["voltage"] = shellyEm3PhaseBVoltageStateTypeId;
+        stateTypeIdMap["total"] = shellyEm3PhaseBTotalEnergyConsumedStateTypeId;
+        stateTypeIdMap["total_returned"] = shellyEm3PhaseBTotalEnergyReturnedStateTypeId;
+        channelMap[1] = stateTypeIdMap;
+        stateTypeIdMap["power"] = shellyEm3PhaseCPowerStateTypeId;
+        stateTypeIdMap["pf"] = shellyEm3PhaseCPowerFactorStateTypeId;
+        stateTypeIdMap["current"] = shellyEm3PhaseCCurrentStateTypeId;
+        stateTypeIdMap["voltage"] = shellyEm3PhaseCVoltageStateTypeId;
+        stateTypeIdMap["total"] = shellyEm3PhaseCTotalEnergyConsumedStateTypeId;
+        stateTypeIdMap["total_returned"] = shellyEm3PhaseCTotalEnergyReturnedStateTypeId;
+        channelMap[2] = stateTypeIdMap;
+        StateTypeId stateTypeId = channelMap.value(channel).value(stateName);
+        if (stateTypeId.isNull()) {
+            qCWarning(dcShelly()) << "Unhandled emeter value for channel" << channel << stateName;
+            return;
+        }
+        double factor = 1;
+        if (stateName == "total" || stateName == "total_returned") {
+            factor = 0.001;
+        }
+
+        thing->setStateValue(stateTypeId, value.toDouble() * factor);
+
+        // Some optimization specific to the EM3: We receive each phase in a separate mqtt message
+        // and calculate the total ourselves. In order to not produce intermediate totals for each incoming message
+        // we'll only refresh the total when we get the last value for the last channel.
+        if (channel == 2 && stateName == "total_returned") {
+            double grandTotal = thing->stateValue(shellyEm3PhaseATotalEnergyConsumedStateTypeId).toDouble();
+            grandTotal += thing->stateValue(shellyEm3PhaseBTotalEnergyConsumedStateTypeId).toDouble();
+            grandTotal += thing->stateValue(shellyEm3PhaseCTotalEnergyConsumedStateTypeId).toDouble();
+            thing->setStateValue(shellyEm3TotalEnergyConsumedStateTypeId, grandTotal);
+            double grandTotalReturned = thing->stateValue(shellyEm3PhaseATotalEnergyReturnedStateTypeId).toDouble();
+            grandTotalReturned += thing->stateValue(shellyEm3PhaseBTotalEnergyReturnedStateTypeId).toDouble();
+            grandTotalReturned += thing->stateValue(shellyEm3PhaseCTotalEnergyReturnedStateTypeId).toDouble();
+            thing->setStateValue(shellyEm3TotalEnergyProducedStateTypeId, grandTotalReturned);
+            double totalPower = thing->stateValue(shellyEm3PhaseAPowerStateTypeId).toDouble();
+            totalPower += thing->stateValue(shellyEm3PhaseBPowerStateTypeId).toDouble();
+            totalPower += thing->stateValue(shellyEm3PhaseCPowerStateTypeId).toDouble();
+            thing->setStateValue(shellyEm3CurrentPowerStateTypeId, totalPower);
         }
     }
 }
