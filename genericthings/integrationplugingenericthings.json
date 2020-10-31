@@ -1029,6 +1029,40 @@
                             "ioType": "digitalOutput"
                         }
                     ]
+                },
+                {
+                    "id": "6a34ba99-e5ec-4fc9-a61f-695ed8573fa1",
+                    "name": "thermostat",
+                    "displayName": "Generic thermostat",
+                    "createMethods": ["user"],
+                    "interfaces": ["thermostat", "heating"],
+                    "stateTypes": [
+                        {
+                            "id": "60169ebf-c1e3-41ed-a1bb-4b858e93ec50",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
+                            "type": "double",
+                            "defaultValue": 21,
+                            "minValue": -20,
+                            "maxValue": 50,
+                            "unit": "DegreeCelsius",
+                            "writable": true,
+                            "ioType": "analogInput"
+                        },
+                        {
+                            "id": "1f6a0c39-4417-4e31-86db-9926cf81c345",
+                            "name": "power",
+                            "displayName": "On/off",
+                            "displayNameEvent": "Turned on/off",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
                 }
             ]
         }

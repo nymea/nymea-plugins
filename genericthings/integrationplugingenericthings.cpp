@@ -626,6 +626,18 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         }
 
         Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+    } else if (thing->thingClassId() == thermostatThingClassId) {
+        if (action.actionTypeId() == thermostatTargetTemperatureActionTypeId) {
+            thing->setStateValue(thermostatTargetTemperatureStateTypeId, action.param(thermostatTargetTemperatureActionTargetTemperatureParamTypeId).value());
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == thermostatPowerActionTypeId) {
+            thing->setStateValue(thermostatPowerStateTypeId, action.param(thermostatPowerActionPowerParamTypeId).value());
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }

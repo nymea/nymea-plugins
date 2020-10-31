@@ -794,6 +794,49 @@ The name of the StateType ({0cc74edb-7116-47cf-953a-409933f26557}) of ThingClass
         <extracomment>The name of the EventType ({0cc74edb-7116-47cf-953a-409933f26557}) of ThingClass extendedStatefulGaragedoor</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Generic thermostat</source>
+        <extracomment>The name of the ThingClass ({6a34ba99-e5ec-4fc9-a61f-695ed8573fa1})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On/off</source>
+        <extracomment>The name of the ParamType (ThingClass: thermostat, ActionType: power, ID: {1f6a0c39-4417-4e31-86db-9926cf81c345})
+----------
+The name of the ParamType (ThingClass: thermostat, EventType: power, ID: {1f6a0c39-4417-4e31-86db-9926cf81c345})
+----------
+The name of the StateType ({1f6a0c39-4417-4e31-86db-9926cf81c345}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set target temperature</source>
+        <extracomment>The name of the ActionType ({60169ebf-c1e3-41ed-a1bb-4b858e93ec50}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target temperature</source>
+        <extracomment>The name of the ParamType (ThingClass: thermostat, ActionType: targetTemperature, ID: {60169ebf-c1e3-41ed-a1bb-4b858e93ec50})
+----------
+The name of the ParamType (ThingClass: thermostat, EventType: targetTemperature, ID: {60169ebf-c1e3-41ed-a1bb-4b858e93ec50})
+----------
+The name of the StateType ({60169ebf-c1e3-41ed-a1bb-4b858e93ec50}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Target temperature changed</source>
+        <extracomment>The name of the EventType ({60169ebf-c1e3-41ed-a1bb-4b858e93ec50}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn on/off</source>
+        <extracomment>The name of the ActionType ({1f6a0c39-4417-4e31-86db-9926cf81c345}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turned on/off</source>
+        <extracomment>The name of the EventType ({1f6a0c39-4417-4e31-86db-9926cf81c345}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IntegrationPluginGenericThings</name>
