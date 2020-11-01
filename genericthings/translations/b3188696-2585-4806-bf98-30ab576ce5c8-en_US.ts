@@ -837,6 +837,30 @@ The name of the StateType ({60169ebf-c1e3-41ed-a1bb-4b858e93ec50}) of ThingClass
         <extracomment>The name of the EventType ({1f6a0c39-4417-4e31-86db-9926cf81c345}) of ThingClass thermostat</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Set temperature sensor input</source>
+        <extracomment>The name of the ActionType ({0f808803-0e63-47df-b024-9685998ba663}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temperature difference</source>
+        <extracomment>The name of the ParamType (ThingClass: thermostat, Type: settings, ID: {64bf308f-a543-4e02-b787-1a1714c1f978})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temperature sensor input</source>
+        <extracomment>The name of the ParamType (ThingClass: thermostat, ActionType: temperatureSensorInput, ID: {0f808803-0e63-47df-b024-9685998ba663})
+----------
+The name of the ParamType (ThingClass: thermostat, EventType: temperatureSensorInput, ID: {0f808803-0e63-47df-b024-9685998ba663})
+----------
+The name of the StateType ({0f808803-0e63-47df-b024-9685998ba663}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Temperature sensor input changed</source>
+        <extracomment>The name of the EventType ({0f808803-0e63-47df-b024-9685998ba663}) of ThingClass thermostat</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IntegrationPluginGenericThings</name>

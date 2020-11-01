@@ -1036,7 +1036,32 @@
                     "displayName": "Generic thermostat",
                     "createMethods": ["user"],
                     "interfaces": ["thermostat", "heating"],
+                    "settingsTypes": [
+                        {
+                            "id": "64bf308f-a543-4e02-b787-1a1714c1f978",
+                            "name": "temperatureDifference",
+                            "displayName": "Temperature difference",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "minValue": 0.00,
+                            "defaultValue": 2.00
+                        }
+                    ],
                     "stateTypes": [
+                        {
+                            "id": "0f808803-0e63-47df-b024-9685998ba663",
+                            "name": "temperatureSensorInput",
+                            "displayName": "Temperature sensor input",
+                            "displayNameEvent": "Temperature sensor input changed",
+                            "displayNameAction": "Set temperature sensor input",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": -20,
+                            "maxValue": 50,
+                            "unit": "DegreeCelsius",
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        },
                         {
                             "id": "60169ebf-c1e3-41ed-a1bb-4b858e93ec50",
                             "name": "targetTemperature",

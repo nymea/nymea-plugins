@@ -627,7 +627,22 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
 
         Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
     } else if (thing->thingClassId() == thermostatThingClassId) {
+        if (action.actionTypeId() == temperatureSensorInputActionTypeId) {
+
+            double targetTemperature = thing->stateValue(thermostatTargetTemperatureStateTypeId).toDouble();
+            double actualTemperature = action.param(thermostatTemperatureSensorInputActionTemperatureSensorInputParamTypeId).value().toDouble();
+            thing->setStateValue(temperatureSensorInputStateTypeId, actualTemperature);
+            double temperatureDifference = thing->setting(thermostatSettingsTemperatureDifferenceParamTypeId).toDouble();
+            if (actualTemperature <= (targetTemperature-temperatureDifference)) {
+                thing->setStateValue(thermostatPowerStateTypeId, true);
+            } else if (actualTemperature >= targetTemperature) {
+                thing->setStateValue(thermostatPowerStateTypeId, false);
+            }
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
         if (action.actionTypeId() == thermostatTargetTemperatureActionTypeId) {
+
             thing->setStateValue(thermostatTargetTemperatureStateTypeId, action.param(thermostatTargetTemperatureActionTargetTemperatureParamTypeId).value());
             info->finish(Thing::ThingErrorNoError);
             return;

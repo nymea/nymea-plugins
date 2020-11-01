@@ -653,46 +653,46 @@ The name of the StateType ({9cd7e5ca-f8f8-48d5-9785-911ae75158c3}) of ThingClass
     <message>
         <source>Angle end to end time [ms]</source>
         <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {6c8340bf-7fd3-43e3-a75b-dfa2f6426e11})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Winkel Endlage zu Endlage dauer [ms]</translation>
     </message>
     <message>
         <source>Closing duration [ms]</source>
         <extracomment>The name of the ParamType (ThingClass: venetianBlind, Type: settings, ID: {4c0bf07d-aaab-4f67-af65-00ceaefbaa84})
 ----------
 The name of the ParamType (ThingClass: extendedBlind, Type: settings, ID: {27a95b8d-7f97-441b-a3be-0646c517cb06})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Schließzeit [ms]</translation>
     </message>
     <message>
         <source>Garage door with position control</source>
         <extracomment>The name of the ThingClass ({7341e689-4495-4422-851a-3e7c790394b8})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Garagentor mit Lageeinstellung</translation>
     </message>
     <message>
         <source>Generic blind with position control</source>
         <extracomment>The name of the ThingClass ({40aa9f3c-a23c-4f7f-8786-fcf3554f3e19})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generisches Rollo mit Lageneinstellung</translation>
     </message>
     <message>
         <source>Impulse</source>
         <extracomment>The name of the ParamType (ThingClass: impulseGaragedooor, EventType: impulse, ID: {5ccaf0aa-01a4-441f-b6ca-18940da096a5})
 ----------
 The name of the StateType ({5ccaf0aa-01a4-441f-b6ca-18940da096a5}) of ThingClass impulseGaragedooor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Impuls</translation>
     </message>
     <message>
         <source>Impulse based garage door</source>
         <extracomment>The name of the ThingClass ({d6699a12-f4a6-4c50-951c-f4f1cd0501dc})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Impulsgesteuertes Garagentor</translation>
     </message>
     <message>
         <source>Impulse changed</source>
         <extracomment>The name of the EventType ({5ccaf0aa-01a4-441f-b6ca-18940da096a5}) of ThingClass impulseGaragedooor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Impuls geändert</translation>
     </message>
     <message>
         <source>Impulse duration</source>
         <extracomment>The name of the ParamType (ThingClass: impulseGaragedooor, Type: settings, ID: {962b356c-e975-4d33-b114-10f655eaf74c})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Impulsdauer</translation>
     </message>
     <message>
         <source>Open position</source>
@@ -701,103 +701,103 @@ The name of the StateType ({5ccaf0aa-01a4-441f-b6ca-18940da096a5}) of ThingClass
 The name of the ParamType (ThingClass: extendedStatefulGaragedoor, EventType: percentage, ID: {f9244c14-0bc9-49ce-90a5-437e66245594})
 ----------
 The name of the StateType ({f9244c14-0bc9-49ce-90a5-437e66245594}) of ThingClass extendedStatefulGaragedoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Position offen</translation>
     </message>
     <message>
         <source>Open position changed</source>
         <extracomment>The name of the EventType ({f9244c14-0bc9-49ce-90a5-437e66245594}) of ThingClass extendedStatefulGaragedoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Position offen geändert</translation>
     </message>
     <message>
         <source>Opening duration [ms]</source>
         <extracomment>The name of the ParamType (ThingClass: extendedStatefulGaragedoor, Type: settings, ID: {04fb7724-a870-4df9-a79e-fab693931238})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Öffnungsdauer [ms]</translation>
     </message>
     <message>
         <source>Operate</source>
         <extracomment>The name of the ActionType ({ff5461c6-70fc-435e-8424-96fa59ed321e}) of ThingClass impulseGaragedooor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Betätigen</translation>
     </message>
     <message>
         <source>Set open position</source>
         <extracomment>The name of the ActionType ({f9244c14-0bc9-49ce-90a5-437e66245594}) of ThingClass extendedStatefulGaragedoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Position offen</translation>
     </message>
     <message>
         <source>Simple garage door</source>
         <extracomment>The name of the ThingClass ({572403b1-bc22-4620-8170-53147a546033})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Einfaches Garagentor</translation>
     </message>
     <message>
         <source>State</source>
         <extracomment>The name of the ParamType (ThingClass: extendedStatefulGaragedoor, EventType: state, ID: {0cc74edb-7116-47cf-953a-409933f26557})
 ----------
 The name of the StateType ({0cc74edb-7116-47cf-953a-409933f26557}) of ThingClass extendedStatefulGaragedoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Status</translation>
     </message>
     <message>
         <source>State changed</source>
         <extracomment>The name of the EventType ({0cc74edb-7116-47cf-953a-409933f26557}) of ThingClass extendedStatefulGaragedoor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Status geändert</translation>
     </message>
     <message>
         <source>CO2</source>
         <extracomment>The name of the ParamType (ThingClass: co2Sensor, EventType: co2, ID: {755c4c7f-093e-41dd-a38d-9ee18c9890d6})
 ----------
 The name of the StateType ({755c4c7f-093e-41dd-a38d-9ee18c9890d6}) of ThingClass co2Sensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>CO2</translation>
     </message>
     <message>
         <source>CO2 changed</source>
         <extracomment>The name of the EventType ({755c4c7f-093e-41dd-a38d-9ee18c9890d6}) of ThingClass co2Sensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>CO2 geändert</translation>
     </message>
     <message>
         <source>Generic CO2 sensor</source>
         <extracomment>The name of the ThingClass ({a58a2dae-4148-4a4d-ab34-2a11124454a0})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generischer CO2-Sensor</translation>
     </message>
     <message>
         <source>Generic pressure sensor</source>
         <extracomment>The name of the ThingClass ({9a8d804b-d1dc-450a-8c41-be491e5cdda0})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generischer Drucksensor</translation>
     </message>
     <message>
         <source>Maximum CO2</source>
         <extracomment>The name of the ParamType (ThingClass: co2Sensor, Type: settings, ID: {a3029bee-8b13-4aed-8ebd-eaceb603f8ef})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Maximum CO2</translation>
     </message>
     <message>
         <source>Maximum pressure</source>
         <extracomment>The name of the ParamType (ThingClass: pressureSensor, Type: settings, ID: {06e21251-8b4f-44a1-8504-6b51f8526bd0})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Maximaldruck</translation>
     </message>
     <message>
         <source>Minimum CO2</source>
         <extracomment>The name of the ParamType (ThingClass: co2Sensor, Type: settings, ID: {a0d8a6ec-599a-4ded-ae03-2950561f0b72})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Minimum CO2</translation>
     </message>
     <message>
         <source>Minimum pressure</source>
         <extracomment>The name of the ParamType (ThingClass: pressureSensor, Type: settings, ID: {035e2619-f9c2-4e8f-95dd-f124ad9402d0})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Minimaldruck</translation>
     </message>
     <message>
         <source>Pressure</source>
         <extracomment>The name of the ParamType (ThingClass: pressureSensor, EventType: pressure, ID: {e645a979-1465-4592-b8b0-f4c123db0800})
 ----------
 The name of the StateType ({e645a979-1465-4592-b8b0-f4c123db0800}) of ThingClass pressureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Druck</translation>
     </message>
     <message>
         <source>Pressure changed</source>
         <extracomment>The name of the EventType ({e645a979-1465-4592-b8b0-f4c123db0800}) of ThingClass pressureSensor</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Druck geändert</translation>
     </message>
     <message>
         <source>Generic thermostat</source>
         <extracomment>The name of the ThingClass ({6a34ba99-e5ec-4fc9-a61f-695ed8573fa1})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Generisches Thermostat</translation>
     </message>
     <message>
         <source>On/off</source>
@@ -806,12 +806,12 @@ The name of the StateType ({e645a979-1465-4592-b8b0-f4c123db0800}) of ThingClass
 The name of the ParamType (ThingClass: thermostat, EventType: power, ID: {1f6a0c39-4417-4e31-86db-9926cf81c345})
 ----------
 The name of the StateType ({1f6a0c39-4417-4e31-86db-9926cf81c345}) of ThingClass thermostat</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ein/aus</translation>
     </message>
     <message>
         <source>Set target temperature</source>
         <extracomment>The name of the ActionType ({60169ebf-c1e3-41ed-a1bb-4b858e93ec50}) of ThingClass thermostat</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Zieltemperatur</translation>
     </message>
     <message>
         <source>Target temperature</source>
@@ -820,22 +820,46 @@ The name of the StateType ({1f6a0c39-4417-4e31-86db-9926cf81c345}) of ThingClass
 The name of the ParamType (ThingClass: thermostat, EventType: targetTemperature, ID: {60169ebf-c1e3-41ed-a1bb-4b858e93ec50})
 ----------
 The name of the StateType ({60169ebf-c1e3-41ed-a1bb-4b858e93ec50}) of ThingClass thermostat</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zieltemperatur</translation>
     </message>
     <message>
         <source>Target temperature changed</source>
         <extracomment>The name of the EventType ({60169ebf-c1e3-41ed-a1bb-4b858e93ec50}) of ThingClass thermostat</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zieltemperature geändert</translation>
     </message>
     <message>
         <source>Turn on/off</source>
         <extracomment>The name of the ActionType ({1f6a0c39-4417-4e31-86db-9926cf81c345}) of ThingClass thermostat</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Schalte ein/aus</translation>
     </message>
     <message>
         <source>Turned on/off</source>
         <extracomment>The name of the EventType ({1f6a0c39-4417-4e31-86db-9926cf81c345}) of ThingClass thermostat</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ein/aus geschalten</translation>
+    </message>
+    <message>
+        <source>Set temperature sensor input</source>
+        <extracomment>The name of the ActionType ({0f808803-0e63-47df-b024-9685998ba663}) of ThingClass thermostat</extracomment>
+        <translation>Setze Temperatursensoreingang</translation>
+    </message>
+    <message>
+        <source>Temperature difference</source>
+        <extracomment>The name of the ParamType (ThingClass: thermostat, Type: settings, ID: {64bf308f-a543-4e02-b787-1a1714c1f978})</extracomment>
+        <translation>Temperaturdifferenz</translation>
+    </message>
+    <message>
+        <source>Temperature sensor input</source>
+        <extracomment>The name of the ParamType (ThingClass: thermostat, ActionType: temperatureSensorInput, ID: {0f808803-0e63-47df-b024-9685998ba663})
+----------
+The name of the ParamType (ThingClass: thermostat, EventType: temperatureSensorInput, ID: {0f808803-0e63-47df-b024-9685998ba663})
+----------
+The name of the StateType ({0f808803-0e63-47df-b024-9685998ba663}) of ThingClass thermostat</extracomment>
+        <translation>Temperatursensoreingang</translation>
+    </message>
+    <message>
+        <source>Temperature sensor input changed</source>
+        <extracomment>The name of the EventType ({0f808803-0e63-47df-b024-9685998ba663}) of ThingClass thermostat</extracomment>
+        <translation>Temperatursensoreingang geändert</translation>
     </message>
 </context>
 <context>
