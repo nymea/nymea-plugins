@@ -157,7 +157,11 @@ QPair<QNetworkRequest, QByteArray> HueBridge::createCheckUpdatesRequest()
     // TODO: check if portalservice is true, cannot be done in one step
     //requestMap.insert("portalservices", true);
 
-    requestMap.insert("swupdate", updateMap);
+    if (m_apiVersion < "1.20") {
+        requestMap.insert("swupdate", updateMap);
+    } else {
+        requestMap.insert("swupdate2", updateMap);
+    }
 
     QJsonDocument jsonDoc = QJsonDocument::fromVariant(requestMap);
 
@@ -169,11 +173,17 @@ QPair<QNetworkRequest, QByteArray> HueBridge::createCheckUpdatesRequest()
 
 QPair<QNetworkRequest, QByteArray> HueBridge::createUpgradeRequest()
 {
-    QVariantMap updateMap;
-    updateMap.insert("updatestate", 3);
-
     QVariantMap requestMap;
-    requestMap.insert("swupdate", updateMap);
+
+    if (m_apiVersion < "1.20") {
+        QVariantMap updateMap;
+        updateMap.insert("updatestate", 3);
+        requestMap.insert("swupdate", updateMap);
+    } else {
+        QVariantMap updateMap;
+        updateMap.insert("install", true);
+        requestMap.insert("swupdate2", updateMap);
+    }
 
     QJsonDocument jsonDoc = QJsonDocument::fromVariant(requestMap);
 

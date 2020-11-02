@@ -90,6 +90,9 @@ private:
     QHash<ThingClassId, StateTypeId> m_colorStateTypeMap;
     QHash<ThingClassId, StateTypeId> m_colorTemperatureStateTypeMap;
     QHash<ThingClassId, StateTypeId> m_brightnessStateTypeMap;
+    QHash<ThingClassId, StateTypeId> m_updateStatusStateTypesMap;
+    QHash<ThingClassId, StateTypeId> m_currentVersionStateTypesMap;
+    QHash<ThingClassId, StateTypeId> m_availableVersionStateTypesMap;
 
     QHash<ActionTypeId, ThingClassId> m_rebootActionTypeMap;
     // Relay based power actions
@@ -120,6 +123,9 @@ private:
     QHash<ActionTypeId, ThingClassId> m_rollerOpenActionTypeMap;
     QHash<ActionTypeId, ThingClassId> m_rollerCloseActionTypeMap;
     QHash<ActionTypeId, ThingClassId> m_rollerStopActionTypeMap;
+
+    // Firmware update actions
+    QHash<ActionTypeId, ThingClassId> m_updateActionTypesMap;
 };
 
 #endif // INTEGRATIONPLUGINSHELLY_H
