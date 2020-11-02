@@ -120,7 +120,8 @@
                             "displayName": "Active",
                             "displayNameEvent": "Motion detected",
                             "type": "bool",
-                            "defaultValue": false
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
                         },
                         {
                             "id": "4d66c81e-6293-4997-9685-8b44d7e5c1bd",
@@ -1038,6 +1039,53 @@
                                     "type": "QString"
                                 }
                             ]
+                        }
+                    ]
+                },
+                {
+                    "name": "contactSensor",
+                    "displayName": "Door/window sensor",
+                    "id": "14f6c41c-b1ba-4d83-b1b2-d764a62c8eed",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "user" ],
+                    "interfaces": [ "closablesensor", "connectable", "battery"],
+                    "stateTypes": [
+                        {
+                            "id": "47789719-e300-4d0d-b861-42f24af38103",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "bb02bb10-a933-4833-8a1d-40dda41691b2",
+                            "name": "closed",
+                            "displayName": "Closed",
+                            "displayNameEvent": "Closed changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "4979b1a8-7f1e-4b65-9c35-187045c42a8f",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 80
+                        },
+                        {
+                            "id": "8d87413f-b625-4b77-aa95-2029b4bfb741",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ]
                 }
