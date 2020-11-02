@@ -732,11 +732,11 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     QHostAddress address;
     pluginStorage()->beginGroup(info->thing()->id().toString());
     if (zeroConfEntry.isValid()) {
-        address = zeroConfEntry.hostAddress().toString();
+        address = zeroConfEntry.hostAddress();
         pluginStorage()->setValue("cachedAddress", address.toString());
     } else {
         qCWarning(dcShelly()) << "Could not find Shelly thing on zeroconf. Trying cached address.";
-        address = pluginStorage()->value("cachedAddress").toString();
+        address = QHostAddress(pluginStorage()->value("cachedAddress").toString());
     }
     pluginStorage()->endGroup();
 
