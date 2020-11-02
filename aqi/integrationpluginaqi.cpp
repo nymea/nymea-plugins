@@ -42,6 +42,14 @@ IntegrationPluginAqi::IntegrationPluginAqi()
             if (!value.toString().isEmpty()) {
                 qCDebug(dcAirQualityIndex()) << "Custom API key updated";
                 m_aqiConnection->setApiKey(value.toString());
+            } else {
+                qCDebug(dcAirQualityIndex()) << "Custom API key has been deleted";
+                QString apiKey = apiKeyStorage()->requestKey("aqi").data("apiKey");
+                if (apiKey.isEmpty()) {
+                    qCWarning(dcApiKeys()) << "No API Key is available, keeping the AQI connection as it is";
+                } else {
+                    m_aqiConnection->setApiKey(apiKey);
+                }
             }
         }
     });
@@ -233,7 +241,6 @@ void IntegrationPluginAqi::onPluginTimer()
         return;
 
     foreach (Thing *thing, myThings().filterByThingClassId(airQualityIndexThingClassId)) {
-
         double longitude = thing->paramValue(airQualityIndexThingLongitudeParamTypeId).toDouble();
         double latitude = thing->paramValue(airQualityIndexThingLatitudeParamTypeId).toDouble();
         QUuid requestId = m_aqiConnection->getDataByGeolocation(latitude, longitude);
@@ -247,6 +254,10 @@ void IntegrationPluginAqi::onRequestExecuted(QUuid requestId, bool success)
     if (m_asyncDiscovery.contains(requestId) && !success) {
         ThingDiscoveryInfo *info = m_asyncDiscovery.take(requestId);
         info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Air quality index server not available, please check your internet connection."));
+        if (myThings().filterByThingClassId(airQualityIndexThingClassId).isEmpty() && m_aqiConnection) {
+            m_aqiConnection->deleteLater();
+            m_aqiConnection = nullptr;
+        }
     }
 
     if (m_asyncRequests.contains(requestId)) {
