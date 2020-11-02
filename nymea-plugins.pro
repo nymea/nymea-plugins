@@ -18,6 +18,7 @@ PLUGIN_DIRS = \
     dynatrace           \
     elgato              \
     eq-3                \
+    fastcom             \
     flowercare          \
     fronius             \
     genericelements     \
