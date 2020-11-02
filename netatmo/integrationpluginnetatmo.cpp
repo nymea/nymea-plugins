@@ -42,6 +42,15 @@ IntegrationPluginNetatmo::IntegrationPluginNetatmo()
 
 }
 
+void IntegrationPluginNetatmo::init()
+{
+    updateClientCredentials();
+
+    connect(this, &IntegrationPlugin::configValueChanged, this, &IntegrationPluginNetatmo::updateClientCredentials);
+    connect(apiKeyStorage(), &ApiKeyStorage::keyAdded, this, &IntegrationPluginNetatmo::updateClientCredentials);
+    connect(apiKeyStorage(), &ApiKeyStorage::keyUpdated, this, &IntegrationPluginNetatmo::updateClientCredentials);
+}
+
 void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
 {
     // Checking the internet connection
@@ -61,7 +70,11 @@ void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
 {
-    OAuth2 *authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
+    if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
+         info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, client credentials are not set."));
+        return;
+    }
+    OAuth2 *authentication = new OAuth2(m_clientId, m_clientSecret, this);
     authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
     authentication->setUsername(username);
     authentication->setPassword(password);
@@ -124,7 +137,11 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
             authentication->setUsername(username);
             authentication->setPassword(password);
         } else {
-            authentication = new OAuth2("561c015d49c75f0d1cce6e13", "GuvKkdtu7JQlPD47qTTepRR9hQ0CUPAj4Tae3Ohcq", this);
+            if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
+                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, client credentials are not set."));
+                return;
+            }
+            authentication = new OAuth2(m_clientId, m_clientSecret, this);
             authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
             authentication->setUsername(username);
             authentication->setPassword(password);
@@ -409,4 +426,26 @@ void IntegrationPluginNetatmo::onOutdoorStatesChanged()
     thing->setStateValue(outdoorSignalStrengthStateTypeId, outdoor->signalStrength());
     thing->setStateValue(outdoorBatteryLevelStateTypeId, outdoor->battery());
     thing->setStateValue(outdoorBatteryCriticalStateTypeId, outdoor->battery() < 10);
+}
+
+void IntegrationPluginNetatmo::updateClientCredentials()
+{
+    QString clientId = configValue(netatmoPluginCustomClientIdParamTypeId).toString();
+    QString clientSecret = configValue(netatmoPluginCustomClientSecretParamTypeId).toString();
+    if (!clientId.isEmpty() && !clientSecret.isEmpty()) {
+        qCDebug(dcNetatmo()) << "Using API key from plugin settings.";
+        m_clientId = clientId;
+        m_clientSecret = clientSecret;
+        return;
+    }
+    clientId = apiKeyStorage()->requestKey("netatmo").data("clientId");
+    clientId = apiKeyStorage()->requestKey("netatmo").data("clientSecret");
+    if (!clientId.isEmpty() && !clientSecret.isEmpty()) {
+        qCDebug(dcNetatmo()) << "Using API key from nymea API keys provider";
+        m_clientId = clientId;
+        m_clientSecret = clientSecret;
+        return;
+    }
+    qCWarning(dcNetatmo()) << "No API key set.";
+    qCWarning(dcNetatmo()) << "Either install an API key pacakge (nymea-apikeysprovider-plugin-*) or provide a key in the plugin settings.";
 }

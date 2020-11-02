@@ -48,7 +48,7 @@ class IntegrationPluginNetatmo : public IntegrationPlugin
 
 public:
     explicit IntegrationPluginNetatmo();
-
+    void init() override;
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
     void setupThing(ThingSetupInfo *info) override;
@@ -73,10 +73,14 @@ private:
     Thing *findIndoorDevice(const QString &macAddress);
     Thing *findOutdoorDevice(const QString &macAddress);
 
+    QString m_clientId;
+    QString m_clientSecret;
+
 private slots:
     void onPluginTimer();
     void onIndoorStatesChanged();
     void onOutdoorStatesChanged();
+    void updateClientCredentials();
 };
 
 #endif // INTEGRATIONPLUGINNETATMO_H

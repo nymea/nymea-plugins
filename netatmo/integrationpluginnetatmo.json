@@ -2,6 +2,23 @@
     "displayName": "Netatmo",
     "name": "Netatmo",
     "id": "69d14951-0c02-4877-bcef-dffdf48b7ccb",
+    "apiKeys": ["netatmo"],
+    "paramTypes": [
+        {
+            "id": "fbda653d-d59e-438c-a70c-0ccbe8080215",
+            "name": "customClientId",
+            "displayName": "Custom client id",
+            "type": "QString",
+            "defaultValue": ""
+        },
+        {
+            "id": "06439e1e-da15-4483-8737-0a6aa967c479",
+            "name": "customClientSecret",
+            "displayName": "Custom client secret",
+            "type": "QString",
+            "defaultValue": ""
+        }
+    ],
     "vendors": [
         {
             "displayName": "Netatmo",
