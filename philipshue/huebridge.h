@@ -33,14 +33,13 @@
 
 #include <QObject>
 #include <QHostAddress>
-
-#include "huelight.h"
+#include <QNetworkRequest>
 
 class HueBridge : public QObject
 {
     Q_OBJECT
 public:
-    explicit HueBridge(QObject *parent = 0);
+    explicit HueBridge(QObject *parent = nullptr);
 
     QString name() const;
     void setName(const QString &name);
@@ -66,9 +65,6 @@ public:
     int zigbeeChannel() const;
     void setZigbeeChannel(const int &zigbeeChannel);
 
-    QList<HueLight *> lights() const;
-    void addLight(HueLight *light);
-
     QPair<QNetworkRequest, QByteArray> createDiscoverLightsRequest();
     QPair<QNetworkRequest, QByteArray> createSearchLightsRequest(const QString &deviceId);
     QPair<QNetworkRequest, QByteArray> createSearchSensorsRequest();
@@ -84,9 +80,6 @@ private:
     QString m_apiVersion;
     QString m_softwareVersion;
     int m_zigbeeChannel;
-
-    QList<HueLight *> m_lights;
-
 };
 
 #endif // HUEBRIDGE_H
