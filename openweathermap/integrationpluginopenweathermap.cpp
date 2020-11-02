@@ -44,30 +44,19 @@
 
 IntegrationPluginOpenweathermap::IntegrationPluginOpenweathermap()
 {
-    // max 60 calls/minute
-    // max 50000 calls/day
-    m_apiKey = "c1b9d5584bb740804871583f6c62744f";
-
-    QSettings settings(NymeaSettings::settingsPath() + "/nymead.conf", QSettings::IniFormat);
-    settings.beginGroup("OpenWeatherMap");
-    if (settings.contains("apiKey")) {
-        m_apiKey = settings.value("apiKey").toString();
-        QString printedCopy = m_apiKey;
-        qCDebug(dcOpenWeatherMap()) << "Using custom API key:" << printedCopy.replace(printedCopy.length() - 10, 10, "**********");
-    }
-
-    settings.endGroup();
 }
 
 IntegrationPluginOpenweathermap::~IntegrationPluginOpenweathermap()
 {
-    hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
 }
 
 void IntegrationPluginOpenweathermap::init()
 {
-    m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(900);
-    connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginOpenweathermap::onPluginTimer);
+    updateApiKey();
+
+    connect(this, &IntegrationPlugin::configValueChanged, this, &IntegrationPluginOpenweathermap::updateApiKey);
+    connect(apiKeyStorage(), &ApiKeyStorage::keyAdded, this, &IntegrationPluginOpenweathermap::updateApiKey);
+    connect(apiKeyStorage(), &ApiKeyStorage::keyUpdated, this, &IntegrationPluginOpenweathermap::updateApiKey);
 }
 
 void IntegrationPluginOpenweathermap::discoverThings(ThingDiscoveryInfo *info)
@@ -85,7 +74,21 @@ void IntegrationPluginOpenweathermap::discoverThings(ThingDiscoveryInfo *info)
 void IntegrationPluginOpenweathermap::setupThing(ThingSetupInfo *info)
 {
     update(info->thing());
+
+    if (m_apiKey.isEmpty()) {
+        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("No API key for OpenWeatherMap available."));
+        return;
+    }
     info->finish(Thing::ThingErrorNoError);
+
+    if (!m_pluginTimer) {
+        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(900);
+        connect(m_pluginTimer, &PluginTimer::timeout, this, [this](){
+            foreach (Thing *thing, myThings()) {
+                update(thing);
+            }
+        });
+    }
 }
 
 void IntegrationPluginOpenweathermap::executeAction(ThingActionInfo *info)
@@ -96,37 +99,28 @@ void IntegrationPluginOpenweathermap::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginOpenweathermap::thingRemoved(Thing *thing)
 {
-    // check if a thing gets removed while we still have a reply!
-    foreach (Thing *d, m_weatherReplies.values()) {
-        if (d->id() == thing->id()) {
-            QNetworkReply *reply = m_weatherReplies.key(thing);
-            m_weatherReplies.take(reply);
-            reply->deleteLater();
-        }
+    Q_UNUSED(thing)
+    if (myThings().isEmpty()) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
+        m_pluginTimer = nullptr;
     }
 }
 
-void IntegrationPluginOpenweathermap::networkManagerReplyReady()
+void IntegrationPluginOpenweathermap::updateApiKey()
 {
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-
-    if (reply->error()) {
-        qCWarning(dcOpenWeatherMap) << "OpenWeatherMap reply error: " << reply->errorString();
-        reply->deleteLater();
-        return;
+    if (!(m_apiKey = configValue(openWeatherMapPluginCustomApiKeyParamTypeId).toString()).isEmpty()) {
+        qCDebug(dcOpenWeatherMap()) << "Using API key from plugin settings.";
+    } else if (!(m_apiKey = apiKeyStorage()->requestKey("openweathermap").data("appid")).isEmpty()) {
+        qCDebug(dcOpenWeatherMap()) << "Using API key from nymea API keys provider";
+    } else {
+        qCWarning(dcOpenWeatherMap()) << "No API key set. This plugin might not work correctly.";
+        qCWarning(dcOpenWeatherMap()) << "Either install an API key pacakge (nymea-apikeysprovider-plugin-*) or provide a key in the plugin settings.";
     }
-
-    if (m_weatherReplies.contains(reply)) {
-        QByteArray data = reply->readAll();
-        Thing* thing = m_weatherReplies.take(reply);
-        processWeatherData(data, thing);
-    }
-    reply->deleteLater();
 }
 
 void IntegrationPluginOpenweathermap::update(Thing *thing)
 {
-    qCDebug(dcOpenWeatherMap()) << "Refresh data for" << thing->name();
+    qCDebug(dcOpenWeatherMap()) << "Refreshing data for" << thing->name();
     QUrl url("http://api.openweathermap.org/data/2.5/weather");
     QUrlQuery query;
     query.addQueryItem("id", thing->paramValue(openweathermapThingIdParamTypeId).toString());
@@ -136,8 +130,113 @@ void IntegrationPluginOpenweathermap::update(Thing *thing)
     url.setQuery(query);
 
     QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
-    connect(reply, &QNetworkReply::finished, this, &IntegrationPluginOpenweathermap::networkManagerReplyReady);
-    m_weatherReplies.insert(reply, thing);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, thing, [thing, reply](){
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcOpenWeatherMap) << "OpenWeatherMap reply error: " << reply->errorString();
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcOpenWeatherMap()) << "failed to parse weather data for thing " << thing->name() << "\n" << data << "\n" << error.errorString();
+            return;
+        }
+
+        qCDebug(dcOpenWeatherMap()) << "Received" << qUtf8Printable(jsonDoc.toJson());
+
+        // http://openweathermap.org/current
+        QVariantMap dataMap = jsonDoc.toVariant().toMap();
+        if (dataMap.contains("clouds")) {
+            int cloudiness = dataMap.value("clouds").toMap().value("all").toInt();
+            thing->setStateValue(openweathermapCloudinessStateTypeId, cloudiness);
+        }
+        if (dataMap.contains("dt")) {
+            uint lastUpdate = dataMap.value("dt").toUInt();
+            thing->setStateValue(openweathermapUpdateTimeStateTypeId, lastUpdate);
+        }
+
+        if (dataMap.contains("main")) {
+
+            double temperatur = dataMap.value("main").toMap().value("temp").toDouble();
+            double temperaturMax = dataMap.value("main").toMap().value("temp_max").toDouble();
+            double temperaturMin = dataMap.value("main").toMap().value("temp_min").toDouble();
+            double pressure = dataMap.value("main").toMap().value("pressure").toDouble();
+            int humidity = dataMap.value("main").toMap().value("humidity").toInt();
+
+            thing->setStateValue(openweathermapTemperatureStateTypeId, temperatur);
+            thing->setStateValue(openweathermapTemperatureMinStateTypeId, temperaturMin);
+            thing->setStateValue(openweathermapTemperatureMaxStateTypeId, temperaturMax);
+            thing->setStateValue(openweathermapPressureStateTypeId, pressure);
+            thing->setStateValue(openweathermapHumidityStateTypeId, humidity);
+        }
+
+        if (dataMap.contains("sys")) {
+            qint64 sunrise = dataMap.value("sys").toMap().value("sunrise").toLongLong();
+            qint64 sunset = dataMap.value("sys").toMap().value("sunset").toLongLong();
+
+            thing->setStateValue(openweathermapSunriseTimeStateTypeId, sunrise);
+            thing->setStateValue(openweathermapSunsetTimeStateTypeId, sunset);
+            QTimeZone tz = QTimeZone(QTimeZone::systemTimeZoneId());
+            QDateTime up = QDateTime::fromMSecsSinceEpoch(sunrise * 1000);
+            QDateTime down = QDateTime::fromMSecsSinceEpoch(sunset * 1000);
+            QDateTime now = QDateTime::currentDateTime().toTimeZone(tz);
+            thing->setStateValue(openweathermapDaylightStateTypeId, up < now && down > now);
+        }
+
+        if (dataMap.contains("visibility")) {
+            int visibility = dataMap.value("visibility").toInt();
+            thing->setStateValue(openweathermapVisibilityStateTypeId, visibility);
+        }
+
+        // http://openweathermap.org/weather-conditions
+        if (dataMap.contains("weather") && dataMap.value("weather").toList().count() > 0) {
+            int conditionId = dataMap.value("weather").toList().first().toMap().value("id").toInt();
+            if (conditionId == 800) {
+                if (thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > thing->stateValue(openweathermapSunriseTimeStateTypeId).toInt() &&
+                    thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < thing->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
+                    thing->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-day");
+                } else {
+                    thing->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-night");
+                }
+            } else if (conditionId == 801) {
+                if (thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > thing->stateValue(openweathermapSunriseTimeStateTypeId).toInt() &&
+                    thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < thing->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
+                    thing->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-day");
+                } else {
+                    thing->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-night");
+                }
+            } else if (conditionId == 802) {
+                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "clouds");
+            } else if (conditionId >= 803 && conditionId < 900) {
+                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "overcast");
+            } else if (conditionId >= 300 && conditionId < 400) {
+                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "light-rain");
+            } else if (conditionId >= 500 && conditionId < 600) {
+                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "shower-rain");
+            } else if (conditionId >= 200 && conditionId < 300) {
+                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "thunderstorm");
+            } else if (conditionId >= 600 && conditionId < 700) {
+                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "snow");
+            } else if (conditionId >= 700 && conditionId < 800) {
+                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "fog");
+            }
+            QString description = dataMap.value("weather").toList().first().toMap().value("description").toString();
+            thing->setStateValue(openweathermapWeatherDescriptionStateTypeId, description);
+        }
+
+        if (dataMap.contains("wind")) {
+            int windDirection = dataMap.value("wind").toMap().value("deg").toInt();
+            double windSpeed = dataMap.value("wind").toMap().value("speed").toDouble();
+
+            thing->setStateValue(openweathermapWindDirectionStateTypeId, windDirection);
+            thing->setStateValue(openweathermapWindSpeedStateTypeId, windSpeed);
+        }
+    });
 }
 
 void IntegrationPluginOpenweathermap::searchAutodetect(ThingDiscoveryInfo *info)
@@ -305,111 +404,4 @@ void IntegrationPluginOpenweathermap::processSearchResults(const QList<QVariantM
     info->finish(Thing::ThingErrorNoError);
 }
 
-void IntegrationPluginOpenweathermap::processWeatherData(const QByteArray &data, Thing *thing)
-{
-    QJsonParseError error;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
-
-    //qCDebug(dcOpenWeatherMap) << jsonDoc.toJson();
-
-    if (error.error != QJsonParseError::NoError) {
-        qCWarning(dcOpenWeatherMap) << "failed to parse weather data for thing " << thing->name() << ": " << data << ":" << error.errorString();
-        return;
-    }
-
-    // http://openweathermap.org/current
-    QVariantMap dataMap = jsonDoc.toVariant().toMap();
-    if (dataMap.contains("clouds")) {
-        int cloudiness = dataMap.value("clouds").toMap().value("all").toInt();
-        thing->setStateValue(openweathermapCloudinessStateTypeId, cloudiness);
-    }
-    if (dataMap.contains("dt")) {
-        uint lastUpdate = dataMap.value("dt").toUInt();
-        thing->setStateValue(openweathermapUpdateTimeStateTypeId, lastUpdate);
-    }
-
-    if (dataMap.contains("main")) {
-
-        double temperatur = dataMap.value("main").toMap().value("temp").toDouble();
-        double temperaturMax = dataMap.value("main").toMap().value("temp_max").toDouble();
-        double temperaturMin = dataMap.value("main").toMap().value("temp_min").toDouble();
-        double pressure = dataMap.value("main").toMap().value("pressure").toDouble();
-        int humidity = dataMap.value("main").toMap().value("humidity").toInt();
-
-        thing->setStateValue(openweathermapTemperatureStateTypeId, temperatur);
-        thing->setStateValue(openweathermapTemperatureMinStateTypeId, temperaturMin);
-        thing->setStateValue(openweathermapTemperatureMaxStateTypeId, temperaturMax);
-        thing->setStateValue(openweathermapPressureStateTypeId, pressure);
-        thing->setStateValue(openweathermapHumidityStateTypeId, humidity);
-    }
-
-    if (dataMap.contains("sys")) {
-        qint64 sunrise = dataMap.value("sys").toMap().value("sunrise").toLongLong();
-        qint64 sunset = dataMap.value("sys").toMap().value("sunset").toLongLong();
-
-        thing->setStateValue(openweathermapSunriseTimeStateTypeId, sunrise);
-        thing->setStateValue(openweathermapSunsetTimeStateTypeId, sunset);
-        QTimeZone tz = QTimeZone(QTimeZone::systemTimeZoneId());
-        QDateTime up = QDateTime::fromMSecsSinceEpoch(sunrise * 1000);
-        QDateTime down = QDateTime::fromMSecsSinceEpoch(sunset * 1000);
-        QDateTime now = QDateTime::currentDateTime().toTimeZone(tz);
-        thing->setStateValue(openweathermapDaylightStateTypeId, up < now && down > now);
-    }
-
-    if (dataMap.contains("visibility")) {
-        int visibility = dataMap.value("visibility").toInt();
-        thing->setStateValue(openweathermapVisibilityStateTypeId, visibility);
-    }
-
-    // http://openweathermap.org/weather-conditions
-    if (dataMap.contains("weather") && dataMap.value("weather").toList().count() > 0) {
-        int conditionId = dataMap.value("weather").toList().first().toMap().value("id").toInt();
-        if (conditionId == 800) {
-            if (thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > thing->stateValue(openweathermapSunriseTimeStateTypeId).toInt() &&
-                thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < thing->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
-                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-day");
-            } else {
-                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-night");
-            }
-        } else if (conditionId == 801) {
-            if (thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > thing->stateValue(openweathermapSunriseTimeStateTypeId).toInt() &&
-                thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < thing->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
-                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-day");
-            } else {
-                thing->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-night");
-            }
-        } else if (conditionId == 802) {
-            thing->setStateValue(openweathermapWeatherConditionStateTypeId, "clouds");
-        } else if (conditionId >= 803 && conditionId < 900) {
-            thing->setStateValue(openweathermapWeatherConditionStateTypeId, "overcast");
-        } else if (conditionId >= 300 && conditionId < 400) {
-            thing->setStateValue(openweathermapWeatherConditionStateTypeId, "light-rain");
-        } else if (conditionId >= 500 && conditionId < 600) {
-            thing->setStateValue(openweathermapWeatherConditionStateTypeId, "shower-rain");
-        } else if (conditionId >= 200 && conditionId < 300) {
-            thing->setStateValue(openweathermapWeatherConditionStateTypeId, "thunderstorm");
-        } else if (conditionId >= 600 && conditionId < 700) {
-            thing->setStateValue(openweathermapWeatherConditionStateTypeId, "snow");
-        } else if (conditionId >= 700 && conditionId < 800) {
-            thing->setStateValue(openweathermapWeatherConditionStateTypeId, "fog");
-        }
-        QString description = dataMap.value("weather").toList().first().toMap().value("description").toString();
-        thing->setStateValue(openweathermapWeatherDescriptionStateTypeId, description);
-    }
-
-    if (dataMap.contains("wind")) {
-        int windDirection = dataMap.value("wind").toMap().value("deg").toInt();
-        double windSpeed = dataMap.value("wind").toMap().value("speed").toDouble();
-
-        thing->setStateValue(openweathermapWindDirectionStateTypeId, windDirection);
-        thing->setStateValue(openweathermapWindSpeedStateTypeId, windSpeed);
-    }
-}
-
-void IntegrationPluginOpenweathermap::onPluginTimer()
-{
-    foreach (Thing *thing, myThings()) {
-        update(thing);
-    }
-}
 
