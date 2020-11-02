@@ -82,6 +82,15 @@ IntegrationPluginTasmota::IntegrationPluginTasmota()
     m_connectedStateTypeMap[tasmotaLightThingClassId] = tasmotaLightConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaShutterThingClassId] = tasmotaShutterConnectedStateTypeId;
     m_connectedStateTypeMap[tasmotaBlindsThingClassId] = tasmotaBlindsConnectedStateTypeId;
+
+    m_signalStrengthStateTypeMap[sonoff_basicThingClassId] = sonoff_basicSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeMap[sonoff_dualThingClassId] = sonoff_dualSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeMap[sonoff_triThingClassId] = sonoff_triSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeMap[sonoff_quadThingClassId] = sonoff_quadSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeMap[tasmotaSwitchThingClassId] = tasmotaSwitchSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeMap[tasmotaLightThingClassId] = tasmotaLightSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeMap[tasmotaShutterThingClassId] = tasmotaShutterSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeMap[tasmotaBlindsThingClassId] = tasmotaBlindsSignalStrengthStateTypeId;
 }
 
 IntegrationPluginTasmota::~IntegrationPluginTasmota()
@@ -320,16 +329,13 @@ void IntegrationPluginTasmota::onClientDisconnected(MqttChannel *channel)
 
 void IntegrationPluginTasmota::onPublishReceived(MqttChannel *channel, const QString &topic, const QByteArray &payload)
 {
-    qCDebug(dcTasmota) << "Publish received from Sonoff thing:" << topic << payload;
-    Thing *dev = m_mqttChannels.key(channel);
-    if (m_ipAddressParamTypeMap.contains(dev->thingClassId())) {
+    qCDebug(dcTasmota) << "Publish received from Sonoff thing:" << topic << qUtf8Printable(payload);
+    Thing *thing = m_mqttChannels.key(channel);
+    if (m_ipAddressParamTypeMap.contains(thing->thingClassId())) {
         if (topic.startsWith(channel->topicPrefixList().first() + "/sonoff/POWER")) {
             QString channelName = topic.split("/").last();
 
-            foreach (Thing *child, myThings()) {
-                if (child->parentId() != dev->id()) {
-                    continue;
-                }
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
                 if (child->paramValue(m_channelParamTypeMap.value(child->thingClassId())).toString() != channelName) {
                     continue;
                 }
@@ -349,17 +355,16 @@ void IntegrationPluginTasmota::onPublishReceived(MqttChannel *channel, const QSt
                 qCWarning(dcTasmota) << "Cannot parse JSON from Tasmota device" << error.errorString();
                 return;
             }
-            foreach (Thing *child, myThings()) {
-                if (child->parentId() != dev->id()) {
-                    continue;
-                }
+            QVariantMap dataMap = jsonDoc.toVariant().toMap();
+            thing->setStateValue(m_signalStrengthStateTypeMap.value(thing->thingClassId()), dataMap.value("Wifi").toMap().value("RSSI").toInt());
+            foreach (Thing *child, myThings().filterByParentId(thing->id())) {
                 if (m_powerStateTypeMap.contains(child->thingClassId())) {
                     QString childChannel = child->paramValue(m_channelParamTypeMap.value(child->thingClassId())).toString();
                     QString valueString = jsonDoc.toVariant().toMap().value(childChannel).toString();
                     child->setStateValue(m_powerStateTypeMap.value(child->thingClassId()), valueString == "ON");
                 }
+                child->setStateValue(m_signalStrengthStateTypeMap.value(child->thingClassId()), dataMap.value("Wifi").toMap().value("RSSI").toInt());
             }
-
         }
     }
 }

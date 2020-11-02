@@ -42,6 +42,8 @@
 #include "network/mqtt/mqttprovider.h"
 #include "network/mqtt/mqttchannel.h"
 
+#include "plugintimer.h"
+
 #include "network/zeroconf/zeroconfservicebrowser.h"
 #include "platform/platformzeroconfcontroller.h"
 
@@ -98,6 +100,21 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_connectedStateTypesMap[shellyLightPMThingClassId] = shellyLightPMConnectedStateTypeId;
     m_connectedStateTypesMap[shellySocketPMThingClassId] = shellySocketPMConnectedStateTypeId;
     m_connectedStateTypesMap[shellyRollerThingClassId] = shellyRollerConnectedStateTypeId;
+
+    m_signalStrengthStateTypesMap[shelly1ThingClassId] = shelly1SignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shelly1pmThingClassId] = shelly1pmSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shelly25ThingClassId] = shelly25SignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyPlugThingClassId] = shellyPlugSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyRgbw2ThingClassId] = shellyRgbw2SignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyDimmerThingClassId] = shellyDimmerSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellySwitchThingClassId] = shellySwitchSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyGenericThingClassId] = shellyGenericSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyLightThingClassId] = shellyLightSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellySocketThingClassId] = shellySocketSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyGenericPMThingClassId] = shellyGenericPMSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyLightPMThingClassId] = shellyLightPMSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellySocketPMThingClassId] = shellySocketPMSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyRollerThingClassId] = shellyRollerSignalStrengthStateTypeId;
 
     m_powerStateTypeMap[shellyPlugThingClassId] = shellyPlugPowerStateTypeId;
     m_powerStateTypeMap[shellyRgbw2ThingClassId] = shellyRgbw2PowerStateTypeId;
@@ -255,6 +272,11 @@ void IntegrationPluginShelly::thingRemoved(Thing *thing)
 {
     if (m_mqttChannels.contains(thing)) {
         hardwareManager()->mqttProvider()->releaseChannel(m_mqttChannels.take(thing));
+    }
+
+    if (myThings().isEmpty() && m_timer) {
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_timer);
+        m_timer = nullptr;
     }
     qCDebug(dcShelly()) << "Device removed" << thing->name();
 }
@@ -465,6 +487,27 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     qCDebug(dcShelly()) << "Publish received from" << thing->name() << topic << payload;
 
     QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
+    if (topic == "shellies/" + shellyId + "/info") {
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcShelly()) << "Failed to parse shelly info payload:" << error.errorString();
+            qCWarning(dcShelly()) << qUtf8Printable(payload);
+            return;
+        }
+        QVariantMap data = jsonDoc.toVariant().toMap();
+
+        int signalStrength = -1;
+        if (data.value("wifi_sta").toMap().contains("rssi")) {
+            int rssi = data.value("wifi_sta").toMap().value("rssi").toInt();
+            signalStrength = qMin(100, qMax(0, (rssi + 100) * 2));
+        }
+        thing->setStateValue(m_signalStrengthStateTypesMap.value(thing->thingClassId()), signalStrength);
+        foreach (Thing *child, myThings().filterByParentId(thing->id())) {
+            child->setStateValue(m_signalStrengthStateTypesMap.value(child->thingClassId()), signalStrength);
+        }
+    }
+
     if (topic.startsWith("shellies/" + shellyId + "/input/")) {
         int channel = topic.split("/").last().toInt();
         // "1" or "0"
@@ -608,6 +651,16 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedshutter")) {
             child->setStateValue(shellyRollerPercentageStateTypeId, 100 - pos);
         }
+    }
+}
+
+void IntegrationPluginShelly::updateStatus()
+{
+    foreach (Thing *thing, m_mqttChannels.keys()) {
+        MqttChannel *channel = m_mqttChannels.value(thing);
+        QString shellyId = thing->paramValue(m_idParamTypeMap.value(thing->thingClassId())).toString();
+        qCDebug(dcShelly()) << "Requesting announcement" << QString("shellies/%1/info").arg(shellyId);
+        channel->publish(QString("shellies/command").arg(shellyId), "announce");
     }
 }
 
@@ -818,6 +871,11 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
         info->finish(Thing::ThingErrorNoError);
 
         emit autoThingsAppeared(autoChilds);
+
+        if (!m_timer) {
+            m_timer = hardwareManager()->pluginTimerManager()->registerTimer(10);
+            connect(m_timer, &PluginTimer::timeout, this, &IntegrationPluginShelly::updateStatus);
+        }
 
         // Make sure authentication is enalbed if the user wants it
         QString username = info->thing()->paramValue(m_usernameParamTypeMap.value(info->thing()->thingClassId())).toString();
