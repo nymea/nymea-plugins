@@ -1678,11 +1678,13 @@ void IntegrationPluginPhilipsHue::processBridgeRefreshResponse(Thing *thing, con
 
     // mark bridge as reachable
     bridgeReachableChanged(thing, true);
-    thing->setStateValue(bridgeApiVersionStateTypeId, configMap.value("apiversion").toString());
+    QString bridgeApiVersion = configMap.value("apiversion").toString();
+    thing->setStateValue(bridgeApiVersionStateTypeId, bridgeApiVersion);
     thing->setStateValue(bridgeCurrentVersionStateTypeId, configMap.value("swversion").toString());
 
     HueBridge *bridge = m_bridges.key(thing);
-    if (bridge->apiVersion() < "1.20") {
+    bridge->setApiVersion(bridgeApiVersion);
+    if (bridgeApiVersion < "1.20") {
         int updateStatus = configMap.value("swupdate").toMap().value("updatestate").toInt();
         switch (updateStatus) {
         case 0:
