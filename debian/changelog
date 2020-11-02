@@ -1,6 +1,39 @@
-nymea-plugins (0.24.0) UNRELEASED; urgency=medium
+nymea-plugins (0.24.0) xenial; urgency=medium
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Wed, 30 Sep 2020 17:29:57 +0200
+  [ Christian Fetzer ]
+  * New plugin: somfytahoma
+
+  [ Michael Zanetti ]
+  * 0.24
+  * PhilipsHue: Fix automatic rediscovery of the bridge if it changes IP
+  * New Plugin: Sun position
+  * New Plugin: Fastcom
+  * Make use of the wirelessconnectable interface across relevant
+    plugins
+  * Shelly & Hue: Implement update interface
+  * Shelly: Clean up a copy/paste error in the plugin JSON
+  * SolarLog: Fix units in json
+
+  [ Bernhard Trinnes ]
+  * Simulation plug-in: Added door/windows contact sensor
+
+  [ Michael Zanetti ]
+  * UDP Commander: Fix processing of multiple UDP datagrams in one go
+  * OpenWeatherMap: Use api key provider api
+  * BluOS: Fix undefined reference
+  * MQTTClient: Fix linking with more restrictive flags
+  * Tuya: Poll api less frequently to adhere to new API rate limits
+
+  [ Bernhard Trinnes ]
+  * AQI: Added API key provider
+
+  [ Michael Zanetti ]
+  * Don't use API deprecated in Qt 5.14
+
+  [ Bernhard Trinnes ]
+  * OneWire: Fixed W1 temperature sensor setup
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 02 Nov 2020 18:48:15 +0100
 
 nymea-plugins (0.23.1) xenial; urgency=medium
 
