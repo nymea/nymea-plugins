@@ -50,6 +50,7 @@ PLUGIN_DIRS = \
     snapd               \
     somfytahoma         \
     sonos               \
+    sunposition         \
     tado                \
     tasmota             \
     tcpcommander        \

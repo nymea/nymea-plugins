@@ -904,6 +904,22 @@ Description: nymea.io plugin for snapd
  This package will install the nymea.io plugin for snapd
 
 
+Package: nymea-plugin-sunposition
+Architecture: any
+Depends: ${misc:Depends},
+         libatlas-base-dev,
+         python3-pip,
+         nymea-plugins-translations,
+Description: nymea.io plugin for calculating the sun position
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for calculating the sun position
+
+
 Package: nymea-plugin-keba
 Architecture: any
 Depends: ${shlibs:Depends},
