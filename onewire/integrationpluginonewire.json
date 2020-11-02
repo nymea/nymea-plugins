@@ -83,7 +83,10 @@
                             "displayNameEvent": "Temperature changed",
                             "unit": "DegreeCelsius",
                             "type": "double",
-                            "defaultValue": 0
+                            "minValue": -55,
+                            "maxValue": 125,
+                            "defaultValue": 0,
+                            "ioType": "analogInput"
                         }
                     ]
                 },
@@ -127,7 +130,8 @@
                             "displayNameAction": "Set digital output",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
@@ -171,7 +175,8 @@
                             "displayNameAction": "Set digital output 1",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "82a78aed-5994-4af5-aecb-1806be5de1f3",
@@ -181,7 +186,8 @@
                             "displayNameAction": "Set digital output 2",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
 
                         }
                     ]
@@ -226,7 +232,8 @@
                             "displayNameAction": "Set digital output 1",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "c7d2f4a8-2b13-4a48-81a8-72f4908c775b",
@@ -236,7 +243,8 @@
                             "displayNameAction": "Set digital output 2",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "4b2ac595-eba9-4364-8cd7-00ff8bccda5a",
@@ -246,7 +254,8 @@
                             "displayNameAction": "Set digital output 3",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "bbbd1863-ef04-4687-803d-3c9ccdfc8d8f",
@@ -256,7 +265,8 @@
                             "displayNameAction": "Set digital output 4",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "50855d2b-a700-4030-8674-fee00cc0b4e2",
@@ -266,7 +276,8 @@
                             "displayNameAction": "Set digital output 5",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "a91ce593-09ba-4754-8a2e-e3f507313585",
@@ -276,7 +287,8 @@
                             "displayNameAction": "Set digital output 6",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "5f46047c-b00d-486f-b169-b738fbc89cdb",
@@ -286,7 +298,8 @@
                             "displayNameAction": "Set digital output 7",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         },
                         {
                             "id": "63334a17-0847-4f53-8007-1b5e72b88aa8",
@@ -296,7 +309,8 @@
                             "displayNameAction": "Set digital output 8",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 }
