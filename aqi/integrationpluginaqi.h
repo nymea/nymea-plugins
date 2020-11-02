@@ -50,8 +50,6 @@ class IntegrationPluginAqi : public IntegrationPlugin
 public:
     explicit IntegrationPluginAqi();
 
-    void startPairing(ThingPairingInfo *info) override;
-    void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void thingRemoved(Thing *thing) override;
@@ -64,6 +62,8 @@ private:
     QHash<QUuid, ThingDiscoveryInfo *> m_asyncDiscovery;
     QHash<QUuid, ThingSetupInfo *> m_asyncSetups;
     QHash<QUuid, ThingId> m_asyncRequests;
+    QString getApiKey();
+    bool createAqiConnection();
 
 private slots:
     void onPluginTimer();
