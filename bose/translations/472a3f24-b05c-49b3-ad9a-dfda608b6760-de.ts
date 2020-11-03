@@ -154,7 +154,7 @@ The name of the StateType ({bc98cdb0-4d0e-48ca-afc7-922e49bb7813}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="183"/>
         <source>Play</source>
         <extracomment>The name of the ActionType ({4d2ee668-a2e3-4795-8b96-0c800b703b46}) of ThingClass soundtouch</extracomment>
-        <translation>Play</translation>
+        <translation>Start</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="186"/>
@@ -178,19 +178,19 @@ The name of the StateType ({2dd512b7-40c2-488e-8d4f-6519edaa6f74}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="198"/>
         <source>Player pause</source>
         <extracomment>The name of the EventType ({99498b1c-e9c0-480a-9e91-662ee79ba976}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Player pause</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="201"/>
         <source>Player play</source>
         <extracomment>The name of the EventType ({2535a1eb-7643-4874-98f6-b027fdff6311}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Player start</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="204"/>
         <source>Player stop</source>
         <extracomment>The name of the EventType ({a02ce255-3abb-435d-a92e-7f99c952ecb2}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Player stopp</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="207"/>
@@ -268,13 +268,13 @@ The name of the StateType ({bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="249"/>
         <source>Set shuffle</source>
         <extracomment>The name of the ActionType ({5913aa2a-629d-4de5-bf44-a4a1f130c118}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze zufällige Wiedergabe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="252"/>
         <source>Set volume</source>
         <extracomment>The name of the ActionType ({9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Setze Lautstärke</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="255"/>
@@ -286,31 +286,31 @@ The name of the StateType ({bc02c28e-3f5d-4de4-b9b5-c0b1576c6e7e}) of ThingClass
 The name of the ParamType (ThingClass: soundtouch, EventType: shuffle, ID: {5913aa2a-629d-4de5-bf44-a4a1f130c118})
 ----------
 The name of the StateType ({5913aa2a-629d-4de5-bf44-a4a1f130c118}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zufällige Wiedergabe</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="264"/>
         <source>Shuffle changed</source>
         <extracomment>The name of the EventType ({5913aa2a-629d-4de5-bf44-a4a1f130c118}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zufällige Wiedergabe geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="267"/>
         <source>Skip Next</source>
         <extracomment>The name of the ActionType ({85d7126a-b123-4a28-aeb4-d84bcfb4d14f}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Nächster</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="270"/>
         <source>Skip back</source>
         <extracomment>The name of the ActionType ({a180807d-1265-4831-9d86-a421767418dd}) of ThingClass soundtouch</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="273"/>
         <source>Sound</source>
         <extracomment>The name of the ParamType (ThingClass: soundtouch, ActionType: alert, ID: {4c13007a-82e6-484f-959a-bf3731c18768})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Ton</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/bose/plugininfo.h" line="276"/>
@@ -404,7 +404,7 @@ The name of the StateType ({9dfe5d78-4c3f-497c-bab1-bb9fdf7e93a9}) of ThingClass
     <message>
         <location filename="../integrationpluginbose.cpp" line="295"/>
         <source>Sound URL is not valid.</source>
-        <translation type="unfinished">Die Sound-URL ist ungültig.</translation>
+        <translation>Die Benachrichtigungston-URL ist ungültig.</translation>
     </message>
 </context>
 </TS>
