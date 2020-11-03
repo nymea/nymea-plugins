@@ -119,7 +119,12 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
 
     m_programFinishedEventTypeIds.insert(ovenThingClassId, ovenProgramFinishedEventTypeId);
     m_programFinishedEventTypeIds.insert(dryerThingClassId, dryerProgramFinishedEventTypeId);
+    m_programFinishedEventTypeIds.insert(cookTopThingClassId, cookTopProgramFinishedEventTypeId);
     m_programFinishedEventTypeIds.insert(coffeeMakerThingClassId, coffeeMakerProgramFinishedEventTypeId);
+    m_programFinishedEventTypeIds.insert(hoodThingClassId, hoodProgramFinishedEventTypeId);
+    m_programFinishedEventTypeIds.insert(washerThingClassId, washerProgramFinishedEventTypeId);
+    m_programFinishedEventTypeIds.insert(dishwasherThingClassId, dishwasherProgramFinishedEventTypeId);
+    m_programFinishedEventTypeIds.insert(cleaningRobotThingClassId, cleaningRobotProgramFinishedEventTypeId);
 
     m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.VeryMild", "Very mild");
     m_coffeeStrengthTypes.insert("ConsumerProducts.CoffeeMaker.EnumType.BeanAmount.Mild", "Mild");

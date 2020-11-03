@@ -880,6 +880,13 @@
                             "name": "stop",
                             "displayName": "Stop"
                         }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "79e2b11e-557e-4295-b23f-7cf31d8566af",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
                     ]
                 },
                 {
@@ -906,6 +913,13 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "0360b2af-f88f-48be-904a-b352aab0a2cd",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
                         }
                     ]
                 },
@@ -969,6 +983,13 @@
                             "defaultValue": 0,
                             "type": "int"
                         }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "79bf7b91-73d6-4d11-8530-588d301b60f2",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
                     ]
                 },
                 {
@@ -1031,6 +1052,11 @@
                             "id": "4507655c-bc98-4437-acba-8ce701ba7b5f",
                             "name": "dockingStationNotFound",
                             "displayName": "Docking station not found"
+                        },
+                        {
+                            "id": "4f801225-b3ac-4519-9885-243497f6b2e2",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
                         }
                     ]
                 },
