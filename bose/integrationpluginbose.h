@@ -63,6 +63,7 @@ public:
     void executeBrowserItem(BrowserActionInfo *info) override;
 
 private:
+    QString m_consumerKey;
     ZeroConfServiceBrowser *m_serviceBrowser = nullptr;
     PluginTimer *m_pluginTimer = nullptr;
 
@@ -79,15 +80,17 @@ private slots:
     void onDeviceNameChanged();
     void onRequestExecuted(QUuid requestId, bool success);
 
-   void onInfoObjectReceived(QUuid requestId, InfoObject infoObject);
-   void onNowPlayingObjectReceived(QUuid requestId, NowPlayingObject nowPlaying);
-   void onVolumeObjectReceived(QUuid requestId, VolumeObject volume);
-   void onSourcesObjectReceived(QUuid requestId, SourcesObject sources);
-   void onBassObjectReceived(QUuid requestId, BassObject bass);
-   void onBassCapabilitiesObjectReceived(QUuid requestId, BassCapabilitiesObject bassCapabilities);
-   void onGroupObjectReceived(QUuid requestId, GroupObject group);
-   void onZoneObjectReceived(QUuid requestId, ZoneObject zone);
-   void onPresetsReceived(QUuid requestId, QList<PresetObject> presets);
+    void onInfoObjectReceived(QUuid requestId, InfoObject infoObject);
+    void onNowPlayingObjectReceived(QUuid requestId, NowPlayingObject nowPlaying);
+    void onVolumeObjectReceived(QUuid requestId, VolumeObject volume);
+    void onSourcesObjectReceived(QUuid requestId, SourcesObject sources);
+    void onBassObjectReceived(QUuid requestId, BassObject bass);
+    void onBassCapabilitiesObjectReceived(QUuid requestId, BassCapabilitiesObject bassCapabilities);
+    void onGroupObjectReceived(QUuid requestId, GroupObject group);
+    void onZoneObjectReceived(QUuid requestId, ZoneObject zone);
+    void onPresetsReceived(QUuid requestId, QList<PresetObject> presets);
+
+    void updateConsumerKey();
 };
 
 #endif // INTEGRATIONPLUGINBOSE_H

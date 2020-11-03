@@ -2,6 +2,37 @@
     "id": "472a3f24-b05c-49b3-ad9a-dfda608b6760",
     "name": "Bose",
     "displayName": "Bose",
+    "apiKeys": ["bose"],
+    "paramTypes": [
+        {
+            "id": "a5fcebca-b37d-4c14-ba22-1e5f1dd377e7",
+            "name": "customConsumerKey",
+            "displayName": "Custom consumer key",
+            "type" : "QString",
+            "defaultValue": ""
+        },
+        {
+            "id": "2c41fcc1-b28f-4f7e-9a8c-74972c60d22f",
+            "name": "customConsumerSecret",
+            "displayName": "Custom consumer secret",
+            "type" : "QString",
+            "defaultValue": ""
+        },
+        {
+            "id": "82883f9b-4397-404a-9126-4e9d5a22e6c6",
+            "name": "doorbellSoundUrl",
+            "displayName": "Doorbell sound url",
+            "type" : "QString",
+            "defaultValue": "https://downloads.nymea.io/notification-sounds/doorbell.mp3"
+        },
+        {
+            "id": "8717d14e-c3d5-44a7-b658-4826dd4013c2",
+            "name": "notificationSoundUrl",
+            "displayName": "Notification sound url",
+            "type" : "QString",
+            "defaultValue": "https://downloads.nymea.io/notification-sounds/notification.mp3"
+        }
+    ],
     "vendors": [
         {
             "id": "433c45cd-5bc1-4239-a8a1-487c70ffdfc7",
@@ -12,7 +43,7 @@
                     "id": "f9b7a3f5-6353-48b1-afc1-66f914412f82",
                     "name": "soundtouch",
                     "displayName": "SoundTouch",
-                    "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "alert", "connectable"],
                     "createMethods": ["discovery"],
                     "browsable": true,
                     "paramTypes": [
@@ -219,6 +250,42 @@
                                         "Preset 5",
                                         "Preset 6"
                                     ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "de24c5ec-1e36-4149-bfaa-71fb05264aa3",
+                            "name": "alert",
+                            "displayName": "Alert",
+                            "paramTypes": [
+                                {
+                                    "id": "4c13007a-82e6-484f-959a-bf3731c18768",
+                                    "name": "sound",
+                                    "displayName": "Sound",
+                                    "type": "QString",
+                                    "defaultValue": "Notification",
+                                    "allowedValues": [
+                                        "Doorbell",
+                                        "Warning",
+                                        "Noification",
+                                        "Error"
+                                    ]
+                                },
+                                {
+                                    "id": "346e1544-16fa-49a1-85ac-6be657c737d8",
+                                    "name": "message",
+                                    "displayName": "Display message",
+                                    "type": "QString",
+                                    "defaultValue": "None"
+                                },
+                                {
+                                    "id": "8527bff6-811f-41f5-a098-e4b356e2463c",
+                                    "name": "volume",
+                                    "displayName": "Volume",
+                                    "type": "int",
+                                    "minValue": 10,
+                                    "maxValue": 70,
+                                    "defaultValue": "30"
                                 }
                             ]
                         }
