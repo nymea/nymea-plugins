@@ -266,9 +266,7 @@
                                     "defaultValue": "Notification",
                                     "allowedValues": [
                                         "Doorbell",
-                                        "Warning",
-                                        "Noification",
-                                        "Error"
+                                        "Notification"
                                     ]
                                 },
                                 {
@@ -276,7 +274,7 @@
                                     "name": "message",
                                     "displayName": "Display message",
                                     "type": "QString",
-                                    "defaultValue": "None"
+                                    "defaultValue": ""
                                 },
                                 {
                                     "id": "8527bff6-811f-41f5-a098-e4b356e2463c",
@@ -285,7 +283,7 @@
                                     "type": "int",
                                     "minValue": 10,
                                     "maxValue": 70,
-                                    "defaultValue": "30"
+                                    "defaultValue": "40"
                                 }
                             ]
                         }

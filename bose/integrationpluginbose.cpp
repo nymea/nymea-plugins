@@ -59,7 +59,6 @@ void IntegrationPluginBose::init()
 
 void IntegrationPluginBose::setupThing(ThingSetupInfo *info)
 {
-
     if (info->thing()->thingClassId() == soundtouchThingClassId) {
 
         QString ipAddress;
@@ -298,6 +297,7 @@ void IntegrationPluginBose::executeAction(ThingActionInfo *info)
             PlayInfoObject playInfo;
             playInfo.url = alertUrl.toString();
             playInfo.appKey = m_consumerKey;
+            playInfo.services = "nymea";
             playInfo.volume = action.param(soundtouchAlertActionVolumeParamTypeId).value().toInt();
             playInfo.reason = action.param(soundtouchAlertActionMessageParamTypeId).value().toString();
             QUuid requestId = soundTouch->setSpeaker(playInfo);
