@@ -199,6 +199,109 @@
                     ]
                 },
                 {
+                    "id": "f277d3a3-62e0-49c1-90b2-4108578e80bf",
+                    "name": "shelly2",
+                    "displayName": "Shelly 2",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "gateway", "wirelessconnectable", "update" ],
+                    "paramTypes": [
+                        {
+                            "id": "847583a1-2037-44ac-9b28-399c3cb8cf8c",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "84e60831-0a2c-466a-bdfe-36ae6bd114e2",
+                            "name": "connectedDevice1",
+                            "displayName": "Connected device 1",
+                            "type": "QString",
+                            "allowedValues": ["None", "Generic", "Light", "Socket", "Roller Shutter Up"],
+                            "defaultValue": "Generic"
+                        },
+                        {
+                            "id": "0becaa77-b927-489a-ad5f-9b22513f8673",
+                            "name": "connectedDevice2",
+                            "displayName": "Connected device 2",
+                            "type": "QString",
+                            "allowedValues": ["None", "Generic", "Light", "Socket", "Roller Shutter Down"],
+                            "defaultValue": "Generic"
+                        },
+                        {
+                            "id": "521303e2-ef93-47df-8acb-fb1f8f78aae9",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "4f3cb0f0-ff3d-4aa8-9c2c-6a7d67cb0f8c",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "966ddc70-aa75-4c86-a75e-c1a010698d93",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "ed8d3275-4d47-406b-9adf-0355a9bff31e",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "8f544e5f-f200-47aa-82c4-46aa9838c96e",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "b38b19da-4403-40a2-8aa3-81518d092505",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "6f081a46-df7d-43df-acb0-a7f226c0fd71",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "f444ff28-07b1-40fe-b450-c373a6341411",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        },
+                        {
+                            "id": "4ca44813-1ee3-4aee-89c7-a667fe1c8ddc",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
                     "id": "465efb0d-da68-4177-a040-940c7f451e29",
                     "name": "shelly25",
                     "displayName": "Shelly 2.5",
