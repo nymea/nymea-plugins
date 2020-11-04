@@ -1,0 +1,434 @@
+{
+    "name": "ZigbeeLumi",
+    "displayName": "Zigbee Lumi",
+    "id": "4a6e97da-0e4b-4731-8bfe-c93d806a9383",
+    "vendors": [
+        {
+            "name": "lumi",
+            "displayName": "Lumi",
+            "id": "f58dac98-0ba1-408f-946a-25d452080baa",
+            "thingClasses": [
+                {
+                    "name": "lumiHTSensor",
+                    "displayName": "Temperature humidity sensor",
+                    "id": "dfabab0e-d483-43f8-82c6-720899e70c86",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "temperaturesensor", "humiditysensor", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "bd0b2bf2-2ec3-497f-9679-a63850101257",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "2daebedb-d272-4553-a410-91feff69ff7a",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "eb09e3f4-44ea-4ca9-9eac-9a693595fe37",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "0cb72e84-01c4-4041-9aee-1dabf26a062e",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "968ff8bb-b852-48d8-bde2-28cfa810b20e",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "152b475e-6bd8-4e6f-8765-0636c0bc8e9d",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0.0
+                        },
+                        {
+                            "id": "e6559d9e-2c64-485d-bb2b-8a9aec0ac656",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "unit": "Percentage",
+                            "type": "double",
+                            "defaultValue": 0.0
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "ce853c00-d175-45bc-a3d9-3c8c93d88099",
+                            "name": "removeFromNetwork",
+                            "displayName": "Remove from network"
+                        },
+                        {
+                            "id": "4a9d9427-52cf-4c13-9b71-496145b18476",
+                            "name": "test1",
+                            "displayName": "Test 1"
+                        }
+                    ],
+                    "eventTypes": [
+
+                    ]
+                },
+                {
+                    "name": "lumiMagnetSensor",
+                    "displayName": "Magnet sensor",
+                    "id": "b3e30f37-7467-4c66-8694-9fe624aebd10",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "closablesensor", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "36d8a40a-7f37-4d59-a0d9-6d4977ea63f3",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "6a238726-ccd5-484b-ac5d-92649a604f9a",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "76f6c739-73e0-4a36-97c9-043af5854af5",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "7fef2f25-91ac-4818-bc7a-e427bdeff438",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "ac0e4cd1-553b-4e43-b08a-6dd8d617e765",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "6fad76ec-9d36-408d-bbf1-00e5d18bf6b0",
+                            "name": "closed",
+                            "displayName": "Closed",
+                            "displayNameEvent": "Closed changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "2bae0e2d-0c20-475d-a6cd-2e685e6b0626",
+                            "name": "removeFromNetwork",
+                            "displayName": "Remove from network"
+                        }
+                    ],
+                    "eventTypes": [
+
+                    ]
+                },
+                {
+                    "name": "lumiButtonSensor",
+                    "displayName": "Button sensor",
+                    "id": "42c1edba-cc5f-4eb9-84f8-1b0d47a6f95e",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "longpressbutton", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "929eb2be-6d8f-46b7-8cc9-896e7e2c494a",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "de153a5e-c7bd-4815-aa08-21d093b296d7",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f0da4762-4778-4b3b-ba68-466ff504a3d3",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "6e9de8ee-cb28-4f7d-a0f6-fe9e64df0463",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "11d03ab4-7450-4caf-81ec-0b2b73e56b08",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "65b43aad-1784-4e85-ad5a-ce01cc5757bd",
+                            "name": "removeFromNetwork",
+                            "displayName": "Remove from network"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "2515e40a-8146-4f11-8d79-2be9e20224e5",
+                            "name": "pressed",
+                            "displayName": "Pressed"
+                        },
+                        {
+                            "id": "6e9dda9f-e51b-48c4-9839-01aa33085e2c",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
+                        }
+                    ]
+                },
+                {
+                    "name": "lumiMotionSensor",
+                    "displayName": "Motion sensor",
+                    "id": "b5530192-0891-4934-88a2-7338b069be24",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "presencesensor", "lightsensor", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "3a44ed47-5a70-4052-9a14-78f9033eab85",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "bc0c78f6-ed88-4ae3-8e1e-2190374391af",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "4aeb84fa-e3ef-495e-8754-a5f6c3aa934a",
+                            "name": "timeout",
+                            "displayName": "Time period",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "defaultValue": 10,
+                            "minValue": 10
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "007e2fe5-80d5-4f98-941d-b458b555965a",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "c5913170-e377-484b-a330-c5d5b590fee2",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "d1337b3b-0dfb-4505-90f1-e5b2b45be9bd",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "fed7582b-c057-42ab-b7c0-d562a2e7917c",
+                            "name": "isPresent",
+                            "displayName": "Present",
+                            "displayNameEvent": "Present changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "021ce190-a775-40e0-b19b-c6307c73e343",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "eb3fb43e-a9bb-4498-880b-464cbb752ff6",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "unit": "Lux",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "2797c499-ca7f-4cf6-a732-c8e3cd580e56",
+                            "name": "removeFromNetwork",
+                            "displayName": "Remove from network"
+                        }
+                    ],
+                    "eventTypes": [
+
+                    ]
+                },
+                {
+                    "name": "lumiWaterSensor",
+                    "displayName": "Water sensor",
+                    "id": "e8e18bbe-27bb-4fd7-98fc-f5cef3b5f213",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "sensor", "battery", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "e12453e7-5fc3-4549-b4fc-8b85f78607c6",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "4c67bab4-da84-407a-8d8d-84a5c373d585",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "03fc0e4d-dcd9-41dc-8aac-dbe735f11ef7",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b3bba018-b9d0-47a8-a2cf-d8d2d6fcecce",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "bae1014f-67f5-4dcc-b36f-e15eb43afd6e",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "e43532a7-cbee-446e-9e4a-aff88026ad1a",
+                            "name": "waterDetected",
+                            "displayName": "Water detected",
+                            "displayNameEvent": "Water detected changed",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "72aa617c-88cc-4992-a1a2-400b5e19106e",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "ed085bda-5608-419d-88e2-81ebcb9f26e1",
+                            "name": "removeFromNetwork",
+                            "displayName": "Remove from network"
+                        }
+                    ],
+                    "eventTypes": [
+
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "name": "ZigbeeGeneric",
+    "displayName": "Zigbee Generic",
+    "id": "6a4343be-9fd6-4015-9ff5-38542651c534",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+            ]
+        }
+    ]
+}
