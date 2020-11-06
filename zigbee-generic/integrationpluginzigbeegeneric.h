@@ -56,6 +56,12 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
+
+    QHash<ThingClassId, ParamTypeId> m_ieeeAddressParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_networkUuidParamTypeIds;
+
+    QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeIds;
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEGENERIC_H

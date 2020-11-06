@@ -167,7 +167,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == lumiMagnetSensorThingClassId) {
         ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
         if (onOffCluster) {
-            thing->setStateValue(lumiMagnetSensorClosedStateTypeId, !onOffCluster->powered());
+//            thing->setStateValue(lumiMagnetSensorClosedStateTypeId, !onOffCluster->powered());
             connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
                 qCDebug(dcZigbeeLumi()) << thing << "state changed" << (power ? "closed" : "open");
                 thing->setStateValue(lumiMagnetSensorClosedStateTypeId, !power);
@@ -180,7 +180,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == lumiMotionSensorThingClassId) {
         ZigbeeClusterOccupancySensing *occupancyCluster = endpoint->inputCluster<ZigbeeClusterOccupancySensing>(ZigbeeClusterLibrary::ClusterIdOccupancySensing);
         if (occupancyCluster) {
-            thing->setStateValue(lumiMotionSensorIsPresentStateTypeId, occupancyCluster->occupancy());
+//            thing->setStateValue(lumiMotionSensorIsPresentStateTypeId, occupancyCluster->occupancy());
             connect(occupancyCluster, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [thing](bool occupancy){
                 qCDebug(dcZigbeeLumi()) << "occupancy changed" << occupancy;
                 thing->setStateValue(lumiMotionSensorIsPresentStateTypeId, occupancy);
@@ -207,7 +207,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
 
         ZigbeeClusterIlluminanceMeasurment *illuminanceCluster = endpoint->inputCluster<ZigbeeClusterIlluminanceMeasurment>(ZigbeeClusterLibrary::ClusterIdIlluminanceMeasurement);
         if (illuminanceCluster) {
-            thing->setStateValue(lumiHTSensorTemperatureStateTypeId, illuminanceCluster->illuminance());
+//            thing->setStateValue(lumiHTSensorTemperatureStateTypeId, illuminanceCluster->illuminance());
             connect(illuminanceCluster, &ZigbeeClusterIlluminanceMeasurment::illuminanceChanged, thing, [thing](quint16 illuminance){
                 thing->setStateValue(lumiMotionSensorLightIntensityStateTypeId, illuminance);
             });
@@ -219,7 +219,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == lumiHTSensorThingClassId) {
         ZigbeeClusterTemperatureMeasurement *temperatureCluster = endpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
         if (temperatureCluster) {
-            thing->setStateValue(lumiHTSensorTemperatureStateTypeId, temperatureCluster->temperature());
+//            thing->setStateValue(lumiHTSensorTemperatureStateTypeId, temperatureCluster->temperature());
             connect(temperatureCluster, &ZigbeeClusterTemperatureMeasurement::temperatureChanged, thing, [thing](double temperature){
                 thing->setStateValue(lumiHTSensorTemperatureStateTypeId, temperature);
             });
@@ -229,7 +229,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
 
         ZigbeeClusterRelativeHumidityMeasurement *humidityCluster = endpoint->inputCluster<ZigbeeClusterRelativeHumidityMeasurement>(ZigbeeClusterLibrary::ClusterIdRelativeHumidityMeasurement);
         if (humidityCluster) {
-            thing->setStateValue(lumiHTSensorHumidityStateTypeId, humidityCluster->humidity());
+//            thing->setStateValue(lumiHTSensorHumidityStateTypeId, humidityCluster->humidity());
             connect(humidityCluster, &ZigbeeClusterRelativeHumidityMeasurement::humidityChanged, thing, [thing](double humidity){
                 thing->setStateValue(lumiHTSensorHumidityStateTypeId, humidity);
             });

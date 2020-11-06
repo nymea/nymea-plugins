@@ -8,6 +8,62 @@
             "displayName": "nymea",
             "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
             "thingClasses": [
+                {
+                    "id": "ca9af6cf-2d15-4d54-ba07-3d2ce03445b8",
+                    "name": "thermostat",
+                    "displayName": "Zigbee Thermostat",
+                    "createMethods": ["auto"],
+                    "interfaces": ["thermostat", "wirelessconnectable"],
+                    "paramTypes": [
+                    {
+                        "id": "f38746d8-0084-43a3-b645-3ec743ea5fbc",
+                        "name": "ieeeAddress",
+                        "displayName": "IEEE adress",
+                        "type": "QString",
+                        "defaultValue": "00:00:00:00:00:00:00:00"
+                    },
+                    {
+                        "id": "4a92b536-de4c-4701-8117-9bb26dd51c3e",
+                        "name": "networkUuid",
+                        "displayName": "Zigbee network UUID",
+                        "type": "QString",
+                        "defaultValue": ""
+                    }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "88ad3957-2912-4de1-b53d-b360565dd361",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "minValue": 0,
+                            "maxValue": 50,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "e9fb2b10-96da-4b70-afda-46e948399af8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected/disconnected",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "8f0512ab-ced2-4dcb-90fe-aaa532efd0dd",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        }
+                    ]
+                }
             ]
         }
     ]
