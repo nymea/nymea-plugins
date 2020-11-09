@@ -1088,6 +1088,59 @@
                             "ioType": "digitalInput"
                         }
                     ]
+                },
+                {
+                    "id": "83cf138d-02dc-4015-9b03-6360c2f3cfb1",
+                    "name": "sgReady",
+                    "displayName": "SG-Ready",
+                    "createMethods": ["user"],
+                    "interfaces": [],
+                    "settingsTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d080466e-7271-441f-9916-1199a6668545",
+                            "name": "relay1",
+                            "displayName": "Relay 1",
+                            "displayNameEvent": "Relay 1 changed",
+                            "displayNameAction": "Set relay 1",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "caf22937-fdf7-41e1-a87b-d11e66c4f4c6",
+                            "name": "relay2",
+                            "displayName": "Relay 2",
+                            "displayNameEvent": "Relay 2 changed",
+                            "displayNameAction": "Set relay 2",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput",
+                            "writable": true
+                        },
+                        {
+                            "id": "85667640-d719-4be4-a5fa-e41193eea162",
+                            "name": "operatingMode",
+                            "displayName": "Operating mode",
+                            "displayNameAction": "Set operating mode",
+                            "displayNameEvent": "Operating mode changed",
+                            "type": "int",
+                            "minValue": 1,
+                            "maxValue": 4,
+                            "writable": true,
+                            "defaultValue": 2
+                        },
+                        {
+                            "id": "b421d098-f6e9-40e2-b536-58acdb3a49fe",
+                            "name": "operatingModeDescription",
+                            "displayName": "Operating mode description",
+                            "displayNameEvent": "Operating mode description changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ]
                 }
             ]
         }

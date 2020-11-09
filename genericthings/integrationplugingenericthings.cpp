@@ -634,6 +634,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         }
 
         Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+
     } else if (thing->thingClassId() == thermostatThingClassId) {
         if (action.actionTypeId() == thermostatTemperatureSensorInputActionTypeId) {
             thing->setStateValue(thermostatTemperatureSensorInputStateTypeId, action.param(thermostatTemperatureSensorInputActionTemperatureSensorInputParamTypeId).value());
@@ -647,6 +648,45 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         thermostatCheckPowerOutputState(thing);
         info->finish(Thing::ThingErrorNoError);
         return;
+
+    } else if (thing->thingClassId() == sgReadyThingClassId) {
+        if (action.actionTypeId() == sgReadyRelay1ActionTypeId) {
+            thing->setStateValue(sgReadyRelay1StateTypeId, action.param(sgReadyRelay1ActionRelay1ParamTypeId).value());
+            int operatingMode = sgReadyOperatingMode(thing->stateValue(sgReadyRelay1StateTypeId).toBool(), thing->stateValue(sgReadyRelay2StateTypeId).toBool());
+            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+            thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == sgReadyRelay2ActionTypeId) {
+            thing->setStateValue(sgReadyRelay2StateTypeId, action.param(sgReadyRelay2ActionRelay2ParamTypeId).value());
+            int operatingMode = sgReadyOperatingMode(thing->stateValue(sgReadyRelay1StateTypeId).toBool(), thing->stateValue(sgReadyRelay2StateTypeId).toBool());
+            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+            thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == sgReadyOperatingModeActionTypeId) {
+            int operatingMode = action.param(sgReadyOperatingModeActionOperatingModeParamTypeId).value().toInt();
+            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+            thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
+            if (operatingMode == 1) {
+                thing->setStateValue(sgReadyRelay1StateTypeId, 1);
+                thing->setStateValue(sgReadyRelay2StateTypeId, 0);
+            } else if (operatingMode == 2) {
+                thing->setStateValue(sgReadyRelay1StateTypeId, 0);
+                thing->setStateValue(sgReadyRelay2StateTypeId, 0);
+            } else if (operatingMode == 3) {
+                thing->setStateValue(sgReadyRelay1StateTypeId, 0);
+                thing->setStateValue(sgReadyRelay2StateTypeId, 1);
+            } else if (operatingMode == 4) {
+                thing->setStateValue(sgReadyRelay1StateTypeId, 1);
+                thing->setStateValue(sgReadyRelay2StateTypeId, 1);
+            }
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -801,6 +841,7 @@ void IntegrationPluginGenericThings::moveBlindToAngle(Action action, Thing *thin
     }
 }
 
+
 void IntegrationPluginGenericThings::thermostatCheckPowerOutputState(Thing *thing)
 {
     double targetTemperature = thing->stateValue(thermostatTargetTemperatureStateTypeId).toDouble();
@@ -813,5 +854,55 @@ void IntegrationPluginGenericThings::thermostatCheckPowerOutputState(Thing *thin
     } else {
         //Keep actual state
         //Possible improvement add boost action where powerState = true is forced inside the hysteresis
+    }
+}
+
+QString IntegrationPluginGenericThings::sgReadyOperatingModeDescription(int operatingMode)
+{
+    if (operatingMode == 1) {
+        return "Operating mode 1";
+    } else if (operatingMode == 2) {
+        return "Operating mode 2";
+    } else if (operatingMode == 3) {
+        return "Operating mode 3";
+    } else if (operatingMode == 4) {
+        return "Operating mode 4";
+    }
+    return QString("Unknown operating mode %1").arg(operatingMode);
+}
+
+int IntegrationPluginGenericThings::sgReadyOperatingMode(bool relay1, bool relay2)
+{
+    if (relay1 && !relay2) {
+        /*
+         * Betriebszustand 1 (1 Schaltzustand, bei Klemmenlösung: 1:0):
+         * Dieser Betriebszustand ist abwärtskompatibel zur häufig zu festen Uhrzeiten
+         * geschalteten EVU-Sperre und umfasst maximal 2 Stunden „harte“ Sperrzeit.
+        */
+        return 1;
+    } else if (!relay1 && !relay2) {
+        /*
+        * Betriebszustand 2 (1 Schaltzustand, bei Klemmenlösungen: 0:0):
+        * In dieser Schaltung läuft die Wärmepumpe im energieffizienten Normalbetrieb
+        * mit anteiliger Wärmespeicher-Füllung für die  maximal zweistündige EVU-Sperre.
+        */
+        return 2;
+    } else if (!relay1 && relay2) {
+        /*
+        * Betriebszustand 3 (1 Schaltzustand, bei Klemmenlösung 0:1):
+        * In diesem Betriebszustand läuft die Wärmepumpe innerhalb des Reglers im verstärkten
+        * Betrieb für Raumheizung und Warmwasserbereitung. Es handelt sich dabei nicht um einen
+        * definitiven Anlaufbefehl, sondern um eine Einschaltempfehlung entsprechend der heutigen Anhebung.
+        */
+        return 3;
+    } else {
+        /*
+        * Betriebszustand 4 (1 Schaltzustand, bei Klemmenlösung 1:1):
+        * Hierbei handelt es sich um einen definitiven Anlaufbefehl, insofern dieser im Rahmen der Regeleinstellungen möglich ist.
+        * Für diesen Betriebszustand müssen für verschiedene Tarif- und Nutzungsmodelle verschiedene Regelungsmodelle am Regler einstellbar sein:
+        * Variante 1: Die Wärmepumpe (Verdichter) wird aktiv eingeschaltet.
+        * Variante 2: Die Wärmepumpe (Verdichter und elektrische Zusatzheizungen) wird aktiv eingeschaltet, optional: höhere Temperatur in den Wärmespeichern
+        */
+        return 4;
     }
 }
