@@ -1,3 +1,10 @@
+nymea-plugins (0.24.1) xenial; urgency=medium
+
+  [ Bernhard Trinnes ]
+  * New  Plugin: LIFX
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 09 Nov 2020 15:07:05 +0100
+
 nymea-plugins (0.24.0) xenial; urgency=medium
 
   [ Christian Fetzer ]
