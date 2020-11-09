@@ -861,6 +861,80 @@ The name of the StateType ({0f808803-0e63-47df-b024-9685998ba663}) of ThingClass
         <extracomment>The name of the EventType ({0f808803-0e63-47df-b024-9685998ba663}) of ThingClass thermostat</extracomment>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Operating mode</source>
+        <extracomment>The name of the ParamType (ThingClass: sgReady, ActionType: operatingMode, ID: {85667640-d719-4be4-a5fa-e41193eea162})
+----------
+The name of the ParamType (ThingClass: sgReady, EventType: operatingMode, ID: {85667640-d719-4be4-a5fa-e41193eea162})
+----------
+The name of the StateType ({85667640-d719-4be4-a5fa-e41193eea162}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operating mode changed</source>
+        <extracomment>The name of the EventType ({85667640-d719-4be4-a5fa-e41193eea162}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operating mode description</source>
+        <extracomment>The name of the ParamType (ThingClass: sgReady, EventType: operatingModeDescription, ID: {b421d098-f6e9-40e2-b536-58acdb3a49fe})
+----------
+The name of the StateType ({b421d098-f6e9-40e2-b536-58acdb3a49fe}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operating mode description changed</source>
+        <extracomment>The name of the EventType ({b421d098-f6e9-40e2-b536-58acdb3a49fe}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Relay 1</source>
+        <extracomment>The name of the ParamType (ThingClass: sgReady, ActionType: relay1, ID: {d080466e-7271-441f-9916-1199a6668545})
+----------
+The name of the ParamType (ThingClass: sgReady, EventType: relay1, ID: {d080466e-7271-441f-9916-1199a6668545})
+----------
+The name of the StateType ({d080466e-7271-441f-9916-1199a6668545}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Relay 1 changed</source>
+        <extracomment>The name of the EventType ({d080466e-7271-441f-9916-1199a6668545}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Relay 2</source>
+        <extracomment>The name of the ParamType (ThingClass: sgReady, ActionType: relay2, ID: {caf22937-fdf7-41e1-a87b-d11e66c4f4c6})
+----------
+The name of the ParamType (ThingClass: sgReady, EventType: relay2, ID: {caf22937-fdf7-41e1-a87b-d11e66c4f4c6})
+----------
+The name of the StateType ({caf22937-fdf7-41e1-a87b-d11e66c4f4c6}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Relay 2 changed</source>
+        <extracomment>The name of the EventType ({caf22937-fdf7-41e1-a87b-d11e66c4f4c6}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SG-Ready</source>
+        <extracomment>The name of the ThingClass ({83cf138d-02dc-4015-9b03-6360c2f3cfb1})</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set operating mode</source>
+        <extracomment>The name of the ActionType ({85667640-d719-4be4-a5fa-e41193eea162}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set relay 1</source>
+        <extracomment>The name of the ActionType ({d080466e-7271-441f-9916-1199a6668545}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set relay 2</source>
+        <extracomment>The name of the ActionType ({caf22937-fdf7-41e1-a87b-d11e66c4f4c6}) of ThingClass sgReady</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IntegrationPluginGenericThings</name>
