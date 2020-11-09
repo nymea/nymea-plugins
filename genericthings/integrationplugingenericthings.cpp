@@ -251,6 +251,12 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 thermostatCheckPowerOutputState(thing);
             }
         });
+    } else if (thing->thingClassId() == sgReadyThingClassId) {
+        bool relay1 = thing->stateValue(sgReadyRelay1StateTypeId).toBool();
+        bool relay2 = thing->stateValue(sgReadyRelay2StateTypeId).toBool();
+        int operatingMode = sgReadyOperatingMode(relay1, relay2);
+        thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+        thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
     }
     info->finish(Thing::ThingErrorNoError);
 }
@@ -671,17 +677,17 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
             thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
             if (operatingMode == 1) {
-                thing->setStateValue(sgReadyRelay1StateTypeId, 1);
-                thing->setStateValue(sgReadyRelay2StateTypeId, 0);
+                thing->setStateValue(sgReadyRelay1StateTypeId, true);
+                thing->setStateValue(sgReadyRelay2StateTypeId, false);
             } else if (operatingMode == 2) {
-                thing->setStateValue(sgReadyRelay1StateTypeId, 0);
-                thing->setStateValue(sgReadyRelay2StateTypeId, 0);
+                thing->setStateValue(sgReadyRelay1StateTypeId, false);
+                thing->setStateValue(sgReadyRelay2StateTypeId, false);
             } else if (operatingMode == 3) {
-                thing->setStateValue(sgReadyRelay1StateTypeId, 0);
-                thing->setStateValue(sgReadyRelay2StateTypeId, 1);
+                thing->setStateValue(sgReadyRelay1StateTypeId, false);
+                thing->setStateValue(sgReadyRelay2StateTypeId, true);
             } else if (operatingMode == 4) {
-                thing->setStateValue(sgReadyRelay1StateTypeId, 1);
-                thing->setStateValue(sgReadyRelay2StateTypeId, 1);
+                thing->setStateValue(sgReadyRelay1StateTypeId, true);
+                thing->setStateValue(sgReadyRelay2StateTypeId, true);
             }
             info->finish(Thing::ThingErrorNoError);
             return;
@@ -860,13 +866,13 @@ void IntegrationPluginGenericThings::thermostatCheckPowerOutputState(Thing *thin
 QString IntegrationPluginGenericThings::sgReadyOperatingModeDescription(int operatingMode)
 {
     if (operatingMode == 1) {
-        return "Operating mode 1";
+        return "Stop heating.";
     } else if (operatingMode == 2) {
-        return "Operating mode 2";
+        return "Normal mode, with partial heat storage filling.";
     } else if (operatingMode == 3) {
-        return "Operating mode 3";
+        return "Increased room and heat storage temperature.";
     } else if (operatingMode == 4) {
-        return "Operating mode 4";
+        return "Start heating.";
     }
     return QString("Unknown operating mode %1").arg(operatingMode);
 }
@@ -875,33 +881,33 @@ int IntegrationPluginGenericThings::sgReadyOperatingMode(bool relay1, bool relay
 {
     if (relay1 && !relay2) {
         /*
-         * Betriebszustand 1 (1 Schaltzustand, bei Klemmenlösung: 1:0):
-         * Dieser Betriebszustand ist abwärtskompatibel zur häufig zu festen Uhrzeiten
-         * geschalteten EVU-Sperre und umfasst maximal 2 Stunden „harte“ Sperrzeit.
+          * Operating state 1 (Relay state: 1: 0):
+          * This operating state is downward compatible with the often fixed times
+          * activated EVU lock and includes a maximum of 2 hours of "hard" lock time.
         */
         return 1;
     } else if (!relay1 && !relay2) {
         /*
-        * Betriebszustand 2 (1 Schaltzustand, bei Klemmenlösungen: 0:0):
-        * In dieser Schaltung läuft die Wärmepumpe im energieffizienten Normalbetrieb
-        * mit anteiliger Wärmespeicher-Füllung für die  maximal zweistündige EVU-Sperre.
+         * Operating state 2 (Relay state: 0: 0):
+         * In this circuit, the heat pump runs in energy-efficient normal mode
+         * with partial heat storage filling for the maximum two-hour EVU lock.
         */
         return 2;
     } else if (!relay1 && relay2) {
         /*
-        * Betriebszustand 3 (1 Schaltzustand, bei Klemmenlösung 0:1):
-        * In diesem Betriebszustand läuft die Wärmepumpe innerhalb des Reglers im verstärkten
-        * Betrieb für Raumheizung und Warmwasserbereitung. Es handelt sich dabei nicht um einen
-        * definitiven Anlaufbefehl, sondern um eine Einschaltempfehlung entsprechend der heutigen Anhebung.
+         * Operating state 3 (Relay state: 0: 1):
+         * In this operating state, the heat pump within the controller runs in amplified mode
+         * Operation for space heating and hot water preparation. It's not one
+         * definitive start-up command, but a switch-on recommendation according to the current increase.
         */
         return 3;
     } else {
         /*
-        * Betriebszustand 4 (1 Schaltzustand, bei Klemmenlösung 1:1):
-        * Hierbei handelt es sich um einen definitiven Anlaufbefehl, insofern dieser im Rahmen der Regeleinstellungen möglich ist.
-        * Für diesen Betriebszustand müssen für verschiedene Tarif- und Nutzungsmodelle verschiedene Regelungsmodelle am Regler einstellbar sein:
-        * Variante 1: Die Wärmepumpe (Verdichter) wird aktiv eingeschaltet.
-        * Variante 2: Die Wärmepumpe (Verdichter und elektrische Zusatzheizungen) wird aktiv eingeschaltet, optional: höhere Temperatur in den Wärmespeichern
+         * Operating state 4 (Relay state 1: 1):
+         * This is a definitive start-up command, insofar as this is possible within the framework of the rule settings.
+         * For this operating state, different control models must be set on the controller for different tariff and usage models:
+         * Variant 1: The heat pump (compressor) is actively switched on.
+         * Variant 2: The heat pump (compressor and electrical auxiliary heating) is actively switched on, optional: higher temperature in the heat storage
         */
         return 4;
     }
