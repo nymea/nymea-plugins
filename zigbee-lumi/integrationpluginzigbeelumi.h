@@ -49,6 +49,7 @@ public:
 
     QString name() const override;
     bool handleNode(ZigbeeNode *node, const QUuid &networkUuid) override;
+    void handleRemoveNode(ZigbeeNode *node, const QUuid &networkUuid) override;
 
     void init() override;
     void setupThing(ThingSetupInfo *info) override;
@@ -61,6 +62,11 @@ private:
 
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_versionStateTypeIds;
+
+    QHash<QString, ThingClassId> m_knownLumiDevices;
+
+    QHash<Thing *, ZigbeeNode *> m_nodeThings;
 
     PluginTimer *m_presenceTimer = nullptr;
 };
