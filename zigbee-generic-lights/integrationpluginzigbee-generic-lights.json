@@ -1,0 +1,110 @@
+{
+    "name": "ZigbeeGenericLights",
+    "displayName": "Zigbee Generic Lights",
+    "id": "ee67f87d-d4cc-4223-a9f3-79e47c0267e0",
+    "vendors": [
+        {
+            "name": "nymea",
+            "displayName": "nymea",
+            "id": "2062d64d-3232-433c-88bc-0d33c0ba2ba6",
+            "thingClasses": [
+                {
+                    "name": "onOffLight",
+                    "displayName": "On/Off Light",
+                    "id": "7fbc3165-e618-4dc0-8255-8dac2cc08dfa",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "light", "alert", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "1b434d5d-4fe4-439c-b842-3483e8e24820",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE address",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "b3e298de-140c-4d3d-be81-0a9792359275",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "fd8a6ae6-202b-4634-824f-8d4b187430fa",
+                            "name": "endpointId",
+                            "displayName": "Endpoint ID",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "acb5e910-ed8b-4968-972e-5fc57f466b8a",
+                            "name": "manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "3d942b2d-302a-4c42-8cf5-be2865736736",
+                            "name": "model",
+                            "displayName": "Model",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7548ac08-4ea1-4dcd-98b9-9d58bbc06ab7",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5857943e-ed90-4321-966e-b56eddaf2441",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "f5b5e0b3-2c34-4ccc-baef-8e29b84e7a2b",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "ae03155c-f17f-4d9f-bb40-157a8cb1f83c",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "9388290d-5db2-484a-a702-53a0d842d412",
+                            "name": "alert",
+                            "displayName": "Identify"
+                        }
+                    ],
+                    "eventTypes": [
+
+                    ]
+                }
+            ]
+        }
+    ]
+}

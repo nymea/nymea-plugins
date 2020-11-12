@@ -141,10 +141,10 @@ void IntegrationPluginZigbeeLumi::handleRemoveNode(ZigbeeNode *node, const QUuid
 {
     Q_UNUSED(networkUuid)
 
-    if (m_nodeThings.values().contains(node)) {
-        Thing *thing = m_nodeThings.key(node);
-        qCDebug(dcZigbeeLumi()) << "Node for" << thing << node << "has left the network. Removing thing";
-        m_nodeThings.remove(thing);
+    if (m_thingNodes.values().contains(node)) {
+        Thing *thing = m_thingNodes.key(node);
+        qCDebug(dcZigbeeLumi()) << node << "for" << thing << "has left the network.";
+        m_thingNodes.remove(thing);
         emit autoThingDisappeared(thing->id());
     }
 }
@@ -157,10 +157,10 @@ void IntegrationPluginZigbeeLumi::init()
 void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
-    qCDebug(dcZigbeeLumi()) << "Nework uuid:" << networkUuid;
-    ZigbeeAddress zigbeeAddress = ZigbeeAddress(thing->paramValue(m_zigbeeAddressParamTypeIds.value(thing->thingClassId())).toString());
 
+    // Get the node for this thing
+    QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
+    ZigbeeAddress zigbeeAddress = ZigbeeAddress(thing->paramValue(m_zigbeeAddressParamTypeIds.value(thing->thingClassId())).toString());
     ZigbeeNode *node = hardwareManager()->zigbeeResource()->getNode(networkUuid, zigbeeAddress);
     if (!node) {
         qCWarning(dcZigbeeLumi()) << "Zigbee node for" << info->thing()->name() << "not found.´";
@@ -175,16 +175,14 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
         info->finish(Thing::ThingErrorSetupFailed);
         return;
     }
-    
-    m_nodeThings.insert(thing, node);
 
-    // General signals and states
+    // Store the node thing association for removing
+    m_thingNodes.insert(thing, node);
+
     // Update connected state
-    thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), hardwareManager()->zigbeeResource()->networkState(networkUuid) == ZigbeeNetwork::StateRunning);
-    connect(hardwareManager()->zigbeeResource(), &ZigbeeHardwareResource::networkStateChanged, thing, [thing, this](const QUuid &networkUuid, ZigbeeNetwork::State state){
-        if (thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid() == networkUuid) {
-            thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), state == ZigbeeNetwork::StateRunning);
-        }
+    thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), node->reachable());
+    connect(node, &ZigbeeNode::reachableChanged, thing, [thing, this](bool reachable){
+        thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), reachable);
     });
 
     // Update signal strength
@@ -198,7 +196,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     // Set the version
     thing->setStateValue(m_versionStateTypeIds.value(thing->thingClassId()), endpoint->softwareBuildId());
 
-
+    // Thing specific setup
     if (thing->thingClassId() == lumiMagnetSensorThingClassId) {
         ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
         if (onOffCluster) {
@@ -461,7 +459,7 @@ void IntegrationPluginZigbeeLumi::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginZigbeeLumi::thingRemoved(Thing *thing)
 {
-    ZigbeeNode *node = m_nodeThings.take(thing);
+    ZigbeeNode *node = m_thingNodes.take(thing);
     if (node) {
         QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
         hardwareManager()->zigbeeResource()->removeNodeFromNetwork(networkUuid, node);

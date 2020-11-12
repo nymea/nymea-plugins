@@ -28,24 +28,21 @@
 *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#ifndef INTEGRATIONPLUGINZIGBEELUMI_H
-#define INTEGRATIONPLUGINZIGBEELUMI_H
+#ifndef INTEGRATIONPLUGINZIGBEEGENERICLIGHTS_H
+#define INTEGRATIONPLUGINZIGBEEGENERICLIGHTS_H
 
 #include "integrations/integrationplugin.h"
 #include "hardware/zigbee/zigbeehandler.h"
-#include "plugintimer.h"
 
-#include <QTimer>
-
-class IntegrationPluginZigbeeLumi: public IntegrationPlugin, public ZigbeeHandler
+class IntegrationPluginZigbeeGenericLights: public IntegrationPlugin, public ZigbeeHandler
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbee-lumi.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbee-generic-lights.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:
-    explicit IntegrationPluginZigbeeLumi();
+    explicit IntegrationPluginZigbeeGenericLights();
 
     QString name() const override;
     bool handleNode(ZigbeeNode *node, const QUuid &networkUuid) override;
@@ -57,18 +54,18 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
+    QHash<ThingClassId, ParamTypeId> m_ieeeAddressParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_networkUuidParamTypeIds;
-    QHash<ThingClassId, ParamTypeId> m_zigbeeAddressParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_endpointIdParamTypeIds;
 
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_versionStateTypeIds;
 
-    QHash<QString, ThingClassId> m_knownLumiDevices;
-
     QHash<Thing *, ZigbeeNode *> m_thingNodes;
 
-    PluginTimer *m_presenceTimer = nullptr;
+    ZigbeeNodeEndpoint *findEndpoint(Thing *thing);
+
 };
 
-#endif // INTEGRATIONPLUGINZIGBEELUMI_H
+#endif // INTEGRATIONPLUGINZIGBEEGENERICLIGHTS_H

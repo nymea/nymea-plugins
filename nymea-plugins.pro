@@ -65,6 +65,7 @@ PLUGIN_DIRS = \
     wemo                \
     ws2812fx            \
     zigbee-generic      \
+    zigbee-generic-lights \
     zigbee-lumi         \
 
 
