@@ -402,6 +402,21 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
         });
     }
 
+    if (thing->thingClassId() == lumiButtonSensorThingClassId) {
+        ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (onOffCluster) {
+            connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [this, thing](bool power){
+                qCDebug(dcZigbeeLumi()) << thing << "state changed" << (power ? "closed" : "open");
+                if (!power) {
+                    emitEvent(Event(lumiButtonSensorPressedEventTypeId, thing->id()));
+                }
+            });
+        } else {
+            qCWarning(dcZigbeeLumi()) << "Could not find the OnOff input cluster on" << thing << endpoint;
+        }
+    }
+
+
 
     info->finish(Thing::ThingErrorNoError);
 
