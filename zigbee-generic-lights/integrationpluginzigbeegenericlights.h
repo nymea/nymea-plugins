@@ -66,6 +66,7 @@ private:
 
     ZigbeeNodeEndpoint *findEndpoint(Thing *thing);
 
+    void readLightPowerState(Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEGENERICLIGHTS_H

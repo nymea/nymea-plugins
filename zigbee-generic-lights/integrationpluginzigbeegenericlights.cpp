@@ -148,6 +148,7 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
     // Thing specific setup
     if (thing->thingClassId() == onOffLightThingClassId) {
 
+        // Get the on/off cluster
         ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
         if (!onOffCluster) {
             qCWarning(dcZigbeeGenericLights()) << "Could not find on/off cluster for" << thing << "in" << node;
@@ -155,11 +156,18 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
             return;
         }
 
+        // Update the power state if the node power value changes
         connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
             qCDebug(dcZigbeeGenericLights()) << thing << "power state changed" << power;
             thing->setStateValue(onOffLightPowerStateTypeId, power);
         });
 
+        // Read the power state once the node gets reachable
+        connect(node, &ZigbeeNode::reachableChanged, thing, [thing, this](bool reachable){
+            if (reachable) {
+                readLightPowerState(thing);
+            }
+        });
     }
 
     info->finish(Thing::ThingErrorNoError);
@@ -175,10 +183,10 @@ void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
     // Get the node
     Thing *thing = info->thing();
     ZigbeeNode *node = m_thingNodes.value(thing);
-    if (!node->reachable()) {
-        info->finish(Thing::ThingErrorHardwareNotAvailable);
-        return;
-    }
+//    if (!node->reachable()) {
+//        info->finish(Thing::ThingErrorHardwareNotAvailable);
+//        return;
+//    }
 
     // Get the endpoint
     ZigbeeNodeEndpoint *endpoint = findEndpoint(thing);
@@ -212,7 +220,7 @@ void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
         }
 
         if (info->action().actionTypeId() == onOffLightPowerActionTypeId) {
-            // Get the identify server cluster from the endpoint
+            // Get the on/off server cluster from the endpoint
             ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
             if (!onOffCluster) {
                 qCWarning(dcZigbeeGenericLights()) << "Could not find on/off cluster for" << thing << "in" << node;
@@ -222,13 +230,16 @@ void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
 
             // Send the command trough the network
             bool power = info->action().param(onOffLightPowerActionPowerParamTypeId).value().toBool();
+            qCDebug(dcZigbeeGenericLights()) << "Set power for" << thing << "to" << power;
             ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
             connect(reply, &ZigbeeClusterReply::finished, thing, [reply, info, power, thing](){
                 // Note: reply will be deleted automatically
                 if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                    qCWarning(dcZigbeeGenericLights()) << "Failed to set power on" << thing << reply->error();
                     info->finish(Thing::ThingErrorHardwareFailure);
                 } else {
                     info->finish(Thing::ThingErrorNoError);
+                    qCDebug(dcZigbeeGenericLights()) << "Set power finished successfully for" << thing;
                     thing->setStateValue(onOffLightPowerStateTypeId, power);
                 }
             });
@@ -258,4 +269,31 @@ ZigbeeNodeEndpoint *IntegrationPluginZigbeeGenericLights::findEndpoint(Thing *th
 
     quint8 endpointId = thing->paramValue(m_endpointIdParamTypeIds.value(thing->thingClassId())).toUInt();
     return node->getEndpoint(endpointId);
+}
+
+void IntegrationPluginZigbeeGenericLights::readLightPowerState(Thing *thing)
+{
+    // Get the node
+    ZigbeeNode *node = m_thingNodes.value(thing);
+    if (!node->reachable())
+        return;
+
+    // Get the endpoint
+    ZigbeeNodeEndpoint *endpoint = findEndpoint(thing);
+    if (!endpoint)
+        return;
+
+    // Get the on/off server cluster from the endpoint
+    ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+    if (!onOffCluster)
+        return;
+
+    qCDebug(dcZigbeeGenericLights()) << "Reading on/off power value for" << thing << "on" << node;
+    ZigbeeClusterReply *reply = onOffCluster->readAttributes({ZigbeeClusterOnOff::AttributeOnOff});
+    connect(reply, &ZigbeeClusterReply::finished, thing, [thing, reply](){
+        if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+            qCWarning(dcZigbeeGenericLights()) << "Failed to read on/off cluster attribute from" << thing << reply->error();
+            return;
+        }
+    });
 }
