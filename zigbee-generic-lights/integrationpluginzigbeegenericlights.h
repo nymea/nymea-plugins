@@ -54,19 +54,54 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
+    // Common thing params
     QHash<ThingClassId, ParamTypeId> m_ieeeAddressParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_networkUuidParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_endpointIdParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_modelIdParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_manufacturerIdParamTypeIds;
 
+    // Common states
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_versionStateTypeIds;
 
     QHash<Thing *, ZigbeeNode *> m_thingNodes;
 
+    // Get the endpoint for the given thing
     ZigbeeNodeEndpoint *findEndpoint(Thing *thing);
 
+    void createLightThing(const ThingClassId &thingClassId, const QUuid &networkUuid, ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
+    // Action help methods since they work all the same
+    void executeAlertAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint);
+    void executePowerAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint, const StateTypeId &powerStateTypeId, bool power);
+    void executeBrightnessAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint, const StateTypeId &powerStateTypeId, const StateTypeId &brightnessStateTypeId, int brightness, quint8 level);
+    void executeColorTemperatureAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint, const StateTypeId &colorTemperatureStateTypeId, int colorTemperatureScaled);
+
+    // Read state values from the node
     void readLightPowerState(Thing *thing);
+    void readLightLevelState(Thing *thing);
+    void readLightColorTemperatureState(Thing *thing);
+
+    // Color temperature information handling
+    typedef struct ColorTemperatureRange {
+        quint16 minValue = 250;
+        quint16 maxValue = 450;
+    } ColorTemperatureRange;
+
+    // Color temperature scaling range defined in
+    // all color temperature states/actions (the slider min/max)
+    int m_minScaleValue = 0;
+    int m_maxScaleValue = 200;
+
+    QHash<Thing *, ColorTemperatureRange> m_colorTemperatureRanges;
+
+    void readColorTemperatureRange(Thing *thing);
+    bool readCachedColorTemperatureRange(Thing *thing, ZigbeeClusterColorControl *colorCluster);
+    quint16 mapScaledValueToColorTemperature(Thing *thing, int scaledColorTemperature);
+    int mapColorTemperatureToScaledValue(Thing *thing, quint16 colorTemperature);
+
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEGENERICLIGHTS_H

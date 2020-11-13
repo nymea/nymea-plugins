@@ -56,8 +56,8 @@
                         {
                             "id": "7548ac08-4ea1-4dcd-98b9-9d58bbc06ab7",
                             "name": "connected",
-                            "displayName": "Available",
-                            "displayNameEvent": "Available changed",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "cached": false,
                             "defaultValue": false
@@ -98,6 +98,239 @@
                             "id": "9388290d-5db2-484a-a702-53a0d842d412",
                             "name": "alert",
                             "displayName": "Identify"
+                        }
+                    ],
+                    "eventTypes": [
+
+                    ]
+                },
+                {
+                    "name": "dimmableLight",
+                    "displayName": "Dimmable Light",
+                    "id": "b2eeb554-ca5c-46b5-a897-bc443fb186ea",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "dimmablelight", "alert", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "beab891f-c1b0-4b2c-88c4-216c8d19f9e2",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE address",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "81a82ed2-c465-4e53-a208-157d8473b16c",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "9472299b-b91b-456a-95fe-bf80d1a266a1",
+                            "name": "endpointId",
+                            "displayName": "Endpoint ID",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "d9044272-2d7d-46d2-b7bf-37239014f2df",
+                            "name": "manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "3e971afc-a6f1-429c-a902-69cba865c222",
+                            "name": "model",
+                            "displayName": "Model",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "2dc93a53-c506-41a5-9242-b5d045f51c40",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ab75980d-12f5-4ddc-be2d-dc54514a3b75",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "9390d2a6-7a17-4b42-8b35-cdb8b3d4d723",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "19d82a60-0009-4cff-966d-3b1c4fe358e1",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "6376376f-3221-4e6b-bce3-41872a6fc98a",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brightness",
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "int",
+                            "defaultValue": 100,
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a04d9e2b-e854-4361-bb34-2da74f8f028f",
+                            "name": "alert",
+                            "displayName": "Identify"
+                        }
+                    ],
+                    "eventTypes": [
+
+                    ]
+                },
+                {
+                    "name": "colorTemperatureLight",
+                    "displayName": "Color Temperature Light",
+                    "id": "498815c1-a6a3-48e9-9c9b-bff974694b26",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "colortemperaturelight", "alert", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "60abc695-c945-4e08-8ea3-21c4f05ff2f4",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE address",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "2f1799f0-76da-4147-89a0-1db93bb74872",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "8511c361-79c2-420c-93c2-89e97da1baff",
+                            "name": "endpointId",
+                            "displayName": "Endpoint ID",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "3b688ee1-dd08-4863-a221-70c4ccc062e9",
+                            "name": "manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "c58bef19-87e3-484c-9a5c-c0daa23092a3",
+                            "name": "model",
+                            "displayName": "Model",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "dd4eb1fe-4ddd-42fa-97bf-df690728c866",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "45e5b606-1e4d-42b8-9ee1-0442751247ef",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "477a1531-5f87-4f21-9b32-01161be93cd2",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "a8c56366-5b2d-4f4b-b910-38a87851c484",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "b72177f9-b673-49b5-864a-345936e5c821",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brightness",
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "int",
+                            "defaultValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "69e94f88-a664-4bb9-ba04-2c3ea6cd7569",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature scaled",
+                            "displayNameEvent": "Color temperature scaled changed",
+                            "displayNameAction": "Set color temperature scaled",
+                            "defaultValue": 100,
+                            "minValue": 0,
+                            "maxValue": 200,
+                            "type": "int",
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "4f8a38f4-652f-40e1-86dd-028dcd64349c",
+                            "name": "alert",
+                            "displayName": "Identify"
+                        },
+                        {
+                            "id": "a3e8d1c7-81c7-4255-b410-3bc4d5c7b4e9",
+                            "name": "removeFromNetwork",
+                            "displayName": "Remove from network"
                         }
                     ],
                     "eventTypes": [
