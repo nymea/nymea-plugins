@@ -49,6 +49,7 @@ public:
 
     QString name() const override;
     bool handleNode(ZigbeeNode *node, const QUuid &networkUuid) override;
+    void handleRemoveNode(ZigbeeNode *node, const QUuid &networkUuid) override;
 
     void init() override;
     void setupThing(ThingSetupInfo *info) override;
@@ -56,6 +57,7 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
+    QHash<Thing*, ZigbeeNode*> m_zigbeeNodes;
 
     QHash<ThingClassId, ParamTypeId> m_ieeeAddressParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_networkUuidParamTypeIds;

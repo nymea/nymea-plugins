@@ -33,6 +33,8 @@
 #include "plugininfo.h"
 #include "hardware/zigbee/zigbeehardwareresource.h"
 
+#include "zcl/hvac/zigbeeclusterthermostat.h"
+
 #include <QDebug>
 
 IntegrationPluginZigbeeGeneric::IntegrationPluginZigbeeGeneric()
@@ -78,6 +80,19 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
     return handled;
 }
 
+void IntegrationPluginZigbeeGeneric::handleRemoveNode(ZigbeeNode *node, const QUuid &networkUuid)
+{
+    Q_UNUSED(networkUuid)
+    Thing *thing = m_zigbeeNodes.key(node);
+    if (thing) {
+        qCDebug(dcZigbeeGeneric()) << node << "for" << thing << "has left the network.";
+        emit autoThingDisappeared(thing->id());
+
+        // Removing it from our map to prevent a loop that would ask the zigbee network to remove this node (see thingRemoved())
+        m_zigbeeNodes.remove(thing);
+    }
+}
+
 void IntegrationPluginZigbeeGeneric::init()
 {
     hardwareManager()->zigbeeResource()->registerHandler(this, ZigbeeHardwareResource::HandlerTypeCatchAll);
@@ -94,12 +109,14 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
     QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
     qCDebug(dcZigbeeGeneric()) << "Nework uuid:" << networkUuid;
     ZigbeeAddress zigbeeAddress = ZigbeeAddress(thing->paramValue(m_ieeeAddressParamTypeIds.value(thing->thingClassId())).toString());
-    ZigbeeNode *node = hardwareManager()->zigbeeResource()->getNode(networkUuid, zigbeeAddress);
+    ZigbeeNode *node = hardwareManager()->zigbeeResource()->claimNode(this, networkUuid, zigbeeAddress);
     if (!node) {
         qCWarning(dcZigbeeGeneric()) << "Zigbee node for" << info->thing()->name() << "not found.´";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }
+
+    m_zigbeeNodes.insert(thing, node);
 
     ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
     if (!endpoint) {
@@ -127,7 +144,8 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
     // Type specific setup
     if (thing->thingClassId() == thermostatThingClassId) {
         // TODO: Thermostat cluster is missing
-        // ZigbeeClusterThermostat *thermostatCluster = endpoint->inputCluster<ZigbeeClusterThermostat>(ZigbeeClusterLibrary::ClusterIdThermostat);
+//        ZigbeeClusterThermostat *thermostatCluster = endpoint->outputCluster<ZigbeeClusterThermostat>(ZigbeeClusterLibrary::ClusterIdThermostat);
+//        thermostatCluster->attribute(ZigbeeClusterLibrary::ClusterId);
     }
 
 
@@ -142,5 +160,9 @@ void IntegrationPluginZigbeeGeneric::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginZigbeeGeneric::thingRemoved(Thing *thing)
 {
-    Q_UNUSED(thing)
+    ZigbeeNode *node = m_zigbeeNodes.take(thing);
+    if (node) {
+        QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
+        hardwareManager()->zigbeeResource()->removeNodeFromNetwork(networkUuid, node);
+    }
 }
