@@ -165,7 +165,7 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
     ZigbeeAddress zigbeeAddress = ZigbeeAddress(thing->paramValue(m_ieeeAddressParamTypeIds.value(thing->thingClassId())).toString());
     ZigbeeNode *node = hardwareManager()->zigbeeResource()->claimNode(this, networkUuid, zigbeeAddress);
     if (!node) {
-        qCWarning(dcZigbeeGenericLights()) << "Zigbee node for" << info->thing()->name() << "not found.´";
+        qCWarning(dcZigbeeGenericLights()) << "Zigbee node for" << info->thing()->name() << "not found.";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }

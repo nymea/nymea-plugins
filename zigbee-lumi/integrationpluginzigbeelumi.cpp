@@ -46,6 +46,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_networkUuidParamTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketThingNetworkUuidParamTypeId;
 
     m_zigbeeAddressParamTypeIds[lumiHTSensorThingClassId] = lumiHTSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorThingIeeeAddressParamTypeId;
@@ -54,6 +55,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_zigbeeAddressParamTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorThingIeeeAddressParamTypeId;
+    m_zigbeeAddressParamTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketThingIeeeAddressParamTypeId;
 
     m_connectedStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorConnectedStateTypeId;
@@ -62,6 +64,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_connectedStateTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketConnectedStateTypeId;
 
     m_versionStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorVersionStateTypeId;
@@ -70,6 +73,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_versionStateTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorVersionStateTypeId;
+    m_versionStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketVersionStateTypeId;
 
     m_signalStrengthStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorSignalStrengthStateTypeId;
@@ -78,6 +82,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_signalStrengthStateTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketSignalStrengthStateTypeId;
 
     // Known model identifier
     m_knownLumiDevices.insert("lumi.sensor_ht", lumiHTSensorThingClassId);
@@ -87,6 +92,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_knownLumiDevices.insert("lumi.sensor_wleak", lumiWaterSensorThingClassId);
     m_knownLumiDevices.insert("lumi.weather", lumiWeatherSensorThingClassId);
     m_knownLumiDevices.insert("lumi.vibration", lumiVibrationSensorThingClassId);
+    m_knownLumiDevices.insert("lumi.plug", lumiPowerSocketThingClassId);
 }
 
 QString IntegrationPluginZigbeeLumi::name() const
@@ -415,45 +421,68 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     }
 
 
+    if (thing->thingClassId() == lumiPowerSocketThingClassId) {
+        ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (onOffCluster) {
+            if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
+                thing->setStateValue(lumiPowerSocketPowerStateTypeId, onOffCluster->power());
+            }
+
+            connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
+                qCDebug(dcZigbeeLumi()) << thing << "power changed" << power;
+                thing->setStateValue(lumiPowerSocketPowerStateTypeId, power);
+            });
+        } else {
+            qCWarning(dcZigbeeLumi()) << "Could not find the OnOff input cluster on" << thing << endpoint;
+        }
+    }
 
     info->finish(Thing::ThingErrorNoError);
-
-
-    //    if (thing->thingClassId() == lumiButtonSensorThingClassId) {
-    //        qCDebug(dcZigbee()) << "Lumi button sensor" << thing;
-    //        ZigbeeAddress ieeeAddress(thing->paramValue(lumiButtonSensorThingIeeeAddressParamTypeId).toString());
-    //        ZigbeeNetwork *network = findParentNetwork(thing);
-    //        LumiButtonSensor *sensor = new LumiButtonSensor(network, ieeeAddress, thing, this);
-    //        connect(sensor, &LumiButtonSensor::buttonPressed, this, [this, thing](){
-    //            qCDebug(dcZigbee()) << thing << "clicked event";
-    //            emit emitEvent(Event(lumiButtonSensorPressedEventTypeId, thing->id()));
-    //        });
-    //        connect(sensor, &LumiButtonSensor::buttonLongPressed, this, [this, thing](){
-    //            qCDebug(dcZigbee()) << thing << "long pressed event";
-    //            emit emitEvent(Event(lumiButtonSensorLongPressedEventTypeId, thing->id()));
-    //        });
-
-    //        m_zigbeeDevices.insert(thing, sensor);
-    //        info->finish(Thing::ThingErrorNoError);
-    //        return;
-    //    }
-
-
-    //    if (thing->thingClassId() == lumiWaterSensorThingClassId) {
-    //        qCDebug(dcZigbee()) << "Lumi water sensor" << thing;
-    //        ZigbeeAddress ieeeAddress(thing->paramValue(lumiWaterSensorThingIeeeAddressParamTypeId).toString());
-    //        ZigbeeNetwork *network = findParentNetwork(thing);
-    //        LumiWaterSensor *sensor = new LumiWaterSensor(network, ieeeAddress, thing, this);
-    //        m_zigbeeDevices.insert(thing, sensor);
-    //        info->finish(Thing::ThingErrorNoError);
-    //        return;
-    //    }
-
-    //    info->finish(Thing::ThingErrorThingClassNotFound);
 }
 
 void IntegrationPluginZigbeeLumi::executeAction(ThingActionInfo *info)
 {
+    Thing *thing = info->thing();
+
+    if (thing->thingClassId() == lumiPowerSocketThingClassId) {
+        ZigbeeNode *node = m_thingNodes.value(thing);
+        if (!node) {
+            qCWarning(dcZigbeeLumi()) << "Zigbee node for" << thing->name() << "not found.";
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+        if (!endpoint) {
+            qCWarning(dcZigbeeLumi()) << "Unable to get the endpoint from node" << node << "for" << thing;
+            info->finish(Thing::ThingErrorSetupFailed);
+            return;
+        }
+
+        ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster) {
+            qCWarning(dcZigbeeLumi()) << "Could not find on/off cluster for" << thing << "in" << node;
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        bool power = info->action().param(lumiPowerSocketPowerActionPowerParamTypeId).value().toBool();
+        qCDebug(dcZigbeeLumi()) << "Set power for" << info->thing() << "to" << power;
+        ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
+        connect(reply, &ZigbeeClusterReply::finished, info, [=](){
+            // Note: reply will be deleted automatically
+            if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeLumi()) << "Failed to set power on" << thing << reply->error();
+                info->finish(Thing::ThingErrorHardwareFailure);
+            } else {
+                info->finish(Thing::ThingErrorNoError);
+                qCDebug(dcZigbeeLumi()) << "Set power finished successfully for" << thing;
+                thing->setStateValue(lumiPowerSocketPowerStateTypeId, power);
+            }
+        });
+        return;
+    }
+
     info->finish(Thing::ThingErrorUnsupportedFeature);
 }
 
