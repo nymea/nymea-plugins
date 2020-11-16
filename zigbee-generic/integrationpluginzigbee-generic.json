@@ -13,7 +13,7 @@
                     "name": "thermostat",
                     "displayName": "Zigbee Thermostat",
                     "createMethods": ["auto"],
-                    "interfaces": ["thermostat", "wirelessconnectable"],
+                    "interfaces": ["thermostat", "temperaturesensor", "wirelessconnectable"],
                     "paramTypes": [
                     {
                         "id": "f38746d8-0084-43a3-b645-3ec743ea5fbc",
@@ -40,6 +40,15 @@
                             "unit": "DegreeCelsius",
                             "minValue": 0,
                             "maxValue": 50,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "497af03a-a893-438c-aba2-1bf3ecfc66c5",
+                            "name": "temperature",
+                            "displayName": "Current temperature",
+                            "displayNameEvent": "Current temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
                             "defaultValue": 0
                         },
                         {

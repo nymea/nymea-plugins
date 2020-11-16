@@ -63,6 +63,7 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
     bool handled = false;
 
     foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
+        qCDebug(dcZigbeeGeneric()) << "Checking ndoe endpoint:" << endpoint->endpointId() << endpoint->deviceId();
 
         if (devicesThingClassIdsMap.contains(endpoint->deviceId())) {
             ThingClassId thingClassId = devicesThingClassIdsMap.value(endpoint->deviceId());
@@ -100,16 +101,14 @@ void IntegrationPluginZigbeeGeneric::init()
 
 void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
 {
-    if (!hardwareManager()->zigbeeResource()->available()) {
-        qCWarning(dcZigbeeGeneric()) << "Zigbee is not available. Not setting up" << info->thing()->name();
-        info->finish(Thing::ThingErrorHardwareNotAvailable);
-        return;
-    }
     Thing *thing = info->thing();
     QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
     qCDebug(dcZigbeeGeneric()) << "Nework uuid:" << networkUuid;
     ZigbeeAddress zigbeeAddress = ZigbeeAddress(thing->paramValue(m_ieeeAddressParamTypeIds.value(thing->thingClassId())).toString());
-    ZigbeeNode *node = hardwareManager()->zigbeeResource()->claimNode(this, networkUuid, zigbeeAddress);
+    ZigbeeNode *node = m_zigbeeNodes.value(thing);
+    if (!node) {
+        node = hardwareManager()->zigbeeResource()->claimNode(this, networkUuid, zigbeeAddress);
+    }
     if (!node) {
         qCWarning(dcZigbeeGeneric()) << "Zigbee node for" << info->thing()->name() << "not found.´";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
@@ -126,11 +125,9 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
     }
 
     // Update connected state
-    thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), hardwareManager()->zigbeeResource()->networkState(networkUuid) == ZigbeeNetwork::StateRunning);
-    connect(hardwareManager()->zigbeeResource(), &ZigbeeHardwareResource::networkStateChanged, thing, [thing, this](const QUuid &networkUuid, ZigbeeNetwork::State state){
-        if (thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid() == networkUuid) {
-            thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), state == ZigbeeNetwork::StateRunning);
-        }
+    thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), node->reachable());
+    connect(node, &ZigbeeNode::reachableChanged, thing, [thing, this](bool reachable){
+        thing->setStateValue(m_connectedStateTypeIds.value(thing->thingClassId()), reachable);
     });
 
     // Update signal strength
@@ -143,12 +140,49 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
 
     // Type specific setup
     if (thing->thingClassId() == thermostatThingClassId) {
-        // TODO: Thermostat cluster is missing
-//        ZigbeeClusterThermostat *thermostatCluster = endpoint->outputCluster<ZigbeeClusterThermostat>(ZigbeeClusterLibrary::ClusterIdThermostat);
-//        thermostatCluster->attribute(ZigbeeClusterLibrary::ClusterId);
+        ZigbeeClusterThermostat *thermostatCluster = endpoint->inputCluster<ZigbeeClusterThermostat>(ZigbeeClusterLibrary::ClusterIdThermostat);
+        if (!thermostatCluster) {
+            qCWarning(dcZigbeeGeneric()) << "Failed to read thermostat cluster";
+            return;
+        }
+//        thermostatCluster->attribute(ZigbeeClusterLibrary::ClusterIdThermostat);
+
+        // We need to read them from the lamp
+        ZigbeeClusterReply *reply = thermostatCluster->readAttributes({ZigbeeClusterThermostat::AttributeLocalTemperature, ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint});
+        connect(reply, &ZigbeeClusterReply::finished, thing, [=](){
+            if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeGeneric()) << "Reading loacal temperature attribute finished with error" << reply->error();
+                return;
+            }
+
+            QList<ZigbeeClusterLibrary::ReadAttributeStatusRecord> attributeStatusRecords = ZigbeeClusterLibrary::parseAttributeStatusRecords(reply->responseFrame().payload);
+
+            foreach (const ZigbeeClusterLibrary::ReadAttributeStatusRecord &record, attributeStatusRecords) {
+                if (record.attributeId == ZigbeeClusterThermostat::AttributeLocalTemperature) {
+                    bool valueOk = false;
+                    quint16 localTemperature = record.dataType.toUInt16(&valueOk);
+                    if (!valueOk) {
+                        qCWarning(dcZigbeeGeneric()) << "Failed to read local temperature" << attributeStatusRecords;
+                        return;
+                    }
+                    thing->setStateValue(thermostatTemperatureStateTypeId, localTemperature * 0.01);
+                }
+
+                if (record.attributeId == ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint) {
+                    bool valueOk = false;
+                    quint16 targetTemperature = record.dataType.toUInt16(&valueOk);
+                    if (!valueOk) {
+                        qCWarning(dcZigbeeGeneric()) << "Failed to read local temperature" << attributeStatusRecords;
+                        return;
+                    }
+                    thing->setStateValue(thermostatTargetTemperatureStateTypeId, targetTemperature * 0.01);
+                }
+            }
+
+
+
+        });
     }
-
-
 
     info->finish(Thing::ThingErrorNoError);
 }
