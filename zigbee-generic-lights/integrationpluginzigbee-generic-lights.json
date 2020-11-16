@@ -336,6 +336,136 @@
                     "eventTypes": [
 
                     ]
+                },
+                {
+                    "name": "colorLight",
+                    "displayName": "Color Light",
+                    "id": "8d157281-73c0-4d2c-96a0-572d26e9dd4f",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "colorlight", "alert", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "03afaef5-0f68-494e-9153-745ca878f894",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE address",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "e409e8fe-9afa-407d-94fd-ec40f88f60f1",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "be14c4fe-5a19-4d0c-a546-2b68162ca707",
+                            "name": "endpointId",
+                            "displayName": "Endpoint ID",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "787d0c2e-c475-4426-a0ba-fe8ec89b1a4d",
+                            "name": "manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "a1ef07bf-260a-48cc-b7cb-423cbbf860af",
+                            "name": "model",
+                            "displayName": "Model",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "bc56076a-cfa3-4f93-bbf5-2fe9b067cdc3",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "62789a2c-c6e6-47b4-b022-29a2d183f690",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "084b8268-4ae6-482d-b42b-67a57b5a7147",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "16cfb549-5347-4dc9-b5de-e4028cb4dddd",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "7329b2eb-fb7e-4098-a551-c3ff24fc2962",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brightness",
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "int",
+                            "defaultValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "c2817667-afd0-434b-b0a3-e020d2c90082",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature scaled",
+                            "displayNameEvent": "Color temperature scaled changed",
+                            "displayNameAction": "Set color temperature scaled",
+                            "defaultValue": 100,
+                            "minValue": 0,
+                            "maxValue": 200,
+                            "type": "int",
+                            "writable": true
+                        },
+                        {
+                            "id": "51e8e6da-426c-4812-9c00-70f1356190dc",
+                            "name": "color",
+                            "displayName": "color",
+                            "displayNameEvent": "color changed",
+                            "displayNameAction": "Set color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "062fa97d-50b6-48ee-ab74-03701e4c7220",
+                            "name": "alert",
+                            "displayName": "Identify"
+                        }
+                    ],
+                    "eventTypes": [
+
+                    ]
                 }
             ]
         }

@@ -78,11 +78,13 @@ private:
     void executePowerAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint, const StateTypeId &powerStateTypeId, bool power);
     void executeBrightnessAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint, const StateTypeId &powerStateTypeId, const StateTypeId &brightnessStateTypeId, int brightness, quint8 level);
     void executeColorTemperatureAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint, const StateTypeId &colorTemperatureStateTypeId, int colorTemperatureScaled);
+    void executeColorAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint, const StateTypeId &colorStateTypeId, const QColor &color);
 
     // Read state values from the node
     void readLightPowerState(Thing *thing);
     void readLightLevelState(Thing *thing);
     void readLightColorTemperatureState(Thing *thing);
+    void readLightColorXYState(Thing *thing);
 
     // Color temperature information handling
     typedef struct ColorTemperatureRange {
@@ -96,6 +98,10 @@ private:
     int m_maxScaleValue = 200;
 
     QHash<Thing *, ColorTemperatureRange> m_colorTemperatureRanges;
+    QHash<Thing *, ZigbeeClusterColorControl::ColorCapabilities> m_colorCapabilities;
+
+    void readColorCapabilities(Thing *thing);
+    void processColorCapabilities(Thing *thing);
 
     void readColorTemperatureRange(Thing *thing);
     bool readCachedColorTemperatureRange(Thing *thing, ZigbeeClusterColorControl *colorCluster);

@@ -35,42 +35,52 @@
 
 #include <QDebug>
 
+#include <zigbeeutils.h>
+
 IntegrationPluginZigbeeGenericLights::IntegrationPluginZigbeeGenericLights()
 {
     // Common thing params map
     m_ieeeAddressParamTypeIds[onOffLightThingClassId] = onOffLightThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[dimmableLightThingClassId] = dimmableLightThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[colorLightThingClassId] = colorLightThingIeeeAddressParamTypeId;
 
     m_networkUuidParamTypeIds[onOffLightThingClassId] = onOffLightThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[dimmableLightThingClassId] = dimmableLightThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[colorLightThingClassId] = colorLightThingNetworkUuidParamTypeId;
 
     m_endpointIdParamTypeIds[onOffLightThingClassId] = onOffLightThingEndpointIdParamTypeId;
     m_endpointIdParamTypeIds[dimmableLightThingClassId] = dimmableLightThingEndpointIdParamTypeId;
     m_endpointIdParamTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightThingEndpointIdParamTypeId;
+    m_endpointIdParamTypeIds[colorLightThingClassId] = colorLightThingEndpointIdParamTypeId;
 
     m_manufacturerIdParamTypeIds[onOffLightThingClassId] = onOffLightThingManufacturerParamTypeId;
     m_manufacturerIdParamTypeIds[dimmableLightThingClassId] = dimmableLightThingManufacturerParamTypeId;
     m_manufacturerIdParamTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightThingManufacturerParamTypeId;
+    m_manufacturerIdParamTypeIds[colorLightThingClassId] = colorLightThingManufacturerParamTypeId;
 
     m_modelIdParamTypeIds[onOffLightThingClassId] = onOffLightThingModelParamTypeId;
     m_modelIdParamTypeIds[dimmableLightThingClassId] = dimmableLightThingModelParamTypeId;
     m_modelIdParamTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightThingModelParamTypeId;
+    m_modelIdParamTypeIds[colorLightThingClassId] = colorLightThingModelParamTypeId;
 
 
     // Common sates map
     m_connectedStateTypeIds[onOffLightThingClassId] = onOffLightConnectedStateTypeId;
     m_connectedStateTypeIds[dimmableLightThingClassId] = dimmableLightConnectedStateTypeId;
     m_connectedStateTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightConnectedStateTypeId;
+    m_connectedStateTypeIds[colorLightThingClassId] = colorLightConnectedStateTypeId;
 
     m_signalStrengthStateTypeIds[onOffLightThingClassId] = onOffLightSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[dimmableLightThingClassId] = dimmableLightSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[colorLightThingClassId] = colorLightSignalStrengthStateTypeId;
 
     m_versionStateTypeIds[onOffLightThingClassId] = onOffLightVersionStateTypeId;
     m_versionStateTypeIds[dimmableLightThingClassId] = dimmableLightVersionStateTypeId;
     m_versionStateTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightVersionStateTypeId;
+    m_versionStateTypeIds[colorLightThingClassId] = colorLightVersionStateTypeId;
 }
 
 QString IntegrationPluginZigbeeGenericLights::name() const
@@ -109,6 +119,15 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
 
             qCDebug(dcZigbeeGenericLights()) << "Handeling color temperature light for" << node << endpoint;
             createLightThing(colorTemperatureLightThingClassId, networkUuid, node, endpoint);
+            return true;
+        }
+
+        if ((endpoint->profile() == Zigbee::ZigbeeProfileLightLink && endpoint->deviceId() == Zigbee::LightLinkDeviceColourLight) ||
+                (endpoint->profile() == Zigbee::ZigbeeProfileLightLink && endpoint->deviceId() == Zigbee::LightLinkDeviceExtendedColourLight) ||
+                (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceExtendedColourLight)) {
+
+            qCDebug(dcZigbeeGenericLights()) << "Handeling color light for" << node << endpoint;
+            createLightThing(colorLightThingClassId, networkUuid, node, endpoint);
             return true;
         }
     }
@@ -340,6 +359,84 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
         });
     }
 
+    // Color temperature light
+    if (thing->thingClassId() == colorLightThingClassId) {
+
+        // Get the on/off cluster
+        ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster) {
+            qCWarning(dcZigbeeGenericLights()) << "Could not find on/off cluster for" << thing << "in" << node;
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        // Only set the state if the cluster actually has the attribute
+        if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
+            thing->setStateValue(colorLightPowerStateTypeId, onOffCluster->power());
+        }
+
+        // Update the power state if the node power value changes
+        connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
+            qCDebug(dcZigbeeGenericLights()) << thing << "power state changed" << power;
+            thing->setStateValue(colorLightPowerStateTypeId, power);
+        });
+
+
+        // Get the level cluster
+        ZigbeeClusterLevelControl *levelCluster = endpoint->inputCluster<ZigbeeClusterLevelControl>(ZigbeeClusterLibrary::ClusterIdLevelControl);
+        if (!levelCluster) {
+            qCWarning(dcZigbeeGenericLights()) << "Could not find level cluster for" << thing << "in" << node;
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        // Only set the state if the cluster actually has the attribute
+        if (levelCluster->hasAttribute(ZigbeeClusterLevelControl::AttributeCurrentLevel)) {
+            int percentage = qRound(levelCluster->currentLevel() * 100.0 / 255.0);
+            thing->setStateValue(colorLightBrightnessStateTypeId, percentage);
+        }
+
+        connect(levelCluster, &ZigbeeClusterLevelControl::currentLevelChanged, thing, [thing](quint8 level){
+            int percentage = qRound(level * 100.0 / 255.0);
+            qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << level << percentage << "%";
+            thing->setStateValue(colorLightBrightnessStateTypeId, percentage);
+        });
+
+
+        // Get color cluster
+        ZigbeeClusterColorControl *colorCluster = endpoint->inputCluster<ZigbeeClusterColorControl>(ZigbeeClusterLibrary::ClusterIdColorControl);
+        if (!colorCluster) {
+            qCWarning(dcZigbeeGenericLights()) << "Could not find color cluster for" << thing << "in" << node;
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        // Only set the state if the cluster actually has the attribute
+        if (colorCluster->hasAttribute(ZigbeeClusterColorControl::AttributeColorTemperatureMireds)) {
+            int mappedValue = mapColorTemperatureToScaledValue(thing, colorCluster->colorTemperatureMireds());
+            thing->setStateValue(colorLightColorTemperatureStateTypeId, mappedValue);
+        }
+
+        connect(colorCluster, &ZigbeeClusterColorControl::colorTemperatureMiredsChanged, thing, [this, thing](quint16 colorTemperatureMired){
+            qCDebug(dcZigbeeGenericLights()) << "Actual color temperature is" << colorTemperatureMired << "mireds";
+            int mappedValue = mapColorTemperatureToScaledValue(thing, colorTemperatureMired);
+            qCDebug(dcZigbeeGenericLights()) << "Mapped color temperature is" << mappedValue;
+            thing->setStateValue(colorLightColorTemperatureStateTypeId, mappedValue);
+        });
+
+        // Read the states once the node gets reachable
+        connect(node, &ZigbeeNode::reachableChanged, thing, [thing, this](bool reachable){
+            if (reachable) {
+                // Note: this will also read the color temperature range if available
+                readColorCapabilities(thing);
+                readLightPowerState(thing);
+                readLightLevelState(thing);
+                readLightColorXYState(thing);
+            }
+        });
+    }
+
+
     info->finish(Thing::ThingErrorNoError);
 }
 
@@ -428,6 +525,73 @@ void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
         }
     }
 
+    // Color light
+    if (thing->thingClassId() == colorLightThingClassId) {
+        if (info->action().actionTypeId() == colorLightAlertActionTypeId) {
+            executeAlertAction(info, endpoint);
+            return;
+        }
+
+        if (info->action().actionTypeId() == colorLightPowerActionTypeId) {
+            bool power = info->action().param(colorLightPowerActionPowerParamTypeId).value().toBool();
+            executePowerAction(info, endpoint, colorLightPowerStateTypeId, power);
+            return;
+        }
+
+        if (info->action().actionTypeId() == colorLightBrightnessActionTypeId) {
+            int brightness = info->action().param(colorLightBrightnessActionBrightnessParamTypeId).value().toInt();
+            quint8 level = static_cast<quint8>(qRound(255.0 * brightness / 100.0));
+            executeBrightnessAction(info, endpoint, colorLightPowerStateTypeId, colorLightBrightnessStateTypeId, brightness, level);
+            return;
+        }
+
+        if (info->action().actionTypeId() == colorLightColorTemperatureActionTypeId) {
+            int colorTemperatureScaled = info->action().param(colorLightColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
+            if (m_colorCapabilities[thing].testFlag(ZigbeeClusterColorControl::ColorCapabilityColorTemperature)) {
+                // Native color temperature available
+                executeColorTemperatureAction(info, endpoint, colorLightColorTemperatureStateTypeId, colorTemperatureScaled);
+                return;
+            }
+
+            // Note: there is no color temperature capability, we have to emulate the color using default min/max values
+            // Convert the scaled value into the min/max color temperature interval
+            quint16 colorTemperature = mapScaledValueToColorTemperature(thing, colorTemperatureScaled);
+            qCDebug(dcZigbeeGenericLights()) << "Mapping action value" << colorTemperatureScaled << "to the color temperature in the range of [" << m_colorTemperatureRanges[thing].minValue << "," << m_colorTemperatureRanges[thing].maxValue << "] -->" << colorTemperature << "mired";
+            // Note: the color temperature command/attribute is not supported. Using xy colors to interpolate the temperature colors
+            QColor temperatureColor = ZigbeeUtils::interpolateColorFromColorTemperature(colorTemperature, m_colorTemperatureRanges[thing].minValue, m_colorTemperatureRanges[thing].maxValue);
+            QPoint temperatureColorXyInt = ZigbeeUtils::convertColorToXYInt(temperatureColor);
+            qCDebug(dcZigbeeGenericLights()) << "Mapping interpolated value" << temperatureColor << "mired to the xy color" << temperatureColorXyInt;
+
+            // Set color
+            ZigbeeClusterColorControl *colorCluster = endpoint->inputCluster<ZigbeeClusterColorControl>(ZigbeeClusterLibrary::ClusterIdColorControl);
+            if (!colorCluster) {
+                qCWarning(dcZigbeeGenericLights()) << "Could not find color control cluster for" << thing << "in" << m_thingNodes.value(thing);
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            ZigbeeClusterReply *reply = colorCluster->commandMoveToColor(temperatureColorXyInt.x(), temperatureColorXyInt.y(), 2);
+            connect(reply, &ZigbeeClusterReply::finished, info, [=](){
+                if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                } else {
+                    qCDebug(dcZigbeeGenericLights()) << "Set color temperature" << colorTemperature << "mired finished successfully" << "(scalled" << colorTemperatureScaled << ")";
+                    thing->setStateValue(colorLightColorTemperatureStateTypeId, colorTemperatureScaled);
+                    info->finish(Thing::ThingErrorNoError);
+                }
+            });
+
+            return;
+        }
+
+        if (info->action().actionTypeId() == colorLightColorActionTypeId) {
+            QColor color = info->action().param(colorLightColorActionColorParamTypeId).value().value<QColor>();
+            QPoint xyColorInt = ZigbeeUtils::convertColorToXYInt(color);
+            qCDebug(dcZigbeeGenericLights()) << "Set color" << color.toRgb() << xyColorInt;
+            executeColorAction(info, endpoint, colorLightColorStateTypeId, color);
+            return;
+        }
+    }
 
 
     info->finish(Thing::ThingErrorUnsupportedFeature);
@@ -570,6 +734,30 @@ void IntegrationPluginZigbeeGenericLights::executeColorTemperatureAction(ThingAc
     });
 }
 
+void IntegrationPluginZigbeeGenericLights::executeColorAction(ThingActionInfo *info, ZigbeeNodeEndpoint *endpoint, const StateTypeId &colorStateTypeId, const QColor &color)
+{
+    Thing *thing = info->thing();
+    ZigbeeClusterColorControl *colorCluster = endpoint->inputCluster<ZigbeeClusterColorControl>(ZigbeeClusterLibrary::ClusterIdColorControl);
+    if (!colorCluster) {
+        qCWarning(dcZigbeeGenericLights()) << "Could not find color control cluster for" << thing << "in" << m_thingNodes.value(thing);
+        info->finish(Thing::ThingErrorHardwareFailure);
+        return;
+    }
+
+    // Note: time unit is 1/10 s
+    QPoint colorXyInt = ZigbeeUtils::convertColorToXYInt(color);
+    ZigbeeClusterReply *reply = colorCluster->commandMoveToColor(colorXyInt.x(), colorXyInt.y(), 2);
+    connect(reply, &ZigbeeClusterReply::finished, info, [=](){
+        // Note: reply will be deleted automatically
+        if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+            info->finish(Thing::ThingErrorHardwareFailure);
+        } else {
+            info->finish(Thing::ThingErrorNoError);
+            thing->setStateValue(colorStateTypeId, color);
+        }
+    });
+}
+
 void IntegrationPluginZigbeeGenericLights::readLightPowerState(Thing *thing)
 {
     // Get the node
@@ -646,6 +834,123 @@ void IntegrationPluginZigbeeGenericLights::readLightColorTemperatureState(Thing 
             return;
         }
     });
+}
+
+void IntegrationPluginZigbeeGenericLights::readLightColorXYState(Thing *thing)
+{
+    ZigbeeNodeEndpoint *endpoint = findEndpoint(thing);
+    if (!endpoint) {
+        qCWarning(dcZigbeeGenericLights()) << "Failed to read color xy for" << thing << "because the node could not be found";
+        return;
+    }
+
+    // Get the color server cluster from the endpoint
+    ZigbeeClusterColorControl *colorCluster = endpoint->inputCluster<ZigbeeClusterColorControl>(ZigbeeClusterLibrary::ClusterIdColorControl);
+    if (!colorCluster) {
+        qCWarning(dcZigbeeGenericLights()) << "Failed to read color xy for" << thing << "because the color cluster could not be found on" << endpoint;
+        return;
+    }
+
+    ZigbeeClusterReply *reply = colorCluster->readAttributes({ZigbeeClusterColorControl::AttributeCurrentX, ZigbeeClusterColorControl::AttributeCurrentY});
+    connect(reply, &ZigbeeClusterReply::finished, thing, [=](){
+        if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+            qCWarning(dcZigbeeGenericLights()) << "Failed to read ColorControl cluster attribute" << reply->error();
+            return;
+        }
+
+        // Note: the attribute gets updated internally and the state gets updated with the currentLevelChanged signal
+        qCDebug(dcZigbeeGenericLights()) << "Reading ColorControl cluster attribute color x and y finished successfully";
+
+        QList<ZigbeeClusterLibrary::ReadAttributeStatusRecord> attributeStatusRecords = ZigbeeClusterLibrary::parseAttributeStatusRecords(reply->responseFrame().payload);
+        if (attributeStatusRecords.count() != 2) {
+            qCWarning(dcZigbeeGenericLights()) << "Did not receive color x and y attribute values from" << thing;
+            return;
+        }
+
+        // Parse the attribute status records and calculate the color
+        quint16 currentX = 0; quint16 currentY = 0;
+        foreach (const ZigbeeClusterLibrary::ReadAttributeStatusRecord &attributeStatusRecord, attributeStatusRecords) {
+            qCDebug(dcZigbeeGenericLights()) << "Received read attribute status record" << thing << attributeStatusRecord;
+            if (attributeStatusRecord.attributeId == ZigbeeClusterColorControl::AttributeCurrentX) {
+                bool valueOk = false;
+                currentX = attributeStatusRecord.dataType.toUInt16(&valueOk);
+                if (!valueOk) {
+                    qCWarning(dcZigbeeGenericLights()) << "Failed to convert color x attribute values from" << thing << attributeStatusRecord;
+                    return;
+                }
+                continue;
+            }
+
+            if (attributeStatusRecord.attributeId == ZigbeeClusterColorControl::AttributeCurrentY) {
+                bool valueOk = false;
+                currentY = attributeStatusRecord.dataType.toUInt16(&valueOk);
+                if (!valueOk) {
+                    qCWarning(dcZigbeeGenericLights()) << "Failed to convert color y attribute values from" << thing << attributeStatusRecord;
+                    return;
+                }
+                continue;
+            }
+        }
+
+        // Set the current color
+        QColor color = ZigbeeUtils::convertXYToColor(currentX, currentY);
+        qCDebug(dcZigbeeGenericLights()) << "Current color" << color.toRgb() << QPoint(currentX, currentY);
+        thing->setStateValue(colorLightColorStateTypeId, color);
+    });
+}
+
+void IntegrationPluginZigbeeGenericLights::readColorCapabilities(Thing *thing)
+{
+    ZigbeeNodeEndpoint *endpoint = findEndpoint(thing);
+    if (!endpoint) {
+        qCWarning(dcZigbeeGenericLights()) << "Failed to read color capabilities for" << thing << "because the node could not be found";
+        return;
+    }
+
+    // Get the color server cluster from the endpoint
+    ZigbeeClusterColorControl *colorCluster = endpoint->inputCluster<ZigbeeClusterColorControl>(ZigbeeClusterLibrary::ClusterIdColorControl);
+    if (!colorCluster) {
+        qCWarning(dcZigbeeGenericLights()) << "Failed to read color color capabilities for" << thing << "because the color cluster could not be found on" << endpoint;
+        return;
+    }
+
+    // Check if we know already the color capabilities for this lamp
+    if (colorCluster->hasAttribute(ZigbeeClusterColorControl::AttributeColorCapabilities)) {
+        m_colorCapabilities[thing] = colorCluster->colorCapabilities();
+        qCDebug(dcZigbeeGenericLights()) << "Found cached color capabilities for" << thing << colorCluster->colorCapabilities();
+        processColorCapabilities(thing);
+        return;
+    }
+
+    // We have to read the color capabilities
+    ZigbeeClusterReply *reply = colorCluster->readAttributes({ZigbeeClusterColorControl::AttributeColorCapabilities});
+    connect(reply, &ZigbeeClusterReply::finished, thing, [=](){
+        if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+            qCWarning(dcZigbeeGenericLights()) << "Failed to read color capabilitie for" << thing << "because the node could not be found";
+            return;
+        }
+
+        m_colorCapabilities[thing] = colorCluster->colorCapabilities();
+        processColorCapabilities(thing);
+    });
+}
+
+void IntegrationPluginZigbeeGenericLights::processColorCapabilities(Thing *thing)
+{
+    // Fetch all information required depending on the capabilities
+    qCDebug(dcZigbeeGenericLights()) << "Loading information depending on the lamp capabilities" << thing << m_colorCapabilities[thing];
+    if (m_colorCapabilities[thing].testFlag(ZigbeeClusterColorControl::ColorCapabilityColorTemperature)) {
+        qCDebug(dcZigbeeGenericLights()) << "The lamp is capable of native controlling the color temperature";
+
+        // Read min/max value, otherwise emulate the color temperature using the color map
+        readColorTemperatureRange(thing);
+    } else {
+        qCDebug(dcZigbeeGenericLights()) << "The lamp has no native color temperature capability, emulating them using color map.";
+
+        // TODO: continue with color fetching (xy, hsv, gamut values)
+
+        qCDebug(dcZigbeeGenericLights()) << "Lamp capabilities information complete";
+    }
 }
 
 void IntegrationPluginZigbeeGenericLights::readColorTemperatureRange(Thing *thing)
