@@ -67,6 +67,7 @@ PLUGIN_DIRS = \
     zigbee-generic      \
     zigbee-generic-lights \
     zigbee-lumi         \
+    zigbee-tradfri      \
 
 
 message(============================================)
