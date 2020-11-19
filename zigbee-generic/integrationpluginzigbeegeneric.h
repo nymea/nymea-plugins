@@ -57,13 +57,22 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
-    QHash<Thing*, ZigbeeNode*> m_zigbeeNodes;
+    QHash<Thing*, ZigbeeNode*> m_thingNodes;
 
     QHash<ThingClassId, ParamTypeId> m_ieeeAddressParamTypeIds;
     QHash<ThingClassId, ParamTypeId> m_networkUuidParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_endpointIdParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_modelIdParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_manufacturerIdParamTypeIds;
 
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_versionStateTypeIds;
+
+    // Get the endpoint for the given thing
+    ZigbeeNodeEndpoint *findEndpoint(Thing *thing);
+    void createThing(const ThingClassId &thingClassId, const QUuid &networkUuid, ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEGENERIC_H

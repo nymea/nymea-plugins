@@ -90,6 +90,7 @@ QString IntegrationPluginZigbeeGenericLights::name() const
 
 bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QUuid &networkUuid)
 {
+    bool handled = false;
     foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
         if ((endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileLightLink &&
              endpoint->deviceId() == Zigbee::LightLinkDevice::LightLinkDeviceOnOffLight) ||
@@ -98,7 +99,7 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
 
             qCDebug(dcZigbeeGenericLights()) << "Handeling on/off light for" << node << endpoint;
             createLightThing(onOffLightThingClassId, networkUuid, node, endpoint);
-            return true;
+            handled = true;
         }
 
         if ((endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileLightLink &&
@@ -108,7 +109,7 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
 
             qCDebug(dcZigbeeGenericLights()) << "Handeling dimmable light for" << node << endpoint;
             createLightThing(dimmableLightThingClassId, networkUuid, node, endpoint);
-            return true;
+            handled = true;
         }
 
 
@@ -119,7 +120,7 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
 
             qCDebug(dcZigbeeGenericLights()) << "Handeling color temperature light for" << node << endpoint;
             createLightThing(colorTemperatureLightThingClassId, networkUuid, node, endpoint);
-            return true;
+            handled = true;
         }
 
         if ((endpoint->profile() == Zigbee::ZigbeeProfileLightLink && endpoint->deviceId() == Zigbee::LightLinkDeviceColourLight) ||
@@ -128,11 +129,11 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
 
             qCDebug(dcZigbeeGenericLights()) << "Handeling color light for" << node << endpoint;
             createLightThing(colorLightThingClassId, networkUuid, node, endpoint);
-            return true;
+            handled = true;
         }
     }
 
-    return false;
+    return handled;
 }
 
 void IntegrationPluginZigbeeGenericLights::handleRemoveNode(ZigbeeNode *node, const QUuid &networkUuid)

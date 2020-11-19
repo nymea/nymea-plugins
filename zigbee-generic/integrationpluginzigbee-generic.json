@@ -15,20 +15,41 @@
                     "createMethods": ["auto"],
                     "interfaces": ["thermostat", "temperaturesensor", "wirelessconnectable"],
                     "paramTypes": [
-                    {
-                        "id": "f38746d8-0084-43a3-b645-3ec743ea5fbc",
-                        "name": "ieeeAddress",
-                        "displayName": "IEEE adress",
-                        "type": "QString",
-                        "defaultValue": "00:00:00:00:00:00:00:00"
-                    },
-                    {
-                        "id": "4a92b536-de4c-4701-8117-9bb26dd51c3e",
-                        "name": "networkUuid",
-                        "displayName": "Zigbee network UUID",
-                        "type": "QString",
-                        "defaultValue": ""
-                    }
+                        {
+                            "id": "f38746d8-0084-43a3-b645-3ec743ea5fbc",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "4a92b536-de4c-4701-8117-9bb26dd51c3e",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "138a529d-1d85-410a-9d83-93ebc9a5f8ca",
+                            "name": "endpointId",
+                            "displayName": "Endpoint ID",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "ae76acb0-40f4-440b-8ae7-16969fe6c91a",
+                            "name": "manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "4262cfc6-4b04-49fd-af2b-765afca53b0b",
+                            "name": "model",
+                            "displayName": "Model",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
                     ],
                     "stateTypes": [
                         {
@@ -70,7 +91,113 @@
                             "minValue": 0,
                             "type": "uint",
                             "unit": "Percentage"
+                        },
+                        {
+                            "id": "c8bd12d2-b425-4422-9e0e-a65542a47b70",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
                         }
+                    ]
+                },
+                {
+                    "name": "powerSocket",
+                    "displayName": "Power socket",
+                    "id": "800a8df8-06cb-4d93-8334-944fcce9651a",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "powersocket", "alert", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "1db22159-08a3-43d0-b515-7b34211b1d04",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "26e92d1d-bc2f-4ccd-ad1f-d6d6189d2609",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "c7cbda61-2b84-4f2f-a40d-bcbe0efad08c",
+                            "name": "endpointId",
+                            "displayName": "Endpoint ID",
+                            "type": "uint",
+                            "defaultValue": 1
+                        },
+                        {
+                            "id": "8daa4709-1dc1-4717-a529-b78e32002b59",
+                            "name": "manufacturer",
+                            "displayName": "Manufacturer",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "ad03bc04-857a-43a9-8bea-a3c9db24461a",
+                            "name": "model",
+                            "displayName": "Model",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b5abd47e-95f1-4e35-94fa-be87c396073a",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "21889797-32c0-4f1b-903d-8af71981882b",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "41c74445-4d2d-46dc-8a63-c98f1df8e742",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "2c8268b9-d76b-415a-b2e9-6bfeabd98a76",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "4e3b1430-d98e-4f05-bae6-301dac34bd4b",
+                            "name": "alert",
+                            "displayName": "Identify"
+                        }
+                    ],
+                    "eventTypes": [
+
                     ]
                 }
             ]
