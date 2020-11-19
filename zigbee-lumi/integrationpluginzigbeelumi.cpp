@@ -47,6 +47,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_networkUuidParamTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[lumiRelayThingClassId] = lumiRelayThingNetworkUuidParamTypeId;
 
     m_zigbeeAddressParamTypeIds[lumiHTSensorThingClassId] = lumiHTSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorThingIeeeAddressParamTypeId;
@@ -56,6 +57,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_zigbeeAddressParamTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketThingIeeeAddressParamTypeId;
+    m_zigbeeAddressParamTypeIds[lumiRelayThingClassId] = lumiRelayThingIeeeAddressParamTypeId;
 
     m_connectedStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorConnectedStateTypeId;
@@ -65,6 +67,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_connectedStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketConnectedStateTypeId;
+    m_connectedStateTypeIds[lumiRelayThingClassId] = lumiRelayConnectedStateTypeId;
 
     m_versionStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorVersionStateTypeId;
@@ -74,6 +77,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_versionStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketVersionStateTypeId;
+    m_versionStateTypeIds[lumiRelayThingClassId] = lumiRelayVersionStateTypeId;
 
     m_signalStrengthStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorSignalStrengthStateTypeId;
@@ -83,6 +87,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_signalStrengthStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[lumiRelayThingClassId] = lumiRelaySignalStrengthStateTypeId;
 
     // Known model identifier
     m_knownLumiDevices.insert("lumi.sensor_ht", lumiHTSensorThingClassId);
@@ -93,6 +98,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_knownLumiDevices.insert("lumi.weather", lumiWeatherSensorThingClassId);
     m_knownLumiDevices.insert("lumi.vibration", lumiVibrationSensorThingClassId);
     m_knownLumiDevices.insert("lumi.plug", lumiPowerSocketThingClassId);
+    m_knownLumiDevices.insert("lumi.relay", lumiRelayThingClassId);
 }
 
 QString IntegrationPluginZigbeeLumi::name() const
@@ -136,7 +142,6 @@ bool IntegrationPluginZigbeeLumi::handleNode(ZigbeeNode *node, const QUuid &netw
         params << Param(m_zigbeeAddressParamTypeIds.value(thingClassId), node->extendedAddress().toString());
         descriptor.setParams(params);
         emit autoThingsAppeared({descriptor});
-
         return true;
     }
 
@@ -437,6 +442,47 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
         }
     }
 
+    if (thing->thingClassId() == lumiRelayThingClassId) {
+        // Get the 2 endpoints
+        ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
+        if (!endpoint1) {
+            ZigbeeClusterOnOff *onOffCluster = endpoint1->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+            if (onOffCluster) {
+                if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
+                    thing->setStateValue(lumiRelayRelay1StateTypeId, onOffCluster->power());
+                }
+
+                connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
+                    qCDebug(dcZigbeeLumi()) << thing << "power changed" << power;
+                    thing->setStateValue(lumiRelayRelay1StateTypeId, power);
+                });
+            } else {
+                qCWarning(dcZigbeeLumi()) << "Could not find the OnOff input cluster on" << thing << endpoint1;
+            }
+        } else {
+            qCWarning(dcZigbeeLumi()) << "Could not find endpoint 1 on" << thing << node;
+        }
+
+        ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02);
+        if (!endpoint2) {
+            ZigbeeClusterOnOff *onOffCluster = endpoint2->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+            if (onOffCluster) {
+                if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
+                    thing->setStateValue(lumiRelayRelay2StateTypeId, onOffCluster->power());
+                }
+
+                connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
+                    qCDebug(dcZigbeeLumi()) << thing << "power changed" << power;
+                    thing->setStateValue(lumiRelayRelay2StateTypeId, power);
+                });
+            } else {
+                qCWarning(dcZigbeeLumi()) << "Could not find the OnOff input cluster on" << thing << endpoint1;
+            }
+        } else {
+            qCWarning(dcZigbeeLumi()) << "Could not find endpoint 2 on" << thing << node;
+        }
+    }
+
     info->finish(Thing::ThingErrorNoError);
 }
 
@@ -447,7 +493,7 @@ void IntegrationPluginZigbeeLumi::executeAction(ThingActionInfo *info)
     if (thing->thingClassId() == lumiPowerSocketThingClassId) {
         ZigbeeNode *node = m_thingNodes.value(thing);
         if (!node) {
-            qCWarning(dcZigbeeLumi()) << "Zigbee node for" << thing->name() << "not found.";
+            qCWarning(dcZigbeeLumi()) << "Zigbee node for" << thing << "not found.";
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
@@ -481,6 +527,69 @@ void IntegrationPluginZigbeeLumi::executeAction(ThingActionInfo *info)
             }
         });
         return;
+    }
+
+    if (thing->thingClassId() == lumiRelayThingClassId) {
+        ZigbeeNode *node = m_thingNodes.value(thing);
+        if (!node) {
+            qCWarning(dcZigbeeLumi()) << "Zigbee node for" << thing << "not found.";
+            info->finish(Thing::ThingErrorHardwareFailure);
+            return;
+        }
+
+        if (info->action().actionTypeId() == lumiRelayRelay1ActionTypeId) {
+            ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+            if (!endpoint) {
+                qCWarning(dcZigbeeLumi()) << "Unable to get the endpoint from node" << node << "for" << thing;
+                info->finish(Thing::ThingErrorSetupFailed);
+                return;
+            }
+
+            ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+            if (!onOffCluster) {
+                qCWarning(dcZigbeeLumi()) << "Unable to get the OnOff cluster from endpoint" << endpoint << "on" << node << "for" << thing;
+                info->finish(Thing::ThingErrorSetupFailed);
+                return;
+            }
+            bool power = info->action().param(lumiRelayRelay1ActionRelay1ParamTypeId).value().toBool();
+            ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
+            connect(reply, &ZigbeeClusterReply::finished, this, [=](){
+                // Note: reply will be deleted automatically
+                if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                } else {
+                    info->finish(Thing::ThingErrorNoError);
+                    thing->setStateValue(lumiRelayRelay1StateTypeId, power);
+                }
+            });
+        }
+
+        if (info->action().actionTypeId() == lumiRelayRelay2ActionTypeId) {
+            ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x02);
+            if (!endpoint) {
+                qCWarning(dcZigbeeLumi()) << "Unable to get the endpoint from node" << node << "for" << thing;
+                info->finish(Thing::ThingErrorSetupFailed);
+                return;
+            }
+
+            ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+            if (!onOffCluster) {
+                qCWarning(dcZigbeeLumi()) << "Unable to get the OnOff cluster from endpoint" << endpoint << "on" << node << "for" << thing;
+                info->finish(Thing::ThingErrorSetupFailed);
+                return;
+            }
+            bool power = info->action().param(lumiRelayRelay2ActionRelay2ParamTypeId).value().toBool();
+            ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
+            connect(reply, &ZigbeeClusterReply::finished, this, [=](){
+                // Note: reply will be deleted automatically
+                if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                    info->finish(Thing::ThingErrorHardwareFailure);
+                } else {
+                    info->finish(Thing::ThingErrorNoError);
+                    thing->setStateValue(lumiRelayRelay2StateTypeId, power);
+                }
+            });
+        }
     }
 
     info->finish(Thing::ThingErrorUnsupportedFeature);

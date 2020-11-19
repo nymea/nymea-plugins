@@ -238,7 +238,8 @@
                             "displayName": "Closed",
                             "displayNameEvent": "Closed changed",
                             "type": "bool",
-                            "defaultValue": true
+                            "defaultValue": true,
+                            "ioType": "digitalInput"
                         }
                     ],
                     "actionTypes": [
@@ -387,7 +388,8 @@
                             "displayName": "Present",
                             "displayNameEvent": "Present changed",
                             "type": "bool",
-                            "defaultValue": true
+                            "defaultValue": true,
+                            "ioType": "digitalInput"
                         },
                         {
                             "id": "021ce190-a775-40e0-b19b-c6307c73e343",
@@ -474,7 +476,8 @@
                             "displayName": "Water detected",
                             "displayNameEvent": "Water detected changed",
                             "type": "bool",
-                            "defaultValue": true
+                            "defaultValue": true,
+                            "ioType": "digitalInput"
                         },
                         {
                             "id": "72aa617c-88cc-4992-a1a2-400b5e19106e",
@@ -618,7 +621,8 @@
                             "displayNameAction": "Set power",
                             "type": "bool",
                             "defaultValue": false,
-                            "writable": true
+                            "writable": true,
+                            "ioType": "digitalOutput"
                         }
                     ],
                     "actionTypes": [
@@ -627,6 +631,89 @@
                             "name": "alert",
                             "displayName": "Identify"
                         }
+                    ],
+                    "eventTypes": [
+
+                    ]
+                },
+                {
+                    "name": "lumiRelay",
+                    "displayName": "Relay",
+                    "id": "8e381cb1-2caa-4261-be77-e76a538bf67a",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "f4a51b83-9cfa-402f-9d2a-e42933e33660",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "b5783bb8-ae1d-4e93-84f9-3f1e8c59b955",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "b12d1765-0b2e-4e95-b5ef-780d27fdda44",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "bc22b220-003f-4f19-9aef-21c4049c5a0e",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "ca1a8d08-4423-4401-bca7-d52b11e54ed9",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                           "id": "486e0df0-cbda-4b67-b844-6f70e5af6891",
+                           "name": "relay1",
+                           "displayName": "Relay 1",
+                           "displayNameEvent": "Relay 1 changed",
+                           "displayNameAction": "Set relay 1",
+                           "type": "bool",
+                           "writable": true,
+                           "defaultValue": false,
+                           "ioType": "digitalOutput"
+                       },
+                       {
+                           "id": "2caa4f0f-661e-4b59-83e5-8417058e48fd",
+                           "name": "relay2",
+                           "displayName": "Relay 2",
+                           "displayNameEvent": "Relay 2 changed",
+                           "displayNameAction": "Set relay 2",
+                           "type": "bool",
+                           "writable": true,
+                           "defaultValue": false,
+                           "ioType": "digitalOutput"
+                       }
+                    ],
+                    "actionTypes": [
+
                     ],
                     "eventTypes": [
 
