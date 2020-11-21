@@ -329,8 +329,8 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
             QUuid commandId = avrConnection->setVolume(vol);
             connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
             m_avrPendingActions.insert(commandId, info);
-        } else if (action.actionTypeId() == AVRX1000ChannelActionTypeId) {
-            QByteArray channel = action.param(AVRX1000ChannelActionChannelParamTypeId).value().toByteArray();
+        } else if (action.actionTypeId() == AVRX1000InputSourceActionTypeId) {
+            QByteArray channel = action.param(AVRX1000InputSourceActionInputSourceParamTypeId).value().toByteArray();
             QUuid commandId =  avrConnection->setChannel(channel);
             connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
             m_avrPendingActions.insert(commandId, info);
@@ -466,6 +466,14 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
         } else if (action.actionTypeId() == heosPlayerSkipNextActionTypeId) {
             heos->playNext(playerId);
             return info->finish(Thing::ThingErrorNoError);
+        } else if (action.actionTypeId() == heosPlayerIncreaseVolumeActionTypeId) {
+            heos->volumeUp(playerId, action.param(heosPlayerIncreaseVolumeActionStepParamTypeId).value().toInt());
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else if (action.actionTypeId() == heosPlayerDecreaseVolumeActionTypeId) {
+            heos->volumeUp(playerId, action.param(heosPlayerDecreaseVolumeActionStepParamTypeId).value().toInt());
+            info->finish(Thing::ThingErrorNoError);
+            return;
         } else {
             qCWarning(dcDenon()) << "ActionType not found" << thing->thingClass().name() << action.actionTypeId() ;
             return info->finish(Thing::ThingErrorActionTypeNotFound);
@@ -603,7 +611,7 @@ void IntegrationPluginDenon::onAvrChannelChanged(const QString &channel)
         return;
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
-        thing->setStateValue(AVRX1000ChannelStateTypeId, channel);
+        thing->setStateValue(AVRX1000InputSourceStateTypeId, channel);
     }
 }
 

@@ -13,7 +13,7 @@
                     "name": "bluosPlayer",
                     "displayName": "BluOS player",
                     "createMethods": ["discovery"],
-                    "interfaces": ["mediaplayer", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "interfaces": ["mediaplayer", "volumecontroller", "mediametadataprovider", "connectable"],
                     "browsable": true,
                     "paramTypes":[
                         {
@@ -189,6 +189,38 @@
                             "id": "30930095-6f97-48ef-8bbf-597d734f0751",
                             "name": "skipNext",
                             "displayName": "Skip next"
+                        },
+                        {
+                            "id": "83db3d84-9bbd-4a83-9f4e-97424db8979f",
+                            "name": "increaseVolume",
+                            "displayName": "Increase volume",
+                            "paramTypes": [
+                                {
+                                    "id": "d3660462-08ae-4ba5-b240-1ab20d19c504",
+                                    "name": "step",
+                                    "displayName": "Step size",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 100,
+                                    "defaultValue": 5
+                                }
+                            ]
+                        },
+                        {
+                            "id": "dc04db5b-8396-44b1-afd7-9448f6be5453",
+                            "name": "decreaseVolume",
+                            "displayName": "Decrease volume",
+                            "paramTypes": [
+                                {
+                                    "id": "15ca69da-2b83-46e7-a474-c904c86de3c5",
+                                    "name": "step",
+                                    "displayName": "Step size",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 100,
+                                    "defaultValue": 5
+                                }
+                            ]
                         }
                     ]
                 }

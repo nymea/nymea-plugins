@@ -50,7 +50,7 @@
                     "id": "72d9332b-2b25-4136-87a6-e534eae4cc80",
                     "name": "sonosGroup",
                     "displayName": "Sonos group",
-                    "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable"],
+                    "interfaces": ["mediacontroller", "volumecontroller", "mediametadataprovider", "connectable"],
                     "createMethods": ["auto"],
                     "browsable": true,
                     "paramTypes": [
@@ -211,6 +211,16 @@
                             "id": "85d7126a-b123-4a28-aeb4-d84bcfb4d14f",
                             "name": "skipNext",
                             "displayName": "Skip Next"
+                        },
+                        {
+                            "id": "02abbda5-d23c-4fde-84cf-09782f319804",
+                            "name": "increaseVolume",
+                            "displayName": "Increase volume"
+                        },
+                        {
+                            "id": "7f71d0f7-3950-46fb-a785-f16f9c3fd85f",
+                            "name": "decreaseVolume",
+                            "displayName": "Decrease volume"
                         }
                     ],
                     "browserItemActionTypes": [

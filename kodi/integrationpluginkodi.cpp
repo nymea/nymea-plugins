@@ -324,6 +324,10 @@ void IntegrationPluginKodi::executeAction(ThingActionInfo *info)
         commandId = kodi->navigate("skipnext");
     } else if (action.actionTypeId() == kodiShuffleActionTypeId) {
         commandId = kodi->setShuffle(action.param(kodiShuffleActionShuffleParamTypeId).value().toBool());
+    } else if (action.actionTypeId() == kodiIncreaseVolumeActionTypeId) {
+        commandId = kodi->setVolume(qMin(100, thing->stateValue(kodiVolumeStateTypeId).toInt() + 5));
+    } else if (action.actionTypeId() == kodiDecreaseVolumeActionTypeId) {
+        commandId = kodi->setVolume(qMax(0, thing->stateValue(kodiVolumeStateTypeId).toInt() - 5));
     } else if (action.actionTypeId() == kodiRepeatActionTypeId) {
         QString repeat = action.param(kodiRepeatActionRepeatParamTypeId).value().toString();
         if (repeat == "One") {

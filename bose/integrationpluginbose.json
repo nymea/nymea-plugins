@@ -43,7 +43,7 @@
                     "id": "f9b7a3f5-6353-48b1-afc1-66f914412f82",
                     "name": "soundtouch",
                     "displayName": "SoundTouch",
-                    "interfaces": ["extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "alert", "connectable"],
+                    "interfaces": ["mediaplayer", "volumecontroller", "mediametadataprovider", "alert", "connectable"],
                     "createMethods": ["discovery"],
                     "browsable": true,
                     "paramTypes": [
@@ -102,6 +102,15 @@
                             "maxValue": 100,
                             "defaultValue": 50,
                             "writable": true
+                        },
+                        {
+                            "id": "f784072d-b8da-4c8f-9497-dccf38aa9b16",
+                            "name": "playerType",
+                            "displayName": "Player type",
+                            "displayNameEvent": "Player type changed",
+                            "type": "QString",
+                            "possibleValues": ["audio", "video"],
+                            "defaultValue": "audio"
                         },
                         {
                             "id": "2dd512b7-40c2-488e-8d4f-6519edaa6f74",
@@ -284,6 +293,38 @@
                                     "minValue": 10,
                                     "maxValue": 70,
                                     "defaultValue": "40"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "d0169ff4-f5a5-4db2-8ef0-b819d3022bde",
+                            "name": "increaseVolume",
+                            "displayName": "Increase volume",
+                            "paramTypes": [
+                                {
+                                    "id": "a5c6adeb-ea2a-4bcd-b844-e6fd2d946dbe",
+                                    "name": "step",
+                                    "displayName": "Step size",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 100,
+                                    "defaultValue": 5
+                                }
+                            ]
+                        },
+                        {
+                            "id": "30873274-7662-42ec-ac31-2ef709e430ca",
+                            "name": "decreaseVolume",
+                            "displayName": "Decrease volume",
+                            "paramTypes": [
+                                {
+                                    "id": "0e8e1c20-ede5-4778-b36e-a8f72893e45b",
+                                    "name": "step",
+                                    "displayName": "Step size",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 100,
+                                    "defaultValue": 5
                                 }
                             ]
                         }

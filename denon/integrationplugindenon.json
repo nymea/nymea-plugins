@@ -22,7 +22,7 @@
                     "name": "AVRX1000",
                     "displayName": "AVR X1000",
                     "createMethods": ["discovery"],
-                    "interfaces": ["mediaplayer", "mediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "connectable", "power"],
+                    "interfaces": ["mediaplayer", "mediacontroller", "volumecontroller", "mediametadataprovider", "connectable", "power"],
                     "paramTypes": [
                         {
                             "id": "cb6eeeb0-3d75-43b6-8177-b5ac19648557",
@@ -117,7 +117,7 @@
                         {
                             "displayName": "Channel",
                             "id": "f29ffa2c-31d6-4d88-b160-a38288c82ce1",
-                            "name": "channel",
+                            "name": "inputSource",
                             "displayNameEvent": "Channel changed",
                             "displayNameAction": "Set channel",
                             "type": "QString",
@@ -255,28 +255,12 @@
                         {
                             "id": "4ae686d6-2307-40a0-bd38-2cd3a92342cc",
                             "displayName": "Increase volume",
-                            "name": "increaseVolume",
-                            "paramTypes": [
-                                {
-                                    "id": "765c7e2a-9eb6-46fc-a880-4e96c81f8d1e",
-                                    "displayName": "Step",
-                                    "name": "step",
-                                    "type": "int"
-                                }
-                            ]
+                            "name": "increaseVolume"
                         },
                         {
                             "id": "d3752c32-92e3-4396-8e2f-ab5e57c6cfb1",
                             "displayName": "Decrease volume",
-                            "name": "decreaseVolume",
-                            "paramTypes": [
-                                {
-                                    "id": "1d54fda8-336c-436f-ab2b-e8bd549f830c",
-                                    "displayName": "Step",
-                                    "name": "step",
-                                    "type": "int"
-                                }
-                            ]
+                            "name": "decreaseVolume"
                         },
                         {
                             "id": "3f2eb789-918c-475a-a295-14c0c24338b8",
@@ -374,7 +358,7 @@
                     "name": "heosPlayer",
                     "displayName": "Heos player",
                     "createMethods": ["auto"],
-                    "interfaces": ["mediaplayer", "mediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "alert", "connectable"],
+                    "interfaces": ["mediaplayer", "mediacontroller", "volumecontroller", "mediametadataprovider", "alert", "connectable"],
                     "browsable": true,
                     "paramTypes":[
                         {
@@ -553,6 +537,38 @@
                             "id": "57697e9c-ce5e-4b8f-b42e-16662829ceb2",
                             "name": "skipNext",
                             "displayName": "Skip next"
+                        },
+                        {
+                            "id": "ebdc35f8-24a2-4984-855e-4c1a158289b7",
+                            "name": "increaseVolume",
+                            "displayName": "Increase volume",
+                            "paramTypes": [
+                                {
+                                    "id": "0770da3f-61c3-4145-b0d8-348f42a8cf0d",
+                                    "name": "step",
+                                    "displayName": "Step size",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 10,
+                                    "defaultValue": 5
+                                }
+                            ]
+                        },
+                        {
+                            "id": "e19cc4e0-00ef-4df4-8314-85902017d095",
+                            "name": "decreaseVolume",
+                            "displayName": "Decrease volume",
+                            "paramTypes": [
+                                {
+                                    "id": "ef5a252b-3d28-4817-a668-1dacf0ed1f8a",
+                                    "name": "step",
+                                    "displayName": "Step size",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 10,
+                                    "defaultValue": 5
+                                }
+                            ]
                         }
                     ],
                     "browserItemActionTypes": [

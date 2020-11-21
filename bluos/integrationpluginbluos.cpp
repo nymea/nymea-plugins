@@ -40,6 +40,7 @@
 #include <QStringList>
 #include <QJsonDocument>
 #include <QTimer>
+#include <QtGlobal>
 
 
 IntegrationPluginBluOS::IntegrationPluginBluOS()
@@ -205,6 +206,16 @@ void IntegrationPluginBluOS::executeAction(ThingActionInfo *info)
             } else {
                 qCWarning(dcBluOS()) << "Unhandled Repeat Mode";
             }
+            m_asyncActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+        } else if (action.actionTypeId() == bluosPlayerIncreaseVolumeActionTypeId) {
+            uint step = action.param(bluosPlayerIncreaseVolumeActionStepParamTypeId).value().toUInt();
+            QUuid requestId = bluos->setVolume(qMin<uint>(100, thing->stateValue(bluosPlayerVolumeStateTypeId).toUInt() + step));
+            m_asyncActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
+        } else if (action.actionTypeId() == bluosPlayerDecreaseVolumeActionTypeId) {
+            uint step = action.param(bluosPlayerDecreaseVolumeActionStepParamTypeId).value().toUInt();
+            QUuid requestId = bluos->setVolume(qMax<uint>(0, thing->stateValue(bluosPlayerVolumeStateTypeId).toUInt() - step));
             m_asyncActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, [this, requestId] {m_asyncActions.remove(requestId);});
         } else {
