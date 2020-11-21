@@ -918,7 +918,7 @@
                     "name": "co2Sensor",
                     "displayName": "Generic CO2 sensor",
                     "createMethods": ["user"],
-                    "interfaces": ["co2Sensor"],
+                    "interfaces": ["co2sensor"],
                     "settingsTypes": [
                         {
                             "id": "a0d8a6ec-599a-4ded-ae03-2950561f0b72",

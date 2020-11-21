@@ -95,7 +95,8 @@
                                     "name": "outputData",
                                     "displayName": "Data",
                                     "type": "QString",
-                                    "inputType": "TextArea"
+                                    "inputType": "TextArea",
+                                    "defaultValue": ""
                                 }
                             ]
                         }

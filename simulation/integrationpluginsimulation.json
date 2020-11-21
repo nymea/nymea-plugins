@@ -613,7 +613,8 @@
                                         "MiddleFingerRight",
                                         "RingFingerRight",
                                         "PinkyRight"
-                                    ]
+                                    ],
+                                    "defaultValue": "IndexFingerRight"
                                 }
                             ]
                         },

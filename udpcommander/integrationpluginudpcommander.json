@@ -76,7 +76,8 @@
                                     "id": "6604c852-6b24-4707-b8e5-1ddd8032efcc",
                                     "name": "data",
                                     "displayName": "Data",
-                                    "type": "QString"
+                                    "type": "QString",
+                                    "defaultValue": ""
                                 }
                             ]
                         }
