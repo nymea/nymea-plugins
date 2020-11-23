@@ -4,18 +4,13 @@ This plugin is a generic approach to allow sending and receiving custom TCP pack
 
 > Note: This plugin is ment to be combined with a rule.
 
-## TCP output
+## TCP client
 
-The TCP output opens a TCP connection to the given host IPv4 address and port everytime the output trigger gets activated. As soon 
-as the command has been executed the socket will close again. The connected state is only stated as connected 
-as long as the connection is active.
+The TCP output opens a TCP connection to the given host address and port. Once the connection is established, TCP packets can be sent both directions.
 
-## TCP input
+## TCP server
 
-The TCP input creates a TCP server on the given port.
-
-Be aware that only a single connection can be established simultaneously. The connected state is active as long as
-a client is connected. It is up to the client to deside how long the connection stays active.
+The TCP input creates a TCP server on the given port. Other applications may connect to this server and send messages to it which can be processed further within nymea. Also, TCP packets can be sent to all or individual clients. Use the address 0.0.0.0 (the default) to send the data to all connected clients.
 
 ## Example
 
