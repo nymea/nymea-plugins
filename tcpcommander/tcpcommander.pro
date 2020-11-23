@@ -6,10 +6,8 @@ TARGET = $$qtLibraryTarget(nymea_integrationplugintcpcommander)
 
 SOURCES += \
     integrationplugintcpcommander.cpp \
-    tcpserver.cpp \
-    tcpsocket.cpp
+    tcpserver.cpp
 
 HEADERS += \
     integrationplugintcpcommander.h \
-    tcpserver.h \
-    tcpsocket.h
+    tcpserver.h

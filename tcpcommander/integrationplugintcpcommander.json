@@ -10,10 +10,10 @@
             "thingClasses": [
                 {
                     "id": "c67d059f-694f-47cb-8e1d-9e3e6d014c1a",
-                    "name": "tcpOutput",
-                    "displayName": "TCP Output",
+                    "name": "tcpClient",
+                    "displayName": "TCP Client",
                     "createMethods": ["user"],
-                    "interfaces": ["outputtrigger", "connectable"],
+                    "interfaces": ["outputtrigger", "inputtrigger", "connectable"],
                     "paramTypes": [
                         {
                             "id": "2a3fcb23-931b-4ba1-b134-c49b656c76f7",
@@ -49,7 +49,7 @@
                             "paramTypes": [
                                 {
                                     "id": "6604c852-6b24-4707-b8e5-1ddd8032efcc",
-                                    "name": "outputDataArea",
+                                    "name": "data",
                                     "displayName": "Data",
                                     "type": "QString",
                                     "inputType": "TextArea",
@@ -57,14 +57,29 @@
                                 }
                             ]
                         }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "d4cab21d-5877-465f-be3d-8fb20df0e087",
+                            "name": "triggered",
+                            "displayName": "Data received",
+                            "paramTypes": [
+                                {
+                                    "id": "9b1ae5d2-aeee-4cee-9695-e770e6f50a2c",
+                                    "name": "data",
+                                    "displayName": "Data",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
                     ]
                 },
                 {
                     "id": "bc40e84a-69c4-4fd2-beb0-bd65f19aa8ff",
-                    "name": "tcpInput",
-                    "displayName": "TCP Input",
+                    "name": "tcpServer",
+                    "displayName": "TCP Server",
                     "createMethods": ["user"],
-                    "interfaces": ["inputtrigger", "connectable"],
+                    "interfaces": ["inputtrigger", "outputtrigger", "connectable"],
                     "paramTypes": [
                         {
                             "id": "88eb227d-13f7-451c-babf-1b141c219fd4",
@@ -105,6 +120,36 @@
                                     "name": "data",
                                     "displayName": "Data",
                                     "type": "QString"
+                                },
+                                {
+                                    "id": "1f92bde3-4250-431c-abf4-1b3de8c23b27",
+                                    "name": "clientIp",
+                                    "displayName": "Client IP",
+                                    "type": "QString"
+                                }
+                            ]
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "be495c14-61a7-4292-b16f-0734b006d10f",
+                            "name": "trigger",
+                            "displayName": "Send Data",
+                            "paramTypes": [
+                                {
+                                    "id": "ae624855-0356-4859-a42b-1657543c0a5d",
+                                    "name": "data",
+                                    "displayName": "Data",
+                                    "type": "QString",
+                                    "inputType": "TextArea",
+                                    "defaultValue": ""
+                                },
+                                {
+                                    "id": "31182d99-26f1-48e1-8b47-38fe01822125",
+                                    "name": "clientIp",
+                                    "displayName": "Client IP",
+                                    "type": "QString",
+                                    "defaultValue": "0.0.0.0"
                                 }
                             ]
                         }
