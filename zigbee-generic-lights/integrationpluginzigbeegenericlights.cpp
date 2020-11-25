@@ -149,6 +149,10 @@ void IntegrationPluginZigbeeGenericLights::handleRemoveNode(ZigbeeNode *node, co
         if (m_colorTemperatureRanges.contains(thing)) {
             m_colorTemperatureRanges.remove(thing);
         }
+
+        if (m_colorCapabilities.contains(thing)) {
+            m_colorCapabilities.remove(thing);
+        }
     }
 }
 
@@ -608,6 +612,10 @@ void IntegrationPluginZigbeeGenericLights::thingRemoved(Thing *thing)
 
     if (m_colorTemperatureRanges.contains(thing)) {
         m_colorTemperatureRanges.remove(thing);
+    }
+
+    if (m_colorCapabilities.contains(thing)) {
+        m_colorCapabilities.remove(thing);
     }
 }
 

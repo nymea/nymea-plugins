@@ -57,6 +57,7 @@ public:
     void thingRemoved(Thing *thing) override;
 
 private:
+    PluginTimer *m_presenceTimer = nullptr;
     QHash<Thing*, ZigbeeNode*> m_thingNodes;
 
     QHash<ThingClassId, ParamTypeId> m_ieeeAddressParamTypeIds;
@@ -68,6 +69,17 @@ private:
     QHash<ThingClassId, StateTypeId> m_versionStateTypeIds;
 
     ZigbeeNodeEndpoint *findEndpoint(Thing *thing);
+    void createThing(const ThingClassId &thingClassId, const QUuid &networkUuid, ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
+    void initOnOffSwitch(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void initRemote(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
+    void readBindings(ZigbeeNode *node);
+    void initPowerConfigurationCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void initOnOffCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void initLevelControlCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
+
 };
 
 #endif // INTEGRATIONPLUGINZIGBEETRADFRI_H
