@@ -91,20 +91,21 @@ bool IntegrationPluginZigbeeTradfri::handleNode(ZigbeeNode *node, const QUuid &n
             qCDebug(dcZigbeeTradfri()) << "Handeling TRADFRI remote control" << node << endpoint;
             createThing(remoteThingClassId, networkUuid, node, endpoint);
 
-            ZigbeeClusterBasic *basicCluster = endpoint->inputCluster<ZigbeeClusterBasic>(ZigbeeClusterLibrary::ClusterIdBasic);
-            if (!basicCluster) {
-                qCWarning(dcZigbeeTradfri()) << "Failed to find basic cluster for performing factory reset to defaults";
-                initRemote(node, endpoint);
-            } else {
-                ZigbeeClusterReply *zclReply = basicCluster->resetToFactoryDefaults();
-                connect(zclReply, &ZigbeeClusterReply::finished, node, [=](){
-                    if (zclReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                        qCWarning(dcZigbeeTradfri()) << "Failed to perform factory reset on basic cluster on" << endpoint;
-                    }
+//            ZigbeeClusterBasic *basicCluster = endpoint->inputCluster<ZigbeeClusterBasic>(ZigbeeClusterLibrary::ClusterIdBasic);
+//            if (!basicCluster) {
+//                qCWarning(dcZigbeeTradfri()) << "Failed to find basic cluster for performing factory reset to defaults";
+//                initRemote(node, endpoint);
+//            } else {
+//                ZigbeeClusterReply *zclReply = basicCluster->resetToFactoryDefaults();
+//                connect(zclReply, &ZigbeeClusterReply::finished, node, [=](){
+//                    if (zclReply->error() != ZigbeeClusterReply::ErrorNoError) {
+//                        qCWarning(dcZigbeeTradfri()) << "Failed to perform factory reset on basic cluster on" << endpoint;
+//                    }
 
-                    initRemote(node, endpoint);
-                });
-            }
+//                    initRemote(node, endpoint);
+//                });
+//            }
+            initRemote(node, endpoint);
 
             handled = true;
         }
