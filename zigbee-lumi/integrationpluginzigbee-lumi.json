@@ -718,6 +718,94 @@
                     "eventTypes": [
 
                     ]
+                },
+                {
+                    "name": "lumiRemote",
+                    "displayName": "Switch",
+                    "id": "f8aa2ba1-ce74-4691-b97d-85427f4cf8bd",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "longpressmultibutton", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "cce8b39c-ac8a-4a8f-b66e-b6100a209fb8",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "8eec3cae-8f3b-4c32-b26a-f7c49844841e",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d1afa3ba-f3bd-47e5-90fa-9d80dcce91d8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "a764dbfb-7b86-439b-94ea-aec742dcb13e",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "8164c1d0-657e-4347-99fb-f3fdc07af6de",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+
+                    ],
+                    "eventTypes": [
+                    {
+                        "id": "9a0c5f37-e346-41d9-93a4-4877c012b805",
+                        "name": "pressed",
+                        "displayName": "Button pressed",
+                        "paramTypes": [
+                            {
+                                "id": "72df572a-77d2-42b4-8ffa-cde70ccca37c",
+                                "name": "buttonName",
+                                "displayName": "Button name",
+                                "type": "QString",
+                                "allowedValues": ["1", "2", "1+2"]
+                            }
+                        ]
+                    },
+                    {
+                        "id": "9a7a3d9e-faa3-471f-8c82-0bb98d9a788a",
+                        "name": "longPressed",
+                        "displayName": "Button longpressed",
+                        "paramTypes": [
+                            {
+                                "id": "0a8d4da6-be6e-4b7d-92d7-5cf35d74042f",
+                                "name": "buttonName",
+                                "displayName": "Button name",
+                                "type": "QString",
+                                "allowedValues": ["1", "2", "1+2"]
+                            }
+                        ]
+                    }
+                    ]
                 }
             ]
         }

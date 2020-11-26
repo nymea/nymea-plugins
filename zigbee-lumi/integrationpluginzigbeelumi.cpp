@@ -48,6 +48,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_networkUuidParamTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[lumiRelayThingClassId] = lumiRelayThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[lumiRemoteThingClassId] = lumiRemoteThingNetworkUuidParamTypeId;
 
     m_zigbeeAddressParamTypeIds[lumiHTSensorThingClassId] = lumiHTSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorThingIeeeAddressParamTypeId;
@@ -58,6 +59,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_zigbeeAddressParamTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiRelayThingClassId] = lumiRelayThingIeeeAddressParamTypeId;
+    m_zigbeeAddressParamTypeIds[lumiRemoteThingClassId] = lumiRemoteThingIeeeAddressParamTypeId;
 
     m_connectedStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorConnectedStateTypeId;
@@ -68,6 +70,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_connectedStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketConnectedStateTypeId;
     m_connectedStateTypeIds[lumiRelayThingClassId] = lumiRelayConnectedStateTypeId;
+    m_connectedStateTypeIds[lumiRemoteThingClassId] = lumiRemoteConnectedStateTypeId;
 
     m_versionStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorVersionStateTypeId;
@@ -78,6 +81,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_versionStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketVersionStateTypeId;
     m_versionStateTypeIds[lumiRelayThingClassId] = lumiRelayVersionStateTypeId;
+    m_versionStateTypeIds[lumiRemoteThingClassId] = lumiRemoteVersionStateTypeId;
 
     m_signalStrengthStateTypeIds[lumiHTSensorThingClassId] = lumiHTSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorSignalStrengthStateTypeId;
@@ -88,6 +92,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_signalStrengthStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiPowerSocketThingClassId] = lumiPowerSocketSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiRelayThingClassId] = lumiRelaySignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[lumiRemoteThingClassId] = lumiRemoteSignalStrengthStateTypeId;
 
     // Known model identifier
     m_knownLumiDevices.insert("lumi.sensor_ht", lumiHTSensorThingClassId);
@@ -99,6 +104,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_knownLumiDevices.insert("lumi.vibration", lumiVibrationSensorThingClassId);
     m_knownLumiDevices.insert("lumi.plug", lumiPowerSocketThingClassId);
     m_knownLumiDevices.insert("lumi.relay", lumiRelayThingClassId);
+    m_knownLumiDevices.insert("lumi.remote", lumiRemoteThingClassId);
 }
 
 QString IntegrationPluginZigbeeLumi::name() const
@@ -440,6 +446,47 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
         } else {
             qCWarning(dcZigbeeLumi()) << "Could not find the OnOff input cluster on" << thing << endpoint;
         }
+    }
+
+    if (thing->thingClassId() == lumiRemoteThingClassId) {
+        // Since we are here again out of spec, we just can react on cluster and endpoint signals
+        connect(node, &ZigbeeNode::endpointClusterAttributeChanged, thing, [this, thing](ZigbeeNodeEndpoint *endpoint, ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
+            switch (endpoint->endpointId()) {
+            case 0x01:
+                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdMultistateInput && attribute.id() == ZigbeeClusterMultistateInput::AttributePresentValue) {
+                    quint16 value = attribute.dataType().toUInt16();
+                    if (value == 1) {
+                        emit emitEvent(Event(lumiRemotePressedEventTypeId, thing->id(), ParamList() << Param(lumiRemotePressedEventButtonNameParamTypeId, "1")));
+                    } else {
+                        emit emitEvent(Event(lumiRemoteLongPressedEventTypeId, thing->id(), ParamList() << Param(lumiRemoteLongPressedEventButtonNameParamTypeId, "1")));
+                    }
+                }
+                break;
+            case 0x02:
+                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdMultistateInput && attribute.id() == ZigbeeClusterMultistateInput::AttributePresentValue) {
+                    quint16 value = attribute.dataType().toUInt16();
+                    if (value == 1) {
+                        emit emitEvent(Event(lumiRemotePressedEventTypeId, thing->id(), ParamList() << Param(lumiRemotePressedEventButtonNameParamTypeId, "2")));
+                    } else {
+                        emit emitEvent(Event(lumiRemoteLongPressedEventTypeId, thing->id(), ParamList() << Param(lumiRemoteLongPressedEventButtonNameParamTypeId, "2")));
+                    }
+                }
+                break;
+            case 0x03:
+                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdMultistateInput && attribute.id() == ZigbeeClusterMultistateInput::AttributePresentValue) {
+                    quint16 value = attribute.dataType().toUInt16();
+                    if (value == 1) {
+                        emit emitEvent(Event(lumiRemotePressedEventTypeId, thing->id(), ParamList() << Param(lumiRemotePressedEventButtonNameParamTypeId, "1+2")));
+                    } else {
+                        emit emitEvent(Event(lumiRemoteLongPressedEventTypeId, thing->id(), ParamList() << Param(lumiRemoteLongPressedEventButtonNameParamTypeId, "1+2")));
+                    }
+                }
+                break;
+            default:
+                qCWarning(dcZigbeeLumi()) << "Received attribute changed signal from unhandled endpoint" << thing << endpoint << cluster << attribute;
+                break;
+            }
+        });
     }
 
     if (thing->thingClassId() == lumiRelayThingClassId) {

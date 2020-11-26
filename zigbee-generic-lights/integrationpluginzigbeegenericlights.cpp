@@ -66,7 +66,7 @@ IntegrationPluginZigbeeGenericLights::IntegrationPluginZigbeeGenericLights()
     m_modelIdParamTypeIds[colorLightThingClassId] = colorLightThingModelParamTypeId;
 
 
-    // Common sates map
+    // Common states map
     m_connectedStateTypeIds[onOffLightThingClassId] = onOffLightConnectedStateTypeId;
     m_connectedStateTypeIds[dimmableLightThingClassId] = dimmableLightConnectedStateTypeId;
     m_connectedStateTypeIds[colorTemperatureLightThingClassId] = colorTemperatureLightConnectedStateTypeId;
