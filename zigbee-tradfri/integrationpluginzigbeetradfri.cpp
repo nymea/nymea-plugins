@@ -394,8 +394,8 @@ void IntegrationPluginZigbeeTradfri::initOnOffSwitch(ZigbeeNode *node, ZigbeeNod
                 ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
                 reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
                 reportingConfig.dataType = Zigbee::Uint8;
-                reportingConfig.minReportingInterval = 60;//300;
-                reportingConfig.maxReportingInterval = 120;//2700;
+                reportingConfig.minReportingInterval = 300;
+                reportingConfig.maxReportingInterval = 2700;
                 reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
 
                 qCDebug(dcZigbeeTradfri()) << "Configure attribute reporting for power configuration cluster to coordinator";
@@ -487,8 +487,8 @@ void IntegrationPluginZigbeeTradfri::initRemote(ZigbeeNode *node, ZigbeeNodeEndp
                 ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
                 reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
                 reportingConfig.dataType = Zigbee::Uint8;
-                reportingConfig.minReportingInterval = 60;//300;
-                reportingConfig.maxReportingInterval = 120;//2700;
+                reportingConfig.minReportingInterval = 300;
+                reportingConfig.maxReportingInterval = 2700;
                 reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
 
                 qCDebug(dcZigbeeTradfri()) << "Configure attribute reporting for power configuration cluster to coordinator";
@@ -585,8 +585,8 @@ void IntegrationPluginZigbeeTradfri::initPowerConfigurationCluster(ZigbeeNode *n
             ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
             reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
             reportingConfig.dataType = Zigbee::Uint8;
-            reportingConfig.minReportingInterval = 60;//300;
-            reportingConfig.maxReportingInterval = 120;//2700;
+            reportingConfig.minReportingInterval = 300;
+            reportingConfig.maxReportingInterval = 2700;
             reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
 
             qCDebug(dcZigbeeTradfri()) << "Configure attribute reporting for power configuration cluster to coordinator";

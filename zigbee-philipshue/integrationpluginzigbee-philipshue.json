@@ -1,0 +1,107 @@
+{
+    "name": "ZigbeePhilipsHue",
+    "displayName": "Zigbee Philips Hue",
+    "id": "0ca340b7-061a-42e6-ab7d-d7b4fd235d02",
+    "vendors": [
+        {
+            "id": "0ae1e001-2aa6-47ed-b8c0-334c3728a68f",
+            "name": "philips",
+            "displayName": "Philips",
+            "thingClasses": [
+                {
+                    "name": "dimmerSwitch",
+                    "displayName": "Hue dimmer switch",
+                    "id": "b2711164-a848-4715-8ddf-33ca86f9f4cf",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "multibutton", "batterylevel", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "b221cad1-ef2e-4192-8168-11d0205a43da",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "d2bb97ee-caed-4776-8931-9fc0a04e4e8f",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5ac101b2-4bb7-4b5c-8493-08b1ae7ca0c1",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5a6e325e-a6ee-4a36-b429-f5d8c8adb80b",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "12139630-668a-4ad8-96fa-781028e9eced",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "3e28e0b3-fe23-4293-8876-8384def6c4fb",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "4223a3bc-9616-4ed2-ae50-704b9df62d0e",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "33bb5816-8479-4995-99e2-cb0443886003",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "c086a247-838f-49c0-b1e4-2ae1ed181b55",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
