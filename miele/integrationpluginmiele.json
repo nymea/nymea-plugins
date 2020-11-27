@@ -1,0 +1,343 @@
+{
+    "id": "d44fad27-668a-4540-9eee-505d0ff13c37",
+    "name": "miele",
+    "displayName": "Miele",
+    "paramTypes": [
+        {
+            "id": "6ebf0bdb-012d-4277-9603-2a2e68e23c33",
+            "name": "customClientKey",
+            "displayName": "Custom client key",
+            "defaultValue": "",
+            "type": "QString"
+        },
+        {
+            "id": "37230edb-22ed-4f1d-8849-7fd72f192d89",
+            "name": "customClientSecret",
+            "displayName": "Custom client secret",
+            "defaultValue": "",
+            "type": "QString"
+        }
+    ],
+    "apiKeys": ["miele"],
+    "vendors": [
+        {
+            "id": "ec1e94c4-d649-4af5-90c2-6c50b1a48e9e",
+            "name": "miele",
+            "displayName": "Miele",
+            "thingClasses": [
+                {
+                    "id": "bea89711-7f41-4add-ba27-32dd69515c1c",
+                    "name": "miele",
+                    "displayName": "Miele",
+                    "interfaces": ["account"],
+                    "createMethods": ["user"],
+                    "setupMethod": "oauth",
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "89f4554b-fad2-402e-a0f0-6a76b26d10ea",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "b38f3d86-6d54-442c-a0f3-78ece8887d93",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "a5b85688-d319-4f61-8907-7da8a2b16d64",
+                            "name": "userDisplayName",
+                            "displayName": "User name",
+                            "displayNameEvent": "User name changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        }
+                    ]
+                },
+                {
+                    "id": "cf542b5e-2903-497c-95a0-042df6535450",
+                    "name": "oven",
+                    "displayName": "Oven",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "1e287843-41dd-49c8-a250-a21ed0e4215c",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9c2c9360-0a4a-43ff-8d15-9cefa80380ec",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "82c7cba0-63fc-400c-8c47-dbeee47a3459",
+                    "name": "dishwasher",
+                    "displayName": "Dishwasher",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "f61d0fef-b588-4547-a5b6-03dc1622d0c5",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "170a1bb2-7c8f-448e-acdc-61a4537f10ab",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "8af89a1f-c752-4452-a568-d3b987e4667d",
+                    "name": "coffeeMaker",
+                    "displayName": "Coffee Maker",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "438cb528-91f4-481f-9b51-16658fd0a7c8",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4b999b92-def7-4192-9814-38adf9af14e3",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "ad9bc908-9f61-4cb3-a8df-db003c6bf171",
+                    "name": "dryer",
+                    "displayName": "Dryer",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "3de1300c-766f-4a0b-9bc8-e75aa2402a6a",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "4dfce9b8-940b-49cb-8961-b2504fc2f3a6",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "a03e17fd-8da8-4977-8ac3-c058ada9f547",
+                    "name": "fridge",
+                    "displayName": "Fridge Freezer",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "945c1fa3-c304-4fc5-8c6b-f88f1f08d47a",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "6b066033-a290-459f-b6a1-c63857e6b538",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "58a6feaf-b2f7-48e9-822e-6f9526671f04",
+                    "name": "washer",
+                    "displayName": "Washer",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "2681e31e-cb0a-486f-b5b7-8ae28f7c96f9",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "ba271347-04b6-40a6-86f7-9c260a2fb23f",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "bbc55426-f649-4d32-81fc-cebd8a2b46d0",
+                    "name": "cookTop",
+                    "displayName": "Cook top",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "39f094ee-b672-4d75-b106-a21eeec41a34",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "08b7960c-e244-4956-808f-53ca7e486dd9",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "707e46a5-9ca0-4375-8249-2de19ec669ec",
+                    "name": "hood",
+                    "displayName": "Hood",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "15c3cea9-16c2-4517-ae43-3a9b5f388b82",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "be91bef9-c957-4bb8-9c92-1d2a548e762f",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "5698a1cf-5b3d-4746-a4fe-e4412d2768ab",
+                    "name": "cleaningRobot",
+                    "displayName": "Cleaning robot",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "629ac68f-89a2-41cf-801b-20df9968d204",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8abe70f4-f49f-4b13-8251-216bea230f04",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "40d31505-d6ae-4c45-a2b2-d652e1b85c80",
+                    "name": "cookProcessor",
+                    "displayName": "Cook processor",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "51750b9f-4fc3-4556-a651-c8efcf07abe7",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9eee48ba-b2e2-40fe-81b5-3404b655a497",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
