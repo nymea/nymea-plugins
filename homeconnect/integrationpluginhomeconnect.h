@@ -29,7 +29,7 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #ifndef INTEGRATIONPLUGINHOMECONNECT_H
-#define INTEGRATIONPLUGINHOMECONNECt_H
+#define INTEGRATIONPLUGINHOMECONNECT_H
 
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
