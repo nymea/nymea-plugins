@@ -1150,6 +1150,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-keba,
          nymea-plugin-unifi,
          nymea-plugin-usbrelay,
+         nymea-plugins-zigbee,
 Replaces: guh-plugins
 Description: Plugins for nymea IoT server - the default plugin collection
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
@@ -1223,7 +1224,6 @@ Package: nymea-plugins-all
 Section: libs
 Architecture: all
 Depends: nymea-plugins,
-         nymea-plugins-zigbee,
          nymea-plugin-simulation,
          nymea-plugin-snapd,
          nymea-plugins-maker,
