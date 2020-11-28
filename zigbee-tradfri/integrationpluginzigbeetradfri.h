@@ -73,12 +73,7 @@ private:
 
     void initOnOffSwitch(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void initRemote(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
-
-    void readBindings(ZigbeeNode *node);
-    void initPowerConfigurationCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
-    void initOnOffCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
-    void initLevelControlCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
-
+    void initMotionSensor(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
 
 };
 

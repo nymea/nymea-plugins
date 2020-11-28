@@ -39,26 +39,32 @@ IntegrationPluginZigbeeTradfri::IntegrationPluginZigbeeTradfri()
     m_ieeeAddressParamTypeIds[onOffSwitchThingClassId] = onOffSwitchThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[remoteThingClassId] = remoteThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[motionSensorThingClassId] = motionSensorThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[signalRepeaterThingClassId] = signalRepeaterThingIeeeAddressParamTypeId;
 
     m_networkUuidParamTypeIds[onOffSwitchThingClassId] = onOffSwitchThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[remoteThingClassId] = remoteThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[motionSensorThingClassId] = motionSensorThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[signalRepeaterThingClassId] = signalRepeaterThingNetworkUuidParamTypeId;
 
     m_endpointIdParamTypeIds[onOffSwitchThingClassId] = onOffSwitchThingEndpointIdParamTypeId;
     m_endpointIdParamTypeIds[remoteThingClassId] = remoteThingEndpointIdParamTypeId;
     m_endpointIdParamTypeIds[motionSensorThingClassId] = motionSensorThingEndpointIdParamTypeId;
+    m_endpointIdParamTypeIds[signalRepeaterThingClassId] = signalRepeaterThingEndpointIdParamTypeId;
 
     m_connectedStateTypeIds[onOffSwitchThingClassId] = onOffSwitchConnectedStateTypeId;
     m_connectedStateTypeIds[remoteThingClassId] = remoteConnectedStateTypeId;
     m_connectedStateTypeIds[motionSensorThingClassId] = motionSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[signalRepeaterThingClassId] = signalRepeaterConnectedStateTypeId;
 
     m_signalStrengthStateTypeIds[onOffSwitchThingClassId] = onOffSwitchSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[remoteThingClassId] = remoteSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[motionSensorThingClassId] = motionSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[signalRepeaterThingClassId] = signalRepeaterSignalStrengthStateTypeId;
 
     m_versionStateTypeIds[onOffSwitchThingClassId] = onOffSwitchVersionStateTypeId;
     m_versionStateTypeIds[remoteThingClassId] = remoteVersionStateTypeId;
     m_versionStateTypeIds[motionSensorThingClassId] = motionSensorVersionStateTypeId;
+    m_versionStateTypeIds[signalRepeaterThingClassId] = signalRepeaterVersionStateTypeId;
 }
 
 QString IntegrationPluginZigbeeTradfri::name() const
@@ -84,29 +90,20 @@ bool IntegrationPluginZigbeeTradfri::handleNode(ZigbeeNode *node, const QUuid &n
         if (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceOnOffSensor) {
             qCDebug(dcZigbeeTradfri()) << "Handeling TRADFRI motion sensor" << node << endpoint;
             createThing(motionSensorThingClassId, networkUuid, node, endpoint);
+            initMotionSensor(node, endpoint);
             handled = true;
         }
 
         if (endpoint->profile() == Zigbee::ZigbeeProfileLightLink && endpoint->deviceId() == Zigbee::LightLinkDeviceNonColourSceneController) {
             qCDebug(dcZigbeeTradfri()) << "Handeling TRADFRI remote control" << node << endpoint;
             createThing(remoteThingClassId, networkUuid, node, endpoint);
-
-//            ZigbeeClusterBasic *basicCluster = endpoint->inputCluster<ZigbeeClusterBasic>(ZigbeeClusterLibrary::ClusterIdBasic);
-//            if (!basicCluster) {
-//                qCWarning(dcZigbeeTradfri()) << "Failed to find basic cluster for performing factory reset to defaults";
-//                initRemote(node, endpoint);
-//            } else {
-//                ZigbeeClusterReply *zclReply = basicCluster->resetToFactoryDefaults();
-//                connect(zclReply, &ZigbeeClusterReply::finished, node, [=](){
-//                    if (zclReply->error() != ZigbeeClusterReply::ErrorNoError) {
-//                        qCWarning(dcZigbeeTradfri()) << "Failed to perform factory reset on basic cluster on" << endpoint;
-//                    }
-
-//                    initRemote(node, endpoint);
-//                });
-//            }
             initRemote(node, endpoint);
+            handled = true;
+        }
 
+        if (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceRangeExtender) {
+            qCDebug(dcZigbeeTradfri()) << "Handeling TRADFRI signal repeater" << node << endpoint;
+            createThing(signalRepeaterThingClassId, networkUuid, node, endpoint);
             handled = true;
         }
     }
@@ -170,6 +167,24 @@ void IntegrationPluginZigbeeTradfri::setupThing(ThingSetupInfo *info)
 
     // Thing specific setup
     if (thing->thingClassId() == onOffSwitchThingClassId) {
+        // Get battery level changes
+        ZigbeeClusterPowerConfiguration *powerCluster = endpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+        if (!powerCluster) {
+            qCWarning(dcZigbeeTradfri()) << "Could not find power configuration cluster on" << thing << endpoint;
+        } else {
+            // Only set the initial state if the attribute already exists
+            if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
+                thing->setStateValue(onOffSwitchBatteryLevelStateTypeId, powerCluster->batteryPercentage());
+                thing->setStateValue(onOffSwitchBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+            }
+
+            connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
+                qCDebug(dcZigbeeTradfri()) << "Battery percentage changed" << percentage << "%" << thing;
+                thing->setStateValue(onOffSwitchBatteryLevelStateTypeId, percentage);
+                thing->setStateValue(onOffSwitchBatteryCriticalStateTypeId, (percentage < 10.0));
+            });
+        }
+
         // Receive on/off commands
         ZigbeeClusterOnOff *onOffCluster = endpoint->outputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
         if (!onOffCluster) {
@@ -208,7 +223,9 @@ void IntegrationPluginZigbeeTradfri::setupThing(ThingSetupInfo *info)
                 }
             });
         }
+    }
 
+    if (thing->thingClassId() == motionSensorThingClassId) {
         // Get battery level changes
         ZigbeeClusterPowerConfiguration *powerCluster = endpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
         if (!powerCluster) {
@@ -216,19 +233,17 @@ void IntegrationPluginZigbeeTradfri::setupThing(ThingSetupInfo *info)
         } else {
             // Only set the initial state if the attribute already exists
             if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-                thing->setStateValue(onOffSwitchBatteryLevelStateTypeId, powerCluster->batteryPercentage());
-                thing->setStateValue(onOffSwitchBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+                thing->setStateValue(motionSensorBatteryLevelStateTypeId, powerCluster->batteryPercentage());
+                thing->setStateValue(motionSensorBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
             }
 
             connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
                 qCDebug(dcZigbeeTradfri()) << "Battery percentage changed" << percentage << "%" << thing;
-                thing->setStateValue(onOffSwitchBatteryLevelStateTypeId, percentage);
-                thing->setStateValue(onOffSwitchBatteryCriticalStateTypeId, (percentage < 10.0));
+                thing->setStateValue(motionSensorBatteryLevelStateTypeId, percentage);
+                thing->setStateValue(motionSensorBatteryCriticalStateTypeId, (percentage < 10.0));
             });
         }
-    }
 
-    if (thing->thingClassId() == motionSensorThingClassId) {
         // Create plugintimer if required
         if (!m_presenceTimer) {
             m_presenceTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
@@ -255,41 +270,9 @@ void IntegrationPluginZigbeeTradfri::setupThing(ThingSetupInfo *info)
                 m_presenceTimer->start();
             });
         }
-
-        // Get battery level changes
-        ZigbeeClusterPowerConfiguration *powerCluster = endpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
-        if (!powerCluster) {
-            qCWarning(dcZigbeeTradfri()) << "Could not find power configuration cluster on" << thing << endpoint;
-        } else {
-            // Only set the initial state if the attribute already exists
-            if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-                thing->setStateValue(motionSensorBatteryLevelStateTypeId, powerCluster->batteryPercentage());
-                thing->setStateValue(motionSensorBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
-            }
-
-            connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
-                qCDebug(dcZigbeeTradfri()) << "Battery percentage changed" << percentage << "%" << thing;
-                thing->setStateValue(motionSensorBatteryLevelStateTypeId, percentage);
-                thing->setStateValue(motionSensorBatteryCriticalStateTypeId, (percentage < 10.0));
-            });
-        }
     }
 
     if (thing->thingClassId() == remoteThingClassId) {
-        // Receive on/off commands
-        ZigbeeClusterOnOff *onOffCluster = endpoint->outputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
-        if (!onOffCluster) {
-            qCWarning(dcZigbeeTradfri()) << "Could not find on/off client cluster on" << thing << endpoint;
-        } else {
-            connect(onOffCluster, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
-                qCDebug(dcZigbeeTradfri()) << thing << "button pressed" << command;
-                if (command == ZigbeeClusterOnOff::CommandToggle) {
-                    qCDebug(dcZigbeeTradfri()) << thing << "pressed power";
-                    emit emitEvent(Event(remotePressedEventTypeId, thing->id(), ParamList() << Param(remotePressedEventButtonNameParamTypeId, "Power")));
-                }
-            });
-        }
-
         // Get battery level changes
         ZigbeeClusterPowerConfiguration *powerCluster = endpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
         if (!powerCluster) {
@@ -305,6 +288,20 @@ void IntegrationPluginZigbeeTradfri::setupThing(ThingSetupInfo *info)
                 qCDebug(dcZigbeeTradfri()) << "Battery percentage changed" << percentage << "%" << thing;
                 thing->setStateValue(remoteBatteryLevelStateTypeId, percentage);
                 thing->setStateValue(remoteBatteryCriticalStateTypeId, (percentage < 10.0));
+            });
+        }
+
+        // Receive on/off commands
+        ZigbeeClusterOnOff *onOffCluster = endpoint->outputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster) {
+            qCWarning(dcZigbeeTradfri()) << "Could not find on/off client cluster on" << thing << endpoint;
+        } else {
+            connect(onOffCluster, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
+                qCDebug(dcZigbeeTradfri()) << thing << "button pressed" << command;
+                if (command == ZigbeeClusterOnOff::CommandToggle) {
+                    qCDebug(dcZigbeeTradfri()) << thing << "pressed power";
+                    emit emitEvent(Event(remotePressedEventTypeId, thing->id(), ParamList() << Param(remotePressedEventButtonNameParamTypeId, "Power")));
+                }
             });
         }
     }
@@ -538,94 +535,74 @@ void IntegrationPluginZigbeeTradfri::initRemote(ZigbeeNode *node, ZigbeeNodeEndp
     });
 }
 
-void IntegrationPluginZigbeeTradfri::readBindings(ZigbeeNode *node)
+void IntegrationPluginZigbeeTradfri::initMotionSensor(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
 {
-    qCDebug(dcZigbeeTradfri()) << "Read binding table from node" << node;
-    ZigbeeReply *reply = node->readBindingTableEntries();
+    // Get the current configured bindings for this node
+    ZigbeeReply *reply = node->removeAllBindings();
     connect(reply, &ZigbeeReply::finished, node, [=](){
-       if (reply->error() != ZigbeeReply::ErrorNoError) {
-           qCWarning(dcZigbeeTradfri()) << "Failed to read binding table from" << node;
-       } else {
-           foreach (const ZigbeeDeviceProfile::BindingTableListRecord &binding, node->bindingTableRecords()) {
-               qCDebug(dcZigbeeTradfri()) << node << binding;
-           }
-       }
-    });
-}
+        if (reply->error() != ZigbeeReply::ErrorNoError) {
+            qCWarning(dcZigbeeTradfri()) << "Failed to remove all bindings for initialization of" << node;
+        }
 
-void IntegrationPluginZigbeeTradfri::initPowerConfigurationCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
-{
-    if (!endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)) {
-        qCWarning(dcZigbeeTradfri()) << "Failed to initialize the power configuration cluster because the cluster could not be found" << node << endpoint;
-        return;
-    }
+        // Read battery, bind and configure attribute reporting for battery
 
-    qCDebug(dcZigbeeTradfri()) << "Read power configuration cluster attributes" << node;
-    ZigbeeClusterReply *readAttributeReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->readAttributes({ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining});
-    connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
-        if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
-            qCWarning(dcZigbeeTradfri()) << "Failed to read power cluster attributes" << readAttributeReply->error();
-            //emit nodeInitialized(node);
+        if (!endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)) {
+            qCWarning(dcZigbeeTradfri()) << "Failed to initialize the power configuration cluster because the cluster could not be found" << node << endpoint;
             return;
         }
 
-        qCDebug(dcZigbeeTradfri()) << "Read power configuration cluster attributes finished successfully";
-        // Bind the cluster to the coordinator
-        qCDebug(dcZigbeeTradfri()) << "Bind power configuration cluster to coordinator IEEE address";
-        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration,
-                                                                                          hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
-        connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-            if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                qCWarning(dcZigbeeTradfri()) << "Failed to bind power cluster to coordinator" << zdoReply->error();
+        qCDebug(dcZigbeeTradfri()) << "Read power configuration cluster attributes" << node;
+        ZigbeeClusterReply *readAttributeReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->readAttributes({ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining});
+        connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
+            if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeTradfri()) << "Failed to read power cluster attributes" << readAttributeReply->error();
+                //emit nodeInitialized(node);
                 return;
             }
-            qCDebug(dcZigbeeTradfri()) << "Bind power configuration cluster to coordinator finished successfully";
 
-            // Configure attribute rporting for battery remaining (0.5 % changes = 1)
-            ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
-            reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
-            reportingConfig.dataType = Zigbee::Uint8;
-            reportingConfig.minReportingInterval = 300;
-            reportingConfig.maxReportingInterval = 2700;
-            reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+            qCDebug(dcZigbeeTradfri()) << "Read power configuration cluster attributes finished successfully";
 
-            qCDebug(dcZigbeeTradfri()) << "Configure attribute reporting for power configuration cluster to coordinator";
-            ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingConfig});
-            connect(reportingReply, &ZigbeeClusterReply::finished, this, [reportingReply](){
-                if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                    qCWarning(dcZigbeeTradfri()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
+            // Bind the cluster to the coordinator
+            qCDebug(dcZigbeeTradfri()) << "Bind power configuration cluster to coordinator IEEE address";
+            ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration,
+                                                                                              hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+            connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                    qCWarning(dcZigbeeTradfri()) << "Failed to bind power cluster to coordinator" << zdoReply->error();
                     return;
                 }
+                qCDebug(dcZigbeeTradfri()) << "Bind power configuration cluster to coordinator finished successfully";
 
-                qCDebug(dcZigbeeTradfri()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+                // Configure attribute rporting for battery remaining (0.5 % changes = 1)
+                ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+                reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
+                reportingConfig.dataType = Zigbee::Uint8;
+                reportingConfig.minReportingInterval = 300;
+                reportingConfig.maxReportingInterval = 2700;
+                reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+                qCDebug(dcZigbeeTradfri()) << "Configure attribute reporting for power configuration cluster to coordinator";
+                ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingConfig});
+                connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+                    if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                        qCWarning(dcZigbeeTradfri()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
+                        return;
+                    }
+
+                    qCDebug(dcZigbeeTradfri()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+
+                    qCDebug(dcZigbeeTradfri()) << "Bind power configuration cluster to coordinator";
+                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindShortAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
+                    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                            qCWarning(dcZigbeeTradfri()) << "Failed to bind on/off cluster to coordinator" << zdoReply->error();
+                            return;
+                        }
+                        qCDebug(dcZigbeeTradfri()) << "Bind on/off cluster to coordinator finished successfully";
+                    });
+                });
             });
         });
-    });
-}
-
-void IntegrationPluginZigbeeTradfri::initOnOffCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
-{
-    qCDebug(dcZigbeeTradfri()) << "Bind power configuration cluster to coordinator";
-    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindShortAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
-    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-            qCWarning(dcZigbeeTradfri()) << "Failed to bind on/off cluster to coordinator" << zdoReply->error();
-            return;
-        }
-        qCDebug(dcZigbeeTradfri()) << "Bind on/off cluster to coordinator finished successfully";
-    });
-}
-
-void IntegrationPluginZigbeeTradfri::initLevelControlCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
-{
-    qCDebug(dcZigbeeTradfri()) << "Bind power level cluster to coordinator";
-    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindShortAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdLevelControl, 0x0000);
-    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-            qCWarning(dcZigbeeTradfri()) << "Failed to bind level cluster to coordinator" << zdoReply->error();
-            return;
-        }
-        qCDebug(dcZigbeeTradfri()) << "Bind level cluster to coordinator finished successfully";
     });
 }
 
