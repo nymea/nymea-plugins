@@ -332,7 +332,7 @@
                             "displayName": "Present",
                             "displayNameEvent": "Present changed",
                             "type": "bool",
-                            "defaultValue": true,
+                            "defaultValue": false,
                             "ioType": "digitalInput"
                         },
                         {

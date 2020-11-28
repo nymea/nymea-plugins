@@ -124,6 +124,17 @@
                             "defaultValue": ""
                         }
                     ],
+                    "settingsTypes": [
+                        {
+                            "id": "4576f68f-7856-48f8-a3fd-2c9e7f968537",
+                            "name": "timeout",
+                            "displayName": "Time period",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "defaultValue": 60,
+                            "minValue": 10
+                        }
+                    ],
                     "stateTypes": [
                         {
                             "id": "0d0a5ee1-41f2-4b5a-a3c0-7c8cca1c064d",
@@ -179,7 +190,7 @@
                             "displayName": "Present",
                             "displayNameEvent": "Present changed",
                             "type": "bool",
-                            "defaultValue": true,
+                            "defaultValue": false,
                             "ioType": "digitalInput"
                         },
                         {

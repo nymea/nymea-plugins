@@ -33,6 +33,8 @@
 #include "plugininfo.h"
 #include "hardware/zigbee/zigbeehardwareresource.h"
 
+#include <math.h>
+
 IntegrationPluginZigbeePhilipsHue::IntegrationPluginZigbeePhilipsHue()
 {
     m_ieeeAddressParamTypeIds[dimmerSwitchThingClassId] = dimmerSwitchThingIeeeAddressParamTypeId;
@@ -235,34 +237,30 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
         if (!occupancyCluster) {
             qCWarning(dcZigbeePhilipsHue()) << "Occupancy cluster not found on" << thing;
         } else {
-            if (occupancyCluster->hasAttribute(ZigbeeClusterOccupancySensing::AttributeOccupancy)) {
-                thing->setStateValue(outdoorSensorIsPresentStateTypeId, occupancyCluster->occupied());
-                thing->setStateValue(outdoorSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
+            if (!m_presenceTimer) {
+                m_presenceTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
             }
 
-            connect(occupancyCluster, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [thing](bool occupancy){
-                qCDebug(dcZigbeePhilipsHue()) << "occupancy changed" << occupancy;
-                // Only change the state if the it changed to true, it will be disabled by the timer
-                if (occupancy) {
-                    thing->setStateValue(outdoorSensorIsPresentStateTypeId, occupancy);
-                    //m_presenceTimer->start();
+            connect(m_presenceTimer, &PluginTimer::timeout, thing, [thing](){
+                if (thing->stateValue(outdoorSensorIsPresentStateTypeId).toBool()) {
+                    int timeout = thing->setting(outdoorSensorSettingsTimeoutParamTypeId).toInt();
+                    QDateTime lastSeenTime = QDateTime::fromMSecsSinceEpoch(thing->stateValue(outdoorSensorLastSeenTimeStateTypeId).toULongLong() * 1000);
+                    if (lastSeenTime.addSecs(timeout) < QDateTime::currentDateTime()) {
+                        qCDebug(dcZigbeePhilipsHue()) << thing << "Presence timeout";
+                        thing->setStateValue(outdoorSensorIsPresentStateTypeId, false);
+                    }
                 }
-                thing->setStateValue(outdoorSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
             });
 
-            //            if (!m_presenceTimer) {
-            //                m_presenceTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
-            //            }
-
-            //            connect(m_presenceTimer, &PluginTimer::timeout, thing, [thing](){
-            //                if (thing->stateValue(outdoorSensorIsPresentStateTypeId).toBool()) {
-            //                    int timeout = thing->setting(outdoorSensorSettingsTimeoutParamTypeId).toInt();
-            //                    QDateTime lastSeenTime = QDateTime::fromMSecsSinceEpoch(thing->stateValue(lumiMotionSensorLastSeenTimeStateTypeId).toULongLong() * 1000);
-            //                    if (lastSeenTime.addSecs(timeout) < QDateTime::currentDateTime()) {
-            //                        thing->setStateValue(lumiMotionSensorIsPresentStateTypeId, false);
-            //                    }
-            //                }
-            //            });
+            connect(occupancyCluster, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [=](bool occupancy){
+                qCDebug(dcZigbeePhilipsHue()) << thing << "occupancy cluster changed" << occupancy;
+                // Only change the state if the it changed to true, it will be disabled by the timer
+                if (occupancy) {
+                    thing->setStateValue(outdoorSensorIsPresentStateTypeId, true);
+                    thing->setStateValue(outdoorSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
+                    m_presenceTimer->start();
+                }
+            });
         }
 
         ZigbeeClusterTemperatureMeasurement *temperatureCluster = endpointHa->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
@@ -277,6 +275,24 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
             connect(temperatureCluster, &ZigbeeClusterTemperatureMeasurement::temperatureChanged, thing, [thing](double temperature){
                 qCDebug(dcZigbeePhilipsHue()) << thing << "temperature changed" << temperature << "°C";
                 thing->setStateValue(outdoorSensorTemperatureStateTypeId, temperature);
+            });
+        }
+
+        ZigbeeClusterIlluminanceMeasurment *illuminanceCluster = endpointHa->inputCluster<ZigbeeClusterIlluminanceMeasurment>(ZigbeeClusterLibrary::ClusterIdIlluminanceMeasurement);
+        if (!illuminanceCluster) {
+            qCWarning(dcZigbeePhilipsHue()) << "Could not find the illuminance measurement server cluster on" << thing << endpointHa;
+        } else {
+            // Only set the state if the cluster actually has the attribute
+            if (illuminanceCluster->hasAttribute(ZigbeeClusterIlluminanceMeasurment::AttributeMeasuredValue)) {
+                int convertedValue = pow(10, illuminanceCluster->illuminance() / 10000) - 1;
+                qCDebug(dcZigbeePhilipsHue()) << thing << "illuminance" << illuminanceCluster->illuminance() << "-->" << convertedValue << "lux";
+                thing->setStateValue(outdoorSensorLightIntensityStateTypeId, convertedValue);
+            }
+
+            connect(illuminanceCluster, &ZigbeeClusterIlluminanceMeasurment::illuminanceChanged, thing, [thing](quint16 illuminance){
+                int convertedValue = pow(10, illuminance / 10000) - 1;
+                qCDebug(dcZigbeePhilipsHue()) << thing << "illuminance changed" << illuminance << "-->" << convertedValue << "lux";
+                thing->setStateValue(outdoorSensorLightIntensityStateTypeId, convertedValue);
             });
         }
 
@@ -410,7 +426,6 @@ void IntegrationPluginZigbeePhilipsHue::initDimmerSwitch(ZigbeeNode *node)
 
 void IntegrationPluginZigbeePhilipsHue::initOutdoorSensor(ZigbeeNode *node)
 {
-    //ZigbeeNodeEndpoint *endpointZll = node->getEndpoint(0x01);
     ZigbeeNodeEndpoint *endpointHa = node->getEndpoint(0x02);
 
     // Get the current configured bindings for this node
@@ -426,6 +441,7 @@ void IntegrationPluginZigbeePhilipsHue::initOutdoorSensor(ZigbeeNode *node)
             return;
         }
 
+        // Init power configuration cluster
         qCDebug(dcZigbeePhilipsHue()) << "Read power configuration cluster attributes" << node;
         ZigbeeClusterReply *readAttributeReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->readAttributes({ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining});
         connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
@@ -434,7 +450,6 @@ void IntegrationPluginZigbeePhilipsHue::initOutdoorSensor(ZigbeeNode *node)
             } else {
                 qCDebug(dcZigbeePhilipsHue()) << "Read power configuration cluster attributes finished successfully";
             }
-
 
             // Bind the cluster to the coordinator
             qCDebug(dcZigbeePhilipsHue()) << "Bind power configuration cluster to coordinator IEEE address";
@@ -465,84 +480,135 @@ void IntegrationPluginZigbeePhilipsHue::initOutdoorSensor(ZigbeeNode *node)
                     }
 
 
-                    // Init occupancy sensing cluster
-                    qCDebug(dcZigbeePhilipsHue()) << "Bind occupancy cluster to coordinator IEEE address";
-                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpointHa->endpointId(), ZigbeeClusterLibrary::ClusterIdOccupancySensing,
+                    // Init temperature measurment cluster
+                    qCDebug(dcZigbeePhilipsHue()) << "Bind temperature cluster to coordinator IEEE address";
+                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpointHa->endpointId(), ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement,
                                                                                                       hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
                     connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
                         if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                            qCWarning(dcZigbeePhilipsHue()) << "Failed to bind occupancy cluster to coordinator" << zdoReply->error();
+                            qCWarning(dcZigbeePhilipsHue()) << "Failed to bind temperature cluster to coordinator" << zdoReply->error();
                         } else {
-                            qCDebug(dcZigbeePhilipsHue()) << "Bind occupency cluster to coordinator finished successfully";
+                            qCDebug(dcZigbeePhilipsHue()) << "Bind temperature cluster to coordinator finished successfully";
                         }
 
+                        // Read current temperature
+                        if (!endpointHa->hasInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)) {
+                            qCWarning(dcZigbeePhilipsHue()) << "Failed to initialize the temperature cluster because the cluster could not be found" << node << endpointHa;
+                            return;
+                        }
 
-                        // Configure attribute reporting for temperature
-                        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
-                        reportingConfig.attributeId = ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue;
-                        reportingConfig.dataType = Zigbee::BitMap8;
-                        reportingConfig.minReportingInterval = 1;
-                        reportingConfig.maxReportingInterval = 10;
-                        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
-
-                        qCDebug(dcZigbeePhilipsHue()) << "Configure attribute reporting for occupancy cluster to coordinator";
-                        ZigbeeClusterReply *reportingReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdOccupancySensing)->configureReporting({reportingConfig});
-                        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
-                            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                                qCWarning(dcZigbeePhilipsHue()) << "Failed to configure occupancy cluster attribute reporting" << reportingReply->error();
+                        qCDebug(dcZigbeePhilipsHue()) << "Read temperature cluster attributes" << node;
+                        ZigbeeClusterReply *readAttributeReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)->readAttributes({ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue});
+                        connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
+                            if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                qCWarning(dcZigbeePhilipsHue()) << "Failed to read temperature cluster attributes" << readAttributeReply->error();
                             } else {
-                                qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for occupancy cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+                                qCDebug(dcZigbeePhilipsHue()) << "Read temperature cluster attributes finished successfully";
                             }
 
+                            // Configure attribute reporting for temperature
+                            ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+                            reportingConfig.attributeId = ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue;
+                            reportingConfig.dataType = Zigbee::Int16;
+                            reportingConfig.minReportingInterval = 300;
+                            reportingConfig.maxReportingInterval = 600;
+                            reportingConfig.reportableChange = ZigbeeDataType(static_cast<qint16>(10)).data();
 
-                            // Init temperature measurment cluster
-                            qCDebug(dcZigbeePhilipsHue()) << "Bind temperature cluster to coordinator IEEE address";
-                            ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpointHa->endpointId(), ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement,
-                                                                                                              hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
-                            connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-                                if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                                    qCWarning(dcZigbeePhilipsHue()) << "Failed to bind temperature cluster to coordinator" << zdoReply->error();
+                            qCDebug(dcZigbeePhilipsHue()) << "Configure attribute reporting for temperature cluster to coordinator";
+                            ZigbeeClusterReply *reportingReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)->configureReporting({reportingConfig});
+                            connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+                                if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                    qCWarning(dcZigbeePhilipsHue()) << "Failed to configure temperature cluster attribute reporting" << reportingReply->error();
                                 } else {
-                                    qCDebug(dcZigbeePhilipsHue()) << "Bind temperature cluster to coordinator finished successfully";
+                                    qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for temperature cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
                                 }
 
-                                // Read current temperature
-                                if (!endpointHa->hasInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)) {
-                                    qCWarning(dcZigbeePhilipsHue()) << "Failed to initialize the temperature cluster because the cluster could not be found" << node << endpointHa;
-                                    return;
-                                }
-
-                                qCDebug(dcZigbeePhilipsHue()) << "Read temperature cluster attributes" << node;
-                                ZigbeeClusterReply *readAttributeReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)->readAttributes({ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue});
-                                connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
-                                    if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                                        qCWarning(dcZigbeePhilipsHue()) << "Failed to read temperature cluster attributes" << readAttributeReply->error();
+                                // Init illuminance measurment cluster
+                                qCDebug(dcZigbeePhilipsHue()) << "Bind illuminance measurement cluster to coordinator IEEE address";
+                                ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpointHa->endpointId(), ZigbeeClusterLibrary::ClusterIdIlluminanceMeasurement,
+                                                                                                                  hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+                                connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                                    if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                                        qCWarning(dcZigbeePhilipsHue()) << "Failed to bind illuminance measurement cluster to coordinator" << zdoReply->error();
                                     } else {
-                                        qCDebug(dcZigbeePhilipsHue()) << "Read temperature cluster attributes finished successfully";
+                                        qCDebug(dcZigbeePhilipsHue()) << "Bind illuminance measurement cluster to coordinator finished successfully";
                                     }
 
-                                    // Configure attribute reporting
+                                    // Read current illuminance
+                                    if (!endpointHa->hasInputCluster(ZigbeeClusterLibrary::ClusterIdIlluminanceMeasurement)) {
+                                        qCWarning(dcZigbeePhilipsHue()) << "Failed to initialize the illuminance measurement cluster because the cluster could not be found" << node << endpointHa;
+                                        return;
+                                    }
 
-                                    // Configure attribute reporting for temperature
-                                    ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
-                                    reportingConfig.attributeId = ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue;
-                                    reportingConfig.dataType = Zigbee::Int16;
-                                    reportingConfig.minReportingInterval = 300;
-                                    reportingConfig.maxReportingInterval = 600;
-                                    reportingConfig.reportableChange = ZigbeeDataType(static_cast<qint16>(10)).data();
-
-                                    qCDebug(dcZigbeePhilipsHue()) << "Configure attribute reporting for temperature cluster to coordinator";
-                                    ZigbeeClusterReply *reportingReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)->configureReporting({reportingConfig});
-                                    connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
-                                        if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                                            qCWarning(dcZigbeePhilipsHue()) << "Failed to configure temperature cluster attribute reporting" << reportingReply->error();
+                                    qCDebug(dcZigbeePhilipsHue()) << "Read illuminance measurement cluster attributes" << node;
+                                    ZigbeeClusterReply *readAttributeReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdIlluminanceMeasurement)->readAttributes({ZigbeeClusterIlluminanceMeasurment::AttributeMeasuredValue});
+                                    connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
+                                        if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                            qCWarning(dcZigbeePhilipsHue()) << "Failed to read illuminance measurement cluster attributes" << readAttributeReply->error();
                                         } else {
-                                            qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for temperature cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+                                            qCDebug(dcZigbeePhilipsHue()) << "Read illuminance measurement cluster attributes finished successfully";
                                         }
 
+                                        // Configure attribute reporting
+
+                                        // Configure attribute reporting for temperature
+                                        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+                                        reportingConfig.attributeId = ZigbeeClusterIlluminanceMeasurment::AttributeMeasuredValue;
+                                        reportingConfig.dataType = Zigbee::Uint16;
+                                        reportingConfig.minReportingInterval = 300;
+                                        reportingConfig.maxReportingInterval = 600;
+                                        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint16>(1)).data();
+
+                                        qCDebug(dcZigbeePhilipsHue()) << "Configure attribute reporting for illuminance measurement cluster to coordinator";
+                                        ZigbeeClusterReply *reportingReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdIlluminanceMeasurement)->configureReporting({reportingConfig});
+                                        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+                                            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                                qCWarning(dcZigbeePhilipsHue()) << "Failed to configure illuminance measurement cluster attribute reporting" << reportingReply->error();
+                                            } else {
+                                                qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for illuminance measurement cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+                                            }
 
 
+                                            // Init occupancy sensing cluster
+                                            qCDebug(dcZigbeePhilipsHue()) << "Bind occupancy sensing cluster to coordinator IEEE address";
+                                            ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpointHa->endpointId(), ZigbeeClusterLibrary::ClusterIdOccupancySensing,
+                                                                                                                              hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+                                            connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                                                if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                                                    qCWarning(dcZigbeePhilipsHue()) << "Failed to bind occupancy sensing cluster to coordinator" << zdoReply->error();
+                                                } else {
+                                                    qCDebug(dcZigbeePhilipsHue()) << "Bind occupancy sensing cluster to coordinator finished successfully";
+                                                }
 
+
+                                                qCDebug(dcZigbeePhilipsHue()) << "Read occupancy sensing cluster attributes" << node;
+                                                ZigbeeClusterReply *readAttributeReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdOccupancySensing)->readAttributes({ZigbeeClusterOccupancySensing::AttributeOccupancy, ZigbeeClusterOccupancySensing::AttributeOccupancySensorType});
+                                                connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
+                                                    if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                                        qCWarning(dcZigbeePhilipsHue()) << "Failed to read occupancy sensing cluster attributes" << readAttributeReply->error();
+                                                    } else {
+                                                        qCDebug(dcZigbeePhilipsHue()) << "Read occupancy sensing cluster attributes finished successfully";
+                                                    }
+
+                                                    // Configure attribute reporting for temperature
+                                                    ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+                                                    reportingConfig.attributeId = ZigbeeClusterOccupancySensing::AttributeOccupancy;
+                                                    reportingConfig.dataType = Zigbee::BitMap8;
+                                                    reportingConfig.minReportingInterval = 0;
+                                                    reportingConfig.maxReportingInterval = 300;
+
+                                                    qCDebug(dcZigbeePhilipsHue()) << "Configure attribute reporting for occupancy cluster to coordinator";
+                                                    ZigbeeClusterReply *reportingReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdOccupancySensing)->configureReporting({reportingConfig});
+                                                    connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+                                                        if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                                            qCWarning(dcZigbeePhilipsHue()) << "Failed to configure occupancy cluster attribute reporting" << reportingReply->error();
+                                                        } else {
+                                                            qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for occupancy cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+                                                        }
+                                                    });
+                                                });
+                                            });
+                                        });
                                     });
                                 });
                             });

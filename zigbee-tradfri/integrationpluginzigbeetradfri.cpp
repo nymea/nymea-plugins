@@ -591,7 +591,7 @@ void IntegrationPluginZigbeeTradfri::initMotionSensor(ZigbeeNode *node, ZigbeeNo
 
                     qCDebug(dcZigbeeTradfri()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
 
-                    qCDebug(dcZigbeeTradfri()) << "Bind power configuration cluster to coordinator";
+                    qCDebug(dcZigbeeTradfri()) << "Bind on/off cluster to coordinator";
                     ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindShortAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
                     connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
                         if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
