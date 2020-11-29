@@ -1,0 +1,3 @@
+accuweather==0.0.11 \
+    --hash=sha256:9338af6b76484f9b80592d725d6a55b68020e89bf33e5c61f7d0e7dca50df460 \
+    --hash=sha256:fb8bbe7c2740ecde3f6f612e004958ab36ea0fee22f92aa222be420ce4ea242f
