@@ -330,9 +330,4 @@ void IntegrationPluginSenic::onBatteryValueChanged(const uint &percentage)
     Thing *thing = m_nuimos.value(nuimo);
 
     thing->setStateValue(nuimoBatteryLevelStateTypeId, percentage);
-    if (percentage < 20) {
-        thing->setStateValue(nuimoBatteryCriticalStateTypeId, true);
-    } else {
-        thing->setStateValue(nuimoBatteryCriticalStateTypeId, false);
-    }
 }

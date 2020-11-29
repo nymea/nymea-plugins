@@ -73,14 +73,6 @@
                             "defaultValue": "-"
                         },
                         {
-                            "id": "aabd660f-b0c5-49f6-b7b0-6ba8e0a8cfcd",
-                            "name": "batteryCritical",
-                            "displayName": "Battery critical",
-                            "displayNameEvent": "Battery critical changed",
-                            "type": "bool",
-                            "defaultValue": true
-                        },
-                        {
                             "id": "b5ee2465-7fa1-450b-8073-f115537d3409",
                             "name": "batteryLevel",
                             "displayName": "Battery",
