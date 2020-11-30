@@ -705,7 +705,7 @@ void IntegrationPluginZigbeeGenericLights::executeBrightnessAction(ThingActionIn
         return;
     }
 
-    ZigbeeClusterReply *reply = levelCluster->commandMoveToLevelWithOnOff(level);
+    ZigbeeClusterReply *reply = levelCluster->commandMoveToLevelWithOnOff(level, 5);
     connect(reply, &ZigbeeClusterReply::finished, info, [=](){
         // Note: reply will be deleted automatically
         if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
@@ -755,7 +755,7 @@ void IntegrationPluginZigbeeGenericLights::executeColorAction(ThingActionInfo *i
 
     // Note: time unit is 1/10 s
     QPoint colorXyInt = ZigbeeUtils::convertColorToXYInt(color);
-    ZigbeeClusterReply *reply = colorCluster->commandMoveToColor(colorXyInt.x(), colorXyInt.y(), 2);
+    ZigbeeClusterReply *reply = colorCluster->commandMoveToColor(colorXyInt.x(), colorXyInt.y(), 5);
     connect(reply, &ZigbeeClusterReply::finished, info, [=](){
         // Note: reply will be deleted automatically
         if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
