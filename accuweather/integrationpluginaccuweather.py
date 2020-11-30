@@ -27,7 +27,7 @@
 import nymea
 import threading
 import asyncio
-import threading
+import simplejson
 
 from accuweather import (
     AccuWeather,
@@ -37,6 +37,8 @@ from accuweather import (
     RequestsExceededError,
 )
 from aiohttp import ClientError, ClientSession
+from urllib.request import urlopen, Request
+
 
 LATITUDE = 52.0677904
 LONGITUDE = 19.4795644
@@ -51,17 +53,17 @@ def init():
     loop.run_forever();
 
 
-async def initAccuWeather():
+async def initAccuWeather(latitude, longitude):
     # Need "global" here to be able to modify the global variable
     global accuweather
-    logger.log("Initializing accuweather")
+    logger.log("Initializing Accuweather, latitude", latitude, "longitude:", longitude)
     websession = ClientSession()
-    accuweather = AccuWeather(apikey, websession, latitude=LATITUDE, longitude=LONGITUDE)
+    accuweather = AccuWeather(apikey, websession, latitude, longitude)
 
 
 def deinit():
-    accuweather.stop();
-    accuweather.close();
+    loop.stop()
+    loop.close()
 
 # Not needed for asyncio atm, so commented out atm...
 #    for timer in timers:
@@ -69,28 +71,51 @@ def deinit():
 
 
 def discoverThings(info):
-    if accuweather == None:
-        asyncio.run_coroutine_threadsafe(initAccuWeather(), loop);
-
-    future = asyncio.run_coroutine_threadsafe(doDiscover(info), loop)
-
-
-async def doDiscover(info):
-    logger.log("running doDiscover")
-    current_conditions = await accuweather.async_get_current_conditions()
-    logger.log("after await", current_conditions)
-    descriptor = nymea.ThingDescriptor(weatherThingClassId, "Weather")
+    request = Request("http://ip-api.com/json")
+    data = simplejson.load(urlopen(request))
+    descriptor = nymea.ThingDescriptor(weatherThingClassId, "%s - %s" % (data["city"], data["country"]), "%s - %s" % (data["lat"], data["lon"]))
+    descriptor.params = [nymea.Param(weatherThingLatitudeParamTypeId, data["lat"]), nymea.Param(weatherThingLongitudeParamTypeId, data["lon"])]
     info.addDescriptor(descriptor)
     info.finish(nymea.ThingErrorNoError)
 
 
+async def getCurrentConditions(thing):
+    logger.log("running get current conditions")
+    currentConditions = await accuweather.async_get_current_conditions()
+    logger.log("after await", currentConditions)
+
+    thing.setStateValue(weatherWeatherDescriptionStateId, currentConditions["WeatherText"]);
+
+    thing.setStateValue(weatherTemperatureStateId, currentConditions["Temperature"]["Metric"]["Value"]);
+    thing.setStateValue(weatherHumidityStateId, currentConditions["Humidity"]["Metric"]["Value"]);
+    thing.setStateValue(weatherPressureStateId, currentConditions["Pressure"]["Metric"]["Value"]);
+
+    thing.setStateValue(weatherWindSpeedStateId, currentConditions["Wind"]["Direction"]["Degrees"]);
+    thing.setStateValue(weatherWindDirectionStateId, currentConditions["Wind"]["Speed"]);
+
+    thing.setStateValue(weatherMinTemperatureStateId, currentConditions["TemperatureSummary"]["Past24HourRange"]["Minimum"]);
+    thing.setStateValue(weatherMaxTemperatureStateId, currentConditions["TemperatureSummary"]["Past24HourRange"]["Maximum"]);
+
+    thing.setStateValue(weatherVisibilityStateId, currentConditions["Visibility"]["Metric"]["Value"]);
+    thing.setStateValue(cloudinessStateId, currentConditions["CloudCover"]);
+    #descriptor = nymea.ThingDescriptor(weatherThingClassId, "Weather")
+    #info.addDescriptor(descriptor)
+    #info.finish(nymea.ThingErrorNoError)
 
 # Haven't looked at anything below at all so far
 
 def setupThing(info):
     logger.log("setupThing", info.thing.name, "Creating connection.")
-    timers[info.thing] = threading.Timer(30, getData, [info.thing])
-    timers[info.thing].start()
+    #timers[info.thing] = threading.Timer(30, getData, [info.thing])
+    #timers[info.thing].start()
+
+    latitude = info.thing.paramValue(weatherThingLatitudeParamTypeId)
+    longitude = info.thing.paramValue(weatherThingLongitudeParamTypeId)
+
+    if accuweather == None:
+        asyncio.run_coroutine_threadsafe(initAccuWeather(latitude, longitude), loop);
+
+    future = asyncio.run_coroutine_threadsafe(getCurrentConditions(info.thing), loop)
     info.finish(nymea.ThingErrorNoError)
 
 
@@ -121,6 +146,6 @@ def configValueChanged(paramTypeId, value):
 
 def getData(thing):
     lat = thing.paramValue(weatherThingLatitudeParamTypeId)
-    lon = thing.paramValue(weatherThingLatitudeParamTypeId)
+    lon = thing.paramValue(weatherThingLongitudeParamTypeId)
 
     logger.log("Current: {current_conditions}")

@@ -154,32 +154,6 @@
                             "displayNameEvent": "weather description changed",
                             "type": "QString",
                             "defaultValue": "-"
-                        },
-                        {
-                            "id": "af155e94-9492-44e1-8608-7d0ee8b5d50d",
-                            "name": "sunsetTime",
-                            "displayName": "sunset",
-                            "displayNameEvent": "sunset changed",
-                            "unit": "UnixTime",
-                            "type": "int",
-                            "defaultValue": 0
-                        },
-                        {
-                            "id": "a1dddc3d-549f-4f20-b78b-be850548f286",
-                            "name": "sunriseTime",
-                            "displayName": "sunrise",
-                            "displayNameEvent": "sunrise changed",
-                            "unit": "UnixTime",
-                            "type": "int",
-                            "defaultValue": 0
-                        },
-                        {
-                            "id": "e0a14b66-c8e1-49fb-8eff-b48e5dce80de",
-                            "name": "daylight",
-                            "displayName": "daylight",
-                            "displayNameEvent": "daylightChanged",
-                            "type": "bool",
-                            "defaultValue": false
                         }
                     ]
                 }
