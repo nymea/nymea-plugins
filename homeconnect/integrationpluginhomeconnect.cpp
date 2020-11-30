@@ -147,7 +147,7 @@ IntegrationPluginHomeConnect::IntegrationPluginHomeConnect()
 void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
 {
     if (info->thingClassId() == homeConnectAccountThingClassId) {
-
+        qCDebug(dcHomeConnect()) << "Start pairing" << info->thingName();
         bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
         bool controlEnabled =  configValue(homeConnectPluginControlEnabledParamTypeId).toBool();
         QByteArray clientKey = configValue(homeConnectPluginCustomClientKeyParamTypeId).toByteArray();
@@ -155,20 +155,39 @@ void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
         if (clientKey.isEmpty() || clientSecret.isEmpty()) {
             clientKey = apiKeyStorage()->requestKey("homeconnect").data("clientKey");
             clientSecret = apiKeyStorage()->requestKey("homeconnect").data("clientSecret");
+        } else {
+            qCDebug(dcHomeConnect()) << "Using custom client secret and key";
         }
         if (clientKey.isEmpty() || clientSecret.isEmpty()) {
             info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client key and/or seceret is not available."));
             return;
+        } else {
+            qCDebug(dcHomeConnect()) << "Using API client secret and key from API key provider";
         }
         HomeConnect *homeConnect = new HomeConnect(hardwareManager()->networkManager(), clientKey, clientSecret, simulationMode, this);
         QString scope = "IdentifyAppliance Monitor Settings Dishwasher Washer Dryer WasherDryer Refrigerator Freezer WineCooler CoffeeMaker Hood CookProcessor";
-        if (controlEnabled)
+        if (controlEnabled) {
             scope.append(" Control");
+            qCDebug(dcHomeConnect()) << "Conrol scope is enabled";
+        }
+        if (simulationMode) {
+            qCDebug(dcHomeConnect()) << "Simulation mode is enabled";
+        }
         QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), scope);
-        qCDebug(dcHomeConnect()) << "HomeConnect url:" << url;
-        m_setupHomeConnectConnections.insert(info->thingId(), homeConnect);
         info->setOAuthUrl(url);
-        info->finish(Thing::ThingErrorNoError);
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url)); // Check if the host is reachable
+        connect(reply, &QNetworkReply::finished, info, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, info, [reply, info, homeConnect, url, this] {
+
+            if (reply->error() == QNetworkReply::NetworkError::NoError) {
+                m_setupHomeConnectConnections.insert(info->thingId(), homeConnect);
+                connect(info, &ThingPairingInfo::aborted, this, [info, this] {m_setupHomeConnectConnections.take(info->thingId())->deleteLater();});
+                info->finish(Thing::ThingErrorNoError);
+            } else {
+                qCDebug(dcHomeConnect()) << "Got online check error" << reply->errorString();
+                info->finish(Thing::ThingErrorSetupFailed, tr("HomeConnect server not reachable, please check the internet connection"));
+            }
+        });
     } else {
         qCWarning(dcHomeConnect()) << "Unhandled pairing metod!";
         info->finish(Thing::ThingErrorCreationMethodNotSupported);
@@ -180,10 +199,13 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
     Q_UNUSED(username);
 
     if (info->thingClassId() == homeConnectAccountThingClassId) {
-        qCDebug(dcHomeConnect()) << "Redirect url is" << secret;
         QUrl url(secret);
         QUrlQuery query(url);
         QByteArray authorizationCode = query.queryItemValue("code").toLocal8Bit();
+        if (authorizationCode.isEmpty()) {
+            qCWarning(dcHomeConnect()) << "No authorization code received.";
+            info->finish(Thing::ThingErrorSetupFailed);
+        }
 
         HomeConnect *homeConnect = m_setupHomeConnectConnections.value(info->thingId());
         if (!homeConnect) {
@@ -192,10 +214,10 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
-        qCDebug(dcHomeConnect()) << "Authorization code" << authorizationCode;
+        qCDebug(dcHomeConnect()) << "Authorization code" << authorizationCode.mid(0, 4)+QString().fill('*', authorizationCode.length()-4) ;
         homeConnect->getAccessTokenFromAuthorizationCode(authorizationCode);
         connect(homeConnect, &HomeConnect::receivedRefreshToken, info, [info, this](const QByteArray &refreshToken){
-            qCDebug(dcHomeConnect()) << "Token:" << refreshToken;
+            qCDebug(dcHomeConnect()) << "Token:" << refreshToken.mid(0, 4)+QString().fill('*', refreshToken.length()-4) ;
 
             pluginStorage()->beginGroup(info->thingId().toString());
             pluginStorage()->setValue("refresh_token", refreshToken);
@@ -236,6 +258,8 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
             if (clientKey.isEmpty() || clientSecret.isEmpty()) {
                 clientKey = apiKeyStorage()->requestKey("homeconnect").data("clientKey");
                 clientSecret = apiKeyStorage()->requestKey("homeconnect").data("clientSecret");
+            } else {
+                qCDebug(dcHomeConnect()) << "Using custom API key and secret.";
             }
             if (clientKey.isEmpty() || clientSecret.isEmpty()) {
                 info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client key and/or seceret is not available."));
