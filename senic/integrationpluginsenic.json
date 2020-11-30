@@ -29,7 +29,7 @@
                     "name": "nuimo",
                     "displayName": "Nuimo",
                     "createMethods": ["discovery"],
-                    "interfaces": ["simplemultibutton", "longpressbutton", "connectable", "batterylevel"],
+                    "interfaces": ["simplemultibutton", "longpressbutton", "connectable"],
                     "paramTypes": [
                         {
                             "id": "71553f6a-2ed4-4896-bb7b-52e7dca948b2",
@@ -71,17 +71,6 @@
                             "displayNameEvent": "Software revision changed",
                             "type": "QString",
                             "defaultValue": "-"
-                        },
-                        {
-                            "id": "b5ee2465-7fa1-450b-8073-f115537d3409",
-                            "name": "batteryLevel",
-                            "displayName": "Battery",
-                            "displayNameEvent": "Battery changed",
-                            "type": "int",
-                            "minValue": 0,
-                            "maxValue": 100,
-                            "unit": "Percentage",
-                            "defaultValue": 0
                         },
                         {
                             "id": "69a5f495-5452-434b-8fb8-b73d992c5446",

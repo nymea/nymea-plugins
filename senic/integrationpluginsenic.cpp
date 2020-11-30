@@ -105,7 +105,6 @@ void IntegrationPluginSenic::setupThing(ThingSetupInfo *info)
     connect(nuimo, &Nuimo::rotationValueChanged, this, &IntegrationPluginSenic::onRotationValueChanged);
     connect(nuimo, &Nuimo::connectedChanged, this, &IntegrationPluginSenic::onConnectedChanged);
     connect(nuimo, &Nuimo::deviceInformationChanged, this, &IntegrationPluginSenic::onDeviceInformationChanged);
-    connect(nuimo, &Nuimo::batteryValueChanged, this, &IntegrationPluginSenic::onBatteryValueChanged);
 
     m_nuimos.insert(nuimo, thing);
 
@@ -324,10 +323,3 @@ void IntegrationPluginSenic::onPluginConfigurationChanged(const ParamTypeId &par
     }
 }
 
-void IntegrationPluginSenic::onBatteryValueChanged(const uint &percentage)
-{
-    Nuimo *nuimo = static_cast<Nuimo *>(sender());
-    Thing *thing = m_nuimos.value(nuimo);
-
-    thing->setStateValue(nuimoBatteryLevelStateTypeId, percentage);
-}
