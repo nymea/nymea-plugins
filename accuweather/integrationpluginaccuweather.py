@@ -43,21 +43,49 @@ LONGITUDE = 19.4795644
 
 apikey = ""
 timers = {}
+loop = asyncio.get_event_loop()
+accuweather = None
 
 def init():
-    logger.log("AccuWeather init")
+    # AccuWeather lib needs asyncio, let's start the event loop for it.
+    loop.run_forever();
+
+
+async def initAccuWeather():
+    # Need "global" here to be able to modify the global variable
+    global accuweather
+    logger.log("Initializing accuweather")
+    websession = ClientSession()
+    accuweather = AccuWeather(apikey, websession, latitude=LATITUDE, longitude=LONGITUDE)
 
 
 def deinit():
-    for timer in timers:
-        timers[timer].cancel()
+    accuweather.stop();
+    accuweather.close();
+
+# Not needed for asyncio atm, so commented out atm...
+#    for timer in timers:
+#        timers[timer].cancel()
+
 
 def discoverThings(info):
-    logger.log("discoverThings")
+    if accuweather == None:
+        asyncio.run_coroutine_threadsafe(initAccuWeather(), loop);
+
+    future = asyncio.run_coroutine_threadsafe(doDiscover(info), loop)
+
+
+async def doDiscover(info):
+    logger.log("running doDiscover")
+    current_conditions = await accuweather.async_get_current_conditions()
+    logger.log("after await", current_conditions)
     descriptor = nymea.ThingDescriptor(weatherThingClassId, "Weather")
     info.addDescriptor(descriptor)
     info.finish(nymea.ThingErrorNoError)
 
+
+
+# Haven't looked at anything below at all so far
 
 def setupThing(info):
     logger.log("setupThing", info.thing.name, "Creating connection.")
@@ -94,9 +122,5 @@ def configValueChanged(paramTypeId, value):
 def getData(thing):
     lat = thing.paramValue(weatherThingLatitudeParamTypeId)
     lon = thing.paramValue(weatherThingLatitudeParamTypeId)
-    websession = ClientSession()
-    accuweather = AccuWeather(
-        apikey, websession, lat, lon
-    )
-    current_conditions = accuweather.async_get_current_conditions()
+
     logger.log("Current: {current_conditions}")
