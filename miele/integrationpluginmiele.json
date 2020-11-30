@@ -5,15 +5,8 @@
     "paramTypes": [
         {
             "id": "6ebf0bdb-012d-4277-9603-2a2e68e23c33",
-            "name": "customClientKey",
-            "displayName": "Custom client key",
-            "defaultValue": "",
-            "type": "QString"
-        },
-        {
-            "id": "37230edb-22ed-4f1d-8849-7fd72f192d89",
-            "name": "customClientSecret",
-            "displayName": "Custom client secret",
+            "name": "customClientId",
+            "displayName": "Custom client id",
             "defaultValue": "",
             "type": "QString"
         }
@@ -27,7 +20,7 @@
             "thingClasses": [
                 {
                     "id": "bea89711-7f41-4add-ba27-32dd69515c1c",
-                    "name": "miele",
+                    "name": "mieleAccount",
                     "displayName": "Miele",
                     "interfaces": ["account"],
                     "createMethods": ["user"],

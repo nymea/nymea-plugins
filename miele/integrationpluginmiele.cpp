@@ -29,34 +29,45 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "integrationpluginmiele.h"
+#include "extern-plugininfo.h"
+
+#include <QJsonDocument>
+#include <QUrl>
+#include <QUrlQuery>
 
 IntegrationPluginMiele::IntegrationPluginMiele()
 {
-
+    m_idParamTypeIds.insert(ovenThingClassId, ovenThingIdParamTypeId);
+    m_idParamTypeIds.insert(fridgeThingClassId, fridgeThingIdParamTypeId);
+    m_idParamTypeIds.insert(dryerThingClassId, dryerThingIdParamTypeId);
+    m_idParamTypeIds.insert(coffeeMakerThingClassId, coffeeMakerThingIdParamTypeId);
+    m_idParamTypeIds.insert(dishwasherThingClassId, dishwasherThingIdParamTypeId);
+    m_idParamTypeIds.insert(washerThingClassId, washerThingIdParamTypeId);
+    m_idParamTypeIds.insert(cookTopThingClassId, cookTopThingIdParamTypeId);
+    m_idParamTypeIds.insert(hoodThingClassId, hoodThingIdParamTypeId);
+    m_idParamTypeIds.insert(cleaningRobotThingClassId, cleaningRobotThingIdParamTypeId);
 }
 
 void IntegrationPluginMiele::startPairing(ThingPairingInfo *info)
 {
     if (info->thingClassId() == mieleAccountThingClassId) {
 
-        QByteArray clientKey = configValue(mielePluginCustomClientKeyParamTypeId).toByteArray();
-        QByteArray clientSecret = configValue(mielePluginCustomClientSecretParamTypeId).toByteArray();
-        if (clientKey.isEmpty() || clientSecret.isEmpty()) {
-            clientKey = apiKeyStorage()->requestKey("miele").data("clientKey");
-            clientSecret = apiKeyStorage()->requestKey("miele").data("clientSecret");
+        QByteArray clientId = configValue(mielePluginCustomClientIdParamTypeId).toByteArray();
+        if (clientId.isEmpty()) {
+            clientId = apiKeyStorage()->requestKey("miele").data("clientKey");
         }
-        if (clientKey.isEmpty() || clientSecret.isEmpty()) {
+        if (clientId.isEmpty()) {
             info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client key and/or seceret is not available."));
             return;
         }
-        Miele *miele = new Miele(hardwareManager()->networkManager(), clientKey, clientSecret, this);
-        QUrl url = miele->getLoginUrl(QUrl("https://127.0.0.1:8888"), scope);
+        Miele *miele = new Miele(hardwareManager()->networkManager(), clientId, this);
+        QUrl url = miele->getLoginUrl(QUrl("https://127.0.0.1:8888"));
         qCDebug(dcMiele()) << "HomeConnect url:" << url;
-        m_setupHomeConnectConnections.insert(info->thingId(), miele);
+        m_setupMieleConnections.insert(info->thingId(), miele);
         info->setOAuthUrl(url);
         info->finish(Thing::ThingErrorNoError);
     } else {
-        qCWarning(dMiele()) << "Unhandled pairing metod!";
+        qCWarning(dcMiele()) << "Unhandled pairing metod!";
         info->finish(Thing::ThingErrorCreationMethodNotSupported);
     }
 }
@@ -96,6 +107,51 @@ void IntegrationPluginMiele::confirmPairing(ThingPairingInfo *info, const QStrin
 
 void IntegrationPluginMiele::setupThing(ThingSetupInfo *info)
 {
+    Thing *thing = info->thing();
+
+    if (thing->thingClassId() == mieleAccountThingClassId) {
+        Miele *miele;
+        if (m_setupMieleConnections.keys().contains(thing->id())) {
+            //Fresh device setup, has already a fresh access token
+            qCDebug(dcMiele()) << "Miele OAuth setup complete";
+            miele = m_setupMieleConnections.take(thing->id());
+            m_mieleConnections.insert(thing, miele);
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            //device loaded from the device database, needs a new access token;
+            pluginStorage()->beginGroup(thing->id().toString());
+            QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
+            pluginStorage()->endGroup();
+            if (refreshToken.isEmpty()) {
+                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Refresh token is not available."));
+                return;
+            }
+            QByteArray clientId = configValue(mielePluginCustomClientIdParamTypeId).toByteArray();
+            if (clientId.isEmpty()) {
+                clientId = apiKeyStorage()->requestKey("miele").data("clientId");
+            }
+            if (clientId.isEmpty()) {
+                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client id is not available."));
+                return;
+            }
+            miele = new Miele(hardwareManager()->networkManager(), clientId, this);
+            miele->getAccessTokenFromRefreshToken(refreshToken);
+            m_asyncSetup.insert(miele, info);
+        }
+    } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
+        Thing *parentThing = myThings().findById(thing->parentId());
+        if (parentThing->setupComplete()) {
+            info->finish(Thing::ThingErrorNoError);
+        } else {
+            connect(parentThing, &Thing::setupStatusChanged, info, [parentThing, info]{
+                if (parentThing->setupComplete()) {
+                    info->finish(Thing::ThingErrorNoError);
+                }
+            });
+        }
+    } else {
+        Q_ASSERT_X(false, "setupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+    }
 
 }
 
@@ -118,6 +174,28 @@ void IntegrationPluginMiele::postSetupThing(Thing *thing)
             }
         });
     }
+
+    if (thing->thingClassId() == mieleAccountThingClassId) {
+           Miele *miele = m_mieleConnections.value(thing);
+           miele->getDevices();
+           //miele->connectEventStream();
+           thing->setStateValue(mieleAccountConnectedStateTypeId, true);
+           thing->setStateValue(mieleAccountLoggedInStateTypeId, true);
+           //TBD Set user name
+       } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
+           Thing *parentThing = myThings().findById(thing->parentId());
+           if (!parentThing)
+               qCWarning(dcMiele()) << "Could not find parent with Id" << thing->parentId().toString();
+           Miele *miele = m_mieleConnections.value(parentThing);
+           QString deviceId = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
+           if (!miele) {
+               qCWarning(dcMiele()) << "Could not find HomeConnect connection for thing" << thing->name();
+           } else {
+               miele->getDevice(deviceId);
+           }
+       } else {
+           Q_ASSERT_X(false, "postSetupThing", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
+       }
 }
 
 void IntegrationPluginMiele::executeAction(ThingActionInfo *info)

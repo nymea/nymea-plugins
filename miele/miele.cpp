@@ -37,10 +37,58 @@
 #include <QJsonObject>
 #include <QUrlQuery>
 
+
+Miele::Miele(NetworkAccessManager *networkmanager, const QByteArray &clientId, QObject *parent) :
+    QObject(parent),
+    m_clientId(clientId),
+    m_networkManager(networkmanager)
+{
+    m_tokenRefreshTimer = new QTimer(this);
+    m_tokenRefreshTimer->setSingleShot(true);
+    connect(m_tokenRefreshTimer, &QTimer::timeout, this, &Miele::onRefreshTimeout);
+}
+
+QByteArray Miele::accessToken()
+{
+    return m_accessToken;
+}
+
+QByteArray Miele::refreshToken()
+{
+    return m_refreshToken;
+}
+
+QUrl Miele::getLoginUrl(const QUrl &redirectUrl)
+{
+    if (m_clientId.isEmpty()) {
+        qWarning(dcMiele) << "Client key not defined!";
+        return QUrl("");
+    }
+
+    if (redirectUrl.isEmpty()){
+        qWarning(dcMiele()) << "No redirect uri defined!";
+    }
+    m_redirectUri = QUrl::toPercentEncoding(redirectUrl.toString());
+
+    QUrl url(m_authorizationUrl);
+    QUrlQuery queryParams;
+    queryParams.addQueryItem("client_id", m_clientId);
+    queryParams.addQueryItem("redirect_uri", m_redirectUri);
+    queryParams.addQueryItem("response_type", "code");
+    m_state = QUuid::createUuid().toString();
+    queryParams.addQueryItem("state", m_state);
+    url.setQuery(queryParams);
+
+    return url;
+}
+
+
+
 void Miele::getDevices()
 {
 
 }
+
 
 QUuid Miele::processAction(const QString &deviceId, Miele::ProcessAction action)
 {
@@ -107,7 +155,7 @@ QUuid Miele::putAction(const QString &deviceId, const QJsonDocument &action)
 
     QNetworkRequest request(url);
     request.setRawHeader("Authorization", "Bearer "+m_accessToken);
-   // request.setRawHeader("Accept-Language", "en-US");
+    // request.setRawHeader("Accept-Language", "en-US");
     request.setRawHeader("accept", "application/json; charset=utf-8");
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
 

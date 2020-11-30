@@ -89,12 +89,12 @@ public:
         StatusNotConnected = 255
     };
 
-    Miele(NetworkAccessManager *networkmanager, const QByteArray &clientKey, const QByteArray &clientSecret, bool simulationMode = false, QObject *parent = nullptr);
+    Miele(NetworkAccessManager *networkmanager, const QByteArray &clientId, QObject *parent = nullptr);
     QByteArray accessToken();
     QByteArray refreshToken();
     void setSimulationMode(bool simulation);
 
-    QUrl getLoginUrl(const QUrl &redirectUrl, const QString &scope);
+    QUrl getLoginUrl(const QUrl &redirectUrl);
 
     void getAccessTokenFromRefreshToken(const QByteArray &refreshToken);
     void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
@@ -127,6 +127,20 @@ private:
     QUrl m_authorizationUrl = QUrl("https://api.mcs3.miele.com/thirdparty/login/");
     QUrl m_tokenUrl = QUrl("https://api.mcs3.miele.com/thirdparty/token/");
     QUrl m_apiUrl = QUrl("https://api.mcs3.miele.com/");
+    QByteArray m_clientId;
+
+    QByteArray m_accessToken;
+    QByteArray m_refreshToken;
+    QByteArray m_redirectUri  = "https://127.0.0.1:8888";
+    QString m_state;
+
+    QTimer *m_tokenRefreshTimer = nullptr;
+
+    void setAuthenticated(bool state);
+    void setConnected(bool state);
+
+    bool m_authenticated = false;
+    bool m_connected = false;
 
     bool checkStatusCode(QNetworkReply *reply, const QByteArray &rawData);
 signals:
@@ -135,5 +149,8 @@ signals:
     void receivedRefreshToken(const QByteArray &refreshToken);
     void receivedAccessToken(const QByteArray &accessToken);
     void commandExecuted(const QUuid &commandId, bool success);
+
+private slots:
+    void onRefreshTimeout();
 };
 #endif // MIELE
