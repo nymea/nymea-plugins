@@ -55,10 +55,6 @@ public:
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
-    void browseThing(BrowseResult *result) override;
-    void browserItem(BrowserItemResult *result) override;
-    void executeBrowserItem(BrowserActionInfo *info) override;
-
 private:
     PluginTimer *m_pluginTimer15min = nullptr;
 
@@ -68,31 +64,11 @@ private:
     QHash<Thing *, Miele *> m_mieleConnections;
 
     QHash<QUuid, ThingActionInfo *> m_pendingActions;
-    QHash<Thing *, QString> m_selectedProgram;
-
     QHash<ThingClassId, ParamTypeId> m_idParamTypeIds;
 
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_doorStateStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_localControlStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_remoteControlActivationStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_remoteStartAllowanceStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_operationStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_doorStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_selectedProgramStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_progressStateTypeIds;
-    QHash<ThingClassId, StateTypeId> m_endTimerStateTypeIds;
 
-    QHash<ThingClassId, ActionTypeId> m_startActionTypeIds;
-    QHash<ThingClassId, ActionTypeId> m_stopActionTypeIds;
-
-    QHash<ThingClassId, EventTypeId> m_programFinishedEventTypeIds;
-
-    QHash<QString, QString> m_coffeeStrengthTypes;
-
-    void parseKey(Thing *thing, const QString &key, const QVariant &value);
-    void parseSettingKey(Thing *thing, const QString &key, const QVariant &value);
-    bool checkIfActionIsPossible(ThingActionInfo *info);
+    Miele *createMieleConnection();
 
 private slots:
     void onConnectionChanged(bool connected);

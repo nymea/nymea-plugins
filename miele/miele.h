@@ -68,6 +68,7 @@ public:
         ColorPurple,
         ColorTurquoise
     };
+    Q_ENUM(Color)
 
     enum Status {
         StatusOff = 1,
@@ -89,12 +90,11 @@ public:
         StatusNotConnected = 255
     };
 
-    Miele(NetworkAccessManager *networkmanager, const QByteArray &clientId, QObject *parent = nullptr);
+    Miele(NetworkAccessManager *networkmanager, const QByteArray &clientId, const QByteArray &clientSecret, const QString &language = "en", QObject *parent = nullptr);
     QByteArray accessToken();
     QByteArray refreshToken();
-    void setSimulationMode(bool simulation);
 
-    QUrl getLoginUrl(const QUrl &redirectUrl);
+    QUrl getLoginUrl(const QUrl &redirectUrl, const QString &state = "");
 
     void getAccessTokenFromRefreshToken(const QByteArray &refreshToken);
     void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
@@ -114,12 +114,14 @@ public:
     QUuid setColors(const QString &deviceId, Color color);
     QUuid setModes(const QString &deviceId, Mode mode);
     QUuid setVentilationStep(const QString &deviceId, int step);
-    QUuid setStartTime();
+    QUuid setStartTime(const QString &deviceId, int seconds);
 
     // EVENTS
     void getAllEvents();
 private:
-
+    QString m_language;
+    QByteArray m_clientId;
+    QByteArray m_clientSecret;
     NetworkAccessManager *m_networkManager = nullptr;
 
     QUuid putAction(const QString &deviceId, const QJsonDocument &action); //
@@ -127,21 +129,18 @@ private:
     QUrl m_authorizationUrl = QUrl("https://api.mcs3.miele.com/thirdparty/login/");
     QUrl m_tokenUrl = QUrl("https://api.mcs3.miele.com/thirdparty/token/");
     QUrl m_apiUrl = QUrl("https://api.mcs3.miele.com/");
-    QByteArray m_clientId;
 
     QByteArray m_accessToken;
     QByteArray m_refreshToken;
     QByteArray m_redirectUri  = "https://127.0.0.1:8888";
-    QString m_state;
 
     QTimer *m_tokenRefreshTimer = nullptr;
-
-    void setAuthenticated(bool state);
-    void setConnected(bool state);
 
     bool m_authenticated = false;
     bool m_connected = false;
 
+    void setAuthenticated(bool state);
+    void setConnected(bool state);
     bool checkStatusCode(QNetworkReply *reply, const QByteArray &rawData);
 signals:
     void connectionChanged(bool connected);

@@ -9,6 +9,13 @@
             "displayName": "Custom client id",
             "defaultValue": "",
             "type": "QString"
+        },
+        {
+            "id": "cd4709fb-adc2-4403-99b5-93dc9cc7f0d8",
+            "name": "customClientSecret",
+            "displayName": "Custom client secret",
+            "defaultValue": "",
+            "type": "QString"
         }
     ],
     "apiKeys": ["miele"],
@@ -56,7 +63,7 @@
                     ]
                 },
                 {
-                    "id": "cf542b5e-2903-497c-95a0-042df6535450",
+                    "id": "98491bd0-9ba7-4060-924d-153900f470b5",
                     "name": "oven",
                     "displayName": "Oven",
                     "interfaces": ["connectable"],
@@ -64,7 +71,7 @@
                     "browsable": true,
                     "paramTypes": [
                         {
-                            "id": "1e287843-41dd-49c8-a250-a21ed0e4215c",
+                            "id": "5be2f375-8068-40b8-9a88-fc5a07508d82",
                             "name": "id",
                             "displayName": "ID",
                             "defaultValue": "-",
@@ -73,7 +80,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "9c2c9360-0a4a-43ff-8d15-9cefa80380ec",
+                            "id": "eba13efe-cc1c-4954-bcaf-beed1d490f6d",
                             "name": "connected",
                             "displayName": "Connected",
                             "displayNameEvent": "Connected changed",
