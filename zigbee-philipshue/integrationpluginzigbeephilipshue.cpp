@@ -339,6 +339,8 @@ void IntegrationPluginZigbeePhilipsHue::initDimmerSwitch(ZigbeeNode *node)
     connect(reply, &ZigbeeReply::finished, node, [=](){
         if (reply->error() != ZigbeeReply::ErrorNoError) {
             qCWarning(dcZigbeePhilipsHue()) << "Failed to remove all bindings for initialization of" << node;
+        } else {
+            qCDebug(dcZigbeePhilipsHue()) << "Removed all bindings successfully from" << node;
         }
 
         // Read battery, bind and configure attribute reporting for battery
@@ -352,11 +354,10 @@ void IntegrationPluginZigbeePhilipsHue::initDimmerSwitch(ZigbeeNode *node)
         connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
             if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
                 qCWarning(dcZigbeePhilipsHue()) << "Failed to read power cluster attributes" << readAttributeReply->error();
-                //emit nodeInitialized(node);
-                return;
+            } else {
+                qCDebug(dcZigbeePhilipsHue()) << "Read power configuration cluster attributes finished successfully";
             }
 
-            qCDebug(dcZigbeePhilipsHue()) << "Read power configuration cluster attributes finished successfully";
 
             // Bind the cluster to the coordinator
             qCDebug(dcZigbeePhilipsHue()) << "Bind power configuration cluster to coordinator IEEE address";
@@ -365,9 +366,9 @@ void IntegrationPluginZigbeePhilipsHue::initDimmerSwitch(ZigbeeNode *node)
             connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
                 if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
                     qCWarning(dcZigbeePhilipsHue()) << "Failed to bind power cluster to coordinator" << zdoReply->error();
-                    return;
+                } else {
+                    qCDebug(dcZigbeePhilipsHue()) << "Bind power configuration cluster to coordinator finished successfully";
                 }
-                qCDebug(dcZigbeePhilipsHue()) << "Bind power configuration cluster to coordinator finished successfully";
 
                 // Configure attribute rporting for battery remaining (0.5 % changes = 1)
                 ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
@@ -382,28 +383,27 @@ void IntegrationPluginZigbeePhilipsHue::initDimmerSwitch(ZigbeeNode *node)
                 connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
                     if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
                         qCWarning(dcZigbeePhilipsHue()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
-                        return;
+                    } else {
+                        qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
                     }
-
-                    qCDebug(dcZigbeePhilipsHue()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
 
                     qCDebug(dcZigbeePhilipsHue()) << "Bind on/off cluster to coordinator";
                     ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindShortAddress(endpointZll->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
                     connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
                         if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
                             qCWarning(dcZigbeePhilipsHue()) << "Failed to bind on/off cluster to coordinator" << zdoReply->error();
-                            return;
+                        } else {
+                            qCDebug(dcZigbeePhilipsHue()) << "Bind on/off cluster to coordinator finished successfully";
                         }
-                        qCDebug(dcZigbeePhilipsHue()) << "Bind on/off cluster to coordinator finished successfully";
 
                         qCDebug(dcZigbeePhilipsHue()) << "Bind power level cluster to coordinator";
                         ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindShortAddress(endpointZll->endpointId(), ZigbeeClusterLibrary::ClusterIdLevelControl, 0x0000);
                         connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
                             if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
                                 qCWarning(dcZigbeePhilipsHue()) << "Failed to bind level cluster to coordinator" << zdoReply->error();
-                                return;
+                            } else {
+                                qCDebug(dcZigbeePhilipsHue()) << "Bind level cluster to coordinator finished successfully";
                             }
-                            qCDebug(dcZigbeePhilipsHue()) << "Bind level cluster to coordinator finished successfully";
 
                             qCDebug(dcZigbeePhilipsHue()) << "Read binding table from node" << node;
                             ZigbeeReply *reply = node->readBindingTableEntries();
@@ -433,6 +433,8 @@ void IntegrationPluginZigbeePhilipsHue::initOutdoorSensor(ZigbeeNode *node)
     connect(reply, &ZigbeeReply::finished, node, [=](){
         if (reply->error() != ZigbeeReply::ErrorNoError) {
             qCWarning(dcZigbeePhilipsHue()) << "Failed to remove all bindings for initialization of" << node;
+        } else {
+            qCDebug(dcZigbeePhilipsHue()) << "Removed all bindings successfully from" << node;
         }
 
         // Read battery, bind and configure attribute reporting for battery
