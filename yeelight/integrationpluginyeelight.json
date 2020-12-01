@@ -1,0 +1,239 @@
+{
+    "displayName": "Yeelight",
+    "name": "yeelight",
+    "id": "40012951-be9f-4de6-b6e1-0a7455fdd416",
+    "vendors": [
+        {
+            "name": "Yeelight",
+            "displayName": "Yeelight",
+            "id": "74011456-0a0f-4e43-bd94-bf4bb69593a4",
+            "thingClasses": [
+                {
+                    "id": "7d801b71-0aee-4b5d-ae62-a950473b20f5",
+                    "name": "colorBulb",
+                    "displayName": "Color bulb",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["colorlight", "alert", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "a603ff66-0da8-42e8-942b-1632a22adefb",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "99790910-ce6c-4b14-bb1f-f56133522dce",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "bfe184d2-6e62-4979-8ff2-3fd190903c82",
+                            "name": "id",
+                            "displayName": "Id",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "e80aea31-7ac0-4f71-9650-efb70ea1e768",
+                            "name": "default",
+                            "displayName": "Set default"
+                        },
+                        {
+                            "id": "ef558b8b-c4a1-4485-bd89-70749cc185b7",
+                            "name": "alert",
+                            "displayName": "flash",
+                            "paramTypes": [
+                                {
+                                    "id": "944c9ab8-0f46-42f7-b814-8b72f9ca5407",
+                                    "name": "alert",
+                                    "displayName": "alert",
+                                    "type": "QString",
+                                    "defaultValue": "flash",
+                                    "allowedValues": [
+                                        "flash",
+                                        "flash 15 [s]"
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7cb7d7ae-f281-46c9-83ea-52b1d7e8e2c8",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "759b661e-8726-41c8-9c29-c5885eb19018",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "01f058cc-4bfb-439c-8344-f7ffdd2b2ed0",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature",
+                            "displayNameEvent": "Color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "unit": "Mired",
+                            "defaultValue": 170,
+                            "minValue": 153,
+                            "maxValue": 500,
+                            "writable": true
+                        },
+                        {
+                            "id": "d74cfe47-b6e6-47ae-a8e9-bb99b8ae63fe",
+                            "name": "color",
+                            "displayName": "Color",
+                            "displayNameEvent": "Color changed",
+                            "displayNameAction": "Set color",
+                            "type": "QColor",
+                            "defaultValue": "#000000",
+                            "writable": true
+                        },
+                        {
+                            "id": "a7a16fb8-0e8b-4aa3-977d-3ff7cd65c708",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        },
+                        {
+                            "id": "97082528-392c-4af3-8fe4-ff643045812f",
+                            "name": "effect",
+                            "displayName": "effect",
+                            "displayNameEvent": "effect changed",
+                            "displayNameAction": "Set effect",
+                            "type": "QString",
+                            "defaultValue": "none",
+                            "possibleValues": [
+                                "none",
+                                "color loop"
+                            ],
+                            "writable": true
+                        },
+                        {
+                            "id": "6babaf04-0247-447c-b429-d39f3d330f45",
+                            "name": "colorMode",
+                            "displayName": "Color mode",
+                            "displayNameEvent": "Color mode changed",
+                            "displayNameAction": "Set color mode",
+                            "type": "QString",
+                            "defaultValue": "-",
+                            "writable": true
+                        }
+                    ]
+                },
+                {
+                    "id": "5112eb03-7b5a-44a1-994a-01a70c850555",
+                    "name": "dimmableBulb",
+                    "displayName": "Dimmable bulb",
+                    "createMethods": ["user", "discovery"],
+                    "interfaces": ["dimmablelight", "alert", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "32f4f50c-a3f2-4379-8838-295024d200b4",
+                            "name": "host",
+                            "displayName": "Host address",
+                            "type" : "QString",
+                            "inputType": "IPv4Address",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "df51023e-7f18-4e11-8c7a-30d153b50952",
+                            "name": "port",
+                            "displayName": "Port",
+                            "type" : "int",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "5a526561-588a-49bd-ae2b-ce3c3b4fd04e",
+                            "name": "id",
+                            "displayName": "Id",
+                            "type" : "QString",
+                            "readOnly": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "a50780d1-259d-4240-8f71-a0bb5c57362b",
+                            "name": "default",
+                            "displayName": "Set default"
+                        },
+                        {
+                            "id": "ba513820-1ace-4ad2-aa84-b7bd01318bc3",
+                            "name": "alert",
+                            "displayName": "flash",
+                            "paramTypes": [
+                                {
+                                    "id": "1c0f4e9e-95fd-4715-8386-9ac28ffa3c6e",
+                                    "name": "alert",
+                                    "displayName": "alert",
+                                    "type": "QString",
+                                    "defaultValue": "flash",
+                                    "allowedValues": [
+                                        "flash",
+                                        "flash 15 [s]"
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "fcfe37cb-4c9d-4af2-9789-56190c9d8d7f",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "0786e242-1257-437c-9327-f202b427ab1b",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true
+                        },
+                        {
+                            "id": "b0db1fd8-cec8-4cd4-acd0-5fc415095e10",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brigtness",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

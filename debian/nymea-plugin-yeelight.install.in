@@ -1,0 +1,3 @@
+yeelight/integrationpluginyeelight.json usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/yeelight/
+yeelight/integrationpluginyeelight.py usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/yeelight/
+yeelight/requirements.txt usr/lib/@DEB_HOST_MULTIARCH@/nymea/plugins/yeelight/
