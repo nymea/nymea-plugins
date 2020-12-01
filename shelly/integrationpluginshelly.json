@@ -23,14 +23,6 @@
                             "readOnly": true
                         },
                         {
-                            "id": "d0e0499e-faa0-432a-a760-c295b0aefed0",
-                            "name": "connectedDevice",
-                            "displayName": "Connected device",
-                            "type": "QString",
-                            "allowedValues": ["None", "Generic", "Light", "Socket"],
-                            "defaultValue": "Generic"
-                        },
-                        {
                             "id": "fa1aa0f6-93b2-410d-a2c5-7b2f45eae679",
                             "name": "username",
                             "displayName": "Username (optional)",
@@ -44,6 +36,17 @@
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "5b7eeb6c-6113-41f3-a61b-3076d087c9fe",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameEvent": "Turned on/off",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
                         {
                             "id": "e5d41e05-2296-457e-97d8-98a5ac0de615",
                             "name": "connected",
@@ -108,7 +111,7 @@
                     "name": "shelly1pm",
                     "displayName": "Shelly 1PM",
                     "createMethods": ["discovery"],
-                    "interfaces": [ "gateway", "wirelessconnectable", "update" ],
+                    "interfaces": [ "gateway", "extendedsmartmeterconsumer", "wirelessconnectable", "update" ],
                     "paramTypes": [
                         {
                             "id": "6df5db8a-4e27-49e5-8cf9-78cb8497d831",
@@ -116,14 +119,6 @@
                             "displayName": "Shelly ID",
                             "type": "QString",
                             "readOnly": true
-                        },
-                        {
-                            "id": "3aacd693-3f1a-4040-be3a-953e600da44f",
-                            "name": "connectedDevice",
-                            "displayName": "Connected device",
-                            "type": "QString",
-                            "allowedValues": ["None", "Generic", "Light", "Socket"],
-                            "defaultValue": "Generic"
                         },
                         {
                             "id": "99a31711-0029-461e-9117-2834451175c1",
@@ -139,6 +134,17 @@
                         }
                     ],
                     "stateTypes": [
+                        {
+                            "id": "ff44d332-52c3-4142-83e3-01d56c2eb42e",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameEvent": "Turned on/off",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
                         {
                             "id": "df23a5ea-5f54-42ac-ab6b-aea8f71224f0",
                             "name": "connected",
@@ -183,6 +189,24 @@
                             "displayNameEvent": "Available firmware version changed",
                             "type": "QString",
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "23594959-1cd4-4e23-a7ae-b0b7fbd29daa",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "displayNameEvent": "Total consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "3ec03053-7cf5-44fb-ad92-041eed9edd9a",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
                         }
                     ],
                     "actionTypes": [
@@ -193,6 +217,122 @@
                         },
                         {
                             "id": "edc735dd-8c6b-4f76-b05b-32c934b4fe3b",
+                            "name": "performUpdate",
+                            "displayName": "Update firmware"
+                        }
+                    ]
+                },
+                {
+                    "id": "20754114-1591-48b5-af2f-8c9966adb7c4",
+                    "name": "shelly1l",
+                    "displayName": "Shelly 1L",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "gateway", "extendedsmartmeterconsumer", "wirelessconnectable", "update" ],
+                    "paramTypes": [
+                        {
+                            "id": "afd5f2c5-dbe4-4d60-80a6-97b77264ad7c",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "b7c4c031-77ec-4ce7-a499-5bb8bf117fe8",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "e93b4eae-618c-4c4b-9c3e-0226361f87a2",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "94276bb9-ef68-47ab-8e74-34ebe54b411f",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameEvent": "Turned on/off",
+                            "displayNameAction": "Turn on/off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "2a333f45-2bba-4643-b973-1bb47d56306a",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "cce7906d-fdef-4804-b118-b5abefa6c6ed",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "0e47815d-0084-4a30-957a-f73ed100bed5",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "2303ffb7-8de4-4993-b3ac-95e4c035b790",
+                            "name": "currentVersion",
+                            "displayName": "Firmware version",
+                            "displayNameEvent": "Firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "5f357a69-6096-4f31-9b5b-b2d5478739da",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "0f879e7b-2124-4d98-9828-e5bbd1b344ce",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "displayNameEvent": "Total consumed energy changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "194f4f1b-86a7-4c04-abf0-2459ae7e2821",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "5a05c09a-c6a0-4141-aeeb-86afdb49ffaf",
+                            "name": "reboot",
+                            "displayName": "Reboot"
+                        },
+                        {
+                            "id": "fa6a52fa-6a57-4d65-8c41-1e61b545dd9b",
                             "name": "performUpdate",
                             "displayName": "Update firmware"
                         }
