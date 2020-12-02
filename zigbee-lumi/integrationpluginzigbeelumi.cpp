@@ -188,7 +188,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     // Get the endpoint of interest (0x01) for this device
     ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
     if (!endpoint) {
-        qCWarning(dcZigbeeLumi()) << "Zigbee endpoint 1 not found on" << thing->name();
+        qCWarning(dcZigbeeLumi()) << "Zigbee endpoint 1 not found on" << thing;
         info->finish(Thing::ThingErrorSetupFailed);
         return;
     }

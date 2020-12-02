@@ -238,7 +238,7 @@
                 },
                 {
                     "name": "soundRemote",
-                    "displayName": "TRÅDFRI Symfonsik",
+                    "displayName": "TRÅDFRI Symfonisk",
                     "id": "a18e398d-c14b-4bcd-8e6d-b64737436814",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],

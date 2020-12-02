@@ -445,9 +445,42 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
     info->finish(Thing::ThingErrorNoError);
 }
 
+void IntegrationPluginZigbeeGenericLights::postSetupThing(Thing *thing)
+{
+    if (thing->thingClassId() == onOffLightThingClassId) {
+        ZigbeeNode *node = m_thingNodes.value(thing);
+        if (node && node->reachable()) {
+            readLightPowerState(thing);
+        }
+    } else if (thing->thingClassId() == dimmableLightThingClassId) {
+        ZigbeeNode *node = m_thingNodes.value(thing);
+        if (node && node->reachable()) {
+            readLightPowerState(thing);
+            readLightLevelState(thing);
+        }
+    } else if (thing->thingClassId() == colorTemperatureLightThingClassId) {
+        ZigbeeNode *node = m_thingNodes.value(thing);
+        if (node && node->reachable()) {
+            readColorTemperatureRange(thing);
+            readLightPowerState(thing);
+            readLightLevelState(thing);
+            readLightColorTemperatureState(thing);
+        }
+    } else if (thing->thingClassId() == colorLightThingClassId) {
+        ZigbeeNode *node = m_thingNodes.value(thing);
+        if (node && node->reachable()) {
+            readColorCapabilities(thing);
+            readLightPowerState(thing);
+            readLightLevelState(thing);
+            readLightColorXYState(thing);
+        }
+    }
+}
+
 void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
 {
     if (!hardwareManager()->zigbeeResource()->available()) {
+        qCDebug(dcZigbeeGenericLights()) << "Failed to execute action" << info->thing() << info->action().actionTypeId().toString() << "because the hardware is not available.";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }
@@ -456,6 +489,7 @@ void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     ZigbeeNode *node = m_thingNodes.value(thing);
     if (!node->reachable()) {
+        qCDebug(dcZigbeeGenericLights()) << "Failed to execute action" << info->thing() << info->action().actionTypeId().toString() << "because node seems not to be reachable.";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }
@@ -463,6 +497,7 @@ void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
     // Get the endpoint
     ZigbeeNodeEndpoint *endpoint = findEndpoint(thing);
     if (!endpoint) {
+        qCDebug(dcZigbeeGenericLights()) << "Failed to execute action" << info->thing() << info->action().actionTypeId().toString() << "because node endpoint could not be found.";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }
