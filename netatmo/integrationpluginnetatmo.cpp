@@ -53,11 +53,17 @@ void IntegrationPluginNetatmo::init()
 
 void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
 {
+    // Checking the client credentials
+    if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
+        qCWarning(dcNetatmo()) << "Pairing failed, client credentials are not set";
+        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, client credentials are not set."));
+        return;
+    }
     // Checking the internet connection
     NetworkAccessManager *network = hardwareManager()->networkManager();
     QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://api.netatmo.net")));
-    connect(reply, &QNetworkReply::finished, this, [reply, info] {
-        reply->deleteLater();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, info, [reply, info] {
         //The server replies usually 404 not found on this request
         //int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
@@ -70,16 +76,11 @@ void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
 {
-    if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
-         info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, client credentials are not set."));
-        return;
-    }
     OAuth2 *authentication = new OAuth2(m_clientId, m_clientSecret, this);
     authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
     authentication->setUsername(username);
     authentication->setPassword(password);
     authentication->setScope("read_station read_thermostat write_thermostat");
-
 
     connect(authentication, &OAuth2::authenticationChanged, info, [this, info, username, password, authentication](){
         if (authentication->authenticated()) {
@@ -138,7 +139,8 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
             authentication->setPassword(password);
         } else {
             if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
-                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, client credentials are not set."));
+                qCWarning(dcNetatmo()) << "Setup failed because of missing client credentials";
+                info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, client credentials are not set."));
                 return;
             }
             authentication = new OAuth2(m_clientId, m_clientSecret, this);
@@ -433,19 +435,23 @@ void IntegrationPluginNetatmo::updateClientCredentials()
     QString clientId = configValue(netatmoPluginCustomClientIdParamTypeId).toString();
     QString clientSecret = configValue(netatmoPluginCustomClientSecretParamTypeId).toString();
     if (!clientId.isEmpty() && !clientSecret.isEmpty()) {
-        qCDebug(dcNetatmo()) << "Using API key from plugin settings.";
         m_clientId = clientId;
         m_clientSecret = clientSecret;
+        qCDebug(dcNetatmo()) << "Using API key from plugin settings.";
+        qCDebug(dcNetatmo()) << "   Client ID" << m_clientId.mid(0, 4)+"****";
+        qCDebug(dcNetatmo()) << "   Client secret" << m_clientSecret.mid(0, 4)+"****";
         return;
     }
     clientId = apiKeyStorage()->requestKey("netatmo").data("clientId");
-    clientId = apiKeyStorage()->requestKey("netatmo").data("clientSecret");
+    clientSecret = apiKeyStorage()->requestKey("netatmo").data("clientSecret");
     if (!clientId.isEmpty() && !clientSecret.isEmpty()) {
-        qCDebug(dcNetatmo()) << "Using API key from nymea API keys provider";
         m_clientId = clientId;
         m_clientSecret = clientSecret;
+        qCDebug(dcNetatmo()) << "Using API key from nymea API keys provider";
+        qCDebug(dcNetatmo()) << "   Client ID" << m_clientId.mid(0, 4)+"****";
+        qCDebug(dcNetatmo()) << "   Client secret" << m_clientSecret.mid(0, 4)+"****";
         return;
     }
     qCWarning(dcNetatmo()) << "No API key set.";
-    qCWarning(dcNetatmo()) << "Either install an API key pacakge (nymea-apikeysprovider-plugin-*) or provide a key in the plugin settings.";
+    qCWarning(dcNetatmo()) << "Either install an API key package (nymea-apikeysprovider-plugin-*) or provide a key in the plugin settings.";
 }
