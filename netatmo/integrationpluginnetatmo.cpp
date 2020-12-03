@@ -161,8 +161,6 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
 
             // Update thing connected state based on OAuth connected state
             connect(authentication, &OAuth2::authenticationChanged, thing, [this, thing, authentication](){
-                //FIXME connected states should only change if the server is not reachable
-                thing->setStateValue(netatmoConnectionConnectedStateTypeId, authentication->authenticated());
                 thing->setStateValue(netatmoConnectionLoggedInStateTypeId, authentication->authenticated());
                 if (authentication->authenticated()) {
                     refreshData(thing, authentication->token());
@@ -251,9 +249,15 @@ void IntegrationPluginNetatmo::thingRemoved(Thing *thing)
         outdoor->deleteLater();
     }
 
-    if (myThings().isEmpty() && m_pluginTimer) {
-        hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer);
-        m_pluginTimer = nullptr;
+    if (myThings().isEmpty()) {
+        if (m_pluginTimer3s) {
+            hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer3s);
+            m_pluginTimer3s = nullptr;
+        }
+        if (m_pluginTimer10m) {
+            hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer10m);
+            m_pluginTimer10m = nullptr;
+        }
     }
 }
 
@@ -271,9 +275,25 @@ void IntegrationPluginNetatmo::postSetupThing(Thing *thing)
         }
     }
 
-    if (!m_pluginTimer) {
-        m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(600);
-        connect(m_pluginTimer, &PluginTimer::timeout, this, &IntegrationPluginNetatmo::onPluginTimer);
+    if (!m_pluginTimer3s) {
+        m_pluginTimer3s = hardwareManager()->pluginTimerManager()->registerTimer(3);
+        connect(m_pluginTimer3s, &PluginTimer::timeout, this, [this] {
+            // Checking the connection to the Netatmo server
+            NetworkAccessManager *network = hardwareManager()->networkManager();
+            QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://api.netatmo.net")));
+            connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+            connect(reply, &QNetworkReply::finished, this, [reply, this] {
+
+                bool connected = (reply->error() != QNetworkReply::NetworkError::HostNotFoundError);
+                Q_FOREACH(Thing *thing, myThings().filterByThingClassId(netatmoConnectionThingClassId)) {
+                    thing->setStateValue(netatmoConnectionConnectedStateTypeId, connected);
+                }
+            });
+        });
+    }
+    if (!m_pluginTimer10m) {
+        m_pluginTimer10m = hardwareManager()->pluginTimerManager()->registerTimer(600);
+        connect(m_pluginTimer10m, &PluginTimer::timeout, this, &IntegrationPluginNetatmo::onPluginTimer);
     }
 }
 

@@ -56,7 +56,8 @@ public:
     void postSetupThing(Thing *thing) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_pluginTimer3s = nullptr;
+    PluginTimer *m_pluginTimer10m = nullptr;
 
     QHash<QString, QVariantMap> m_indoorStationInitData;
     QHash<QString, QVariantMap> m_outdoorStationInitData;
