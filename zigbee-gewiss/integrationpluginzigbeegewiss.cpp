@@ -85,12 +85,7 @@ bool IntegrationPluginZigbeeGewiss::handleNode(ZigbeeNode *node, const QUuid &ne
             return false;
         }
 
-        ThingDescriptor descriptor(thingClassId, supportedThings().findById(thingClassId).displayName());
-        ParamList params;
-        params << Param(m_networkUuidParamTypeIds.value(thingClassId), networkUuid.toString());
-        params << Param(m_ieeeAddressParamTypeIds.value(thingClassId), node->extendedAddress().toString());
-        descriptor.setParams(params);
-        emit autoThingsAppeared({descriptor});
+        createThing(thingClassId, networkUuid, node);
         return true;
     }
 
@@ -142,6 +137,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
     });
 
     if (thing->thingClassId() == gewissGwa1501ThingClassId) {
+        initGwa1501(node);
 
         ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
         ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02);
