@@ -66,10 +66,10 @@ PLUGIN_DIRS = \
     ws2812fx            \
     zigbeegeneric       \
     zigbeegenericlights \
+    zigbeegewiss        \
     zigbeelumi          \
     zigbeephilipshue    \
     zigbeetradfri       \
-
 
 message(============================================)
 message("Qt version:" $$[QT_VERSION])

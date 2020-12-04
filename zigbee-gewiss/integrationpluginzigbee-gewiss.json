@@ -1,0 +1,99 @@
+{
+    "name": "ZigBeeGewiss",
+    "displayName": "ZigBee Gewiss",
+    "id": "98959344-92a2-47c5-b071-36db610f147c",
+    "vendors": [
+        {
+            "name": "gewiss",
+            "displayName": "Gewiss",
+            "id": "2fdc8d78-ea8e-47bd-9331-b06a9b56f938",
+            "thingClasses": [
+                {
+                    "name": "gewissGwa1501",
+                    "displayName": "GWA1501",
+                    "id": "5daf398f-2eba-47c1-8805-ca34f075c7ea",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "longpressbutton", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "25366cc6-b13d-497e-8dac-bc77123af572",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "2ee9eb10-69b4-4ac0-a236-d4eec0c25608",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "c4a8d75d-fce0-4243-a25d-9a10a6c7e811",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "17150f4b-6ef1-444a-b178-293a057275dc",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "ab5adef9-738b-4a0e-966c-6f48be99c365",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "e2a05f86-7aef-4638-b637-b3b6af38e86b",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "baffd50b-1acc-416e-ba7c-94ee72a90e6a",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["1", "2", "1+2"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "b37d5ff0-4913-41d4-a236-618a4bc0d00f",
+                            "name": "longPressed",
+                            "displayName": "Button longpressed",
+                            "paramTypes": [
+                                {
+                                    "id": "6a42f1f6-b957-42ca-90b8-8c543bd249f6",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["1", "2", "1+2"]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
