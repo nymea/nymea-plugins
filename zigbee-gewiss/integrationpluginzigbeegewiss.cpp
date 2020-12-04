@@ -41,7 +41,7 @@ IntegrationPluginZigbeeGewiss::IntegrationPluginZigbeeGewiss()
 {
     m_networkUuidParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingNetworkUuidParamTypeId;
 
-    m_zigbeeAddressParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingIeeeAddressParamTypeId;
 
     m_connectedStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ConnectedStateTypeId;
 
@@ -88,7 +88,7 @@ bool IntegrationPluginZigbeeGewiss::handleNode(ZigbeeNode *node, const QUuid &ne
         ThingDescriptor descriptor(thingClassId, supportedThings().findById(thingClassId).displayName());
         ParamList params;
         params << Param(m_networkUuidParamTypeIds.value(thingClassId), networkUuid.toString());
-        params << Param(m_zigbeeAddressParamTypeIds.value(thingClassId), node->extendedAddress().toString());
+        params << Param(m_ieeeAddressParamTypeIds.value(thingClassId), node->extendedAddress().toString());
         descriptor.setParams(params);
         emit autoThingsAppeared({descriptor});
         return true;
@@ -117,26 +117,14 @@ void IntegrationPluginZigbeeGewiss::init()
 void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-
-    // Get the node for this thing
     QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
-    ZigbeeAddress zigbeeAddress = ZigbeeAddress(thing->paramValue(m_zigbeeAddressParamTypeIds.value(thing->thingClassId())).toString());
+    ZigbeeAddress zigbeeAddress = ZigbeeAddress(thing->paramValue(m_ieeeAddressParamTypeIds.value(thing->thingClassId())).toString());
     ZigbeeNode *node = hardwareManager()->zigbeeResource()->claimNode(this, networkUuid, zigbeeAddress);
     if (!node) {
-        qCWarning(dcZigBeeGewiss()) << "Zigbee node for" << info->thing()->name() << "not found.´";
+        qCWarning(dcZigBeeGewiss()) << "Zigbee node for" << info->thing()->name() << "not found.";
         info->finish(Thing::ThingErrorHardwareNotAvailable);
         return;
     }
-
-    // Get the endpoint of interest (0x01) for this device
-    ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
-    if (!endpoint) {
-        qCWarning(dcZigBeeGewiss()) << "Zigbee endpoint 1 not found on" << thing;
-        info->finish(Thing::ThingErrorSetupFailed);
-        return;
-    }
-
-    // Store the node thing association for removing
     m_thingNodes.insert(thing, node);
 
     // Update connected state
@@ -153,20 +141,20 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         thing->setStateValue(m_signalStrengthStateTypeIds.value(thing->thingClassId()), signalStrength);
     });
 
-    // Set the version
-    thing->setStateValue(m_versionStateTypeIds.value(thing->thingClassId()), endpoint->softwareBuildId());
-
-
     if (thing->thingClassId() == gewissGwa1501ThingClassId) {
 
-        ZigbeeNodeEndpoint *endpointHa = node->getEndpoint(0x01);
-        if (!endpoint) {
-            qCWarning(dcZigBeeGewiss()) << "endpoint 0x01 not found" << thing->name();
+        ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
+        ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02);
+
+        if (!endpoint1 || !endpoint2) {
+            qCWarning(dcZigBeeGewiss()) << "one ore more endpoints not found" << thing->name();
             return;
         }
-        ZigbeeClusterPowerConfiguration *powerCluster = node->getEndpoint(0x01)->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+
+        // Get battery level changes
+        ZigbeeClusterPowerConfiguration *powerCluster = endpoint1->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
         if (!powerCluster) {
-            qCWarning(dcZigBeeGewiss()) << "Could not find power configuration cluster on" << thing << endpointHa;
+            qCWarning(dcZigBeeGewiss()) << "Could not find power configuration cluster on" << thing << endpoint1;
         } else {
             // Only set the initial state if the attribute already exists
             if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
@@ -181,27 +169,49 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             });
         }
 
+        ZigbeeClusterOccupancySensing *occupancyCluster1 = endpoint1->inputCluster<ZigbeeClusterOccupancySensing>(ZigbeeClusterLibrary::ClusterIdOccupancySensing);
+        if (!occupancyCluster1) {
+            qCWarning(dcZigBeeGewiss()) << "Occupancy cluster 1 not found on" << thing;
+        } else {
+            connect(occupancyCluster1, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [=](bool occupancy){
+                qCDebug(dcZigBeeGewiss()) << thing << "occupancy cluster 1 changed" << occupancy;
+            });
+        }
+
+        ZigbeeClusterOccupancySensing *occupancyCluster2 = endpoint2->inputCluster<ZigbeeClusterOccupancySensing>(ZigbeeClusterLibrary::ClusterIdOccupancySensing);
+        if (!occupancyCluster2) {
+            qCWarning(dcZigBeeGewiss()) << "Occupancy cluster 2 not found on" << thing;
+        } else {
+            connect(occupancyCluster2, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [=](bool occupancy){
+                qCDebug(dcZigBeeGewiss()) << thing << "occupancy cluster 2 changed" << occupancy;
+            });
+        }
+
+        ZigbeeClusterBinaryInput *binaryInputCluster1 = endpoint1->inputCluster<ZigbeeClusterBinaryInput>(ZigbeeClusterLibrary::ClusterIdBinaryInput);
+        if (!binaryInputCluster1) {
+            qCWarning(dcZigBeeGewiss()) << "Binary input cluster 1 not found on" << thing;
+        } else {
+            connect(binaryInputCluster1, &ZigbeeClusterBinaryInput::attributeChanged, thing, [=](const ZigbeeClusterAttribute &attribute){
+                qCDebug(dcZigBeeGewiss()) << thing->name() << "Binary input cluster 1 attribute changed" << attribute;
+            });
+        }
+
+        ZigbeeClusterBinaryInput *binaryInputCluster2 = endpoint2->inputCluster<ZigbeeClusterBinaryInput>(ZigbeeClusterLibrary::ClusterIdBinaryInput);
+        if (!binaryInputCluster2) {
+            qCWarning(dcZigBeeGewiss()) << "Binary input cluster 1 not found on" << thing;
+        } else {
+            connect(binaryInputCluster2, &ZigbeeClusterBinaryInput::attributeChanged, thing, [=](const ZigbeeClusterAttribute &attribute){
+                qCDebug(dcZigBeeGewiss()) << thing->name() << "Binary input cluster 2 attribute changed" << attribute;
+            });
+        }
+
         connect(node, &ZigbeeNode::endpointClusterAttributeChanged, thing, [this, thing](ZigbeeNodeEndpoint *endpoint, ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
             switch (endpoint->endpointId()) {
             case 0x01:
-                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdBinaryInput && attribute.id() == ZigbeeClusterBinaryInput::AttributePresentValue) {
-                    quint16 value = attribute.dataType().toUInt16();
-                    if (value == 1) {
-                        emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "1")));
-                    } else {
-                        emit emitEvent(Event(gewissGwa1501LongPressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "1")));
-                    }
-                }
+                qCDebug(dcZigBeeGewiss()) << "Endpoint 1 cluster attribute changed" << cluster << attribute;
                 break;
             case 0x02:
-                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdBinaryInput && attribute.id() == ZigbeeClusterBinaryInput::AttributePresentValue) {
-                    quint16 value = attribute.dataType().toUInt16();
-                    if (value == 1) {
-                        emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "2")));
-                    } else {
-                        emit emitEvent(Event(gewissGwa1501LongPressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501LongPressedEventButtonNameParamTypeId, "2")));
-                    }
-                }
+                qCDebug(dcZigBeeGewiss()) << "Endpoint 2 cluster attribute changed" << cluster << attribute;
                 break;
             default:
                 qCWarning(dcZigBeeGewiss()) << "Received attribute changed signal from unhandled endpoint" << thing << endpoint << cluster << attribute;
@@ -225,4 +235,115 @@ void IntegrationPluginZigbeeGewiss::thingRemoved(Thing *thing)
         QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
         hardwareManager()->zigbeeResource()->removeNodeFromNetwork(networkUuid, node);
     }
+}
+
+void IntegrationPluginZigbeeGewiss::createThing(const ThingClassId &thingClassId, const QUuid &networkUuid, ZigbeeNode *node)
+{
+    ThingDescriptor descriptor(thingClassId);
+    QString deviceClassName = supportedThings().findById(thingClassId).displayName();
+    descriptor.setTitle(deviceClassName);
+
+    ParamList params;
+    params.append(Param(m_networkUuidParamTypeIds[thingClassId], networkUuid.toString()));
+    params.append(Param(m_ieeeAddressParamTypeIds[thingClassId], node->extendedAddress().toString()));
+    descriptor.setParams(params);
+    emit autoThingsAppeared({descriptor});
+}
+
+void IntegrationPluginZigbeeGewiss::initGwa1501(ZigbeeNode *node)
+{
+    ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
+    //ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02); TODO
+
+    // Get the current configured bindings for this node
+    ZigbeeReply *reply = node->removeAllBindings();
+    connect(reply, &ZigbeeReply::finished, node, [=](){
+        if (reply->error() != ZigbeeReply::ErrorNoError) {
+            qCWarning(dcZigBeeGewiss()) << "Failed to remove all bindings for initialization of" << node;
+        } else {
+            qCDebug(dcZigBeeGewiss()) << "Removed all bindings successfully from" << node;
+        }
+
+        // Read battery, bind and configure attribute reporting for battery
+        if (!endpoint1->hasInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)) {
+            qCWarning(dcZigBeeGewiss()) << "Failed to initialize the power configuration cluster because the cluster could not be found" << node << endpoint1;
+            return;
+        }
+
+        qCDebug(dcZigBeeGewiss()) << "Read power configuration cluster attributes" << node;
+        ZigbeeClusterReply *readAttributeReply = endpoint1->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->readAttributes({ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining});
+        connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
+            if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigBeeGewiss()) << "Failed to read power cluster attributes" << readAttributeReply->error();
+            } else {
+                qCDebug(dcZigBeeGewiss()) << "Read power configuration cluster attributes finished successfully";
+            }
+
+            // Bind the cluster to the coordinator
+            qCDebug(dcZigBeeGewiss()) << "Bind power configuration cluster to coordinator IEEE address";
+            ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint1->endpointId(), ZigbeeClusterLibrary::ClusterIdPowerConfiguration,
+                                                                                              hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+            connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                    qCWarning(dcZigBeeGewiss()) << "Failed to bind power cluster to coordinator" << zdoReply->error();
+                } else {
+                    qCDebug(dcZigBeeGewiss()) << "Bind power configuration cluster to coordinator finished successfully";
+                }
+
+                // Configure attribute rporting for battery remaining (0.5 % changes = 1)
+                ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+                reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
+                reportingConfig.dataType = Zigbee::Uint8;
+                reportingConfig.minReportingInterval = 300;
+                reportingConfig.maxReportingInterval = 2700;
+                reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+                qCDebug(dcZigBeeGewiss()) << "Configure attribute reporting for power configuration cluster to coordinator";
+                ZigbeeClusterReply *reportingReply = endpoint1->getInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)->configureReporting({reportingConfig});
+                connect(reportingReply, &ZigbeeClusterReply::finished, this, [=] {
+                    if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                        qCWarning(dcZigBeeGewiss()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
+                    } else {
+                        qCDebug(dcZigBeeGewiss()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+                    }
+
+                    // Init binary cluster
+                    qCDebug(dcZigBeeGewiss()) << "Bind binary input cluster to coordinator";
+                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint1->endpointId(), ZigbeeClusterLibrary::ClusterIdBinaryInput, 0x0000);
+                    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                            qCWarning(dcZigBeeGewiss()) << "Failed to bind binary cluster to coordinator" << zdoReply->error();
+                        } else {
+                            qCDebug(dcZigBeeGewiss()) << "Bind  cluster to coordinator finished successfully";
+                        }
+
+
+                        // Init Level cluster
+                        qCDebug(dcZigBeeGewiss()) << "Bind power level cluster to coordinator";
+                        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint1->endpointId(), ZigbeeClusterLibrary::ClusterIdLevelControl, 0x0000);
+                        connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                            if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                                qCWarning(dcZigBeeGewiss()) << "Failed to bind level cluster to coordinator" << zdoReply->error();
+                            } else {
+                                qCDebug(dcZigBeeGewiss()) << "Bind level cluster to coordinator finished successfully";
+                            }
+
+                            // Read final bindings
+                            qCDebug(dcZigBeeGewiss()) << "Read binding table from node" << node;
+                            ZigbeeReply *reply = node->readBindingTableEntries();
+                            connect(reply, &ZigbeeReply::finished, node, [=](){
+                                if (reply->error() != ZigbeeReply::ErrorNoError) {
+                                    qCWarning(dcZigBeeGewiss()) << "Failed to read binding table from" << node;
+                                } else {
+                                    foreach (const ZigbeeDeviceProfile::BindingTableListRecord &binding, node->bindingTableRecords()) {
+                                        qCDebug(dcZigBeeGewiss()) << node << binding;
+                                    }
+                                }
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
 }

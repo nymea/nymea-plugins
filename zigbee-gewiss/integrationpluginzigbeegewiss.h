@@ -58,7 +58,7 @@ public:
 
 private:
     QHash<ThingClassId, ParamTypeId> m_networkUuidParamTypeIds;
-    QHash<ThingClassId, ParamTypeId> m_zigbeeAddressParamTypeIds;
+    QHash<ThingClassId, ParamTypeId> m_ieeeAddressParamTypeIds;
 
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeIds;
@@ -67,6 +67,9 @@ private:
     QHash<QString, ThingClassId> m_knownGewissDevices;
 
     QHash<Thing *, ZigbeeNode *> m_thingNodes;
+
+    void createThing(const ThingClassId &thingClassId, const QUuid &networkUuid, ZigbeeNode *node);
+    void initGwa1501(ZigbeeNode *node);
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEGEWISS_H
