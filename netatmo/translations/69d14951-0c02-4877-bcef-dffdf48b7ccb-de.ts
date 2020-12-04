@@ -6,7 +6,7 @@
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="59"/>
         <location filename="../integrationpluginnetatmo.cpp" line="144"/>
-        <source>Error, client credentials are not set.</source>
+        <source>Client credentials are not set.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -26,7 +26,7 @@
     </message>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="139"/>
-        <source>Error, login credentials not found.</source>
+        <source>Login credentials not found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

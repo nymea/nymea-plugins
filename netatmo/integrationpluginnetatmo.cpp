@@ -56,7 +56,7 @@ void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
     // Checking the client credentials
     if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
         qCWarning(dcNetatmo()) << "Pairing failed, client credentials are not set";
-        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, client credentials are not set."));
+        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Client credentials are not set."));
         return;
     }
     // Checking the internet connection
@@ -136,12 +136,12 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
 
         if (username.isEmpty() || password.isEmpty()) {
             qCWarning(dcNetatmo()) << "Setup failed because of missing login credentials";
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, login credentials not found."));
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Login credentials not found."));
             return;
         }
         if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
             qCWarning(dcNetatmo()) << "Setup failed because of missing client credentials";
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Error, client credentials are not set."));
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Client credentials are not set."));
             return;
         }
 
