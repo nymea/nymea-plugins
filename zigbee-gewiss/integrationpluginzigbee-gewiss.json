@@ -14,7 +14,7 @@
                     "id": "5daf398f-2eba-47c1-8805-ca34f075c7ea",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "longpressbutton", "wirelessconnectable" ],
+                    "interfaces": [ "longpressbutton", "batterylevel", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "25366cc6-b13d-497e-8dac-bc77123af572",
@@ -60,6 +60,25 @@
                             "type": "QString",
                             "cached": true,
                             "defaultValue": ""
+                        },
+                        {
+                            "id": "9dcf9715-267e-43c6-bcc7-9822e5361228",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "8b4b82e8-69e4-4160-90be-3040d455fd97",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "eventTypes": [

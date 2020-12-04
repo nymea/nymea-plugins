@@ -159,25 +159,47 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
 
     if (thing->thingClassId() == gewissGwa1501ThingClassId) {
 
+        ZigbeeNodeEndpoint *endpointHa = node->getEndpoint(0x01);
+        if (!endpoint) {
+            qCWarning(dcZigBeeGewiss()) << "endpoint 0x01 not found" << thing->name();
+            return;
+        }
+        ZigbeeClusterPowerConfiguration *powerCluster = node->getEndpoint(0x01)->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+        if (!powerCluster) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find power configuration cluster on" << thing << endpointHa;
+        } else {
+            // Only set the initial state if the attribute already exists
+            if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
+                thing->setStateValue(gewissGwa1501BatteryLevelStateTypeId, powerCluster->batteryPercentage());
+                thing->setStateValue(gewissGwa1501BatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+            }
+
+            connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
+                qCDebug(dcZigBeeGewiss()) << "Battery percentage changed" << percentage << "%" << thing;
+                thing->setStateValue(gewissGwa1501BatteryLevelStateTypeId, percentage);
+                thing->setStateValue(gewissGwa1501BatteryCriticalStateTypeId, (percentage < 10.0));
+            });
+        }
+
         connect(node, &ZigbeeNode::endpointClusterAttributeChanged, thing, [this, thing](ZigbeeNodeEndpoint *endpoint, ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
             switch (endpoint->endpointId()) {
             case 0x01:
-                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdMultistateInput && attribute.id() == ZigbeeClusterMultistateInput::AttributePresentValue) {
+                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdBinaryInput && attribute.id() == ZigbeeClusterBinaryInput::AttributePresentValue) {
                     quint16 value = attribute.dataType().toUInt16();
                     if (value == 1) {
-                        emit emitEvent(Event(gewissGwa1501ButtonPressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501ButtonPressedEventButtonNameParamTypeId, "1")));
+                        emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "1")));
                     } else {
-                        emit emitEvent(Event(gewissGwa1501ButtonLongPressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501ButtonPressedEventButtonNameParamTypeId, "1")));
+                        emit emitEvent(Event(gewissGwa1501LongPressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "1")));
                     }
                 }
                 break;
             case 0x02:
-                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdMultistateInput && attribute.id() == ZigbeeClusterMultistateInput::AttributePresentValue) {
+                if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdBinaryInput && attribute.id() == ZigbeeClusterBinaryInput::AttributePresentValue) {
                     quint16 value = attribute.dataType().toUInt16();
                     if (value == 1) {
-                        emit emitEvent(Event(gewissGwa1501RemotePressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501RemotePressedEventButtonNameParamTypeId, "2")));
+                        emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "2")));
                     } else {
-                        emit emitEvent(Event(gewissGwa1501RemoteLongPressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501RemoteLongPressedEventButtonNameParamTypeId, "2")));
+                        emit emitEvent(Event(gewissGwa1501LongPressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501LongPressedEventButtonNameParamTypeId, "2")));
                     }
                 }
                 break;
