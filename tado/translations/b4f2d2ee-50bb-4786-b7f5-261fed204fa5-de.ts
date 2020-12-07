@@ -4,19 +4,31 @@
 <context>
     <name>IntegrationPluginTado</name>
     <message>
-        <location filename="../integrationplugintado.cpp" line="55"/>
+        <location filename="../integrationplugintado.cpp" line="56"/>
         <source>Tado server is not reachable.</source>
         <translation>Tado-Server ist nicht erreichbar.</translation>
     </message>
     <message>
-        <location filename="../integrationplugintado.cpp" line="57"/>
+        <location filename="../integrationplugintado.cpp" line="59"/>
         <source>Please enter the login credentials for your Tado account.</source>
         <translation>Bitte geben Sie die Anmeldeinformationen für Ihr Tado-Konto ein.</translation>
     </message>
     <message>
-        <location filename="../integrationplugintado.cpp" line="77"/>
+        <location filename="../integrationplugintado.cpp" line="80"/>
+        <location filename="../integrationplugintado.cpp" line="157"/>
+        <source>Wrong username or password.</source>
+        <translation>Fascher Benutzername oder Passwort.</translation>
+    </message>
+    <message>
+        <location filename="../integrationplugintado.cpp" line="83"/>
+        <location filename="../integrationplugintado.cpp" line="160"/>
         <source>Connection error</source>
         <translation>Verbindungsfehler</translation>
+    </message>
+    <message>
+        <location filename="../integrationplugintado.cpp" line="92"/>
+        <source>Client credentials not found, the plug-in version might be outdated.</source>
+        <translation>Client-Anmeldeinformationen nicht gefunden, die Plug-In-Version ist möglicherweise veraltet.</translation>
     </message>
 </context>
 <context>

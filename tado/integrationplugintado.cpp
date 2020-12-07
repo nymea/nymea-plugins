@@ -45,15 +45,17 @@ IntegrationPluginTado::IntegrationPluginTado()
 
 void IntegrationPluginTado::startPairing(ThingPairingInfo *info)
 {
-    // Checking the internet connection
+    qCDebug(dcTado()) << "Start pairing process, checking the internet connection ...";
     NetworkAccessManager *network = hardwareManager()->networkManager();
     QNetworkReply *reply = network->get(QNetworkRequest(QUrl("https://my.tado.com/api/v2")));
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, info, [reply, info] {
 
         if (reply->error() == QNetworkReply::NetworkError::HostNotFoundError) {
+            qCWarning(dcTado()) << "Tado server is not reachable, likely because of a missing internet connection.";
             info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Tado server is not reachable."));
         } else {
+            qCDebug(dcTado()) << "Internet connection available";
             info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter the login credentials for your Tado account."));
         }
     });
@@ -72,9 +74,13 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
     });
 
     connect(tado, &Tado::connectionError, info, [info] (QNetworkReply::NetworkError error){
-        if (error != QNetworkReply::NetworkError::NoError){
+
+        if (error == QNetworkReply::NetworkError::ProtocolInvalidOperationError) {
+            qCWarning(dcTado()) << "Confirm pairing failed, wrong username or password";
+            info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Wrong username or password."));
+        } else if (error != QNetworkReply::NetworkError::NoError){
             qCWarning(dcTado()) << "Confirm pairing failed" << error;
-            info->finish(Thing::ThingErrorSetupFailed, tr("Connection error"));
+            info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Connection error"));
         }
         // info->finish(success) will be called after the token has been received
     });
@@ -83,7 +89,7 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
         if (success) {
             tado->getToken(password);
         } else {
-            info->finish(Thing::ThingErrorAuthenticationFailure, "Client credentials not found, the plug-in version might be outdated.");
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Client credentials not found, the plug-in version might be outdated."));
         }
     });
 
@@ -138,13 +144,21 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorNoError);
             });
 
-            connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error){
+            connect(tado, &Tado::connectionError, info, [this, info] (QNetworkReply::NetworkError error) {
+
                 if (error != QNetworkReply::NetworkError::NoError){
+
                     if (m_tadoAccounts.contains(info->thing()->id())) {
                         Tado *tado = m_tadoAccounts.take(info->thing()->id());
                         tado->deleteLater();
                     }
-                    info->finish(Thing::ThingErrorSetupFailed);
+                    if (error == QNetworkReply::NetworkError::ProtocolInvalidOperationError) {
+                        qCWarning(dcTado()) << "Confirm pairing failed, wrong username or password";
+                        info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Wrong username or password."));
+                    } else {
+                        qCWarning(dcTado()) << "Confirm pairing failed" << error;
+                        info->finish(Thing::ThingErrorSetupFailed, QT_TR_NOOP("Connection error"));
+                    }
                 }
             });
             tado->getApiCredentials();
