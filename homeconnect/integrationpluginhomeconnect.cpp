@@ -168,28 +168,30 @@ void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
         QString scope = "IdentifyAppliance Monitor Settings Dishwasher Washer Dryer WasherDryer Refrigerator Freezer WineCooler CoffeeMaker Hood CookProcessor";
         if (controlEnabled) {
             scope.append(" Control");
-            qCDebug(dcHomeConnect()) << "Conrol scope is enabled";
+            qCDebug(dcHomeConnect()) << "Control scope is enabled";
         }
         if (simulationMode) {
             qCDebug(dcHomeConnect()) << "Simulation mode is enabled";
         }
         QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), scope);
-        info->setOAuthUrl(url);
-        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url)); // Check if the host is reachable
+        qCDebug(dcHomeConnect()) << "Checking if the HomeConnect server is reachable: https://simulator.home-connect.com/security/oauth";
+        QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(QUrl("https://simulator.home-connect.com/security/oauth")));
         connect(reply, &QNetworkReply::finished, info, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [reply, info, homeConnect, url, this] {
 
-            if (reply->error() == QNetworkReply::NetworkError::NoError) {
+            if (reply->error() != QNetworkReply::NetworkError::HostNotFoundError) {
+                qCDebug(dcHomeConnect()) << "HomeConnect server is reachable";
                 m_setupHomeConnectConnections.insert(info->thingId(), homeConnect);
                 connect(info, &ThingPairingInfo::aborted, this, [info, this] {m_setupHomeConnectConnections.take(info->thingId())->deleteLater();});
+                info->setOAuthUrl(url);
                 info->finish(Thing::ThingErrorNoError);
             } else {
-                qCDebug(dcHomeConnect()) << "Got online check error" << reply->errorString();
+                qCWarning(dcHomeConnect()) << "Got online check error" << reply->error() << reply->errorString();
                 info->finish(Thing::ThingErrorSetupFailed, tr("HomeConnect server not reachable, please check the internet connection"));
             }
         });
     } else {
-        qCWarning(dcHomeConnect()) << "Unhandled pairing metod!";
+        qCWarning(dcHomeConnect()) << "Unhandled pairing method!";
         info->finish(Thing::ThingErrorCreationMethodNotSupported);
     }
 }
@@ -199,20 +201,20 @@ void IntegrationPluginHomeConnect::confirmPairing(ThingPairingInfo *info, const 
     Q_UNUSED(username);
 
     if (info->thingClassId() == homeConnectAccountThingClassId) {
+        qCDebug(dcHomeConnect()) << "Confirm  pairing" << info->thingName();
         QUrl url(secret);
         QUrlQuery query(url);
         QByteArray authorizationCode = query.queryItemValue("code").toLocal8Bit();
         if (authorizationCode.isEmpty()) {
             qCWarning(dcHomeConnect()) << "No authorization code received.";
-            info->finish(Thing::ThingErrorSetupFailed);
+            return info->finish(Thing::ThingErrorAuthenticationFailure);
         }
 
         HomeConnect *homeConnect = m_setupHomeConnectConnections.value(info->thingId());
         if (!homeConnect) {
             qWarning(dcHomeConnect()) << "No HomeConnect connection found for device:"  << info->thingName();
             m_setupHomeConnectConnections.remove(info->thingId());
-            info->finish(Thing::ThingErrorHardwareFailure);
-            return;
+            return info->finish(Thing::ThingErrorHardwareFailure);
         }
         qCDebug(dcHomeConnect()) << "Authorization code" << authorizationCode.mid(0, 4)+QString().fill('*', authorizationCode.length()-4) ;
         homeConnect->getAccessTokenFromAuthorizationCode(authorizationCode);
@@ -235,6 +237,7 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
+    qCDebug(dcHomeConnect()) << "Setuo thing" << thing->name();
     if (thing->thingClassId() == homeConnectAccountThingClassId) {
         bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
         HomeConnect *homeConnect;
@@ -296,6 +299,7 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
 {
+    qCDebug(dcHomeConnect()) << "Post setup thing" << thing->name();
     if (!m_pluginTimer15min) {
         m_pluginTimer15min = hardwareManager()->pluginTimerManager()->registerTimer(60*15);
         connect(m_pluginTimer15min, &PluginTimer::timeout, this, [this]() {
@@ -345,8 +349,10 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
 {
     Thing *thing = info->thing();
     Action action = info->action();
+    qCDebug(dcHomeConnect()) << "Executing action" << thing->name() << action.actionTypeId();
     HomeConnect *homeConnect = m_homeConnectConnections.value(myThings().findById(thing->parentId()));
     if (!homeConnect) {
+        qCWarning(dcHomeConnect()) << "HomeConnection account not found";
         return info->finish(Thing::ThingErrorHardwareNotAvailable);
     }
     QString haid = thing->paramValue(m_idParamTypeIds.value(thing->thingClassId())).toString();
@@ -359,7 +365,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             m_pendingActions.remove(requestId);
         });
     } else if (thing->thingClassId() == ovenThingClassId) {
-        //Oven control is only allowed with an additional agreement with home connect
+        qCWarning(dcHomeConnect()) << "Oven control is only allowed with an additional agreement with home connect";
     } else if (thing->thingClassId() == coffeeMakerThingClassId) {
         if (action.actionTypeId() == coffeeMakerTemperatureActionTypeId) {
             QUuid requestId;
@@ -424,7 +430,7 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             });
         }
     } else if (thing->thingClassId() == fridgeThingClassId) {
-        //Fridge control is only allowed with an additional agreement with home connect
+        qCWarning(dcHomeConnect()) << "Fridge control is only allowed with an additional agreement with home connect";
     } else if (thing->thingClassId() == dishwasherThingClassId) {
         if (action.actionTypeId() == dishwasherStartActionTypeId) {
             if (!m_selectedProgram.contains(thing)) {
@@ -491,11 +497,11 @@ void IntegrationPluginHomeConnect::executeAction(ThingActionInfo *info)
             });
         }
     } else if (thing->thingClassId() == cleaningRobotThingClassId) {
-        //Home Connect: Program support is planned to be released in 2020.
+        qCWarning(dcHomeConnect()) << "Program support is planned to be released in 2020." << thing->name();
     } else if (thing->thingClassId() == cookTopThingClassId) {
-        //Home Connect: Program support is planned to be released in 2020.
+        qCWarning(dcHomeConnect()) << "Program support is planned to be released in 2020." << thing->name();
     } else if (thing->thingClassId() == hoodThingClassId) {
-        //Home Connect: Program support is planned to be released in 2020.
+        qCWarning(dcHomeConnect()) << "Program support is planned to be released in 2020." << thing->name();
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -555,8 +561,9 @@ void IntegrationPluginHomeConnect::browserItem(BrowserItemResult *result)
     connect(homeConnect, &HomeConnect::receivedAvailablePrograms, result, [result, this] (const QString &haid, const QStringList &programs) {
         if (result->thing()->paramValue(m_idParamTypeIds.value(result->thing()->thingClassId())).toString() == haid) {
             if (programs.contains(result->item().id())) {
-                result->item().setDisplayName(result->item().id());
-                result->finish(Thing::ThingErrorNoError);
+                BrowserItem item =result->item();
+                item.setDisplayName(result->item().id());
+                result->finish(item);
             }
         }
     });
