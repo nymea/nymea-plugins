@@ -135,7 +135,7 @@ void Tado::getApiCredentials(const QString &url)
 void Tado::getToken(const QString &password)
 {
     if (!m_apiAvailable) {
-        qCWarning(dcTado()) << "Not sending request, get API credentials firs";
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
         return;
     }
 
@@ -173,7 +173,7 @@ void Tado::getToken(const QString &password)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Received invalide JSON object:" << data;
+            qDebug(dcTado()) << "Get Token: Received invalid JSON object:" << data;
             return;
         }
         if (data.isObject()) {
@@ -209,7 +209,7 @@ void Tado::getToken(const QString &password)
 void Tado::getHomes()
 {
     if (!m_apiAvailable) {
-        qCWarning(dcTado()) << "Not sending request, get API credentials firs";
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
         return;
     }
 
@@ -246,7 +246,7 @@ void Tado::getHomes()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         QList<Home> homes;
@@ -265,7 +265,7 @@ void Tado::getHomes()
 void Tado::getZones(const QString &homeId)
 {
     if (!m_apiAvailable) {
-        qCWarning(dcTado()) << "Not sending request, get API credentials firs";
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
         return;
     }
 
@@ -302,7 +302,7 @@ void Tado::getZones(const QString &homeId)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         QList<Zone> zones;
@@ -322,7 +322,7 @@ void Tado::getZones(const QString &homeId)
 void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 {
     if (!m_apiAvailable) {
-        qCWarning(dcTado()) << "Not sending request, get API credentials firs";
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
         return;
     }
 
@@ -362,7 +362,7 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         ZoneState state;
@@ -400,7 +400,7 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature)
 {
     if (!m_apiAvailable) {
-        qCWarning(dcTado()) << "Not sending request, get API credentials firs";
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
         return "";
     }
 
@@ -453,7 +453,7 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         QVariantMap map = data.toVariant().toMap();
@@ -475,7 +475,7 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
 QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
 {
     if (!m_apiAvailable) {
-        qCWarning(dcTado()) << "Not sending request, get API credentials firs";
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
         return "";
     }
 
@@ -518,7 +518,7 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         QVariantMap map = data.toVariant().toMap();
@@ -598,7 +598,7 @@ void Tado::onRefreshTimer()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         Token token;
