@@ -79,8 +79,12 @@ void IntegrationPluginTado::confirmPairing(ThingPairingInfo *info, const QString
         // info->finish(success) will be called after the token has been received
     });
 
-    connect(tado, &Tado::apiCredentialsReceived, info, [password, tado] {
-        tado->getToken(password);
+    connect(tado, &Tado::apiCredentialsReceived, info, [info, password, tado] (bool success) {
+        if (success) {
+            tado->getToken(password);
+        } else {
+            info->finish(Thing::ThingErrorAuthenticationFailure, "Client credentials not found, the plug-in version might be outdated.");
+        }
     });
 
     connect(tado, &Tado::tokenReceived, info, [this, info, username, password](Tado::Token token) {

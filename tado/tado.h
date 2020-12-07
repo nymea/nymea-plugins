@@ -126,7 +126,7 @@ private:
 
 signals:
     void connectionChanged(bool connected);
-    void apiCredentialsReceived();
+    void apiCredentialsReceived(bool success);
     void authenticationStatusChanged(bool authenticated);
     void requestExecuted(QUuid requestId, bool success);
 

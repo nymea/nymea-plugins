@@ -84,6 +84,7 @@ void Tado::getApiCredentials(const QString &url)
         // Check HTTP status code
         if (status != 200 || reply->error() != QNetworkReply::NoError) {
             qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
+            emit apiCredentialsReceived(false);
             return;
         }
         QRegExp filter;
@@ -92,30 +93,42 @@ void Tado::getApiCredentials(const QString &url)
 
         QStringList list = QString(reply->readAll()).split('\n');
         int index = list.indexOf(filter);
-        if (index == -1)
+        if (index == -1) {
+            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the API url";
+            emit apiCredentialsReceived(false);
             return;
+        }
         m_baseControlUrl = list.value(index).split(": ").last().remove(QRegExp("[,']"));;
         qCDebug(dcTado()) << "Received control url" << m_baseControlUrl;
         filter.setPattern("*apiEndpoint*");
         index = list.indexOf(filter);
-        if (index == -1)
+        if (index == -1) {
+            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the authorization url";
+            emit apiCredentialsReceived(false);
             return;
+        }
         m_baseAuthorizationUrl = list.value(index).split(": ").last().remove(QRegExp("[,']"))+"/token";
         qCDebug(dcTado()) << "Received auth url" << m_baseAuthorizationUrl;
         filter.setPattern("*clientId*");
         index = list.indexOf(filter);
-        if (index == -1)
+        if (index == -1) {
+            emit apiCredentialsReceived(false);
+            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the client Id";
             return;
+        }
         m_clientId = list.value(index).split(": ").last().remove(QRegExp("[,']"));
-        qCDebug(dcTado()) << "Received client id" << m_clientId;
+        qCDebug(dcTado()) << "Received client id" << m_clientId.mid(0, 4)+"*****";
         filter.setPattern("*clientSecret*");
         index = list.indexOf(filter);
-        if (index == -1)
+        if (index == -1) {
+            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the client secret";
+            emit apiCredentialsReceived(false);
             return;
+        }
         m_clientSecret = list.value(index).split(": ").last().remove(QRegExp("[,']"));
-        qCDebug(dcTado()) << "Received client secret" << m_clientSecret;
+        qCDebug(dcTado()) << "Received client secret" << m_clientSecret.mid(0, 4)+"*****";
         m_apiAvailable = true;
-        emit apiCredentialsReceived();
+        emit apiCredentialsReceived(true);
     });
 }
 
