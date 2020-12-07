@@ -165,55 +165,45 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             });
         }
 
-        ZigbeeClusterOccupancySensing *occupancyCluster1 = endpoint1->inputCluster<ZigbeeClusterOccupancySensing>(ZigbeeClusterLibrary::ClusterIdOccupancySensing);
-        if (!occupancyCluster1) {
-            qCWarning(dcZigBeeGewiss()) << "Occupancy cluster 1 not found on" << thing;
+        // Receive on/off commands
+        ZigbeeClusterOnOff *onOffCluster1 = endpoint1->outputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster1) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find on/off client cluster on" << thing << endpoint1;
         } else {
-            connect(occupancyCluster1, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [=](bool occupancy){
-                qCDebug(dcZigBeeGewiss()) << thing << "occupancy cluster 1 changed" << occupancy;
+            connect(onOffCluster1, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
+                if (command == ZigbeeClusterOnOff::CommandOn) {
+                    qCDebug(dcZigBeeGewiss()) << thing << "pressed ON";
+                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "ON")));
+                } else {
+                    qCWarning(dcZigBeeGewiss()) << thing << "unhandled command received" << command;
+                }
+            });
+
+            connect(onOffCluster1, &ZigbeeClusterOnOff::commandOffWithEffectSent, thing, [=](ZigbeeClusterOnOff::Effect effect, quint8 effectVariant){
+                qCDebug(dcZigBeeGewiss()) << thing << "OFF button pressed" << effect << effectVariant;
+                emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "OFF")));
             });
         }
 
-        ZigbeeClusterOccupancySensing *occupancyCluster2 = endpoint2->inputCluster<ZigbeeClusterOccupancySensing>(ZigbeeClusterLibrary::ClusterIdOccupancySensing);
-        if (!occupancyCluster2) {
-            qCWarning(dcZigBeeGewiss()) << "Occupancy cluster 2 not found on" << thing;
+        // Receive on/off commands
+        ZigbeeClusterOnOff *onOffCluster2 = endpoint2->outputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster2) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find on/off client cluster on" << thing << endpoint2;
         } else {
-            connect(occupancyCluster2, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [=](bool occupancy){
-                qCDebug(dcZigBeeGewiss()) << thing << "occupancy cluster 2 changed" << occupancy;
+            connect(onOffCluster2, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
+                if (command == ZigbeeClusterOnOff::CommandOn) {
+                    qCDebug(dcZigBeeGewiss()) << thing << "pressed ON";
+                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "ON")));
+                } else {
+                    qCWarning(dcZigBeeGewiss()) << thing << "unhandled command received" << command;
+                }
+            });
+
+            connect(onOffCluster2, &ZigbeeClusterOnOff::commandOffWithEffectSent, thing, [=](ZigbeeClusterOnOff::Effect effect, quint8 effectVariant){
+                qCDebug(dcZigBeeGewiss()) << thing << "OFF button pressed" << effect << effectVariant;
+                emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "OFF")));
             });
         }
-
-        ZigbeeClusterBinaryInput *binaryInputCluster1 = endpoint1->inputCluster<ZigbeeClusterBinaryInput>(ZigbeeClusterLibrary::ClusterIdBinaryInput);
-        if (!binaryInputCluster1) {
-            qCWarning(dcZigBeeGewiss()) << "Binary input cluster 1 not found on" << thing;
-        } else {
-            connect(binaryInputCluster1, &ZigbeeClusterBinaryInput::attributeChanged, thing, [=](const ZigbeeClusterAttribute &attribute){
-                qCDebug(dcZigBeeGewiss()) << thing->name() << "Binary input cluster 1 attribute changed" << attribute;
-            });
-        }
-
-        ZigbeeClusterBinaryInput *binaryInputCluster2 = endpoint2->inputCluster<ZigbeeClusterBinaryInput>(ZigbeeClusterLibrary::ClusterIdBinaryInput);
-        if (!binaryInputCluster2) {
-            qCWarning(dcZigBeeGewiss()) << "Binary input cluster 1 not found on" << thing;
-        } else {
-            connect(binaryInputCluster2, &ZigbeeClusterBinaryInput::attributeChanged, thing, [=](const ZigbeeClusterAttribute &attribute){
-                qCDebug(dcZigBeeGewiss()) << thing->name() << "Binary input cluster 2 attribute changed" << attribute;
-            });
-        }
-
-        connect(node, &ZigbeeNode::endpointClusterAttributeChanged, thing, [this, thing](ZigbeeNodeEndpoint *endpoint, ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
-            switch (endpoint->endpointId()) {
-            case 0x01:
-                qCDebug(dcZigBeeGewiss()) << "Endpoint 1 cluster attribute changed" << cluster << attribute;
-                break;
-            case 0x02:
-                qCDebug(dcZigBeeGewiss()) << "Endpoint 2 cluster attribute changed" << cluster << attribute;
-                break;
-            default:
-                qCWarning(dcZigBeeGewiss()) << "Received attribute changed signal from unhandled endpoint" << thing << endpoint << cluster << attribute;
-                break;
-            }
-        });
     }
 
     info->finish(Thing::ThingErrorNoError);
@@ -303,12 +293,12 @@ void IntegrationPluginZigbeeGewiss::initGwa1501(ZigbeeNode *node)
                         qCDebug(dcZigBeeGewiss()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
                     }
 
-                    // Init binary cluster
-                    qCDebug(dcZigBeeGewiss()) << "Bind binary input cluster to coordinator";
-                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint1->endpointId(), ZigbeeClusterLibrary::ClusterIdBinaryInput, 0x0000);
+                    // On/off cluster
+                    qCDebug(dcZigBeeGewiss()) << "Bind on/off cluster to coordinator";
+                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint1->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
                     connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
                         if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                            qCWarning(dcZigBeeGewiss()) << "Failed to bind binary cluster to coordinator" << zdoReply->error();
+                            qCWarning(dcZigBeeGewiss()) << "Failed to bind on/off cluster to coordinator" << zdoReply->error();
                         } else {
                             qCDebug(dcZigBeeGewiss()) << "Bind  cluster to coordinator finished successfully";
                         }
