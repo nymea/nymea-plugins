@@ -316,7 +316,6 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
             qCWarning(dcZigbeeLumi()) << "Could not find the relative humidity measurement server cluster on" << thing << endpoint;
         }
     }
-    
 
     if (thing->thingClassId() == lumiWeatherSensorThingClassId) {
         ZigbeeClusterTemperatureMeasurement *temperatureCluster = endpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
@@ -492,7 +491,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == lumiRelayThingClassId) {
         // Get the 2 endpoints
         ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
-        if (!endpoint1) {
+        if (endpoint1) {
             ZigbeeClusterOnOff *onOffCluster = endpoint1->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
             if (onOffCluster) {
                 if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
@@ -511,7 +510,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
         }
 
         ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02);
-        if (!endpoint2) {
+        if (endpoint2) {
             ZigbeeClusterOnOff *onOffCluster = endpoint2->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
             if (onOffCluster) {
                 if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
