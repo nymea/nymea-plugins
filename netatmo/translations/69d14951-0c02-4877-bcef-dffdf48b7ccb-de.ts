@@ -6,8 +6,8 @@
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="59"/>
         <location filename="../integrationpluginnetatmo.cpp" line="144"/>
-        <source>Client credentials are not set.</source>
-        <translation type="unfinished"></translation>
+        <source>No API key installed</source>
+        <translation>Kein API Schlüssel installiert</translation>
     </message>
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="71"/>
@@ -27,10 +27,10 @@
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="139"/>
         <source>Login credentials not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Anmeldeinformationen nicht gefunden.</translation>
     </message>
     <message>
-        <location filename="../integrationpluginnetatmo.cpp" line="175"/>
+        <location filename="../integrationpluginnetatmo.cpp" line="186"/>
         <source>Error logging in to Netatmo server.</source>
         <translation>Fehler beim Anmelden am Netatmo-Server.</translation>
     </message>
@@ -107,13 +107,13 @@ The name of the StateType ({e5710bd1-79fa-4bd4-9052-8416aae909b9}) of ThingClass
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="136"/>
         <source>Custom client id</source>
         <extracomment>The name of the ParamType (ThingClass: netatmo, Type: plugin, ID: {fbda653d-d59e-438c-a70c-0ccbe8080215})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzerdefinierte Client-ID</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="139"/>
         <source>Custom client secret</source>
         <extracomment>The name of the ParamType (ThingClass: netatmo, Type: plugin, ID: {06439e1e-da15-4483-8737-0a6aa967c479})</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzerdefinierte Client-Secret</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="142"/>
@@ -170,13 +170,13 @@ The name of the EventType ({50da9f6b-c350-401c-a72e-2e4036f3975d}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: netatmoConnection, EventType: loggedIn, ID: {d1ca8579-5d5a-4372-9139-4b083efead2e})
 ----------
 The name of the StateType ({d1ca8579-5d5a-4372-9139-4b083efead2e}) of ThingClass netatmoConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeloggt</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="187"/>
         <source>Logged inchanged</source>
         <extracomment>The name of the EventType ({d1ca8579-5d5a-4372-9139-4b083efead2e}) of ThingClass netatmoConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Eingeloggt geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="190"/>
@@ -326,13 +326,13 @@ The name of the EventType ({ae8bb713-8805-4efd-89a1-bca44a1f1690}) of ThingClass
         <extracomment>The name of the ParamType (ThingClass: netatmoConnection, EventType: userDisplayName, ID: {b9c98ae6-3687-4279-8fda-bc02c7b7ea38})
 ----------
 The name of the StateType ({b9c98ae6-3687-4279-8fda-bc02c7b7ea38}) of ThingClass netatmoConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="295"/>
         <source>Username changed</source>
         <extracomment>The name of the EventType ({b9c98ae6-3687-4279-8fda-bc02c7b7ea38}) of ThingClass netatmoConnection</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Benutzername geändert</translation>
     </message>
     <message>
         <location filename="../../../build-nymea-plugins-Desktop-Debug/netatmo/plugininfo.h" line="298"/>

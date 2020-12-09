@@ -6,7 +6,7 @@
     <message>
         <location filename="../integrationpluginnetatmo.cpp" line="59"/>
         <location filename="../integrationpluginnetatmo.cpp" line="144"/>
-        <source>Client credentials are not set.</source>
+        <source>No API key installed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -30,7 +30,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../integrationpluginnetatmo.cpp" line="175"/>
+        <location filename="../integrationpluginnetatmo.cpp" line="186"/>
         <source>Error logging in to Netatmo server.</source>
         <translation type="unfinished"></translation>
     </message>

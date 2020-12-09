@@ -56,7 +56,7 @@ void IntegrationPluginNetatmo::startPairing(ThingPairingInfo *info)
     // Checking the client credentials
     if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
         qCWarning(dcNetatmo()) << "Pairing failed, client credentials are not set";
-        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Client credentials are not set."));
+        info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("No API key installed"));
         return;
     }
     // Checking the internet connection
@@ -141,7 +141,7 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
         }
         if (m_clientId.isEmpty() || m_clientSecret.isEmpty()) {
             qCWarning(dcNetatmo()) << "Setup failed because of missing client credentials";
-            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Client credentials are not set."));
+            info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("No API key installed"));
             return;
         }
 
