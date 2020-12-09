@@ -102,8 +102,8 @@
                     ]
                 },
                 {
-                    "name": "outdoorSensor",
-                    "displayName": "Hue outdoor sensor",
+                    "name": "motionSensor",
+                    "displayName": "Hue motion sensor",
                     "id": "031c45d1-e782-4f91-9f05-259d6b81c7ef",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],

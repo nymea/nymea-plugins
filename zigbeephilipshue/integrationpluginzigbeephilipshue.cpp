@@ -38,19 +38,19 @@
 IntegrationPluginZigbeePhilipsHue::IntegrationPluginZigbeePhilipsHue()
 {
     m_ieeeAddressParamTypeIds[dimmerSwitchThingClassId] = dimmerSwitchThingIeeeAddressParamTypeId;
-    m_ieeeAddressParamTypeIds[outdoorSensorThingClassId] = outdoorSensorThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[motionSensorThingClassId] = motionSensorThingIeeeAddressParamTypeId;
 
     m_networkUuidParamTypeIds[dimmerSwitchThingClassId] = dimmerSwitchThingNetworkUuidParamTypeId;
-    m_networkUuidParamTypeIds[outdoorSensorThingClassId] = outdoorSensorThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[motionSensorThingClassId] = motionSensorThingNetworkUuidParamTypeId;
 
     m_connectedStateTypeIds[dimmerSwitchThingClassId] = dimmerSwitchConnectedStateTypeId;
-    m_connectedStateTypeIds[outdoorSensorThingClassId] = outdoorSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[motionSensorThingClassId] = motionSensorConnectedStateTypeId;
 
     m_signalStrengthStateTypeIds[dimmerSwitchThingClassId] = dimmerSwitchSignalStrengthStateTypeId;
-    m_signalStrengthStateTypeIds[outdoorSensorThingClassId] = outdoorSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[motionSensorThingClassId] = motionSensorSignalStrengthStateTypeId;
 
     m_versionStateTypeIds[dimmerSwitchThingClassId] = dimmerSwitchVersionStateTypeId;
-    m_versionStateTypeIds[outdoorSensorThingClassId] = outdoorSensorVersionStateTypeId;
+    m_versionStateTypeIds[motionSensorThingClassId] = motionSensorVersionStateTypeId;
 }
 
 QString IntegrationPluginZigbeePhilipsHue::name() const
@@ -89,8 +89,8 @@ bool IntegrationPluginZigbeePhilipsHue::handleNode(ZigbeeNode *node, const QUuid
                 endpoinTwo->deviceId() == Zigbee::HomeAutomationDeviceOccupacySensor) {
 
             qCDebug(dcZigbeePhilipsHue()) << "Handeling Hue outdoor sensor" << node << endpointOne << endpoinTwo;
-            createThing(outdoorSensorThingClassId, networkUuid, node);
-            initOutdoorSensor(node);
+            createThing(motionSensorThingClassId, networkUuid, node);
+            initMotionSensor(node);
             return true;
         }
     }
@@ -209,7 +209,7 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
         }
     }
 
-    if (thing->thingClassId() == outdoorSensorThingClassId) {
+    if (thing->thingClassId() == motionSensorThingClassId) {
         ZigbeeNodeEndpoint *endpointHa = node->getEndpoint(0x02);
 
         // Set the version
@@ -222,14 +222,14 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
         } else {
             // Only set the initial state if the attribute already exists
             if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-                thing->setStateValue(outdoorSensorBatteryLevelStateTypeId, powerCluster->batteryPercentage());
-                thing->setStateValue(outdoorSensorBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+                thing->setStateValue(motionSensorBatteryLevelStateTypeId, powerCluster->batteryPercentage());
+                thing->setStateValue(motionSensorBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
             }
 
             connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
                 qCDebug(dcZigbeePhilipsHue()) << "Battery percentage changed" << percentage << "%" << thing;
-                thing->setStateValue(outdoorSensorBatteryLevelStateTypeId, percentage);
-                thing->setStateValue(outdoorSensorBatteryCriticalStateTypeId, (percentage < 10.0));
+                thing->setStateValue(motionSensorBatteryLevelStateTypeId, percentage);
+                thing->setStateValue(motionSensorBatteryCriticalStateTypeId, (percentage < 10.0));
             });
         }
 
@@ -242,12 +242,12 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
             }
 
             connect(m_presenceTimer, &PluginTimer::timeout, thing, [thing](){
-                if (thing->stateValue(outdoorSensorIsPresentStateTypeId).toBool()) {
-                    int timeout = thing->setting(outdoorSensorSettingsTimeoutParamTypeId).toInt();
-                    QDateTime lastSeenTime = QDateTime::fromMSecsSinceEpoch(thing->stateValue(outdoorSensorLastSeenTimeStateTypeId).toULongLong() * 1000);
+                if (thing->stateValue(motionSensorIsPresentStateTypeId).toBool()) {
+                    int timeout = thing->setting(motionSensorSettingsTimeoutParamTypeId).toInt();
+                    QDateTime lastSeenTime = QDateTime::fromMSecsSinceEpoch(thing->stateValue(motionSensorLastSeenTimeStateTypeId).toULongLong() * 1000);
                     if (lastSeenTime.addSecs(timeout) < QDateTime::currentDateTime()) {
                         qCDebug(dcZigbeePhilipsHue()) << thing << "Presence timeout";
-                        thing->setStateValue(outdoorSensorIsPresentStateTypeId, false);
+                        thing->setStateValue(motionSensorIsPresentStateTypeId, false);
                     }
                 }
             });
@@ -256,8 +256,8 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
                 qCDebug(dcZigbeePhilipsHue()) << thing << "occupancy cluster changed" << occupancy;
                 // Only change the state if the it changed to true, it will be disabled by the timer
                 if (occupancy) {
-                    thing->setStateValue(outdoorSensorIsPresentStateTypeId, true);
-                    thing->setStateValue(outdoorSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
+                    thing->setStateValue(motionSensorIsPresentStateTypeId, true);
+                    thing->setStateValue(motionSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
                     m_presenceTimer->start();
                 }
             });
@@ -269,12 +269,12 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
         } else {
             // Only set the state if the cluster actually has the attribute
             if (temperatureCluster->hasAttribute(ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue)) {
-                thing->setStateValue(outdoorSensorTemperatureStateTypeId, temperatureCluster->temperature());
+                thing->setStateValue(motionSensorTemperatureStateTypeId, temperatureCluster->temperature());
             }
 
             connect(temperatureCluster, &ZigbeeClusterTemperatureMeasurement::temperatureChanged, thing, [thing](double temperature){
                 qCDebug(dcZigbeePhilipsHue()) << thing << "temperature changed" << temperature << "°C";
-                thing->setStateValue(outdoorSensorTemperatureStateTypeId, temperature);
+                thing->setStateValue(motionSensorTemperatureStateTypeId, temperature);
             });
         }
 
@@ -286,13 +286,13 @@ void IntegrationPluginZigbeePhilipsHue::setupThing(ThingSetupInfo *info)
             if (illuminanceCluster->hasAttribute(ZigbeeClusterIlluminanceMeasurment::AttributeMeasuredValue)) {
                 int convertedValue = pow(10, illuminanceCluster->illuminance() / 10000) - 1;
                 qCDebug(dcZigbeePhilipsHue()) << thing << "illuminance" << illuminanceCluster->illuminance() << "-->" << convertedValue << "lux";
-                thing->setStateValue(outdoorSensorLightIntensityStateTypeId, convertedValue);
+                thing->setStateValue(motionSensorLightIntensityStateTypeId, convertedValue);
             }
 
             connect(illuminanceCluster, &ZigbeeClusterIlluminanceMeasurment::illuminanceChanged, thing, [thing](quint16 illuminance){
                 int convertedValue = pow(10, illuminance / 10000) - 1;
                 qCDebug(dcZigbeePhilipsHue()) << thing << "illuminance changed" << illuminance << "-->" << convertedValue << "lux";
-                thing->setStateValue(outdoorSensorLightIntensityStateTypeId, convertedValue);
+                thing->setStateValue(motionSensorLightIntensityStateTypeId, convertedValue);
             });
         }
 
@@ -424,7 +424,7 @@ void IntegrationPluginZigbeePhilipsHue::initDimmerSwitch(ZigbeeNode *node)
     });
 }
 
-void IntegrationPluginZigbeePhilipsHue::initOutdoorSensor(ZigbeeNode *node)
+void IntegrationPluginZigbeePhilipsHue::initMotionSensor(ZigbeeNode *node)
 {
     ZigbeeNodeEndpoint *endpointHa = node->getEndpoint(0x02);
 
@@ -551,15 +551,13 @@ void IntegrationPluginZigbeePhilipsHue::initOutdoorSensor(ZigbeeNode *node)
                                             qCDebug(dcZigbeePhilipsHue()) << "Read illuminance measurement cluster attributes finished successfully";
                                         }
 
-                                        // Configure attribute reporting
-
-                                        // Configure attribute reporting for temperature
+                                        // Configure attribute reporting for illuminance
                                         ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
                                         reportingConfig.attributeId = ZigbeeClusterIlluminanceMeasurment::AttributeMeasuredValue;
                                         reportingConfig.dataType = Zigbee::Uint16;
-                                        reportingConfig.minReportingInterval = 300;
+                                        reportingConfig.minReportingInterval = 5;
                                         reportingConfig.maxReportingInterval = 600;
-                                        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint16>(1)).data();
+                                        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint16>(100)).data();
 
                                         qCDebug(dcZigbeePhilipsHue()) << "Configure attribute reporting for illuminance measurement cluster to coordinator";
                                         ZigbeeClusterReply *reportingReply = endpointHa->getInputCluster(ZigbeeClusterLibrary::ClusterIdIlluminanceMeasurement)->configureReporting({reportingConfig});
