@@ -89,7 +89,7 @@ void IntegrationPluginNetatmo::confirmPairing(ThingPairingInfo *info, const QStr
             pluginStorage()->setValue("username", username);
             pluginStorage()->setValue("password", password);
             pluginStorage()->endGroup();
-            m_authentications.insert(authentication, info->thingId());
+            m_pairingAuthentications.insert(authentication, info->thingId());
             info->finish(Thing::ThingErrorNoError);
         } else {
             qCWarning(dcNetatmo()) << "Wrong username or password";
@@ -146,11 +146,22 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
         }
 
         if (m_authentications.values().contains(thing->id())) {
-            OAuth2 *authentication = m_authentications.key(thing->id());
-            qCDebug(dcNetatmo()) << "Authenticated from discovery, not creating a new authentication";
+            qCDebug(dcNetatmo()) << "Setup after reconfiguration, cleaning up";
+            OAuth2 *auth = m_authentications.key(thing->id());
+            m_authentications.remove(auth);
+            if (auth) {
+                auth->deleteLater();
+            }
+        }
+
+        if (m_pairingAuthentications.values().contains(thing->id())) {
+            OAuth2 *authentication = m_pairingAuthentications.key(thing->id());
+            m_pairingAuthentications.remove(authentication);
+            qCDebug(dcNetatmo()) << "Authenticated from pairing process, not creating a new authentication";
             thing->setStateValue(netatmoConnectionConnectedStateTypeId, true);
             thing->setStateValue(netatmoConnectionLoggedInStateTypeId, true);
             thing->setStateValue(netatmoConnectionUserDisplayNameStateTypeId, authentication->username());
+            m_authentications.insert(authentication, thing->id());
             info->finish(Thing::ThingErrorNoError);
         } else {
             OAuth2 *authentication = new OAuth2(m_clientId, m_clientSecret, this);

@@ -62,6 +62,7 @@ private:
     QHash<QString, QVariantMap> m_indoorStationInitData;
     QHash<QString, QVariantMap> m_outdoorStationInitData;
 
+    QHash<OAuth2 *, ThingId> m_pairingAuthentications;
     QHash<OAuth2 *, ThingId> m_authentications;
     QHash<NetatmoBaseStation *, Thing *> m_indoorDevices;
     QHash<NetatmoOutdoorModule *, Thing *> m_outdoorDevices;
