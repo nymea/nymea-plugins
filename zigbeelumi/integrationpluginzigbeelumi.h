@@ -41,7 +41,7 @@ class IntegrationPluginZigbeeLumi: public IntegrationPlugin, public ZigbeeHandle
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbee-lumi.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbeelumi.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:

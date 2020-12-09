@@ -66,7 +66,7 @@ PLUGIN_DIRS = \
     ws2812fx            \
     zigbeegeneric       \
     zigbeegenericlights \
-    zigbee-lumi         \
+    zigbeelumi          \
     zigbee-philipshue   \
     zigbee-tradfri      \
 
