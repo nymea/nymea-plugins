@@ -54,6 +54,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_zigbeeAddressParamTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiMagnetSensorThingClassId] = lumiMagnetSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiMotionSensorThingClassId] = lumiMotionSensorThingIeeeAddressParamTypeId;
+    m_zigbeeAddressParamTypeIds[xiaomiMotionSensorThingClassId] = xiaomiMotionSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorThingIeeeAddressParamTypeId;
     m_zigbeeAddressParamTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorThingIeeeAddressParamTypeId;
@@ -65,6 +66,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_connectedStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiMagnetSensorThingClassId] = lumiMagnetSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiMotionSensorThingClassId] = lumiMotionSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[xiaomiMotionSensorThingClassId] = xiaomiMotionSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorConnectedStateTypeId;
     m_connectedStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorConnectedStateTypeId;
@@ -76,6 +78,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_versionStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiMagnetSensorThingClassId] = lumiMagnetSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiMotionSensorThingClassId] = lumiMotionSensorVersionStateTypeId;
+    m_versionStateTypeIds[xiaomiMotionSensorThingClassId] = xiaomiMotionSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorVersionStateTypeId;
     m_versionStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorVersionStateTypeId;
@@ -87,6 +90,7 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_signalStrengthStateTypeIds[lumiButtonSensorThingClassId] = lumiButtonSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiMagnetSensorThingClassId] = lumiMagnetSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiMotionSensorThingClassId] = lumiMotionSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[xiaomiMotionSensorThingClassId] = xiaomiMotionSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiWaterSensorThingClassId] = lumiWaterSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiWeatherSensorThingClassId] = lumiWeatherSensorSignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[lumiVibrationSensorThingClassId] = lumiVibrationSensorSignalStrengthStateTypeId;
@@ -98,7 +102,8 @@ IntegrationPluginZigbeeLumi::IntegrationPluginZigbeeLumi()
     m_knownLumiDevices.insert("lumi.sensor_ht", lumiHTSensorThingClassId);
     m_knownLumiDevices.insert("lumi.sensor_magnet", lumiMagnetSensorThingClassId);
     m_knownLumiDevices.insert("lumi.sensor_switch", lumiButtonSensorThingClassId);
-    m_knownLumiDevices.insert("lumi.sensor_motion", lumiMotionSensorThingClassId);
+    // Check sensor_motion separate since the have the same name but different features
+    //m_knownLumiDevices.insert("lumi.sensor_motion", lumiMotionSensorThingClassId);
     m_knownLumiDevices.insert("lumi.sensor_wleak", lumiWaterSensorThingClassId);
     m_knownLumiDevices.insert("lumi.weather", lumiWeatherSensorThingClassId);
     m_knownLumiDevices.insert("lumi.vibration", lumiVibrationSensorThingClassId);
@@ -116,8 +121,8 @@ bool IntegrationPluginZigbeeLumi::handleNode(ZigbeeNode *node, const QUuid &netw
 {
     // Check if this is Lumi
     // Note: Lumi / Xiaomi / Aquara devices are not in the specs, some older models do not
-    // send the node descriptor or use a inconsistent manufacturer code. We use the manufacturer
-    // name for matching since that has shown to be most constant
+    // send the node descriptor or use a inconsistent manufacturer code. We use the model identifier
+    // for verification since they seem to start always with lumi.
     foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
         // Get the model identifier if present from the first endpoint. Also this is out of spec
         if (!endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdBasic)) {
@@ -125,16 +130,26 @@ bool IntegrationPluginZigbeeLumi::handleNode(ZigbeeNode *node, const QUuid &netw
             continue;
         }
 
-        // Basic cluster exists, so we should have the manufacturer name
-        if (!endpoint->manufacturerName().toLower().startsWith("lumi")) {
+        // Basic cluster exists, so we should have the model name
+        if (!endpoint->modelIdentifier().toLower().startsWith("lumi.")) {
             return false;
         }
 
         ThingClassId thingClassId;
-        foreach (const QString &knownLumi, m_knownLumiDevices.keys()) {
-            if (endpoint->modelIdentifier().startsWith(knownLumi)) {
-                thingClassId = m_knownLumiDevices.value(knownLumi);
-                break;
+        if (endpoint->modelIdentifier().startsWith("lumi.sensor_motion")) {
+            // Check if this is a xiaomi or aquara motion sensor
+            if (endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdIlluminanceMeasurement)) {
+                thingClassId = lumiMotionSensorThingClassId;
+            } else {
+                thingClassId = xiaomiMotionSensorThingClassId;
+            }
+
+        } else {
+            foreach (const QString &knownLumi, m_knownLumiDevices.keys()) {
+                if (endpoint->modelIdentifier().startsWith(knownLumi)) {
+                    thingClassId = m_knownLumiDevices.value(knownLumi);
+                    break;
+                }
             }
         }
         if (thingClassId.isNull()) {
@@ -285,6 +300,43 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     }
 
 
+    if (thing->thingClassId() == xiaomiMotionSensorThingClassId) {
+        ZigbeeClusterOccupancySensing *occupancyCluster = endpoint->inputCluster<ZigbeeClusterOccupancySensing>(ZigbeeClusterLibrary::ClusterIdOccupancySensing);
+        if (occupancyCluster) {
+            if (occupancyCluster->hasAttribute(ZigbeeClusterOccupancySensing::AttributeOccupancy)) {
+                thing->setStateValue(xiaomiMotionSensorIsPresentStateTypeId, occupancyCluster->occupied());
+                thing->setStateValue(xiaomiMotionSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
+            }
+
+            connect(occupancyCluster, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [this, thing](bool occupancy){
+                qCDebug(dcZigbeeLumi()) << "occupancy changed" << occupancy;
+                // Only change the state if the it changed to true, it will be disabled by the timer
+                if (occupancy) {
+                    thing->setStateValue(xiaomiMotionSensorIsPresentStateTypeId, occupancy);
+                    m_presenceTimer->start();
+                }
+
+                thing->setStateValue(xiaomiMotionSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
+            });
+
+            if (!m_presenceTimer) {
+                m_presenceTimer = hardwareManager()->pluginTimerManager()->registerTimer(1);
+            }
+
+            connect(m_presenceTimer, &PluginTimer::timeout, thing, [thing](){
+                if (thing->stateValue(xiaomiMotionSensorIsPresentStateTypeId).toBool()) {
+                    int timeout = thing->setting(xiaomiMotionSensorSettingsTimeoutParamTypeId).toInt();
+                    QDateTime lastSeenTime = QDateTime::fromMSecsSinceEpoch(thing->stateValue(xiaomiMotionSensorLastSeenTimeStateTypeId).toULongLong() * 1000);
+                    if (lastSeenTime.addSecs(timeout) < QDateTime::currentDateTime()) {
+                        thing->setStateValue(xiaomiMotionSensorIsPresentStateTypeId, false);
+                    }
+                }
+            });
+        } else {
+            qCWarning(dcZigbeeLumi()) << "Occupancy cluster not found on" << thing->name();
+        }
+    }
+
     if (thing->thingClassId() == lumiHTSensorThingClassId) {
         ZigbeeClusterTemperatureMeasurement *temperatureCluster = endpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
         if (temperatureCluster) {
@@ -364,7 +416,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
     }
 
 
-    if (thing->thingClassId() == lumiWaterSensorThingClassId) {        
+    if (thing->thingClassId() == lumiWaterSensorThingClassId) {
         connect(endpoint, &ZigbeeNodeEndpoint::clusterAttributeChanged, this, [thing](ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
             if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdIasZone) {
                 if (attribute.id() == ZigbeeClusterIasZone::AttributeZoneState) {

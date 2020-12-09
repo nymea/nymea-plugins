@@ -418,6 +418,96 @@
                     ]
                 },
                 {
+                    "name": "xiaomiMotionSensor",
+                    "displayName": "Motion sensor",
+                    "id": "73bfe746-4fc7-4a2a-a3c2-32dc44214170",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "presencesensor", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "e3a52900-320e-4ada-957a-6a10594f08c8",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "c1e7a76f-81ea-42f6-846b-86ef40087ba0",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "96183481-42f2-40fc-8a19-5b59bd311720",
+                            "name": "timeout",
+                            "displayName": "Time period",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "defaultValue": 10,
+                            "minValue": 10
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d0239a0a-9320-45b6-8652-5e6af4f544d8",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "84a2061d-da9c-4755-87b2-770dc92a2a53",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "ad45268e-54f0-44fe-9a8f-25ccdca92452",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "9a30ff91-64cb-432c-8db7-cf6a751e8601",
+                            "name": "isPresent",
+                            "displayName": "Present",
+                            "displayNameEvent": "Present changed",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "55229e22-e42b-4d38-af4b-fb668439d38a",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
+                        }
+                    ],
+                    "actionTypes": [
+
+                    ],
+                    "eventTypes": [
+
+                    ]
+                },
+                {
                     "name": "lumiWaterSensor",
                     "displayName": "Water sensor",
                     "id": "e8e18bbe-27bb-4fd7-98fc-f5cef3b5f213",
