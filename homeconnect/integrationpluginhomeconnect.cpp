@@ -176,7 +176,7 @@ void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
         QUrl url = homeConnect->getLoginUrl(QUrl("https://127.0.0.1:8888"), scope);
         qCDebug(dcHomeConnect()) << "Checking if the HomeConnect server is reachable: https://simulator.home-connect.com/security/oauth";
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(QUrl("https://simulator.home-connect.com/security/oauth")));
-        connect(reply, &QNetworkReply::finished, info, &QNetworkReply::deleteLater);
+        connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
         connect(reply, &QNetworkReply::finished, info, [reply, info, homeConnect, url, this] {
 
             if (reply->error() != QNetworkReply::NetworkError::HostNotFoundError) {
