@@ -237,10 +237,15 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
 
-    qCDebug(dcHomeConnect()) << "Setuo thing" << thing->name();
+    qCDebug(dcHomeConnect()) << "Setup thing" << thing->name();
     if (thing->thingClassId() == homeConnectAccountThingClassId) {
         bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
         HomeConnect *homeConnect;
+
+        if (m_homeConnectConnections.contains(thing)) {
+            qCDebug(dcHomeConnect()) << "Setup after reconfiguration, cleaning up";
+            m_homeConnectConnections.take(thing)->deleteLater();
+        }
         if (m_setupHomeConnectConnections.keys().contains(thing->id())) {
             //Fresh device setup, has already a fresh access token
             qCDebug(dcHomeConnect()) << "HomeConnect OAuth setup complete";
@@ -265,12 +270,16 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
                 qCDebug(dcHomeConnect()) << "Using custom API key and secret.";
             }
             if (clientKey.isEmpty() || clientSecret.isEmpty()) {
-                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client key and/or seceret is not available."));
+                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client key and/or secret is not available."));
                 return;
             }
             homeConnect = new HomeConnect(hardwareManager()->networkManager(), clientKey, clientSecret, simulationMode,  this);
             homeConnect->getAccessTokenFromRefreshToken(refreshToken);
             m_asyncSetup.insert(homeConnect, info);
+            connect(info, &ThingSetupInfo::aborted, homeConnect, [homeConnect, this] {
+                m_asyncSetup.remove(homeConnect);
+                homeConnect->deleteLater();
+            });
         }
         connect(homeConnect, &HomeConnect::connectionChanged, this, &IntegrationPluginHomeConnect::onConnectionChanged);
         connect(homeConnect, &HomeConnect::commandExecuted, this, &IntegrationPluginHomeConnect::onRequestExecuted);
