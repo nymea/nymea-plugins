@@ -112,9 +112,16 @@ void IntegrationPluginTado::setupThing(ThingSetupInfo *info)
 
     if (thing->thingClassId() == tadoAccountThingClassId) {
 
-        qCDebug(dcTado) << "Setup tado connection" << thing->name() << thing->params();
+        qCDebug(dcTado) << "Setup Tado account" << thing->name() << thing->params();
         Tado *tado;
+
+        if (m_tadoAccounts.contains(thing->id())) {
+            qCDebug(dcTado()) << "Setup after reconfigure, cleaning up";
+            m_tadoAccounts.take(thing->id())->deleteLater();
+        }
+
         if (m_unfinishedTadoAccounts.contains(thing->id())) {
+            qCDebug(dcTado()) << "Using Tado connection from pairing process";
             tado = m_unfinishedTadoAccounts.take(thing->id());
             m_tadoAccounts.insert(thing->id(), tado);
             info->finish(Thing::ThingErrorNoError);
