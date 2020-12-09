@@ -41,7 +41,7 @@ class IntegrationPluginZigbeeGeneric: public IntegrationPlugin, public ZigbeeHan
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbee-generic.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbeegeneric.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:

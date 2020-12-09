@@ -64,7 +64,7 @@ PLUGIN_DIRS = \
     wakeonlan           \
     wemo                \
     ws2812fx            \
-    zigbee-generic      \
+    zigbeegeneric       \
     zigbee-generic-lights \
     zigbee-lumi         \
     zigbee-philipshue   \
