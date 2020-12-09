@@ -41,7 +41,7 @@ class IntegrationPluginZigbeePhilipsHue: public IntegrationPlugin, public Zigbee
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbee-philipshue.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbeephilipshue.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:
