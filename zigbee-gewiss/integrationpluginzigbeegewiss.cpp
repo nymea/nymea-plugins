@@ -85,6 +85,7 @@ bool IntegrationPluginZigbeeGewiss::handleNode(ZigbeeNode *node, const QUuid &ne
             return false;
         }
 
+        initGwa1501(node);
         createThing(thingClassId, networkUuid, node);
         return true;
     }
@@ -111,6 +112,7 @@ void IntegrationPluginZigbeeGewiss::init()
 
 void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
 {
+    qCDebug(dcZigBeeGewiss()) << "Setting up thing" << info->thing()->name();
     Thing *thing = info->thing();
     QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
     ZigbeeAddress zigbeeAddress = ZigbeeAddress(thing->paramValue(m_ieeeAddressParamTypeIds.value(thing->thingClassId())).toString());
@@ -137,7 +139,6 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
     });
 
     if (thing->thingClassId() == gewissGwa1501ThingClassId) {
-        initGwa1501(node);
 
         ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
         ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02);
@@ -171,9 +172,10 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             qCWarning(dcZigBeeGewiss()) << "Could not find on/off client cluster on" << thing << endpoint1;
         } else {
             connect(onOffCluster1, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
+                qCDebug(dcZigBeeGewiss()) << thing << "channel 1, on/off changed" << command;
                 if (command == ZigbeeClusterOnOff::CommandOn) {
-                    qCDebug(dcZigBeeGewiss()) << thing << "pressed ON";
                     emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "ON")));
+                } else if (command == ZigbeeClusterOnOff::CommandOff) {
                 } else {
                     qCWarning(dcZigBeeGewiss()) << thing << "unhandled command received" << command;
                 }
@@ -191,31 +193,39 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             qCWarning(dcZigBeeGewiss()) << "Could not find on/off client cluster on" << thing << endpoint2;
         } else {
             connect(onOffCluster2, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
+                qCDebug(dcZigBeeGewiss()) << thing << "channel 2, on/off changed" << command;
                 if (command == ZigbeeClusterOnOff::CommandOn) {
-                    qCDebug(dcZigBeeGewiss()) << thing << "pressed ON";
                     emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "ON")));
+                } else if (command == ZigbeeClusterOnOff::CommandOff) {
                 } else {
                     qCWarning(dcZigBeeGewiss()) << thing << "unhandled command received" << command;
                 }
             });
-
+            connect(onOffCluster2, &ZigbeeClusterOnOff::commandOnWithTimedOffSent, thing, [=] (bool acceptOnlyWhenOn, quint16 onTime, quint16 offTime) {
+                Q_UNUSED(acceptOnlyWhenOn)
+                qCDebug(dcZigBeeGewiss()) << thing << "On button pressed, including timed off" << offTime << "on time" << onTime;
+            });
             connect(onOffCluster2, &ZigbeeClusterOnOff::commandOffWithEffectSent, thing, [=](ZigbeeClusterOnOff::Effect effect, quint8 effectVariant){
                 qCDebug(dcZigBeeGewiss()) << thing << "OFF button pressed" << effect << effectVariant;
                 emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "OFF")));
             });
         }
+        return info->finish(Thing::ThingErrorNoError);
+    } else {
+        qCWarning(dcZigBeeGewiss()) << "Thing class not found" << info->thing()->thingClassId();
+        return info->finish(Thing::ThingErrorThingClassNotFound);
     }
-
-    info->finish(Thing::ThingErrorNoError);
 }
 
 void IntegrationPluginZigbeeGewiss::executeAction(ThingActionInfo *info)
 {
+    qCDebug(dcZigBeeGewiss()) << "Execute action" << info->thing()->name() << info->action().actionTypeId();
     info->finish(Thing::ThingErrorUnsupportedFeature);
 }
 
 void IntegrationPluginZigbeeGewiss::thingRemoved(Thing *thing)
 {
+    qCDebug(dcZigBeeGewiss()) << "Removing thing" << thing->name();
     ZigbeeNode *node = m_thingNodes.take(thing);
     if (node) {
         QUuid networkUuid = thing->paramValue(m_networkUuidParamTypeIds.value(thing->thingClassId())).toUuid();
@@ -238,8 +248,9 @@ void IntegrationPluginZigbeeGewiss::createThing(const ThingClassId &thingClassId
 
 void IntegrationPluginZigbeeGewiss::initGwa1501(ZigbeeNode *node)
 {
+    qCDebug(dcZigBeeGewiss()) << "Initializing GWA1501 node";
     ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
-    //ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02); TODO
+    ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02);
 
     // Get the current configured bindings for this node
     ZigbeeReply *reply = node->removeAllBindings();
@@ -303,28 +314,40 @@ void IntegrationPluginZigbeeGewiss::initGwa1501(ZigbeeNode *node)
                             qCDebug(dcZigBeeGewiss()) << "Bind  cluster to coordinator finished successfully";
                         }
 
-
-                        // Init Level cluster
-                        qCDebug(dcZigBeeGewiss()) << "Bind power level cluster to coordinator";
-                        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint1->endpointId(), ZigbeeClusterLibrary::ClusterIdLevelControl, 0x0000);
+                        // On/off cluster 2
+                        qCDebug(dcZigBeeGewiss()) << "Bind on/off cluster 2 to coordinator";
+                        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint2->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
                         connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
                             if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                                qCWarning(dcZigBeeGewiss()) << "Failed to bind level cluster to coordinator" << zdoReply->error();
+                                qCWarning(dcZigBeeGewiss()) << "Failed to bind on/off cluster to coordinator" << zdoReply->error();
                             } else {
-                                qCDebug(dcZigBeeGewiss()) << "Bind level cluster to coordinator finished successfully";
+                                qCDebug(dcZigBeeGewiss()) << "Bind  cluster to coordinator finished successfully";
                             }
 
-                            // Read final bindings
-                            qCDebug(dcZigBeeGewiss()) << "Read binding table from node" << node;
-                            ZigbeeReply *reply = node->readBindingTableEntries();
-                            connect(reply, &ZigbeeReply::finished, node, [=](){
-                                if (reply->error() != ZigbeeReply::ErrorNoError) {
-                                    qCWarning(dcZigBeeGewiss()) << "Failed to read binding table from" << node;
+
+
+                            // Init Level cluster
+                            qCDebug(dcZigBeeGewiss()) << "Bind power level cluster to coordinator";
+                            ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(endpoint1->endpointId(), ZigbeeClusterLibrary::ClusterIdLevelControl, 0x0000);
+                            connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                                if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                                    qCWarning(dcZigBeeGewiss()) << "Failed to bind level cluster to coordinator" << zdoReply->error();
                                 } else {
-                                    foreach (const ZigbeeDeviceProfile::BindingTableListRecord &binding, node->bindingTableRecords()) {
-                                        qCDebug(dcZigBeeGewiss()) << node << binding;
-                                    }
+                                    qCDebug(dcZigBeeGewiss()) << "Bind level cluster to coordinator finished successfully";
                                 }
+
+                                // Read final bindings
+                                qCDebug(dcZigBeeGewiss()) << "Read binding table from node" << node;
+                                ZigbeeReply *reply = node->readBindingTableEntries();
+                                connect(reply, &ZigbeeReply::finished, node, [=](){
+                                    if (reply->error() != ZigbeeReply::ErrorNoError) {
+                                        qCWarning(dcZigBeeGewiss()) << "Failed to read binding table from" << node;
+                                    } else {
+                                        foreach (const ZigbeeDeviceProfile::BindingTableListRecord &binding, node->bindingTableRecords()) {
+                                            qCDebug(dcZigBeeGewiss()) << node << binding;
+                                        }
+                                    }
+                                });
                             });
                         });
                     });
