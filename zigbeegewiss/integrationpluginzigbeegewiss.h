@@ -41,7 +41,7 @@ class IntegrationPluginZigbeeGewiss: public IntegrationPlugin, public ZigbeeHand
 {
     Q_OBJECT
 
-    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbee-gewiss.json")
+    Q_PLUGIN_METADATA(IID "io.nymea.IntegrationPlugin" FILE "integrationpluginzigbeegewiss.json")
     Q_INTERFACES(IntegrationPlugin)
 
 public:
