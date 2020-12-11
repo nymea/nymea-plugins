@@ -472,7 +472,7 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
         ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
         if (onOffCluster) {
             connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [this, thing](bool power){
-                qCDebug(dcZigbeeLumi()) << thing << "state changed" << (power ? "closed" : "open");
+                qCDebug(dcZigbeeLumi()) << thing << "state changed" << (power ? "pressed" : "released");
                 if (!power) {
                     emitEvent(Event(lumiButtonSensorPressedEventTypeId, thing->id()));
                 }
