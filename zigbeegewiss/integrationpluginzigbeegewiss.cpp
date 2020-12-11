@@ -174,7 +174,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             connect(onOffCluster1, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
                 qCDebug(dcZigBeeGewiss()) << thing << "channel 1, on/off changed" << command;
                 if (command == ZigbeeClusterOnOff::CommandOn) {
-                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "ON")));
+                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "2")));
                 } else if (command == ZigbeeClusterOnOff::CommandOff) {
                 } else {
                     qCWarning(dcZigBeeGewiss()) << thing << "unhandled command received" << command;
@@ -187,6 +187,26 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             });
         }
 
+        // Receive level control commands
+        ZigbeeClusterLevelControl *levelCluster = endpoint1->outputCluster<ZigbeeClusterLevelControl>(ZigbeeClusterLibrary::ClusterIdLevelControl);
+        if (!levelCluster) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find level client cluster on" << thing << endpoint1;
+        } else {
+            connect(levelCluster, &ZigbeeClusterLevelControl::commandStepSent, thing, [=](ZigbeeClusterLevelControl::FadeMode fadeMode, quint8 stepSize, quint16 transitionTime){
+                qCDebug(dcZigBeeGewiss()) << thing << "level button pressed" << fadeMode << stepSize << transitionTime;
+                switch (fadeMode) {
+                case ZigbeeClusterLevelControl::FadeModeUp:
+                    qCDebug(dcZigBeeGewiss()) << thing << "DIM UP pressed";
+                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "1")));
+                    break;
+                case ZigbeeClusterLevelControl::FadeModeDown:
+                    qCDebug(dcZigBeeGewiss()) << thing << "DIM DOWN pressed";
+                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "DIM DOWN")));
+                    break;
+                }
+            });
+        }
+
         // Receive on/off commands
         ZigbeeClusterOnOff *onOffCluster2 = endpoint2->outputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
         if (!onOffCluster2) {
@@ -195,7 +215,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             connect(onOffCluster2, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
                 qCDebug(dcZigBeeGewiss()) << thing << "channel 2, on/off changed" << command;
                 if (command == ZigbeeClusterOnOff::CommandOn) {
-                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "ON")));
+                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "2")));
                 } else if (command == ZigbeeClusterOnOff::CommandOff) {
                 } else {
                     qCWarning(dcZigBeeGewiss()) << thing << "unhandled command received" << command;
@@ -209,6 +229,26 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
                 qCDebug(dcZigBeeGewiss()) << thing << "OFF button pressed" << effect << effectVariant;
                 emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "OFF")));
             });
+
+            // Receive level control commands
+            ZigbeeClusterLevelControl *levelCluster2 = endpoint2->outputCluster<ZigbeeClusterLevelControl>(ZigbeeClusterLibrary::ClusterIdLevelControl);
+            if (!levelCluster2) {
+                qCWarning(dcZigBeeGewiss()) << "Could not find level client cluster on" << thing << endpoint2;
+            } else {
+                connect(levelCluster2, &ZigbeeClusterLevelControl::commandStepSent, thing, [=](ZigbeeClusterLevelControl::FadeMode fadeMode, quint8 stepSize, quint16 transitionTime){
+                    qCDebug(dcZigBeeGewiss()) << thing << "level button pressed" << fadeMode << stepSize << transitionTime;
+                    switch (fadeMode) {
+                    case ZigbeeClusterLevelControl::FadeModeUp:
+                        qCDebug(dcZigBeeGewiss()) << thing << "cluster 2 DIM UP pressed";
+                        emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "2")));
+                        break;
+                    case ZigbeeClusterLevelControl::FadeModeDown:
+                        qCDebug(dcZigBeeGewiss()) << thing << "cluster 2 DIM DOWN pressed";
+                        emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "DIM DOWN")));
+                        break;
+                    }
+                });
+            }
         }
         return info->finish(Thing::ThingErrorNoError);
     } else {
