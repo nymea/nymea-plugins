@@ -335,11 +335,15 @@ void IntegrationPluginDenon::executeAction(ThingActionInfo *info)
             connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
             m_avrPendingActions.insert(commandId, info);
         } else if (action.actionTypeId() == AVRX1000IncreaseVolumeActionTypeId) {
-            QUuid commandId = avrConnection->increaseVolume();
+            uint step =  action.paramValue(AVRX1000IncreaseVolumeActionStepParamTypeId).toUInt();
+            uint currentVolume = thing->stateValue(AVRX1000VolumeStateTypeId).toUInt();
+            QUuid commandId = avrConnection->setVolume(currentVolume+step);
             connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
             m_avrPendingActions.insert(commandId, info);
         } else if (action.actionTypeId() == AVRX1000DecreaseVolumeActionTypeId) {
-            QUuid commandId = avrConnection->decreaseVolume();
+            uint step =  action.paramValue(AVRX1000DecreaseVolumeActionStepParamTypeId).toUInt();
+            uint currentVolume = thing->stateValue(AVRX1000VolumeStateTypeId).toUInt();
+            QUuid commandId = avrConnection->setVolume(currentVolume-step);
             connect(info, &ThingActionInfo::aborted, [this, commandId] {m_avrPendingActions.remove(commandId);});
             m_avrPendingActions.insert(commandId, info);
         } else if (action.actionTypeId() == AVRX1000SurroundModeActionTypeId) {

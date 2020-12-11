@@ -255,12 +255,34 @@
                         {
                             "id": "4ae686d6-2307-40a0-bd38-2cd3a92342cc",
                             "displayName": "Increase volume",
-                            "name": "increaseVolume"
+                            "name": "increaseVolume",
+                            "paramTypes": [
+                                {
+                                    "id": "f24e4e9d-5f7b-4b5c-ad0a-eb6316d86408",
+                                    "name": "step",
+                                    "displayName": "Step size",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 10,
+                                    "defaultValue": 5
+                                }
+                            ]
                         },
                         {
                             "id": "d3752c32-92e3-4396-8e2f-ab5e57c6cfb1",
                             "displayName": "Decrease volume",
-                            "name": "decreaseVolume"
+                            "name": "decreaseVolume",
+                            "paramTypes": [
+                                {
+                                    "id": "0731daad-e689-40f6-8685-6d6362b715ec",
+                                    "name": "step",
+                                    "displayName": "Step size",
+                                    "type": "uint",
+                                    "minValue": 0,
+                                    "maxValue": 10,
+                                    "defaultValue": 5
+                                }
+                            ]
                         },
                         {
                             "id": "3f2eb789-918c-475a-a295-14c0c24338b8",
