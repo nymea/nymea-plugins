@@ -167,7 +167,18 @@ void IntegrationPluginNuki::confirmPairing(ThingPairingInfo *info, const QString
 
     m_asyncSetupNuki->startAuthenticationProcess(info->transactionId());
     m_pairingInfo = info;
-    connect(info, &ThingPairingInfo::destroyed, this, [this] { m_pairingInfo = nullptr; });
+    connect(info, &ThingPairingInfo::destroyed, this, [this] {
+        m_pairingInfo = nullptr;
+
+        // FIXME: There are situations where the setup never returns (i.e. when the Bluetooth connection aborts)
+        // In order to always clean up and not block subsequent retries, we'll destry the setup object here but
+        // for a better user experience it should be handled properly and tell the user what wen't wrong instead
+        // of letting the setup time out.
+        if (m_asyncSetupNuki) {
+            m_asyncSetupNuki->deleteLater();
+            m_asyncSetupNuki = nullptr;
+        }
+    });
 }
 
 void IntegrationPluginNuki::postSetupThing(Thing *thing)
