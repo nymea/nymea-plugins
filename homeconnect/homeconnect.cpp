@@ -162,7 +162,7 @@ bool HomeConnect::checkStatusCode(QNetworkReply *reply, const QByteArray &rawDat
         return false;
     case 409:
         qCWarning(dcHomeConnect()) << "Conflict - Command/Query cannot be executed for the home appliance, the error response contains the error details";
-        qCWarning(dcHomeConnect()) << "Error" << jsonDoc.toVariant().toMap().value("error").toString();
+        qCWarning(dcHomeConnect()) << "Error" << jsonDoc;
         return false;
     case 415:
         qCWarning(dcHomeConnect())<< "Unsupported Media Type. The request's Content-Type is not supported";
@@ -753,80 +753,96 @@ void HomeConnect::connectEventStream()
     request.setRawHeader("accept", "text/event-stream");
 
     QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, [reply, this] {
-        reply->deleteLater();
-        QTimer::singleShot(5000, this, [this] {connectEventStream();}); //try to reconnect every 5 seconds
+        int reconnectTime = 5000; // Usual reconnect in 5 s
+        if (reply->error() != QNetworkReply::NetworkError::NoError) {
+            qCDebug(dcHomeConnect()) << "Event stream error" << reply->errorString() << reply->readAll();
+        }
+        qCDebug(dcHomeConnect()) << "Eventstream disconected";
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status == 429) {
+            reconnectTime = 600000;
+        }
+        qCDebug(dcHomeConnect()) << "Trying to reconnect event stream in" << reconnectTime/1000 << "seconds";
+        QTimer::singleShot(reconnectTime, this, [this] {
+            qCDebug(dcHomeConnect()) << "Reconnecting event stream";
+            connectEventStream();
+        });
     });
     connect(reply, &QNetworkReply::readyRead, this, [this, reply]{
 
-        while (reply->canReadLine()) {
-            QJsonDocument data;
-            QString haId;
-            EventType eventType;
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status == 200) {
+            while (reply->canReadLine()) {
+                QJsonDocument data;
+                QString haId;
+                EventType eventType;
 
-            QByteArray eventTypeLine = reply->readLine();
-            if (eventTypeLine == "\n")
-                continue;
-            if (eventTypeLine.startsWith("event")) {
-                QString eventString = eventTypeLine.split(':').last().trimmed();
-                if (eventString == "KEEP-ALIVE") {
-                    eventType = EventTypeKeepAlive;
-                } else if (eventString == "STATUS") {
-                    eventType = EventTypeStatus;
-                } else if (eventString == "EVENT") {
-                    eventType = EventTypeEvent;
-                } else if (eventString == "NOTIFY") {
-                    eventType = EventTypeNotify;
-                } else if (eventString == "DISCONNECTED") {
-                    eventType = EventTypeDisconnected;
-                } else if (eventString == "CONNECTED") {
-                    eventType = EventTypeConnected;
-                } else if (eventString == "PAIRED") {
-                    eventType = EventTypePaired;
-                } else if (eventString == "DEPAIRED") {
-                    eventType = EventTypeDepaired;
-                } else {
-                    qCWarning(dcHomeConnect()) << "Unhandled event type" << eventString;
-                    return;
-                }
-                QByteArray dataLine = reply->readLine();
-                if (dataLine.startsWith("data")) {
-                    data = QJsonDocument::fromJson(dataLine.remove(0,6));
-
-                    QByteArray idLine = reply->readLine();
-                    if (idLine.startsWith("id")) {
-                        haId = idLine.split(':').last().trimmed();
+                QByteArray eventTypeLine = reply->readLine();
+                if (eventTypeLine == "\n")
+                    continue;
+                if (eventTypeLine.startsWith("event")) {
+                    QString eventString = eventTypeLine.split(':').last().trimmed();
+                    if (eventString == "KEEP-ALIVE") {
+                        eventType = EventTypeKeepAlive;
+                    } else if (eventString == "STATUS") {
+                        eventType = EventTypeStatus;
+                    } else if (eventString == "EVENT") {
+                        eventType = EventTypeEvent;
+                    } else if (eventString == "NOTIFY") {
+                        eventType = EventTypeNotify;
+                    } else if (eventString == "DISCONNECTED") {
+                        eventType = EventTypeDisconnected;
+                    } else if (eventString == "CONNECTED") {
+                        eventType = EventTypeConnected;
+                    } else if (eventString == "PAIRED") {
+                        eventType = EventTypePaired;
+                    } else if (eventString == "DEPAIRED") {
+                        eventType = EventTypeDepaired;
                     } else {
-                        qCWarning(dcHomeConnect()) << "Id line: Unexpected line" << eventTypeLine;
+                        qCWarning(dcHomeConnect()) << "Unhandled event type" << eventString;
+                        return;
+                    }
+                    QByteArray dataLine = reply->readLine();
+                    if (dataLine.startsWith("data")) {
+                        data = QJsonDocument::fromJson(dataLine.remove(0,6));
+
+                        QByteArray idLine = reply->readLine();
+                        if (idLine.startsWith("id")) {
+                            haId = idLine.split(':').last().trimmed();
+                        } else {
+                            qCWarning(dcHomeConnect()) << "Id line: Unexpected line" << eventTypeLine;
+                            continue;
+                        }
+                    } else {
+                        qCWarning(dcHomeConnect()) << "Data Line: Unexpected line" << eventTypeLine;
                         continue;
                     }
                 } else {
-                    qCWarning(dcHomeConnect()) << "Data Line: Unexpected line" << eventTypeLine;
+                    qCWarning(dcHomeConnect()) << "Event type: Unexpected line" << eventTypeLine;
                     continue;
                 }
-            } else {
-                qCWarning(dcHomeConnect()) << "Event type: Unexpected line" << eventTypeLine;
-                continue;
-            }
 
-            if (data.toVariant().toMap().contains("items")) {
-                QList<Event> events;
-                QVariantList itemsList = data.toVariant().toMap().value("items").toList();
-                Q_FOREACH(QVariant item, itemsList) {
-                    QVariantMap map = item.toMap();
-                    Event event;
-                    event.key = map["key"].toString();
-                    event.uri = map["uri"].toString();
-                    event.name = map["uri"].toString();
-                    event.value  = map["value"];
-                    event.unit = map["unit"].toString();
-                    event.timestamp  = map["timestamp"].toInt();
-                    events.append(event);
+                if (data.toVariant().toMap().contains("items")) {
+                    QList<Event> events;
+                    QVariantList itemsList = data.toVariant().toMap().value("items").toList();
+                    Q_FOREACH(QVariant item, itemsList) {
+                        QVariantMap map = item.toMap();
+                        Event event;
+                        event.key = map["key"].toString();
+                        event.uri = map["uri"].toString();
+                        event.name = map["uri"].toString();
+                        event.value  = map["value"];
+                        event.unit = map["unit"].toString();
+                        event.timestamp  = map["timestamp"].toInt();
+                        events.append(event);
+                    }
+                    if (!events.isEmpty())
+                        emit receivedEvents(eventType, haId, events);
+                } else if (data.toVariant().toMap().contains("error")) {
+                    qCWarning(dcHomeConnect()) << "Event stream error" << data.toVariant().toMap().value("error");
                 }
-                if (!events.isEmpty())
-                    emit receivedEvents(eventType, haId, events);
-            } else if (data.toVariant().toMap().contains("error")) {
-                qCWarning(dcHomeConnect()) << "Event stream error" << data.toVariant().toMap().value("error");
             }
         }
     });

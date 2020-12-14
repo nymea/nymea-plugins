@@ -181,8 +181,14 @@ void IntegrationPluginHomeConnect::startPairing(ThingPairingInfo *info)
 
             if (reply->error() != QNetworkReply::NetworkError::HostNotFoundError) {
                 qCDebug(dcHomeConnect()) << "HomeConnect server is reachable";
+                ThingId thingId = info->thingId();
                 m_setupHomeConnectConnections.insert(info->thingId(), homeConnect);
-                connect(info, &ThingPairingInfo::aborted, this, [info, this] {m_setupHomeConnectConnections.take(info->thingId())->deleteLater();});
+                connect(info, &ThingPairingInfo::aborted, this, [thingId, this] {
+                    qCWarning(dcHomeConnect()) << "ThingPairingInfo aborted, cleaning up";
+                    HomeConnect *homeConnect = m_setupHomeConnectConnections.take(thingId);
+                    if (homeConnect)
+                        homeConnect->deleteLater();
+                });
                 info->setOAuthUrl(url);
                 info->finish(Thing::ThingErrorNoError);
             } else {
@@ -239,17 +245,19 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
 
     qCDebug(dcHomeConnect()) << "Setup thing" << thing->name();
     if (thing->thingClassId() == homeConnectAccountThingClassId) {
-        bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
-        HomeConnect *homeConnect;
 
+        HomeConnect *homeConnect;
         if (m_homeConnectConnections.contains(thing)) {
             qCDebug(dcHomeConnect()) << "Setup after reconfiguration, cleaning up";
             m_homeConnectConnections.take(thing)->deleteLater();
         }
         if (m_setupHomeConnectConnections.keys().contains(thing->id())) {
-            //Fresh device setup, has already a fresh access token
+            // This thing setup is after a pairing process
             qCDebug(dcHomeConnect()) << "HomeConnect OAuth setup complete";
             homeConnect = m_setupHomeConnectConnections.take(thing->id());
+            if (!homeConnect) {
+                qCWarning(dcHomeConnect()) << "HomeConnect connection object not found for thing" << thing->name();
+            }
             m_homeConnectConnections.insert(thing, homeConnect);
             info->finish(Thing::ThingErrorNoError);
         } else {
@@ -261,6 +269,7 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorAuthenticationFailure, tr("Refresh token is not available."));
                 return;
             }
+            bool simulationMode =  configValue(homeConnectPluginSimulationModeParamTypeId).toBool();
             QByteArray clientKey = configValue(homeConnectPluginCustomClientKeyParamTypeId).toByteArray();
             QByteArray clientSecret = configValue(homeConnectPluginCustomClientSecretParamTypeId).toByteArray();
             if (clientKey.isEmpty() || clientSecret.isEmpty()) {
@@ -309,9 +318,11 @@ void IntegrationPluginHomeConnect::setupThing(ThingSetupInfo *info)
 void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
 {
     qCDebug(dcHomeConnect()) << "Post setup thing" << thing->name();
+
     if (!m_pluginTimer15min) {
         m_pluginTimer15min = hardwareManager()->pluginTimerManager()->registerTimer(60*15);
         connect(m_pluginTimer15min, &PluginTimer::timeout, this, [this]() {
+            qCDebug(dcHomeConnect()) << "Refresh timer timout, polling all HomeConnect accounts.";
             Q_FOREACH (Thing *thing, myThings().filterByThingClassId(homeConnectAccountThingClassId)) {
                 HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
                 if (!homeConnect) {
@@ -330,12 +341,21 @@ void IntegrationPluginHomeConnect::postSetupThing(Thing *thing)
     }
 
     if (thing->thingClassId() == homeConnectAccountThingClassId) {
+        qCDebug(dcHomeConnect()) << "HomeConnect Account thing count" << myThings().filterByThingClassId(homeConnectAccountThingClassId).count();
+        qCDebug(dcHomeConnect()) << "   - HomeConnect connection count" << m_homeConnectConnections.count();
+        qCDebug(dcHomeConnect()) << "   - Setup connections" << m_setupHomeConnectConnections.count();
+
         HomeConnect *homeConnect = m_homeConnectConnections.value(thing);
-        homeConnect->getHomeAppliances();
-        homeConnect->connectEventStream();
-        thing->setStateValue(homeConnectAccountConnectedStateTypeId, true);
-        thing->setStateValue(homeConnectAccountLoggedInStateTypeId, true);
-        //TBD Set user name
+        if (!homeConnect) {
+            qCWarning(dcHomeConnect()) << "Could not find HomeConnect connection for thing" << thing->name();
+        } else {
+            homeConnect->getHomeAppliances();
+            homeConnect->connectEventStream();
+            thing->setStateValue(homeConnectAccountConnectedStateTypeId, true);
+            thing->setStateValue(homeConnectAccountLoggedInStateTypeId, true);
+            //TBD Set user name
+        }
+
     } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());
         if (!parentThing)
@@ -520,7 +540,9 @@ void IntegrationPluginHomeConnect::thingRemoved(Thing *thing)
 {
     qCDebug(dcHomeConnect) << "Delete " << thing->name();
     if (thing->thingClassId() == homeConnectAccountThingClassId) {
-        m_homeConnectConnections.take(thing)->deleteLater();
+        HomeConnect *homeConnect = m_homeConnectConnections.take(thing);
+                if (homeConnect)
+                homeConnect->deleteLater();
     } else {
         m_selectedProgram.remove(thing);
     }
@@ -860,13 +882,16 @@ void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
 
 void IntegrationPluginHomeConnect::onAuthenticationStatusChanged(bool authenticated)
 {
-    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
+    qCDebug(dcHomeConnect()) << "Authentication changed" << authenticated;
+           HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
     if (m_asyncSetup.contains(homeConnectConnection)) {
         ThingSetupInfo *info = m_asyncSetup.take(homeConnectConnection);
         if (authenticated) {
+            qCDebug(dcHomeConnect()) << "Finishing async setup" << info->thing()->name();
             m_homeConnectConnections.insert(info->thing(), homeConnectConnection);
             info->finish(Thing::ThingErrorNoError);
         } else {
+            qCWarning(dcHomeConnect()) << "Authentication failed, aborting setup";
             homeConnectConnection->deleteLater();
             info->finish(Thing::ThingErrorHardwareFailure);
         }
@@ -900,6 +925,7 @@ void IntegrationPluginHomeConnect::onRequestExecuted(QUuid requestId, bool succe
 
 void IntegrationPluginHomeConnect::onReceivedHomeAppliances(const QList<HomeConnect::HomeAppliance> &appliances)
 {
+    qCDebug(dcHomeConnect()) << "Received home appliances list, with" << appliances.count() << "entries";
     HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
     Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
     if (!parentThing)
@@ -943,12 +969,12 @@ void IntegrationPluginHomeConnect::onReceivedHomeAppliances(const QList<HomeConn
             continue;
         }
 
-        if (!myThings().filterByParam(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId).isEmpty()) {
-            Thing * existingThing = myThings().filterByParam(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId).first();
+        if (!myThings().findByParams(ParamList() << Param(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId))) {
+            Thing * existingThing = myThings().findByParams(ParamList() << Param(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId));
             existingThing->setStateValue(m_connectedStateTypeIds.value(thingClassId), appliance.connected);
             continue;
         }
-
+        qCDebug(dcHomeConnect()) << "Found new appliance:" << appliance.name << "brand:" << appliance.brand << "product:" << appliance.vib;
         ThingDescriptor descriptor(thingClassId, appliance.name, appliance.brand+" "+appliance.vib, parentThing->id());
 
         ParamList params;
