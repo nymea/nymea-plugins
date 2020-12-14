@@ -179,8 +179,174 @@
                     ]
                 },
                 {
+                    "name": "gewissGwa1511",
+                    "displayName": "GWA1511 motion sensor",
+                    "id": "d9acb5ba-d717-41c9-bed3-1a9923f9e4be",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "presencesensor", "batterylevel", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "cddaff64-c228-481f-a27c-4f58cb2b27c2",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "d5ca0e50-4d60-4014-8e2e-ddf40bca50c9",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "313ba215-b376-4d30-b6b6-4aede412f19a",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "fc683b93-ecdc-429a-bfd6-2a6f748915db",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "3c7b68be-a89f-4c74-ae69-a011562d1729",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "99347069-fda3-4742-a0a8-bc51c7704813",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "e30b751d-0be4-4293-bc12-be6001c52836",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "3a2c21dd-3a8e-481a-8f01-1150dc18ae79",
+                            "name": "isPresent",
+                            "displayName": "Present",
+                            "displayNameEvent": "Present changed",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "e1c9c39a-bdfa-458a-a45b-afd79c2dc9a3",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen",
+                            "displayNameEvent": "Last seen changed",
+                            "type": "int",
+                            "defaultValue": 0,
+                            "unit": "UnixTime"
+                        }
+                    ]
+                },
+                {
+                    "name": "gewissGwa1512",
+                    "displayName": "GWA1512 smoke sensor",
+                    "id": "4ce9764d-66fc-40e2-84d1-6b6e9577c6ee",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "sensor", "batterylevel", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "b87b70f0-efeb-4a2c-b38b-af85e6e6e6ed",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "0bdfa756-609c-4388-bfe2-5a9b0402940e",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "638b77b1-ac45-466d-b9d0-06d2305c931e",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d1c303d8-4559-4d47-8b05-1be998197572",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "fae4beae-6212-4df2-bfc5-98d4ca30b7ee",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "db632d40-e307-4f41-a3bd-16bd10b2160d",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "617ff4c0-3182-4ebc-92e2-39efa4421730",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
                     "name": "gewissGwa1513",
-                    "displayName": "GWA1513",
+                    "displayName": "GWA1513 window sensor",
                     "id": "ebf6850f-4f05-4ff8-b334-5b9b4da8b74d",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
@@ -262,22 +428,22 @@
                     ]
                 },
                 {
-                    "name": "gewissGwa1512",
-                    "displayName": "GWA1512",
-                    "id": "4ce9764d-66fc-40e2-84d1-6b6e9577c6ee",
+                    "name": "gewissGwa1514",
+                    "displayName": "GWA1514 flood sensor",
+                    "id": "01bb5856-7d90-42fc-8238-a35e61525783",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
                     "interfaces": [ "sensor", "batterylevel", "wirelessconnectable" ],
                     "paramTypes": [
                         {
-                            "id": "b87b70f0-efeb-4a2c-b38b-af85e6e6e6ed",
+                            "id": "c8900d2b-bae7-4cb3-95f7-f5ee15971afb",
                             "name": "ieeeAddress",
                             "displayName": "IEEE adress",
                             "type": "QString",
                             "defaultValue": "00:00:00:00:00:00:00:00"
                         },
                         {
-                            "id": "0bdfa756-609c-4388-bfe2-5a9b0402940e",
+                            "id": "7bec77e9-fc76-4282-8db6-d6e251095afd",
                             "name": "networkUuid",
                             "displayName": "Zigbee network UUID",
                             "type": "QString",
@@ -286,7 +452,7 @@
                     ],
                     "stateTypes": [
                         {
-                            "id": "638b77b1-ac45-466d-b9d0-06d2305c931e",
+                            "id": "c7a78282-9747-493a-aa4b-f2ebc16298e3",
                             "name": "connected",
                             "displayName": "Available",
                             "displayNameEvent": "Available changed",
@@ -295,7 +461,7 @@
                             "defaultValue": false
                         },
                         {
-                            "id": "d1c303d8-4559-4d47-8b05-1be998197572",
+                            "id": "f0acc37c-16ea-4550-95cb-d535f6ed9825",
                             "name": "signalStrength",
                             "displayName": "Signal strength",
                             "displayNameEvent": "Signal strength changed",
@@ -306,7 +472,7 @@
                             "unit": "Percentage"
                         },
                         {
-                            "id": "fae4beae-6212-4df2-bfc5-98d4ca30b7ee",
+                            "id": "22b889ed-16d3-49da-b18e-345bf109188a",
                             "name": "version",
                             "displayName": "Version",
                             "displayNameEvent": "Version changed",
@@ -315,7 +481,7 @@
                             "defaultValue": ""
                         },
                         {
-                            "id": "db632d40-e307-4f41-a3bd-16bd10b2160d",
+                            "id": "2cb91588-2867-41dc-b308-d5f718a39380",
                             "name": "batteryLevel",
                             "displayName": "Battery",
                             "displayNameEvent": "Battery changed",
@@ -326,10 +492,18 @@
                             "maxValue": 100
                         },
                         {
-                            "id": "617ff4c0-3182-4ebc-92e2-39efa4421730",
+                            "id": "8f10b361-a8fa-4283-b8e2-657a30d7733e",
                             "name": "batteryCritical",
                             "displayName": "Battery critical",
                             "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "9d0d16f7-7b9e-4598-86a7-adb61143335a",
+                            "name": "waterDetected",
+                            "displayName": "Water detected",
+                            "displayNameEvent": "Water detected changed",
                             "type": "bool",
                             "defaultValue": false
                         }

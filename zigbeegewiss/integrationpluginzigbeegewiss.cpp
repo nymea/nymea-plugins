@@ -40,35 +40,47 @@
 IntegrationPluginZigbeeGewiss::IntegrationPluginZigbeeGewiss()
 {
     m_networkUuidParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511ThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514ThingNetworkUuidParamTypeId;
     m_networkUuidParamTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ThingNetworkUuidParamTypeId;
 
     m_ieeeAddressParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511ThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514ThingIeeeAddressParamTypeId;
     m_ieeeAddressParamTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ThingIeeeAddressParamTypeId;
 
     m_connectedStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ConnectedStateTypeId;
+    m_connectedStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511ConnectedStateTypeId;
     m_connectedStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ConnectedStateTypeId;
     m_connectedStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ConnectedStateTypeId;
+    m_connectedStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514ConnectedStateTypeId;
     m_connectedStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ConnectedStateTypeId;
 
     m_versionStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501VersionStateTypeId;
+    m_versionStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511VersionStateTypeId;
     m_versionStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512VersionStateTypeId;
     m_versionStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513VersionStateTypeId;
+    m_versionStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514VersionStateTypeId;
     m_versionStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521VersionStateTypeId;
 
     m_signalStrengthStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501SignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511SignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512SignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513SignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514SignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521SignalStrengthStateTypeId;
 
     // Known model identifier
     m_knownGewissDevices.insert("GWA1501_BinaryInput_FC", gewissGwa1501ThingClassId);
     m_knownGewissDevices.insert("GWA1521_Actuator_1_CH_PF", gewissGwa1501ThingClassId);
-    m_knownGewissDevices.insert("GWA1513_WindowSensor", gewissGwa1513ThingClassId);
+    m_knownGewissDevices.insert("GWA1511_MotionSensor", gewissGwa1512ThingClassId); //Check
     m_knownGewissDevices.insert("GWA1512_SmokeSensor", gewissGwa1512ThingClassId);
+    m_knownGewissDevices.insert("GWA1513_WindowSensor", gewissGwa1513ThingClassId);
+    m_knownGewissDevices.insert("GWA1514_FloodingSensor", gewissGwa1512ThingClassId);
 }
 
 QString IntegrationPluginZigbeeGewiss::name() const
@@ -292,12 +304,88 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             });
         }
         return info->finish(Thing::ThingErrorNoError);
+        //Motion sensor
+    } else if (thing->thingClassId() == gewissGwa1511ThingClassId) {
+        ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+        if (!endpoint) {
+            qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
+            return;
+        }
 
-        // Window contact sensor
-    } else if (thing->thingClassId() == gewissGwa1513ThingClassId) {
+        ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find on/off cluster on" << thing << endpoint;
+        } else {
+            if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
+                thing->setStateValue(gewissGwa1511IsPresentStateTypeId, onOffCluster->power());
+                //TODO last seen state
+            }
+
+            connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
+                qCDebug(dcZigBeeGewiss()) << thing << "power changed" << power;
+                thing->setStateValue(gewissGwa1511IsPresentStateTypeId, power);
+                //TODO last seen state
+            });
+        }
         return info->finish(Thing::ThingErrorNoError);
         // Smoke sensor
     } else if (thing->thingClassId() == gewissGwa1512ThingClassId) {
+        ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+        if (!endpoint) {
+            qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
+            return;
+        }
+        return info->finish(Thing::ThingErrorNoError);
+
+        // Window contact sensor
+    } else if (thing->thingClassId() == gewissGwa1513ThingClassId) {
+        ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+        if (!endpoint) {
+            qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
+            return;
+        }
+
+        ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find on/off cluster on" << thing << endpoint;
+        } else {
+            if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
+                thing->setStateValue(gewissGwa1513ClosedStateTypeId, onOffCluster->power());
+            }
+
+            connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
+                qCDebug(dcZigBeeGewiss()) << thing << "power changed" << power;
+                thing->setStateValue(gewissGwa1513ClosedStateTypeId, power);
+            });
+        }
+        return info->finish(Thing::ThingErrorNoError);
+        //Flood sensor
+    } else if (thing->thingClassId() == gewissGwa1514ThingClassId) {
+        ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+        if (!endpoint) {
+            qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
+            return;
+        }
+
+        ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find on/off cluster on" << thing << endpoint;
+        } else {
+            if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
+                thing->setStateValue(gewissGwa1514WaterDetectedStateTypeId, onOffCluster->power());
+            }
+
+            connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
+                qCDebug(dcZigBeeGewiss()) << thing << "power changed" << power;
+                thing->setStateValue(gewissGwa1514WaterDetectedStateTypeId, power);
+            });
+        }
+
+        //TODO add temperature sensor
+        ZigbeeClusterTemperatureMeasurement *temperatureCluster = endpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
+        if (!temperatureCluster) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find temperature cluster on" << thing << endpoint;
+        }
         return info->finish(Thing::ThingErrorNoError);
     } else {
         qCWarning(dcZigBeeGewiss()) << "Thing class not found" << info->thing()->thingClassId();
