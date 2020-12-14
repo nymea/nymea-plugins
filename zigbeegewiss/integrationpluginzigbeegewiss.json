@@ -184,7 +184,18 @@
                     "id": "d9acb5ba-d717-41c9-bed3-1a9923f9e4be",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "presencesensor", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "presencesensor", "lightsensor", "temperaturesensor", "batterylevel", "wirelessconnectable" ],
+                    "settingsTypes": [
+                        {
+                            "id": "09a423e8-24a3-4670-9ae6-268c9a4444ad",
+                            "name": "timeout",
+                            "displayName": "Time period",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "defaultValue": 10,
+                            "minValue": 10
+                        }
+                    ],
                     "paramTypes": [
                         {
                             "id": "cddaff64-c228-481f-a27c-4f58cb2b27c2",
@@ -267,6 +278,24 @@
                             "type": "int",
                             "defaultValue": 0,
                             "unit": "UnixTime"
+                        },
+                        {
+                            "id": "6f753ef1-37fe-4230-a4fd-8fd595c68d24",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "unit": "Lux",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "11064d18-dfec-4d3e-a8a6-00369c4df2b3",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0.0
                         }
                     ]
                 },

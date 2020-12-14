@@ -67,9 +67,10 @@ private:
     QHash<QString, ThingClassId> m_knownGewissDevices;
 
     QHash<Thing *, ZigbeeNode *> m_thingNodes;
+    PluginTimer *m_presenceTimer = nullptr;
 
     void createThing(const ThingClassId &thingClassId, const QUuid &networkUuid, ZigbeeNode *node);
-    void initGwa1501(ZigbeeNode *node);
+    void initPowerConfiguration(ZigbeeNode *node);
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEGEWISS_H
