@@ -883,7 +883,8 @@ void IntegrationPluginHomeConnect::onConnectionChanged(bool connected)
 void IntegrationPluginHomeConnect::onAuthenticationStatusChanged(bool authenticated)
 {
     qCDebug(dcHomeConnect()) << "Authentication changed" << authenticated;
-           HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
+
+    HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
     if (m_asyncSetup.contains(homeConnectConnection)) {
         ThingSetupInfo *info = m_asyncSetup.take(homeConnectConnection);
         if (authenticated) {
@@ -926,6 +927,7 @@ void IntegrationPluginHomeConnect::onRequestExecuted(QUuid requestId, bool succe
 void IntegrationPluginHomeConnect::onReceivedHomeAppliances(const QList<HomeConnect::HomeAppliance> &appliances)
 {
     qCDebug(dcHomeConnect()) << "Received home appliances list, with" << appliances.count() << "entries";
+
     HomeConnect *homeConnectConnection = static_cast<HomeConnect *>(sender());
     Thing *parentThing = m_homeConnectConnections.key(homeConnectConnection);
     if (!parentThing)
@@ -969,8 +971,9 @@ void IntegrationPluginHomeConnect::onReceivedHomeAppliances(const QList<HomeConn
             continue;
         }
 
-        if (!myThings().findByParams(ParamList() << Param(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId))) {
-            Thing * existingThing = myThings().findByParams(ParamList() << Param(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId));
+        Thing * existingThing = myThings().findByParams(ParamList() << Param(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId));
+        if (existingThing) {
+            qCDebug(dcHomeConnect()) << "Thing is already added to system" << existingThing->name();
             existingThing->setStateValue(m_connectedStateTypeIds.value(thingClassId), appliance.connected);
             continue;
         }
@@ -1033,10 +1036,9 @@ void IntegrationPluginHomeConnect::onReceivedEvents(HomeConnect::EventType event
                 }
             } break;
             case HomeConnect::EventTypePaired: {
-                //TODO add device
             } break;
             case HomeConnect::EventTypeDepaired: {
-                //TODO remove device
+                emit autoThingDisappeared(thing->id());
             } break;
             }
             break;
