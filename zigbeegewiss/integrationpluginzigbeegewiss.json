@@ -111,6 +111,91 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "name": "gewissGwa1521",
+                    "displayName": "GWA1521",
+                    "id": "6bce244f-b93c-474e-b8eb-65e44ad96329",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "batterylevel", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "56965d8c-6706-41c4-a4be-be58de674a2f",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "816f4bea-3514-4aca-9ee8-1dea76d6a1ef",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5d23d473-f063-49dd-b675-d31741d6976b",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "3e3dba24-37d5-4c4b-99b1-b33ad612a817",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "42387fc9-0382-4be2-8758-0b612c296e12",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "9b0ff7ab-6acc-48c2-8b05-a1cffa86e069",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "b71b60ca-5396-4a73-bde0-b78d6ac78279",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                           "id": "3d4993c4-9142-409a-8389-3377eeae0ad6",
+                           "name": "relay",
+                           "displayName": "Relay",
+                           "displayNameEvent": "Relay changed",
+                           "displayNameAction": "Set relay",
+                           "type": "bool",
+                           "writable": true,
+                           "defaultValue": false,
+                           "ioType": "digitalOutput"
+                        }
+                    ]
                 }
             ]
         }

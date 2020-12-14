@@ -51,6 +51,7 @@ IntegrationPluginZigbeeGewiss::IntegrationPluginZigbeeGewiss()
 
     // Known model identifier
     m_knownGewissDevices.insert("GWA1501_BinaryInput_FC", gewissGwa1501ThingClassId);
+    m_knownGewissDevices.insert("GWA1501_****", gewissGwa1501ThingClassId); //TODO
 }
 
 QString IntegrationPluginZigbeeGewiss::name() const
@@ -251,6 +252,28 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             }
         }
         return info->finish(Thing::ThingErrorNoError);
+    } else if (thing->thingClassId() == gewissGwa1521ThingClassId) {
+
+        ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+        if (!endpoint) {
+            qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
+            return;
+        }
+
+        ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+        if (!onOffCluster) {
+            qCWarning(dcZigBeeGewiss()) << "Could not find on/off cluster on" << thing << endpoint;
+        } else {
+            if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
+                thing->setStateValue(gewissGwa1521RelayStateTypeId, onOffCluster->power());
+            }
+
+            connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
+                qCDebug(dcZigBeeGewiss()) << thing << "power changed" << power;
+                thing->setStateValue(gewissGwa1521RelayStateTypeId, power);
+            });
+        }
+
     } else {
         qCWarning(dcZigBeeGewiss()) << "Thing class not found" << info->thing()->thingClassId();
         return info->finish(Thing::ThingErrorThingClassNotFound);
@@ -259,8 +282,49 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginZigbeeGewiss::executeAction(ThingActionInfo *info)
 {
-    qCDebug(dcZigBeeGewiss()) << "Execute action" << info->thing()->name() << info->action().actionTypeId();
-    info->finish(Thing::ThingErrorUnsupportedFeature);
+    Thing *thing = info->thing();
+    Action action = info->action();
+
+    if (thing->thingClassId() == gewissGwa1521ThingClassId) {
+        if (action.actionTypeId() == gewissGwa1521RelayActionTypeId) {
+            ZigbeeNode *node = m_thingNodes.value(thing);
+            if (!node) {
+                qCWarning(dcZigBeeGewiss()) << "Zigbee node for" << thing << "not found.";
+                info->finish(Thing::ThingErrorHardwareFailure);
+                return;
+            }
+
+            if (info->action().actionTypeId() == gewissGwa1521RelayActionTypeId) {
+                ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
+                if (!endpoint) {
+                    qCWarning(dcZigBeeGewiss()) << "Unable to get the endpoint from node" << node << "for" << thing;
+                    info->finish(Thing::ThingErrorSetupFailed);
+                    return;
+                }
+
+                ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+                if (!onOffCluster) {
+                    qCWarning(dcZigBeeGewiss()) << "Unable to get the OnOff cluster from endpoint" << endpoint << "on" << node << "for" << thing;
+                    info->finish(Thing::ThingErrorSetupFailed);
+                    return;
+                }
+                bool power = info->action().param(gewissGwa1521RelayActionRelayParamTypeId).value().toBool();
+                ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
+                connect(reply, &ZigbeeClusterReply::finished, this, [=](){
+                    // Note: reply will be deleted automatically
+                    if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                        info->finish(Thing::ThingErrorHardwareFailure);
+                    } else {
+                        info->finish(Thing::ThingErrorNoError);
+                        thing->setStateValue(gewissGwa1521RelayStateTypeId, power);
+                    }
+                });
+            }
+        }
+    } else {
+        qCDebug(dcZigBeeGewiss()) << "Execute action" << info->thing()->name() << info->action().actionTypeId();
+        info->finish(Thing::ThingErrorUnsupportedFeature);
+    }
 }
 
 void IntegrationPluginZigbeeGewiss::thingRemoved(Thing *thing)
