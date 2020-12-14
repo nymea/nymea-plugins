@@ -40,18 +40,35 @@
 IntegrationPluginZigbeeGewiss::IntegrationPluginZigbeeGewiss()
 {
     m_networkUuidParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ThingNetworkUuidParamTypeId;
 
     m_ieeeAddressParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ThingIeeeAddressParamTypeId;
 
     m_connectedStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ConnectedStateTypeId;
+    m_connectedStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ConnectedStateTypeId;
+    m_connectedStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ConnectedStateTypeId;
+    m_connectedStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ConnectedStateTypeId;
 
     m_versionStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501VersionStateTypeId;
+    m_versionStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512VersionStateTypeId;
+    m_versionStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513VersionStateTypeId;
+    m_versionStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521VersionStateTypeId;
 
     m_signalStrengthStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501SignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512SignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513SignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521SignalStrengthStateTypeId;
 
     // Known model identifier
     m_knownGewissDevices.insert("GWA1501_BinaryInput_FC", gewissGwa1501ThingClassId);
-    m_knownGewissDevices.insert("GWA1501_****", gewissGwa1501ThingClassId); //TODO
+    m_knownGewissDevices.insert("GWA1521_Actuator_1_CH_PF", gewissGwa1501ThingClassId);
+    m_knownGewissDevices.insert("GWA1513_WindowSensor", gewissGwa1513ThingClassId);
+    m_knownGewissDevices.insert("GWA1512_SmokeSensor", gewissGwa1512ThingClassId);
 }
 
 QString IntegrationPluginZigbeeGewiss::name() const
@@ -252,8 +269,9 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             }
         }
         return info->finish(Thing::ThingErrorNoError);
-    } else if (thing->thingClassId() == gewissGwa1521ThingClassId) {
 
+        // Single channel relay
+    } else if (thing->thingClassId() == gewissGwa1521ThingClassId) {
         ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
         if (!endpoint) {
             qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
@@ -273,7 +291,14 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
                 thing->setStateValue(gewissGwa1521RelayStateTypeId, power);
             });
         }
+        return info->finish(Thing::ThingErrorNoError);
 
+        // Window contact sensor
+    } else if (thing->thingClassId() == gewissGwa1513ThingClassId) {
+        return info->finish(Thing::ThingErrorNoError);
+        // Smoke sensor
+    } else if (thing->thingClassId() == gewissGwa1512ThingClassId) {
+        return info->finish(Thing::ThingErrorNoError);
     } else {
         qCWarning(dcZigBeeGewiss()) << "Thing class not found" << info->thing()->thingClassId();
         return info->finish(Thing::ThingErrorThingClassNotFound);

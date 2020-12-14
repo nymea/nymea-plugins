@@ -118,7 +118,7 @@
                     "id": "6bce244f-b93c-474e-b8eb-65e44ad96329",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "56965d8c-6706-41c4-a4be-be58de674a2f",
@@ -166,7 +166,73 @@
                             "defaultValue": ""
                         },
                         {
-                            "id": "9b0ff7ab-6acc-48c2-8b05-a1cffa86e069",
+                           "id": "3d4993c4-9142-409a-8389-3377eeae0ad6",
+                           "name": "relay",
+                           "displayName": "Relay",
+                           "displayNameEvent": "Relay changed",
+                           "displayNameAction": "Set relay",
+                           "type": "bool",
+                           "writable": true,
+                           "defaultValue": false,
+                           "ioType": "digitalOutput"
+                        }
+                    ]
+                },
+                {
+                    "name": "gewissGwa1513",
+                    "displayName": "GWA1513",
+                    "id": "ebf6850f-4f05-4ff8-b334-5b9b4da8b74d",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "closablesensor", "batterylevel", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "c75ba9c2-bf9e-49e1-9859-614a70b07629",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "7be98825-e29b-4763-91ec-a346123c5284",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "569fc5c2-5220-4a17-8675-b07b67480670",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "642e0c38-0048-4d3e-a9eb-6d03de2ad6ca",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "63b59d77-0587-44c0-9535-214b022555fb",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "f920d42c-65f9-4b3c-b3bd-746c386a09f6",
                             "name": "batteryLevel",
                             "displayName": "Battery",
                             "displayNameEvent": "Battery changed",
@@ -177,7 +243,7 @@
                             "maxValue": 100
                         },
                         {
-                            "id": "b71b60ca-5396-4a73-bde0-b78d6ac78279",
+                            "id": "84aa56e6-69b8-40cd-8744-e4fb36d90ce3",
                             "name": "batteryCritical",
                             "displayName": "Battery critical",
                             "displayNameEvent": "Battery critical changed",
@@ -185,15 +251,87 @@
                             "defaultValue": false
                         },
                         {
-                           "id": "3d4993c4-9142-409a-8389-3377eeae0ad6",
-                           "name": "relay",
-                           "displayName": "Relay",
-                           "displayNameEvent": "Relay changed",
-                           "displayNameAction": "Set relay",
-                           "type": "bool",
-                           "writable": true,
-                           "defaultValue": false,
-                           "ioType": "digitalOutput"
+                            "id": "876b72c2-ab73-4f64-8a20-28209817fd6e",
+                            "name": "closed",
+                            "displayName": "Closed",
+                            "displayNameEvent": "Closed changed",
+                            "type": "bool",
+                            "defaultValue": true,
+                            "ioType": "digitalInput"
+                        }
+                    ]
+                },
+                {
+                    "name": "gewissGwa1512",
+                    "displayName": "GWA1512",
+                    "id": "4ce9764d-66fc-40e2-84d1-6b6e9577c6ee",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "sensor", "batterylevel", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "b87b70f0-efeb-4a2c-b38b-af85e6e6e6ed",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "0bdfa756-609c-4388-bfe2-5a9b0402940e",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "638b77b1-ac45-466d-b9d0-06d2305c931e",
+                            "name": "connected",
+                            "displayName": "Available",
+                            "displayNameEvent": "Available changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d1c303d8-4559-4d47-8b05-1be998197572",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "fae4beae-6212-4df2-bfc5-98d4ca30b7ee",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "db632d40-e307-4f41-a3bd-16bd10b2160d",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "617ff4c0-3182-4ebc-92e2-39efa4421730",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ]
                 }
