@@ -320,6 +320,22 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             qCWarning(dcZigBeeGewiss()) << "Occupancy endpoint not found" << thing->name();
             return info->finish(Thing::ThingErrorSetupFailed);
         }
+
+        connect(occupancyEndpoint, &ZigbeeNodeEndpoint::clusterAttributeChanged, this, [thing](ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
+            qCDebug(dcZigBeeGewiss()) << "Cluster attribute changed" << thing->name() << cluster;
+            if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdIasZone) {
+                if (attribute.id() == ZigbeeClusterIasZone::AttributeZoneState) {
+                    bool valueOk = false;
+                    ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus = static_cast<ZigbeeClusterIasZone::ZoneStatusFlags>(attribute.dataType().toUInt16(&valueOk));
+                    if (!valueOk) {
+                        qCWarning(dcZigBeeGewiss()) << thing << "failed to convert attribute data to uint16 flag. Not updating the states from" << attribute;
+                    } else {
+                        qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus;
+                    }
+                }
+            }
+        });
+
         ZigbeeClusterOccupancySensing *occupancyCluster = occupancyEndpoint->inputCluster<ZigbeeClusterOccupancySensing>(ZigbeeClusterLibrary::ClusterIdOccupancySensing);
         if (!occupancyCluster) {
             qCWarning(dcZigBeeGewiss()) << "Occupancy cluster not found" << thing->name();
@@ -409,6 +425,28 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
                 thing->setStateValue(gewissGwa1513ClosedStateTypeId, power);
             });
         }
+
+        ZigbeeNodeEndpoint *iasEndpoint = node->getEndpoint(0x23);
+        if (!iasEndpoint) {
+            qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
+            return;
+        }
+        connect(iasEndpoint, &ZigbeeNodeEndpoint::clusterAttributeChanged, this, [thing](ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
+            qCDebug(dcZigBeeGewiss()) << "Cluster attribute changed" << thing->name() << cluster;
+            if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdIasZone) {
+                if (attribute.id() == ZigbeeClusterIasZone::AttributeZoneState) {
+                    bool valueOk = false;
+                    ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus = static_cast<ZigbeeClusterIasZone::ZoneStatusFlags>(attribute.dataType().toUInt16(&valueOk));
+                    if (!valueOk) {
+                        qCWarning(dcZigBeeGewiss()) << thing << "failed to convert attribute data to uint16 flag. Not updating the states from" << attribute;
+                    } else {
+                        qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus;
+                    }
+                }
+            }
+        });
+
+
         return info->finish(Thing::ThingErrorNoError);
         //Flood sensor
     } else if (thing->thingClassId() == gewissGwa1514ThingClassId) {
