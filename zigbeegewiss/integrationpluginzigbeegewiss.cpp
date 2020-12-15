@@ -74,13 +74,28 @@ IntegrationPluginZigbeeGewiss::IntegrationPluginZigbeeGewiss()
     m_signalStrengthStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514SignalStrengthStateTypeId;
     m_signalStrengthStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521SignalStrengthStateTypeId;
 
+    m_temperatureStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511TemperatureStateTypeId;
+    m_temperatureStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512TemperatureStateTypeId;
+    m_temperatureStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513TemperatureStateTypeId;
+    m_temperatureStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514TemperatureStateTypeId;
+
+    m_batteryLevelStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511BatteryLevelStateTypeId;
+    m_batteryLevelStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512BatteryLevelStateTypeId;
+    m_batteryLevelStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513BatteryLevelStateTypeId;
+    m_batteryLevelStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514BatteryLevelStateTypeId;
+
+    m_batteryCriticalStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511BatteryCriticalStateTypeId;
+    m_batteryCriticalStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512BatteryCriticalStateTypeId;
+    m_batteryCriticalStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513BatteryCriticalStateTypeId;
+    m_batteryCriticalStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514BatteryCriticalStateTypeId;
+
     // Known model identifier
     m_knownGewissDevices.insert("GWA1501_BinaryInput_FC", gewissGwa1501ThingClassId);
-    m_knownGewissDevices.insert("GWA1521_Actuator_1_CH_PF", gewissGwa1521ThingClassId);
     m_knownGewissDevices.insert("GWA1511_MotionSensor", gewissGwa1511ThingClassId);
     m_knownGewissDevices.insert("GWA1512_SmokeSensor", gewissGwa1512ThingClassId);
     m_knownGewissDevices.insert("GWA1513_WindowSensor", gewissGwa1513ThingClassId);
     m_knownGewissDevices.insert("GWA1514_FloodingSensor", gewissGwa1512ThingClassId);
+    m_knownGewissDevices.insert("GWA1521_Actuator_1_CH_PF", gewissGwa1521ThingClassId);
 }
 
 QString IntegrationPluginZigbeeGewiss::name() const
@@ -168,6 +183,16 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         thing->setStateValue(m_signalStrengthStateTypeIds.value(thing->thingClassId()), signalStrength);
     });
 
+    if (m_temperatureStateTypeIds.contains(thing->thingClassId())) {
+        if (!initTemperatureCluster(node, thing))
+            return info->finish(Thing::ThingErrorSetupFailed);
+    }
+
+    if (m_batteryLevelStateTypeIds.contains(thing->thingClassId())) {
+        if (!initPowerConfigurationCluster(node, thing))
+            return info->finish(Thing::ThingErrorSetupFailed);
+    }
+
     if (thing->thingClassId() == gewissGwa1501ThingClassId) {
 
         ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
@@ -176,24 +201,6 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         if (!endpoint1 || !endpoint2) {
             qCWarning(dcZigBeeGewiss()) << "one ore more endpoints not found" << thing->name();
             return;
-        }
-
-        // Get battery level changes
-        ZigbeeClusterPowerConfiguration *powerCluster = endpoint1->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
-        if (!powerCluster) {
-            qCWarning(dcZigBeeGewiss()) << "Could not find power configuration cluster on" << thing << endpoint1;
-        } else {
-            // Only set the initial state if the attribute already exists
-            if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-                thing->setStateValue(gewissGwa1501BatteryLevelStateTypeId, powerCluster->batteryPercentage());
-                thing->setStateValue(gewissGwa1501BatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
-            }
-
-            connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
-                qCDebug(dcZigBeeGewiss()) << "Battery percentage changed" << percentage << "%" << thing;
-                thing->setStateValue(gewissGwa1501BatteryLevelStateTypeId, percentage);
-                thing->setStateValue(gewissGwa1501BatteryCriticalStateTypeId, (percentage < 10.0));
-            });
         }
 
         // Receive on/off commands
@@ -348,27 +355,6 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             }
         });
 
-        // Home Automation Device
-        ZigbeeNodeEndpoint *temperatureEndpoint = node->getEndpoint(0x26);
-        if (!temperatureEndpoint) {
-            qCWarning(dcZigBeeGewiss()) << "Temperature endpoint not found" << thing->name();
-            return info->finish(Thing::ThingErrorSetupFailed);
-        }
-
-        ZigbeeClusterTemperatureMeasurement *temperatureCluster = temperatureEndpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
-        if (!temperatureCluster) {
-            qCWarning(dcZigBeeGewiss()) << "Temperature cluster not found" << thing->name();
-            return info->finish(Thing::ThingErrorSetupFailed);
-        }
-
-        if (temperatureCluster->hasAttribute(ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue)) {
-            thing->setStateValue(gewissGwa1511TemperatureStateTypeId, temperatureCluster->temperature());
-        }
-        connect(temperatureCluster, &ZigbeeClusterTemperatureMeasurement::temperatureChanged, thing, [thing](double temperature){
-            qCDebug(dcZigBeeGewiss()) << thing << "temperature changed" << temperature << "°C";
-            thing->setStateValue(gewissGwa1511TemperatureStateTypeId, temperature);
-        });
-
         //Home Automation Device Light Sensor Endpoint
         ZigbeeNodeEndpoint *lightSensorEndpoint = node->getEndpoint(0x27);
         if (!lightSensorEndpoint) {
@@ -389,31 +375,6 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         connect(illuminanceCluster, &ZigbeeClusterIlluminanceMeasurment::illuminanceChanged, thing, [thing](quint16 illuminance){
             qCDebug(dcZigBeeGewiss()) << thing << "light intensity changed" << illuminance << "lux";
             thing->setStateValue(gewissGwa1511LightIntensityStateTypeId, illuminance);
-        });
-
-
-        //Home Automation Power Configuration Endpoint
-        ZigbeeNodeEndpoint *powerConfigurationEndpoint = node->getEndpoint(0x23);
-        if (!powerConfigurationEndpoint ) {
-            qCWarning(dcZigBeeGewiss()) << "Power configuration endpoint not found" << thing->name();
-            return info->finish(Thing::ThingErrorSetupFailed);
-        }
-        // Get battery level changes
-        ZigbeeClusterPowerConfiguration *powerCluster = powerConfigurationEndpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
-        if (!powerCluster) {
-            qCWarning(dcZigBeeGewiss()) << "Could not find power configuration cluster on" << thing << powerConfigurationEndpoint ;
-            return info->finish(Thing::ThingErrorSetupFailed);
-        }
-        // Only set the initial state if the attribute already exists
-        if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-            thing->setStateValue(gewissGwa1511BatteryLevelStateTypeId, powerCluster->batteryPercentage());
-            thing->setStateValue(gewissGwa1511BatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
-        }
-
-        connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
-            qCDebug(dcZigBeeGewiss()) << "Battery percentage changed" << percentage << "%" << thing;
-            thing->setStateValue(gewissGwa1511BatteryLevelStateTypeId, percentage);
-            thing->setStateValue(gewissGwa1511BatteryCriticalStateTypeId, (percentage < 10.0));
         });
 
         return info->finish(Thing::ThingErrorNoError);
@@ -469,12 +430,6 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
                 qCDebug(dcZigBeeGewiss()) << thing << "power changed" << power;
                 thing->setStateValue(gewissGwa1514WaterDetectedStateTypeId, power);
             });
-        }
-
-        //TODO add temperature sensor
-        ZigbeeClusterTemperatureMeasurement *temperatureCluster = endpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
-        if (!temperatureCluster) {
-            qCWarning(dcZigBeeGewiss()) << "Could not find temperature cluster on" << thing << endpoint;
         }
         return info->finish(Thing::ThingErrorNoError);
     } else {
@@ -624,4 +579,76 @@ void IntegrationPluginZigbeeGewiss::initPowerConfiguration(ZigbeeNode *node)
             });
         });
     });
+}
+
+bool IntegrationPluginZigbeeGewiss::initTemperatureCluster(ZigbeeNode *node, Thing *thing)
+{
+    qCDebug(dcZigBeeGewiss()) << "Initializing temperature cluster" << node->modelName();
+    ZigbeeNodeEndpoint *temperatureEndpoint;
+
+    Q_FOREACH(ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
+        if (endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)) {
+            temperatureEndpoint = endpoint;
+            break;
+        }
+    }
+    if (!temperatureEndpoint) {
+        qCWarning(dcZigBeeGewiss()) << "No temperature endpoint found";
+        return false;
+    }
+
+    if (!temperatureEndpoint) {
+        qCWarning(dcZigBeeGewiss()) << "Temperature endpoint not found";
+        return false;
+    }
+
+    ZigbeeClusterTemperatureMeasurement *temperatureCluster = temperatureEndpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
+    if (!temperatureCluster) {
+        qCWarning(dcZigBeeGewiss()) << "Temperature cluster not found";
+        return false;
+    }
+
+    if (temperatureCluster->hasAttribute(ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue)) {
+        thing->setStateValue(m_temperatureStateTypeIds.value(thing->thingClassId()), temperatureCluster->temperature());
+    }
+    connect(temperatureCluster, &ZigbeeClusterTemperatureMeasurement::temperatureChanged, thing, [this, thing](double temperature){
+        qCDebug(dcZigBeeGewiss()) << thing << "temperature changed" << temperature << "°C";
+        thing->setStateValue(m_temperatureStateTypeIds.value(thing->thingClassId()), temperature);
+    });
+    return true;
+}
+
+bool IntegrationPluginZigbeeGewiss::initPowerConfigurationCluster(ZigbeeNode *node, Thing *thing)
+{
+    qCDebug(dcZigBeeGewiss()) << "Initializing power configuration cluster" << node->modelName();
+    ZigbeeNodeEndpoint *powerConfigurationEndpoint;
+
+    Q_FOREACH(ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
+        if (endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdPowerConfiguration)) {
+            powerConfigurationEndpoint = endpoint;
+            break;
+        }
+    }
+    if (!powerConfigurationEndpoint) {
+        qCWarning(dcZigBeeGewiss()) << "No power configuration endpoint found";
+        return false;
+    }
+    // Get battery level changes
+    ZigbeeClusterPowerConfiguration *powerCluster = powerConfigurationEndpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+    if (!powerCluster) {
+        qCWarning(dcZigBeeGewiss()) << "Could not find power configuration cluster on" << thing << powerConfigurationEndpoint;
+    } else {
+        // Only set the initial state if the attribute already exists
+        if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
+            thing->setStateValue(m_batteryLevelStateTypeIds.value(thing->thingClassId()), powerCluster->batteryPercentage());
+            thing->setStateValue(m_batteryCriticalStateTypeIds.value(thing->thingClassId()), (powerCluster->batteryPercentage() < 10.0));
+        }
+
+        connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
+            qCDebug(dcZigBeeGewiss()) << "Battery percentage changed" << percentage << "%" << thing;
+            thing->setStateValue(m_batteryLevelStateTypeIds.value(thing->thingClassId()), percentage);
+            thing->setStateValue(m_batteryCriticalStateTypeIds.value(thing->thingClassId()), (percentage < 10.0));
+        });
+    }
+    return true;
 }

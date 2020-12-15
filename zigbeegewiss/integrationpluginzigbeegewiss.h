@@ -63,6 +63,10 @@ private:
     QHash<ThingClassId, StateTypeId> m_connectedStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypeIds;
     QHash<ThingClassId, StateTypeId> m_versionStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_temperatureStateTypeIds;
+
+    QHash<ThingClassId, StateTypeId> m_batteryLevelStateTypeIds;
+    QHash<ThingClassId, StateTypeId> m_batteryCriticalStateTypeIds;
 
     QHash<QString, ThingClassId> m_knownGewissDevices;
 
@@ -71,6 +75,9 @@ private:
 
     void createThing(const ThingClassId &thingClassId, const QUuid &networkUuid, ZigbeeNode *node);
     void initPowerConfiguration(ZigbeeNode *node);
+
+    bool initTemperatureCluster(ZigbeeNode *node, Thing *thing);
+    bool initPowerConfigurationCluster(ZigbeeNode *node, Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEGEWISS_H

@@ -305,7 +305,7 @@
                     "id": "4ce9764d-66fc-40e2-84d1-6b6e9577c6ee",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "sensor", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "sensor", "temperaturesensor", "batterylevel", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "b87b70f0-efeb-4a2c-b38b-af85e6e6e6ed",
@@ -370,6 +370,15 @@
                             "displayNameEvent": "Battery critical changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "00a01618-8d4e-4a63-a278-3f438554ee9d",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0.0
                         }
                     ]
                 },
@@ -379,7 +388,7 @@
                     "id": "ebf6850f-4f05-4ff8-b334-5b9b4da8b74d",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "closablesensor", "batterylevel", "wirelessconnectable" ],
+                    "interfaces": [ "closablesensor", "temperaturesensor", "batterylevel", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "c75ba9c2-bf9e-49e1-9859-614a70b07629",
@@ -453,6 +462,15 @@
                             "type": "bool",
                             "defaultValue": true,
                             "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "6b1dd1d9-d650-4d0c-b471-87cde58a4457",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0.0
                         }
                     ]
                 },
@@ -535,6 +553,15 @@
                             "displayNameEvent": "Water detected changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "9d7e6799-9955-43ad-8796-9d0b6e192c55",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0.0
                         }
                     ]
                 }
