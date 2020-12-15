@@ -410,31 +410,39 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         }
         return info->finish(Thing::ThingErrorNoError);
 
-        // Window contact sensor
     } else if (thing->thingClassId() == gewissGwa1513ThingClassId) {
+        // Window sensor
+        ZigbeeNodeEndpoint *isaEndpoint = nullptr;
+        foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
+            if (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceIsaZone) {
+                isaEndpoint = endpoint;
+                break;
+            }
+        }
 
-        ZigbeeNodeEndpoint *iasEndpoint = node->getEndpoint(0x23);
-        if (!iasEndpoint) {
+        if (!isaEndpoint) {
             qCWarning(dcZigBeeGewiss()) << "ISA zone endpoint could not be found for" << thing;
         } else {
             // Set the current zone status
-            ZigbeeClusterIasZone *iasZoneCluster = iasEndpoint->inputCluster<ZigbeeClusterIasZone>(ZigbeeClusterLibrary::ClusterIdIasZone);
+            ZigbeeClusterIasZone *iasZoneCluster = isaEndpoint->inputCluster<ZigbeeClusterIasZone>(ZigbeeClusterLibrary::ClusterIdIasZone);
             if (!iasZoneCluster) {
-                qCWarning(dcZigBeeGewiss()) << "ISA zone cluster could not be found on" << thing << node << iasEndpoint;
+                qCWarning(dcZigBeeGewiss()) << "ISA zone cluster could not be found on" << thing << node << isaEndpoint;
             } else {
-                // TODO: pars initial zone status if present and set the window state
-                // if ()
+                if (iasZoneCluster->hasAttribute(ZigbeeClusterIasZone::AttributeZoneStatus)) {
+                    thing->setStateValue(gewissGwa1513ClosedStateTypeId, !iasZoneCluster->zoneStatus().testFlag(ZigbeeClusterIasZone::ZoneStatusAlarm1));
+                }
 
                 connect(iasZoneCluster, &ZigbeeClusterIasZone::zoneStatusChanged, this, [=](ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus, quint8 extendedStatus, quint8 zoneId, quint16 delay){
                     qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus << extendedStatus << zoneId << delay;
-
-                    // TODO: set the window state depending on the zone status flag
+                    thing->setStateValue(gewissGwa1513ClosedStateTypeId, !iasZoneCluster->zoneStatus().testFlag(ZigbeeClusterIasZone::ZoneStatusAlarm1));
+                    // TODO: casing opened alarm event
+                    // TODO: battery critical could be set with the battery flag
                 });
             }
 
-            ZigbeeClusterPowerConfiguration *powerCluster = iasEndpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+            ZigbeeClusterPowerConfiguration *powerCluster = isaEndpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
             if (!powerCluster) {
-                qCWarning(dcZigBeeGewiss()) << "Power configuration cluster could not be found on" << thing << node << iasEndpoint;
+                qCWarning(dcZigBeeGewiss()) << "Power configuration cluster could not be found on" << thing << node << isaEndpoint;
             } else {
                 // Only set the initial state if the attribute already exists
                 if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
@@ -450,41 +458,33 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             }
         }
 
-        ZigbeeNodeEndpoint *customEndpoint = node->getEndpoint(0x01);
-        if (!customEndpoint) {
-            qCWarning(dcZigBeeGewiss()) << "Custom profile endpoint could not be found for" << thing;
-        } else {
-            ZigbeeClusterOnOff *onOffCluster = customEndpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
-            if (!onOffCluster) {
-                qCWarning(dcZigBeeGewiss()) << "Could not find on/off input cluster on" << thing << customEndpoint;
-            } else {
-                connect(onOffCluster, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
-                    qCDebug(dcZigBeeGewiss()) << thing << "command received" << command;
-                });
 
-                connect(onOffCluster, &ZigbeeClusterOnOff::attributeChanged, thing, [=](const ZigbeeClusterAttribute &attribute){
-                    qCDebug(dcZigBeeGewiss()) << thing << "on/off attribute changed" << attribute;
-                });
+        ZigbeeNodeEndpoint *temperatureSensorEndpoint = nullptr;
+        foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
+            if (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceTemperatureSensor) {
+                temperatureSensorEndpoint = endpoint;
+                break;
             }
-
         }
 
+        if (!temperatureSensorEndpoint) {
+            qCWarning(dcZigBeeGewiss()) << "Temperature sensor endpoint could not be found for" << thing;
+        } else {
+            ZigbeeClusterTemperatureMeasurement *temperatureCluster = temperatureSensorEndpoint->inputCluster<ZigbeeClusterTemperatureMeasurement>(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement);
+            if (!temperatureCluster) {
+                qCWarning(dcZigBeeGewiss()) << "Could not find the temperature measurement server cluster on" << thing << temperatureSensorEndpoint;
+            } else {
+                // Only set the state if the cluster actually has the attribute
+                if (temperatureCluster->hasAttribute(ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue)) {
+                    thing->setStateValue(gewissGwa1513TemperatureStateTypeId, temperatureCluster->temperature());
+                }
 
-        //        connect(iasEndpoint, &ZigbeeNodeEndpoint::clusterAttributeChanged, this, [thing](ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
-        //            qCDebug(dcZigBeeGewiss()) << "Cluster attribute changed" << thing->name() << cluster;
-        //            if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdIasZone) {
-        //                if (attribute.id() == ZigbeeClusterIasZone::AttributeZoneState) {
-        //                    bool valueOk = false;
-        //                    ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus = static_cast<ZigbeeClusterIasZone::ZoneStatusFlags>(attribute.dataType().toUInt16(&valueOk));
-        //                    if (!valueOk) {
-        //                        qCWarning(dcZigBeeGewiss()) << thing << "failed to convert attribute data to uint16 flag. Not updating the states from" << attribute;
-        //                    } else {
-        //                        qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus;
-        //                    }
-        //                }
-        //            }
-        //        });
-
+                connect(temperatureCluster, &ZigbeeClusterTemperatureMeasurement::temperatureChanged, thing, [thing](double temperature){
+                    qCDebug(dcZigBeeGewiss()) << thing << "temperature changed" << temperature << "°C";
+                    thing->setStateValue(gewissGwa1513TemperatureStateTypeId, temperature);
+                });
+            }
+        }
 
         return info->finish(Thing::ThingErrorNoError);
         //Flood sensor
@@ -732,41 +732,6 @@ bool IntegrationPluginZigbeeGewiss::initPowerConfigurationCluster(ZigbeeNode *no
 
 bool IntegrationPluginZigbeeGewiss::initWindowSensor(ZigbeeNode *node)
 {
-    // Get the IAS zone endpoint
-    //    I | ZigbeeNetwork:     -  ZigbeeNodeEndpoint(0x23, Zigbee::ZigbeeProfileHomeAutomation, Zigbee::HomeAutomationDeviceIsaZone)
-    //    I | ZigbeeNetwork:       Input clusters:
-    //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x000f, BinaryInput, Servers)
-    //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x0500, IasZone, Servers)
-    //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x0003, Identify, Servers)
-    //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x0020, PollControl, Servers)
-    //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x0001, PowerConfiguration, Servers)
-    //    I | ZigbeeNetwork:         -  ZigbeeClusterAttribute(0x003e, ZigbeeDataType(32-bit bitmap, 0x00 0x00 0x00 0x00) )
-    //    I | ZigbeeNetwork:         -  ZigbeeClusterAttribute(0x0020, ZigbeeDataType(Unsigned 8-bit integer, 0x1e) )
-    //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x0000, Basic, Servers)
-    //    I | ZigbeeNetwork:         -  ZigbeeClusterAttribute(0x0005, ZigbeeDataType(Character string, GWA1513_WindowSensor) )
-    //    I | ZigbeeNetwork:         -  ZigbeeClusterAttribute(0x0004, ZigbeeDataType(Character string, Gewiss) )
-    //    I | ZigbeeNetwork:       Output clusters:
-    //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x000a, Time, Client)
-    //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x0019, OtaUpgrade, Client)
-
-    ZigbeeNodeEndpoint *customEndpoint = nullptr;
-    foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
-        if (endpoint->profile() == 0xc0c9 && endpoint->endpointId() == 0x01) {
-            customEndpoint = endpoint;
-            break;
-        }
-    }
-
-    if (!customEndpoint) {
-        qCWarning(dcZigBeeGewiss()) << "Could not find custom profile endpoint on node" << node;
-        return false;
-    }
-
-    if (!customEndpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)) {
-        qCWarning(dcZigBeeGewiss()) << "Failed to initialize the on/off cluster because the cluster could not be found" << node << customEndpoint;
-        return false;
-    }
-
     ZigbeeNodeEndpoint *isaEndpoint = nullptr;
     foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
         if (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceIsaZone) {
@@ -790,8 +755,26 @@ bool IntegrationPluginZigbeeGewiss::initWindowSensor(ZigbeeNode *node)
         return false;
     }
 
-    qCDebug(dcZigBeeGewiss()) << "Initialize window sensor on endpoint" << isaEndpoint;
+    ZigbeeNodeEndpoint *temperatureSensorEndpoint = nullptr;
+    foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
+        if (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceTemperatureSensor) {
+            temperatureSensorEndpoint = endpoint;
+            break;
+        }
+    }
 
+    if (!temperatureSensorEndpoint) {
+        qCWarning(dcZigBeeGewiss()) << "Could not find temperature sensor endpoint on node" << node;
+        return false;
+    }
+
+    if (!temperatureSensorEndpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)) {
+        qCWarning(dcZigBeeGewiss()) << "Failed to initialize the temperature cluster because the cluster could not be found" << node << temperatureSensorEndpoint;
+        return false;
+    }
+
+
+    qCDebug(dcZigBeeGewiss()) << "Initialize window sensor on endpoint" << isaEndpoint;
     // Get the current configured bindings for this node
     ZigbeeReply *reply = node->removeAllBindings();
     connect(reply, &ZigbeeReply::finished, node, [=](){
@@ -862,41 +845,42 @@ bool IntegrationPluginZigbeeGewiss::initWindowSensor(ZigbeeNode *node)
                             }
 
 
-
-                            // Init the on/off cluster
-                            qCDebug(dcZigBeeGewiss()) << "Read on/off cluster attributes" << node;
-                            ZigbeeClusterReply *readAttributeReply = customEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)->readAttributes({ZigbeeClusterOnOff::AttributeOnOff});
-                            connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
-                                if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                                    qCWarning(dcZigBeeGewiss()) << "Failed to on/off cluster attributes" << readAttributeReply->error();
+                            qCDebug(dcZigBeeGewiss()) << "Initialize temperature sensor on endpoint" << temperatureSensorEndpoint;
+                            qCDebug(dcZigBeeGewiss()) << "Bind temperature cluster to coordinator IEEE address";
+                            ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(temperatureSensorEndpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement,
+                                                                                                              hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+                            connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                                if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                                    qCWarning(dcZigBeeGewiss()) << "Failed to bind temperature cluster to coordinator" << zdoReply->error();
                                 } else {
-                                    qCDebug(dcZigBeeGewiss()) << "Read on/off cluster attributes finished successfully";
+                                    qCDebug(dcZigBeeGewiss()) << "Bind temperature cluster to coordinator finished successfully";
                                 }
 
-                                // Bind the cluster to the coordinator
-                                qCDebug(dcZigBeeGewiss()) << "Bind on/off cluster to coordinator IEEE address";
-                                ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(customEndpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
-                                connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-                                    if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                                        qCWarning(dcZigBeeGewiss()) << "Failed to bind on/off cluster to group" << zdoReply->error();
+                                // Read current temperature
+                                qCDebug(dcZigBeeGewiss()) << "Read temperature cluster attributes" << node;
+                                ZigbeeClusterReply *readAttributeReply = temperatureSensorEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)->readAttributes({ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue});
+                                connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
+                                    if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                        qCWarning(dcZigBeeGewiss()) << "Failed to read temperature cluster attributes" << readAttributeReply->error();
                                     } else {
-                                        qCDebug(dcZigBeeGewiss()) << "Bind on/off cluster to group finished successfully";
+                                        qCDebug(dcZigBeeGewiss()) << "Read temperature cluster attributes finished successfully";
                                     }
 
-                                    // Configure attribute reporting any change
+                                    // Configure attribute reporting for temperature
                                     ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
-                                    reportingConfig.attributeId = ZigbeeClusterOnOff::AttributeOnOff;
-                                    reportingConfig.dataType = Zigbee::Bool;
-                                    reportingConfig.minReportingInterval = 0;
-                                    reportingConfig.maxReportingInterval = 2700;
+                                    reportingConfig.attributeId = ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue;
+                                    reportingConfig.dataType = Zigbee::Int16;
+                                    reportingConfig.minReportingInterval = 300;
+                                    reportingConfig.maxReportingInterval = 600;
+                                    reportingConfig.reportableChange = ZigbeeDataType(static_cast<qint16>(10)).data();
 
-                                    qCDebug(dcZigBeeGewiss()) << "Configure attribute reporting for on/off cluster";
-                                    ZigbeeClusterReply *reportingReply = customEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)->configureReporting({reportingConfig});
-                                    connect(reportingReply, &ZigbeeClusterReply::finished, this, [=] {
+                                    qCDebug(dcZigBeeGewiss()) << "Configure attribute reporting for temperature cluster to coordinator";
+                                    ZigbeeClusterReply *reportingReply = temperatureSensorEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdTemperatureMeasurement)->configureReporting({reportingConfig});
+                                    connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
                                         if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                                            qCWarning(dcZigBeeGewiss()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
+                                            qCWarning(dcZigBeeGewiss()) << "Failed to configure temperature cluster attribute reporting" << reportingReply->error();
                                         } else {
-                                            qCDebug(dcZigBeeGewiss()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+                                            qCDebug(dcZigBeeGewiss()) << "Attribute reporting configuration finished for temperature cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
                                         }
                                     });
                                 });
