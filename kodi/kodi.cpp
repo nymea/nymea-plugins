@@ -176,6 +176,11 @@ Kodi::Kodi(const QHostAddress &hostAddress, int port, int httpPort, QObject *par
 
 }
 
+Kodi::~Kodi()
+{
+    delete m_virtualFs;
+}
+
 QHostAddress Kodi::hostAddress() const
 {
     return m_connection->hostAddress();

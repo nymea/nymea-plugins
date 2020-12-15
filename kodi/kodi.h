@@ -49,6 +49,7 @@ class Kodi : public QObject
 public:
 
     explicit Kodi(const QHostAddress &hostAddress, int port = 9090, int httpPort = 8080, QObject *parent = nullptr);
+    ~Kodi();
 
     QHostAddress hostAddress() const;
     int port() const;
@@ -124,6 +125,7 @@ private:
     class VirtualFsNode {
     public:
         VirtualFsNode(const BrowserItem &item):item(item) {}
+        ~VirtualFsNode() { qDeleteAll(childs); }
         BrowserItem item;
         QList<VirtualFsNode*> childs;
         QString getMethod;
