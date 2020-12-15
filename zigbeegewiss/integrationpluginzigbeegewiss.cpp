@@ -416,57 +416,74 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         ZigbeeNodeEndpoint *iasEndpoint = node->getEndpoint(0x23);
         if (!iasEndpoint) {
             qCWarning(dcZigBeeGewiss()) << "ISA zone endpoint could not be found for" << thing;
-            return;
-        }
-
-        // Set the current zone status
-        ZigbeeClusterIasZone *iasZoneCluster = iasEndpoint->inputCluster<ZigbeeClusterIasZone>(ZigbeeClusterLibrary::ClusterIdIasZone);
-        if (!iasZoneCluster) {
-            qCWarning(dcZigBeeGewiss()) << "ISA zone cluster could not be found on" << thing << node << iasEndpoint;
         } else {
-            // TODO: pars initial zone status if present and set the window state
-            // if ()
+            // Set the current zone status
+            ZigbeeClusterIasZone *iasZoneCluster = iasEndpoint->inputCluster<ZigbeeClusterIasZone>(ZigbeeClusterLibrary::ClusterIdIasZone);
+            if (!iasZoneCluster) {
+                qCWarning(dcZigBeeGewiss()) << "ISA zone cluster could not be found on" << thing << node << iasEndpoint;
+            } else {
+                // TODO: pars initial zone status if present and set the window state
+                // if ()
 
-            connect(iasZoneCluster, &ZigbeeClusterIasZone::zoneStatusChanged, this, [=](ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus, quint8 extendedStatus, quint8 zoneId, quint16 delay){
-                qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus << extendedStatus << zoneId << delay;
+                connect(iasZoneCluster, &ZigbeeClusterIasZone::zoneStatusChanged, this, [=](ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus, quint8 extendedStatus, quint8 zoneId, quint16 delay){
+                    qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus << extendedStatus << zoneId << delay;
 
-                // TODO: set the window state depending on the zone status flag
-            });
-        }
-
-
-        ZigbeeClusterPowerConfiguration *powerCluster = iasEndpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
-        if (!powerCluster) {
-            qCWarning(dcZigBeeGewiss()) << "Power configuration cluster could not be found on" << thing << node << iasEndpoint;
-        } else {
-            // Only set the initial state if the attribute already exists
-            if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-                thing->setStateValue(gewissGwa1513BatteryLevelStateTypeId, powerCluster->batteryPercentage());
-                thing->setStateValue(gewissGwa1513BatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+                    // TODO: set the window state depending on the zone status flag
+                });
             }
 
-            connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
-                qCDebug(dcZigBeeGewiss()) << "Battery percentage changed" << percentage << "%" << thing;
-                thing->setStateValue(gewissGwa1513BatteryLevelStateTypeId, percentage);
-                thing->setStateValue(gewissGwa1513BatteryCriticalStateTypeId, (percentage < 10.0));
-            });
+            ZigbeeClusterPowerConfiguration *powerCluster = iasEndpoint->inputCluster<ZigbeeClusterPowerConfiguration>(ZigbeeClusterLibrary::ClusterIdPowerConfiguration);
+            if (!powerCluster) {
+                qCWarning(dcZigBeeGewiss()) << "Power configuration cluster could not be found on" << thing << node << iasEndpoint;
+            } else {
+                // Only set the initial state if the attribute already exists
+                if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
+                    thing->setStateValue(gewissGwa1513BatteryLevelStateTypeId, powerCluster->batteryPercentage());
+                    thing->setStateValue(gewissGwa1513BatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+                }
+
+                connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
+                    qCDebug(dcZigBeeGewiss()) << "Battery percentage changed" << percentage << "%" << thing;
+                    thing->setStateValue(gewissGwa1513BatteryLevelStateTypeId, percentage);
+                    thing->setStateValue(gewissGwa1513BatteryCriticalStateTypeId, (percentage < 10.0));
+                });
+            }
+        }
+
+        ZigbeeNodeEndpoint *customEndpoint = node->getEndpoint(0x01);
+        if (!customEndpoint) {
+            qCWarning(dcZigBeeGewiss()) << "Custom profile endpoint could not be found for" << thing;
+        } else {
+            ZigbeeClusterOnOff *onOffCluster = customEndpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+            if (!onOffCluster) {
+                qCWarning(dcZigBeeGewiss()) << "Could not find on/off input cluster on" << thing << customEndpoint;
+            } else {
+                connect(onOffCluster, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
+                    qCDebug(dcZigBeeGewiss()) << thing << "command received" << command;
+                });
+
+                connect(onOffCluster, &ZigbeeClusterOnOff::attributeChanged, thing, [=](const ZigbeeClusterAttribute &attribute){
+                    qCDebug(dcZigBeeGewiss()) << thing << "on/off attribute changed" << attribute;
+                });
+            }
+
         }
 
 
-//        connect(iasEndpoint, &ZigbeeNodeEndpoint::clusterAttributeChanged, this, [thing](ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
-//            qCDebug(dcZigBeeGewiss()) << "Cluster attribute changed" << thing->name() << cluster;
-//            if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdIasZone) {
-//                if (attribute.id() == ZigbeeClusterIasZone::AttributeZoneState) {
-//                    bool valueOk = false;
-//                    ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus = static_cast<ZigbeeClusterIasZone::ZoneStatusFlags>(attribute.dataType().toUInt16(&valueOk));
-//                    if (!valueOk) {
-//                        qCWarning(dcZigBeeGewiss()) << thing << "failed to convert attribute data to uint16 flag. Not updating the states from" << attribute;
-//                    } else {
-//                        qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus;
-//                    }
-//                }
-//            }
-//        });
+        //        connect(iasEndpoint, &ZigbeeNodeEndpoint::clusterAttributeChanged, this, [thing](ZigbeeCluster *cluster, const ZigbeeClusterAttribute &attribute){
+        //            qCDebug(dcZigBeeGewiss()) << "Cluster attribute changed" << thing->name() << cluster;
+        //            if (cluster->clusterId() == ZigbeeClusterLibrary::ClusterIdIasZone) {
+        //                if (attribute.id() == ZigbeeClusterIasZone::AttributeZoneState) {
+        //                    bool valueOk = false;
+        //                    ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus = static_cast<ZigbeeClusterIasZone::ZoneStatusFlags>(attribute.dataType().toUInt16(&valueOk));
+        //                    if (!valueOk) {
+        //                        qCWarning(dcZigBeeGewiss()) << thing << "failed to convert attribute data to uint16 flag. Not updating the states from" << attribute;
+        //                    } else {
+        //                        qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus;
+        //                    }
+        //                }
+        //            }
+        //        });
 
 
         return info->finish(Thing::ThingErrorNoError);
@@ -716,7 +733,6 @@ bool IntegrationPluginZigbeeGewiss::initPowerConfigurationCluster(ZigbeeNode *no
 bool IntegrationPluginZigbeeGewiss::initWindowSensor(ZigbeeNode *node)
 {
     // Get the IAS zone endpoint
-
     //    I | ZigbeeNetwork:     -  ZigbeeNodeEndpoint(0x23, Zigbee::ZigbeeProfileHomeAutomation, Zigbee::HomeAutomationDeviceIsaZone)
     //    I | ZigbeeNetwork:       Input clusters:
     //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x000f, BinaryInput, Servers)
@@ -733,6 +749,23 @@ bool IntegrationPluginZigbeeGewiss::initWindowSensor(ZigbeeNode *node)
     //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x000a, Time, Client)
     //    I | ZigbeeNetwork:       -  ZigbeeCluster(0x0019, OtaUpgrade, Client)
 
+    ZigbeeNodeEndpoint *customEndpoint = nullptr;
+    foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
+        if (endpoint->profile() == 0xc0c9 && endpoint->endpointId() == 0x01) {
+            customEndpoint = endpoint;
+            break;
+        }
+    }
+
+    if (!customEndpoint) {
+        qCWarning(dcZigBeeGewiss()) << "Could not find custom profile endpoint on node" << node;
+        return false;
+    }
+
+    if (!customEndpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)) {
+        qCWarning(dcZigBeeGewiss()) << "Failed to initialize the on/off cluster because the cluster could not be found" << node << customEndpoint;
+        return false;
+    }
 
     ZigbeeNodeEndpoint *isaEndpoint = nullptr;
     foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
@@ -789,7 +822,7 @@ bool IntegrationPluginZigbeeGewiss::initWindowSensor(ZigbeeNode *node)
                     qCDebug(dcZigBeeGewiss()) << "Bind power configuration cluster to coordinator finished successfully";
                 }
 
-                // Configure attribute rporting for battery remaining (0.5 % changes = 1)
+                // Configure attribute reporting for battery remaining (0.5 % changes = 1)
                 ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
                 reportingConfig.attributeId = ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining;
                 reportingConfig.dataType = Zigbee::Uint8;
@@ -805,32 +838,70 @@ bool IntegrationPluginZigbeeGewiss::initWindowSensor(ZigbeeNode *node)
                     } else {
                         qCDebug(dcZigBeeGewiss()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
                     }
-                });
 
 
-                // Init the ISA zone cluster
-                ZigbeeClusterReply *readAttributeReply = isaEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdIasZone)->readAttributes({ZigbeeClusterIasZone::AttributeZoneType, ZigbeeClusterIasZone::AttributeZoneState, ZigbeeClusterIasZone::AttributeZoneStatus});
-                connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
-                    if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
-                        qCWarning(dcZigBeeGewiss()) << "Failed to read ISA zone attributes" << readAttributeReply->error();
-                    } else {
-                        qCDebug(dcZigBeeGewiss()) << "Read ISA zone cluster attributes finished successfully.";
-                    }
 
-                    // Bind the cluster to the coordinator
-                    qCDebug(dcZigBeeGewiss()) << "Bind ISA zone cluster to coordinator IEEE address";
-                    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(isaEndpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdIasZone,
-                                                                                                      hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
-                    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
-                        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
-                            qCWarning(dcZigBeeGewiss()) << "Failed to bind ISA zone cluster to coordinator" << zdoReply->error();
+                    // Init the ISA zone cluster
+                    ZigbeeClusterReply *readAttributeReply = isaEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdIasZone)->readAttributes({ZigbeeClusterIasZone::AttributeZoneType, ZigbeeClusterIasZone::AttributeZoneState, ZigbeeClusterIasZone::AttributeZoneStatus});
+                    connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
+                        if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                            qCWarning(dcZigBeeGewiss()) << "Failed to read ISA zone attributes" << readAttributeReply->error();
                         } else {
-                            qCDebug(dcZigBeeGewiss()) << "Bind ISA zone cluster to coordinator finished successfully";
+                            qCDebug(dcZigBeeGewiss()) << "Read ISA zone cluster attributes finished successfully.";
                         }
 
+                        // Bind the cluster to the coordinator
+                        qCDebug(dcZigBeeGewiss()) << "Bind ISA zone cluster to coordinator IEEE address";
+                        ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(isaEndpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdIasZone,
+                                                                                                          hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+                        connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                            if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                                qCWarning(dcZigBeeGewiss()) << "Failed to bind ISA zone cluster to coordinator" << zdoReply->error();
+                            } else {
+                                qCDebug(dcZigBeeGewiss()) << "Bind ISA zone cluster to coordinator finished successfully";
+                            }
 
-                        // TODO: init temperature sensor endpoint
 
+
+                            // Init the on/off cluster
+                            qCDebug(dcZigBeeGewiss()) << "Read on/off cluster attributes" << node;
+                            ZigbeeClusterReply *readAttributeReply = customEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)->readAttributes({ZigbeeClusterOnOff::AttributeOnOff});
+                            connect(readAttributeReply, &ZigbeeClusterReply::finished, node, [=](){
+                                if (readAttributeReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                    qCWarning(dcZigBeeGewiss()) << "Failed to on/off cluster attributes" << readAttributeReply->error();
+                                } else {
+                                    qCDebug(dcZigBeeGewiss()) << "Read on/off cluster attributes finished successfully";
+                                }
+
+                                // Bind the cluster to the coordinator
+                                qCDebug(dcZigBeeGewiss()) << "Bind on/off cluster to coordinator IEEE address";
+                                ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindGroupAddress(customEndpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, 0x0000);
+                                connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+                                    if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+                                        qCWarning(dcZigBeeGewiss()) << "Failed to bind on/off cluster to group" << zdoReply->error();
+                                    } else {
+                                        qCDebug(dcZigBeeGewiss()) << "Bind on/off cluster to group finished successfully";
+                                    }
+
+                                    // Configure attribute reporting any change
+                                    ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+                                    reportingConfig.attributeId = ZigbeeClusterOnOff::AttributeOnOff;
+                                    reportingConfig.dataType = Zigbee::Bool;
+                                    reportingConfig.minReportingInterval = 0;
+                                    reportingConfig.maxReportingInterval = 2700;
+
+                                    qCDebug(dcZigBeeGewiss()) << "Configure attribute reporting for on/off cluster";
+                                    ZigbeeClusterReply *reportingReply = customEndpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)->configureReporting({reportingConfig});
+                                    connect(reportingReply, &ZigbeeClusterReply::finished, this, [=] {
+                                        if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                                            qCWarning(dcZigBeeGewiss()) << "Failed to configure power cluster attribute reporting" << reportingReply->error();
+                                        } else {
+                                            qCDebug(dcZigBeeGewiss()) << "Attribute reporting configuration finished for power cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+                                        }
+                                    });
+                                });
+                            });
+                        });
                     });
                 });
             });
