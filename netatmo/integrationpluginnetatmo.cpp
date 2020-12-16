@@ -154,31 +154,28 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
             }
         }
 
+        OAuth2 *authentication;
         if (m_pairingAuthentications.values().contains(thing->id())) {
-            OAuth2 *authentication = m_pairingAuthentications.key(thing->id());
+            authentication = m_pairingAuthentications.key(thing->id());
             m_pairingAuthentications.remove(authentication);
             qCDebug(dcNetatmo()) << "Authenticated from pairing process, not creating a new authentication";
-            thing->setStateValue(netatmoConnectionConnectedStateTypeId, true);
-            thing->setStateValue(netatmoConnectionLoggedInStateTypeId, true);
-            thing->setStateValue(netatmoConnectionUserDisplayNameStateTypeId, authentication->username());
-            m_authentications.insert(authentication, thing->id());
-            info->finish(Thing::ThingErrorNoError);
         } else {
-            OAuth2 *authentication = new OAuth2(m_clientId, m_clientSecret, this);
+            authentication = new OAuth2(m_clientId, m_clientSecret, this);
             authentication->setUrl(QUrl("https://api.netatmo.net/oauth2/token"));
             authentication->setUsername(username);
             authentication->setPassword(password);
             authentication->setScope("read_station read_thermostat write_thermostat");
+        }
 
-            // Update thing connected state based on OAuth connected state
-            connect(authentication, &OAuth2::authenticationChanged, thing, [this, thing, authentication](){
-                thing->setStateValue(netatmoConnectionLoggedInStateTypeId, authentication->authenticated());
-                if (authentication->authenticated()) {
-                    refreshData(thing, authentication->token());
-                }
-            });
+        if (authentication->authenticated()) {
+            thing->setStateValue(netatmoConnectionConnectedStateTypeId, true);
+            thing->setStateValue(netatmoConnectionLoggedInStateTypeId, true);
+            thing->setStateValue(netatmoConnectionUserDisplayNameStateTypeId, authentication->username());
+            m_authentications.insert(authentication, thing->id());
+            refreshData(thing, authentication->token());
+            info->finish(Thing::ThingErrorNoError);
+        } else {
             authentication->startAuthentication();
-
             // Report thing setup finished when authentication reports success
             connect(authentication, &OAuth2::authenticationChanged, info, [this, info, thing, authentication](){
                 if (!authentication->authenticated()) {
@@ -193,6 +190,14 @@ void IntegrationPluginNetatmo::setupThing(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorNoError);
             });
         }
+
+        // Update thing connected state based on OAuth connected state
+        connect(authentication, &OAuth2::authenticationChanged, thing, [this, thing, authentication](){
+            thing->setStateValue(netatmoConnectionLoggedInStateTypeId, authentication->authenticated());
+            if (authentication->authenticated()) {
+                refreshData(thing, authentication->token());
+            }
+        });
         return;
 
     } else if (thing->thingClassId() == indoorThingClassId) {
@@ -457,7 +462,8 @@ void IntegrationPluginNetatmo::onIndoorStatesChanged()
     thing->setStateValue(indoorHumidityStateTypeId, indoor->humidity());
     thing->setStateValue(indoorCo2StateTypeId, indoor->co2());
     thing->setStateValue(indoorNoiseStateTypeId, indoor->noise());
-    thing->setStateValue(indoorWifiStrengthStateTypeId, indoor->wifiStrength());
+    thing->setStateValue(indoorSignalStrengthStateTypeId, indoor->wifiStrength());
+    thing->setStateValue(indoorConnectedStateTypeId, indoor->reachable());
 }
 
 void IntegrationPluginNetatmo::onOutdoorStatesChanged()
@@ -473,6 +479,7 @@ void IntegrationPluginNetatmo::onOutdoorStatesChanged()
     thing->setStateValue(outdoorSignalStrengthStateTypeId, outdoor->signalStrength());
     thing->setStateValue(outdoorBatteryLevelStateTypeId, outdoor->battery());
     thing->setStateValue(outdoorBatteryCriticalStateTypeId, outdoor->battery() < 10);
+    thing->setStateValue(outdoorConnectedStateTypeId, outdoor->reachable());
 }
 
 void IntegrationPluginNetatmo::updateClientCredentials()

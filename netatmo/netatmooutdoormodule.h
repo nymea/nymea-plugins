@@ -52,6 +52,7 @@ public:
     double maxTemperature() const;
     int signalStrength() const;
     int battery() const;
+    bool reachable() const;
 
     void updateStates(const QVariantMap &data);
 
@@ -69,6 +70,7 @@ private:
     double m_maxTemperature;
     int m_signalStrength;
     int m_battery;
+    bool m_reachable;
 
 signals:
     void statesChanged();
