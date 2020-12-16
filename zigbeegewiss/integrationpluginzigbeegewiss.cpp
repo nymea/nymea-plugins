@@ -39,63 +39,56 @@
 
 IntegrationPluginZigbeeGewiss::IntegrationPluginZigbeeGewiss()
 {
-    m_networkUuidParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingNetworkUuidParamTypeId;
-    m_networkUuidParamTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511ThingNetworkUuidParamTypeId;
-    m_networkUuidParamTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ThingNetworkUuidParamTypeId;
-    m_networkUuidParamTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ThingNetworkUuidParamTypeId;
-    m_networkUuidParamTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514ThingNetworkUuidParamTypeId;
-    m_networkUuidParamTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gwa1501BinaryInputThingClassId] = gwa1501BinaryInputThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gwa1511MotionSensorThingClassId] = gwa1511MotionSensorThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gwa1512SmokeSensorThingClassId] = gwa1512SmokeSensorThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gwa1513WindowSensorThingClassId] = gwa1513WindowSensorThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gwa1514FloodSensorThingClassId] = gwa1514FloodSensorThingNetworkUuidParamTypeId;
+    m_networkUuidParamTypeIds[gwa1521ActuatorThingClassId] = gwa1521ActuatorThingNetworkUuidParamTypeId;
 
-    m_ieeeAddressParamTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ThingIeeeAddressParamTypeId;
-    m_ieeeAddressParamTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511ThingIeeeAddressParamTypeId;
-    m_ieeeAddressParamTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ThingIeeeAddressParamTypeId;
-    m_ieeeAddressParamTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ThingIeeeAddressParamTypeId;
-    m_ieeeAddressParamTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514ThingIeeeAddressParamTypeId;
-    m_ieeeAddressParamTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gwa1501BinaryInputThingClassId] = gwa1501BinaryInputThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gwa1511MotionSensorThingClassId] = gwa1511MotionSensorThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gwa1512SmokeSensorThingClassId] = gwa1512SmokeSensorThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gwa1513WindowSensorThingClassId] = gwa1513WindowSensorThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gwa1514FloodSensorThingClassId] = gwa1514FloodSensorThingIeeeAddressParamTypeId;
+    m_ieeeAddressParamTypeIds[gwa1521ActuatorThingClassId] = gwa1521ActuatorThingIeeeAddressParamTypeId;
 
-    m_connectedStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501ConnectedStateTypeId;
-    m_connectedStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511ConnectedStateTypeId;
-    m_connectedStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512ConnectedStateTypeId;
-    m_connectedStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513ConnectedStateTypeId;
-    m_connectedStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514ConnectedStateTypeId;
-    m_connectedStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521ConnectedStateTypeId;
+    m_connectedStateTypeIds[gwa1501BinaryInputThingClassId] = gwa1501BinaryInputConnectedStateTypeId;
+    m_connectedStateTypeIds[gwa1511MotionSensorThingClassId] = gwa1511MotionSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[gwa1512SmokeSensorThingClassId] = gwa1512SmokeSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[gwa1513WindowSensorThingClassId] = gwa1513WindowSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[gwa1514FloodSensorThingClassId] = gwa1514FloodSensorConnectedStateTypeId;
+    m_connectedStateTypeIds[gwa1521ActuatorThingClassId] = gwa1521ActuatorConnectedStateTypeId;
 
-    m_versionStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501VersionStateTypeId;
-    m_versionStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511VersionStateTypeId;
-    m_versionStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512VersionStateTypeId;
-    m_versionStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513VersionStateTypeId;
-    m_versionStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514VersionStateTypeId;
-    m_versionStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521VersionStateTypeId;
+    m_signalStrengthStateTypeIds[gwa1501BinaryInputThingClassId] = gwa1501BinaryInputSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gwa1511MotionSensorThingClassId] = gwa1511MotionSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gwa1512SmokeSensorThingClassId] = gwa1512SmokeSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gwa1513WindowSensorThingClassId] = gwa1513WindowSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gwa1514FloodSensorThingClassId] = gwa1514FloodSensorSignalStrengthStateTypeId;
+    m_signalStrengthStateTypeIds[gwa1521ActuatorThingClassId] = gwa1521ActuatorSignalStrengthStateTypeId;
 
-    m_signalStrengthStateTypeIds[gewissGwa1501ThingClassId] = gewissGwa1501SignalStrengthStateTypeId;
-    m_signalStrengthStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511SignalStrengthStateTypeId;
-    m_signalStrengthStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512SignalStrengthStateTypeId;
-    m_signalStrengthStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513SignalStrengthStateTypeId;
-    m_signalStrengthStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514SignalStrengthStateTypeId;
-    m_signalStrengthStateTypeIds[gewissGwa1521ThingClassId] = gewissGwa1521SignalStrengthStateTypeId;
+    m_temperatureStateTypeIds[gwa1511MotionSensorThingClassId] = gwa1511MotionSensorTemperatureStateTypeId;
+    m_temperatureStateTypeIds[gwa1512SmokeSensorThingClassId] = gwa1512SmokeSensorTemperatureStateTypeId;
+    m_temperatureStateTypeIds[gwa1513WindowSensorThingClassId] = gwa1513WindowSensorTemperatureStateTypeId;
+    m_temperatureStateTypeIds[gwa1514FloodSensorThingClassId] = gwa1514FloodSensorTemperatureStateTypeId;
 
-    m_temperatureStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511TemperatureStateTypeId;
-    m_temperatureStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512TemperatureStateTypeId;
-    m_temperatureStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513TemperatureStateTypeId;
-    m_temperatureStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514TemperatureStateTypeId;
+    m_batteryLevelStateTypeIds[gwa1511MotionSensorThingClassId] = gwa1511MotionSensorBatteryLevelStateTypeId;
+    m_batteryLevelStateTypeIds[gwa1512SmokeSensorThingClassId] = gwa1512SmokeSensorBatteryLevelStateTypeId;
+    m_batteryLevelStateTypeIds[gwa1513WindowSensorThingClassId] = gwa1513WindowSensorBatteryLevelStateTypeId;
+    m_batteryLevelStateTypeIds[gwa1514FloodSensorThingClassId] = gwa1514FloodSensorBatteryLevelStateTypeId;
 
-    m_batteryLevelStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511BatteryLevelStateTypeId;
-    m_batteryLevelStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512BatteryLevelStateTypeId;
-    m_batteryLevelStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513BatteryLevelStateTypeId;
-    m_batteryLevelStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514BatteryLevelStateTypeId;
-
-    m_batteryCriticalStateTypeIds[gewissGwa1511ThingClassId] = gewissGwa1511BatteryCriticalStateTypeId;
-    m_batteryCriticalStateTypeIds[gewissGwa1512ThingClassId] = gewissGwa1512BatteryCriticalStateTypeId;
-    m_batteryCriticalStateTypeIds[gewissGwa1513ThingClassId] = gewissGwa1513BatteryCriticalStateTypeId;
-    m_batteryCriticalStateTypeIds[gewissGwa1514ThingClassId] = gewissGwa1514BatteryCriticalStateTypeId;
+    m_batteryCriticalStateTypeIds[gwa1511MotionSensorThingClassId] = gwa1511MotionSensorBatteryCriticalStateTypeId;
+    m_batteryCriticalStateTypeIds[gwa1512SmokeSensorThingClassId] = gwa1512SmokeSensorBatteryCriticalStateTypeId;
+    m_batteryCriticalStateTypeIds[gwa1513WindowSensorThingClassId] = gwa1513WindowSensorBatteryCriticalStateTypeId;
+    m_batteryCriticalStateTypeIds[gwa1514FloodSensorThingClassId] = gwa1514FloodSensorBatteryCriticalStateTypeId;
 
     // Known model identifier
-    m_knownGewissDevices.insert("GWA1501_BinaryInput_FC", gewissGwa1501ThingClassId);
-    m_knownGewissDevices.insert("GWA1511_MotionSensor", gewissGwa1511ThingClassId);
-    m_knownGewissDevices.insert("GWA1512_SmokeSensor", gewissGwa1512ThingClassId);
-    m_knownGewissDevices.insert("GWA1513_WindowSensor", gewissGwa1513ThingClassId);
-    m_knownGewissDevices.insert("GWA1514_FloodingSensor", gewissGwa1512ThingClassId);
-    m_knownGewissDevices.insert("GWA1521_Actuator_1_CH_PF", gewissGwa1521ThingClassId);
+    m_knownGewissDevices.insert("GWA1501_BinaryInput_FC", gwa1501BinaryInputThingClassId);
+    m_knownGewissDevices.insert("GWA1511_MotionSensor", gwa1511MotionSensorThingClassId);
+    m_knownGewissDevices.insert("GWA1512_SmokeSensor", gwa1512SmokeSensorThingClassId);
+    m_knownGewissDevices.insert("GWA1513_WindowSensor", gwa1513WindowSensorThingClassId);
+    m_knownGewissDevices.insert("GWA1514_FloodingSensor", gwa1514FloodSensorThingClassId);
+    m_knownGewissDevices.insert("GWA1521_Actuator_1_CH_PF", gwa1521ActuatorThingClassId);
 }
 
 QString IntegrationPluginZigbeeGewiss::name() const
@@ -131,7 +124,7 @@ bool IntegrationPluginZigbeeGewiss::handleNode(ZigbeeNode *node, const QUuid &ne
         }
 
         // Window sensor
-        if (thingClassId == gewissGwa1513ThingClassId) {
+        if (thingClassId == gwa1513WindowSensorThingClassId) {
             if (!initWindowSensor(node)) {
                 return false;
             }
@@ -199,7 +192,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
     //            return info->finish(Thing::ThingErrorSetupFailed);
     //    }
 
-    if (thing->thingClassId() == gewissGwa1501ThingClassId) {
+    if (thing->thingClassId() == gwa1501BinaryInputThingClassId) {
 
         ZigbeeNodeEndpoint *endpoint1 = node->getEndpoint(0x01);
         ZigbeeNodeEndpoint *endpoint2 = node->getEndpoint(0x02);
@@ -217,7 +210,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             connect(onOffCluster1, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
                 qCDebug(dcZigBeeGewiss()) << thing << "channel 1, on/off changed" << command;
                 if (command == ZigbeeClusterOnOff::CommandOn) {
-                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "2")));
+                    emit emitEvent(Event(gwa1501BinaryInputPressedEventTypeId, thing->id(), ParamList() << Param(gwa1501BinaryInputPressedEventButtonNameParamTypeId, "2")));
                 } else if (command == ZigbeeClusterOnOff::CommandOff) {
                 } else {
                     qCWarning(dcZigBeeGewiss()) << thing << "unhandled command received" << command;
@@ -226,7 +219,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
 
             connect(onOffCluster1, &ZigbeeClusterOnOff::commandOffWithEffectSent, thing, [=](ZigbeeClusterOnOff::Effect effect, quint8 effectVariant){
                 qCDebug(dcZigBeeGewiss()) << thing << "OFF button pressed" << effect << effectVariant;
-                emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "OFF")));
+                emit emitEvent(Event(gwa1501BinaryInputPressedEventTypeId, thing->id(), ParamList() << Param(gwa1501BinaryInputPressedEventButtonNameParamTypeId, "OFF")));
             });
         }
 
@@ -240,11 +233,11 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
                 switch (fadeMode) {
                 case ZigbeeClusterLevelControl::FadeModeUp:
                     qCDebug(dcZigBeeGewiss()) << thing << "DIM UP pressed";
-                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "1")));
+                    emit emitEvent(Event(gwa1501BinaryInputPressedEventTypeId, thing->id(), ParamList() << Param(gwa1501BinaryInputPressedEventButtonNameParamTypeId, "1")));
                     break;
                 case ZigbeeClusterLevelControl::FadeModeDown:
                     qCDebug(dcZigBeeGewiss()) << thing << "DIM DOWN pressed";
-                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "DIM DOWN")));
+                    emit emitEvent(Event(gwa1501BinaryInputPressedEventTypeId, thing->id(), ParamList() << Param(gwa1501BinaryInputPressedEventButtonNameParamTypeId, "DIM DOWN")));
                     break;
                 }
             });
@@ -258,7 +251,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             connect(onOffCluster2, &ZigbeeClusterOnOff::commandSent, thing, [=](ZigbeeClusterOnOff::Command command){
                 qCDebug(dcZigBeeGewiss()) << thing << "channel 2, on/off changed" << command;
                 if (command == ZigbeeClusterOnOff::CommandOn) {
-                    emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "2")));
+                    emit emitEvent(Event(gwa1501BinaryInputPressedEventTypeId, thing->id(), ParamList() << Param(gwa1501BinaryInputPressedEventButtonNameParamTypeId, "2")));
                 } else if (command == ZigbeeClusterOnOff::CommandOff) {
                 } else {
                     qCWarning(dcZigBeeGewiss()) << thing << "unhandled command received" << command;
@@ -270,7 +263,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             });
             connect(onOffCluster2, &ZigbeeClusterOnOff::commandOffWithEffectSent, thing, [=](ZigbeeClusterOnOff::Effect effect, quint8 effectVariant){
                 qCDebug(dcZigBeeGewiss()) << thing << "OFF button pressed" << effect << effectVariant;
-                emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "OFF")));
+                emit emitEvent(Event(gwa1501BinaryInputPressedEventTypeId, thing->id(), ParamList() << Param(gwa1501BinaryInputPressedEventButtonNameParamTypeId, "OFF")));
             });
 
             // Receive level control commands
@@ -283,11 +276,11 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
                     switch (fadeMode) {
                     case ZigbeeClusterLevelControl::FadeModeUp:
                         qCDebug(dcZigBeeGewiss()) << thing << "cluster 2 DIM UP pressed";
-                        emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "2")));
+                        emit emitEvent(Event(gwa1501BinaryInputPressedEventTypeId, thing->id(), ParamList() << Param(gwa1501BinaryInputPressedEventButtonNameParamTypeId, "2")));
                         break;
                     case ZigbeeClusterLevelControl::FadeModeDown:
                         qCDebug(dcZigBeeGewiss()) << thing << "cluster 2 DIM DOWN pressed";
-                        emit emitEvent(Event(gewissGwa1501PressedEventTypeId, thing->id(), ParamList() << Param(gewissGwa1501PressedEventButtonNameParamTypeId, "DIM DOWN")));
+                        emit emitEvent(Event(gwa1501BinaryInputPressedEventTypeId, thing->id(), ParamList() << Param(gwa1501BinaryInputPressedEventButtonNameParamTypeId, "DIM DOWN")));
                         break;
                     }
                 });
@@ -296,7 +289,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         return info->finish(Thing::ThingErrorNoError);
 
         // Single channel relay
-    } else if (thing->thingClassId() == gewissGwa1521ThingClassId) {
+    } else if (thing->thingClassId() == gwa1521ActuatorThingClassId) {
         ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
         if (!endpoint) {
             qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
@@ -308,17 +301,17 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             qCWarning(dcZigBeeGewiss()) << "Could not find on/off cluster on" << thing << endpoint;
         } else {
             if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
-                thing->setStateValue(gewissGwa1521RelayStateTypeId, onOffCluster->power());
+                thing->setStateValue(gwa1521ActuatorRelayStateTypeId, onOffCluster->power());
             }
 
             connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
                 qCDebug(dcZigBeeGewiss()) << thing << "power changed" << power;
-                thing->setStateValue(gewissGwa1521RelayStateTypeId, power);
+                thing->setStateValue(gwa1521ActuatorRelayStateTypeId, power);
             });
         }
         return info->finish(Thing::ThingErrorNoError);
         //Motion sensor
-    } else if (thing->thingClassId() == gewissGwa1511ThingClassId) {
+    } else if (thing->thingClassId() == gwa1511MotionSensorThingClassId) {
 
         // Home Automation Device Occupacy Sensor
         ZigbeeNodeEndpoint *occupancyEndpoint = node->getEndpoint(0x22);
@@ -349,18 +342,18 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         }
 
         if (occupancyCluster->hasAttribute(ZigbeeClusterOccupancySensing::AttributeOccupancy)) {
-            thing->setStateValue(gewissGwa1511IsPresentStateTypeId, occupancyCluster->occupied());
-            thing->setStateValue(gewissGwa1511LastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
+            thing->setStateValue(gwa1511MotionSensorIsPresentStateTypeId, occupancyCluster->occupied());
+            thing->setStateValue(gwa1511MotionSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
         }
 
         connect(occupancyCluster, &ZigbeeClusterOccupancySensing::occupancyChanged, thing, [this, thing](bool occupancy) {
             qCDebug(dcZigBeeGewiss()) << "occupancy changed" << occupancy;
             // Only change the state if the it changed to true, it will be disabled by the timer
             if (occupancy) {
-                thing->setStateValue(gewissGwa1511IsPresentStateTypeId, occupancy);
+                thing->setStateValue(gwa1511MotionSensorIsPresentStateTypeId, occupancy);
                 m_presenceTimer->start();
             }
-            thing->setStateValue(gewissGwa1511LastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
+            thing->setStateValue(gwa1511MotionSensorLastSeenTimeStateTypeId, QDateTime::currentMSecsSinceEpoch() / 1000);
         });
 
         if (!m_presenceTimer) {
@@ -368,11 +361,11 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         }
 
         connect(m_presenceTimer, &PluginTimer::timeout, thing, [thing] {
-            if (thing->stateValue(gewissGwa1511IsPresentStateTypeId).toBool()) {
-                int timeout = thing->setting(gewissGwa1511SettingsTimeoutParamTypeId).toInt();
-                QDateTime lastSeenTime = QDateTime::fromMSecsSinceEpoch(thing->stateValue(gewissGwa1511LastSeenTimeStateTypeId).toULongLong() * 1000);
+            if (thing->stateValue(gwa1511MotionSensorIsPresentStateTypeId).toBool()) {
+                int timeout = thing->setting(gwa1511MotionSensorSettingsTimeoutParamTypeId).toInt();
+                QDateTime lastSeenTime = QDateTime::fromMSecsSinceEpoch(thing->stateValue(gwa1511MotionSensorLastSeenTimeStateTypeId).toULongLong() * 1000);
                 if (lastSeenTime.addSecs(timeout) < QDateTime::currentDateTime()) {
-                    thing->setStateValue(gewissGwa1511IsPresentStateTypeId, false);
+                    thing->setStateValue(gwa1511MotionSensorIsPresentStateTypeId, false);
                 }
             }
         });
@@ -391,18 +384,18 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         }
         // Only set the state if the cluster actually has the attribute
         if (illuminanceCluster->hasAttribute(ZigbeeClusterIlluminanceMeasurment::AttributeMeasuredValue)) {
-            thing->setStateValue(gewissGwa1511LightIntensityStateTypeId, illuminanceCluster->illuminance());
+            thing->setStateValue(gwa1511MotionSensorLightIntensityStateTypeId, illuminanceCluster->illuminance());
         }
 
         connect(illuminanceCluster, &ZigbeeClusterIlluminanceMeasurment::illuminanceChanged, thing, [thing](quint16 illuminance){
             qCDebug(dcZigBeeGewiss()) << thing << "light intensity changed" << illuminance << "lux";
-            thing->setStateValue(gewissGwa1511LightIntensityStateTypeId, illuminance);
+            thing->setStateValue(gwa1511MotionSensorLightIntensityStateTypeId, illuminance);
         });
 
         return info->finish(Thing::ThingErrorNoError);
 
         // Smoke sensor
-    } else if (thing->thingClassId() == gewissGwa1512ThingClassId) {
+    } else if (thing->thingClassId() == gwa1512SmokeSensorThingClassId) {
         ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
         if (!endpoint) {
             qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
@@ -410,7 +403,7 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
         }
         return info->finish(Thing::ThingErrorNoError);
 
-    } else if (thing->thingClassId() == gewissGwa1513ThingClassId) {
+    } else if (thing->thingClassId() == gwa1513WindowSensorThingClassId) {
         // Window sensor
         ZigbeeNodeEndpoint *isaEndpoint = nullptr;
         foreach (ZigbeeNodeEndpoint *endpoint, node->endpoints()) {
@@ -429,12 +422,12 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
                 qCWarning(dcZigBeeGewiss()) << "ISA zone cluster could not be found on" << thing << node << isaEndpoint;
             } else {
                 if (iasZoneCluster->hasAttribute(ZigbeeClusterIasZone::AttributeZoneStatus)) {
-                    thing->setStateValue(gewissGwa1513ClosedStateTypeId, !iasZoneCluster->zoneStatus().testFlag(ZigbeeClusterIasZone::ZoneStatusAlarm1));
+                    thing->setStateValue(gwa1513WindowSensorClosedStateTypeId, !iasZoneCluster->zoneStatus().testFlag(ZigbeeClusterIasZone::ZoneStatusAlarm1));
                 }
 
                 connect(iasZoneCluster, &ZigbeeClusterIasZone::zoneStatusChanged, this, [=](ZigbeeClusterIasZone::ZoneStatusFlags zoneStatus, quint8 extendedStatus, quint8 zoneId, quint16 delay){
                     qCDebug(dcZigBeeGewiss()) << thing << "zone status changed" << zoneStatus << extendedStatus << zoneId << delay;
-                    thing->setStateValue(gewissGwa1513ClosedStateTypeId, !iasZoneCluster->zoneStatus().testFlag(ZigbeeClusterIasZone::ZoneStatusAlarm1));
+                    thing->setStateValue(gwa1513WindowSensorClosedStateTypeId, !iasZoneCluster->zoneStatus().testFlag(ZigbeeClusterIasZone::ZoneStatusAlarm1));
                     // TODO: casing opened alarm event
                     // TODO: battery critical could be set with the battery flag
                 });
@@ -446,14 +439,14 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             } else {
                 // Only set the initial state if the attribute already exists
                 if (powerCluster->hasAttribute(ZigbeeClusterPowerConfiguration::AttributeBatteryPercentageRemaining)) {
-                    thing->setStateValue(gewissGwa1513BatteryLevelStateTypeId, powerCluster->batteryPercentage());
-                    thing->setStateValue(gewissGwa1513BatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
+                    thing->setStateValue(gwa1513WindowSensorBatteryLevelStateTypeId, powerCluster->batteryPercentage());
+                    thing->setStateValue(gwa1513WindowSensorBatteryCriticalStateTypeId, (powerCluster->batteryPercentage() < 10.0));
                 }
 
                 connect(powerCluster, &ZigbeeClusterPowerConfiguration::batteryPercentageChanged, thing, [=](double percentage){
                     qCDebug(dcZigBeeGewiss()) << "Battery percentage changed" << percentage << "%" << thing;
-                    thing->setStateValue(gewissGwa1513BatteryLevelStateTypeId, percentage);
-                    thing->setStateValue(gewissGwa1513BatteryCriticalStateTypeId, (percentage < 10.0));
+                    thing->setStateValue(gwa1513WindowSensorBatteryLevelStateTypeId, percentage);
+                    thing->setStateValue(gwa1513WindowSensorBatteryCriticalStateTypeId, (percentage < 10.0));
                 });
             }
         }
@@ -476,19 +469,19 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             } else {
                 // Only set the state if the cluster actually has the attribute
                 if (temperatureCluster->hasAttribute(ZigbeeClusterTemperatureMeasurement::AttributeMeasuredValue)) {
-                    thing->setStateValue(gewissGwa1513TemperatureStateTypeId, temperatureCluster->temperature());
+                    thing->setStateValue(gwa1513WindowSensorTemperatureStateTypeId, temperatureCluster->temperature());
                 }
 
                 connect(temperatureCluster, &ZigbeeClusterTemperatureMeasurement::temperatureChanged, thing, [thing](double temperature){
                     qCDebug(dcZigBeeGewiss()) << thing << "temperature changed" << temperature << "°C";
-                    thing->setStateValue(gewissGwa1513TemperatureStateTypeId, temperature);
+                    thing->setStateValue(gwa1513WindowSensorTemperatureStateTypeId, temperature);
                 });
             }
         }
 
         return info->finish(Thing::ThingErrorNoError);
         //Flood sensor
-    } else if (thing->thingClassId() == gewissGwa1514ThingClassId) {
+    } else if (thing->thingClassId() == gwa1514FloodSensorThingClassId) {
         ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
         if (!endpoint) {
             qCWarning(dcZigBeeGewiss()) << "Endpoint not found" << thing->name();
@@ -500,12 +493,12 @@ void IntegrationPluginZigbeeGewiss::setupThing(ThingSetupInfo *info)
             qCWarning(dcZigBeeGewiss()) << "Could not find on/off cluster on" << thing << endpoint;
         } else {
             if (onOffCluster->hasAttribute(ZigbeeClusterOnOff::AttributeOnOff)) {
-                thing->setStateValue(gewissGwa1514WaterDetectedStateTypeId, onOffCluster->power());
+                thing->setStateValue(gwa1514FloodSensorWaterDetectedStateTypeId, onOffCluster->power());
             }
 
             connect(onOffCluster, &ZigbeeClusterOnOff::powerChanged, thing, [thing](bool power){
                 qCDebug(dcZigBeeGewiss()) << thing << "power changed" << power;
-                thing->setStateValue(gewissGwa1514WaterDetectedStateTypeId, power);
+                thing->setStateValue(gwa1514FloodSensorWaterDetectedStateTypeId, power);
             });
         }
         return info->finish(Thing::ThingErrorNoError);
@@ -520,8 +513,8 @@ void IntegrationPluginZigbeeGewiss::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    if (thing->thingClassId() == gewissGwa1521ThingClassId) {
-        if (action.actionTypeId() == gewissGwa1521RelayActionTypeId) {
+    if (thing->thingClassId() == gwa1521ActuatorThingClassId) {
+        if (action.actionTypeId() == gwa1521ActuatorRelayActionTypeId) {
             ZigbeeNode *node = m_thingNodes.value(thing);
             if (!node) {
                 qCWarning(dcZigBeeGewiss()) << "Zigbee node for" << thing << "not found.";
@@ -529,7 +522,7 @@ void IntegrationPluginZigbeeGewiss::executeAction(ThingActionInfo *info)
                 return;
             }
 
-            if (info->action().actionTypeId() == gewissGwa1521RelayActionTypeId) {
+            if (info->action().actionTypeId() == gwa1521ActuatorRelayActionTypeId) {
                 ZigbeeNodeEndpoint *endpoint = node->getEndpoint(0x01);
                 if (!endpoint) {
                     qCWarning(dcZigBeeGewiss()) << "Unable to get the endpoint from node" << node << "for" << thing;
@@ -543,7 +536,7 @@ void IntegrationPluginZigbeeGewiss::executeAction(ThingActionInfo *info)
                     info->finish(Thing::ThingErrorSetupFailed);
                     return;
                 }
-                bool power = info->action().param(gewissGwa1521RelayActionRelayParamTypeId).value().toBool();
+                bool power = info->action().param(gwa1521ActuatorRelayActionRelayParamTypeId).value().toBool();
                 ZigbeeClusterReply *reply = (power ? onOffCluster->commandOn() : onOffCluster->commandOff());
                 connect(reply, &ZigbeeClusterReply::finished, this, [=](){
                     // Note: reply will be deleted automatically
@@ -551,7 +544,7 @@ void IntegrationPluginZigbeeGewiss::executeAction(ThingActionInfo *info)
                         info->finish(Thing::ThingErrorHardwareFailure);
                     } else {
                         info->finish(Thing::ThingErrorNoError);
-                        thing->setStateValue(gewissGwa1521RelayStateTypeId, power);
+                        thing->setStateValue(gwa1521ActuatorRelayStateTypeId, power);
                     }
                 });
             }

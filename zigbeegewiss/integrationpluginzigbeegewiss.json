@@ -9,8 +9,8 @@
             "id": "2fdc8d78-ea8e-47bd-9331-b06a9b56f938",
             "thingClasses": [
                 {
-                    "name": "gewissGwa1501",
-                    "displayName": "GWA1501",
+                    "name": "gwa1501BinaryInput",
+                    "displayName": "GWA1501 binary input",
                     "id": "5daf398f-2eba-47c1-8805-ca34f075c7ea",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
@@ -51,15 +51,6 @@
                             "minValue": 0,
                             "type": "uint",
                             "unit": "Percentage"
-                        },
-                        {
-                            "id": "ab5adef9-738b-4a0e-966c-6f48be99c365",
-                            "name": "version",
-                            "displayName": "Version",
-                            "displayNameEvent": "Version changed",
-                            "type": "QString",
-                            "cached": true,
-                            "defaultValue": ""
                         },
                         {
                             "id": "9dcf9715-267e-43c6-bcc7-9822e5361228",
@@ -113,8 +104,8 @@
                     ]
                 },
                 {
-                    "name": "gewissGwa1521",
-                    "displayName": "GWA1521",
+                    "name": "gwa1521Actuator",
+                    "displayName": "GWA1521 actuator",
                     "id": "6bce244f-b93c-474e-b8eb-65e44ad96329",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
@@ -157,15 +148,6 @@
                             "unit": "Percentage"
                         },
                         {
-                            "id": "42387fc9-0382-4be2-8758-0b612c296e12",
-                            "name": "version",
-                            "displayName": "Version",
-                            "displayNameEvent": "Version changed",
-                            "type": "QString",
-                            "cached": true,
-                            "defaultValue": ""
-                        },
-                        {
                            "id": "3d4993c4-9142-409a-8389-3377eeae0ad6",
                            "name": "relay",
                            "displayName": "Relay",
@@ -179,7 +161,7 @@
                     ]
                 },
                 {
-                    "name": "gewissGwa1511",
+                    "name": "gwa1511MotionSensor",
                     "displayName": "GWA1511 motion sensor",
                     "id": "d9acb5ba-d717-41c9-bed3-1a9923f9e4be",
                     "setupMethod": "JustAdd",
@@ -232,15 +214,6 @@
                             "minValue": 0,
                             "type": "uint",
                             "unit": "Percentage"
-                        },
-                        {
-                            "id": "3c7b68be-a89f-4c74-ae69-a011562d1729",
-                            "name": "version",
-                            "displayName": "Version",
-                            "displayNameEvent": "Version changed",
-                            "type": "QString",
-                            "cached": true,
-                            "defaultValue": ""
                         },
                         {
                             "id": "99347069-fda3-4742-a0a8-bc51c7704813",
@@ -300,7 +273,7 @@
                     ]
                 },
                 {
-                    "name": "gewissGwa1512",
+                    "name": "gwa1512SmokeSensor",
                     "displayName": "GWA1512 smoke sensor",
                     "id": "4ce9764d-66fc-40e2-84d1-6b6e9577c6ee",
                     "setupMethod": "JustAdd",
@@ -344,15 +317,6 @@
                             "unit": "Percentage"
                         },
                         {
-                            "id": "fae4beae-6212-4df2-bfc5-98d4ca30b7ee",
-                            "name": "version",
-                            "displayName": "Version",
-                            "displayNameEvent": "Version changed",
-                            "type": "QString",
-                            "cached": true,
-                            "defaultValue": ""
-                        },
-                        {
                             "id": "db632d40-e307-4f41-a3bd-16bd10b2160d",
                             "name": "batteryLevel",
                             "displayName": "Battery",
@@ -383,7 +347,7 @@
                     ]
                 },
                 {
-                    "name": "gewissGwa1513",
+                    "name": "gwa1513WindowSensor",
                     "displayName": "GWA1513 window sensor",
                     "id": "ebf6850f-4f05-4ff8-b334-5b9b4da8b74d",
                     "setupMethod": "JustAdd",
@@ -427,15 +391,6 @@
                             "unit": "Percentage"
                         },
                         {
-                            "id": "63b59d77-0587-44c0-9535-214b022555fb",
-                            "name": "version",
-                            "displayName": "Version",
-                            "displayNameEvent": "Version changed",
-                            "type": "QString",
-                            "cached": true,
-                            "defaultValue": ""
-                        },
-                        {
                             "id": "f920d42c-65f9-4b3c-b3bd-746c386a09f6",
                             "name": "batteryLevel",
                             "displayName": "Battery",
@@ -475,7 +430,7 @@
                     ]
                 },
                 {
-                    "name": "gewissGwa1514",
+                    "name": "gwa1514FloodSensor",
                     "displayName": "GWA1514 flood sensor",
                     "id": "01bb5856-7d90-42fc-8238-a35e61525783",
                     "setupMethod": "JustAdd",
@@ -517,15 +472,6 @@
                             "minValue": 0,
                             "type": "uint",
                             "unit": "Percentage"
-                        },
-                        {
-                            "id": "22b889ed-16d3-49da-b18e-345bf109188a",
-                            "name": "version",
-                            "displayName": "Version",
-                            "displayNameEvent": "Version changed",
-                            "type": "QString",
-                            "cached": true,
-                            "defaultValue": ""
                         },
                         {
                             "id": "2cb91588-2867-41dc-b308-d5f718a39380",
