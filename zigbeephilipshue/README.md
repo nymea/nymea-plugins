@@ -13,7 +13,6 @@ The [Hue motion sensor](https://www.philips-hue.com/en-us/p/hue-motion-sensor/04
 **Pairing instructions**: Open the ZigBee network for joining. Press the setup button for 5 seconds until the LED start blinking in different colors.
 
 
-
 ### Hue outdoor sensor
 The [Hue outdoor sensor](https://www.philips-hue.com/en-us/p/hue-outdoor-sensor/046677541736) is fully supported. The time period for the present state can be specied in the thing setting.
 
@@ -49,10 +48,6 @@ The most reliable way is method 1.
 
 * A compatible ZigBee controller and a running ZigBee network in nymea. You can find more information about supported controllers and ZigBee network configurations [here](https://nymea.io/documentation/users/usage/configuration#zigbee).
 * Optional: [Hue dimmer switch](https://www.philips-hue.com/en-us/p/hue-dimmer-switch/046677473372) for resetting lights and bringing them into the nymea ZigBee network.
-
-## Request support for a ZigBee device.
-
-If your Hardware is not listed and you want to request support for your device, please let us know in the [nymea forum](https://forum.nymea.io/).
 
 ## More
 
