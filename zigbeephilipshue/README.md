@@ -1,4 +1,4 @@
-# Zigbee Philips Hue
+# ZigBee Philips Hue
 
 This plugin allows to interact with Philips Hue ZigBee devices using a native ZigBee network controller in nymea.
 
