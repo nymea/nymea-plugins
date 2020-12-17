@@ -16,7 +16,7 @@ Simple on/off power sockets.
 
 **Pairing instructions**: Open the ZigBee network for joining. Follow the manufacturer specific reset/pairing instruction.
 
-> Most power sockets have a pairing button. Once the device is powered, it can be resetted / paired by clicking the pairing/setup button multiple times of keeping it pressed for several seconds.
+> Most power sockets have a pairing button. Once the device is powered, it can be resetted / paired by clicking the button multiple times of keeping it pressed for several seconds.
 
 
 ## Requirements

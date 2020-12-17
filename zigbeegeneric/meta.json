@@ -8,5 +8,6 @@
         "zigbee"
     ],
     "categories": [
+        "socket"
     ]
 }

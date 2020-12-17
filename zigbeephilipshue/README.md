@@ -6,6 +6,7 @@ This plugin allows to interact with Philips Hue ZigBee devices using a native Zi
 
 In order to bring a ZigBee device into the nymea ZigBee network, the network needs to be opened for joining before you perform the device pairing instructions. The joining process can take up to 30 seconds. If the device does not show up, please restart the pairing process.
 
+
 ### Hue motion sensor
 
 The [Hue motion sensor](https://www.philips-hue.com/en-us/p/hue-motion-sensor/046677473389) is fully supported. The time period for the present state can be specied in the thing setting.
@@ -27,7 +28,7 @@ The [Hue dimmer switch](https://www.philips-hue.com/en-us/p/hue-dimmer-switch/04
 
 Most of the lights and lamps from Philips Hue should be handled in a generic way by the `nymea-plugin-zigbee-generic-lights` plugin. There are 2 methods for bringing a Hue light / bulb into the nymea ZigBee network.
 
-1. Use a [Hue dimmer switch](https://www.philips-hue.com/en-us/p/hue-dimmer-switch/046677473372):
+1. Use a [Hue dimmer switch](https://www.philips-hue.com/en-us/p/hue-dimmer-switch/046677473372) (most reliable):
 
     * Open the ZigBee network for for allowing new devices to join the network.
     * Switch the lamp off and on again (take the power).
@@ -42,12 +43,12 @@ Most of the lights and lamps from Philips Hue should be handled in a generic way
     * Remove the lamp from the Hue Bridge using the official Hue App or nymea.
     * The lamp should now be resetted and start joining the nymea ZigBee network.
 
-The most reliable way is method 1.
 
 ## Requirements
 
 * A compatible ZigBee controller and a running ZigBee network in nymea. You can find more information about supported controllers and ZigBee network configurations [here](https://nymea.io/documentation/users/usage/configuration#zigbee).
-* Optional: [Hue dimmer switch](https://www.philips-hue.com/en-us/p/hue-dimmer-switch/046677473372) for resetting lights and bringing them into the nymea ZigBee network.
+* *Optional*: [Hue dimmer switch](https://www.philips-hue.com/en-us/p/hue-dimmer-switch/046677473372) for resetting lights and bringing them into the nymea ZigBee network.
+
 
 ## More
 
