@@ -33,7 +33,7 @@ Most of the lights and lamps from Philips Hue should be handled in a generic way
     * Open the ZigBee network for for allowing new devices to join the network.
     * Switch the lamp off and on again (take the power).
     * Take the Hue dimmer switch and press the `On` and the `Off` key at the same time
-    * Hold the switch close to the lamp while keep pressing both buttons (< 5 cm).
+    * Hold the switch close to the lamp while keep pressing both buttons (less than 5 cm).
     * Keep holding an pressing the buttons until the lamp starts blinking multiple times.
     * Once you release the buttons on the switch, the lamp should be resetted and start joining the nymea ZigBee network.
 
