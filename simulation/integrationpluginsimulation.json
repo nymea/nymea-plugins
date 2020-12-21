@@ -64,7 +64,10 @@
                             "displayNameEvent": "Temperature changed",
                             "type": "double",
                             "unit": "DegreeCelsius",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "minValue": -20,
+                            "maxValue": 50,
+                            "ioType": "analogInput"
                         },
                         {
                             "id": "10c735fd-7b81-484a-a148-76ea0da840f0",
@@ -75,7 +78,8 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "unit": "Percentage",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "ioType": "analogInput"
                         },
                         {
                             "id": "45c0de32-b519-47d7-9f82-e5f09d1542d4",
