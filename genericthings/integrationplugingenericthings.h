@@ -72,6 +72,9 @@ private:
     void moveBlindToAngle(Action action, Thing *thing);
 
     void thermostatCheckPowerOutputState(Thing *thing);
+
+    int sgReadyOperatingMode(bool relay1, bool relay2);
+    QString sgReadyOperatingModeDescription(int operatingMode);
 };
 
 #endif // INTEGRATIONPLUGINGENERICTHINGS_H

@@ -251,6 +251,12 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 thermostatCheckPowerOutputState(thing);
             }
         });
+    } else if (thing->thingClassId() == sgReadyThingClassId) {
+        bool relay1 = thing->stateValue(sgReadyRelay1StateTypeId).toBool();
+        bool relay2 = thing->stateValue(sgReadyRelay2StateTypeId).toBool();
+        int operatingMode = sgReadyOperatingMode(relay1, relay2);
+        thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+        thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
     }
     info->finish(Thing::ThingErrorNoError);
 }
@@ -634,6 +640,7 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         }
 
         Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+
     } else if (thing->thingClassId() == thermostatThingClassId) {
         if (action.actionTypeId() == thermostatTemperatureSensorInputActionTypeId) {
             thing->setStateValue(thermostatTemperatureSensorInputStateTypeId, action.param(thermostatTemperatureSensorInputActionTemperatureSensorInputParamTypeId).value());
@@ -647,6 +654,45 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         thermostatCheckPowerOutputState(thing);
         info->finish(Thing::ThingErrorNoError);
         return;
+
+    } else if (thing->thingClassId() == sgReadyThingClassId) {
+        if (action.actionTypeId() == sgReadyRelay1ActionTypeId) {
+            thing->setStateValue(sgReadyRelay1StateTypeId, action.param(sgReadyRelay1ActionRelay1ParamTypeId).value());
+            int operatingMode = sgReadyOperatingMode(thing->stateValue(sgReadyRelay1StateTypeId).toBool(), thing->stateValue(sgReadyRelay2StateTypeId).toBool());
+            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+            thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == sgReadyRelay2ActionTypeId) {
+            thing->setStateValue(sgReadyRelay2StateTypeId, action.param(sgReadyRelay2ActionRelay2ParamTypeId).value());
+            int operatingMode = sgReadyOperatingMode(thing->stateValue(sgReadyRelay1StateTypeId).toBool(), thing->stateValue(sgReadyRelay2StateTypeId).toBool());
+            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+            thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        if (action.actionTypeId() == sgReadyOperatingModeActionTypeId) {
+            int operatingMode = action.param(sgReadyOperatingModeActionOperatingModeParamTypeId).value().toInt();
+            thing->setStateValue(sgReadyOperatingModeStateTypeId, operatingMode);
+            thing->setStateValue(sgReadyOperatingModeDescriptionStateTypeId, sgReadyOperatingModeDescription(operatingMode));
+            if (operatingMode == 1) {
+                thing->setStateValue(sgReadyRelay1StateTypeId, true);
+                thing->setStateValue(sgReadyRelay2StateTypeId, false);
+            } else if (operatingMode == 2) {
+                thing->setStateValue(sgReadyRelay1StateTypeId, false);
+                thing->setStateValue(sgReadyRelay2StateTypeId, false);
+            } else if (operatingMode == 3) {
+                thing->setStateValue(sgReadyRelay1StateTypeId, false);
+                thing->setStateValue(sgReadyRelay2StateTypeId, true);
+            } else if (operatingMode == 4) {
+                thing->setStateValue(sgReadyRelay1StateTypeId, true);
+                thing->setStateValue(sgReadyRelay2StateTypeId, true);
+            }
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
+        Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -801,6 +847,7 @@ void IntegrationPluginGenericThings::moveBlindToAngle(Action action, Thing *thin
     }
 }
 
+
 void IntegrationPluginGenericThings::thermostatCheckPowerOutputState(Thing *thing)
 {
     double targetTemperature = thing->stateValue(thermostatTargetTemperatureStateTypeId).toDouble();
@@ -813,5 +860,55 @@ void IntegrationPluginGenericThings::thermostatCheckPowerOutputState(Thing *thin
     } else {
         //Keep actual state
         //Possible improvement add boost action where powerState = true is forced inside the hysteresis
+    }
+}
+
+QString IntegrationPluginGenericThings::sgReadyOperatingModeDescription(int operatingMode)
+{
+    if (operatingMode == 1) {
+        return "Stop heating.";
+    } else if (operatingMode == 2) {
+        return "Normal mode, with partial heat storage filling.";
+    } else if (operatingMode == 3) {
+        return "Increased room and heat storage temperature.";
+    } else if (operatingMode == 4) {
+        return "Start heating.";
+    }
+    return QString("Unknown operating mode %1").arg(operatingMode);
+}
+
+int IntegrationPluginGenericThings::sgReadyOperatingMode(bool relay1, bool relay2)
+{
+    if (relay1 && !relay2) {
+        /*
+          * Operating state 1 (Relay state: 1: 0):
+          * This operating state is downward compatible with the often fixed times
+          * activated EVU lock and includes a maximum of 2 hours of "hard" lock time.
+        */
+        return 1;
+    } else if (!relay1 && !relay2) {
+        /*
+         * Operating state 2 (Relay state: 0: 0):
+         * In this circuit, the heat pump runs in energy-efficient normal mode
+         * with partial heat storage filling for the maximum two-hour EVU lock.
+        */
+        return 2;
+    } else if (!relay1 && relay2) {
+        /*
+         * Operating state 3 (Relay state: 0: 1):
+         * In this operating state, the heat pump within the controller runs in amplified mode
+         * Operation for space heating and hot water preparation. It's not one
+         * definitive start-up command, but a switch-on recommendation according to the current increase.
+        */
+        return 3;
+    } else {
+        /*
+         * Operating state 4 (Relay state 1: 1):
+         * This is a definitive start-up command, insofar as this is possible within the framework of the rule settings.
+         * For this operating state, different control models must be set on the controller for different tariff and usage models:
+         * Variant 1: The heat pump (compressor) is actively switched on.
+         * Variant 2: The heat pump (compressor and electrical auxiliary heating) is actively switched on, optional: higher temperature in the heat storage
+        */
+        return 4;
     }
 }
