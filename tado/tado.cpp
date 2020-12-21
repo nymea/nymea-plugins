@@ -56,6 +56,11 @@ QString Tado::username()
     return m_username;
 }
 
+bool Tado::apiAvailable()
+{
+    return m_apiAvailable;
+}
+
 bool Tado::authenticated()
 {
     return m_authenticationStatus;
@@ -66,8 +71,74 @@ bool Tado::connected()
     return m_connectionStatus;
 }
 
+void Tado::getApiCredentials(const QString &url)
+{
+    QNetworkRequest request;
+    request.setUrl(url);
+    QNetworkReply *reply = m_networkManager->get(request);
+    qCDebug(dcTado()) << "Sending request" << request.url();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [reply, this] {
+
+        int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        // Check HTTP status code
+        if (status != 200 || reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcTado()) << "Request error:" << status << reply->errorString();
+            emit apiCredentialsReceived(false);
+            return;
+        }
+        QRegExp filter;
+        filter.setPatternSyntax(QRegExp::Wildcard);
+        filter.setPattern("*tgaRestApiV2Endpoint:*");
+
+        QStringList list = QString(reply->readAll()).split('\n');
+        int index = list.indexOf(filter);
+        if (index == -1) {
+            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the API url";
+            emit apiCredentialsReceived(false);
+            return;
+        }
+        m_baseControlUrl = list.value(index).split(": ").last().remove(QRegExp("[,']"));;
+        qCDebug(dcTado()) << "Received control url" << m_baseControlUrl;
+        filter.setPattern("*apiEndpoint*");
+        index = list.indexOf(filter);
+        if (index == -1) {
+            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the authorization url";
+            emit apiCredentialsReceived(false);
+            return;
+        }
+        m_baseAuthorizationUrl = list.value(index).split(": ").last().remove(QRegExp("[,']"))+"/token";
+        qCDebug(dcTado()) << "Received auth url" << m_baseAuthorizationUrl;
+        filter.setPattern("*clientId*");
+        index = list.indexOf(filter);
+        if (index == -1) {
+            emit apiCredentialsReceived(false);
+            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the client Id";
+            return;
+        }
+        m_clientId = list.value(index).split(": ").last().remove(QRegExp("[,']"));
+        qCDebug(dcTado()) << "Received client id" << m_clientId.mid(0, 4)+"*****";
+        filter.setPattern("*clientSecret*");
+        index = list.indexOf(filter);
+        if (index == -1) {
+            qCWarning(dcTado()) << "GetApiCredenitals: Could not find the client secret";
+            emit apiCredentialsReceived(false);
+            return;
+        }
+        m_clientSecret = list.value(index).split(": ").last().remove(QRegExp("[,']"));
+        qCDebug(dcTado()) << "Received client secret" << m_clientSecret.mid(0, 4)+"*****";
+        m_apiAvailable = true;
+        emit apiCredentialsReceived(true);
+    });
+}
+
 void Tado::getToken(const QString &password)
 {
+    if (!m_apiAvailable) {
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
+        return;
+    }
+
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseAuthorizationUrl));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -102,7 +173,7 @@ void Tado::getToken(const QString &password)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Received invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Received invalid JSON object:" << data;
             return;
         }
         if (data.isObject()) {
@@ -137,6 +208,11 @@ void Tado::getToken(const QString &password)
 
 void Tado::getHomes()
 {
+    if (!m_apiAvailable) {
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
+        return;
+    }
+
     if(m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return;
@@ -170,7 +246,7 @@ void Tado::getHomes()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         QList<Home> homes;
@@ -188,6 +264,16 @@ void Tado::getHomes()
 
 void Tado::getZones(const QString &homeId)
 {
+    if (!m_apiAvailable) {
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
+        return;
+    }
+
+    if(m_accessToken.isEmpty()) {
+        qCWarning(dcTado()) << "Not sending request, get the access token first";
+        return;
+    }
+
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -216,7 +302,7 @@ void Tado::getZones(const QString &homeId)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         QList<Zone> zones;
@@ -235,10 +321,16 @@ void Tado::getZones(const QString &homeId)
 
 void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 {
+    if (!m_apiAvailable) {
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
+        return;
+    }
+
     if(m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return;
     }
+
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/state"));
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/x-www-form-urlencoded");
@@ -270,7 +362,7 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         ZoneState state;
@@ -307,10 +399,16 @@ void Tado::getZoneState(const QString &homeId, const QString &zoneId)
 
 QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power, double targetTemperature)
 {
+    if (!m_apiAvailable) {
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
+        return "";
+    }
+
     if(m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return "";
     }
+
     QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
@@ -355,7 +453,7 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         QVariantMap map = data.toVariant().toMap();
@@ -376,10 +474,16 @@ QUuid Tado::setOverlay(const QString &homeId, const QString &zoneId, bool power,
 
 QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
 {
+    if (!m_apiAvailable) {
+        qCWarning(dcTado()) << "Not sending request, get API credentials first";
+        return "";
+    }
+
     if(m_accessToken.isEmpty()) {
         qCWarning(dcTado()) << "Not sending request, get the access token first";
         return "";
     }
+
     QUuid requestId = QUuid::createUuid();
     QNetworkRequest request;
     request.setUrl(QUrl(m_baseControlUrl+"/homes/"+homeId+"/zones/"+zoneId+"/overlay"));
@@ -414,7 +518,7 @@ QUuid Tado::deleteOverlay(const QString &homeId, const QString &zoneId)
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         QVariantMap map = data.toVariant().toMap();
@@ -494,7 +598,7 @@ void Tado::onRefreshTimer()
         QJsonParseError error;
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll(), &error);
         if (error.error != QJsonParseError::NoError) {
-            qDebug(dcTado()) << "Get Token: Recieved invalide JSON object";
+            qDebug(dcTado()) << "Get Token: Recieved invalid JSON object";
             return;
         }
         Token token;

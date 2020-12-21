@@ -93,9 +93,11 @@ public:
 
     void setUsername(const QString &username);
     QString username();
+    bool apiAvailable();
     bool authenticated();
     bool connected();
 
+    void getApiCredentials(const QString &url = "https://my.tado.com/webapp/env.js");
     void getToken(const QString &password);
     void getHomes();
     void getZones(const QString &homeId);
@@ -105,10 +107,11 @@ public:
     QUuid deleteOverlay(const QString &homeId, const QString &zoneId);
 
 private:
-    QByteArray m_baseAuthorizationUrl = "https://auth.tado.com/oauth/token";
-    QByteArray m_baseControlUrl = "https://my.tado.com/api/v2";
-    QByteArray m_clientSecret = "4HJGRffVR8xb3XdEUQpjgZ1VplJi6Xgw";
-    QByteArray m_clientId = "public-api-preview";
+    bool m_apiAvailable = false;
+    QString m_baseAuthorizationUrl;
+    QString m_baseControlUrl;
+    QString m_clientSecret;
+    QString m_clientId;
 
     NetworkAccessManager *m_networkManager = nullptr;
     QString m_username;
@@ -123,6 +126,7 @@ private:
 
 signals:
     void connectionChanged(bool connected);
+    void apiCredentialsReceived(bool success);
     void authenticationStatusChanged(bool authenticated);
     void requestExecuted(QUuid requestId, bool success);
 
