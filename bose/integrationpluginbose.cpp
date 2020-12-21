@@ -303,6 +303,16 @@ void IntegrationPluginBose::executeAction(ThingActionInfo *info)
             QUuid requestId = soundTouch->setSpeaker(playInfo);
             m_pendingActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
+        } else if (action.actionTypeId() == soundtouchIncreaseVolumeActionTypeId) {
+            int step = action.param(soundtouchIncreaseVolumeActionStepParamTypeId).value().toInt();
+            QUuid requestId = soundTouch->setVolume(qMin(100, thing->stateValue(soundtouchVolumeStateTypeId).toInt() + step));
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
+        } else if (action.actionTypeId() == soundtouchDecreaseVolumeActionTypeId) {
+            int step = action.param(soundtouchDecreaseVolumeActionStepParamTypeId).value().toInt();
+            QUuid requestId = soundTouch->setVolume(qMax(0, thing->stateValue(soundtouchVolumeStateTypeId).toInt() - step));
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
         } else {
             qCWarning(dcBose()) << "ActionTypeId not found" << action.actionTypeId();
             return info->finish(Thing::ThingErrorActionTypeNotFound);

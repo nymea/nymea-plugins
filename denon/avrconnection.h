@@ -73,7 +73,7 @@ public:
     QUuid getPlayBackInfo();
 
     QUuid setChannel(const QByteArray &channel);
-    QUuid setVolume(int volume);
+    QUuid setVolume(uint volume);
     QUuid setMute(bool mute);
     QUuid setPower(bool power);
     QUuid setSurroundMode(const QByteArray &surroundMode);

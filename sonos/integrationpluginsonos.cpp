@@ -342,6 +342,19 @@ void IntegrationPluginSonos::executeAction(ThingActionInfo *info)
             }
             return;
         }
+
+        if (action.actionTypeId() == sonosGroupIncreaseVolumeActionTypeId) {
+            int volume = qMin(100, thing->stateValue(sonosGroupVolumeStateTypeId).toInt() + 5);
+            m_pendingActions.insert(sonos->setGroupVolume(groupId, volume), QPointer<ThingActionInfo>(info));
+            return;
+        }
+
+        if (action.actionTypeId() == sonosGroupDecreaseVolumeActionTypeId) {
+            int volume = qMax(0, thing->stateValue(sonosGroupVolumeStateTypeId).toInt() - 5);
+            m_pendingActions.insert(sonos->setGroupVolume(groupId, volume), QPointer<ThingActionInfo>(info));
+            return;
+        }
+
         return info->finish(Thing::ThingErrorActionTypeNotFound);
     }
     info->finish(Thing::ThingErrorThingClassNotFound);

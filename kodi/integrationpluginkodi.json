@@ -12,7 +12,7 @@
                     "id": "d09953e3-c5bd-415b-973b-0d0bf2be3f69",
                     "name": "kodi",
                     "displayName": "Kodi",
-                    "interfaces": ["mediaplayer", "extendedmediacontroller", "extendedvolumecontroller", "mediametadataprovider", "shufflerepeat", "notifications", "extendednavigationpad", "connectable"],
+                    "interfaces": ["mediaplayer", "mediacontroller", "volumecontroller", "mediametadataprovider", "notifications", "extendednavigationpad", "connectable"],
                     "createMethods": ["user", "discovery"],
                     "browsable": true,
                     "paramTypes": [
@@ -203,6 +203,16 @@
                             "id": "85d7126a-b123-4a28-aeb4-d84bcfb4d14f",
                             "name": "skipNext",
                             "displayName": "skipNext"
+                        },
+                        {
+                            "id": "3ec57983-01e7-4cc4-b266-8de86dfca82d",
+                            "name": "increaseVolume",
+                            "displayName": "Increase volume"
+                        },
+                        {
+                            "id": "54497942-9bf8-492a-8f9c-9820a03e754e",
+                            "name": "decreaseVolume",
+                            "displayName": "Decrease volume"
                         },
                         {
                             "id": "dc0aa3b5-4eae-4e58-a4ac-d4c124da53f1",

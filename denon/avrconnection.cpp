@@ -161,7 +161,7 @@ QUuid AvrConnection::setChannel(const QByteArray &channel)
     return sendCommand(cmd);
 }
 
-QUuid AvrConnection::setVolume(int volume)
+QUuid AvrConnection::setVolume(uint volume)
 {
     qCDebug(dcDenon) << "Set volume" << volume;
     QByteArray cmd = "MV" + QByteArray::number(volume) + "\r";
