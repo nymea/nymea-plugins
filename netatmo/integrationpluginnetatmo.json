@@ -2,6 +2,23 @@
     "displayName": "Netatmo",
     "name": "Netatmo",
     "id": "69d14951-0c02-4877-bcef-dffdf48b7ccb",
+    "apiKeys": ["netatmo"],
+    "paramTypes": [
+        {
+            "id": "fbda653d-d59e-438c-a70c-0ccbe8080215",
+            "name": "customClientId",
+            "displayName": "Custom client id",
+            "type": "QString",
+            "defaultValue": ""
+        },
+        {
+            "id": "06439e1e-da15-4483-8737-0a6aa967c479",
+            "name": "customClientSecret",
+            "displayName": "Custom client secret",
+            "type": "QString",
+            "defaultValue": ""
+        }
+    ],
     "vendors": [
         {
             "displayName": "Netatmo",
@@ -12,7 +29,7 @@
                     "id": "728d5a67-27a3-400e-b83c-2765f5196f69",
                     "name": "netatmoConnection",
                     "displayName": "Netatmo Connection",
-                    "interfaces": ["gateway"],
+                    "interfaces": ["account"],
                     "setupMethod": "userandpassword",
                     "createMethods": ["user"],
                     "stateTypes": [
@@ -23,6 +40,22 @@
                             "displayNameEvent": "Available changed",
                             "type": "bool",
                             "defaultValue": false
+                        },
+                        {
+                            "id": "d1ca8579-5d5a-4372-9139-4b083efead2e",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged inchanged",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "b9c98ae6-3687-4279-8fda-bc02c7b7ea38",
+                            "name": "userDisplayName",
+                            "displayName": "Username",
+                            "displayNameEvent": "Username changed",
+                            "type": "QString",
+                            "defaultValue": ""
                         }
                     ]
                 },
@@ -30,7 +63,7 @@
                     "id": "1c809049-04f2-4710-99f5-6ed379a2934f",
                     "name": "indoor",
                     "displayName": "Indoor Station",
-                    "interfaces": ["temperaturesensor", "humiditysensor", "pressuresensor", "noisesensor", "co2sensor"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "pressuresensor", "noisesensor", "co2sensor", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -126,12 +159,23 @@
                         },
                         {
                             "id": "6ea906d4-5740-454d-a730-6fdb9fa0d624",
-                            "name": "wifiStrength",
+                            "name": "signalStrength",
                             "displayName": "WiFi signal strength",
                             "displayNameEvent": "WiFi signal strength changed",
                             "unit": "Percentage",
-                            "type": "int",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "d84ba5d7-5202-4786-b983-958b594c341f",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
                         }
                     ]
                 },
@@ -139,7 +183,7 @@
                     "id": "6cc01d62-7317-4ec4-8ac4-a4cab762c179",
                     "name": "outdoor",
                     "displayName": "Outdoor Station",
-                    "interfaces": ["temperaturesensor", "humiditysensor", "batterylevel"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "batterylevel", "wirelessconnectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
@@ -220,8 +264,19 @@
                             "displayName": "Signal strength",
                             "displayNameEvent": "Signal strength changed",
                             "unit": "Percentage",
-                            "type": "int",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "21d7f2b7-e45b-4986-b3da-d6e8c0421bfc",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
                         },
                         {
                             "id": "15d8fae1-ba47-42e1-994d-530e8017c965",

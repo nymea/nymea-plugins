@@ -48,7 +48,7 @@ class IntegrationPluginNetatmo : public IntegrationPlugin
 
 public:
     explicit IntegrationPluginNetatmo();
-
+    void init() override;
     void startPairing(ThingPairingInfo *info) override;
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
     void setupThing(ThingSetupInfo *info) override;
@@ -56,12 +56,14 @@ public:
     void postSetupThing(Thing *thing) override;
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_pluginTimer3s = nullptr;
+    PluginTimer *m_pluginTimer10m = nullptr;
 
     QHash<QString, QVariantMap> m_indoorStationInitData;
     QHash<QString, QVariantMap> m_outdoorStationInitData;
 
-    QHash<OAuth2 *, Thing *> m_authentications;
+    QHash<OAuth2 *, ThingId> m_pairingAuthentications;
+    QHash<OAuth2 *, ThingId> m_authentications;
     QHash<NetatmoBaseStation *, Thing *> m_indoorDevices;
     QHash<NetatmoOutdoorModule *, Thing *> m_outdoorDevices;
 
@@ -73,10 +75,14 @@ private:
     Thing *findIndoorDevice(const QString &macAddress);
     Thing *findOutdoorDevice(const QString &macAddress);
 
+    QString m_clientId;
+    QString m_clientSecret;
+
 private slots:
     void onPluginTimer();
     void onIndoorStatesChanged();
     void onOutdoorStatesChanged();
+    void updateClientCredentials();
 };
 
 #endif // INTEGRATIONPLUGINNETATMO_H

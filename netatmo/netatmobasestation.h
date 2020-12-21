@@ -55,6 +55,7 @@ public:
     int noise() const;
     int co2() const;
     int wifiStrength() const;
+    bool reachable() const;
 
     void updateStates(const QVariantMap &data);
 
@@ -73,6 +74,7 @@ private:
     int m_noise;
     int m_co2;
     int m_wifiStrength;
+    bool m_reachable;
 
 signals:
     void statesChanged();

@@ -90,6 +90,11 @@ int NetatmoOutdoorModule::battery() const
     return m_battery;
 }
 
+bool NetatmoOutdoorModule::reachable() const
+{
+    return m_reachable;
+}
+
 void NetatmoOutdoorModule::updateStates(const QVariantMap &data)
 {
     // check data timestamp
@@ -129,6 +134,11 @@ void NetatmoOutdoorModule::updateStates(const QVariantMap &data)
             int delta = 30 - (signalStrength - 60);
             m_signalStrength = qRound(100.0 * delta / 30.0);
         }
+    }
+
+    // update reachable state
+    if (data.contains("reachable")) {
+        m_reachable = data.value("reachable").toBool();
     }
     emit statesChanged();
 

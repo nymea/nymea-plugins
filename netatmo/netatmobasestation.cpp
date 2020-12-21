@@ -94,6 +94,11 @@ int NetatmoBaseStation::wifiStrength() const
     return m_wifiStrength;
 }
 
+bool NetatmoBaseStation::reachable() const
+{
+    return m_reachable;
+}
+
 void NetatmoBaseStation::updateStates(const QVariantMap &data)
 {
     // check data timestamp
@@ -123,6 +128,11 @@ void NetatmoBaseStation::updateStates(const QVariantMap &data)
             int delta = 30 - (wifiStrength - 56);
             m_wifiStrength = qRound(100.0 * delta / 30.0);
         }
+    }
+
+    // update reachable state
+    if (data.contains("reachable")) {
+        m_reachable = data.value("reachable").toBool();
     }
     emit statesChanged();
 }
