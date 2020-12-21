@@ -1,6 +1,41 @@
-nymea-plugins (0.25.0) UNRELEASED; urgency=medium
+nymea-plugins (0.25.0) xenial; urgency=medium
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Sun, 08 Nov 2020 18:09:48 +0100
+  [ Bernhard Trinnes ]
+  * New Plugin: Home Connect
+  * Tado: Added dynamic API credential optaining
+
+  [ Michael Zanetti ]
+  * Hue: Fix motionsensor flickering with low intervals
+  * GenericThings: Add a generic thermostat
+
+  [ Bernhard Trinnes ]
+  * Simulated things: Sensors add ioType
+  * Onewire: Add iotype
+  * Netatmo: Add api key provider and custom api plugin settings
+  * Bose SoundTouch: Add alert interface and api key provider
+
+  [ Michael Zanetti ]
+  * Shelly: Add support for the Shelly Button 1
+  * Shelly: Add support for the Shelly 3EM
+  * Shelly: Add support for the Shelly 2
+  * Shelly: Add support for the Shelly H&T
+  * ZigBee: Add initial set of ZigBee plugins (Generic, Hue, Tradfri,
+    Lumi)
+  * 0.25 version bump
+
+  [ Bernhard Trinnes ]
+  * GenericThings: Add SG-Ready thingClassId
+
+  [ Michael Zanetti ]
+  * Tasmota: Fix wrong param types for channels
+  * Adjust media plugins to new interfaces
+  * Fix some plugins that fail the new, more strict param validation
+  * TCP Commander: Make the commander bidirectional
+  * Shelly: Fix occational crash when setup times out
+  * Shelly: Add support for the Shelly 1L
+  * Kodi: Fix a small leak when removing kodi things
+
+ -- Jenkins <jenkins@nymea.io>  Mon, 21 Dec 2020 18:01:57 +0100
 
 nymea-plugins (0.24.1) xenial; urgency=medium
 
