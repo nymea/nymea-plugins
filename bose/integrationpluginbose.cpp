@@ -49,11 +49,16 @@ IntegrationPluginBose::~IntegrationPluginBose()
 void IntegrationPluginBose::init()
 {
     m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_soundtouch._tcp");
+
+    updateConsumerKey();
+
+    connect(this, &IntegrationPlugin::configValueChanged, this, &IntegrationPluginBose::updateConsumerKey);
+    connect(apiKeyStorage(), &ApiKeyStorage::keyAdded, this, &IntegrationPluginBose::updateConsumerKey);
+    connect(apiKeyStorage(), &ApiKeyStorage::keyUpdated, this, &IntegrationPluginBose::updateConsumerKey);
 }
 
 void IntegrationPluginBose::setupThing(ThingSetupInfo *info)
 {
-
     if (info->thing()->thingClassId() == soundtouchThingClassId) {
 
         QString ipAddress;
@@ -275,6 +280,29 @@ void IntegrationPluginBose::executeAction(ThingActionInfo *info)
             }
             m_pendingActions.insert(requestId, info);
             connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
+        } else if (action.actionTypeId() == soundtouchAlertActionTypeId) {
+            if (m_consumerKey.isEmpty()) {
+                return info->finish(Thing::ThingErrorHardwareFailure, tr("No consumer key available."));
+            }
+            QUrl alertUrl;
+            QString alertSound = action.param(soundtouchAlertActionSoundParamTypeId).value().toString();
+            if (alertSound == "Doorbell") {
+                alertUrl = configValue(bosePluginDoorbellSoundUrlParamTypeId).toString();
+            } else if (alertSound == "Notification") {
+                alertUrl = configValue(bosePluginNotificationSoundUrlParamTypeId).toString();
+            }
+            if (!alertUrl.isValid()) {
+                return info->finish(Thing::ThingErrorHardwareFailure, tr("Sound URL is not valid."));
+            }
+            PlayInfoObject playInfo;
+            playInfo.url = alertUrl.toString();
+            playInfo.appKey = m_consumerKey;
+            playInfo.services = "nymea";
+            playInfo.volume = action.param(soundtouchAlertActionVolumeParamTypeId).value().toInt();
+            playInfo.reason = action.param(soundtouchAlertActionMessageParamTypeId).value().toString();
+            QUuid requestId = soundTouch->setSpeaker(playInfo);
+            m_pendingActions.insert(requestId, info);
+            connect(info, &ThingActionInfo::aborted, this, [requestId, this] {m_pendingActions.remove(requestId);});
         } else {
             qCWarning(dcBose()) << "ActionTypeId not found" << action.actionTypeId();
             return info->finish(Thing::ThingErrorActionTypeNotFound);
@@ -367,6 +395,22 @@ void IntegrationPluginBose::executeBrowserItem(BrowserActionInfo *info)
             }
         }
     }
+}
+
+void IntegrationPluginBose::updateConsumerKey()
+{
+    QString key = configValue(bosePluginCustomConsumerKeyParamTypeId).toString();
+    if (!key.isEmpty()) {
+        m_consumerKey = key;
+        return;
+    }
+    key = apiKeyStorage()->requestKey("bose").data("consumerKey");
+    if (!key.isEmpty()) {
+        m_consumerKey = key;
+        return;
+    }
+    qCWarning(dcBose()) << "No API key set.";
+    qCWarning(dcBose()) << "Either install an API key pacakge (nymea-apikeysprovider-plugin-*) or provide a key in the plugin settings.";
 }
 
 void IntegrationPluginBose::onPluginTimer()
