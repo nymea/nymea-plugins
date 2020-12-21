@@ -1,0 +1,13 @@
+{
+    "title": "ZigBee Generic lights",
+    "tagline": "Connect and control generic ZigBee lights native.",
+    "icon": "zigbee.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "zigbee"
+    ],
+    "categories": [
+        "light"
+    ]
+}

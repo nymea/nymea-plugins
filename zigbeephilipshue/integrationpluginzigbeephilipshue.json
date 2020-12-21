@@ -1,0 +1,234 @@
+{
+    "name": "ZigbeePhilipsHue",
+    "displayName": "Zigbee Philips Hue",
+    "id": "0ca340b7-061a-42e6-ab7d-d7b4fd235d02",
+    "vendors": [
+        {
+            "id": "0ae1e001-2aa6-47ed-b8c0-334c3728a68f",
+            "name": "philips",
+            "displayName": "Philips",
+            "thingClasses": [
+                {
+                    "name": "dimmerSwitch",
+                    "displayName": "Hue dimmer switch",
+                    "id": "b2711164-a848-4715-8ddf-33ca86f9f4cf",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "multibutton", "batterylevel", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "b221cad1-ef2e-4192-8168-11d0205a43da",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "d2bb97ee-caed-4776-8931-9fc0a04e4e8f",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "5ac101b2-4bb7-4b5c-8493-08b1ae7ca0c1",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "5a6e325e-a6ee-4a36-b429-f5d8c8adb80b",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "12139630-668a-4ad8-96fa-781028e9eced",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "3e28e0b3-fe23-4293-8876-8384def6c4fb",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "4223a3bc-9616-4ed2-ae50-704b9df62d0e",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ],
+                    "actionTypes": [
+
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "33bb5816-8479-4995-99e2-cb0443886003",
+                            "name": "pressed",
+                            "displayName": "Button pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "c086a247-838f-49c0-b1e4-2ae1ed181b55",
+                                    "name": "buttonName",
+                                    "displayName": "Button name",
+                                    "type": "QString",
+                                    "allowedValues": ["ON", "OFF", "DIM UP", "DIM DOWN"]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "motionSensor",
+                    "displayName": "Hue motion sensor",
+                    "id": "031c45d1-e782-4f91-9f05-259d6b81c7ef",
+                    "setupMethod": "JustAdd",
+                    "createMethods": [ "Auto" ],
+                    "interfaces": [ "presencesensor", "lightsensor", "temperaturesensor", "batterylevel", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "a866df99-7e2a-40e1-b82e-529c03846d5e",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "99f4ff28-6d61-4e96-bfc4-c32aa05bb256",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "4576f68f-7856-48f8-a3fd-2c9e7f968537",
+                            "name": "timeout",
+                            "displayName": "Time period",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "defaultValue": 60,
+                            "minValue": 10
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "0d0a5ee1-41f2-4b5a-a3c0-7c8cca1c064d",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "cached": false,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "d4f85c34-896a-4bab-af71-8b80d9889815",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "defaultValue": 0,
+                            "maxValue": 100,
+                            "minValue": 0,
+                            "type": "uint",
+                            "unit": "Percentage"
+                        },
+                        {
+                            "id": "18cb67e1-220f-41d7-9145-1816fc5d38d0",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "00a4450b-d2fe-4e2b-92c8-1ab3a98d1628",
+                            "name": "batteryLevel",
+                            "displayName": "Battery",
+                            "displayNameEvent": "Battery changed",
+                            "type": "int",
+                            "unit": "Percentage",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100
+                        },
+                        {
+                            "id": "9341f65a-b0aa-4648-82eb-e8400779f817",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "66e3b840-4f4c-4f4a-a71a-69fb751f2a3b",
+                            "name": "isPresent",
+                            "displayName": "Present",
+                            "displayNameEvent": "Present changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "ioType": "digitalInput"
+                        },
+                        {
+                            "id": "128777a9-75e7-4cc6-b196-691d2ffddbc9",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen time",
+                            "displayNameEvent": "Last seen time changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "8077e335-1d18-4e3f-9b5e-6f71af4a33b1",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "unit": "Lux",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "978f069c-57c0-4e73-a81b-c593bc2e7624",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0.0
+                        }
+                    ],
+                    "actionTypes": [
+
+                    ],
+                    "eventTypes": [
+
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "title": "ZigBee Generic",
+    "tagline": "Connect and control native ZigBee devices which can be handled in a generic way.",
+    "icon": "zigbee.svg",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "zigbee"
+    ],
+    "categories": [
+        "socket"
+    ]
+}
