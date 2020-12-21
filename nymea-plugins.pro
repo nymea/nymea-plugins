@@ -26,6 +26,7 @@ PLUGIN_DIRS = \
     gpio                \
     i2cdevices          \
     httpcommander       \
+    homeconnect         \
     keba                \
     kodi                \
     lgsmarttv           \

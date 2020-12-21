@@ -1,0 +1,1112 @@
+{
+    "id": "109abdc7-5d53-4f63-a4b2-851e97cea8ea",
+    "name": "homeConnect",
+    "displayName": "Home Connect",
+    "paramTypes": [
+        {
+            "id": "82a1d671-4774-49df-97dc-ed89398c0dc9",
+            "name": "simulationMode",
+            "displayName": "Simulation mode",
+            "defaultValue": false,
+            "type": "bool"
+        },
+        {
+            "id": "37c6cbee-4ce6-4f8c-91ad-9f6f89b6c032",
+            "name": "controlEnabled",
+            "displayName": "Control enabled",
+            "defaultValue": false,
+            "type": "bool"
+        },
+        {
+            "id": "19cedaab-b8a0-4cab-80c7-0cae5fce124d",
+            "name": "customClientKey",
+            "displayName": "Custom client key",
+            "defaultValue": "",
+            "type": "QString"
+        },
+        {
+            "id": "49b828ab-f495-4332-900b-99a9d37565b1",
+            "name": "customClientSecret",
+            "displayName": "Custom client secret",
+            "defaultValue": "",
+            "type": "QString"
+        }
+    ],
+    "apiKeys": ["homeconnect"],
+    "vendors": [
+        {
+            "id": "43cfb7a4-402f-4315-86b5-ce095697fd13",
+            "name": "homeConnect",
+            "displayName": "Home Connect",
+            "thingClasses": [
+                {
+                    "id": "babc1a39-730a-4516-95bf-ff51a8ce887a",
+                    "name": "homeConnectAccount",
+                    "displayName": "Home Connect account",
+                    "interfaces": ["account"],
+                    "createMethods": ["user"],
+                    "setupMethod": "oauth",
+                    "paramTypes": [
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "1180576a-1de2-4815-b442-877b572ce586",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "ff40d5c7-3095-4b3e-9e10-4c0774336764",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "5d3b2396-6528-47c2-b5a4-f751531bccea",
+                            "name": "userDisplayName",
+                            "displayName": "User name",
+                            "displayNameEvent": "User name changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        }
+                    ]
+                },
+                {
+                    "id": "96845b7d-4c20-43a0-a810-ec505df3ee88",
+                    "name": "oven",
+                    "displayName": "Oven",
+                    "interfaces": ["connectable", "closablesensor"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "661c1603-356e-4a78-baf4-7ea0bc9da316",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "e0a6c618-d849-4206-9e3c-cd01352664e7",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "e892ca9e-5b31-41f5-a568-44474091f0f6",
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "c9f9bd33-513f-4834-a504-c2c1611fb4be",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "8843a1ce-796a-40c3-ab24-cf97b821d45c",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "6afd574a-3c22-46cd-bc28-4dfcba01c51d",
+                            "name": "remoteControlActivationState",
+                            "displayName": "Remote control activation state",
+                            "displayNameEvent": "Remote control state activation changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "9f9cb8ea-8527-48c9-8bf2-f5148d5b53f1",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "f3f5f257-5887-4d64-b61a-8179424912b3",
+                            "name": "targetTemperature",
+                            "displayName": "Target temperature",
+                            "displayNameEvent": "Target temperature changed",
+                            "displayNameAction": "Set target temperature",
+                            "defaultValue": 180,
+                            "minValue": 30,
+                            "maxValue": 250,
+                            "unit": "DegreeCelsius",
+                            "type": "int"
+                        },
+                        {
+                            "id": "1dcf634c-04c1-4415-9656-06f5b61bde17",
+                            "name": "currentTemperature",
+                            "displayName": "Current temperature",
+                            "displayNameEvent": "Current temperature changed",
+                            "defaultValue": 0,
+                            "unit": "DegreeCelsius",
+                            "type": "int"
+                        },
+                        {
+                            "id": "3527a28d-e4df-481b-a8b6-88717b77c7a6",
+                            "name": "duration",
+                            "displayName": "Duration",
+                            "displayNameEvent": "Duration changed",
+                            "displayNameAction": "Set duration",
+                            "defaultValue": 0,
+                            "unit": "Minutes",
+                            "type": "int"
+                        },
+                        {
+                            "id": "85a333dc-0e0b-454c-9c9a-d14dd6484275",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "2e6f27bb-371a-44a4-b057-51f765bdeb86",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "6e828e48-3634-4d92-9dee-2c03a51c7189",
+                            "name": "endTime",
+                            "displayName": "End time",
+                            "displayNameEvent": "End time changed",
+                            "defaultValue": "00:00:00",
+                            "type": "QString"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "aa3372df-5be7-499a-8246-9c4319a2c080",
+                            "name": "preheatFinished",
+                            "displayName": "Preheat finished"
+                        },
+                        {
+                            "id": "3067c6e8-33b3-4a87-ae41-09f28e8a0c1e",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
+                    ]
+                },
+                {
+                    "id": "bb0fcd0b-9594-4368-99d9-3ad5e5a8136b",
+                    "name": "dishwasher",
+                    "displayName": "Dishwasher",
+                    "interfaces": ["connectable", "closablesensor"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "f6b86d1b-481a-4496-975e-055f5ecc2bdb",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "7c056989-d91b-492c-9206-ef77fb81b0c8",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "8cbb3746-7e04-4fc8-93eb-b774b606a057",
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "2b45fbfc-d3d7-4dd4-91f8-4a789405246e",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Action required",
+                                "Finished",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "c8bf60d2-e8e3-44dd-9cea-c7bcbe17c2b1",
+                            "name": "remoteControlActivationState",
+                            "displayName": "Remote control activation state",
+                            "displayNameEvent": "Remote control state activation changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "a8ce4a4e-fae3-4100-ad05-7c390b774b4a",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "f0484744-a180-4a14-9c84-f49a489e3510",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "692ea106-557c-4870-b569-ab82a4909b2c",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "f61cd171-2e8e-434c-98f9-e7fc7df1c928",
+                            "name": "endTime",
+                            "displayName": "End time",
+                            "displayNameEvent": "End time changed",
+                            "defaultValue": "00:00:00",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "7dc1e238-cdc2-42e8-9a2a-e93d497966d9",
+                            "name": "start",
+                            "displayName": "Start",
+                            "paramTypes": [
+                                {
+                                    "id": "9b87bcc9-4d0d-4cd8-bd14-c2e48ef8cb1f",
+                                    "name": "startTime",
+                                    "displayName": "Start time",
+                                    "defaultValue": 0,
+                                    "minValue": 0,
+                                    "type": "int",
+                                    "unit": "Minutes"
+                                }
+                            ]
+                        },
+                        {
+                            "id": "c2c7e1bd-bf0f-4ded-93e0-e4d770f03f6f",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "509e62c1-8121-4f8e-b847-e5e8083d6c1b",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
+                    ]
+                },
+                {
+                    "id": "f6b39ce2-8276-4db7-b2a3-4a04cafacbb9",
+                    "name": "coffeeMaker",
+                    "displayName": "Coffee Maker",
+                    "interfaces": ["connectable", "closablesensor"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "85d48203-e97b-45cc-a899-494c375389a5",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "796aa7d3-db32-4b6a-88b0-323813feceb3",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "5011efa7-9915-4ecc-b717-6ced369abcb7",
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "693fc8d2-d9a9-4109-b8c5-f3d22091500c",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Run",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "dc0fbd4b-364e-4856-a237-7d789a99f321",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "598985c1-7c9a-4b04-aabd-f72e6dd8cab8",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "a121f86a-ab69-4be9-bbe2-631e2210fee7",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "648e3a8e-74c4-41e8-bcbb-dd8b5757d375",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "714a12bc-63a5-4423-aad9-47d77f41ae47",
+                            "name": "strength",
+                            "displayName": "Strength",
+                            "displayNameEvent": "Strength changed",
+                            "displayNameAction": "Set strength",
+                            "defaultValue": "Normal",
+                            "writable": true,
+                            "type": "QString",
+                            "possibleValues": [
+                                "Very mild",
+                                "Mild",
+                                "Normal",
+                                "Strong",
+                                "Very strong",
+                                "Double shot",
+                                "Double shot +",
+                                "Double shot ++"
+                            ]
+                        },
+                        {
+                            "id": "b3aea372-bc51-4e92-b92f-5b9613c20a9c",
+                            "name": "fillQuantity",
+                            "displayName": "Fill quantity",
+                            "displayNameEvent": "Fill quantity changed",
+                            "displayNameAction": "Set fill quantity",
+                            "defaultValue": "60",
+                            "type": "int",
+                            "minValue": 30,
+                            "maxValue": 400,
+                            "writable": true
+                        },
+                        {
+                            "id": "29dc7edb-c34f-41da-9d2a-e46bda34885b",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "displayNameAction": "Set temperature",
+                            "defaultValue": "Normal",
+                            "possibleValues": [
+                                "Normal",
+                                "High",
+                                "Very high"
+                            ],
+                            "type": "QString",
+                            "writable": true
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "025f7cb5-83a7-40d3-9628-05eda18f5568",
+                            "name": "start",
+                            "displayName": "Start"
+                        },
+                        {
+                            "id": "12f5b09e-a23a-43ee-ba4b-8b0f34792496",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "9e641015-67bd-4879-aa58-7b6849c58178",
+                            "name": "beanContainerEmpty",
+                            "displayName": "Bean container empty"
+                        },
+                        {
+                            "id": "2ea6dd16-86ad-4e55-9281-ae55646eb869",
+                            "name": "waterTankEmpty",
+                            "displayName": "Water tank empty"
+                        },
+                        {
+                            "id": "1f360c77-01a5-411c-b347-aa3f0a5c9ba5",
+                            "name": "dripTrayFull",
+                            "displayName": "Drip tray full"
+                        },
+                        {
+                            "id": "f8c7a26a-221a-454c-a2b0-ef8064e467f3",
+                            "name": "programFinished",
+                           "displayName": "Program finished"
+                        }
+                    ]
+                },
+                {
+                    "id": "f360cc43-41fc-454a-b6df-09ec0a66c22a",
+                    "name": "dryer",
+                    "displayName": "Dryer",
+                    "interfaces": ["connectable", "closablesensor"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "cad8a1f9-6313-48dd-bb1d-b285006c760b",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "485f895a-5c2d-4e1a-8f77-a2d020363635",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "81aa609e-69c0-4d5c-98f0-46e6f14c7eaa",
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "52fde732-ed14-437e-8fbf-461d2ed19654",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "d73c04c4-7082-4259-a225-10c453247103",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "ed8a56a1-18db-469f-b51d-487111037c71",
+                            "name": "remoteControlActivationState",
+                            "displayName": "Remote control activation state",
+                            "displayNameEvent": "Remote control state activation changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "d18d89c1-d04f-491c-b817-7234ea531deb",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "eaf84b93-bacd-42b1-afaf-a890c8b2a099",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "4ad5424c-6ccd-4e29-9aba-41f960618401",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "829c1ec6-5b5a-490a-b487-52287eab91ba",
+                            "name": "dryingTarget",
+                            "displayName": "Drying target",
+                            "displayNameEvent": "Drying target changed",
+                            "displayNameAction": "Set drying target",
+                            "defaultValue": "Iron dry",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Iron dry",
+                                "Cupboard dry",
+                                "Cupboard dry plus"
+                            ],
+                            "writable": true
+                        },
+                        {
+                            "id": "6586f2d9-daec-43fa-8f7f-f3afc9d70046",
+                            "name": "endTime",
+                            "displayName": "End time",
+                            "displayNameEvent": "End time changed",
+                            "defaultValue": "00:00:00",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "aedd85a6-0f9a-4bc4-b2ba-90ba11d1a955",
+                            "name": "start",
+                            "displayName": "Start"
+                        },
+                        {
+                            "id": "8c9923f6-2a2d-48bb-aaf4-5f887565c58a",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "09c6269d-015f-4f83-895f-9dea1ac11c43",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
+                    ]
+                },
+                {
+                    "id": "6cbf309d-bde8-4e6e-ad6d-b85c8fc1843f",
+                    "name": "fridge",
+                    "displayName": "Fridge Freezer",
+                    "interfaces": ["connectable", "closablesensor"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "ba36e6a0-cb88-42d2-bdb9-9d7d106dec83",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "16931afd-44f6-4b13-bd3e-f6d30ac54ea0",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "99bba70c-5ead-4076-8b71-720a931668a4",
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "bc13977e-0ea1-4804-af00-311ae62c6c06",
+                            "name": "fridgeTemperature",
+                            "displayName": "Fridge temperature",
+                            "displayNameEvent": "Fridge temperature changed",
+                            "defaultValue": 0,
+                            "type": "int",
+                            "minValue": 2,
+                            "maxValue": 8,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "5a1a8665-835b-4909-8f79-42874c5c4643",
+                            "name": "fridgeTemperatureSetting",
+                            "displayName": "Fridge temperature setting",
+                            "displayNameEvent": "Fridge temperature setting changed",
+                            "displayNameAction": "Set fridge temperature setting",
+                            "defaultValue": 0,
+                            "type": "int",
+                            "minValue": 2,
+                            "maxValue": 8,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "523adac4-a98a-49b5-96d4-d506831aeab7",
+                            "name": "freezerTemperature",
+                            "displayName": "Freezer temperature",
+                            "displayNameEvent": "Freezer temperature changed",
+                            "defaultValue": -18,
+                            "type": "int",
+                            "minValue": -24,
+                            "maxValue": -16,
+                            "unit": "DegreeCelsius"
+                        },
+                        {
+                            "id": "081ceedc-7c09-4cd9-8015-13a59ce653bf",
+                            "name": "freezerTemperatureSetting",
+                            "displayName": "Freezer temperature setting",
+                            "displayNameEvent": "Freezer temperature setting changed",
+                            "displayNameAction": "Set freezer temperature setting",
+                            "defaultValue": -18,
+                            "type": "int",
+                            "minValue": -24,
+                            "maxValue": -16,
+                            "unit": "DegreeCelsius"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "1c2ca8d8-3d51-4303-b749-93dc71b1a696",
+                            "name": "doorAlarmRefrigerator",
+                            "displayName": "Door alarm refrigerator"
+                        },
+                        {
+                            "id": "702e6401-6dd1-4c29-9bb7-36173284b6ab",
+                            "name": "doorAlarmFreezer",
+                            "displayName": "Door alarm freezer"
+                        },
+                        {
+                            "id": "b4e68a37-0d38-4ae0-babb-3c8e3bc4cf6c",
+                            "name": "temperatureAlarmFreezer",
+                            "displayName": "Temperature alarm freezer"
+                        }
+                    ]
+                },
+                {
+                    "id": "aaec390e-a61f-40ea-b42c-80f69428690b",
+                    "name": "washer",
+                    "displayName": "Washer",
+                    "interfaces": ["connectable", "closablesensor"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "be4a1dcf-a0ce-44bb-a374-65f875e53c94",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "950a8bf0-83c4-4e1b-9c00-167a4d3e3c22",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "99296e86-09bf-4b74-b122-ee82b6bfdb62",
+                            "name": "closed",
+                            "displayName": "Door closed",
+                            "displayNameEvent": "Door closed changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "2ad3e2f8-c955-4e1d-b394-1e71a16f03bb",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "f3aa6f6e-bfa3-4465-906c-3d5137d4098c",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "3c9c7163-b5f5-47cc-86b1-aa95273a22f6",
+                            "name": "remoteControlActivationState",
+                            "displayName": "Remote control activation state",
+                            "displayNameEvent": "Remote control state activation changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "f7a68b23-6d74-451b-89c8-b2d2fb5d0839",
+                            "name": "remoteStartAllowanceState",
+                            "displayName": "Remote start allowance state",
+                            "displayNameEvent": "Remote start allowance changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "312d817d-3384-41fb-a8ba-15c137844ee0",
+                            "name": "progress",
+                            "displayName": "Progress",
+                            "displayNameEvent": "Progress changed",
+                            "defaultValue": 0,
+                            "unit": "Percentage",
+                            "type": "int"
+                        },
+                        {
+                            "id": "d10066ad-0ad3-49d2-a3c3-ee6002c1a18d",
+                            "name": "selectedProgram",
+                            "displayName": "Selected program",
+                            "displayNameEvent": "Selected program changed",
+                            "defaultValue": "None",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "29ed9597-2ace-48f5-91bc-171ac2601bfc",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "defaultValue": "Unknown",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "ab65bfa0-37d8-4df6-80f0-80377a43a520",
+                            "name": "spinSpeed",
+                            "displayName": "Spin speed",
+                            "displayNameEvent": "Spin speed changed",
+                            "defaultValue": "Unknown",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "e9b93ad1-fe9e-4ba2-ac7c-9407fa80c846",
+                            "name": "endTime",
+                            "displayName": "End time",
+                            "displayNameEvent": "End time changed",
+                            "defaultValue": "00:00:00",
+                            "type": "QString"
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "c87d6825-f37d-4da6-8545-945bd589dbc2",
+                            "name": "start",
+                            "displayName": "Start"
+                        },
+                        {
+                            "id": "044582ca-30e6-4d37-9377-809fb5fa120a",
+                            "name": "stop",
+                            "displayName": "Stop"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "79e2b11e-557e-4295-b23f-7cf31d8566af",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
+                    ]
+                },
+                {
+                    "id": "6ab99f5b-c8b6-4391-84d3-2e258a529174",
+                    "name": "cookTop",
+                    "displayName": "Cook top",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "5babea64-0cd3-4477-9b95-3a71433b9c0c",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d8113d26-045d-4fd5-a2f5-f202968408e0",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "0360b2af-f88f-48be-904a-b352aab0a2cd",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
+                    ]
+                },
+                {
+                    "id": "62ce7eee-f6bb-43e5-8adf-dfd030276987",
+                    "name": "hood",
+                    "displayName": "Hood",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "7aa9f92a-e8ad-4b89-80d2-4ed0f3ead114",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "bb137bcd-bb6e-464b-8fdc-fb376efd1f59",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "a7680cc1-528c-47ac-a917-d9f3866e9504",
+                            "name": "localControlState",
+                            "displayName": "Local control state",
+                            "displayNameEvent": "Local control state changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "d1cf12ef-c0e9-452f-99bf-5e65a4dd622c",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        },
+                        {
+                            "id": "09e73cec-5b98-4d31-86fb-cd671f210196",
+                            "name": "ventingLevel",
+                            "displayName": "Venting level",
+                            "displayNameEvent": "Venting level changed",
+                            "defaultValue": 0,
+                            "type": "int"
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "79bf7b91-73d6-4d11-8530-588d301b60f2",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
+                    ]
+                },
+                {
+                    "id": "a7bfe39f-14d1-481a-a255-eea7f40e0c07",
+                    "name": "cleaningRobot",
+                    "displayName": "Cleaning robot",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "a48821ab-b777-4d34-9b49-f3422c190825",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "f0f81c21-b10e-44ef-8606-600ebaf646e0",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "ac2b896e-d7ff-4b17-affa-ad5bdc486640",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "35548e9e-5c41-40e1-add6-e6d2911d4a2a",
+                            "name": "emptyDustBoxAndCleanFilter",
+                            "displayName": "Empty dust box and clean filter"
+                        },
+                        {
+                            "id": "e55cb32a-a8ee-4f1d-958e-f15ae0ad6c42",
+                            "name": "robotIsStuck",
+                            "displayName": "Robot is stuck"
+                        },
+                        {
+                            "id": "4507655c-bc98-4437-acba-8ce701ba7b5f",
+                            "name": "dockingStationNotFound",
+                            "displayName": "Docking station not found"
+                        },
+                        {
+                            "id": "4f801225-b3ac-4519-9885-243497f6b2e2",
+                            "name": "programFinished",
+                            "displayName": "Program finished"
+                        }
+                    ]
+                },
+                {
+                    "id": "8b792638-11dc-4288-ac94-5b41d9e11a4e",
+                    "name": "cookProcessor",
+                    "displayName": "Cook processor",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "a104145b-a373-45b3-a457-0245681f8256",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "434c5690-a62d-4815-ad8b-e3c306745d9f",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "9aed899f-09cc-4f20-965a-9724372a1093",
+                            "name": "operationState",
+                            "displayName": "Operation state",
+                            "displayNameEvent": "Operation state changed",
+                            "defaultValue": "Inactive",
+                            "type": "QString",
+                            "possibleValues": [
+                                "Inactive",
+                                "Ready",
+                                "Delayed start",
+                                "Run",
+                                "Pause",
+                                "Action required",
+                                "Finished",
+                                "Error",
+                                "Aborting"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
