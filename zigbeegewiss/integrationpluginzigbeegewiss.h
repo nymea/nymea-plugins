@@ -79,6 +79,7 @@ private:
     bool initTemperatureCluster(ZigbeeNode *node, Thing *thing);
     bool initPowerConfigurationCluster(ZigbeeNode *node, Thing *thing);
 
+    bool initBinaryInput(ZigbeeNode *node);
     bool initWindowSensor(ZigbeeNode *node);
 };
 
