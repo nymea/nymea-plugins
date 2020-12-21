@@ -687,6 +687,175 @@
                     ]
                 },
                 {
+                    "id": "3eba6b29-f634-4ade-80a3-2159803373cc",
+                    "name": "shellyButton1",
+                    "displayName": "Shelly button 1",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["longpressmultibutton", "wirelessconnectable", "batterylevel", "update"],
+                    "paramTypes": [
+                        {
+                            "id": "ef42a9f5-b6f4-4bb9-ad17-a9419be4a44e",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "cc4a3365-b302-4782-9eec-ee6b66df8ed6",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "bf9a47c4-0773-461e-af5b-c1bd90167646",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "settingsTypes": [
+                        {
+                            "id": "45d4628d-7d8c-43b6-ac86-6232caa5816f",
+                            "name": "remainAwake",
+                            "displayName": "Remain awake",
+                            "type": "uint",
+                            "unit": "Seconds",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "420298a7-bcf8-4970-951e-f6ee5efa1013",
+                            "name": "statusLedEnabled",
+                            "displayName": "Status LED enabled",
+                            "type": "bool",
+                            "defaultValue": true
+                        },
+                        {
+                            "id": "b98423a8-c758-4dae-b979-e22446d06b22",
+                            "name": "longpushMaxDuration",
+                            "displayName": "Longpress duration",
+                            "type": "uint",
+                            "unit": "MilliSeconds",
+                            "minValue": 800,
+                            "maxValue": 2000,
+                            "defaultValue": 800
+                        },
+                        {
+                            "id": "b1f5a911-76ec-42e5-ac64-17f85d82b875",
+                            "name": "multipressInterval",
+                            "displayName": "Max time between multiple presses",
+                            "type": "uint",
+                            "minValue": 200,
+                            "maxValue": 2000,
+                            "defaultValue": 500
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "d23e25a1-f723-4de1-806a-83fb073f01f4",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected/disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "fff3aa51-ec42-40c7-b603-cbd2d58d781e",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "338355e5-9506-48b1-be86-757d69b34755",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "18edddee-1b30-48e4-b233-1e3b68bd6ff1",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "aa3cbd93-192a-4035-8f46-c5ff68fe331b",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "b17a7df2-952b-4cdd-8d28-a8e8582b49d4",
+                            "name": "currentVersion",
+                            "displayName": "Current firmware version",
+                            "displayNameEvent": "Current firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "46f33cf8-82bf-4798-9100-69f54aabd9e0",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "25955cb9-dc0e-48dc-91b1-ba27e30a3a3f",
+                            "name": "pressed",
+                            "displayName": "Pressed",
+                            "paramTypes": [
+                                {
+                                    "id": "a384450d-12b5-4269-9469-2e986423bde0",
+                                    "name": "buttonName",
+                                    "displayName": "Count",
+                                    "type": "QString",
+                                    "allowedValues": ["1", "2", "3"]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "47cab6b6-eed3-4628-b3ad-2ceda26d6f84",
+                            "name": "longPressed",
+                            "displayName": "Longpressed",
+                            "paramTypes": [
+                                {
+                                    "id": "f8b5f587-d266-4fd3-9f01-941d0dcedc1f",
+                                    "name": "buttonName",
+                                    "displayName": "Count",
+                                    "type": "QString",
+                                    "allowedValues": ["1"]
+                                }
+                            ]
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "87b24064-5db7-4590-a9d8-f6d8fd02ed6e",
+                            "name": "performUpdate",
+                            "displayName": "Start firmware update"
+                        }
+                    ]
+                },
+                {
                     "id": "6de35a17-0f54-4397-894d-4321b64c53d1",
                     "name": "shellySwitch",
                     "displayName": "Shelly switch",

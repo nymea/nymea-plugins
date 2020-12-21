@@ -93,6 +93,8 @@ private:
     QHash<ThingClassId, StateTypeId> m_updateStatusStateTypesMap;
     QHash<ThingClassId, StateTypeId> m_currentVersionStateTypesMap;
     QHash<ThingClassId, StateTypeId> m_availableVersionStateTypesMap;
+    QHash<ThingClassId, StateTypeId> m_batteryLevelStateTypeMap;
+    QHash<ThingClassId, StateTypeId> m_batteryCriticalStateTypeMap;
 
     QHash<ActionTypeId, ThingClassId> m_rebootActionTypeMap;
     // Relay based power actions
