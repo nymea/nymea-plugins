@@ -1,0 +1,12 @@
+{
+    "title": "ZigBee Gewiss",
+    "tagline": "Support for Gewiss ZigBee devices.",
+    "icon": "gewiss.png",
+    "stability": "consumer",
+    "offline": true,
+    "technologies": [
+        "zigbee"
+    ],
+    "categories": [
+    ]
+}
