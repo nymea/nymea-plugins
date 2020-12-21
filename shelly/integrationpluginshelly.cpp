@@ -599,7 +599,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             qCWarning(dcShelly()) << qUtf8Printable(payload);
             return;
         }
-        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
+//        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
         QVariantMap data = jsonDoc.toVariant().toMap();
 
         // Wifi signal strength
@@ -633,7 +633,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
 
     if (topic.startsWith("shellies/" + shellyId + "/input/")) {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         int channel = topic.split("/").last().toInt();
         // "1" or "0"
         // Emit event button pressed
@@ -650,7 +650,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     QRegExp topicMatcher = QRegExp("shellies/" + shellyId + "/relay/[0-1]");
     if (topicMatcher.exactMatch(topic)) {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         bool on = payload == "on";
@@ -673,7 +673,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/power");
     if (topicMatcher.exactMatch(topic)) {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         double power = payload.toDouble();
@@ -692,7 +692,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
 
     topicMatcher = QRegExp("shellies/" + shellyId + "/(relay|roller)/[0-1]/energy");
     if (topicMatcher.exactMatch(topic)) {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         QStringList parts = topic.split("/");
         int channel = parts.at(3).toInt();
         // W/min => kW/h
@@ -711,7 +711,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/color/0") {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         bool on = payload == "on";
         if (m_powerStateTypeMap.contains(thing->thingClassId())) {
             thing->setStateValue(m_powerStateTypeMap.value(thing->thingClassId()), on);
@@ -719,7 +719,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/color/0/status") {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         QJsonParseError error;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
         if (error.error != QJsonParseError::NoError) {
@@ -742,7 +742,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/light/0") {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         bool on = payload == "on";
         if (m_powerStateTypeMap.contains(thing->thingClassId())) {
             thing->setStateValue(m_powerStateTypeMap.value(thing->thingClassId()), on);
@@ -756,7 +756,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             qCWarning(dcShelly()) << "Error parsing JSON from Shelly:" << error.error << error.errorString() << payload;
             return;
         }
-        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
+//        qCDebug(dcShelly()) << "Payload:" << qUtf8Printable(jsonDoc.toJson());
         QVariantMap statusMap = jsonDoc.toVariant().toMap();
         if (m_brightnessStateTypeMap.contains(thing->thingClassId())) {
             int brightness = statusMap.value("brightness").toInt();
@@ -765,7 +765,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/light/0/power") {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         if (m_currentPowerStateTypeMap.contains(thing->thingClassId())) {
             double power = payload.toDouble();
             thing->setStateValue(m_currentPowerStateTypeMap.value(thing->thingClassId()), power);
@@ -773,14 +773,14 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic == "shellies/" + shellyId + "/roller/0") {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         // Roller shutters are always child devices...
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedshutter")) {
             child->setStateValue(shellyRollerMovingStateTypeId, payload != "stop");
         }
     }
     if (topic == "shellies/" + shellyId + "/roller/0/pos") {
-        qCDebug(dcShelly()) << "Payload:" << payload;
+//        qCDebug(dcShelly()) << "Payload:" << payload;
         // Roller shutters are always child devices...
         int pos = payload.toInt();
         foreach (Thing *child, myThings().filterByParentId(thing->id()).filterByInterface("extendedshutter")) {
@@ -974,14 +974,23 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
     QNetworkReply *reply = hardwareManager()->networkManager()->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(info, &ThingSetupInfo::aborted, channel, [this, channel, thing](){
+        qCWarning(dcShelly()) << "Setup for" << thing->name() << "aborted.";
         hardwareManager()->mqttProvider()->releaseChannel(channel);
         m_mqttChannels.remove(thing);
     });
     connect(reply, &QNetworkReply::finished, info, [this, info, reply, channel, address](){
         if (reply->error() != QNetworkReply::NoError) {
-            hardwareManager()->mqttProvider()->releaseChannel(channel);
-            m_mqttChannels.remove(info->thing());
-            qCWarning(dcShelly()) << "Error fetching thing settings" << reply->error() << reply->errorString();
+            qCWarning(dcShelly()) << "Error fetching thing settings for" << info->thing()->name() << reply->error() << reply->errorString();
+            // Given the networkManagers timeout is the same as the info timeout (30s) and they are
+            // both started in the same event loop pass, they'll also time out in the same event loop pass
+            // and it happens we'll get both, ThingSetupInfo::aborted *and* QNetworkReply::finished (with the
+            // aborted flag) which both clean up the MQTT channel. Make sure to check if it's still there
+            // before actually cleaning up. We can't remove any of the cleanups as that might cause leaks if
+            // either the network reply finishes with an earlier error, or the setup is aborted earlier.
+            if (m_mqttChannels.contains(info->thing())) {
+                hardwareManager()->mqttProvider()->releaseChannel(channel);
+                m_mqttChannels.remove(info->thing());
+            }
             if (reply->error() == QNetworkReply::AuthenticationRequiredError) {
                 info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Username and password not set correctly."));
             } else {
