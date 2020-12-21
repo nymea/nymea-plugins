@@ -243,6 +243,14 @@ void IntegrationPluginGenericThings::setupThing(ThingSetupInfo *info)
                 timer->stop();
             }
         });
+    } else if (thing->thingClassId() == thermostatThingClassId) {
+        thermostatCheckPowerOutputState(thing); // check the initial values
+        connect(thing, &Thing::settingChanged, thing, [this, thing] (const ParamTypeId &paramTypeId, const QVariant &value) {
+            Q_UNUSED(value)
+            if (paramTypeId == thermostatSettingsTemperatureDifferenceParamTypeId) {
+                thermostatCheckPowerOutputState(thing);
+            }
+        });
     }
     info->finish(Thing::ThingErrorNoError);
 }
@@ -626,6 +634,19 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         }
 
         Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+    } else if (thing->thingClassId() == thermostatThingClassId) {
+        if (action.actionTypeId() == thermostatTemperatureSensorInputActionTypeId) {
+            thing->setStateValue(thermostatTemperatureSensorInputStateTypeId, action.param(thermostatTemperatureSensorInputActionTemperatureSensorInputParamTypeId).value());
+        } else if (action.actionTypeId() == thermostatTargetTemperatureActionTypeId) {
+            thing->setStateValue(thermostatTargetTemperatureStateTypeId, action.param(thermostatTargetTemperatureActionTargetTemperatureParamTypeId).value());
+        } else if (action.actionTypeId() == thermostatPowerActionTypeId) {
+            thing->setStateValue(thermostatPowerStateTypeId, action.param(thermostatPowerActionPowerParamTypeId).value());
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
+        thermostatCheckPowerOutputState(thing);
+        info->finish(Thing::ThingErrorNoError);
+        return;
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
@@ -777,5 +798,20 @@ void IntegrationPluginGenericThings::moveBlindToAngle(Action action, Thing *thin
         }
     } else {
         qCDebug(dcGenericThings()) << "Move to angle doesn't support this thingClass";
+    }
+}
+
+void IntegrationPluginGenericThings::thermostatCheckPowerOutputState(Thing *thing)
+{
+    double targetTemperature = thing->stateValue(thermostatTargetTemperatureStateTypeId).toDouble();
+    double actualTemperature = thing->stateValue(thermostatTemperatureSensorInputStateTypeId).toDouble();
+    double temperatureDifference = thing->setting(thermostatSettingsTemperatureDifferenceParamTypeId).toDouble();
+    if (actualTemperature <= (targetTemperature-temperatureDifference)) {
+        thing->setStateValue(thermostatPowerStateTypeId, true);
+    } else if (actualTemperature >= targetTemperature) {
+        thing->setStateValue(thermostatPowerStateTypeId, false);
+    } else {
+        //Keep actual state
+        //Possible improvement add boost action where powerState = true is forced inside the hysteresis
     }
 }

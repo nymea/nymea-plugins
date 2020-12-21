@@ -70,6 +70,8 @@ private:
     void setBlindState(BlindState state, Thing *thing);
     void moveBlindToPercentage(Action action, Thing *thing);
     void moveBlindToAngle(Action action, Thing *thing);
+
+    void thermostatCheckPowerOutputState(Thing *thing);
 };
 
 #endif // INTEGRATIONPLUGINGENERICTHINGS_H
