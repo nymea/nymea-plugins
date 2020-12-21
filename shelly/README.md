@@ -12,6 +12,7 @@ The currently supported devices are:
 * Shelly Dimmer / Dimmer 2
 * Shelly Button 1
 * Shelly 3EM
+* Shelly H+T
 
 ## Requirements
 Shelly devices communicate with via MQTT. This means, in order to add Shelly devices to nymea, the nymea instance is required

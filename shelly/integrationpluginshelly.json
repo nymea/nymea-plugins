@@ -959,6 +959,127 @@
                     ]
                 },
                 {
+                    "id": "cc75be5c-8e34-4f72-a55d-c96e4c85d4be",
+                    "name": "shellyHT",
+                    "displayName": "Shelly H&T",
+                    "createMethods": ["discovery"],
+                    "interfaces": ["temperaturesensor", "humiditysensor", "wirelessconnectable", "batterylevel", "update"],
+                    "paramTypes": [
+                        {
+                            "id": "b6882bd5-7b1f-447b-9aa7-34aeeb538697",
+                            "name":"id",
+                            "displayName": "Shelly ID",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "1ea30a6f-5139-4452-8e23-0c525494c9c8",
+                            "name": "username",
+                            "displayName": "Username (optional)",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "a0e1670d-3df2-49c2-b080-577f2d10af68",
+                            "name": "password",
+                            "displayName": "Password (optional)",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "507e7ca7-e1ab-4e7c-8097-4aedf924f797",
+                            "name": "temperature",
+                            "displayName": "Temperature",
+                            "displayNameEvent": "Temperature changed",
+                            "type": "double",
+                            "unit": "DegreeCelsius",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "18a3c71b-f4ef-45d8-a5db-58f533fb6e19",
+                            "name": "humidity",
+                            "displayName": "Humidity",
+                            "displayNameEvent": "Humidity changed",
+                            "type": "double",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "b35ace90-8afb-49f1-924d-899bf1c03c3a",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected or disconnected",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "f6a09411-4efa-49e0-9cac-1c8e550e9cb6",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "15914ad5-816b-471c-996b-00160100f2bc",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "56053726-92dc-4a80-b05e-a9a857c02bc1",
+                            "name": "batteryCritical",
+                            "displayName": "Battery level critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "fdda809d-0807-4495-9d50-f9e2a12894ac",
+                            "name": "updateStatus",
+                            "displayName": "Update status",
+                            "displayNameEvent": "Update status changed",
+                            "type": "QString",
+                            "possibleValues": ["idle", "available", "updating"],
+                            "defaultValue": "idle"
+                        },
+                        {
+                            "id": "5655b88c-f852-4efe-955f-cf5f88e8ba6b",
+                            "name": "currentVersion",
+                            "displayName": "Current firmware version",
+                            "displayNameEvent": "Current firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "770b6b3a-3815-4ba3-8a2d-3fb949c914de",
+                            "name": "availableVersion",
+                            "displayName": "Available firmware version",
+                            "displayNameEvent": "Available firmware version changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "actionTypes": [
+                        {
+                            "id": "e32aaff9-b2f8-437e-b7b4-5b519d9e5e21",
+                            "name": "performUpdate",
+                            "displayName": "Start firmware update"
+                        }
+                    ]
+                },
+                {
                     "id": "6de35a17-0f54-4397-894d-4321b64c53d1",
                     "name": "shellySwitch",
                     "displayName": "Shelly switch",
