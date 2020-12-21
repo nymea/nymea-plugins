@@ -33,7 +33,6 @@
 
 #include "integrations/integrationplugin.h"
 #include "tcpserver.h"
-#include "tcpsocket.h"
 
 class IntegrationPluginTcpCommander : public IntegrationPlugin
 {
@@ -52,14 +51,14 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    QHash<TcpSocket *, Thing *> m_tcpSockets;
-    QHash<TcpServer *, Thing *> m_tcpServer;
+    QHash<Thing*, QTcpSocket*> m_tcpSockets;
+    QHash<Thing*, TcpServer*> m_tcpServers;
 
 private slots:
     void onTcpSocketConnectionChanged(bool connected);
 
     void onTcpServerConnectionCountChanged(int connections);
-    void onTcpServerCommandReceived(QByteArray message);
+    void onTcpServerCommandReceived(const QString &clientIp, const QByteArray &message);
 };
 
 #endif // INTEGRATIONPLUGINTCPCOMMANDER_H

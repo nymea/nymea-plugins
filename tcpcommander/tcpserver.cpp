@@ -78,7 +78,24 @@ int TcpServer::serverPort()
 
 int TcpServer::connectionCount()
 {
-    return m_connectionCount;
+    return m_clients.count();
+}
+
+bool TcpServer::sendCommand(const QString &clientIp, const QByteArray &data)
+{
+    bool success = false;
+    QHostAddress address(clientIp);
+
+    foreach (QTcpSocket *client, m_clients) {
+        if (address == QHostAddress(QHostAddress::AnyIPv4) || client->peerAddress() == address) {
+            qint64 len = client->write(data);
+            if (len == data.length()) {
+                success = true;
+            }
+        }
+    }
+    qCWarning(dcTCPCommander()) << "No client matching the destination IP" << address.toString();
+    return success;
 }
 
 void TcpServer::newConnection()
@@ -87,8 +104,8 @@ void TcpServer::newConnection()
     QTcpSocket *socket = m_tcpServer->nextPendingConnection();
     socket->flush();
 
-    m_connectionCount++;
-    emit connectionCountChanged(m_connectionCount);
+    m_clients.append(socket);
+    emit connectionCountChanged(m_clients.count());
     connect(socket, &QTcpSocket::disconnected, this, &TcpServer::onDisconnected);
     connect(socket, &QTcpSocket::readyRead, this, &TcpServer::readData);
     // Note: error signal will be interpreted as function, not as signal in C++11
@@ -97,12 +114,10 @@ void TcpServer::newConnection()
 
 void TcpServer::onDisconnected()
 {
-    qDebug(dcTCPCommander()) << "TCP Server connection aborted";
-    m_connectionCount--;
-    if (m_connectionCount < 0)
-        m_connectionCount = 0;
-
-    emit connectionCountChanged(m_connectionCount);
+    QTcpSocket *client = qobject_cast<QTcpSocket*>(sender());
+    qDebug(dcTCPCommander()) << "TCP client disconnected";
+    m_clients.removeAll(client);
+    emit connectionCountChanged(m_clients.count());
 }
 
 void TcpServer::readData()
@@ -111,7 +126,7 @@ void TcpServer::readData()
     QByteArray data = socket->readAll();
     qDebug(dcTCPCommander()) << "TCP Server data received: " << data;
     socket->write("OK\n");
-    emit commandReceived(data);
+    emit commandReceived(socket->peerAddress().toString(), data);
 }
 
 void TcpServer::onError(QAbstractSocket::SocketError error)

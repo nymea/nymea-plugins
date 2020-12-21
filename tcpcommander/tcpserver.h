@@ -45,20 +45,16 @@ public:
 
     bool isValid();
     QHostAddress serverAddress();
+
     int serverPort();
 
-    void setPort(int port);
-    void setServerAddress(const QHostAddress &address);
-
     int connectionCount();
-private:
-    QTcpServer *m_tcpServer = nullptr;
 
-    int m_connectionCount = 0;
+    bool sendCommand(const QString &clientIp, const QByteArray &data);
 
 signals:
     void newPendingConnection();
-    void commandReceived(QByteArray message);
+    void commandReceived(const QString &clientIp, const QByteArray &message);
     void connectionCountChanged(int connections);
 
 private slots:
@@ -66,6 +62,12 @@ private slots:
     void onDisconnected();
     void readData();
     void onError(QAbstractSocket::SocketError error);
+
+private:
+    QTcpServer *m_tcpServer = nullptr;
+
+    QList<QTcpSocket*> m_clients;
+
 };
 
 #endif // TCPSERVER_H
