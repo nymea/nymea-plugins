@@ -92,9 +92,7 @@ private:
     QNetworkAccessManager *m_networkAccessManager;
     QByteArray m_readBuffer;
 
-
     QList<QNetworkReply *> m_networkRequests;
-
     QList<QNetworkReply *> m_pendingAuthentications;
 
     QString m_username;
@@ -110,8 +108,6 @@ signals:
     void sessionIdReceived(const QString &sessionId);
     void liveImageReceived(QImage image);
 
-public slots:
-    void onUdpBroadcast(const QByteArray &data);
 };
 
 #endif // DOORBIRD_H

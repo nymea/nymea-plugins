@@ -71,8 +71,8 @@ QUuid Doorbird::getSession(const QString &username, const QString &password)
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
 
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error DoorBird thing:" << reply->errorString();
@@ -104,8 +104,8 @@ QUuid Doorbird::openDoor(int value)
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error opening DoorBird "  << reply->error() << reply->errorString();
@@ -124,8 +124,8 @@ QUuid Doorbird::lightOn()
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error light on"  << reply->error() << reply->errorString();
@@ -144,8 +144,8 @@ QUuid Doorbird::liveVideoRequest()
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error live video request" << reply->error() << reply->errorString();
@@ -164,8 +164,8 @@ QUuid Doorbird::liveImageRequest()
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error live image request"  << reply->error() << reply->errorString();
@@ -193,8 +193,8 @@ QUuid Doorbird::historyImageRequest(int index)
     qCDebug(dcDoorBird) << "Sending request:" << url;
     QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error history image request" << reply->error() << reply->errorString();
@@ -213,8 +213,8 @@ QUuid Doorbird::liveAudioReceive()
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error live audio receive";
@@ -238,8 +238,8 @@ QUuid Doorbird::infoRequest()
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error DoorBird" << reply->error() << reply->errorString();
@@ -258,8 +258,8 @@ QUuid Doorbird::listFavorites()
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error DoorBird device" << reply->error() << reply->errorString();
@@ -288,8 +288,8 @@ QUuid Doorbird::addFavorite(FavoriteType type, const QString &name, const QUrl &
 
     QNetworkReply *reply = m_networkAccessManager->get(QNetworkRequest(url));
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error DoorBird device" << reply->error() << reply->errorString();
@@ -307,8 +307,8 @@ QUuid Doorbird::listSchedules()
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error DoorBird device" << reply->error() << reply->errorString();
@@ -326,8 +326,8 @@ QUuid Doorbird::restart()
     qCDebug(dcDoorBird) << "Sending request:" << request.url();
     QNetworkReply *reply = m_networkAccessManager->get(request);
     QUuid requestId = QUuid::createUuid();
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply, requestId](){
-        reply->deleteLater();
 
         if (reply->error() != QNetworkReply::NoError) {
             qCWarning(dcDoorBird) << "Error restarting DoorBird device" << reply;
@@ -421,54 +421,19 @@ void Doorbird::connectToEventMonitor()
                 qCWarning(dcDoorBird) << "Unhandled DoorBird data:" << message;
             }
         }
+        qCDebug(dcDoorBird()) << "Event read buffer size" << m_readBuffer.size();
     });
 
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        reply->deleteLater();
 
         emit deviceConnected(false);
+        m_readBuffer.clear();
         qCDebug(dcDoorBird) << "Monitor request finished:" << reply->error();
-
+        qCDebug(dcDoorBird) << "    - Trying to reconnect in 5 seconds";
         QTimer::singleShot(2000, this, [this] {
+            qCDebug(dcDoorBird) << "    - Reconnecting now";
             connectToEventMonitor();
         });
     });
 }
-
-void Doorbird::onUdpBroadcast(const QByteArray &data)
-{
-    Q_UNUSED(data);
-    //TODO decryption
-}
-
-
-/*NotifyBroadcastCiphertext decryptBroadcastNotification(const NotifyBroadcast* notification, const
-                                                       StretchedPassword* password) {
-    NotifyBroadcastCiphertext decrypted = {{0},{0},0};
-    if(crypto_aead_chacha20poly1305_decrypt((unsigned char*)&decrypted, NULL, NULL, notification->ciphertext,
-                                            sizeof(notification->ciphertext), NULL, 0, notification->nonce, password->key)!=0){
-        LOGGING("crypto_aead_chacha20poly1305_decrypt() failed");
-    }
-    return decrypted;
-}
-
-unsigned char* stretchPasswordArgon(const char *password, unsigned char *salt, unsigned* oplimit, unsigned* memlimit) {
-    if (sodium_is_zero(salt, CRYPTO_SALT_BYTES) && random_bytes(salt, CRYPTO_SALT_BYTES)) {
-        return NULL;
-    }
-    unsigned char* key = malloc(CRYPTO_ARGON_OUT_SIZE);
-    if (!*oplimit) {
-        *oplimit = crypto_pwhash_argon2i_OPSLIMIT_INTERACTIVE;
-    }
-    if (!*memlimit) {
-        *memlimit = crypto_pwhash_MEMLIMIT_MIN;
-    }
-    if (crypto_pwhash(key, CRYPTO_ARGON_OUT_SIZE, password, str_len(password), salt, *oplimit, *memlimit, crypto_pwhash_ALG_ARGON2I13)) {
-        LOGGING("Argon2 Failed");
-        *oplimit = 0;
-        *memlimit = 0;
-        CLEAN(key);
-        return NULL;
-    }
-    return key;
-}*/

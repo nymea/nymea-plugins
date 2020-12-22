@@ -26,7 +26,8 @@
                             "id": "67ea5534-330a-4291-93b5-0237034e15fa",
                             "name": "serialnumber",
                             "displayName": "Serial number",
-                            "type": "QString"
+                            "type": "QString",
+                            "readOnly": true
                         }
                     ],
                     "actionTypes": [
