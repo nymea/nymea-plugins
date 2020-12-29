@@ -97,8 +97,11 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
                 (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation &&
                  endpoint->deviceId() == Zigbee::HomeAutomationDeviceOnOffPlugin) ||
                 (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation &&
-                 endpoint->deviceId() == Zigbee::HomeAutomationDeviceMainPowerOutlet)) {
+                 endpoint->deviceId() == Zigbee::HomeAutomationDeviceMainPowerOutlet) ||
+                (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation &&
+                 endpoint->deviceId() == Zigbee::HomeAutomationDeviceSmartPlug)) {
 
+            // FIXME: create powersocket with metering for SmartPlug device ID
             qCDebug(dcZigbeeGeneric()) << "Handeling power socket endpoint for" << node << endpoint;
             createThing(powerSocketThingClassId, networkUuid, node, endpoint);
             handled = true;
