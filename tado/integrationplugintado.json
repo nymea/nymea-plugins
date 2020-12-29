@@ -46,7 +46,7 @@
                     "id": "1a7bb944-fb9c-490a-8a4c-794b27282292",
                     "name": "zone",
                     "displayName": "Zone",
-                    "interfaces": ["heating", "temperaturesensor", "humiditysensor", "connectable"],
+                    "interfaces": ["thermostat", "heating", "temperaturesensor", "humiditysensor", "connectable"],
                     "createMethods": ["auto"],
                     "paramTypes": [
                         {
