@@ -15,6 +15,7 @@ This plugin allows to interact with the Hue bridge. Each light bulb, sensor and 
 * Hue Outdoor Motion Sensor
 * Hue Ambient White Bulb
 * Hue Color Bulb
+* Hue Smart plug
 * Any other Bulb that can be connected and controlled by the Hue App.
 
 ## Requirements

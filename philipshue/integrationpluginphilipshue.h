@@ -36,7 +36,6 @@
 #include "huelight.h"
 #include "hueremote.h"
 #include "huemotionsensor.h"
-#include "huemotionsensor.h"
 
 #include "plugintimer.h"
 #include "network/networkaccessmanager.h"
@@ -141,7 +140,7 @@ private:
     void processSensorsRefreshResponse(Thing *thing, const QByteArray &data);
     void processSetNameResponse(Thing *thing, const QByteArray &data);
 
-    void bridgeReachableChanged(Thing *thing, const bool &reachable);
+    void bridgeReachableChanged(Thing *thing, bool reachable);
 
     Thing* bridgeForBridgeId(const QString &id);
     bool lightAlreadyAdded(const QString &uuid);

@@ -945,6 +945,64 @@
                             "defaultValue": 0
                         }
                     ]
+                },
+                {
+                    "id": "01438844-0048-4276-91f8-c93ac0a5171d",
+                    "name": "smartPlug",
+                    "displayName": "Hue Smart plug",
+                    "interfaces": ["powersocket", "wirelessconnectable"],
+                    "createMethods": ["auto"],
+                    "paramTypes": [
+                        {
+                            "id": "a5441712-5a4a-43a7-b797-3806cba86e1a",
+                            "name": "modelId",
+                            "displayName": "model id",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "87cf0d7a-9ac2-4694-9f5f-1c9c6692a6c5",
+                            "name": "type",
+                            "displayName": "type",
+                            "type" : "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "5b8a02b9-3a2b-4178-914d-c62d03281d00",
+                            "name": "uuid",
+                            "displayName": "Uuid",
+                            "type": "QString",
+                            "readOnly": true
+                        },
+                        {
+                            "id": "90791861-bb27-4ade-8551-306af322b12d",
+                            "name": "lightId",
+                            "displayName": "light id",
+                            "type" : "int",
+                            "readOnly": true
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "77198588-cfd0-44ea-beb5-3a7ce06d4c1d",
+                            "name": "power",
+                            "displayName": "Powered",
+                            "displayNameEvent": "Switched on or off",
+                            "displayNameAction": "Switch",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "6fdf4b26-6b93-4db9-9ff4-e755f5da0a3c",
+                            "name": "connected",
+                            "displayName": "Reachable",
+                            "displayNameEvent": "Reachable changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
                 }
             ]
         }
