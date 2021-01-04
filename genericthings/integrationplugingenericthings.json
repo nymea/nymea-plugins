@@ -1141,6 +1141,48 @@
                             "defaultValue": ""
                         }
                     ]
+                },
+                {
+                    "id": "08771aea-70fe-481d-97cd-f11f21e3e24d",
+                    "name": "ampereMeter",
+                    "displayName": "Ampere meter",
+                    "createMethods": ["user"],
+                    "interfaces": ["amperemeter"],
+                    "settingsTypes": [
+                        {
+                            "id": "3b543c3a-1fc0-45b5-8c07-600a6045f82e",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                     ],
+                     "stateTypes": [
+                        {
+                            "id": "cbba3ae6-2d08-4ed1-99b3-4f4502c0eb5b",
+                            "name": "current",
+                            "displayName": "Current",
+                            "displayNameEvent": "Current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "77573ed4-fa97-410d-ae83-cb07c921d8b8",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
                 }
             ]
         }
