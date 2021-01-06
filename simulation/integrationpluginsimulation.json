@@ -115,12 +115,12 @@
                     "name": "motionDetector",
                     "displayName": "Motion Detector",
                     "createMethods": ["user"],
-                    "interfaces": ["battery", "connectable"],
+                    "interfaces": ["presencesensor", "battery", "connectable"],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
                             "id": "5ab00bfc-7345-44a2-90d4-852c810e59ec",
-                            "name": "active",
+                            "name": "isPresent",
                             "displayName": "Active",
                             "displayNameEvent": "Motion detected",
                             "type": "bool",
@@ -153,6 +153,15 @@
                             "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": true
+                        },
+                        {
+                            "id": "17874952-a1ab-467f-9786-29ffe3196a8c",
+                            "name": "lastSeenTime",
+                            "displayName": "Last seen",
+                            "displayNameEvent": "Last seen changed",
+                            "type": "int",
+                            "unit": "UnixTime",
+                            "defaultValue": 0
                         }
                     ]
                 },
@@ -1026,7 +1035,7 @@
                     "name": "waterValve",
                     "displayName": "Water valve",
                     "createMethods": ["user"],
-                    "paramTypes": [ ],
+                    "interfaces": ["irrigation"],
                     "stateTypes": [
                         {
                             "id": "194f05a9-2c54-466c-a2a9-3d278fb41a2a",
@@ -1104,6 +1113,23 @@
                             "name": "batteryCritical",
                             "displayName": "Battery critical",
                             "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        }
+                    ]
+                },
+                {
+                    "id": "088aa0cb-61e8-46b6-b99d-699a29fd79c7",
+                    "name": "waterSensor",
+                    "displayName": "Water sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["watersensor"],
+                    "stateTypes": [
+                        {
+                            "id": "764cbbbf-6a5c-4265-9424-fc9e6dd86fda",
+                            "name": "waterDetected",
+                            "displayName": "Wet",
+                            "displayNameEvent": "Water detected",
                             "type": "bool",
                             "defaultValue": false
                         }
