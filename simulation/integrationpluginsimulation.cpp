@@ -71,7 +71,8 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
             thing->thingClassId() == rollerShutterThingClassId ||
             thing->thingClassId() == fingerPrintSensorThingClassId ||
             thing->thingClassId() == barcodeScannerThingClassId ||
-            thing->thingClassId() == contactSensorThingClassId) {
+            thing->thingClassId() == contactSensorThingClassId ||
+            thing->thingClassId() == waterSensorThingClassId) {
         m_simulationTimers.insert(thing, new QTimer(thing));
         connect(m_simulationTimers[thing], &QTimer::timeout, this, &IntegrationPluginSimulation::simulationTimerTimeout);
     }
@@ -125,6 +126,9 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
     }
 
     if (thing->thingClassId() == contactSensorThingClassId) {
+        m_simulationTimers.value(thing)->start(10000);
+    }
+    if (thing->thingClassId() == waterSensorThingClassId) {
         m_simulationTimers.value(thing)->start(10000);
     }
     info->finish(Thing::ThingErrorNoError);
@@ -628,10 +632,12 @@ void IntegrationPluginSimulation::onPluginTimer20Seconds()
             thing->setStateValue(temperatureSensorConnectedStateTypeId, true);
         } else if (thing->thingClassId() == motionDetectorThingClassId) {
             // Motion detector
-            thing->setStateValue(motionDetectorActiveStateTypeId, generateRandomBoolValue());
+            thing->setStateValue(motionDetectorIsPresentStateTypeId, generateRandomBoolValue());
             thing->setStateValue(motionDetectorBatteryLevelStateTypeId, generateBatteryValue(13, 1));
             thing->setStateValue(motionDetectorBatteryCriticalStateTypeId, thing->stateValue(motionDetectorBatteryLevelStateTypeId).toInt() <= 30);
             thing->setStateValue(motionDetectorConnectedStateTypeId, true);
+        } else if (thing->thingClassId() == waterSensorThingClassId) {
+            thing->setStateValue(waterSensorWaterDetectedStateTypeId, generateRandomBoolValue());
         } else if (thing->thingClassId() == gardenSensorThingClassId) {
             // Garden sensor
             thing->setStateValue(gardenSensorTemperatureStateTypeId, generateSinValue(-4, 17, 5));
@@ -787,5 +793,8 @@ void IntegrationPluginSimulation::simulationTimerTimeout()
        } else {
            thing->setStateValue(contactSensorBatteryCriticalStateTypeId, false);
        }
+    } else if (thing->thingClassId() == waterSensorThingClassId) {
+        bool wet = qrand() > (RAND_MAX / 2);
+        thing->setStateValue(waterSensorWaterDetectedStateTypeId, wet);
     }
 }

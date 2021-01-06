@@ -513,7 +513,7 @@
                     "id": "e8e18bbe-27bb-4fd7-98fc-f5cef3b5f213",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
-                    "interfaces": [ "sensor", "battery", "wirelessconnectable" ],
+                    "interfaces": [ "watersensor", "battery", "wirelessconnectable" ],
                     "paramTypes": [
                         {
                             "id": "e12453e7-5fc3-4549-b4fc-8b85f78607c6",
