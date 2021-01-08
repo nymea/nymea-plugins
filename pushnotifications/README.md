@@ -18,7 +18,7 @@ for iOS too. On Ubuntu, the UBPorts push services are used.
 ## More
 
 During setup, the token, the push service system and a client id needs to be provided. The token is normally
-obtained by the operating system. The push service should be selected from GCM, APNs or UBPorts. The client id
+obtained by the operating system. The push service should be selected from FB-GCM, FB-APNs or UBPorts. The client id
 must a unique per client and as persistent as possible.
 
 > Note: Even when using APNs, the token must be obtained using the Firebase SDK as plain APNs does not support sending push notifications from a distributed setup like nymea, but always requires a centralized server on the internet handling all messages.

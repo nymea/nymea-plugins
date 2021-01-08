@@ -21,7 +21,7 @@
                             "name": "service",
                             "displayName": "Push service",
                             "type": "QString",
-                            "allowedValues": ["FB-GCM", "FB-APNs", "UBPorts"]
+                            "allowedValues": ["FB-GCM", "FB-APNs", "UBPorts", "None"]
                         },
                         {
                             "id": "12ec06b2-44e7-486a-9169-31c684b91c8f",

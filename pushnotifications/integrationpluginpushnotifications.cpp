@@ -87,15 +87,16 @@ void IntegrationPluginPushNotifications::setupThing(ThingSetupInfo *info)
 
     qCDebug(dcPushNotifications()) << "Setting up push notifications" << thing->name() << "(" << clientId << ") for service" << pushService << "with token" << (token.mid(0, 5) + "******");
 
-    if (token.isEmpty()) {
-        //: Error setting up thing
-        info->finish(Thing::ThingErrorMissingParameter, QT_TR_NOOP("The token must not be empty."));
-        return;
-    }
-    QStringList availablePushServices = {"FB-GCM", "FB-APNs", "UBPorts"};
+    QStringList availablePushServices = {"FB-GCM", "FB-APNs", "UBPorts", "None"};
     if (!availablePushServices.contains(pushService)) {
         //: Error setting up thing
         info->finish(Thing::ThingErrorMissingParameter, QT_TR_NOOP("The push service must not be empty."));
+        return;
+    }
+
+    if (pushService != "None" && token.isEmpty()) {
+        //: Error setting up thing
+        info->finish(Thing::ThingErrorMissingParameter, QT_TR_NOOP("The token must not be empty."));
         return;
     }
 
@@ -122,7 +123,7 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
     QString title = action.param(pushNotificationsNotifyActionTitleParamTypeId).value().toString();
     QString body = action.param(pushNotificationsNotifyActionBodyParamTypeId).value().toString();
 
-    if (token.isEmpty()) {
+    if (pushService != "None" && token.isEmpty()) {
         return info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("Push notifications need to be reconfigured."));
     }
 
@@ -196,6 +197,10 @@ void IntegrationPluginPushNotifications::executeAction(ThingActionInfo *info)
         payload.insert("appid", "io.guh.nymeaapp_nymea-app");
         payload.insert("expire_on", QDateTime::currentDateTime().toUTC().addMSecs(1000 * 60 * 10).toString(Qt::ISODate));
         payload.insert("token", token.toUtf8().trimmed());
+    } else if (pushService == "None") {
+        // Nothing to do here... It's the clients responsibility to fetch it from nymea
+        info->finish(Thing::ThingErrorNoError);
+        return;
     }
 
     qCDebug(dcPushNotifications()) << "Sending notification" << request.url().toString() << qUtf8Printable(QJsonDocument::fromVariant(payload).toJson());
