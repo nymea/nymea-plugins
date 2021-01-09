@@ -10,7 +10,7 @@
             "thingClasses": [
                 {
                     "name": "dimmerSwitch",
-                    "displayName": "Hue dimmer switch",
+                    "displayName": "Hue Dimmer switch",
                     "id": "b2711164-a848-4715-8ddf-33ca86f9f4cf",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
@@ -102,8 +102,93 @@
                     ]
                 },
                 {
+                    "id": "edfa223b-aade-4369-a4e2-77b99989f49d",
+                    "name": "smartButton",
+                    "displayName": "Hue Smart button",
+                    "createMethods": ["Auto"],
+                    "interfaces": ["longpressbutton", "batterylevel", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "2c2bd259-b1cd-47f4-825f-03c3806a346f",
+                            "name": "ieeeAddress",
+                            "displayName": "IEEE adress",
+                            "type": "QString",
+                            "defaultValue": "00:00:00:00:00:00:00:00"
+                        },
+                        {
+                            "id": "cee19fae-eac7-4cad-ab4f-b5fe68710115",
+                            "name": "networkUuid",
+                            "displayName": "Zigbee network UUID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "2837540f-a97b-4a92-9e17-900db38577e4",
+                            "name": "batteryLevel",
+                            "displayName": "Battery level",
+                            "displayNameEvent": "Battery level changed",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "3d79d36e-008e-41c8-9bb5-28db235b93ce",
+                            "name": "batteryCritical",
+                            "displayName": "Battery critical",
+                            "displayNameEvent": "Battery critical changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "4748fc45-5ffd-4472-97a2-9fef256937db",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "0eb19a1e-04d1-44ce-9554-f70c47a4f48a",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "06268fbd-08d1-4f6c-bf81-ee44d8628ebc",
+                            "name": "version",
+                            "displayName": "Version",
+                            "displayNameEvent": "Version changed",
+                            "type": "QString",
+                            "cached": true,
+                            "defaultValue": ""
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "b2c94c5a-0076-4231-b455-1ca1567d1b43",
+                            "name": "pressed",
+                            "displayName": "Pressed"
+                        },
+                        {
+                            "id": "c7e6b02a-2700-4dbb-b012-cb641655ce2b",
+                            "name": "longPressed",
+                            "displayName": "Long pressed"
+                        }
+                    ]
+                },
+                {
                     "name": "motionSensor",
-                    "displayName": "Hue motion sensor",
+                    "displayName": "Hue Motion sensor",
                     "id": "031c45d1-e782-4f91-9f05-259d6b81c7ef",
                     "setupMethod": "JustAdd",
                     "createMethods": [ "Auto" ],
