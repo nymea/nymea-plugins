@@ -48,17 +48,19 @@ timers = {}
 loop = asyncio.get_event_loop()
 accuweather = None
 
+
 def init():
     # AccuWeather lib needs asyncio, let's start the event loop for it.
-    loop.run_forever();
+    loop.run_forever()
 
 
 async def initAccuWeather(latitude, longitude):
     # Need "global" here to be able to modify the global variable
     global accuweather
-    logger.log("Initializing Accuweather, latitude", latitude, "longitude:", longitude)
+    logger.log("Initializing Accuweather, latitude", latitude, "longitude:", longitude, apikey)
     websession = ClientSession()
     accuweather = AccuWeather(apikey, websession, latitude, longitude)
+    logger.log("Init finished")
 
 
 def deinit():
@@ -81,23 +83,35 @@ def discoverThings(info):
 
 async def getCurrentConditions(thing):
     logger.log("running get current conditions")
-    currentConditions = await accuweather.async_get_current_conditions()
+    try:
+        currentConditions = await accuweather.async_get_current_conditions()
+    except Exception as e:
+        logger.warn("Error fetching eather conditions:", e)
+
     logger.log("after await", currentConditions)
 
-    thing.setStateValue(weatherWeatherDescriptionStateId, currentConditions["WeatherText"]);
 
-    thing.setStateValue(weatherTemperatureStateId, currentConditions["Temperature"]["Metric"]["Value"]);
-    thing.setStateValue(weatherHumidityStateId, currentConditions["Humidity"]["Metric"]["Value"]);
-    thing.setStateValue(weatherPressureStateId, currentConditions["Pressure"]["Metric"]["Value"]);
+    try:
+        logger.log("weather condition:", currentConditions["Temperature"]["Metric"]["Value"])
 
-    thing.setStateValue(weatherWindSpeedStateId, currentConditions["Wind"]["Direction"]["Degrees"]);
-    thing.setStateValue(weatherWindDirectionStateId, currentConditions["Wind"]["Speed"]);
+        # No Weather condition string in accuweather
+        #thing.setStateValue(weatherWeatherDescriptionStateId, currentConditions["WeatherText"]);
+        thing.setStateValue(weatherTemperatureStateTypeId, currentConditions["Temperature"]["Metric"]["Value"]);
+        thing.setStateValue(weatherHumidityStateTypeId, currentConditions["RelativeHumidity"]);
+        thing.setStateValue(weatherPressureStateTypeId, currentConditions["Pressure"]["Metric"]["Value"]);
 
-    thing.setStateValue(weatherMinTemperatureStateId, currentConditions["TemperatureSummary"]["Past24HourRange"]["Minimum"]);
-    thing.setStateValue(weatherMaxTemperatureStateId, currentConditions["TemperatureSummary"]["Past24HourRange"]["Maximum"]);
+        thing.setStateValue(weatherWindSpeedStateTypeId, currentConditions["Wind"]["Speed"]["Metric"]["Value"]);
+        thing.setStateValue(weatherWindDirectionStateTypeId, currentConditions["Wind"]["Direction"]["Degrees"]);
 
-    thing.setStateValue(weatherVisibilityStateId, currentConditions["Visibility"]["Metric"]["Value"]);
-    thing.setStateValue(cloudinessStateId, currentConditions["CloudCover"]);
+        thing.setStateValue(weatherMinTemperatureStateId, currentConditions["TemperatureSummary"]["Past24HourRange"]["Minimum"]);
+        thing.setStateValue(weatherMaxTemperatureStateId, currentConditions["TemperatureSummary"]["Past24HourRange"]["Maximum"]);
+
+        thing.setStateValue(weatherVisibilityStateId, currentConditions["Visibility"]["Metric"]["Value"])
+        thing.setStateValue(cloudinessStateId, currentConditions["CloudCover"])
+
+    # As we're running in asyncio, nymea can't catch our exception, we need to print ourselves if something goes wrong.
+    except Exception as e:
+        logger.warn("Exception in reading weather conditions", e)
     #descriptor = nymea.ThingDescriptor(weatherThingClassId, "Weather")
     #info.addDescriptor(descriptor)
     #info.finish(nymea.ThingErrorNoError)
@@ -113,7 +127,9 @@ def setupThing(info):
     longitude = info.thing.paramValue(weatherThingLongitudeParamTypeId)
 
     if accuweather == None:
-        asyncio.run_coroutine_threadsafe(initAccuWeather(latitude, longitude), loop);
+        future = asyncio.run_coroutine_threadsafe(initAccuWeather(latitude, longitude), loop)
+        # Need to wait for it to have initialized before calling anything on it
+        future.result()
 
     future = asyncio.run_coroutine_threadsafe(getCurrentConditions(info.thing), loop)
     info.finish(nymea.ThingErrorNoError)
@@ -139,6 +155,7 @@ def executeAction(info):
 
 
 def configValueChanged(paramTypeId, value):
+    global apikey
     if paramTypeId == accuWeatherPluginCustomApiKeyParamTypeId:
         apikey = value
         logger.log("API Key changed to", apikey)
