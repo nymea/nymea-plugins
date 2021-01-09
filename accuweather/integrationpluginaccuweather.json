@@ -22,7 +22,7 @@
                     "id": "18d0dc96-1bf3-41de-aae1-5c0d4636d662",
                     "name": "weather",
                     "displayName": "Weather",
-                    "interfaces": ["weather", "daylightsensor"],
+                    "interfaces": ["weather"],
                     "createMethods": ["discovery"],
                     "paramTypes": [
                         {
