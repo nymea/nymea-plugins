@@ -61,10 +61,13 @@ IntegrationPluginMiele::IntegrationPluginMiele()
 void IntegrationPluginMiele::startPairing(ThingPairingInfo *info)
 {
     if (info->thingClassId() == mieleAccountThingClassId) {
-
+        qCDebug(dcMiele()) << "Start pairing Miele account";
         Miele *miele = createMieleConnection();
+        if (!miele) {
+            info->finish(Thing::ThingErrorAuthenticationFailure);
+            return;
+        }
         QUrl url = miele->getLoginUrl(QUrl("https://127.0.0.1:8888"));
-        qCDebug(dcMiele()) << "HomeConnect url:" << url;
         m_setupMieleConnections.insert(info->thingId(), miele);
         info->setOAuthUrl(url);
         info->finish(Thing::ThingErrorNoError);
@@ -79,7 +82,8 @@ void IntegrationPluginMiele::confirmPairing(ThingPairingInfo *info, const QStrin
     Q_UNUSED(username);
 
     if (info->thingClassId() == mieleAccountThingClassId) {
-        qCDebug(dcMiele()) << "Redirect url is" << secret;
+        qCDebug(dcMiele()) << "Confirm pairing Miele account";
+        qCDebug(dcMiele()) << "Secret" << secret << "username" << username;
         QUrl url(secret);
         QUrlQuery query(url);
         QByteArray authorizationCode = query.queryItemValue("code").toLocal8Bit();
@@ -88,11 +92,12 @@ void IntegrationPluginMiele::confirmPairing(ThingPairingInfo *info, const QStrin
         if (!miele) {
             qWarning(dcMiele()) << "No Miele connection found for thing:"  << info->thingName();
             m_setupMieleConnections.remove(info->thingId());
-            info->finish(Thing::ThingErrorHardwareFailure);
+            info->finish(Thing::ThingErrorAuthenticationFailure);
             return;
         }
         qCDebug(dcMiele()) << "Authorization code" << authorizationCode;
         miele->getAccessTokenFromAuthorizationCode(authorizationCode);
+        connect(info, &ThingPairingInfo::aborted, miele, &Miele::deleteLater);
         connect(miele, &Miele::receivedRefreshToken, info, [info, this](const QByteArray &refreshToken){
             qCDebug(dcMiele()) << "Token:" << refreshToken;
 
@@ -112,7 +117,14 @@ void IntegrationPluginMiele::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == mieleAccountThingClassId) {
+        qCDebug(dcMiele()) << "Setup Miele Account";
         Miele *miele;
+
+        if (m_mieleConnections.contains(thing)) {
+            qCDebug(dcMiele()) << "Setup after reconfiguration, cleaning up";
+            m_mieleConnections.take(thing)->deleteLater();
+        }
+
         if (m_setupMieleConnections.keys().contains(thing->id())) {
             //Fresh device setup, has already a fresh access token
             qCDebug(dcMiele()) << "Miele OAuth setup complete";
@@ -133,7 +145,9 @@ void IntegrationPluginMiele::setupThing(ThingSetupInfo *info)
                 return info->finish(Thing::ThingErrorSetupFailed);
             }
             miele->getAccessTokenFromRefreshToken(refreshToken);
-            m_asyncSetup.insert(miele, info);
+            connect(miele, &Miele::receivedAccessToken, this, [this] {
+
+            });
         }
     } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());
@@ -154,9 +168,12 @@ void IntegrationPluginMiele::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginMiele::postSetupThing(Thing *thing)
 {
+    qCDebug(dcMiele()) << "Post setup thing" << thing->name();
     if (!m_pluginTimer15min) {
+        qCDebug(dcMiele()) << "Registering plugin timer";
         m_pluginTimer15min = hardwareManager()->pluginTimerManager()->registerTimer(60*15);
         connect(m_pluginTimer15min, &PluginTimer::timeout, this, [this]() {
+            qCDebug(dcMiele()) << "Plugin timer triggered";
             Q_FOREACH (Thing *thing, myThings().filterByThingClassId(mieleAccountThingClassId)) {
                 Miele *miele = m_mieleConnections.value(thing);
                 if (!miele) {
@@ -237,15 +254,22 @@ Miele *IntegrationPluginMiele::createMieleConnection()
     if (clientId.isEmpty() || clientSecret.isEmpty()) {
         clientId = apiKeyStorage()->requestKey("miele").data("clientId");
         clientSecret = apiKeyStorage()->requestKey("miele").data("clientSecret");
+
+        if (clientId.isEmpty() || clientSecret.isEmpty()) {
+            qCWarning(dcMiele()) << "No API credentials available, cannot create Miele connection";
+            return nullptr;
+        } else {
+            qCDebug(dcMiele()) << "Using api credentials from API key provider";
+        }
     } else {
         qCDebug(dcMiele()) << "Using custom api credentials";
     }
-    if (clientId.isEmpty() || clientSecret.isEmpty()) {
-        return nullptr;
-    } else {
-        qCDebug(dcMiele()) << "Using api credentials from API key provider";
-    }
-    return new Miele(hardwareManager()->networkManager(), clientId, clientSecret, "en", this);
+    Miele *miele = new Miele(hardwareManager()->networkManager(), clientId, clientSecret, "en", this);
+    connect(miele, &Miele::destroyed, this, [this, miele] {
+        m_setupMieleConnections.remove(m_setupMieleConnections.key(miele));
+        m_mieleConnections.remove(m_mieleConnections.key(miele));
+    });
+    return miele;
 }
 
 void IntegrationPluginMiele::onConnectionChanged(bool connected)

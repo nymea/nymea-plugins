@@ -121,7 +121,7 @@ void Miele::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
         emit receivedAccessToken(m_accessToken);
 
         if (data.toVariant().toMap().contains("expires_in")) {
-            int expireTime = data.toVariant().toMap().value("expires_in").toInt();
+            uint expireTime = data.toVariant().toMap().value("expires_in").toUInt();
             qCDebug(dcMiele) << "Access token expires int" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
             if (!m_tokenRefreshTimer) {
                 qWarning(dcMiele()) << "Access token refresh timer not initialized";
@@ -174,7 +174,7 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
         receivedRefreshToken(m_refreshToken);
 
         if (jsonDoc.toVariant().toMap().contains("expires_in")) {
-            int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
+            uint expireTime = jsonDoc.toVariant().toMap().value("expires_in").toUInt();
             qCDebug(dcMiele()) << "Token expires in" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
             if (!m_tokenRefreshTimer) {
                 qWarning(dcMiele()) << "Token refresh timer not initialized";
@@ -194,6 +194,7 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
 
 void Miele::getDevices()
 {
+    qCDebug(dcMiele()) << "Get devices";
     QUrl url = m_apiUrl;
     url.setPath("/v1/devices");
     url.setQuery("language=en");
@@ -205,7 +206,7 @@ void Miele::getDevices()
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply]{
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
 
         QByteArray rawData = reply->readAll();
         if (!checkStatusCode(reply, rawData)) {
@@ -224,6 +225,7 @@ void Miele::getDevices()
 
 void Miele::getDevice(const QString &deviceId)
 {
+    qCDebug(dcMiele()) << "Get device" << deviceId;
     QUrl url = m_apiUrl;
     url.setPath("/v1/devices/"+deviceId);
     url.setQuery("language=en");
@@ -248,12 +250,14 @@ void Miele::getDevice(const QString &deviceId)
 
 void Miele::getActions(const QString &deviceId)
 {
-    Q_UNUSED(deviceId)
+    qCDebug(dcMiele()) << "Get actions" << deviceId;
+    //TODO
 }
 
 
 QUuid Miele::processAction(const QString &deviceId, Miele::ProcessAction action)
 {
+    qCDebug(dcMiele()) << "Process action" << deviceId << action;
     QJsonDocument doc;
     QJsonObject object;
     object.insert("processAction", action);
