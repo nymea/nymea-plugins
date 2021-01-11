@@ -83,7 +83,6 @@ void IntegrationPluginMiele::confirmPairing(ThingPairingInfo *info, const QStrin
 
     if (info->thingClassId() == mieleAccountThingClassId) {
         qCDebug(dcMiele()) << "Confirm pairing Miele account";
-        qCDebug(dcMiele()) << "Secret" << secret << "username" << username;
         QUrl url(secret);
         QUrlQuery query(url);
         QByteArray authorizationCode = query.queryItemValue("code").toLocal8Bit();
@@ -145,9 +144,11 @@ void IntegrationPluginMiele::setupThing(ThingSetupInfo *info)
                 return info->finish(Thing::ThingErrorSetupFailed);
             }
             miele->getAccessTokenFromRefreshToken(refreshToken);
-            connect(miele, &Miele::receivedAccessToken, this, [this] {
-
+            connect(miele, &Miele::receivedAccessToken, info, [this, info, miele] {
+                m_mieleConnections.insert(info->thing(), miele);
+               info->finish(Thing::ThingErrorNoError);
             });
+            connect(info, &ThingSetupInfo::aborted, miele, &Miele::deleteLater);
         }
     } else if (m_idParamTypeIds.contains(thing->thingClassId())) {
         Thing *parentThing = myThings().findById(thing->parentId());

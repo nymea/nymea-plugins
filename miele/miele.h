@@ -135,6 +135,8 @@ private:
     QByteArray m_redirectUri  = "https://127.0.0.1:8888";
 
     QTimer *m_tokenRefreshTimer = nullptr;
+    int m_refreshInterval = (60 * 10); //10 minutes
+    qint64 m_accessTokenExpireTime = 0;
 
     bool m_authenticated = false;
     bool m_connected = false;

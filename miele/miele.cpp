@@ -46,7 +46,7 @@ Miele::Miele(NetworkAccessManager *networkmanager, const QByteArray &clientId, c
     m_networkManager(networkmanager)
 {
     m_tokenRefreshTimer = new QTimer(this);
-    m_tokenRefreshTimer->setSingleShot(true);
+    m_tokenRefreshTimer->start(m_refreshInterval*1000); // 10 minutes
     connect(m_tokenRefreshTimer, &QTimer::timeout, this, &Miele::onRefreshTimeout);
 }
 
@@ -86,6 +86,7 @@ QUrl Miele::getLoginUrl(const QUrl &redirectUrl, const QString &state)
 
 void Miele::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
 {
+    qCDebug(dcMiele()) << "Getting access token from refresh token";
     if (refreshToken.isEmpty()) {
         qCWarning(dcMiele()) << "No refresh token given!";
         setAuthenticated(false);
@@ -121,23 +122,21 @@ void Miele::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
         emit receivedAccessToken(m_accessToken);
 
         if (data.toVariant().toMap().contains("expires_in")) {
-            uint expireTime = data.toVariant().toMap().value("expires_in").toUInt();
+            int expireTime = data.toVariant().toMap().value("expires_in").toInt();
             qCDebug(dcMiele) << "Access token expires int" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
-            if (!m_tokenRefreshTimer) {
-                qWarning(dcMiele()) << "Access token refresh timer not initialized";
-                return;
-            }
-            if (expireTime < 20) {
+
+            if (expireTime < m_refreshInterval) {
                 qCWarning(dcMiele()) << "Expire time too short";
                 return;
             }
-            m_tokenRefreshTimer->start((expireTime - 20) * 1000);
+            m_accessTokenExpireTime = QDateTime::currentMSecsSinceEpoch() + (expireTime-(m_refreshInterval*1000));
         }
     });
 }
 
 void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode)
 {
+    qCDebug(dcMiele()) << "Getting accsss token from authorization code";
     if(authorizationCode.isEmpty())
         qCWarning(dcMiele) << "No authorization code given!";
 
@@ -146,7 +145,7 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
     query.clear();
     query.addQueryItem("client_id", m_clientId);
     query.addQueryItem("client_secret", m_clientSecret);
-    query.addQueryItem("vg", "de-DE");
+    //query.addQueryItem("vg", "de-DE");
     query.addQueryItem("redirect_uri", m_redirectUri);
     query.addQueryItem("grant_type", "authorization_code");
     query.addQueryItem("code", authorizationCode);
@@ -174,18 +173,14 @@ void Miele::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
         receivedRefreshToken(m_refreshToken);
 
         if (jsonDoc.toVariant().toMap().contains("expires_in")) {
-            uint expireTime = jsonDoc.toVariant().toMap().value("expires_in").toUInt();
+            int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toUInt();
             qCDebug(dcMiele()) << "Token expires in" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
-            if (!m_tokenRefreshTimer) {
-                qWarning(dcMiele()) << "Token refresh timer not initialized";
-                setAuthenticated(false);
-                return;
-            }
-            if (expireTime < 20) {
+
+            if (expireTime < m_refreshInterval) {
                 qCWarning(dcMiele()) << "Expire time too short";
                 return;
             }
-            m_tokenRefreshTimer->start((expireTime - 20) * 1000);
+            m_accessTokenExpireTime = QDateTime::currentMSecsSinceEpoch() + (expireTime-(m_refreshInterval*1000));
         }
     });
 }
@@ -507,6 +502,8 @@ bool Miele::checkStatusCode(QNetworkReply *reply, const QByteArray &rawData)
 
 void Miele::onRefreshTimeout()
 {
-    qCDebug(dcMiele()) << "Refresh authentication token";
-    getAccessTokenFromRefreshToken(m_refreshToken);
+    if (QDateTime::currentMSecsSinceEpoch() > m_accessTokenExpireTime) {
+        qCDebug(dcMiele()) << "Refresh access token";
+        getAccessTokenFromRefreshToken(m_refreshToken);
+    }
 }
