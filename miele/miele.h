@@ -127,8 +127,8 @@ private:
     QUuid putAction(const QString &deviceId, const QJsonDocument &action); //
 
     QUrl m_authorizationUrl = QUrl("https://api.mcs3.miele.com/thirdparty/login/");
-    QUrl m_tokenUrl = QUrl("https://api.mcs3.miele.com/thirdparty/token/");
-    QUrl m_apiUrl = QUrl("https://api.mcs3.miele.com/");
+    QUrl m_tokenUrl = QUrl("https://api.mcs3.miele.com/thirdparty/token");
+    QUrl m_apiUrl = QUrl("https://api.mcs3.miele.com");
 
     QByteArray m_accessToken;
     QByteArray m_refreshToken;

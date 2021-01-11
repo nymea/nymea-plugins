@@ -195,10 +195,10 @@ void Miele::getDevices()
     url.setQuery("language=en");
 
     QNetworkRequest request(url);
-    request.setRawHeader("access_token", m_accessToken);
-    request.setRawHeader("language", "en");
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
     request.setRawHeader("accept", "application/json; charset=utf-8");
 
+    qCDebug(dcMiele()) << "Sending GET request" << request.url() << request.rawHeader("Authorization");
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, reply] {
@@ -226,8 +226,7 @@ void Miele::getDevice(const QString &deviceId)
     url.setQuery("language=en");
 
     QNetworkRequest request(url);
-    request.setRawHeader("access_token", m_accessToken);
-    request.setRawHeader("language", "en");
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
     request.setRawHeader("accept", "application/json; charset=utf-8");
 
     QNetworkReply *reply = m_networkManager->get(request);
@@ -350,7 +349,7 @@ void Miele::getAllEvents()
     url.setPath("/v1/devices/all/events");
 
     QNetworkRequest request(url);
-    request.setRawHeader("authorization", m_accessToken);
+    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
     request.setRawHeader("accept", "*/*");
 
     QNetworkReply *reply = m_networkManager->get(request);
