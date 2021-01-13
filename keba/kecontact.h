@@ -113,17 +113,32 @@ public:
     };
 
     struct ReportThree {
-        int VoltagePhase1; //voltage in V
-        int VoltagePhase2; //voltage in V
-        int VoltagePhase3; //voltage in V
-        int CurrentPhase1; //current in mA
-        int CurrentPhase2; //current in mA
-        int CurrentPhase3;  //current in mA
-        int Power;          //Current power in mW (Real Power).
-        int PowerFactor;    //Power factor in 0,1% (cosphi)
-        int EnergySession;  //Power consumption of the current loading session in 0,1Wh; Reset with new loading session (state = 2).
-        int EnergyTotal;    //Total power consumption (persistent) without current loading session 0,1Wh; Is summed up after each completed charging session (state = 0).
-        QString SerialNumber;
+        int voltagePhase1;  //voltage in V
+        int voltagePhase2;  //voltage in V
+        int voltagePhase3;  //voltage in V
+        double currentPhase1;  //current in A
+        double currentPhase2;  //current in A
+        double currentPhase3;  //current in A
+        double power;          //Current power in W (Real Power).
+        double powerFactor;    //Power factor in 0,1% (cosphi)
+        double energySession;  //Power consumption of the current loading session in 0,1Wh; Reset with new loading session (state = 2).
+        double energyTotal;    //Total power consumption (persistent) without current loading session 0,1Wh; Is summed up after each completed charging session (state = 0).
+        QString serialNumber;
+        int seconds;        //Current system clock since restart of the charging station.
+    };
+
+    struct Report1XX {
+        int sessionId;          // running session counter; not resettable"
+        int currHW;             // maximum charging current of the cable and the charging station setting     (equal to report 2)"E
+        double startEnergy;     // total energy value at the beginning of the session"
+        double ePres;           // delivered energy until now (equal to E pres in report 3)"
+        int startTime;          // system time when the session was started (seconds from reboot;     NTP implementation is still under progress)"
+        int endTime;            // system time when the session has ended"
+        int stopReason;         // reason for stopping the session (1 = vehicle unplug; 10 = Rfid token)"
+        QByteArray rfidTag;     // RFID Token ID if session started with rfid;     hexadecimal; first character is the lowest nibble"
+        QByteArray rfidClass;   // RFID classifier shows the defined     color code if the used card is a BMW  card     (for example “010104” means the white card)"
+        QString serialNumber;   // serial number of the charging station"
+        int seconds;            // current time when the report was generated
     };
 
     QHostAddress address();
@@ -145,6 +160,7 @@ public:
     void getReport1();                                  // Command “report”
     void getReport2();
     void getReport3();
+    void getReport1XX(int reportNumber = 100);
 
     // Command “report 1xx”
 
@@ -176,6 +192,7 @@ signals:
     void reportOneReceived(const ReportOne &reportOne);
     void reportTwoReceived(const ReportTwo &reportTwo);
     void reportThreeReceived(const ReportThree &reportThree);
+    void report1XXReceived(int reportNumber, const Report1XX &report);
     void broadcastReceived(BroadcastType type, const QVariant &content);
 
 private slots:

@@ -298,6 +298,38 @@
                                 }
                             ]
                         }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "dac02c37-f051-481a-ae99-1de0885ef37a",
+                            "name": "chargingSessionFinished",
+                            "displayName": "Charging session finished",
+                            "paramTypes": [
+                                {
+                                    "id": "33446eae-f2cc-4cf2-af29-b3a45e4b91c0",
+                                    "name": "id",
+                                    "displayName": "ID",
+                                    "type": "int",
+                                    "defaultValue": "0"
+                                },
+                                {
+                                    "id": "60494d6f-853b-42b8-894e-108a52ed6feb",
+                                    "name": "duration",
+                                    "displayName": "Duration",
+                                    "type": "int",
+                                    "unit": "Seconds",
+                                    "defaultValue": 0
+                                },
+                                {
+                                    "id": "c8de58b6-b671-4fee-b552-d2c14a37a769",
+                                    "name": "energy",
+                                    "displayName": "Energy",
+                                    "type": "double",
+                                    "defaultValue": 0.00,
+                                    "unit": "KiloWattHour"
+                                }
+                            ]
+                        }
                     ]
                 }
             ]

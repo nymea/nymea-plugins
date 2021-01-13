@@ -67,6 +67,8 @@ private:
 
     Discovery *m_discovery = nullptr;
     QHash<ThingId, KeContact *> m_kebaDevices;
+    QHash<ThingId, int> m_lastSessionId;
+
     QHash<KeContact *, ThingSetupInfo *> m_asyncSetup;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
     QHash<ThingId, QDateTime> m_chargingSessionStartTime;
@@ -77,9 +79,9 @@ private:
 private slots:
     void onConnectionChanged(bool status);
     void onCommandExecuted(QUuid requestId, bool success);
-    void onReportOneReceived(const KeContact::ReportOne &reportOne);
     void onReportTwoReceived(const KeContact::ReportTwo &reportTwo);
     void onReportThreeReceived(const KeContact::ReportThree &reportThree);
+    void onReport1XXReceived(int reportNumber, const KeContact::Report1XX &report);
     void onBroadcastReceived(KeContact::BroadcastType type, const QVariant &content);
 };
 

@@ -92,7 +92,7 @@ QUuid KeContact::stop(const QByteArray &rfidToken)
     return requestId;
 }
 
-void KeContact::setAddress(QHostAddress address)
+void KeContact::setAddress(const QHostAddress &address)
 {
     m_address = address;
 }
@@ -339,19 +339,29 @@ void KeContact::readPendingDatagrams()
             QVariantMap data = jsonDoc.toVariant().toMap();
 
             if(data.contains("ID")) {
-
-                if (data.value("ID").toString() == "1") {
+                int id = data.value("ID").toInt();
+                if (id == 1) {
                     ReportOne reportOne;
                     qCDebug(dcKebaKeContact()) << "Report 1 received";
                     reportOne.product      = data.value("Product").toString();
                     reportOne.firmware     = data.value("Firmware").toString();
-                    reportOne.serialNumber = data.value("Serial").toString();;
+                    reportOne.serialNumber = data.value("Serial").toString();
+                    if (data.contains("COM-module")) {
+                        reportOne.comModule = (data.value("COM-module").toInt() == 1);
+                    } else {
+                        reportOne.comModule = false;
+                    }
+                    if (data.contains("Sec")) {
+                        reportOne.comModule = data.value("Sec").toInt();
+                    } else {
+                        reportOne.comModule = 0;
+                    }
                     emit reportOneReceived(reportOne);
 
-                } else if(data.value("ID").toString() == "2"){
+                } else if (id == 2) {
 
                     ReportTwo reportTwo;
-                    qCDebug(dcKebaKeContact()) << "Report 2 reveiced";
+                    qCDebug(dcKebaKeContact()) << "Report 2 received";
                     int state = data.value("State").toInt();
                     reportTwo.state = State(state);
                     reportTwo.error1 = data.value("Error1").toInt();
@@ -371,22 +381,33 @@ void KeContact::readPendingDatagrams()
                     reportTwo.seconds = data.value("Sec").toInt();
                     emit reportTwoReceived(reportTwo);
 
-                } else if(data.value("ID").toString() == "3"){
+                } else if (id == 3) {
 
                     ReportThree reportThree;
                     qCDebug(dcKebaKeContact()) << "Report 3 reveiced";
-                    reportThree.CurrentPhase1 = data.value("I1").toInt();
-                    reportThree.CurrentPhase2 = data.value("I2").toInt();
-                    reportThree.CurrentPhase3 = data.value("I3").toInt();
-                    reportThree.VoltagePhase1 = data.value("U1").toInt();
-                    reportThree.VoltagePhase2 = data.value("U2").toInt();
-                    reportThree.VoltagePhase3 = data.value("U3").toInt();
-                    reportThree.Power         = data.value("P").toInt();
-                    reportThree.PowerFactor   = data.value("PF").toInt()/10;
-                    reportThree.EnergySession = data.value("E pres").toInt()/10000.00;
-                    reportThree.EnergyTotal   = data.value("E total").toInt()/10000.00;
-                    reportThree.SerialNumber  = data.value("Serial").toString();
+                    reportThree.currentPhase1 = data.value("I1").toInt()/1000.00;
+                    reportThree.currentPhase2 = data.value("I2").toInt()/1000.00;
+                    reportThree.currentPhase3 = data.value("I3").toInt()/1000.00;
+                    reportThree.voltagePhase1 = data.value("U1").toInt();
+                    reportThree.voltagePhase2 = data.value("U2").toInt();
+                    reportThree.voltagePhase3 = data.value("U3").toInt();
+                    reportThree.power         = data.value("P").toInt()/1000.00;
+                    reportThree.powerFactor   = data.value("PF").toInt()/10.00;
+                    reportThree.energySession = data.value("E pres").toInt()/10000.00;
+                    reportThree.energyTotal   = data.value("E total").toInt()/10000.00;
+                    reportThree.serialNumber  = data.value("Serial").toString();
+                    reportThree.seconds  = data.value("Sec").toInt();
                     emit reportThreeReceived(reportThree);
+                } else if (id >= 100) {
+                    Report1XX report;
+                    report.sessionId = data.value("Session ID").toInt();
+                    report.currHW = data.value("Curr HW").toInt();
+                    //report. = data.value("Curr HW").toInt(); TODO
+                    report.currHW = data.value("Curr HW").toInt();
+                    report.currHW = data.value("Curr HW").toInt();
+                    report.currHW = data.value("Curr HW").toInt();
+                    report.currHW = data.value("Curr HW").toInt();
+                    emit report1XXReceived(id, report);
                 }
             } else {
                 if (data.contains("State")) {

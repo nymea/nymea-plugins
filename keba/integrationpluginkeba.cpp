@@ -44,27 +44,27 @@ IntegrationPluginKeba::IntegrationPluginKeba()
 
 void IntegrationPluginKeba::init()
 {
-   m_discovery = new Discovery(this);
-   connect(m_discovery, &Discovery::finished, this, [this](const QList<Host> &hosts) {
+    m_discovery = new Discovery(this);
+    connect(m_discovery, &Discovery::finished, this, [this](const QList<Host> &hosts) {
 
-       foreach (const Host &host, hosts) {
-           if (!host.hostName().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
-               continue;
+        foreach (const Host &host, hosts) {
+            if (!host.hostName().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
+                continue;
 
-           foreach (Thing *existingThing, myThings()) {
-               if (existingThing->paramValue(wallboxThingMacAddressParamTypeId).toString() == host.macAddress())  {
-                   if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() != host.address()) {
-                   qCDebug(dcKebaKeContact()) << "Keba Wallbox IP Address has changed, from"  << existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() << "to" << host.address();
-                   existingThing->setParamValue(wallboxThingIpAddressParamTypeId, host.address());
+            foreach (Thing *existingThing, myThings()) {
+                if (existingThing->paramValue(wallboxThingMacAddressParamTypeId).toString() == host.macAddress())  {
+                    if (existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() != host.address()) {
+                        qCDebug(dcKebaKeContact()) << "Keba Wallbox IP Address has changed, from"  << existingThing->paramValue(wallboxThingIpAddressParamTypeId).toString() << "to" << host.address();
+                        existingThing->setParamValue(wallboxThingIpAddressParamTypeId, host.address());
 
-                   } else {
-                       qCDebug(dcKebaKeContact()) << "Keba Wallbox" << existingThing->name() << "IP address has not changed" << host.address();
-                   }
-                   break;
-               }
-           }
-       }
-   });
+                    } else {
+                        qCDebug(dcKebaKeContact()) << "Keba Wallbox" << existingThing->name() << "IP address has not changed" << host.address();
+                    }
+                    break;
+                }
+            }
+        }
+    });
 }
 
 void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
@@ -113,9 +113,9 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
         KeContact *keba = new KeContact(address, this);
         connect(keba, &KeContact::reachableChanged, this, &IntegrationPluginKeba::onConnectionChanged);
         connect(keba, &KeContact::commandExecuted, this, &IntegrationPluginKeba::onCommandExecuted);
-        connect(keba, &KeContact::reportOneReceived, this, &IntegrationPluginKeba::onReportOneReceived);
         connect(keba, &KeContact::reportTwoReceived, this, &IntegrationPluginKeba::onReportTwoReceived);
         connect(keba, &KeContact::reportThreeReceived, this, &IntegrationPluginKeba::onReportThreeReceived);
+        connect(keba, &KeContact::report1XXReceived, this, &IntegrationPluginKeba::onReport1XXReceived);
         connect(keba, &KeContact::broadcastReceived, this, &IntegrationPluginKeba::onBroadcastReceived);
         if (!keba->init()){
             qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
@@ -316,12 +316,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
     if (!thing)
         return;
 
-    thing->setStateValue()
-    thing->setStateValue(wallboxPowerStateTypeId, reportTwo.enableUser);
-    thing->setStateValue(wallboxError1StateTypeId, reportTwo.error1);
-    thing->setStateValue(wallboxError2StateTypeId, reportTwo.error2);
-
-    qCDebug(dcKebaKeContact()) << "Report 2 recieved for" << thing->name();
+    qCDebug(dcKebaKeContact()) << "Report 2 received for" << thing->name() << "Serial number:" << thing->stateValue(wallboxSerialnumberStateTypeId).toString();
     qCDebug(dcKebaKeContact()) << "     - State:" << reportTwo.state;
     qCDebug(dcKebaKeContact()) << "     - Error 1:" << reportTwo.error1;
     qCDebug(dcKebaKeContact()) << "     - Error 2:" << reportTwo.error2;
@@ -338,17 +333,27 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
     qCDebug(dcKebaKeContact()) << "     - Timeout CT:" << reportTwo.timeoutCt;
     qCDebug(dcKebaKeContact()) << "     - Output:" << reportTwo.output;
     qCDebug(dcKebaKeContact()) << "     - Input:" << reportTwo.input;
-    qCDebug(dcKebaKeContact()) << "     - Serialnumber:" << reportTwo.serialNumber;
+    qCDebug(dcKebaKeContact()) << "     - Serial number:" << reportTwo.serialNumber;
     qCDebug(dcKebaKeContact()) << "     - Uptime:" << reportTwo.seconds;
 
+    if (reportTwo.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
+        setDeviceState(thing, reportTwo.state);
+        setDevicePlugState(thing, reportTwo.plugState);
 
-    //thing->setStateValue(wallboxMaxChargingCurrentAmpereStateTypeId, reportTwo.maxCurrent);
-    thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
-    //thing->setStateValue(wallboxCurrentHardwareLimitationStateTypeId, reportTwo.currentHardwareLimitation);
+        thing->setStateValue(wallboxPowerStateTypeId, reportTwo.enableUser);
+        thing->setStateValue(wallboxError1StateTypeId, reportTwo.error1);
+        thing->setStateValue(wallboxError2StateTypeId, reportTwo.error2);
+        //thing->setStateValue(wallboxMaxChargingCurrentAmpereStateTypeId, reportTwo.maxCurrent);
+        thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
+        //thing->setStateValue(wallboxCurrentHardwareLimitationStateTypeId, reportTwo.currentHardwareLimitation);
 
+        thing->setStateValue(wallboxOutputX2StateTypeId, reportTwo.output);
+        thing->setStateValue(wallboxInputStateTypeId, reportTwo.input);
 
-    setDeviceState(thing, reportTwo.state);
-    setDevicePlugState(thing, reportTwo.plugState);
+        thing->setStateValue(wallboxUptimeStateTypeId, reportTwo.seconds);
+    } else {
+        qCWarning(dcKebaKeContact()) << "Received report but the serial number didn't match";
+    }
 }
 
 void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &reportThree)
@@ -358,16 +363,77 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
     if (!thing)
         return;
 
-    thing->setStateValue(wallboxCurrentPhase1EventTypeId, reportThree.CurrentPhase1);
-    thing->setStateValue(wallboxCurrentPhase2EventTypeId, reportThree.CurrentPhase2);
-    thing->setStateValue(wallboxCurrentPhase3EventTypeId, reportThree.CurrentPhase3);
-    thing->setStateValue(wallboxVoltagePhase1EventTypeId, reportThree.VoltagePhase1);
-    thing->setStateValue(wallboxVoltagePhase2EventTypeId, reportThree.VoltagePhase2);
-    thing->setStateValue(wallboxVoltagePhase3EventTypeId, reportThree.VoltagePhase3);
-    thing->setStateValue(wallboxPowerConsumptionStateTypeId, reportThree.Power);
-    thing->setStateValue(wallboxSessionEnergyStateTypeId, reportThree.EnergySession); //TODO check state name
-    thing->setStateValue(wallboxPowerFactorStateTypeId, reportThree.PowerFactor);
-    thing->setStateValue(wallboxTotalEnergyConsumedStateTypeId, reportThree.EnergyTotal);
+    qCDebug(dcKebaKeContact()) << "Report 3 received for" << thing->name() << "Serial number:" << thing->stateValue(wallboxSerialnumberStateTypeId).toString();
+    qCDebug(dcKebaKeContact()) << "     - Current phase 1:" << reportThree.currentPhase1 << "[mA]";
+    qCDebug(dcKebaKeContact()) << "     - Current phase 2:" << reportThree.currentPhase2 << "[mA]";
+    qCDebug(dcKebaKeContact()) << "     - Current phase 3:" << reportThree.currentPhase3 << "[mA]";
+    qCDebug(dcKebaKeContact()) << "     - Voltage phase 1:" << reportThree.voltagePhase1 << "[V]";
+    qCDebug(dcKebaKeContact()) << "     - Voltage phase 2:" << reportThree.voltagePhase2 << "[V]";
+    qCDebug(dcKebaKeContact()) << "     - Voltage phase 3:" << reportThree.voltagePhase3 << "[V]";
+    qCDebug(dcKebaKeContact()) << "     - Power consumption:" << reportThree.power << "[W]";
+    qCDebug(dcKebaKeContact()) << "     - Energy session" << reportThree.energySession << "[Wh]";
+    qCDebug(dcKebaKeContact()) << "     - Energy total" << reportThree.energyTotal << "[Wh]";
+    qCDebug(dcKebaKeContact()) << "     - Serial number" << reportThree.serialNumber;
+    qCDebug(dcKebaKeContact()) << "     - Uptime" << reportThree.seconds;
+
+    if (reportThree.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
+        thing->setStateValue(wallboxCurrentPhase1EventTypeId, reportThree.currentPhase1);
+        thing->setStateValue(wallboxCurrentPhase2EventTypeId, reportThree.currentPhase2);
+        thing->setStateValue(wallboxCurrentPhase3EventTypeId, reportThree.currentPhase3);
+        thing->setStateValue(wallboxVoltagePhase1EventTypeId, reportThree.voltagePhase1);
+        thing->setStateValue(wallboxVoltagePhase2EventTypeId, reportThree.voltagePhase2);
+        thing->setStateValue(wallboxVoltagePhase3EventTypeId, reportThree.voltagePhase3);
+        thing->setStateValue(wallboxPowerConsumptionStateTypeId, reportThree.power);
+        thing->setStateValue(wallboxSessionEnergyStateTypeId, reportThree.energySession);
+        thing->setStateValue(wallboxPowerFactorStateTypeId, reportThree.powerFactor);
+        thing->setStateValue(wallboxTotalEnergyConsumedStateTypeId, reportThree.energyTotal);
+    } else {
+        qCWarning(dcKebaKeContact()) << "Received report but the serial number didn't match";
+    }
+}
+
+void IntegrationPluginKeba::onReport1XXReceived(int reportNumber, const KeContact::Report1XX &report)
+{
+    KeContact *keba = static_cast<KeContact *>(sender());
+    Thing *thing = myThings().findById(m_kebaDevices.key(keba));
+    if (!thing)
+        return;
+
+    qCDebug(dcKebaKeContact()) << "Report" << reportNumber << "received for" << thing->name() << "Serial number:" << thing->stateValue(wallboxSerialnumberStateTypeId).toString();
+    qCDebug(dcKebaKeContact()) << "     - Session Id" << report.sessionId;
+    qCDebug(dcKebaKeContact()) << "     - Curr HW" << report.currHW;
+    qCDebug(dcKebaKeContact()) << "     - Energy start" << report.startEnergy;
+    qCDebug(dcKebaKeContact()) << "     - Energy present" << report.ePres;
+    qCDebug(dcKebaKeContact()) << "     - Start time" << report.startTime;
+    qCDebug(dcKebaKeContact()) << "     - End time" << report.endTime;
+    qCDebug(dcKebaKeContact()) << "     - Stop reason" << report.stopReason;
+    qCDebug(dcKebaKeContact()) << "     - RFID Tag" << report.rfidTag;
+    qCDebug(dcKebaKeContact()) << "     - RFID Class" << report.rfidClass;
+    qCDebug(dcKebaKeContact()) << "     - Serial number" << report.serialNumber;
+    qCDebug(dcKebaKeContact()) << "     - Uptime" << report.seconds;
+
+    // Report 101 is the lastest finished session
+    if (reportNumber == 101) {
+        if (report.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
+            if (!m_lastSessionId.contains(thing->id())) {
+                m_lastSessionId.insert(thing->id(), report.sessionId);
+            } else {
+                if (m_lastSessionId.value(thing->id()) != report.sessionId) {
+                    qCDebug(dcKebaKeContact()) << "New session id receivd";
+                    Event event;
+                    event.setThingId(thing->id());
+                    ParamList params;
+                    //params << Param(wallboxSessio);
+                    event.setParams(params);
+                    emitEvent(event);
+                }
+            }
+        } else {
+            qCWarning(dcKebaKeContact()) << "Received report but the serial number didn't match";
+        }
+    } else {
+        qCWarning(dcKebaKeContact()) << "Received unhandled report" << reportNumber;
+    }
 }
 
 void IntegrationPluginKeba::onBroadcastReceived(KeContact::BroadcastType type, const QVariant &content)
