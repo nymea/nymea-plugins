@@ -52,6 +52,7 @@ class IntegrationPluginKeba : public IntegrationPlugin
 public:
     explicit IntegrationPluginKeba();
 
+    void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
 
@@ -59,10 +60,12 @@ public:
     void thingRemoved(Thing* thing) override;
 
     void executeAction(ThingActionInfo *info) override;
-    void updateData();
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_updateTimer = nullptr;
+    PluginTimer *m_reconnectTimer = nullptr;
+
+    Discovery *m_discovery = nullptr;
     QHash<ThingId, KeContact *> m_kebaDevices;
     QHash<KeContact *, ThingSetupInfo *> m_asyncSetup;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;

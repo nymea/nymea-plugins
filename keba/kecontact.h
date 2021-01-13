@@ -46,6 +46,14 @@ public:
     ~KeContact();
     bool init();
 
+    enum Model {
+        ModelUnkown,
+        ModelP20,
+        ModelP30,
+        ModelBMW
+    };
+    Q_ENUM(Model)
+
     enum State {
         StateStarting = 0,
         StateNotReady,
@@ -54,6 +62,7 @@ public:
         StateError,
         StateAuthorizationRejected
     };
+    Q_ENUM(State)
 
     enum PlugState {
         PlugStateUnplugged                                           = 0,
@@ -62,6 +71,7 @@ public:
         PlugStatePluggedOnChargingStationAndPluggedOnEV              = 5,
         PlugStatePluggedOnChargingStationAndPlugLockedAndPluggedOnEV = 7
     };
+    Q_ENUM(PlugState)
 
     enum BroadcastType {
         BroadcastTypeState = 0,
@@ -73,9 +83,11 @@ public:
     };
 
     struct ReportOne {
-        QString product;
-        QString serialNumber;
-        QString firmware;
+        QString product;        // Model  name  (variant
+        QString serialNumber;   // Serial number
+        QString firmware;       // Firmware version
+        bool comModule;         // Communication module is installed (only P30)
+        int seconds;            // Current system clock since restart of the charging station.(only P30)
     };
 
     struct ReportTwo {
@@ -85,15 +97,18 @@ public:
         PlugState plugState;            //Current condition of the loading connection
         bool enableSys;                 //Enable state for charging (contains Enable input, RFID, UDP,..).
         bool enableUser;                //Enable condition via UDP.
-        int MaxCurrent;                 //Current preset value via Control pilot in milliampere.
-        int MaxCurrentPercentage;       //Current preset value via Control pilot in 0,1% of the PWM value
-        int CurrentHardwareLimitation;  //Highest possible charging current of the charging connection. Contains device maximum, DIP-switch setting, cable coding and temperature reduction.
-        int CurrentUser;                //Current preset value of the user via UDP; Default = 63000mA.
-        int CurrFS;                     //Current preset value for the Failsafe function.
-        int TmoFS;                      //Communication timeout before triggering the Failsafe function.
+        int maxCurrent;                 //Current preset value via Control pilot in milliampere.
+        int maxCurrentPercentage;       //Current preset value via Control pilot in 0,1% of the PWM value
+        int currentHardwareLimitation;  //Highest possible charging current of the charging connection. Contains device maximum, DIP-switch setting, cable coding and temperature reduction.
+        int currentUser;                //Current preset value of the user via UDP; Default = 63000mA.
+        int currentFailsafe;            //Current preset value for the Failsafe function.
+        int timeoutFailsafe;            //Communication timeout before triggering the Failsafe function.
+        int currTimer;                  //Shows  the  current  preset  value  of  currtime.
+        int timeoutCt;                  //Shows the remaining time until the current value is accepted.
+        int setEnergy;                  //Shows  the  set  energy  limit
         bool output;                    //State of the output X2.
         bool input;                     //State of the potential free Enable input X1. When using the input, please pay attention to the information in the installation manual.
-        QString serialNumber;           //
+        QString serialNumber;           //Serial number
         int seconds;                    //Current system clock since restart of the charging station.
     };
 
@@ -112,21 +127,34 @@ public:
     };
 
     QHostAddress address();
-    int serialNumber();
+    void setAddress(const QHostAddress &address);
 
-    void setAddress(QHostAddress address);
+    bool reachable();
 
-    QUuid enableOutput(bool state);
-    QUuid setMaxAmpere(int milliAmpere);
-    QUuid unlockCharger();
-    QUuid displayMessage(const QByteArray &message);
+    QUuid start(const QByteArray &rfidToken, const QByteArray &rfidClassifier);     // Command “start”
+    QUuid stop(const QByteArray &rfidToken);                // Command “stop”
 
-    void getDeviceInformation();
-    void getReport1();
+    QUuid enableOutput(bool state);                         // Command “ena”
+    QUuid setMaxAmpere(int milliAmpere);                    // Command “curr”
+    QUuid unlockCharger();                                  // Command “unlock"
+    QUuid displayMessage(const QByteArray &message);        // Command “display”
+    QUuid chargeWithEnergyLimit(double energy);             // Command “setenergy”
+    QUuid setFailsafe(int timeout, int current, bool save); // Command “failsafe”
+
+    void getDeviceInformation();                        // Command “i”
+    void getReport1();                                  // Command “report”
     void getReport2();
     void getReport3();
 
+    // Command “report 1xx”
+
+    // Command “currtime”
+    // Command “output”
+
+
+
 private:
+    bool m_reachable = false;
     QUdpSocket *m_udpSocket = nullptr;
     QHostAddress m_address;
     QByteArrayList m_commandList;
@@ -136,11 +164,13 @@ private:
     int m_serialNumber;
     QList<QUuid> m_pendingRequests;
 
+
+    void sendCommand(const QByteArray &data, const QUuid &requestId);
     void sendCommand(const QByteArray &data);
     void handleNextCommandInQueue();
 
 signals:
-    void connectionChanged(bool status);
+    void reachableChanged(bool status);
     void commandExecuted(QUuid requestId, bool success);
     void deviceInformationReceived(const QString &firmware);
     void reportOneReceived(const ReportOne &reportOne);
@@ -151,7 +181,5 @@ signals:
 private slots:
     void readPendingDatagrams();
 };
-
-
 #endif // KECONTACT_H
 

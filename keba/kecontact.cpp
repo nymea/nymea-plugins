@@ -42,7 +42,7 @@ KeContact::KeContact(QHostAddress address, QObject *parent) :
     m_requestTimeoutTimer->setSingleShot(true);
     connect(m_requestTimeoutTimer, &QTimer::timeout, this, [this] {
         //This timer will be started when a request is sent and stopped or resetted when a response has been received
-        emit connectionChanged(false);
+        emit reachableChanged(false);
         //Try to send the next command
         handleNextCommandInQueue();
         m_deviceBlocked = false;
@@ -72,18 +72,52 @@ QHostAddress KeContact::address()
     return m_address;
 }
 
+QUuid KeContact::start(const QByteArray &rfidToken, const QByteArray &rfidClassifier)
+{
+    QUuid requestId = QUuid::createUuid();
+    m_pendingRequests.append(requestId);
+    QByteArray datagram = "start "+rfidToken + " " + rfidClassifier;
+    qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
+    sendCommand(datagram, requestId);;
+    return requestId;
+}
+
+QUuid KeContact::stop(const QByteArray &rfidToken)
+{
+    QUuid requestId = QUuid::createUuid();
+    m_pendingRequests.append(requestId);
+    QByteArray datagram = "stop "+rfidToken;
+    qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
+    sendCommand(datagram, requestId);
+    return requestId;
+}
+
 void KeContact::setAddress(QHostAddress address)
 {
     m_address = address;
+}
+
+
+void KeContact::sendCommand(const QByteArray &command, const QUuid &requestId)
+{
+    QTimer::singleShot(5000, this, [requestId, this] {
+        if (m_pendingRequests.contains(requestId)) {
+            m_pendingRequests.removeOne(requestId);
+            emit commandExecuted(requestId, false);
+        }
+    });
+
+    sendCommand(command);
 }
 
 void KeContact::sendCommand(const QByteArray &command)
 {
     if (!m_udpSocket) {
         qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
-        emit connectionChanged(false);
+        emit reachableChanged(false);
         return;
     }
+
     if(m_deviceBlocked) {
         //add command to queue
         m_commandList.append(command);
@@ -99,7 +133,10 @@ void KeContact::handleNextCommandInQueue()
 {
     if (!m_udpSocket) {
         qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
-        emit connectionChanged(false);
+        if (m_reachable == true) {
+            m_reachable = false;
+            emit reachableChanged(false);
+        }
         return;
     }
     qCDebug(dcKebaKeContact()) << "Handle Command Queue- Pending commands" << m_commandList.length() << "Pending requestIds" << m_pendingRequests.length();
@@ -125,13 +162,7 @@ QUuid KeContact::enableOutput(bool state)
         datagram.append("ena 0");
     }
     qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
-    sendCommand(datagram);
-    QTimer::singleShot(5000, this, [requestId, this] {
-        if (m_pendingRequests.contains(requestId)) {
-            m_pendingRequests.removeOne(requestId);
-            emit commandExecuted(requestId, false);
-        }
-    });
+    sendCommand(datagram, requestId);
     return requestId;
 }
 
@@ -143,12 +174,8 @@ QUuid KeContact::setMaxAmpere(int milliAmpere)
     qCDebug(dcKebaKeContact()) << "Update max current to : " << milliAmpere;
     QByteArray data;
     data.append("curr " + QVariant(milliAmpere).toByteArray());
-    qCDebug(dcKebaKeContact()) << "send command: " << data;
-    sendCommand(data);
-    if (m_pendingRequests.contains(requestId)) {
-        m_pendingRequests.removeOne(requestId);
-        emit commandExecuted(requestId, false);
-    }
+    qCDebug(dcKebaKeContact()) << "sSnd command: " << data;
+    sendCommand(data, requestId);
     return requestId;
 }
 
@@ -169,12 +196,35 @@ QUuid KeContact::displayMessage(const QByteArray &message)
         modifiedMessage.resize(23);
     }
     data.append("display 0 0 0 0 " + modifiedMessage);
-    qCDebug(dcKebaKeContact()) << "send command: " << data;
-    sendCommand(data);
-    if (m_pendingRequests.contains(requestId)) {
-        m_pendingRequests.removeOne(requestId);
-        emit commandExecuted(requestId, false);
-    }
+    qCDebug(dcKebaKeContact()) << "Send command: " << data;
+    sendCommand(data, requestId);
+    return requestId;
+}
+
+QUuid KeContact::chargeWithEnergyLimit(double energy)
+{
+    QUuid requestId = QUuid::createUuid();
+    m_pendingRequests.append(requestId);
+
+    QByteArray data;
+    data.append("setenergy " + QVariant(static_cast<int>(energy*10000)).toByteArray());
+    qCDebug(dcKebaKeContact()) << "Send command: " << data;
+    sendCommand(data, requestId);
+    return requestId;
+}
+
+QUuid KeContact::setFailsafe(int timeout, int current, bool save)
+{
+    QUuid requestId = QUuid::createUuid();
+    m_pendingRequests.append(requestId);
+
+    QByteArray data;
+    data.append("failsave");
+    data.append(" "+QVariant(timeout).toByteArray());
+    data.append(" "+QVariant(current).toByteArray());
+    data.append((save ? " 1":" 0"));
+    qCDebug(dcKebaKeContact()) << "Send command: " << data;
+    sendCommand(data, requestId);
     return requestId;
 }
 
@@ -237,7 +287,10 @@ void KeContact::readPendingDatagrams()
             //Only process data from the target device
             continue;
         }
-        emit connectionChanged(true);
+        if (m_reachable != true) {
+            m_reachable = true;
+            emit reachableChanged(true);
+        }
 
         qCDebug(dcKebaKeContact()) << "Data received" << datagram;
         if(datagram.contains("TCH-OK")){
@@ -257,7 +310,7 @@ void KeContact::readPendingDatagrams()
             } else {
                 //Probably the response has taken too long and the requestId has been already removed
             }
-        } else  if(datagram.left(8).contains("Firmware")){
+        } else if(datagram.left(8).contains("Firmware")){
 
             //Command response has been received, now send the next command
             m_deviceBlocked = false;
@@ -306,12 +359,12 @@ void KeContact::readPendingDatagrams()
                     reportTwo.plugState = PlugState(data.value("Plug").toInt());
                     reportTwo.enableUser  = data.value("Enable user").toBool();
                     reportTwo.enableSys   = data.value("Enable sys").toBool();
-                    reportTwo.MaxCurrent  = data.value("Max curr").toInt()/1000;
-                    reportTwo.MaxCurrentPercentage = data.value("Max curr %").toInt()/10;
-                    reportTwo.CurrentHardwareLimitation = data.value("Curr HW").toInt()/1000;
-                    reportTwo.CurrentUser = data.value("Curr user").toInt();
-                    reportTwo.CurrFS = data.value("Curr FS").toInt();
-                    reportTwo.TmoFS = data.value("Tmo FS").toInt();
+                    reportTwo.maxCurrent  = data.value("Max curr").toInt()/1000;
+                    reportTwo.maxCurrentPercentage = data.value("Max curr %").toInt()/10;
+                    reportTwo.currentHardwareLimitation = data.value("Curr HW").toInt()/1000;
+                    reportTwo.currentUser = data.value("Curr user").toInt();
+                    reportTwo.currentFailsafe = data.value("Curr FS").toInt();
+                    reportTwo.timeoutFailsafe = data.value("Tmo FS").toInt();
                     reportTwo.output = data.value("Output").toInt();
                     reportTwo.input= data.value("Input").toInt();
                     reportTwo.serialNumber = data.value("Serial").toString();
