@@ -18,7 +18,7 @@
                         {
                             "id": "730cd3d3-5f0e-4028-a8c2-ced7574f13f3",
                             "name": "ipAddress",
-                            "displayName": "IPv4 Address",
+                            "displayName": "IP address",
                             "type": "QString",
                             "inputType": "IPv4Address",
                             "defaultValue":"0.0.0.0"
@@ -26,7 +26,7 @@
                         {
                             "id": "c2df921d-ff8b-411c-9b1d-04a437d7dfa6",
                             "name": "macAddress",
-                            "displayName": "MAC Address",
+                            "displayName": "MAC address",
                             "type": "QString",
                             "inputType": "TextLine",
                             "defaultValue":"",
@@ -38,7 +38,7 @@
                             "id": "ce813458-d7d8-4f40-9648-dba4c41e92f0",
                             "name": "connected",
                             "displayName": "Connected",
-                            "displayNameEvent": "Connection changed",
+                            "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
@@ -94,9 +94,9 @@
                         {
                             "id": "83ed0774-2a91-434d-b03c-d920d02f2981",
                             "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Power changed",
-                            "displayNameAction": "Set Power",
+                            "displayName": "Charging enabled",
+                            "displayNameEvent": "Charging enabled changed",
+                            "displayNameAction": "Set charging enabled",
                             "type": "bool",
                             "writable": true,
                             "defaultValue": false
@@ -120,8 +120,8 @@
                         {
                             "id": "3b4d29f3-3101-47ad-90fd-269b6348783b",
                             "name": "plugState",
-                            "displayName": "Plug State",
-                            "displayNameEvent": "Plug State changed",
+                            "displayName": "Plug state",
+                            "displayNameEvent": "Plug state changed",
                             "type": "QString",
                             "defaultValue": "-"
                         },
@@ -150,7 +150,7 @@
                         {
                             "id": "3c7b83a0-0e42-47bf-9788-dde6aab5ceea",
                             "name": "maxChargingCurrentPercent",
-                            "displayName": "Maximal charging current in Percent",
+                            "displayName": "Maximal charging current in percent",
                             "displayNameEvent": "Maximal charging current percentage changed",
                             "type": "uint",
                             "unit": "Percentage",
@@ -170,7 +170,7 @@
                         {
                             "id": "c8344ca5-21ac-4cd1-8f4b-e5ed202c5862",
                             "name": "voltagePhase2",
-                            "displayName": "Voltage Phase 2",
+                            "displayName": "Voltage phase 2",
                             "displayNameEvent": "Voltage phase 2 changed",
                             "type": "int",
                             "unit": "Volt",
@@ -179,7 +179,7 @@
                         {
                             "id": "5f01e86c-0943-4849-a01a-db441916ebd5",
                             "name": "voltagePhase3",
-                            "displayName": "Voltage Phase 3",
+                            "displayName": "Voltage phase 3",
                             "displayNameEvent": "Voltage phase 3 changed",
                             "type": "int",
                             "unit": "Volt",
@@ -188,7 +188,7 @@
                         {
                             "id": "31ec17b0-11e3-4332-92b0-fea821cf024f",
                             "name": "currentPhase1",
-                            "displayName": "Current Phase 1",
+                            "displayName": "Current phase 1",
                             "displayNameEvent": "Current phase 1 changed",
                             "type": "int",
                             "unit": "Ampere",
@@ -197,7 +197,7 @@
                         {
                             "id": "cdc7e10a-0d0a-4e93-ad2c-d34ffca45c97",
                             "name": "currentPhase2",
-                            "displayName": "Current Phase 2",
+                            "displayName": "Current phase 2",
                             "displayNameEvent": "Current phase 2 changed",
                             "type": "double",
                             "unit": "Ampere",
@@ -206,7 +206,7 @@
                         {
                             "id": "da838dc8-85f0-4e55-b4b5-cb93a43b373d",
                             "name": "currentPhase3",
-                            "displayName": "Current Phase 3",
+                            "displayName": "Current phase 3",
                             "displayNameEvent": "Current phase 3 changed",
                             "type": "double",
                             "unit": "Ampere",
