@@ -41,6 +41,7 @@
 #include <QNetworkReply>
 #include <QUdpSocket>
 #include <QDateTime>
+#include <QUdpSocket>
 
 class IntegrationPluginKeba : public IntegrationPlugin
 {
@@ -65,13 +66,13 @@ private:
     PluginTimer *m_updateTimer = nullptr;
     PluginTimer *m_reconnectTimer = nullptr;
 
+    QUdpSocket *m_udpSocket = nullptr;
+
     Discovery *m_discovery = nullptr;
     QHash<ThingId, KeContact *> m_kebaDevices;
     QHash<ThingId, int> m_lastSessionId;
 
-    QHash<KeContact *, ThingSetupInfo *> m_asyncSetup;
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
-    QHash<ThingId, QDateTime> m_chargingSessionStartTime;
 
     void setDeviceState(Thing *device, KeContact::State state);
     void setDevicePlugState(Thing *device, KeContact::PlugState plugState);

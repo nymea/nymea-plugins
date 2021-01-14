@@ -65,13 +65,7 @@
                             "displayName": "Model",
                             "displayNameEvent": "Model changed",
                             "type": "QString",
-                            "defaultValue": "Unknown",
-                            "possibleValues": [
-                                "Unknown",
-                                "Keba P20",
-                                "Keba P30",
-                                "BMW"
-                            ]
+                            "defaultValue": "Unknown"
                         },
                         {
                             "id": "e941ace5-fb7f-4dc2-b3f2-188233f4e934",
@@ -105,6 +99,14 @@
                             "displayNameAction": "Set Power",
                             "type": "bool",
                             "writable": true,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "e5631593-f486-47cb-9951-b7597d0b769b",
+                            "name": "systemEnabled",
+                            "displayName": "System enabled",
+                            "displayNameEvent": "System enabled changed",
+                            "type": "bool",
                             "defaultValue": false
                         },
                         {
@@ -216,7 +218,7 @@
                             "displayName": "Power consumption",
                             "displayNameEvent": "Power consumtion changed",
                             "type": "double",
-                            "unit": "Watt",
+                            "unit": "KiloWatt",
                             "defaultValue": 0
                         },
                         {
@@ -281,6 +283,16 @@
                             "type": "int",
                             "unit": "Seconds",
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "f1758c5c-2c02-41cb-93ec-b778a3c78d28",
+                            "name": "failsafeMode",
+                            "displayName": "Failsafe mode",
+                            "displayNameEvent": "Failsafe mode changed",
+                            "displayNameAction": "Set failsafe mode",
+                            "writable": true,
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "actionTypes": [

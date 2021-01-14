@@ -42,17 +42,9 @@ class KeContact : public QObject
 {
     Q_OBJECT
 public:
-    explicit KeContact(QHostAddress address, QObject *parent = nullptr);
+    explicit KeContact(const QHostAddress &address, QUdpSocket *udpSocket, QObject *parent = nullptr);
     ~KeContact();
     bool init();
-
-    enum Model {
-        ModelUnkown,
-        ModelP20,
-        ModelP30,
-        ModelBMW
-    };
-    Q_ENUM(Model)
 
     enum State {
         StateStarting = 0,
@@ -81,6 +73,7 @@ public:
         BroadcastTypeMaxCurr,
         BroadcastTypeEPres
     };
+    Q_ENUM(BroadcastType)
 
     struct ReportOne {
         QString product;        // Model  name  (variant
@@ -131,7 +124,7 @@ public:
         int sessionId;          // running session counter; not resettable"
         int currHW;             // maximum charging current of the cable and the charging station setting     (equal to report 2)"E
         double startEnergy;     // total energy value at the beginning of the session"
-        double ePres;           // delivered energy until now (equal to E pres in report 3)"
+        double presentEnergy;   // delivered energy until now (equal to E pres in report 3)"
         int startTime;          // system time when the session was started (seconds from reboot;     NTP implementation is still under progress)"
         int endTime;            // system time when the session has ended"
         int stopReason;         // reason for stopping the session (1 = vehicle unplug; 10 = Rfid token)"
@@ -160,16 +153,13 @@ public:
     void getReport1();                                  // Command “report”
     void getReport2();
     void getReport3();
-    void getReport1XX(int reportNumber = 100);
-
-    // Command “report 1xx”
+    void getReport1XX(int reportNumber = 100);          // Command “report 1xx”
 
     // Command “currtime”
     // Command “output”
 
-
-
 private:
+    int m_port = 7090;
     bool m_reachable = false;
     QUdpSocket *m_udpSocket = nullptr;
     QHostAddress m_address;
@@ -180,7 +170,7 @@ private:
     int m_serialNumber;
     QList<QUuid> m_pendingRequests;
 
-
+    void getReport(int reportNumber);
     void sendCommand(const QByteArray &data, const QUuid &requestId);
     void sendCommand(const QByteArray &data);
     void handleNextCommandInQueue();

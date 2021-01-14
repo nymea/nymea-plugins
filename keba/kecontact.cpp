@@ -34,8 +34,9 @@
 #include <QJsonDocument>
 
 
-KeContact::KeContact(QHostAddress address, QObject *parent) :
+KeContact::KeContact(const QHostAddress &address, QUdpSocket *udpSocket, QObject *parent) :
     QObject(parent),
+    m_udpSocket(udpSocket),
     m_address(address)
 {
     m_requestTimeoutTimer = new QTimer(this);
@@ -54,15 +55,16 @@ KeContact::~KeContact() {
 }
 
 bool KeContact::init(){
-
-    if(!m_udpSocket){
-        m_udpSocket = new QUdpSocket(this);
-        if (!m_udpSocket->bind(QHostAddress::AnyIPv4, 7090, QAbstractSocket::ShareAddress)) {
-            qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
-            delete m_udpSocket;
+    qCDebug(dcKebaKeContact()) << "Initializing Keba connection";
+    if(m_udpSocket){
+        connect(m_udpSocket, &QUdpSocket::readyRead, this, &KeContact::readPendingDatagrams);
+        if (!m_udpSocket->bind(QHostAddress::AnyIPv4, m_port, QAbstractSocket::ShareAddress)) {
+            qCWarning(dcKebaKeContact()) << "Cannot bind to port" << m_port;
             return false;
         }
-        connect(m_udpSocket, &QUdpSocket::readyRead, this, &KeContact::readPendingDatagrams);
+    } else {
+        qCWarning(dcKebaKeContact()) << "UDP socket not valid";
+        return false;
     }
     return true;
 }
@@ -94,6 +96,7 @@ QUuid KeContact::stop(const QByteArray &rfidToken)
 
 void KeContact::setAddress(const QHostAddress &address)
 {
+    qCDebug(dcKebaKeContact()) << "Updating Keba connection address" << address.toString();
     m_address = address;
 }
 
@@ -123,7 +126,7 @@ void KeContact::sendCommand(const QByteArray &command)
         m_commandList.append(command);
     } else {
         //send command
-        m_udpSocket->writeDatagram(command, m_address, 7090);
+        m_udpSocket->writeDatagram(command, m_address, m_port);
         m_requestTimeoutTimer->start(5000);
         m_deviceBlocked = true;
     }
@@ -142,7 +145,7 @@ void KeContact::handleNextCommandInQueue()
     qCDebug(dcKebaKeContact()) << "Handle Command Queue- Pending commands" << m_commandList.length() << "Pending requestIds" << m_pendingRequests.length();
     if (!m_commandList.isEmpty()) {
         QByteArray command = m_commandList.takeFirst();
-        m_udpSocket->writeDatagram(command, m_address, 7090);
+        m_udpSocket->writeDatagram(command, m_address, m_port);
         m_requestTimeoutTimer->start(5000);
     } else {
         //nothing to do
@@ -161,7 +164,7 @@ QUuid KeContact::enableOutput(bool state)
     } else{
         datagram.append("ena 0");
     }
-    qCDebug(dcKebaKeContact()) << "Datagram : " << datagram;
+    qCDebug(dcKebaKeContact()) << "Enable output, command:" << datagram;
     sendCommand(datagram, requestId);
     return requestId;
 }
@@ -174,7 +177,7 @@ QUuid KeContact::setMaxAmpere(int milliAmpere)
     qCDebug(dcKebaKeContact()) << "Update max current to : " << milliAmpere;
     QByteArray data;
     data.append("curr " + QVariant(milliAmpere).toByteArray());
-    qCDebug(dcKebaKeContact()) << "sSnd command: " << data;
+    qCDebug(dcKebaKeContact()) << "Set max. ampere, command: " << data;
     sendCommand(data, requestId);
     return requestId;
 }
@@ -196,7 +199,7 @@ QUuid KeContact::displayMessage(const QByteArray &message)
         modifiedMessage.resize(23);
     }
     data.append("display 0 0 0 0 " + modifiedMessage);
-    qCDebug(dcKebaKeContact()) << "Send command: " << data;
+    qCDebug(dcKebaKeContact()) << "Display message, command: " << data;
     sendCommand(data, requestId);
     return requestId;
 }
@@ -208,7 +211,7 @@ QUuid KeContact::chargeWithEnergyLimit(double energy)
 
     QByteArray data;
     data.append("setenergy " + QVariant(static_cast<int>(energy*10000)).toByteArray());
-    qCDebug(dcKebaKeContact()) << "Send command: " << data;
+    qCDebug(dcKebaKeContact()) << "Charge with energy limit, command: " << data;
     sendCommand(data, requestId);
     return requestId;
 }
@@ -223,7 +226,7 @@ QUuid KeContact::setFailsafe(int timeout, int current, bool save)
     data.append(" "+QVariant(timeout).toByteArray());
     data.append(" "+QVariant(current).toByteArray());
     data.append((save ? " 1":" 0"));
-    qCDebug(dcKebaKeContact()) << "Send command: " << data;
+    qCDebug(dcKebaKeContact()) << "Set failsafe mode, command: " << data;
     sendCommand(data, requestId);
     return requestId;
 }
@@ -233,31 +236,35 @@ void KeContact::getDeviceInformation()
 {
     QByteArray data;
     data.append("i");
-    qCDebug(dcKebaKeContact()) << "send command: " << data;
+    qCDebug(dcKebaKeContact()) << "Get device information, command: " << data;
     sendCommand(data);
 }
 
 void KeContact::getReport1()
 {
-    QByteArray data;
-    data.append("report 1");
-    qCDebug(dcKebaKeContact()) << "send command : " << data;
-    sendCommand(data);
+    getReport(1);
 }
 
 void KeContact::getReport2()
 {
-    QByteArray data;
-    data.append("report 2");
-    qCDebug(dcKebaKeContact()) << "send command: " << data;
-    sendCommand(data);
+    getReport(2);
 }
 
 void KeContact::getReport3()
 {
+    getReport(3);
+}
+
+void KeContact::getReport1XX(int reportNumber)
+{
+    getReport(reportNumber);
+}
+
+void KeContact::getReport(int reportNumber)
+{
     QByteArray data;
-    data.append("report 3");
-    qCDebug(dcKebaKeContact()) << "data: " << data;
+    data.append("report "+QVariant(reportNumber).toByteArray());
+    qCDebug(dcKebaKeContact()) << "Get report" << reportNumber << "Command:" << data;
     sendCommand(data);
 }
 
@@ -267,7 +274,7 @@ QUuid KeContact::unlockCharger()
     m_pendingRequests.append(requestId);
     QByteArray data;
     data.append("unlock");
-    qCDebug(dcKebaKeContact()) << "send command: " << data;
+    qCDebug(dcKebaKeContact()) << "Unlock charger, command: " << data;
     sendCommand(data);
     return requestId;
 }
@@ -281,18 +288,21 @@ void KeContact::readPendingDatagrams()
     quint16 senderPort;
 
     while (socket->hasPendingDatagrams()) {
-        datagram.resize(socket->pendingDatagramSize());
-        socket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+
         if (sender != m_address) {
             //Only process data from the target device
             continue;
         }
+
+        datagram.resize(socket->pendingDatagramSize());
+        socket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+        qCDebug(dcKebaKeContact()) << "Data received" << datagram;
+
         if (m_reachable != true) {
             m_reachable = true;
             emit reachableChanged(true);
         }
 
-        qCDebug(dcKebaKeContact()) << "Data received" << datagram;
         if(datagram.contains("TCH-OK")){
 
             //Command response has been received, now send the next command
@@ -399,14 +409,19 @@ void KeContact::readPendingDatagrams()
                     reportThree.seconds  = data.value("Sec").toInt();
                     emit reportThreeReceived(reportThree);
                 } else if (id >= 100) {
+
                     Report1XX report;
                     report.sessionId = data.value("Session ID").toInt();
                     report.currHW = data.value("Curr HW").toInt();
-                    //report. = data.value("Curr HW").toInt(); TODO
-                    report.currHW = data.value("Curr HW").toInt();
-                    report.currHW = data.value("Curr HW").toInt();
-                    report.currHW = data.value("Curr HW").toInt();
-                    report.currHW = data.value("Curr HW").toInt();
+                    report.startTime = data.value("E Start   ").toInt()/10000.00;
+                    report.presentEnergy = data.value("E Pres    ").toInt()/10000.00;
+                    report.startTime = data.value("started[s]").toInt();
+                    report.endTime = data.value("ended[s]  ").toInt();
+                    report.stopReason = data.value("reason ").toInt();
+                    report.rfidTag = data.value("RFID tag").toByteArray();
+                    report.rfidClass = data.value("RFID class").toByteArray();
+                    report.serialNumber = data.value("Serial").toString();
+                    report.seconds = data.value("Sec").toInt();
                     emit report1XXReceived(id, report);
                 }
             } else {
