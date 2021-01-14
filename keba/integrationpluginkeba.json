@@ -142,7 +142,7 @@
                             "displayNameAction": "Set maximal charging current",
                             "type": "uint",
                             "unit": "MilliAmpere",
-                            "defaultValue": 6000,
+                            "defaultValue": 6,
                             "minValue": 6000,
                             "maxValue": 63000,
                             "writable": true
@@ -157,6 +157,15 @@
                             "defaultValue": 100,
                             "minValue": 0,
                             "maxValue": 100
+                        },
+                        {
+                            "id": "08bb9872-8d63-49b0-a8ce-7a449341f13b",
+                            "name": "maxPossibleChargingCurrent",
+                            "displayName": "Maximum possible charging current",
+                            "displayNameEvent": "Maximum possible charging current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 6.00
                         },
                         {
                             "id": "4a2d75d8-a3a0-4b40-9ca7-e8b6f11d0ef9",

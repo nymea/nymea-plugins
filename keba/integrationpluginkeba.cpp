@@ -85,11 +85,13 @@ void IntegrationPluginKeba::discoverThings(ThingDiscoveryInfo *info)
                 if (!host.hostName().contains("keba", Qt::CaseSensitivity::CaseInsensitive))
                     continue;
 
+                qCDebug(dcKebaKeContact()) << "     - Keba Wallbox" << host.address() << host.macAddress();
                 ThingDescriptor descriptor(wallboxThingClassId, "Wallbox", host.address() + " (" + host.macAddress() + ")");
 
                 // Rediscovery
                 foreach (Thing *existingThing, myThings()) {
                     if (existingThing->paramValue(wallboxThingMacAddressParamTypeId).toString() == host.macAddress()) {
+                        qCDebug(dcKebaKeContact()) << "     - Device is already added";
                         descriptor.setThingId(existingThing->id());
                         break;
                     }
@@ -118,7 +120,7 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
 
         if(!m_udpSocket){
             m_udpSocket = new QUdpSocket(this);
-            if (!m_udpSocket->bind(QHostAddress::AnyIPv4, 7090, QAbstractSocket::ShareAddress)) {
+            if (!m_udpSocket->bind(QHostAddress::AnyIPv4, 7090, QAbstractSocket::DefaultForPlatform)) {
                 qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
                 return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Error opening network port."));
             }
@@ -137,9 +139,8 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Error opening network port."));
         }
 
-        m_kebaDevices.insert(thing->id(), keba);
         keba->getReport1();
-        connect(keba, &KeContact::reportOneReceived, info, [info] (const KeContact::ReportOne &report) {
+        connect(keba, &KeContact::reportOneReceived, info, [info, this, keba] (const KeContact::ReportOne &report) {
             Thing *thing = info->thing();
 
             qCDebug(dcKebaKeContact()) << "Report one received for" << thing->name();
@@ -152,12 +153,13 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             thing->setStateValue(wallboxFirmwareStateTypeId, report.firmware);
             thing->setStateValue(wallboxModelStateTypeId, report.product);
             thing->setStateValue(wallboxUptimeStateTypeId, report.seconds);
+
+             m_kebaDevices.insert(thing->id(), keba);
             info->finish(Thing::ThingErrorNoError);
         });
         connect(info, &ThingSetupInfo::aborted, keba, &KeContact::deleteLater);
-        connect(keba, &KeContact::destroyed, this, [thing, keba, this]{
+        connect(keba, &KeContact::destroyed, this, [thing, this]{
             m_kebaDevices.remove(thing->id());
-            keba->deleteLater();
         });
     } else {
         qCWarning(dcKebaKeContact()) << "setupDevice, unhandled device class" << thing->thingClass();
@@ -224,6 +226,11 @@ void IntegrationPluginKeba::thingRemoved(Thing *thing)
     }
 
     if (myThings().empty()) {
+        qCDebug(dcKebaKeContact()) << "Closing UDP Ports";
+        m_udpSocket->close();
+        m_udpSocket->deleteLater();
+        m_udpSocket = nullptr;
+
         qCDebug(dcKebaKeContact()) << "Stopping plugin timers";
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
         m_reconnectTimer = nullptr;

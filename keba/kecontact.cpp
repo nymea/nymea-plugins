@@ -58,10 +58,6 @@ bool KeContact::init(){
     qCDebug(dcKebaKeContact()) << "Initializing Keba connection";
     if(m_udpSocket){
         connect(m_udpSocket, &QUdpSocket::readyRead, this, &KeContact::readPendingDatagrams);
-        if (!m_udpSocket->bind(QHostAddress::AnyIPv4, m_port, QAbstractSocket::ShareAddress)) {
-            qCWarning(dcKebaKeContact()) << "Cannot bind to port" << m_port;
-            return false;
-        }
     } else {
         qCWarning(dcKebaKeContact()) << "UDP socket not valid";
         return false;
