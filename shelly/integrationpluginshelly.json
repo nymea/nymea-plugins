@@ -206,7 +206,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         }
                     ],
                     "actionTypes": [
@@ -322,7 +323,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         }
                     ],
                     "actionTypes": [
@@ -629,7 +631,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "ccec3806-cc48-42cf-94d7-811ff569d407",
@@ -769,7 +772,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "filter": "adaptive"
                         },
                         {
                             "id": "3d22110c-db53-4420-8e0f-314555484926",
@@ -888,7 +892,8 @@
                             "displayNameEvent": "Current power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "filter": "adaptive"
                         },
                         {
                             "id": "8d3b3d63-86f1-46cb-92ef-d27c0d9d0a4e",
@@ -1362,7 +1367,8 @@
                             "displayNameEvent": "Current power changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "432ba180-936d-4700-907e-766264bfdd35",
@@ -1371,7 +1377,8 @@
                             "displayNameEvent": "Power (Phase A) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "50be490b-ba5d-4b1f-806c-9e15b915c1eb",
@@ -1388,7 +1395,8 @@
                             "displayNameEvent": "Current (Phase A) changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "5977ffab-cdcf-409c-940b-aa0a59de84a5",
@@ -1424,7 +1432,8 @@
                             "displayNameEvent": "Power (Phase B) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "f56504bb-0c6c-4425-831c-771b23aadf19",
@@ -1477,7 +1486,8 @@
                             "displayNameEvent": "Power (Phase C) changed",
                             "type": "double",
                             "unit": "Watt",
-                            "defaultValue": 0
+                            "defaultValue": 0,
+                            "filter": "adaptive"
                         },
                         {
                             "id": "2e2c622f-1575-4d0b-a0c0-78bc03748c1e",
@@ -1704,7 +1714,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "filter": "adaptive"
                         }
                     ]
                 },
@@ -1838,7 +1849,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "filter": "adaptive"
                         }
                     ]
                 },
@@ -1972,7 +1984,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "filter": "adaptive"
                         }
                     ]
                 },
@@ -2028,7 +2041,8 @@
                             "displayNameEvent": "Power consumption changed",
                             "type": "double",
                             "defaultValue": 0,
-                            "unit": "Watt"
+                            "unit": "Watt",
+                            "filter": "adaptive"
                         },
                         {
                             "id": "2729d4e0-c38c-47b8-a0e8-26959090fe74",
