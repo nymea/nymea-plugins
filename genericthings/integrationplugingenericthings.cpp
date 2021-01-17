@@ -693,6 +693,14 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             return;
         }
         Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+    } else if (thing->thingClassId() == doorSensorThingClassId) {
+        if (action.actionTypeId() == doorSensorClosedActionTypeId) {
+            bool closed = action.paramValue(doorSensorClosedActionClosedParamTypeId).toBool();
+            qCDebug(dcGenericThings()) << "Door sensor is now" << (closed ? "open" : "closed");
+            thing->setStateValue(doorSensorClosedStateTypeId, closed);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
