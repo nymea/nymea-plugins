@@ -73,7 +73,8 @@ void IntegrationPluginOpenweathermap::discoverThings(ThingDiscoveryInfo *info)
 
 void IntegrationPluginOpenweathermap::setupThing(ThingSetupInfo *info)
 {
-    update(info->thing());
+    weather(info->thing());
+    forecast(info->thing());
 
     if (m_apiKey.isEmpty()) {
         info->finish(Thing::ThingErrorAuthenticationFailure, QT_TR_NOOP("No API key for OpenWeatherMap available."));
@@ -85,7 +86,8 @@ void IntegrationPluginOpenweathermap::setupThing(ThingSetupInfo *info)
         m_pluginTimer = hardwareManager()->pluginTimerManager()->registerTimer(900);
         connect(m_pluginTimer, &PluginTimer::timeout, this, [this](){
             foreach (Thing *thing, myThings()) {
-                update(thing);
+                weather(thing);
+                //TODO get once a day the forecast
             }
         });
     }
@@ -93,7 +95,7 @@ void IntegrationPluginOpenweathermap::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginOpenweathermap::executeAction(ThingActionInfo *info)
 {
-    update(info->thing());
+    weather(info->thing());
     info->finish(Thing::ThingErrorNoError);
 }
 
@@ -118,9 +120,9 @@ void IntegrationPluginOpenweathermap::updateApiKey()
     }
 }
 
-void IntegrationPluginOpenweathermap::update(Thing *thing)
+void IntegrationPluginOpenweathermap::weather(Thing *thing)
 {
-    qCDebug(dcOpenWeatherMap()) << "Refreshing data for" << thing->name();
+    qCDebug(dcOpenWeatherMap()) << "Refreshing weather data for" << thing->name();
     QUrl url("http://api.openweathermap.org/data/2.5/weather");
     QUrlQuery query;
     query.addQueryItem("id", thing->paramValue(openweathermapThingIdParamTypeId).toString());
@@ -198,14 +200,14 @@ void IntegrationPluginOpenweathermap::update(Thing *thing)
             int conditionId = dataMap.value("weather").toList().first().toMap().value("id").toInt();
             if (conditionId == 800) {
                 if (thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > thing->stateValue(openweathermapSunriseTimeStateTypeId).toInt() &&
-                    thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < thing->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
+                        thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < thing->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
                     thing->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-day");
                 } else {
                     thing->setStateValue(openweathermapWeatherConditionStateTypeId, "clear-night");
                 }
             } else if (conditionId == 801) {
                 if (thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() > thing->stateValue(openweathermapSunriseTimeStateTypeId).toInt() &&
-                    thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < thing->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
+                        thing->stateValue(openweathermapUpdateTimeStateTypeId).toInt() < thing->stateValue(openweathermapSunsetTimeStateTypeId).toInt()) {
                     thing->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-day");
                 } else {
                     thing->setStateValue(openweathermapWeatherConditionStateTypeId, "few-clouds-night");
@@ -235,6 +237,106 @@ void IntegrationPluginOpenweathermap::update(Thing *thing)
 
             thing->setStateValue(openweathermapWindDirectionStateTypeId, windDirection);
             thing->setStateValue(openweathermapWindSpeedStateTypeId, windSpeed);
+        }
+    });
+}
+
+void IntegrationPluginOpenweathermap::forecast(Thing *thing)
+{
+    qCDebug(dcOpenWeatherMap()) << "Refreshing forecast data for" << thing->name();
+    QUrl url("http://api.openweathermap.org/data/2.5/forecast");
+    QUrlQuery query;
+    query.addQueryItem("id", thing->paramValue(openweathermapThingIdParamTypeId).toString());
+    query.addQueryItem("mode", "json");
+    query.addQueryItem("units", "metric");
+    query.addQueryItem("appid", m_apiKey);
+    url.setQuery(query);
+
+    QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, thing, [thing, reply](){
+        if (reply->error() != QNetworkReply::NoError) {
+            qCWarning(dcOpenWeatherMap) << "OpenWeatherMap reply error: " << reply->errorString();
+            return;
+        }
+
+        QByteArray data = reply->readAll();
+
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(data, &error);
+
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcOpenWeatherMap()) << "Failed to parse forecast data for thing " << thing->name() << "\n" << data << "\n" << error.errorString();
+            return;
+        }
+
+        //qCDebug(dcOpenWeatherMap()) << "Received" << qUtf8Printable(jsonDoc.toJson());
+        QVariantMap dataMap = jsonDoc.toVariant().toMap();
+        int count = dataMap.value("cnt").toInt();
+
+        QHash<int, int> conditionIdList;
+        QHash<int, double> temperatureList;
+        QHash<int, double> humidityList;
+        QHash<int, double> pressureList;
+        QHash<int, double> cloudinessList;
+        QHash<int, int> windDirectionList;
+        QHash<int, double> windSpeedList;
+        QHash<int, bool> daylightList;
+        QHash<int, int> rainList;
+        QHash<int, int> snowList;
+
+        if (dataMap.contains("list")) {
+            Q_FOREACH(QVariant listEntry, dataMap.value("list").toList()) {
+                QVariantMap map = listEntry.toMap();
+
+                if (!map.contains("dt")) {
+                    continue;
+                }
+
+                int dateTime = map.value("dt").toUInt();
+
+                if (map.contains("main")) {
+                    temperatureList.insert(dateTime, map.value("main").toMap().value("temp").toDouble());
+                    //temperatureMinList.insert(dateTime, map.value("main").toMap().value("temp_min").toDouble());
+                    //temperatureMaxList.insert(dateTime, map.value("main").toMap().value("temp_max").toDouble());
+                    humidityList.insert(dateTime, map.value("main").toMap().value("humidity").toDouble());
+                    pressureList.insert(dateTime, map.value("main").toMap().value("pressure").toDouble());
+                }
+                if (map.contains("weather")) {
+                    conditionIdList.insert(dateTime, map.value("weather").toMap().value("id").toDouble());
+                }
+                if (map.contains("clouds")) {
+                    cloudinessList.insert(dateTime, map.value("clouds").toMap().value("all").toInt());
+                }
+                if (map.contains("wind")) {
+                    windDirectionList.insert(dateTime, map.value("wind").toMap().value("deg").toInt());
+                    windSpeedList.insert(dateTime, map.value("wind").toMap().value("speed").toDouble());
+                }
+                if (map.contains("rain")) {
+                    rainList.insert(dateTime, map.value("rain").toMap().first().toInt()); // 3h or 1h
+                }
+                if (map.contains("snow")) {
+                    snowList.insert(dateTime, map.value("snow").toMap().first().toInt()); // 3h or 1h
+                }
+                if (map.contains("sys")) {
+                    daylightList.insert(dateTime, (map.value("sys").toMap().value("pod").toString() == "d"));
+                }
+            }
+
+            qCDebug(dcOpenWeatherMap()) << "Received forecast";
+            qCDebug(dcOpenWeatherMap()) << "        - Expected entry count" << count;
+            qCDebug(dcOpenWeatherMap()) << "        - Condition list entries" << conditionIdList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Temperature list entries" << temperatureList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Humidity list entries" << humidityList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Pressure list entries" << pressureList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Cloudiness list entries" << cloudinessList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Wind direction list entries" << windDirectionList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Wind speed list entries" << windSpeedList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Daylight list entries" << daylightList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Rain list entries" << rainList.count();
+            qCDebug(dcOpenWeatherMap()) << "        - Snowlist entries" << snowList.count();
+
+            //TODO set forecast states
         }
     });
 }
