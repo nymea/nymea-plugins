@@ -34,11 +34,12 @@
 #include <QJsonDocument>
 
 
-KeContact::KeContact(const QHostAddress &address, QUdpSocket *udpSocket, QObject *parent) :
+KeContact::KeContact(const QHostAddress &address, KeContactDataLayer *dataLayer, QObject *parent) :
     QObject(parent),
-    m_udpSocket(udpSocket),
+    m_dataLayer(dataLayer),
     m_address(address)
 {
+    qCDebug(dcKebaKeContact()) << "Creating KeContact connection for address" << m_address;
     m_requestTimeoutTimer = new QTimer(this);
     m_requestTimeoutTimer->setSingleShot(true);
     connect(m_requestTimeoutTimer, &QTimer::timeout, this, [this] {
@@ -48,21 +49,13 @@ KeContact::KeContact(const QHostAddress &address, QUdpSocket *udpSocket, QObject
         handleNextCommandInQueue();
         m_deviceBlocked = false;
     });
+
+    connect(m_dataLayer, &KeContactDataLayer::datagramReceived, this, &KeContact::onReceivedDatagram);
 }
 
-KeContact::~KeContact() {
+KeContact::~KeContact()
+{
     qCDebug(dcKebaKeContact()) << "Deleting KeContact connection for address" << m_address;
-}
-
-bool KeContact::init(){
-    qCDebug(dcKebaKeContact()) << "Initializing Keba connection";
-    if(m_udpSocket){
-        connect(m_udpSocket, &QUdpSocket::readyRead, this, &KeContact::readPendingDatagrams);
-    } else {
-        qCWarning(dcKebaKeContact()) << "UDP socket not valid";
-        return false;
-    }
-    return true;
 }
 
 QHostAddress KeContact::address()
@@ -105,13 +98,12 @@ void KeContact::sendCommand(const QByteArray &command, const QUuid &requestId)
             emit commandExecuted(requestId, false);
         }
     });
-
     sendCommand(command);
 }
 
 void KeContact::sendCommand(const QByteArray &command)
 {
-    if (!m_udpSocket) {
+    if (!m_dataLayer) {
         qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
         emit reachableChanged(false);
         return;
@@ -121,8 +113,8 @@ void KeContact::sendCommand(const QByteArray &command)
         //add command to queue
         m_commandList.append(command);
     } else {
-        //send command
-        m_udpSocket->writeDatagram(command, m_address, m_port);
+        qCDebug(dcKebaKeContact()) << "Writing datagram" << command << m_address;
+        m_dataLayer->write( m_address, command);
         m_requestTimeoutTimer->start(5000);
         m_deviceBlocked = true;
     }
@@ -130,8 +122,8 @@ void KeContact::sendCommand(const QByteArray &command)
 
 void KeContact::handleNextCommandInQueue()
 {
-    if (!m_udpSocket) {
-        qCWarning(dcKebaKeContact()) << "UDP socket not initialized";
+    if (!m_dataLayer) {
+        qCWarning(dcKebaKeContact()) << "Data layer not initialized";
         if (m_reachable == true) {
             m_reachable = false;
             emit reachableChanged(false);
@@ -141,10 +133,9 @@ void KeContact::handleNextCommandInQueue()
     qCDebug(dcKebaKeContact()) << "Handle Command Queue- Pending commands" << m_commandList.length() << "Pending requestIds" << m_pendingRequests.length();
     if (!m_commandList.isEmpty()) {
         QByteArray command = m_commandList.takeFirst();
-        m_udpSocket->writeDatagram(command, m_address, m_port);
+        qCDebug(dcKebaKeContact()) << "Writing datagram" << command << m_address;
+        m_dataLayer->write( m_address, command);
         m_requestTimeoutTimer->start(5000);
-    } else {
-        //nothing to do
     }
 }
 
@@ -256,6 +247,17 @@ void KeContact::getReport1XX(int reportNumber)
     getReport(reportNumber);
 }
 
+QUuid KeContact::setOutputX2(bool state)
+{
+    QUuid requestId = QUuid::createUuid();
+    m_pendingRequests.append(requestId);
+    QByteArray data;
+    data.append("output "+QVariant((state ? 1 : 0)).toByteArray());
+    qCDebug(dcKebaKeContact()) << "Set Output X2, state:" << state << "Command:" << data;
+    sendCommand(data, requestId);
+    return requestId;
+}
+
 void KeContact::getReport(int reportNumber)
 {
     QByteArray data;
@@ -275,170 +277,159 @@ QUuid KeContact::unlockCharger()
     return requestId;
 }
 
-void KeContact::readPendingDatagrams()
+void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray &datagram)
 {
-    QUdpSocket *socket= qobject_cast<QUdpSocket*>(sender());
+    if (address != m_address) {
+        return;
+    }
 
-    QByteArray datagram;
-    QHostAddress sender;
-    quint16 senderPort;
+    if(datagram.contains("TCH-OK")){
 
-    while (socket->hasPendingDatagrams()) {
+        //Command response has been received, now send the next command
+        m_deviceBlocked = false;
+        m_requestTimeoutTimer->stop();
+        handleNextCommandInQueue();
 
-        if (sender != m_address) {
-            //Only process data from the target device
-            continue;
-        }
-
-        datagram.resize(socket->pendingDatagramSize());
-        socket->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
-        qCDebug(dcKebaKeContact()) << "Data received" << datagram;
-
-        if (m_reachable != true) {
-            m_reachable = true;
-            emit reachableChanged(true);
-        }
-
-        if(datagram.contains("TCH-OK")){
-
-            //Command response has been received, now send the next command
-            m_deviceBlocked = false;
-            m_requestTimeoutTimer->stop();
-            handleNextCommandInQueue();
-
-            if (!m_pendingRequests.isEmpty()) {
-                QUuid requestId = m_pendingRequests.takeFirst();
-                if (datagram.contains("done")) {
-                    emit commandExecuted(requestId, true);
-                } else {
-                    emit commandExecuted(requestId, false);
-                }
+        if (!m_pendingRequests.isEmpty()) {
+            QUuid requestId = m_pendingRequests.takeFirst();
+            if (datagram.contains("done")) {
+                emit commandExecuted(requestId, true);
             } else {
-                //Probably the response has taken too long and the requestId has been already removed
-            }
-        } else if(datagram.left(8).contains("Firmware")){
-
-            //Command response has been received, now send the next command
-            m_deviceBlocked = false;
-            m_requestTimeoutTimer->stop();
-            handleNextCommandInQueue();
-
-            qCDebug(dcKebaKeContact()) << "Firmware information reveiced";
-            QByteArrayList firmware = datagram.split(':');
-            if (firmware.length() >= 2) {
-                emit deviceInformationReceived(firmware[1]);
+                emit commandExecuted(requestId, false);
             }
         } else {
+            //Probably the response has taken too long and the requestId has been already removed
+        }
+    } else if(datagram.left(8).contains("Firmware")){
 
-            //Command response has been received, now send the next command
-            m_deviceBlocked = false;
-            m_requestTimeoutTimer->stop();
-            handleNextCommandInQueue();
+        //Command response has been received, now send the next command
+        m_deviceBlocked = false;
+        m_requestTimeoutTimer->stop();
+        handleNextCommandInQueue();
 
-            // Convert the rawdata to a json document
-            QJsonParseError error;
-            QJsonDocument jsonDoc = QJsonDocument::fromJson(datagram, &error);
-            if (error.error != QJsonParseError::NoError) {
-                qCWarning(dcKebaKeContact()) << "Failed to parse JSON data" << datagram << ":" << error.errorString();
+        qCDebug(dcKebaKeContact()) << "Firmware information reveiced";
+        QByteArrayList firmware = datagram.split(':');
+        if (firmware.length() >= 2) {
+            emit deviceInformationReceived(firmware[1]);
+        }
+    } else {
+
+        //Command response has been received, now send the next command
+        m_deviceBlocked = false;
+        m_requestTimeoutTimer->stop();
+        handleNextCommandInQueue();
+
+        // Convert the rawdata to a json document
+        QJsonParseError error;
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(datagram, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcKebaKeContact()) << "Failed to parse JSON data" << datagram << ":" << error.errorString();
+        }
+
+        QVariantMap data = jsonDoc.toVariant().toMap();
+
+        if(data.contains("ID")) {
+            int id = data.value("ID").toInt();
+            if (id == 1) {
+                ReportOne reportOne;
+                qCDebug(dcKebaKeContact()) << "Report 1 received";
+                reportOne.product      = data.value("Product").toString();
+                reportOne.firmware     = data.value("Firmware").toString();
+                reportOne.serialNumber = data.value("Serial").toString();
+                //"Backend:"
+                //"timeQ": 3
+                //"DIP-Sw1": "0x22"
+                //"DIP-Sw2":
+                if (data.contains("COM-module")) {
+                    reportOne.comModule = (data.value("COM-module").toInt() == 1);
+                } else {
+                    reportOne.comModule = false;
+                }
+                if (data.contains("Sec")) {
+                    reportOne.comModule = data.value("Sec").toInt();
+                } else {
+                    reportOne.comModule = 0;
+                }
+                emit reportOneReceived(reportOne);
+
+            } else if (id == 2) {
+
+                ReportTwo reportTwo;
+                qCDebug(dcKebaKeContact()) << "Report 2 received";
+                int state = data.value("State").toInt();
+                reportTwo.state = State(state);
+                reportTwo.error1 = data.value("Error1").toInt();
+                reportTwo.error2 = data.value("Error2").toInt();
+                reportTwo.plugState = PlugState(data.value("Plug").toInt());
+                reportTwo.enableUser  = data.value("Enable user").toBool();
+                reportTwo.enableSys   = data.value("Enable sys").toBool();
+                reportTwo.maxCurrent  = data.value("Max curr").toInt()/1000.00;
+                reportTwo.maxCurrentPercentage = data.value("Max curr %").toInt()/10.00;
+                reportTwo.currentHardwareLimitation = data.value("Curr HW").toInt()/1000.00;
+                reportTwo.currentUser = data.value("Curr user").toInt()/1000.00;
+                reportTwo.currentFailsafe = data.value("Curr FS").toInt()/1000.00;
+                reportTwo.timeoutFailsafe = data.value("Tmo FS").toInt();
+                reportTwo.setEnergy = data.value("Setenergy").toInt()/10000.00;
+                reportTwo.output = data.value("Output").toInt();
+                reportTwo.input= data.value("Input").toInt();
+                reportTwo.serialNumber = data.value("Serial").toString();
+                reportTwo.seconds = data.value("Sec").toInt();
+                // Not documented:
+                //"AuthON": 0
+                //"Authreq": 0
+                emit reportTwoReceived(reportTwo);
+
+            } else if (id == 3) {
+
+                ReportThree reportThree;
+                qCDebug(dcKebaKeContact()) << "Report 3 reveiced";
+                reportThree.currentPhase1 = data.value("I1").toInt()/1000.00;
+                reportThree.currentPhase2 = data.value("I2").toInt()/1000.00;
+                reportThree.currentPhase3 = data.value("I3").toInt()/1000.00;
+                reportThree.voltagePhase1 = data.value("U1").toInt();
+                reportThree.voltagePhase2 = data.value("U2").toInt();
+                reportThree.voltagePhase3 = data.value("U3").toInt();
+                reportThree.power         = data.value("P").toInt()/1000.00;
+                reportThree.powerFactor   = data.value("PF").toInt()/10.00;
+                reportThree.energySession = data.value("E pres").toInt()/10000.00;
+                reportThree.energyTotal   = data.value("E total").toInt()/10000.00;
+                reportThree.serialNumber  = data.value("Serial").toString();
+                reportThree.seconds  = data.value("Sec").toInt();
+                emit reportThreeReceived(reportThree);
+            } else if (id >= 100) {
+
+                Report1XX report;
+                report.sessionId = data.value("Session ID").toInt();
+                report.currHW = data.value("Curr HW").toInt();
+                report.startTime = data.value("E Start   ").toInt()/10000.00;
+                report.presentEnergy = data.value("E Pres    ").toInt()/10000.00;
+                report.startTime = data.value("started[s]").toInt();
+                report.endTime = data.value("ended[s]  ").toInt();
+                report.stopReason = data.value("reason ").toInt();
+                report.rfidTag = data.value("RFID tag").toByteArray();
+                report.rfidClass = data.value("RFID class").toByteArray();
+                report.serialNumber = data.value("Serial").toString();
+                report.seconds = data.value("Sec").toInt();
+                emit report1XXReceived(id, report);
             }
-
-            QVariantMap data = jsonDoc.toVariant().toMap();
-
-            if(data.contains("ID")) {
-                int id = data.value("ID").toInt();
-                if (id == 1) {
-                    ReportOne reportOne;
-                    qCDebug(dcKebaKeContact()) << "Report 1 received";
-                    reportOne.product      = data.value("Product").toString();
-                    reportOne.firmware     = data.value("Firmware").toString();
-                    reportOne.serialNumber = data.value("Serial").toString();
-                    if (data.contains("COM-module")) {
-                        reportOne.comModule = (data.value("COM-module").toInt() == 1);
-                    } else {
-                        reportOne.comModule = false;
-                    }
-                    if (data.contains("Sec")) {
-                        reportOne.comModule = data.value("Sec").toInt();
-                    } else {
-                        reportOne.comModule = 0;
-                    }
-                    emit reportOneReceived(reportOne);
-
-                } else if (id == 2) {
-
-                    ReportTwo reportTwo;
-                    qCDebug(dcKebaKeContact()) << "Report 2 received";
-                    int state = data.value("State").toInt();
-                    reportTwo.state = State(state);
-                    reportTwo.error1 = data.value("Error1").toInt();
-                    reportTwo.error2 = data.value("Error2").toInt();
-                    reportTwo.plugState = PlugState(data.value("Plug").toInt());
-                    reportTwo.enableUser  = data.value("Enable user").toBool();
-                    reportTwo.enableSys   = data.value("Enable sys").toBool();
-                    reportTwo.maxCurrent  = data.value("Max curr").toInt()/1000;
-                    reportTwo.maxCurrentPercentage = data.value("Max curr %").toInt()/10;
-                    reportTwo.currentHardwareLimitation = data.value("Curr HW").toInt()/1000;
-                    reportTwo.currentUser = data.value("Curr user").toInt();
-                    reportTwo.currentFailsafe = data.value("Curr FS").toInt();
-                    reportTwo.timeoutFailsafe = data.value("Tmo FS").toInt();
-                    reportTwo.output = data.value("Output").toInt();
-                    reportTwo.input= data.value("Input").toInt();
-                    reportTwo.serialNumber = data.value("Serial").toString();
-                    reportTwo.seconds = data.value("Sec").toInt();
-                    emit reportTwoReceived(reportTwo);
-
-                } else if (id == 3) {
-
-                    ReportThree reportThree;
-                    qCDebug(dcKebaKeContact()) << "Report 3 reveiced";
-                    reportThree.currentPhase1 = data.value("I1").toInt()/1000.00;
-                    reportThree.currentPhase2 = data.value("I2").toInt()/1000.00;
-                    reportThree.currentPhase3 = data.value("I3").toInt()/1000.00;
-                    reportThree.voltagePhase1 = data.value("U1").toInt();
-                    reportThree.voltagePhase2 = data.value("U2").toInt();
-                    reportThree.voltagePhase3 = data.value("U3").toInt();
-                    reportThree.power         = data.value("P").toInt()/1000.00;
-                    reportThree.powerFactor   = data.value("PF").toInt()/10.00;
-                    reportThree.energySession = data.value("E pres").toInt()/10000.00;
-                    reportThree.energyTotal   = data.value("E total").toInt()/10000.00;
-                    reportThree.serialNumber  = data.value("Serial").toString();
-                    reportThree.seconds  = data.value("Sec").toInt();
-                    emit reportThreeReceived(reportThree);
-                } else if (id >= 100) {
-
-                    Report1XX report;
-                    report.sessionId = data.value("Session ID").toInt();
-                    report.currHW = data.value("Curr HW").toInt();
-                    report.startTime = data.value("E Start   ").toInt()/10000.00;
-                    report.presentEnergy = data.value("E Pres    ").toInt()/10000.00;
-                    report.startTime = data.value("started[s]").toInt();
-                    report.endTime = data.value("ended[s]  ").toInt();
-                    report.stopReason = data.value("reason ").toInt();
-                    report.rfidTag = data.value("RFID tag").toByteArray();
-                    report.rfidClass = data.value("RFID class").toByteArray();
-                    report.serialNumber = data.value("Serial").toString();
-                    report.seconds = data.value("Sec").toInt();
-                    emit report1XXReceived(id, report);
-                }
-            } else {
-                if (data.contains("State")) {
-                    emit broadcastReceived(BroadcastType::BroadcastTypeState, data.value("State"));
-                }
-                if (data.contains("Plug")) {
-                    emit broadcastReceived(BroadcastType::BroadcastTypePlug, data.value("Plug"));
-                }
-                if (data.contains("Input")) {
-                    emit broadcastReceived(BroadcastType::BroadcastTypeInput, data.value("Input"));
-                }
-                if (data.contains("Enable sys")) {
-                    emit broadcastReceived(BroadcastType::BroadcastTypeEnableSys, data.value("Enable sys"));
-                }
-                if (data.contains("Max curr")) {
-                    emit broadcastReceived(BroadcastType::BroadcastTypeMaxCurr, data.value("Max curr"));
-                }
-                if (data.contains("E pres")) {
-                    emit broadcastReceived(BroadcastType::BroadcastTypeEPres, data.value("E pres"));
-                }
+        } else {
+            if (data.contains("State")) {
+                emit broadcastReceived(BroadcastType::BroadcastTypeState, data.value("State"));
+            }
+            if (data.contains("Plug")) {
+                emit broadcastReceived(BroadcastType::BroadcastTypePlug, data.value("Plug"));
+            }
+            if (data.contains("Input")) {
+                emit broadcastReceived(BroadcastType::BroadcastTypeInput, data.value("Input"));
+            }
+            if (data.contains("Enable sys")) {
+                emit broadcastReceived(BroadcastType::BroadcastTypeEnableSys, data.value("Enable sys"));
+            }
+            if (data.contains("Max curr")) {
+                emit broadcastReceived(BroadcastType::BroadcastTypeMaxCurr, data.value("Max curr"));
+            }
+            if (data.contains("E pres")) {
+                emit broadcastReceived(BroadcastType::BroadcastTypeEPres, data.value("E pres"));
             }
         }
     }

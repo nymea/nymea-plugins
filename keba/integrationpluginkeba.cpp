@@ -118,26 +118,23 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
 
     if (thing->thingClassId() == wallboxThingClassId) {
 
-        if(!m_udpSocket){
-            m_udpSocket = new QUdpSocket(this);
-            if (!m_udpSocket->bind(QHostAddress::AnyIPv4, 7090, QAbstractSocket::DefaultForPlatform)) {
-                qCWarning(dcKebaKeContact()) << "Cannot bind to port" << 7090;
+        if(!m_kebaData){
+            qCDebug(dcKebaKeContact()) << "Creating new Keba data layer";
+            m_kebaData = new KeContactDataLayer;
+            if (!m_kebaData->init()) {
+                m_kebaData->deleteLater();
                 return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Error opening network port."));
             }
         }
 
         QHostAddress address = QHostAddress(thing->paramValue(wallboxThingIpAddressParamTypeId).toString());
-        KeContact *keba = new KeContact(address, m_udpSocket, m_udpSocket);
+        KeContact *keba = new KeContact(address, m_kebaData, m_kebaData);
         connect(keba, &KeContact::reachableChanged, this, &IntegrationPluginKeba::onConnectionChanged);
         connect(keba, &KeContact::commandExecuted, this, &IntegrationPluginKeba::onCommandExecuted);
         connect(keba, &KeContact::reportTwoReceived, this, &IntegrationPluginKeba::onReportTwoReceived);
         connect(keba, &KeContact::reportThreeReceived, this, &IntegrationPluginKeba::onReportThreeReceived);
         connect(keba, &KeContact::report1XXReceived, this, &IntegrationPluginKeba::onReport1XXReceived);
         connect(keba, &KeContact::broadcastReceived, this, &IntegrationPluginKeba::onBroadcastReceived);
-        if (!keba->init()){
-            keba->deleteLater();
-            return info->finish(Thing::ThingErrorHardwareNotAvailable, QT_TR_NOOP("Error opening network port."));
-        }
 
         keba->getReport1();
         connect(keba, &KeContact::reportOneReceived, info, [info, this, keba] (const KeContact::ReportOne &report) {
@@ -146,13 +143,13 @@ void IntegrationPluginKeba::setupThing(ThingSetupInfo *info)
             qCDebug(dcKebaKeContact()) << "Report one received for" << thing->name();
             qCDebug(dcKebaKeContact()) << "     - Firmware" << report.firmware;
             qCDebug(dcKebaKeContact()) << "     - Product" << report.product;
-            qCDebug(dcKebaKeContact()) << "     - Uptime" << report.seconds;
+            qCDebug(dcKebaKeContact()) << "     - Uptime" << report.seconds/60 << "[min]";
             qCDebug(dcKebaKeContact()) << "     - Com Module" << report.comModule;
 
             thing->setStateValue(wallboxConnectedStateTypeId, true);
             thing->setStateValue(wallboxFirmwareStateTypeId, report.firmware);
             thing->setStateValue(wallboxModelStateTypeId, report.product);
-            thing->setStateValue(wallboxUptimeStateTypeId, report.seconds);
+            thing->setStateValue(wallboxUptimeStateTypeId, report.seconds/60);
 
              m_kebaDevices.insert(thing->id(), keba);
             info->finish(Thing::ThingErrorNoError);
@@ -174,7 +171,7 @@ void IntegrationPluginKeba::postSetupThing(Thing *thing)
         qCWarning(dcKebaKeContact()) << "Thing class id not supported" << thing->thingClassId();
         return;
     }
-
+    thing->setStateValue(wallboxConnectedStateTypeId, true);
     KeContact *keba = m_kebaDevices.value(thing->id());
     if (!keba) {
         qCWarning(dcKebaKeContact()) << "No Keba connection found for this thing";
@@ -227,9 +224,8 @@ void IntegrationPluginKeba::thingRemoved(Thing *thing)
 
     if (myThings().empty()) {
         qCDebug(dcKebaKeContact()) << "Closing UDP Ports";
-        m_udpSocket->close();
-        m_udpSocket->deleteLater();
-        m_udpSocket = nullptr;
+        m_kebaData->deleteLater();
+        m_kebaData = nullptr;
 
         qCDebug(dcKebaKeContact()) << "Stopping plugin timers";
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
@@ -344,7 +340,7 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
     qCDebug(dcKebaKeContact()) << "     - Output:" << reportTwo.output;
     qCDebug(dcKebaKeContact()) << "     - Input:" << reportTwo.input;
     qCDebug(dcKebaKeContact()) << "     - Serial number:" << reportTwo.serialNumber;
-    qCDebug(dcKebaKeContact()) << "     - Uptime:" << reportTwo.seconds;
+    qCDebug(dcKebaKeContact()) << "     - Uptime:" << reportTwo.seconds/60 << "[min]";
 
     if (reportTwo.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
         setDeviceState(thing, reportTwo.state);
@@ -353,14 +349,16 @@ void IntegrationPluginKeba::onReportTwoReceived(const KeContact::ReportTwo &repo
         thing->setStateValue(wallboxPowerStateTypeId, reportTwo.enableUser);
         thing->setStateValue(wallboxError1StateTypeId, reportTwo.error1);
         thing->setStateValue(wallboxError2StateTypeId, reportTwo.error2);
-        //thing->setStateValue(wallboxMaxChargingCurrentAmpereStateTypeId, reportTwo.maxCurrent);
+        thing->setStateValue(wallboxSystemEnabledStateTypeId, reportTwo.enableSys);
+
+        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, reportTwo.maxCurrent);
         thing->setStateValue(wallboxMaxChargingCurrentPercentStateTypeId, reportTwo.maxCurrentPercentage);
-        //thing->setStateValue(wallboxCurrentHardwareLimitationStateTypeId, reportTwo.currentHardwareLimitation);
+        thing->setStateValue(wallboxMaxPossibleChargingCurrentStateTypeId, reportTwo.currentHardwareLimitation);
 
         thing->setStateValue(wallboxOutputX2StateTypeId, reportTwo.output);
         thing->setStateValue(wallboxInputStateTypeId, reportTwo.input);
 
-        thing->setStateValue(wallboxUptimeStateTypeId, reportTwo.seconds);
+        thing->setStateValue(wallboxUptimeStateTypeId, reportTwo.seconds/60);
     } else {
         qCWarning(dcKebaKeContact()) << "Received report but the serial number didn't match";
     }
@@ -374,17 +372,17 @@ void IntegrationPluginKeba::onReportThreeReceived(const KeContact::ReportThree &
         return;
 
     qCDebug(dcKebaKeContact()) << "Report 3 received for" << thing->name() << "Serial number:" << thing->stateValue(wallboxSerialnumberStateTypeId).toString();
-    qCDebug(dcKebaKeContact()) << "     - Current phase 1:" << reportThree.currentPhase1 << "[mA]";
-    qCDebug(dcKebaKeContact()) << "     - Current phase 2:" << reportThree.currentPhase2 << "[mA]";
-    qCDebug(dcKebaKeContact()) << "     - Current phase 3:" << reportThree.currentPhase3 << "[mA]";
+    qCDebug(dcKebaKeContact()) << "     - Current phase 1:" << reportThree.currentPhase1 << "[A]";
+    qCDebug(dcKebaKeContact()) << "     - Current phase 2:" << reportThree.currentPhase2 << "[A]";
+    qCDebug(dcKebaKeContact()) << "     - Current phase 3:" << reportThree.currentPhase3 << "[A]";
     qCDebug(dcKebaKeContact()) << "     - Voltage phase 1:" << reportThree.voltagePhase1 << "[V]";
     qCDebug(dcKebaKeContact()) << "     - Voltage phase 2:" << reportThree.voltagePhase2 << "[V]";
     qCDebug(dcKebaKeContact()) << "     - Voltage phase 3:" << reportThree.voltagePhase3 << "[V]";
-    qCDebug(dcKebaKeContact()) << "     - Power consumption:" << reportThree.power << "[W]";
-    qCDebug(dcKebaKeContact()) << "     - Energy session" << reportThree.energySession << "[Wh]";
-    qCDebug(dcKebaKeContact()) << "     - Energy total" << reportThree.energyTotal << "[Wh]";
+    qCDebug(dcKebaKeContact()) << "     - Power consumption:" << reportThree.power << "[kW]";
+    qCDebug(dcKebaKeContact()) << "     - Energy session" << reportThree.energySession << "[kWh]";
+    qCDebug(dcKebaKeContact()) << "     - Energy total" << reportThree.energyTotal << "[kWh]";
     qCDebug(dcKebaKeContact()) << "     - Serial number" << reportThree.serialNumber;
-    qCDebug(dcKebaKeContact()) << "     - Uptime" << reportThree.seconds;
+    qCDebug(dcKebaKeContact()) << "     - Uptime" << reportThree.seconds/60 << "[min]";
 
     if (reportThree.serialNumber == thing->stateValue(wallboxSerialnumberStateTypeId).toString()) {
         thing->setStateValue(wallboxCurrentPhase1EventTypeId, reportThree.currentPhase1);
@@ -483,7 +481,7 @@ void IntegrationPluginKeba::onBroadcastReceived(KeContact::BroadcastType type, c
         setDeviceState(thing, KeContact::State(content.toInt()));
         break;
     case KeContact::BroadcastTypeMaxCurr:
-        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, content.toInt());
+        thing->setStateValue(wallboxMaxChargingCurrentStateTypeId, content.toInt()/1000.00);
         break;
     case KeContact::BroadcastTypeEnableSys:
         qCDebug(dcKebaKeContact()) << "Broadcast enable sys not implemented";
@@ -503,30 +501,28 @@ void IntegrationPluginKeba::executeAction(ThingActionInfo *info)
             return info->finish(Thing::ThingErrorHardwareNotAvailable);
         }
 
+        QUuid requestId;
         if(action.actionTypeId() == wallboxMaxChargingCurrentActionTypeId){
             int milliAmpere = action.param(wallboxMaxChargingCurrentActionMaxChargingCurrentParamTypeId).value().toInt();
-            QUuid requestId = keba->setMaxAmpere(milliAmpere);
-            m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, this, [requestId, this]{m_asyncActions.remove(requestId);});
+            requestId = keba->setMaxAmpere(milliAmpere);
 
         } else if(action.actionTypeId() == wallboxPowerActionTypeId){
-            QUuid requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());
-            m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, this, [requestId, this]{m_asyncActions.remove(requestId);});
+            requestId = keba->enableOutput(action.param(wallboxPowerActionTypeId).value().toBool());
 
         } else if(action.actionTypeId() == wallboxDisplayActionTypeId){
-            QUuid requestId = keba->displayMessage(action.param(wallboxDisplayActionMessageParamTypeId).value().toByteArray());
-            m_asyncActions.insert(requestId, info);
-            connect(info, &ThingActionInfo::aborted, this, [requestId, this]{m_asyncActions.remove(requestId);});
+            requestId = keba->displayMessage(action.param(wallboxDisplayActionMessageParamTypeId).value().toByteArray());
 
-        } else if(action.actionTypeId() == wallboxOutputX2ActionTypeId){
+        } else if(action.actionTypeId() == wallboxOutputX2ActionTypeId) {
+            requestId = keba->setOutputX2(action.param(wallboxOutputX2ActionOutputX2ParamTypeId).value().toBool());
 
         } else if(action.actionTypeId() == wallboxFailsafeModeActionTypeId){
-
+            requestId = keba->setFailsafe(60, 0, false);
         } else {
             qCWarning(dcKebaKeContact()) << "Unhandled ActionTypeId:" << action.actionTypeId();
-            info->finish(Thing::ThingErrorActionTypeNotFound);
+            return info->finish(Thing::ThingErrorActionTypeNotFound);
         }
+        m_asyncActions.insert(requestId, info);
+        connect(info, &ThingActionInfo::aborted, this, [requestId, this]{m_asyncActions.remove(requestId);});
     } else {
         qCWarning(dcKebaKeContact()) << "Execute action, unhandled device class" << thing->thingClass();
         info->finish(Thing::ThingErrorThingClassNotFound);

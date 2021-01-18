@@ -34,6 +34,7 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 #include "kecontact.h"
+#include "kecontactdatalayer.h"
 #include "discovery.h"
 #include "host.h"
 
@@ -66,7 +67,7 @@ private:
     PluginTimer *m_updateTimer = nullptr;
     PluginTimer *m_reconnectTimer = nullptr;
 
-    QUdpSocket *m_udpSocket = nullptr;
+    KeContactDataLayer *m_kebaData = nullptr;
 
     Discovery *m_discovery = nullptr;
     QHash<ThingId, KeContact *> m_kebaDevices;

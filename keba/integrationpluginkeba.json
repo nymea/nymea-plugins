@@ -83,14 +83,7 @@
                             "type": "QString",
                             "defaultValue": ""
                         },
-                        {
-                            "id": "1d30ce60-2ea0-450f-817e-5c88f59ebfbf",
-                            "name": "sessionId",
-                            "displayName": "Session ID",
-                            "displayNameEvent": "Session ID changed",
-                            "type": "uint",
-                            "defaultValue": ""
-                        },
+
                         {
                             "id": "83ed0774-2a91-434d-b03c-d920d02f2981",
                             "name": "power",
@@ -130,9 +123,9 @@
                             "name": "current",
                             "displayName": "Current",
                             "displayNameEvent": "Current changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "593656f0-babf-4308-8767-68f34e10fb15",
@@ -140,11 +133,11 @@
                             "displayName": "Maximal charging current",
                             "displayNameEvent": "Maximal charging current changed",
                             "displayNameAction": "Set maximal charging current",
-                            "type": "uint",
-                            "unit": "MilliAmpere",
-                            "defaultValue": 6,
-                            "minValue": 6000,
-                            "maxValue": 63000,
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 6.00,
+                            "minValue": 6.00,
+                            "maxValue": 63.00,
                             "writable": true
                         },
                         {
@@ -199,9 +192,9 @@
                             "name": "currentPhase1",
                             "displayName": "Current phase 1",
                             "displayNameEvent": "Current phase 1 changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "cdc7e10a-0d0a-4e93-ad2c-d34ffca45c97",
@@ -210,7 +203,7 @@
                             "displayNameEvent": "Current phase 2 changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "da838dc8-85f0-4e55-b4b5-cb93a43b373d",
@@ -219,7 +212,7 @@
                             "displayNameEvent": "Current phase 3 changed",
                             "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "7af9e93b-099d-4d9d-a480-9c0f66aecd8b",
@@ -228,7 +221,7 @@
                             "displayNameEvent": "Power consumtion changed",
                             "type": "double",
                             "unit": "KiloWatt",
-                            "defaultValue": 0
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "889c3c9a-96b4-4408-bd9a-d79e36ed9296",
@@ -238,6 +231,14 @@
                             "type": "double",
                             "unit": "Percentage",
                             "defaultValue": 0.00
+                        },
+                        {
+                            "id": "1d30ce60-2ea0-450f-817e-5c88f59ebfbf",
+                            "name": "sessionId",
+                            "displayName": "Session ID",
+                            "displayNameEvent": "Session ID changed",
+                            "type": "uint",
+                            "defaultValue": ""
                         },
                         {
                             "id": "a6f35ea0-aaea-438b-b818-6d161762611e",
@@ -290,7 +291,7 @@
                             "displayName": "Uptime",
                             "displayNameEvent": "Uptime changed",
                             "type": "int",
-                            "unit": "Seconds",
+                            "unit": "Minutes",
                             "defaultValue": 0
                         },
                         {
@@ -338,7 +339,7 @@
                                     "name": "duration",
                                     "displayName": "Duration",
                                     "type": "int",
-                                    "unit": "Seconds",
+                                    "unit": "Minutes",
                                     "defaultValue": 0
                                 },
                                 {
