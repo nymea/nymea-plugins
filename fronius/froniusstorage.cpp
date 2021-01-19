@@ -84,7 +84,11 @@ void FroniusStorage::updateThingInfo(const QByteArray &data)
     // copy retrieved information to thing states
     if (storageInfoMap.contains("StateOfCharge_Relative")) {
         pluginThing()->setStateValue(storageBatteryLevelStateTypeId, storageInfoMap.value("StateOfCharge_Relative").toInt());
-        pluginThing()->setStateValue(storageBatteryCriticalStateTypeId, storageInfoMap.value("StateOfCharge_Relative").toInt() < 5);
+        if ((pluginThing()->stateValue(storageChargingStateTypeId) != "charging") && (storageInfoMap.value("StateOfCharge_Relative").toInt() < 5)) {
+            pluginThing()->setStateValue(storageBatteryCriticalStateTypeId, true);
+        } else {
+            pluginThing()->setStateValue(storageBatteryCriticalStateTypeId, false);
+        }
     }
 
     if (storageInfoMap.contains("Temperature_Cell"))
