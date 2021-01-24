@@ -69,6 +69,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_idParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingIdParamTypeId;
     m_idParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingIdParamTypeId;
     m_idParamTypeMap[shellyHTThingClassId] = shellyHTThingIdParamTypeId;
+    m_idParamTypeMap[shellyix3ThingClassId] = shellyix3ThingIdParamTypeId;
 
     m_usernameParamTypeMap[shelly1ThingClassId] = shelly1ThingUsernameParamTypeId;
     m_usernameParamTypeMap[shelly1pmThingClassId] = shelly1pmThingUsernameParamTypeId;
@@ -81,6 +82,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_usernameParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingUsernameParamTypeId;
     m_usernameParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingUsernameParamTypeId;
     m_usernameParamTypeMap[shellyHTThingClassId] = shellyHTThingUsernameParamTypeId;
+    m_usernameParamTypeMap[shellyix3ThingClassId] = shellyix3ThingUsernameParamTypeId;
 
     m_passwordParamTypeMap[shelly1ThingClassId] = shelly1ThingPasswordParamTypeId;
     m_passwordParamTypeMap[shelly1pmThingClassId] = shelly1pmThingPasswordParamTypeId;
@@ -93,6 +95,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_passwordParamTypeMap[shellyButton1ThingClassId] = shellyButton1ThingPasswordParamTypeId;
     m_passwordParamTypeMap[shellyEm3ThingClassId] = shellyEm3ThingPasswordParamTypeId;
     m_passwordParamTypeMap[shellyHTThingClassId] = shellyHTThingPasswordParamTypeId;
+    m_passwordParamTypeMap[shellyix3ThingClassId] = shellyix3ThingPasswordParamTypeId;
 
     m_connectedDeviceParamTypeMap[shelly2ThingClassId] = shelly2ThingConnectedDevice1ParamTypeId;
     m_connectedDeviceParamTypeMap[shelly25ThingClassId] = shelly25ThingConnectedDevice1ParamTypeId;
@@ -128,6 +131,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_connectedStateTypesMap[shellyLightPMThingClassId] = shellyLightPMConnectedStateTypeId;
     m_connectedStateTypesMap[shellySocketPMThingClassId] = shellySocketPMConnectedStateTypeId;
     m_connectedStateTypesMap[shellyRollerThingClassId] = shellyRollerConnectedStateTypeId;
+    m_connectedStateTypesMap[shellyix3ThingClassId] = shellyix3ConnectedStateTypeId;
 
     m_signalStrengthStateTypesMap[shelly1ThingClassId] = shelly1SignalStrengthStateTypeId;
     m_signalStrengthStateTypesMap[shelly1pmThingClassId] = shelly1pmSignalStrengthStateTypeId;
@@ -148,6 +152,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_signalStrengthStateTypesMap[shellyLightPMThingClassId] = shellyLightPMSignalStrengthStateTypeId;
     m_signalStrengthStateTypesMap[shellySocketPMThingClassId] = shellySocketPMSignalStrengthStateTypeId;
     m_signalStrengthStateTypesMap[shellyRollerThingClassId] = shellyRollerSignalStrengthStateTypeId;
+    m_signalStrengthStateTypesMap[shellyix3ThingClassId] = shellyix3SignalStrengthStateTypeId;
 
     m_powerStateTypeMap[shelly1ThingClassId] = shelly1PowerStateTypeId;
     m_powerStateTypeMap[shelly1pmThingClassId] = shelly1pmPowerStateTypeId;
@@ -198,6 +203,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_updateStatusStateTypesMap[shellyButton1ThingClassId] = shellyButton1UpdateStatusStateTypeId;
     m_updateStatusStateTypesMap[shellyEm3ThingClassId] = shellyEm3UpdateStatusStateTypeId;
     m_updateStatusStateTypesMap[shellyHTThingClassId] = shellyHTUpdateStatusStateTypeId;
+    m_updateStatusStateTypesMap[shellyix3ThingClassId] = shellyix3UpdateStatusStateTypeId;
 
     m_currentVersionStateTypesMap[shelly1ThingClassId] = shelly1CurrentVersionStateTypeId;
     m_currentVersionStateTypesMap[shelly1pmThingClassId] = shelly1pmCurrentVersionStateTypeId;
@@ -210,6 +216,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_currentVersionStateTypesMap[shellyButton1ThingClassId] = shellyButton1CurrentVersionStateTypeId;
     m_currentVersionStateTypesMap[shellyEm3ThingClassId] = shellyEm3CurrentVersionStateTypeId;
     m_currentVersionStateTypesMap[shellyHTThingClassId] = shellyHTCurrentVersionStateTypeId;
+    m_currentVersionStateTypesMap[shellyix3ThingClassId] = shellyix3CurrentVersionStateTypeId;
 
     m_availableVersionStateTypesMap[shelly1ThingClassId] = shelly1AvailableVersionStateTypeId;
     m_availableVersionStateTypesMap[shelly1pmThingClassId] = shelly1pmAvailableVersionStateTypeId;
@@ -222,6 +229,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_availableVersionStateTypesMap[shellyButton1ThingClassId] = shellyButton1AvailableVersionStateTypeId;
     m_availableVersionStateTypesMap[shellyEm3ThingClassId] = shellyEm3AvailableVersionStateTypeId;
     m_availableVersionStateTypesMap[shellyHTThingClassId] = shellyHTAvailableVersionStateTypeId;
+    m_availableVersionStateTypesMap[shellyix3ThingClassId] = shellyix3AvailableVersionStateTypeId;
 
     m_batteryLevelStateTypeMap[shellyButton1ThingClassId] = shellyButton1BatteryLevelStateTypeId;
     m_batteryLevelStateTypeMap[shellyHTThingClassId] = shellyHTBatteryLevelStateTypeId;
@@ -238,6 +246,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_rebootActionTypeMap[shellyDimmerRebootActionTypeId] = shellyDimmerThingClassId;
     m_rebootActionTypeMap[shelly2RebootActionTypeId] = shelly2ThingClassId;
     m_rebootActionTypeMap[shelly25RebootActionTypeId] = shelly25ThingClassId;
+    m_rebootActionTypeMap[shellyix3RebootActionTypeId] = shellyix3ThingClassId;
 
     m_powerActionTypesMap[shelly1PowerActionTypeId] = shelly1ThingClassId;
     m_powerActionTypesMap[shelly1pmPowerActionTypeId] = shelly1pmThingClassId;
@@ -296,6 +305,7 @@ IntegrationPluginShelly::IntegrationPluginShelly()
     m_updateActionTypesMap[shellyButton1PerformUpdateActionTypeId] = shellyButton1ThingClassId;
     m_updateActionTypesMap[shellyEm3PerformUpdateActionTypeId] = shellyEm3ThingClassId;
     m_updateActionTypesMap[shellyHTPerformUpdateActionTypeId] = shellyHTThingClassId;
+    m_updateActionTypesMap[shellyix3PerformUpdateActionTypeId] = shellyix3ThingClassId;
 }
 
 IntegrationPluginShelly::~IntegrationPluginShelly()
@@ -334,6 +344,8 @@ void IntegrationPluginShelly::discoverThings(ThingDiscoveryInfo *info)
             namePattern = QRegExp("^shellyem3-[0-9A-Z]+$");
         } else if (info->thingClassId() == shellyHTThingClassId) {
             namePattern = QRegExp("shellyht-[0-9A-Z]+$");
+        } else if (info->thingClassId() == shellyix3ThingClassId) {
+            namePattern = QRegExp("shellyix3-[0-9A-Z]+$");
         }
         if (!entry.name().contains(namePattern)) {
             continue;
@@ -817,8 +829,9 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         }
     }
 
-    if (topic == "shellies/" + shellyId + "/input_event/0") {
-        if (thing->thingClassId() == shellyButton1ThingClassId) {
+    if (topic == "shellies/" + shellyId + "/input_event/") {
+        int channel = topic.split("/").last().toInt();
+        if (thing->thingClassId() == shellyButton1ThingClassId) {  // it can be onlz at channel 0
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
             if (error.error != QJsonParseError::NoError) {
@@ -833,6 +846,36 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             ParamTypeId paramTypeId = eventTypeId == shellyButton1PressedEventTypeId ? shellyButton1PressedEventButtonNameParamTypeId : shellyButton1LongPressedEventButtonNameParamTypeId;
             QString param = QString::number(event.length());
             thing->emitEvent(eventTypeId, ParamList() << Param(paramTypeId, param));
+        }
+        if (thing->thingClassId() == shellyix3ThingClassId) {
+            QJsonParseError error;
+            QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
+            if (error.error != QJsonParseError::NoError) {
+                qCWarning(dcShelly()) << "Failed to parse JSON from shelly:" << error.errorString() << qUtf8Printable(payload);
+                return;
+            }
+            QString event = jsonDoc.toVariant().toMap().value("event").toString();
+            if (event.isEmpty()) {
+                return;
+            }
+            QString param = "";
+            EventTypeId eventTypeId = shellyix3LongPressedEventTypeId;;
+            ParamTypeId paramTypeId = shellyix3LongPressedEventButtonNameParamTypeId;
+            ParamTypeId param2TypeId = shellyix3LongPressedEventPressOriginParamTypeId;
+            if (event == "L") {
+                param = "1";
+            } else if (event == "SL") {
+                param = "2";
+            } else if (event == "LS") {
+                param = "3";
+            } else { // short press
+                param = QString::number(event.length());
+                eventTypeId = shellyix3PressedEventTypeId;
+                paramTypeId = shellyix3PressedEventButtonNameParamTypeId;
+                param2TypeId = shellyix3PressedEventPressOriginParamTypeId;
+            }
+            QString usedSwitch = QString::number(channel + 1);
+            thing->emitEvent(eventTypeId, ParamList() << Param(paramTypeId, param) << Param(param2TypeId, usedSwitch));
         }
     }
 
@@ -1065,6 +1108,21 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
                 switch2Child.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 2));
                 autoChilds.append(switch2Child);
             }
+
+
+            // Create 3 switches for shelly ix3
+            if (info->thing()->thingClassId() == shellyix3ThingClassId ) {
+                ThingDescriptor switchChild(shellySwitchThingClassId, info->thing()->name() + " switch 1", QString(), info->thing()->id());
+                switchChild.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 1));
+                autoChilds.append(switchChild);
+                ThingDescriptor switch2Child(shellySwitchThingClassId, info->thing()->name() + " switch 2", QString(), info->thing()->id());
+                switch2Child.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 2));
+                autoChilds.append(switch2Child);
+                ThingDescriptor switch3Child(shellySwitchThingClassId, info->thing()->name() + " switch 3", QString(), info->thing()->id());
+                switch3Child.setParams(ParamList() << Param(shellySwitchThingChannelParamTypeId, 3));
+                autoChilds.append(switch3Child);
+            }
+
 
             // Add connected devices as configured in params
             // No PM devices for shelly 1 and 2
