@@ -14,6 +14,8 @@ The currently supported devices are:
 * Shelly Button 1
 * Shelly 3EM
 * Shelly H+T
+* Shelly i3
+
 
 ## Requirements
 Shelly devices communicate with via MQTT. This means, in order to add Shelly devices to nymea, the nymea instance is required
