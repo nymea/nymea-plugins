@@ -150,9 +150,9 @@ void Nuki::printServices()
     foreach (BluetoothGattService *service, m_bluetoothDevice->services()) {
         qCDebug(dcNuki()) << service;
         foreach (BluetoothGattCharacteristic *characteristic, service->characteristics()) {
-            qCDebug(dcNuki()) << "    " << characteristic->chararcteristicName() << characteristic->uuid().toString();
+            qCDebug(dcNuki()) << "    " << characteristic;
             foreach (BluetoothGattDescriptor *descriptor, characteristic->descriptors()) {
-                qCDebug(dcNuki()) << "        " << descriptor->name() << descriptor->uuid().toString();
+                qCDebug(dcNuki()) << "        " << descriptor;
             }
         }
     }
@@ -200,6 +200,45 @@ void Nuki::executeCurrentAction()
     default:
         break;
     }
+}
+
+bool Nuki::enableNotificationsIndications(BluetoothGattCharacteristic *characteristic)
+{
+    qCDebug(dcNuki()) << "Start enable notifications/indications for" << characteristic;
+
+    // Get the client configuration descriptor
+    // https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Descriptors/org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
+    BluetoothGattDescriptor *clientConfiguration = characteristic->getDescriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+    if (!clientConfiguration) {
+        qCWarning(dcNuki()) << "Could not start notification/indications for" << characteristic << "because the client configuration descriptor is missing";
+        return false;
+    }
+
+    qCDebug(dcNuki()) << "Enable notifications on" << characteristic;
+    if (!characteristic->startNotifications()) {
+        qCDebug(dcNuki()) << "Failed to start notifications on" << characteristic;
+        return false;
+    }
+
+    if (characteristic->properties().testFlag(BluetoothGattCharacteristic::Indicate)) {
+        qCDebug(dcNuki()) << "Enable indications on" << characteristic;
+        QByteArray configuration;
+        QDataStream stream(&configuration, QIODevice::WriteOnly);
+        stream.setByteOrder(QDataStream::LittleEndian);
+        stream << static_cast<quint16>(0x02);
+        if (!clientConfiguration->writeValue(configuration)) {
+            qCWarning(dcNuki()) << "Failed to write client configuration descriptor on" << characteristic;
+            return false;
+        }
+
+    } else {
+        qCWarning(dcNuki()) << "Could not enable notifications. Access properties do not allow indicate or notify" << characteristic;
+        return false;
+    }
+
+    clientConfiguration->readValue();
+
+    return true;
 }
 
 void Nuki::onBluetoothDeviceStateChanged(const BluetoothDevice::State &state)
@@ -433,20 +472,26 @@ bool Nuki::init()
         qCWarning(dcNuki()) << "Could not find user data characteristc on device" << m_bluetoothDevice;
         return false;
     }
+    // Set key turner characteristics for data and user data
     if (!m_keyturnerService->hasCharacteristic(keyturnerDataCharacteristicUuid)) {
         qCWarning(dcNuki()) << "Could not find data characteristc on device" << m_bluetoothDevice;
         return false;
     }
+
+    // Enable notifications/indications
     m_keyturnerUserDataCharacteristic = m_keyturnerService->getCharacteristic(keyturnerUserDataCharacteristicUuid);
-    if (!m_keyturnerUserDataCharacteristic->startNotifications()) {
-        qCWarning(dcNuki()) << "Could not enable notifications for user data characteristic.";
+    if (!enableNotificationsIndications(m_keyturnerUserDataCharacteristic)) {
+        qCWarning(dcNuki()) << "Could not enable notifications/indications for user data characteristic.";
         return false;
     }
+
     m_keyturnerDataCharacteristic = m_keyturnerService->getCharacteristic(keyturnerDataCharacteristicUuid);
-    if (!m_keyturnerDataCharacteristic->startNotifications()) {
-        qCWarning(dcNuki()) << "Could not enable notifications for data characteristic.";
+    if (!enableNotificationsIndications(m_keyturnerDataCharacteristic)) {
+        qCWarning(dcNuki()) << "Could not enable notifications/indications for key turner data characteristic.";
         return false;
     }
+
+
 
     // Pairing service
     m_pairingService = m_bluetoothDevice->getService(pairingServiceUuid);
@@ -454,8 +499,9 @@ bool Nuki::init()
         qCWarning(dcNuki()) << "Could not find pairing data characteristc on device" << m_bluetoothDevice;
         return false;
     }
+
     m_pairingDataCharacteristic = m_pairingService->getCharacteristic(pairingDataCharacteristicUuid);
-    if (!m_pairingDataCharacteristic->startNotifications()) {
+    if (!enableNotificationsIndications(m_pairingDataCharacteristic)) {
         qCWarning(dcNuki()) << "Could not enable notifications for pairing characteristic.";
         return false;
     }
