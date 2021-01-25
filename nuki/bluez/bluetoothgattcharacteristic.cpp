@@ -72,6 +72,17 @@ QList<BluetoothGattDescriptor *> BluetoothGattCharacteristic::descriptors() cons
     return m_descriptors;
 }
 
+BluetoothGattDescriptor *BluetoothGattCharacteristic::getDescriptor(const QBluetoothUuid &desciptorUuid) const
+{
+    foreach (BluetoothGattDescriptor *descriptor, m_descriptors) {
+        if (descriptor->uuid() == desciptorUuid) {
+            return descriptor;
+        }
+    }
+
+    return nullptr;
+}
+
 BluetoothGattCharacteristic::BluetoothGattCharacteristic(const QDBusObjectPath &path, const QVariantMap &properties, QObject *parent) :
     QObject(parent),
     m_path(path),
