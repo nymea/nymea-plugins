@@ -1,0 +1,31 @@
+{
+    "system": {
+        "get_sysinfo": {
+            "active_mode": "none",
+            "alias": "Kasa Plug With Power Monitoring HS110",
+            "dev_name": "Smart Wi-Fi Plug With Energy Monitoring",
+            "deviceId": "8006BBCA9B42F7D495ED9636570C21571BA8D9C1",
+            "err_code": 0,
+            "feature": "TIM:ENE",
+            "fwId": "00000000000000000000000000000000",
+            "hwId": "044A516EE63C875F9458DA25C2CCC5A0",
+            "hw_ver": "2.0",
+            "icon_hash": "",
+            "latitude_i": 484108,
+            "led_off": 0,
+            "longitude_i": 99379,
+            "mac": "98:DA:C4:6A:67:34",
+            "model": "HS110(EU)",
+            "next_action": {
+                "type": -1
+            },
+            "oemId": "1998A14DAA86E4E001FD7CAF42868B5E",
+            "on_time": 27035,
+            "relay_state": 1,
+            "rssi": -52,
+            "sw_ver": "1.5.6 Build 191125 Rel.083657",
+            "type": "IOT.SMARTPLUGSWITCH",
+            "updating": 0
+        }
+    }
+}

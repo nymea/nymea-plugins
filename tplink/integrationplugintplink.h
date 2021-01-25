@@ -85,14 +85,6 @@ private:
     QHash<Thing*, QByteArray> m_inputBuffers;
 
     PluginTimer *m_timer = nullptr;
-
-    QHash<ThingClassId, ParamTypeId> m_idParamTypesMap;
-    QHash<ThingClassId, StateTypeId> m_connectedStateTypesMap;
-    QHash<ThingClassId, StateTypeId> m_signalStrengthStateTypesMap;
-    QHash<ThingClassId, StateTypeId> m_powerStatetTypesMap;
-    QHash<ThingClassId, StateTypeId> m_currentPowerStatetTypesMap;
-    QHash<ThingClassId, StateTypeId> m_totalEnergyConsumedStatetTypesMap;
-    QHash<ThingClassId, ParamTypeId> m_powerActionParamTypesMap;
 };
 
 #endif // INTEGRATIONPLUGINANEL_H

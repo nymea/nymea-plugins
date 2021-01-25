@@ -1,0 +1,37 @@
+{
+    "emeter": {
+        "err_code": -1,
+        "err_msg": "module not support"
+    },
+    "system": {
+        "get_sysinfo": {
+            "active_mode": "none",
+            "alias": "Kasa Plug Mini HS105",
+            "dev_name": "Smart Wi-Fi Plug Mini",
+            "deviceId": "8006F282D515B22F869313C3D0F2E45F1D93EEC2",
+            "err_code": 0,
+            "feature": "TIM",
+            "hwId": "845AC58F61A995F454064635A2E42A92",
+            "hw_ver": "4.0",
+            "icon_hash": "",
+            "latitude_i": 398287,
+            "led_off": 0,
+            "longitude_i": -1049759,
+            "mac": "84:D8:1B:C2:C6:39",
+            "mic_type": "IOT.SMARTPLUGSWITCH",
+            "model": "HS105(US)",
+            "next_action": {
+                "type": -1
+            },
+            "ntc_state": 0,
+            "obd_src": "tplink",
+            "oemId": "69A0595CB3878B4927CC17675B69DBA9",
+            "on_time": 468,
+            "relay_state": 1,
+            "rssi": -50,
+            "status": "new",
+            "sw_ver": "1.0.2 Build 200804 Rel.091847",
+            "updating": 0
+        }
+    }
+}

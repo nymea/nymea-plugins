@@ -171,6 +171,111 @@
                             "writable": true
                         }
                     ]
+                },
+                {
+                    "id": "bbdee989-9431-4187-b135-5030a7a11be2",
+                    "name": "kasaPowerStrip300",
+                    "displayName": "Kasa Smart Wi-Fi Power Strip (HS300)",
+                    "createMethods": ["discovery"],
+                    "interfaces": [ "gateway", "extendedsmartmeterconsumer", "wirelessconnectable" ],
+                    "paramTypes": [
+                        {
+                            "id": "62b38ddf-f6d7-44e1-955f-f04b375d960d",
+                            "name": "id",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "9bcec21d-7207-44c6-8ebf-d2720bb7a63a",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "1a587f62-8274-4c2e-bdc6-1b0b6368e5f7",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "f2992226-1f36-477f-b053-04dc5dc3a31c",
+                            "name": "totalEnergyConsumed",
+                            "displayName": "Total energy consumed",
+                            "displayNameEvent": "Total energy consumed changed",
+                            "type": "double",
+                            "unit": "KiloWattHour",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "f973b4e8-99fb-4331-8193-e287bd37f5a0",
+                            "name": "currentPower",
+                            "displayName": "Current power consumption",
+                            "displayNameEvent": "Current power consumption changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0
+                        }
+                    ]
+                },
+                {
+                    "id": "2f40e28c-2484-4e09-bda9-e7accc29ab41",
+                    "name": "kasaSocket",
+                    "displayName": "Kasa power socket",
+                    "createMethods": ["auto"],
+                    "interfaces": ["powersocket", "wirelessconnectable"],
+                    "paramTypes": [
+                        {
+                            "id": "dd944807-c7f2-49da-b443-b69eb8387f41",
+                            "name": "id",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "59feb3a8-d35e-4c10-ac2e-01361e711a5e",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "16b71516-2ff4-4a2f-b0fc-53fff11f3a16",
+                            "name": "signalStrength",
+                            "displayName": "Signal strength",
+                            "displayNameEvent": "Signal strength changed",
+                            "type": "uint",
+                            "unit": "Percentage",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": 100
+                        },
+                        {
+                            "id": "b1d006a6-f2f5-475c-ab9e-8b431b1ac5f8",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Turned on or off",
+                            "displayNameAction": "Turn on or off",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        }
+                    ]
                 }
             ]
         }
