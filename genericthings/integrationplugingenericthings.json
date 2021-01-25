@@ -1183,6 +1183,90 @@
                             "ioType": "analogOutput"
                         }
                     ]
+                },
+                {
+                    "id": "e48347df-0ab1-4a16-892e-31618fa79c8f",
+                    "name": "voltMeter",
+                    "displayName": "Volt meter",
+                    "createMethods": ["user"],
+                    "interfaces": ["amperemeter"],
+                    "settingsTypes": [
+                        {
+                            "id": "c6d82170-6b65-4917-aa6f-09ca15f57f68",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "a7232a7f-896b-411d-a3e3-58608fe55561",
+                            "name": "voltage",
+                            "displayName": "Voltage",
+                            "displayNameEvent": "Voltage changed",
+                            "type": "double",
+                            "unit": "Voltage",
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "f9a5ca5e-24b5-465a-ab5a-f7867a30100e",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
+                    "id": "2551ef9b-a854-4bf6-837a-d3b48ef1553e",
+                    "name": "wattMeter",
+                    "displayName": "Watt meter",
+                    "createMethods": ["user"],
+                    "interfaces": ["wattmeter"],
+                    "settingsTypes": [
+                        {
+                            "id": "b91deac1-ead3-4587-9256-a142b1af4ad9",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "8c62b084-9948-496d-b5dd-abf9a6b00f1a",
+                            "name": "realPower",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "type": "double",
+                            "unit": "Watt",
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "a818c85c-6376-4b02-87fa-c8c67fbb65ff",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 1,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
                 }
             ]
         }
