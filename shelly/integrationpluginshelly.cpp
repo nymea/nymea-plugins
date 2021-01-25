@@ -848,7 +848,6 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
     }
 
     if (topic.startsWith("shellies/" + shellyId + "/input_event/")) {
-        int channel = topic.split("/").last().toInt();
         if (thing->thingClassId() == shellyButton1ThingClassId) {  // it can be only at channel 0
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
@@ -866,6 +865,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             thing->emitEvent(eventTypeId, ParamList() << Param(paramTypeId, param));
         }
         if (thing->thingClassId() == shellyI3ThingClassId) {
+            int channel = topic.split("/").last().toInt();
             QJsonParseError error;
             QJsonDocument jsonDoc = QJsonDocument::fromJson(payload, &error);
             if (error.error != QJsonParseError::NoError) {
