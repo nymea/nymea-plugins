@@ -672,7 +672,22 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
         // Emit event button pressed
         bool on = payload == "1";
         if (thing->thingClassId() == shellyI3ThingClassId) {
-           thing->emitEvent(shellyI3PressEventTypeId, ParamList() << Param(shellyI3PressEventOriginParamTypeId, QString::number(channel +1)));
+           if (channel == 0) {
+               if (thing->stateValue(shellyI3Input1StateTypeId).toBool() != on) {
+                   thing->setStateValue(shellyI3Input1StateTypeId, on);
+                   emit emitEvent(Event(shellyI3Input1EventTypeId, thing->id()));
+               }
+           } else if (channel == 1) {
+               if (thing->stateValue(shellyI3Input2StateTypeId).toBool() != on) {
+                   thing->setStateValue(shellyI3Input2StateTypeId, on);
+                   emit emitEvent(Event(shellyI3Input2EventTypeId, thing->id()));
+               }
+           } else {
+               if (thing->stateValue(shellyI3Input3StateTypeId).toBool() != on) {
+                   thing->setStateValue(shellyI3Input3StateTypeId, on);
+                   emit emitEvent(Event(shellyI3Input3EventTypeId, thing->id()));
+               }
+           }
            return;
         }
         foreach (Thing *child, myThings().filterByParentId(thing->id())) {
@@ -864,7 +879,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
             QString param = "";
             EventTypeId eventTypeId = shellyI3LongPressedEventTypeId;;
             ParamTypeId paramTypeId = shellyI3LongPressedEventButtonNameParamTypeId;
-            ParamTypeId param2TypeId = shellyI3LongPressedEventPressOriginParamTypeId;
+            ParamTypeId param2TypeId = shellyI3LongPressedEventOriginParamTypeId;
             if (event == "L") {
                 param = "1";
             } else if (event == "SL") {
@@ -875,7 +890,7 @@ void IntegrationPluginShelly::onPublishReceived(MqttChannel *channel, const QStr
                 param = QString::number(event.length());
                 eventTypeId = shellyI3PressedEventTypeId;
                 paramTypeId = shellyI3PressedEventButtonNameParamTypeId;
-                param2TypeId = shellyI3PressedEventPressOriginParamTypeId;
+                param2TypeId = shellyI3PressedEventOriginParamTypeId;
             }
             QString usedSwitch = QString::number(channel + 1);
             thing->emitEvent(eventTypeId, ParamList() << Param(paramTypeId, param) << Param(param2TypeId, usedSwitch));

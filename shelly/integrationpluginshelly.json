@@ -1201,20 +1201,6 @@
                     ],
                     "eventTypes": [
                         {
-                            "id": "724d18ff-693b-4a9c-aa72-66557e0069d6",
-                            "name": "press",
-                            "displayName": "Press",
-                            "paramTypes": [
-                                {
-                                    "id": "ee2e1728-dfb3-4c0b-a131-0b7798415b2c",
-                                    "name": "origin",
-                                    "displayName": "Switch",
-                                    "type": "QString",
-                                    "allowedValues": ["1", "2", "3"]
-                                 }
-                            ]
-                        },
-                        {
                             "id": "79648810-b2f4-4aa5-902f-2875242e7bf8",
                             "name": "pressed",
                             "displayName": "Short Pressed",
@@ -1228,7 +1214,7 @@
                                 },
                                 {
                                     "id": "0ed31339-7457-443c-b6e3-3b8ce3fc2bd8",
-                                    "name": "pressOrigin",
+                                    "name": "origin",
                                     "displayName": "Switch",
                                     "type": "QString",
                                     "allowedValues": ["1", "2", "3"]
@@ -1249,7 +1235,7 @@
                                 },
                                 {
                                     "id": "866d6db6-e989-4b19-93c3-cc4aa7453c9e",
-                                    "name": "pressOrigin",
+                                    "name": "origin",
                                     "displayName": "Switch",
                                     "type": "QString",
                                     "allowedValues": ["1", "2", "3"]
