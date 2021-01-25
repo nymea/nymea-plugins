@@ -126,8 +126,11 @@ void IntegrationPluginTuya::postSetupThing(Thing *thing)
         m_pluginTimerQuery = hardwareManager()->pluginTimerManager()->registerTimer(queryInterval);
         connect(m_pluginTimerQuery, &PluginTimer::timeout, this, [this](){
             foreach (Thing *d, myThings().filterByThingClassId(tuyaCloudThingClassId)) {
-                foreach (Thing *child, myThings().filterByParentId(d->id())) {
-                    queryDevice(child);
+                if (m_pollQueue.value(d).isEmpty()) {
+                    m_pollQueue[d] = myThings().filterByParentId(d->id());
+                }
+                if (m_pollQueue[d].count() > 0) {
+                    queryDevice(m_pollQueue[d].takeFirst());
                 }
             }
         });
@@ -146,6 +149,7 @@ void IntegrationPluginTuya::postSetupThing(Thing *thing)
 void IntegrationPluginTuya::thingRemoved(Thing *thing)
 {
     if (thing->thingClassId() == tuyaCloudThingClassId) {
+        m_pollQueue.remove(thing);
         m_tokenExpiryTimers.take(thing->id())->deleteLater();
     }
 
@@ -445,11 +449,10 @@ void IntegrationPluginTuya::updateChildDevices(Thing *thing)
 
 void IntegrationPluginTuya::queryDevice(Thing *thing)
 {
-    qCDebug(dcTuya()) << "QueryDevice" << thing;
+    qCDebug(dcTuya()) << "Updating thing:" << thing;
 
     QString devId = thing->paramValue(m_devIdParamTypeIdsMap.value(thing->thingClassId())).toString();
 
-    qCDebug(dcTuya()) << thing->name() << "Updating child devices";
     pluginStorage()->beginGroup(thing->parentId().toString());
     QString accesToken = pluginStorage()->value("accessToken").toString();
     pluginStorage()->endGroup();
@@ -495,7 +498,12 @@ void IntegrationPluginTuya::queryDevice(Thing *thing)
         QVariantMap result = jsonDoc.toVariant().toMap();
         if (result.value("header").toMap().value("code").toString() != "SUCCESS") {
             qCWarning(dcTuya()) << "Error quering tuya device" << thing->name() << qUtf8Printable(jsonDoc.toJson());
-            // Fall through to mark thing as offline
+            if (result.value("header").toMap().value("code").toString() == "FrequentlyInvoke") {
+                // Poll rate limit exceeded... As switching is not affected by this, all we lose is an update
+                // from remote... So just do nothing here and hope next polling gets going again...
+                return;
+            }
+            // Fall through to mark thing as offline on any other error.
         }
 
         bool connected = result.value("payload").toMap().value("data").toMap().value("online").toBool();
