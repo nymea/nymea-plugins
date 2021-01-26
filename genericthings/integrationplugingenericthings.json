@@ -1212,6 +1212,26 @@
                             "defaultValue": ""
                         }
                     ]
+                },
+                {
+                    "id": "2d936f56-48ee-4be1-9b3e-28a335ad8085",
+                    "name": "doorSensor",
+                    "displayName": "Gerneric door or window sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["closablesensor"],
+                    "stateTypes": [
+                        {
+                            "id": "7f5fdc2b-7916-4e90-9c24-558162304f71",
+                            "name": "closed",
+                            "displayName": "Closed",
+                            "displayNameEvent": "Opned or closed",
+                            "displayNameAction": "Set open or closed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        }
+                    ]
                 }
             ]
         }
