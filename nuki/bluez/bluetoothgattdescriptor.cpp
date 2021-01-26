@@ -75,10 +75,17 @@ BluetoothGattDescriptor::BluetoothGattDescriptor(const QDBusObjectPath &path, co
     QDBusConnection::systemBus().connect(orgBluez, m_path.path(), "org.freedesktop.DBus.Properties", "PropertiesChanged", this, SLOT(onPropertiesChanged(QString,QVariantMap,QStringList)));
 
     processProperties(properties);
+
+//    QDBusPendingCall readingCall = m_descriptorInterface->asyncCall("GetAll", QVariantMap());
+//    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(readingCall, this);
+//    connect(watcher, &QDBusPendingCallWatcher::finished, this, [=](){
+//        qCDebug(dcBluez()) << "Get descriptor properties finished";
+//    });
 }
 
 void BluetoothGattDescriptor::processProperties(const QVariantMap &properties)
 {
+    qCDebug(dcBluez()) << "Descriptor properties" << properties;
     foreach (const QString &propertyName, properties.keys()) {
         if (propertyName == "UUID") {
             m_uuid = QBluetoothUuid(properties.value(propertyName).toString());

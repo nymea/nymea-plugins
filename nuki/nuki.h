@@ -115,6 +115,7 @@ private:
     void readDeviceInformationCharacteristics();
 
     void executeCurrentAction();
+    bool enableNotificationsIndications(BluetoothGattCharacteristic *characteristic);
 
 signals:
     void availableChanged(bool available);
