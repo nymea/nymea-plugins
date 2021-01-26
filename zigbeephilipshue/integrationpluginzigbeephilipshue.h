@@ -71,6 +71,7 @@ private:
 
     void initDimmerSwitch(ZigbeeNode *node);
     void initMotionSensor(ZigbeeNode *node);
+    void initSmartButton(ZigbeeNode *node);
 
 };
 
