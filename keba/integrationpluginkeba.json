@@ -18,7 +18,7 @@
                         {
                             "id": "730cd3d3-5f0e-4028-a8c2-ced7574f13f3",
                             "name": "ipAddress",
-                            "displayName": "IPv4 Address",
+                            "displayName": "IP address",
                             "type": "QString",
                             "inputType": "IPv4Address",
                             "defaultValue":"0.0.0.0"
@@ -26,10 +26,11 @@
                         {
                             "id": "c2df921d-ff8b-411c-9b1d-04a437d7dfa6",
                             "name": "macAddress",
-                            "displayName": "MAC Address",
+                            "displayName": "MAC address",
                             "type": "QString",
                             "inputType": "TextLine",
-                            "defaultValue":""
+                            "defaultValue":"",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -37,19 +38,68 @@
                             "id": "ce813458-d7d8-4f40-9648-dba4c41e92f0",
                             "name": "connected",
                             "displayName": "Connected",
-                            "displayNameEvent": "Connection changed",
+                            "displayNameEvent": "Connected changed",
                             "type": "bool",
                             "defaultValue": false,
                             "cached": false
                         },
                         {
+                            "id": "b44bc948-1234-4f87-9a22-bfb6de09df4d",
+                            "name": "error1",
+                            "displayName": "Error 1",
+                            "displayNameEvent": "Error 1 changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "afca201a-5213-43fe-bfec-cae6ce7509d2",
+                            "name": "error2",
+                            "displayName": "Error 2",
+                            "displayNameEvent": "Error 2 changed",
+                            "type": "int",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "c3fca233-95b9-4948-88c6-4c0f13cf53b1",
+                            "name": "model",
+                            "displayName": "Model",
+                            "displayNameEvent": "Model changed",
+                            "type": "QString",
+                            "defaultValue": "Unknown"
+                        },
+                        {
+                            "id": "e941ace5-fb7f-4dc2-b3f2-188233f4e934",
+                            "name": "firmware",
+                            "displayName": "Firmware",
+                            "displayNameEvent": "Firmware changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+                        {
+                            "id": "9a1b4316-ce01-4cd3-890f-a8c94b8b5029",
+                            "name": "serialnumber",
+                            "displayName": "Serial number",
+                            "displayNameEvent": "Serial number changed",
+                            "type": "QString",
+                            "defaultValue": ""
+                        },
+
+                        {
                             "id": "83ed0774-2a91-434d-b03c-d920d02f2981",
                             "name": "power",
-                            "displayName": "Power",
-                            "displayNameEvent": "Power changed",
-                            "displayNameAction": "Set Power",
+                            "displayName": "Charging enabled",
+                            "displayNameEvent": "Charging enabled changed",
+                            "displayNameAction": "Set charging enabled",
                             "type": "bool",
                             "writable": true,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "e5631593-f486-47cb-9951-b7597d0b769b",
+                            "name": "systemEnabled",
+                            "displayName": "System enabled",
+                            "displayNameEvent": "System enabled changed",
+                            "type": "bool",
                             "defaultValue": false
                         },
                         {
@@ -63,8 +113,8 @@
                         {
                             "id": "3b4d29f3-3101-47ad-90fd-269b6348783b",
                             "name": "plugState",
-                            "displayName": "Plug State",
-                            "displayNameEvent": "Plug State changed",
+                            "displayName": "Plug state",
+                            "displayNameEvent": "Plug state changed",
                             "type": "QString",
                             "defaultValue": "-"
                         },
@@ -73,9 +123,9 @@
                             "name": "current",
                             "displayName": "Current",
                             "displayNameEvent": "Current changed",
-                            "type": "int",
+                            "type": "double",
                             "unit": "Ampere",
-                            "defaultValue": 0
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "593656f0-babf-4308-8767-68f34e10fb15",
@@ -83,17 +133,17 @@
                             "displayName": "Maximal charging current",
                             "displayNameEvent": "Maximal charging current changed",
                             "displayNameAction": "Set maximal charging current",
-                            "type": "uint",
-                            "unit": "MilliAmpere",
-                            "defaultValue": 6000,
-                            "minValue": 6000,
-                            "maxValue": 63000,
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 6.00,
+                            "minValue": 6.00,
+                            "maxValue": 63.00,
                             "writable": true
                         },
                         {
                             "id": "3c7b83a0-0e42-47bf-9788-dde6aab5ceea",
                             "name": "maxChargingCurrentPercent",
-                            "displayName": "Maximal charging current in Percent",
+                            "displayName": "Maximal charging current in percent",
                             "displayNameEvent": "Maximal charging current percentage changed",
                             "type": "uint",
                             "unit": "Percentage",
@@ -102,8 +152,17 @@
                             "maxValue": 100
                         },
                         {
+                            "id": "08bb9872-8d63-49b0-a8ce-7a449341f13b",
+                            "name": "maxPossibleChargingCurrent",
+                            "displayName": "Maximum possible charging current",
+                            "displayNameEvent": "Maximum possible charging current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 6.00
+                        },
+                        {
                             "id": "4a2d75d8-a3a0-4b40-9ca7-e8b6f11d0ef9",
-                            "name": "U1",
+                            "name": "voltagePhase1",
                             "displayName": "Voltage phase 1",
                             "displayNameEvent": "Voltage phase 1 changed",
                             "type": "int",
@@ -112,8 +171,8 @@
                         },
                         {
                             "id": "c8344ca5-21ac-4cd1-8f4b-e5ed202c5862",
-                            "name": "U2",
-                            "displayName": "Voltage Phase 2",
+                            "name": "voltagePhase2",
+                            "displayName": "Voltage phase 2",
                             "displayNameEvent": "Voltage phase 2 changed",
                             "type": "int",
                             "unit": "Volt",
@@ -121,8 +180,8 @@
                         },
                         {
                             "id": "5f01e86c-0943-4849-a01a-db441916ebd5",
-                            "name": "U3",
-                            "displayName": "Voltage Phase 3",
+                            "name": "voltagePhase3",
+                            "displayName": "Voltage phase 3",
                             "displayNameEvent": "Voltage phase 3 changed",
                             "type": "int",
                             "unit": "Volt",
@@ -130,39 +189,56 @@
                         },
                         {
                             "id": "31ec17b0-11e3-4332-92b0-fea821cf024f",
-                            "name": "I1",
-                            "displayName": "Current Phase 1",
+                            "name": "currentPhase1",
+                            "displayName": "Current phase 1",
                             "displayNameEvent": "Current phase 1 changed",
-                            "type": "int",
-                            "unit": "MilliAmpere",
-                            "defaultValue": 0
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "cdc7e10a-0d0a-4e93-ad2c-d34ffca45c97",
-                            "name": "I2",
-                            "displayName": "Current Phase 2",
+                            "name": "currentPhase2",
+                            "displayName": "Current phase 2",
                             "displayNameEvent": "Current phase 2 changed",
-                            "type": "int",
-                            "unit": "MilliAmpere",
-                            "defaultValue": 0
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "da838dc8-85f0-4e55-b4b5-cb93a43b373d",
-                            "name": "I3",
-                            "displayName": "Current Phase 3",
+                            "name": "currentPhase3",
+                            "displayName": "Current phase 3",
                             "displayNameEvent": "Current phase 3 changed",
-                            "type": "int",
-                            "unit": "MilliAmpere",
-                            "defaultValue": 0
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0.00
                         },
                         {
                             "id": "7af9e93b-099d-4d9d-a480-9c0f66aecd8b",
-                            "name": "P",
+                            "name": "powerConsumption",
                             "displayName": "Power consumption",
                             "displayNameEvent": "Power consumtion changed",
-                            "type": "int",
-                            "unit": "MilliWatt",
-                            "defaultValue": 0
+                            "type": "double",
+                            "unit": "KiloWatt",
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "889c3c9a-96b4-4408-bd9a-d79e36ed9296",
+                            "name": "powerFactor",
+                            "displayName": "Power factor",
+                            "displayNameEvent": "Power factor changed",
+                            "type": "double",
+                            "unit": "Percentage",
+                            "defaultValue": 0.00
+                        },
+                        {
+                            "id": "1d30ce60-2ea0-450f-817e-5c88f59ebfbf",
+                            "name": "sessionId",
+                            "displayName": "Session ID",
+                            "displayNameEvent": "Session ID changed",
+                            "type": "uint",
+                            "defaultValue": ""
                         },
                         {
                             "id": "a6f35ea0-aaea-438b-b818-6d161762611e",
@@ -175,9 +251,9 @@
                         },
                         {
                             "id": "8e277efe-21ef-4536-bfc0-901b32d44d7c",
-                            "name": "EP",
-                            "displayName": "Present energy",
-                            "displayNameEvent": "Present energy changed",
+                            "name": "sessionEnergy",
+                            "displayName": "Session energy",
+                            "displayNameEvent": "Session energy changed",
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
@@ -190,6 +266,43 @@
                             "type": "double",
                             "unit": "KiloWattHour",
                             "defaultValue": 0
+                        },
+                        {
+                            "id": "96b2d176-6460-4109-8824-3af4679c6573",
+                            "name": "outputX2",
+                            "displayName": "Output X2",
+                            "displayNameEvent": "Output X2 changed",
+                            "displayNameAction": "Set output X2",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "ba600276-8b36-4404-b8ec-415245e5bc15",
+                            "name": "input",
+                            "displayName": "Input",
+                            "displayNameEvent": "Input changed",
+                            "type": "bool",
+                            "defaultValue": false
+                        },
+                        {
+                            "id": "3421ecf9-c95f-4dc1-ad0c-144e9b6ae056",
+                            "name": "uptime",
+                            "displayName": "Uptime",
+                            "displayNameEvent": "Uptime changed",
+                            "type": "int",
+                            "unit": "Minutes",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "f1758c5c-2c02-41cb-93ec-b778a3c78d28",
+                            "name": "failsafeMode",
+                            "displayName": "Failsafe mode",
+                            "displayNameEvent": "Failsafe mode changed",
+                            "displayNameAction": "Set failsafe mode",
+                            "writable": true,
+                            "type": "bool",
+                            "defaultValue": false
                         }
                     ],
                     "actionTypes": [
@@ -204,6 +317,38 @@
                                     "displayName": "Display message",
                                     "type": "QString",
                                     "defaultValue": ""
+                                }
+                            ]
+                        }
+                    ],
+                    "eventTypes": [
+                        {
+                            "id": "dac02c37-f051-481a-ae99-1de0885ef37a",
+                            "name": "chargingSessionFinished",
+                            "displayName": "Charging session finished",
+                            "paramTypes": [
+                                {
+                                    "id": "33446eae-f2cc-4cf2-af29-b3a45e4b91c0",
+                                    "name": "id",
+                                    "displayName": "ID",
+                                    "type": "int",
+                                    "defaultValue": "0"
+                                },
+                                {
+                                    "id": "60494d6f-853b-42b8-894e-108a52ed6feb",
+                                    "name": "duration",
+                                    "displayName": "Duration",
+                                    "type": "int",
+                                    "unit": "Minutes",
+                                    "defaultValue": 0
+                                },
+                                {
+                                    "id": "c8de58b6-b671-4fee-b552-d2c14a37a769",
+                                    "name": "energy",
+                                    "displayName": "Energy",
+                                    "type": "double",
+                                    "defaultValue": 0.00,
+                                    "unit": "KiloWattHour"
                                 }
                             ]
                         }

@@ -34,6 +34,7 @@
 #include "integrations/integrationplugin.h"
 #include "plugintimer.h"
 #include "kecontact.h"
+#include "kecontactdatalayer.h"
 #include "discovery.h"
 #include "host.h"
 
@@ -41,6 +42,7 @@
 #include <QNetworkReply>
 #include <QUdpSocket>
 #include <QDateTime>
+#include <QUdpSocket>
 
 class IntegrationPluginKeba : public IntegrationPlugin
 {
@@ -52,6 +54,7 @@ class IntegrationPluginKeba : public IntegrationPlugin
 public:
     explicit IntegrationPluginKeba();
 
+    void init() override;
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
 
@@ -59,14 +62,18 @@ public:
     void thingRemoved(Thing* thing) override;
 
     void executeAction(ThingActionInfo *info) override;
-    void updateData();
 
 private:
-    PluginTimer *m_pluginTimer = nullptr;
+    PluginTimer *m_updateTimer = nullptr;
+    PluginTimer *m_reconnectTimer = nullptr;
+
+    KeContactDataLayer *m_kebaData = nullptr;
+
+    Discovery *m_discovery = nullptr;
     QHash<ThingId, KeContact *> m_kebaDevices;
-    QHash<KeContact *, ThingSetupInfo *> m_asyncSetup;
+    QHash<ThingId, int> m_lastSessionId;
+
     QHash<QUuid, ThingActionInfo *> m_asyncActions;
-    QHash<ThingId, QDateTime> m_chargingSessionStartTime;
 
     void setDeviceState(Thing *device, KeContact::State state);
     void setDevicePlugState(Thing *device, KeContact::PlugState plugState);
@@ -74,9 +81,9 @@ private:
 private slots:
     void onConnectionChanged(bool status);
     void onCommandExecuted(QUuid requestId, bool success);
-    void onReportOneReceived(const KeContact::ReportOne &reportOne);
     void onReportTwoReceived(const KeContact::ReportTwo &reportTwo);
     void onReportThreeReceived(const KeContact::ReportThree &reportThree);
+    void onReport1XXReceived(int reportNumber, const KeContact::Report1XX &report);
     void onBroadcastReceived(KeContact::BroadcastType type, const QVariant &content);
 };
 

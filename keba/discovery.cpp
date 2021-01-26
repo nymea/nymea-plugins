@@ -109,7 +109,7 @@ void Discovery::discoveryFinished(int exitCode, QProcess::ExitStatus exitStatus)
     QXmlStreamReader reader(data);
 
     int foundHosts = 0;
-
+    qCDebug(dcKebaKeContact()) << "nmap finished network discovery:";
     while (!reader.atEnd() && !reader.hasError()) {
         QXmlStreamReader::TokenType token = reader.readNext();
         if(token == QXmlStreamReader::StartDocument)
@@ -143,7 +143,7 @@ void Discovery::discoveryFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
             if (isUp) {
                 foundHosts++;
-                qCDebug(dcKebaKeContact()) << "Have host:" << address;
+                qCDebug(dcKebaKeContact()) << "     - host:" << address;
 
                 Host *host = new Host();
                 host->setAddress(address);
@@ -264,7 +264,7 @@ void Discovery::finishDiscovery()
     qDeleteAll(m_scanResults);
     m_scanResults.clear();
 
-    qCDebug(dcKebaKeContact()) << "Emitting device discovered for" << hosts.count() << "devices";
+    qCDebug(dcKebaKeContact()) << "Found" << hosts.count() << "network devices";
     m_timeoutTimer.stop();
     emit finished(hosts);
 }
