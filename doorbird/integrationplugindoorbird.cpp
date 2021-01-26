@@ -32,7 +32,6 @@
 #include "plugininfo.h"
 
 #include "platform/platformzeroconfcontroller.h"
-#include "network/zeroconf/zeroconfservicebrowser.h"
 #include "network/zeroconf/zeroconfserviceentry.h"
 
 #include <QNetworkAccessManager>
@@ -44,15 +43,17 @@ IntegrationPluginDoorbird::IntegrationPluginDoorbird()
 {
 }
 
+void IntegrationPluginDoorbird::init()
+{
+    m_serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_axis-video._tcp");
+}
 
 void IntegrationPluginDoorbird::discoverThings(ThingDiscoveryInfo *info)
 {
     if (info->thingClassId() == doorBirdThingClassId) {
-        ZeroConfServiceBrowser *serviceBrowser = hardwareManager()->zeroConfController()->createServiceBrowser("_axis-video._tcp");
-        connect(info, &QObject::destroyed, serviceBrowser, &QObject::deleteLater);
 
-        QTimer::singleShot(5000, this, [this, info, serviceBrowser](){
-            foreach (const ZeroConfServiceEntry serviceEntry, serviceBrowser->serviceEntries()) {
+        QTimer::singleShot(5000, info, [this, info](){
+            foreach (const ZeroConfServiceEntry serviceEntry, m_serviceBrowser->serviceEntries()) {
                 if (serviceEntry.hostName().startsWith("bha-")) {
                     qCDebug(dcDoorBird) << "Found DoorBird Thing, name: " << serviceEntry.name() << "\n   host address:" << serviceEntry.hostAddress().toString() << "\n    text:" << serviceEntry.txt() << serviceEntry.protocol() << serviceEntry.serviceType();
                     ThingDescriptor ThingDescriptor(doorBirdThingClassId, serviceEntry.name(), serviceEntry.hostAddress().toString());
@@ -79,7 +80,6 @@ void IntegrationPluginDoorbird::discoverThings(ThingDiscoveryInfo *info)
                     info->addThingDescriptor(ThingDescriptor);
                 }
             }
-            serviceBrowser->deleteLater();
             info->finish(Thing::ThingErrorNoError);
         });
         return;
@@ -92,6 +92,7 @@ void IntegrationPluginDoorbird::discoverThings(ThingDiscoveryInfo *info)
 
 void IntegrationPluginDoorbird::startPairing(ThingPairingInfo *info)
 {
+    qCDebug(dcDoorBird()) << "Start pairing";
     if (info->thingClassId() == doorBirdThingClassId) {
         info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter username and password for the DoorBird Thing"));
         return;
@@ -104,25 +105,18 @@ void IntegrationPluginDoorbird::startPairing(ThingPairingInfo *info)
 
 void IntegrationPluginDoorbird::confirmPairing(ThingPairingInfo *info, const QString &username, const QString &password)
 {
+    qCDebug(dcDoorBird()) << "Confirm pairing";
     if (info->thingClassId() == doorBirdThingClassId) {
         QHostAddress address = QHostAddress(info->params().paramValue(doorBirdThingAddressParamTypeId).toString());
 
         Doorbird *doorbird = new Doorbird(address, this);
-        connect(doorbird, &Doorbird::deviceConnected, this, &IntegrationPluginDoorbird::onDoorBirdConnected);
-        connect(doorbird, &Doorbird::eventReveiced, this, &IntegrationPluginDoorbird::onDoorBirdEvent);
-        connect(doorbird, &Doorbird::requestSent, this, &IntegrationPluginDoorbird::onDoorBirdRequestSent);
-        connect(doorbird, &Doorbird::sessionIdReceived, this, &IntegrationPluginDoorbird::onSessionIdReceived);
-        m_doorbirdConnections.insert(info->thingId(), doorbird);
-        m_pendingPairings.insert(doorbird, info);
         doorbird->getSession(username, password);
-        connect(info, &ThingPairingInfo::aborted, this, [this, info]{
-            if (m_pendingPairings.values().contains(info)) {
-                Doorbird *doorbird = m_pendingPairings.key(info);
-                m_pendingPairings.remove(doorbird);
-                doorbird->deleteLater();
-            }
-            m_doorbirdConnections.remove(info->thingId());
+        connect(doorbird, &Doorbird::sessionIdReceived, info, [info, doorbird, this] {
+            qCDebug(dcDoorBird()) << "Session id received, pairing successfull";
+            m_pairingConnections.insert(info->thingId(), doorbird);
+            info->finish(Thing::ThingErrorNoError);
         });
+        connect(info, &ThingPairingInfo::aborted, doorbird, &Doorbird::deleteLater);
 
         pluginStorage()->beginGroup(info->thingId().toString());
         pluginStorage()->setValue("username", username);
@@ -137,36 +131,46 @@ void IntegrationPluginDoorbird::confirmPairing(ThingPairingInfo *info, const QSt
 
 void IntegrationPluginDoorbird::setupThing(ThingSetupInfo *info)
 {
+    qCDebug(dcDoorBird()) << "Setup thing" << info->thing()->name();
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == doorBirdThingClassId) {
-        QHostAddress address = QHostAddress(thing->paramValue(doorBirdThingAddressParamTypeId).toString());
 
         if (m_doorbirdConnections.contains(thing->id())) {
+            qCDebug(dcDoorBird()) << "Reconfigure, cleaning up";
+            Doorbird *doorbird = m_doorbirdConnections.take(thing->id());
+            if (doorbird)
+                doorbird->deleteLater();
+        }
+
+        Doorbird *doorbird;
+        if (m_pairingConnections.contains(thing->id())) {
+            qCDebug(dcDoorBird()) << "Setup after pairing process, not creating new connection";
+            doorbird = m_pairingConnections.value(thing->id());
+            m_doorbirdConnections.insert(thing->id(), doorbird);
             info->finish(Thing::ThingErrorNoError);
         } else {
+            QHostAddress address = QHostAddress(thing->paramValue(doorBirdThingAddressParamTypeId).toString());
+
             pluginStorage()->beginGroup(thing->id().toString());
             QString username = pluginStorage()->value("username").toString();
             QString password = pluginStorage()->value("password").toString();
             pluginStorage()->endGroup();
 
-            qCDebug(dcDoorBird()) << "Thing setup" << thing->name() << username << password;
-            Doorbird *doorbird = new Doorbird(address, this);
-            connect(doorbird, &Doorbird::deviceConnected, this, &IntegrationPluginDoorbird::onDoorBirdConnected);
-            connect(doorbird, &Doorbird::eventReveiced, this, &IntegrationPluginDoorbird::onDoorBirdEvent);
-            connect(doorbird, &Doorbird::requestSent, this, &IntegrationPluginDoorbird::onDoorBirdRequestSent);
-            connect(doorbird, &Doorbird::sessionIdReceived, this, &IntegrationPluginDoorbird::onSessionIdReceived);
-            m_doorbirdConnections.insert(thing->id(), doorbird);
-            m_pendingThingSetups.insert(doorbird, info);
-            doorbird->getSession(username, password);
-            connect(info, &ThingSetupInfo::aborted, this, [thing, doorbird, this] {
-                if (!doorbird) {
-                    doorbird->deleteLater();
-                }
-                m_doorbirdConnections.remove(thing->id());
-                m_pendingPairings.remove(doorbird);
+            qCDebug(dcDoorBird()) << "Creating new Doorbird conection" << username << password.left(4)+"******";
+            doorbird = new Doorbird(address, this);
+
+            connect(doorbird, &Doorbird::sessionIdReceived, info, [info, thing, doorbird, this] {
+                 qCDebug(dcDoorBird()) << "Session id received, thing setup successfull";
+                m_doorbirdConnections.insert(thing->id(), doorbird);
+                info->finish(Thing::ThingErrorNoError);
             });
+            doorbird->getSession(username, password);
+            connect(info, &ThingSetupInfo::aborted, doorbird, &Doorbird::deleteLater);
         }
+        connect(doorbird, &Doorbird::deviceConnected, this, &IntegrationPluginDoorbird::onDoorBirdConnected);
+        connect(doorbird, &Doorbird::eventReveiced, this, &IntegrationPluginDoorbird::onDoorBirdEvent);
+        connect(doorbird, &Doorbird::requestSent, this, &IntegrationPluginDoorbird::onDoorBirdRequestSent);
     } else {
         qCWarning(dcDoorBird()) << "Unhandled Thing class" << info->thing()->thingClass();
         info->finish(Thing::ThingErrorThingClassNotFound);
@@ -176,8 +180,9 @@ void IntegrationPluginDoorbird::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginDoorbird::postSetupThing(Thing *thing)
 {
+    qCDebug(dcDoorBird()) << "Post setup thing" << thing->name();
     if (thing->thingClassId() == doorBirdThingClassId) {
-        thing->setStateValue(doorBirdConnectedStateTypeId, true); //since we checked the connection in the ThingSetup
+        thing->setStateValue(doorBirdConnectedStateTypeId, true); //since we checked the connection inside ThingSetup
         Doorbird *doorbird =  m_doorbirdConnections.value(thing->id());
         doorbird->connectToEventMonitor();
         doorbird->infoRequest();
@@ -195,7 +200,7 @@ void IntegrationPluginDoorbird::executeAction(ThingActionInfo *info)
     if (thing->thingClassId() == doorBirdThingClassId) {
         Doorbird *doorbird = m_doorbirdConnections.value(thing->id());
         if (!doorbird) {
-            qCWarning(dcDoorBird()) << "Doorbird object not found" << thing->name();
+            qCWarning(dcDoorBird()) << "Doorbird connection not found" << thing->name();
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
@@ -227,6 +232,7 @@ void IntegrationPluginDoorbird::executeAction(ThingActionInfo *info)
 
 void IntegrationPluginDoorbird::thingRemoved(Thing *thing)
 {
+    qCDebug(dcDoorBird()) << "Removing thing" << thing->name();
     if (thing->thingClassId() == doorBirdThingClassId) {
         Doorbird *doorbirdConnection = m_doorbirdConnections.take(thing->id());
         doorbirdConnection->deleteLater();
@@ -237,8 +243,10 @@ void IntegrationPluginDoorbird::onDoorBirdConnected(bool status)
 {
     Doorbird *doorbird = static_cast<Doorbird *>(sender());
     Thing *thing = myThings().findById(m_doorbirdConnections.key(doorbird));
-    if (!thing)
+    if (!thing) {
+        qCWarning(dcDoorBird()) << "Doorbird connection status changed, associated thing not found";
         return;
+    }
 
     thing->setStateValue(doorBirdConnectedStateTypeId, status);
 }
@@ -247,13 +255,17 @@ void IntegrationPluginDoorbird::onDoorBirdEvent(Doorbird::EventType eventType, b
 {
     Doorbird *doorbird = static_cast<Doorbird *>(sender());
     Thing *thing = myThings().findById(m_doorbirdConnections.key(doorbird));
-    if (!thing)
+    if (!thing) {
+        qCWarning(dcDoorBird()) << "Doorbird event received, associated thing not found";
         return;
+    }
 
     switch (eventType) {
     case Doorbird::EventType::Rfid:
+        qCDebug(dcDoorBird()) << "RFID event received, this is not yet handled";
         break;
     case Doorbird::EventType::Input:
+        qCDebug(dcDoorBird()) << "Input event received, this is not yet handled";
         break;
     case Doorbird::EventType::Motion:
         thing->setStateValue(doorBirdIsPresentStateTypeId, status);
@@ -271,36 +283,8 @@ void IntegrationPluginDoorbird::onDoorBirdEvent(Doorbird::EventType eventType, b
 
 void IntegrationPluginDoorbird::onDoorBirdRequestSent(QUuid requestId, bool success)
 {
-    Doorbird *doorbird = static_cast<Doorbird *>(sender());
-
     if (m_asyncActions.contains(requestId)) {
         ThingActionInfo* actionInfo = m_asyncActions.take(requestId);
         actionInfo->finish(success ? Thing::ThingErrorNoError : Thing::ThingErrorInvalidParameter);
-    }
-
-    if (m_pendingPairings.contains(doorbird) && !success) {
-        ThingPairingInfo *info = m_pendingPairings.take(doorbird);
-        info->finish(Thing::ThingErrorAuthenticationFailure, tr("Wrong username or password"));
-    }
-
-    if (m_pendingThingSetups.contains(doorbird) && !success) {
-        ThingSetupInfo *info = m_pendingThingSetups.take(doorbird);
-        info->finish(Thing::ThingErrorAuthenticationFailure, tr("Wrong username or password"));
-    }
-}
-
-void IntegrationPluginDoorbird::onSessionIdReceived(const QString &sessionId)
-{
-    Q_UNUSED(sessionId);
-    Doorbird *doorbird = static_cast<Doorbird *>(sender());
-
-    if (m_pendingPairings.contains(doorbird)) {
-        ThingPairingInfo *info = m_pendingPairings.take(doorbird);
-        info->finish(Thing::ThingErrorNoError);
-    }
-
-    if (m_pendingThingSetups.contains(doorbird)) {
-        ThingSetupInfo *info = m_pendingThingSetups.take(doorbird);
-        info->finish(Thing::ThingErrorNoError);
     }
 }
