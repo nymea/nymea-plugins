@@ -1141,6 +1141,64 @@
                             "defaultValue": ""
                         }
                     ]
+                },
+                {
+                    "id": "08771aea-70fe-481d-97cd-f11f21e3e24d",
+                    "name": "ampereMeter",
+                    "displayName": "Ampere meter",
+                    "createMethods": ["user"],
+                    "interfaces": ["amperemeter"],
+                    "settingsTypes": [
+                        {
+                            "id": "ca23d1ee-acaf-46c6-9ee9-570185211bd4",
+                            "name": "minAmpere",
+                            "displayName": "Minimum ampere",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "Ampere"
+                        },
+                        {
+                            "id": "f6faf16b-4b7e-47a6-a4d5-078c8d186058",
+                            "name": "maxAmpere",
+                            "displayName": "Maximum pressure",
+                            "type": "double",
+                            "defaultValue": 100,
+                            "unit": "Ampere"
+                        },
+                        {
+                            "id": "f5b32629-2f09-4358-a0a6-5d603a4fca83",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                     ],
+                     "stateTypes": [
+                        {
+                            "id": "cbba3ae6-2d08-4ed1-99b3-4f4502c0eb5b",
+                            "name": "electricCurrent",
+                            "displayName": "Current",
+                            "displayNameEvent": "Current changed",
+                            "type": "double",
+                            "unit": "Ampere",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "77573ed4-fa97-410d-ae83-cb07c921d8b8",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
                 }
             ]
         }
