@@ -693,6 +693,21 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
             return;
         }
         Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+    } else if (thing->thingClassId() == ampereMeterThingClassId) {
+        if (action.actionTypeId() ==  ampereMeterInputActionTypeId) {
+            double value = info->action().param(ampereMeterInputActionInputParamTypeId).value().toDouble();
+            thing->setStateValue(ampereMeterInputStateTypeId, value);
+            double min = info->thing()->setting(ampereMeterSettingsMinAmpereParamTypeId).toDouble();
+            double max = info->thing()->setting(ampereMeterSettingsMaxAmpereParamTypeId).toDouble();
+            double newValue = mapDoubleValue(value, 0, 100, min, max);
+            double roundingFactor = qPow(10, info->thing()->setting(ampereMeterSettingsAccuracyParamTypeId).toInt());
+            newValue = qRound(newValue * roundingFactor) / roundingFactor;
+            thing->setStateValue(ampereMeterCurrentStateTypeId, newValue);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else {
+             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
     } else {
         Q_ASSERT_X(false, "executeAction", QString("Unhandled thingClassId: %1").arg(thing->thingClassId().toString()).toUtf8());
     }
