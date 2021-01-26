@@ -124,7 +124,7 @@
                             "name": "pressure",
                             "displayName": "pressure",
                             "displayNameEvent": "pressure changed",
-                            "unit": "HectoPascal",
+                            "unit": "MilliBar",
                             "type": "double",
                             "defaultValue": 0
                         },
