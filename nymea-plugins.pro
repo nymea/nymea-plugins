@@ -51,7 +51,6 @@ PLUGIN_DIRS = \
     senic               \
     serialportcommander \
     simulation          \
-    snapd               \
     somfytahoma         \
     sonos               \
     sunposition         \
