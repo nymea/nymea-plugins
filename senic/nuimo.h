@@ -76,12 +76,10 @@ private:
     BluetoothLowEnergyDevice *m_bluetoothDevice = nullptr;
 
     QLowEnergyService *m_deviceInfoService = nullptr;
-    QLowEnergyService *m_batteryService = nullptr;
     QLowEnergyService *m_inputService = nullptr;
     QLowEnergyService *m_ledMatrixService = nullptr;
 
     QLowEnergyCharacteristic m_deviceInfoCharacteristic;
-    QLowEnergyCharacteristic m_batteryCharacteristic;
     QLowEnergyCharacteristic m_ledMatrixCharacteristic;
     QLowEnergyCharacteristic m_inputButtonCharacteristic;
     QLowEnergyCharacteristic m_inputSwipeCharacteristic;
@@ -99,7 +97,6 @@ signals:
     void connectedChanged(bool connected);
     void buttonPressed();
     void buttonLongPressed();
-    void batteryValueChanged(const uint &percentage);
     void swipeDetected(const SwipeDirection &direction);
     void rotationValueChanged(const uint &value);
     void deviceInformationChanged(const QString &firmwareRevision, const QString &hardwareRevision, const QString &softwareRevision);
@@ -110,9 +107,6 @@ private slots:
     void onServiceDiscoveryFinished();
 
     void onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceState &state);
-
-    void onBatteryServiceStateChanged(const QLowEnergyService::ServiceState &state);
-    void onBatteryCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
 
     void onInputServiceStateChanged(const QLowEnergyService::ServiceState &state);
     void onInputCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
