@@ -91,15 +91,20 @@ bool IntegrationPluginZigbeeGeneric::handleNode(ZigbeeNode *node, const QUuid &n
             handled = true;
         }
 
-        // Check on/off plug
-        if ((endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileLightLink &&
-             endpoint->deviceId() == Zigbee::LightLinkDevice::LightLinkDeviceOnOffPlugin) ||
-                (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation &&
-                 endpoint->deviceId() == Zigbee::HomeAutomationDeviceOnOffPlugin)) {
+        // Check on/off thing
+        if ((endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileLightLink && endpoint->deviceId() == Zigbee::LightLinkDevice::LightLinkDeviceOnOffPlugin) ||
+                (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceOnOffPlugin) ||
+                (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceMainPowerOutlet) ||
+                (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceSmartPlug)) {
 
-            qCDebug(dcZigbeeGeneric()) << "Handeling power socket endpoint for" << node << endpoint;
-            createThing(powerSocketThingClassId, networkUuid, node, endpoint);
-            handled = true;
+            // Simple on/off device
+            if (endpoint->hasInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)) {
+                // FIXME: create powersocket with metering for SmartPlug device ID
+                qCDebug(dcZigbeeGeneric()) << "Handeling power socket endpoint for" << node << endpoint;
+                createThing(powerSocketThingClassId, networkUuid, node, endpoint);
+                initSimplePowerSocket(node, endpoint);
+                handled = true;
+            }
         }
 
         // Check door lock
@@ -187,7 +192,7 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
             qCWarning(dcZigbeeGeneric()) << "Failed to read thermostat cluster";
             return;
         }
-//        thermostatCluster->attribute(ZigbeeClusterLibrary::ClusterIdThermostat);
+        //        thermostatCluster->attribute(ZigbeeClusterLibrary::ClusterIdThermostat);
 
         // We need to read them from the lamp
         ZigbeeClusterReply *reply = thermostatCluster->readAttributes({ZigbeeClusterThermostat::AttributeLocalTemperature, ZigbeeClusterThermostat::AttributeOccupiedHeatingSetpoint});
@@ -239,15 +244,15 @@ void IntegrationPluginZigbeeGeneric::setupThing(ThingSetupInfo *info)
             });
 
             connect(node, &ZigbeeNode::reachableChanged, thing, [=](bool reachable){
-               if (reachable) {
-                   ZigbeeClusterReply *reply = onOffCluster->readAttributes({ZigbeeClusterOnOff::AttributeOnOff});
-                   connect(reply, &ZigbeeClusterReply::finished, thing, [=](){
-                       if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
-                           qCWarning(dcZigbeeGeneric()) << "Reading attribute from" << thing << "finished with error" << reply->error();
-                       }
-                       // Note: the state will be updated using the power changed signal from the cluster
-                   });
-               }
+                if (reachable) {
+                    ZigbeeClusterReply *reply = onOffCluster->readAttributes({ZigbeeClusterOnOff::AttributeOnOff});
+                    connect(reply, &ZigbeeClusterReply::finished, thing, [=](){
+                        if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+                            qCWarning(dcZigbeeGeneric()) << "Reading attribute from" << thing << "finished with error" << reply->error();
+                        }
+                        // Note: the state will be updated using the power changed signal from the cluster
+                    });
+                }
             });
         } else {
             qCWarning(dcZigbeeGeneric()) << "Could not find the OnOff input cluster on" << thing << endpoint;
@@ -448,6 +453,23 @@ void IntegrationPluginZigbeeGeneric::createThing(const ThingClassId &thingClassI
     params.append(Param(m_manufacturerIdParamTypeIds[thingClassId], endpoint->manufacturerName()));
     descriptor.setParams(params);
     emit autoThingsAppeared({descriptor});
+}
+
+void IntegrationPluginZigbeeGeneric::initSimplePowerSocket(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    // Get the on/off server cluster from the endpoint
+    ZigbeeClusterOnOff *onOffCluster = endpoint->inputCluster<ZigbeeClusterOnOff>(ZigbeeClusterLibrary::ClusterIdOnOff);
+    if (!onOffCluster)
+        return;
+
+    qCDebug(dcZigbeeGeneric()) << "Reading on/off power value for" << node << endpoint;
+    ZigbeeClusterReply *reply = onOffCluster->readAttributes({ZigbeeClusterOnOff::AttributeOnOff});
+    connect(reply, &ZigbeeClusterReply::finished, node, [=](){
+        if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
+            qCWarning(dcZigbeeGeneric()) << "Failed to read on/off cluster attribute from" << node << endpoint << reply->error();
+            return;
+        }
+    });
 }
 
 void IntegrationPluginZigbeeGeneric::initializeDoorLock(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
