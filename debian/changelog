@@ -1,7 +1,57 @@
-nymea-plugins (0.26.0) UNRELEASED; urgency=medium
+nymea-plugins (0.26.0) xenial; urgency=medium
 
+  [ Michael Zanetti ]
+  * New Plugin: PushNotifications
 
- -- Michael Zanetti <michael.zanetti@nymea.io>  Mon, 04 Jan 2021 19:37:00 +0100
+  [ Simon Seres ]
+  * Nuimo: Remove Battery Critical state
+
+  [ Michael Zanetti ]
+  * Nuki: Always clean up after a failed setup
+
+  [ Bernhard Trinnes ]
+  * Doorbird: Improve setup and reconfiguration
+
+  [ Michael Zanetti ]
+  * Thermostats: Adjust to new thermostat interface
+  * PhilipsHue: Add better support for the Hue Smart plug
+
+  [ Simon Stürz ]
+  * ZigbeeGeneric: Extend generic power socket
+
+  [ Michael Zanetti ]
+  * FlowerCare: Add missing unit to batteryLevel state
+  * Adjust to new logging and filter options
+  * 0.26
+  * Simulation: Add a simulated water sensor
+  * Simulation: Add simulated venetian blinds
+  * ZigbeePhilipsHue: Add support for the Hue Smart button
+
+  [ Bernhard Trinnes ]
+  * Keba: Rework
+
+  [ Michael Zanetti ]
+  * GenericThings: Add a generic door/window sensor
+  * GPIO: Remove button interface from GPIO input
+
+  [ Bernhard Trinnes ]
+  * Fronius: Storage battery critical only when not charging
+
+  [ Michael Zanetti ]
+  * Snapd: Remove the snap plugin
+  * Tasmota: Add support for the gneric I/O mechanism
+
+  [ Bernhard Trinnes ]
+  * Simulation:  EV Charger update interface
+
+  [ Simon Stürz ]
+  * Nuki: Add support for Nuki 2.0
+
+  [ Michael Zanetti ]
+  * Tuya: Poll the cloud even less frequently to avoid rate limits
+  * TP-Link: Add support for TP-Link Kasa Power Strip HS300
+
+ -- Jenkins <jenkins@nymea.io>  Tue, 26 Jan 2021 10:30:00 +0100
 
 nymea-plugins (0.25.0) xenial; urgency=medium
 
