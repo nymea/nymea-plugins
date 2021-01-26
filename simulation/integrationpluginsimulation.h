@@ -54,6 +54,16 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
+
+    struct SimulatedSong {
+        QString title;
+        QString artist;
+        QString album;
+        QString artwork;
+    };
+    QList<SimulatedSong> m_simulatedSongs;
+    void setSong(Thing *thing, SimulatedSong song);
+
     PluginTimer *m_pluginTimer20Seconds = nullptr;
     PluginTimer *m_pluginTimer5Min = nullptr;
 

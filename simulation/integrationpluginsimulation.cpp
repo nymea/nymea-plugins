@@ -59,6 +59,23 @@ void IntegrationPluginSimulation::init()
     // Change some values every 5 min
     m_pluginTimer5Min = hardwareManager()->pluginTimerManager()->registerTimer(300);
     connect(m_pluginTimer5Min, &PluginTimer::timeout, this, &IntegrationPluginSimulation::onPluginTimer5Minutes);
+
+    SimulatedSong song;
+    song.title = "Slow Mover";
+    song.album = "Slow Mover";
+    song.artist = "Angie McMahon";
+    song.artwork = "https://i.scdn.co/image/ab67616d0000b273d60ec7543d3ff6db4ca8ab0a";
+    m_simulatedSongs.append(song);
+    song.title = "Beverly";
+    song.album = "Dirty Pictures (Part 2)";
+    song.artist = "Low Cut Connie";
+    song.artwork = "https://i.scdn.co/image/ab67616d0000b273ba55b0c92f37b30a24619b0b";
+    m_simulatedSongs.append(song);
+    song.title = "Even the Darkness Has Arms";
+    song.album = "Sleeping Operator";
+    song.artist = "The Barr Brothers";
+    song.artwork = "https://i.scdn.co/image/ab67616d0000b273816d7445282f08c6cf117911";
+    m_simulatedSongs.append(song);
 }
 
 void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
@@ -131,6 +148,11 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
     }
     if (thing->thingClassId() == waterSensorThingClassId) {
         m_simulationTimers.value(thing)->start(10000);
+    }
+    if (thing->thingClassId() == audioPlayerThingClassId) {
+       thing->setStateValue(audioPlayerConnectedStateTypeId, true);
+       thing->setStateValue(audioPlayerPlaybackStatusStateTypeId, "Stopped");
+       setSong(thing, SimulatedSong());
     }
     info->finish(Thing::ThingErrorNoError);
 }
@@ -574,7 +596,93 @@ void IntegrationPluginSimulation::executeAction(ThingActionInfo *info)
         }
     }
 
+    if (thing->thingClassId() == audioPlayerThingClassId) {
+        if (action.actionTypeId() == audioPlayerMuteActionTypeId) {
+            bool mute = action.paramValue(audioPlayerMuteActionMuteParamTypeId).toBool();
+            thing->setStateValue(audioPlayerMuteStateTypeId, mute);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerPlaybackStatusActionTypeId) {
+            QString playbackStatus = action.paramValue(audioPlayerPlaybackStatusActionPlaybackStatusParamTypeId).toString();
+            if (playbackStatus == "Playing") {
+                SimulatedSong song = m_simulatedSongs.takeFirst();
+                m_simulatedSongs.append(song);
+                setSong(thing, song);
+            }
+            thing->setStateValue(audioPlayerPlaybackStatusStateTypeId, playbackStatus);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerPlayActionTypeId) {
+            if (thing->stateValue(audioPlayerPlaybackStatusStateTypeId).toString() == "Stopped") {
+                setSong(thing, m_simulatedSongs.first());
+            }
+            thing->setStateValue(audioPlayerPlaybackStatusStateTypeId, "Playing");
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerPauseActionTypeId) {
+            thing->setStateValue(audioPlayerPlaybackStatusStateTypeId, "Paused");
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerStopActionTypeId) {
+            thing->setStateValue(audioPlayerPlaybackStatusStateTypeId, "Stopped");
+            setSong(thing, SimulatedSong());
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerSkipNextActionTypeId) {
+            SimulatedSong song = m_simulatedSongs.takeFirst();
+            m_simulatedSongs.append(song);
+            setSong(thing, song);
+        }
+        if (action.actionTypeId() == audioPlayerSkipBackActionTypeId) {
+            SimulatedSong song = m_simulatedSongs.takeLast();
+            m_simulatedSongs.prepend(song);
+            setSong(thing, song);
+        }
+        if (action.actionTypeId() == audioPlayerShuffleActionTypeId) {
+            bool shuffle = action.paramValue(audioPlayerShuffleActionShuffleParamTypeId).toBool();
+            thing->setStateValue(audioPlayerShuffleStateTypeId, shuffle);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerRepeatActionTypeId) {
+            QString repeat = action.paramValue(audioPlayerRepeatActionRepeatParamTypeId).toString();
+            thing->setStateValue(audioPlayerRepeatStateTypeId, repeat);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerVolumeActionTypeId) {
+            uint volume = action.paramValue(audioPlayerVolumeActionVolumeParamTypeId).toUInt();
+            thing->setStateValue(audioPlayerVolumeStateTypeId, volume);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerDecreaseVolumeActionTypeId) {
+            int volume = thing->stateValue(audioPlayerVolumeStateTypeId).toInt();
+            int stepSize = action.paramValue(audioPlayerDecreaseVolumeActionStepParamTypeId).toInt();
+            volume -= stepSize;
+            if (volume < 0)
+                volume = 0;
+            thing->setStateValue(audioPlayerVolumeStateTypeId, volume);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == audioPlayerIncreaseVolumeActionTypeId) {
+            int volume = thing->stateValue(audioPlayerVolumeStateTypeId).toInt();
+            int stepSize = action.paramValue(audioPlayerIncreaseVolumeActionStepParamTypeId).toInt();
+            volume += stepSize;
+            if (volume > 100)
+                volume = 100;
+            thing->setStateValue(audioPlayerVolumeStateTypeId, volume);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+    }
     qCWarning(dcSimulation()) << "Unhandled thing class" << thing->thingClassId() << "for" << thing->name();
+}
+
+void IntegrationPluginSimulation::setSong(Thing *thing, IntegrationPluginSimulation::SimulatedSong song)
+{
+    if (thing->thingClassId() == audioPlayerThingClassId) {
+        thing->setStateValue(audioPlayerTitleStateTypeId, song.title);
+        thing->setStateValue(audioPlayerArtistStateTypeId, song.artist);
+        thing->setStateValue(audioPlayerArtworkStateTypeId, song.artwork);
+        thing->setStateValue(audioPlayerCollectionStateTypeId, song.album);
+    }
 }
 
 int IntegrationPluginSimulation::generateRandomIntValue(int min, int max)
@@ -837,16 +945,16 @@ void IntegrationPluginSimulation::simulationTimerTimeout()
         Event event(barcodeScannerCodeScannedEventTypeId, thing->id(), params);
         emit emitEvent(event);
     } else if (thing->thingClassId() == contactSensorThingClassId) {
-       thing->setStateValue(contactSensorClosedStateTypeId, !thing->stateValue(contactSensorClosedStateTypeId).toBool());
-       thing->setStateValue(contactSensorBatteryLevelStateTypeId, thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt()-1);
+        thing->setStateValue(contactSensorClosedStateTypeId, !thing->stateValue(contactSensorClosedStateTypeId).toBool());
+        thing->setStateValue(contactSensorBatteryLevelStateTypeId, thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt()-1);
 
-       if (thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt() == 0) {
-           thing->setStateValue(contactSensorBatteryLevelStateTypeId, 100);
-           thing->setStateValue(contactSensorBatteryCriticalStateTypeId, false);
-       } else if (thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt() <= 20) {
-           thing->setStateValue(contactSensorBatteryCriticalStateTypeId, true);
-       } else {
-           thing->setStateValue(contactSensorBatteryCriticalStateTypeId, false);
-       }
+        if (thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt() == 0) {
+            thing->setStateValue(contactSensorBatteryLevelStateTypeId, 100);
+            thing->setStateValue(contactSensorBatteryCriticalStateTypeId, false);
+        } else if (thing->stateValue(contactSensorBatteryLevelStateTypeId).toInt() <= 20) {
+            thing->setStateValue(contactSensorBatteryCriticalStateTypeId, true);
+        } else {
+            thing->setStateValue(contactSensorBatteryCriticalStateTypeId, false);
+        }
     }
 }
