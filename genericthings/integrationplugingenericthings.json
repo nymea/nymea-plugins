@@ -906,6 +906,7 @@
                             "displayNameAction": "Set input value",
                             "type": "double",
                             "defaultValue": 0,
+                            "unit": "Percentage",
                             "minValue": 0,
                             "maxValue": 100,
                             "writable": true,
