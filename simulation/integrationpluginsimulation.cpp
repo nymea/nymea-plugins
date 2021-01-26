@@ -68,6 +68,7 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
     if (thing->thingClassId() == garageGateThingClassId ||
             thing->thingClassId() == extendedAwningThingClassId ||
             thing->thingClassId() == extendedBlindThingClassId ||
+            thing->thingClassId() == venetianBlindThingClassId ||
             thing->thingClassId() == rollerShutterThingClassId ||
             thing->thingClassId() == fingerPrintSensorThingClassId ||
             thing->thingClassId() == barcodeScannerThingClassId ||
@@ -534,6 +535,45 @@ void IntegrationPluginSimulation::executeAction(ThingActionInfo *info)
         }
     }
 
+    if (thing->thingClassId() == venetianBlindThingClassId) {
+        if (action.actionTypeId() == venetianBlindOpenActionTypeId) {
+            qCDebug(dcSimulation()) << "Opening venetian blind";
+            m_simulationTimers.value(thing)->setProperty("targetPosition", 0);
+            m_simulationTimers.value(thing)->start(500);
+            thing->setStateValue(venetianBlindMovingStateTypeId, true);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == venetianBlindCloseActionTypeId) {
+            qCDebug(dcSimulation()) << "Closing venetian blind";
+            m_simulationTimers.value(thing)->setProperty("targetPosition", 100);
+            m_simulationTimers.value(thing)->start(500);
+            thing->setStateValue(venetianBlindMovingStateTypeId, true);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == venetianBlindStopActionTypeId) {
+            qCDebug(dcSimulation()) << "Stopping venetian blind";
+            m_simulationTimers.value(thing)->stop();
+            m_simulationTimers.value(thing)->setProperty("targetPosition", thing->stateValue(venetianBlindPercentageStateTypeId).toInt());
+            m_simulationTimers.value(thing)->setProperty("targetAngle", thing->stateValue(venetianBlindAngleStateTypeId).toInt());
+            thing->setStateValue(venetianBlindMovingStateTypeId, false);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == venetianBlindPercentageActionTypeId) {
+            qCDebug(dcSimulation()) << "Setting venetian blind position to" << action.param(venetianBlindPercentageActionPercentageParamTypeId);
+            m_simulationTimers.value(thing)->setProperty("targetPosition", action.param(venetianBlindPercentageActionPercentageParamTypeId).value());
+            m_simulationTimers.value(thing)->start(500);
+            thing->setStateValue(venetianBlindMovingStateTypeId, true);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+        if (action.actionTypeId() == venetianBlindAngleActionTypeId) {
+            qCDebug(dcSimulation()) << "Setting venetian blind angle to" << action.param(venetianBlindAngleActionAngleParamTypeId);
+            m_simulationTimers.value(thing)->setProperty("targetAngle", action.param(venetianBlindAngleActionAngleParamTypeId).value());
+            m_simulationTimers.value(thing)->start(500);
+            thing->setStateValue(venetianBlindMovingStateTypeId, true);
+            return info->finish(Thing::ThingErrorNoError);
+        }
+    }
+
     qCWarning(dcSimulation()) << "Unhandled thing class" << thing->thingClassId() << "for" << thing->name();
 }
 
@@ -727,6 +767,23 @@ void IntegrationPluginSimulation::simulationTimerTimeout()
         if (newValue == targetValue) {
             t->stop();
             thing->setStateValue(extendedBlindMovingStateTypeId, false);
+        }
+    } else if (thing->thingClassId() == venetianBlindThingClassId) {
+        int targetPosition = t->property("targetPosition").toInt();
+        int targetAngle = t->property("targetAngle").toInt();
+
+        int currentPosition = thing->stateValue(venetianBlindPercentageStateTypeId).toInt();
+        int currentAngle = thing->stateValue(venetianBlindAngleStateTypeId).toInt();
+
+        int newPosition = targetPosition > currentPosition ? qMin(targetPosition, currentPosition + 5) : qMax(targetPosition, currentPosition - 5);
+        thing->setStateValue(venetianBlindPercentageStateTypeId, newPosition);
+
+        int newAngle = targetAngle > currentAngle ? qMin(targetAngle, currentAngle + 5) : qMax(targetAngle, currentAngle - 5);
+        thing->setStateValue(venetianBlindAngleStateTypeId, newAngle);
+
+        if (newPosition == targetPosition && newAngle == targetAngle) {
+            t->stop();
+            thing->setStateValue(venetianBlindMovingStateTypeId, false);
         }
     } else if (thing->thingClassId() == rollerShutterThingClassId) {
         int currentValue = thing->stateValue(rollerShutterPercentageStateTypeId).toInt();
