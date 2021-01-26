@@ -70,7 +70,6 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
             thing->thingClassId() == extendedBlindThingClassId ||
             thing->thingClassId() == rollerShutterThingClassId ||
             thing->thingClassId() == fingerPrintSensorThingClassId ||
-            thing->thingClassId() == thermostatThingClassId ||
             thing->thingClassId() == barcodeScannerThingClassId ||
             thing->thingClassId() == contactSensorThingClassId) {
         m_simulationTimers.insert(thing, new QTimer(thing));
@@ -81,6 +80,48 @@ void IntegrationPluginSimulation::setupThing(ThingSetupInfo *info)
     }
     if (thing->thingClassId() == barcodeScannerThingClassId) {
         m_simulationTimers.value(thing)->start(10000);
+    }
+    if (thing->thingClassId() == thermostatThingClassId) {
+        QTimer *t = new QTimer(thing);
+        connect(t, &QTimer::timeout, thing, [thing](){
+            double targetTemp = thing->stateValue(thermostatTargetTemperatureStateTypeId).toDouble();
+            double currentTemp = thing->stateValue(thermostatTemperatureStateTypeId).toDouble();
+            bool heatingOn = thing->stateValue(thermostatHeatingOnStateTypeId).toBool();
+            bool coolingOn = thing->stateValue(thermostatCoolingOnStateTypeId).toBool();
+            bool boost = thing->stateValue(thermostatBoostStateTypeId).toBool();
+
+            // When we're heating, temp increases slowly until it's up on par with target temp
+            if (heatingOn) {
+                double diff = targetTemp - currentTemp;
+                currentTemp += 0.005 + diff * (boost ? 0.2 : 0.1);
+                if (currentTemp >= targetTemp) {
+                    thing->setStateValue(thermostatHeatingOnStateTypeId, false);
+                }
+            } else {
+                // Decrease 1% per interval to simulate drop of temperature (assuming it's cold outside)
+                currentTemp = currentTemp * 0.995;
+
+                // Start heating when we're more than 2 degrees lower than what we should be
+                if (currentTemp < targetTemp - 2) {
+                    thing->setStateValue(thermostatHeatingOnStateTypeId, true);
+                }
+            }
+
+            if (coolingOn) {
+                double diff = targetTemp - currentTemp;
+                currentTemp += diff * 0.1;
+                if (currentTemp <= targetTemp) {
+                    thing->setStateValue(thermostatCoolingOnStateTypeId, false);
+                }
+            } else {
+                if (currentTemp > targetTemp + 2) {
+                    thing->setStateValue(thermostatCoolingOnStateTypeId, true);
+                }
+            }
+
+            thing->setStateValue(thermostatTemperatureStateTypeId, currentTemp);
+        });
+        t->start(10000);
     }
 
     if (thing->thingClassId() == contactSensorThingClassId) {
@@ -166,29 +207,18 @@ void IntegrationPluginSimulation::executeAction(ThingActionInfo *info)
     }
 
     if (thing->thingClassId() == thermostatThingClassId) {
-        if (action.actionTypeId() == thermostatPowerActionTypeId) {
-            bool power = action.param(thermostatPowerActionPowerParamTypeId).value().toBool();
-            if (!power && thing->stateValue(thermostatBoostStateTypeId).toBool()) {
-                thing->setStateValue(thermostatBoostStateTypeId, false);
-            }
-            qCDebug(dcSimulation()) << "Set power" << power << "for thermostat device" << thing->name();
-            thing->setStateValue(thermostatPowerStateTypeId, power);
-            return info->finish(Thing::ThingErrorNoError);
-        }
         if (action.actionTypeId() == thermostatBoostActionTypeId) {
             bool boost = action.param(thermostatBoostActionBoostParamTypeId).value().toBool();
-            if (boost && !thing->stateValue(thermostatPowerStateTypeId).toBool()) {
-                thing->setStateValue(thermostatPowerStateTypeId, true);
-            }
             qCDebug(dcSimulation()) << "Set boost" << boost << "for thermostat device" << thing->name();
             thing->setStateValue(thermostatBoostStateTypeId, boost);
-            m_simulationTimers.value(thing)->start(5 * 60 * 1000);
+            QTimer *t = new QTimer(thing);
+            t->setInterval(5 * 60 * 1000);
+            connect(t, &QTimer::timeout, thing, [thing](){
+                thing->setStateValue(thermostatBoostStateTypeId, false);
+            });
             return info->finish(Thing::ThingErrorNoError);
         }
         if (action.actionTypeId() == thermostatTargetTemperatureActionTypeId) {
-            if (!thing->stateValue(thermostatPowerStateTypeId).toBool()) {
-                thing->setStateValue(thermostatPowerStateTypeId, true);
-            }
             double targetTemp = action.param(thermostatTargetTemperatureActionTargetTemperatureParamTypeId).value().toDouble();
             qCDebug(dcSimulation()) << "Set targetTemp" << targetTemp << "for thermostat device" << thing->name();
             thing->setStateValue(thermostatTargetTemperatureStateTypeId, targetTemp);

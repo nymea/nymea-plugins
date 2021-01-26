@@ -74,7 +74,6 @@ public:
 
 signals:
     void availableChanged();
-    void enabledChanged();
     void lockedChanged();
     void boostEnabledChanged();
     void modeChanged();
@@ -107,11 +106,9 @@ private:
     QString m_name;
 
     bool m_available = false;
-    bool m_enabled = false;
     bool m_locked = false;
     bool m_boostEnabled = false;
     qreal m_targetTemp = 0;
-    qreal m_cachedTargetTemp = 0;
     Mode m_mode = ModeAuto;
     bool m_windowOpen = false;
     quint8 m_valveOpen = 0;

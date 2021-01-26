@@ -158,17 +158,6 @@ bool EqivaBluetooth::available() const
     return m_available;
 }
 
-bool EqivaBluetooth::enabled() const
-{
-    return m_enabled;
-}
-
-int EqivaBluetooth::setEnabled(bool enabled)
-{
-    emit enabledChanged();
-    return setTargetTemperature(enabled ? m_cachedTargetTemp : 4.5);
-}
-
 bool EqivaBluetooth::locked() const
 {
     return m_locked;
@@ -199,7 +188,7 @@ int EqivaBluetooth::setBoostEnabled(bool enabled)
 
 qreal EqivaBluetooth::targetTemperature() const
 {
-    return m_enabled ? m_targetTemp : m_cachedTargetTemp;
+    return m_targetTemp;
 }
 
 int EqivaBluetooth::setTargetTemperature(qreal targetTemperature)
@@ -211,7 +200,6 @@ int EqivaBluetooth::setTargetTemperature(qreal targetTemperature)
         stream << static_cast<quint8>(4.5 * 2); // 4.5 degrees is off
     } else {
         stream << static_cast<quint8>(targetTemperature * 2); // Temperature *2 (thing only supports .5 precision)
-        m_cachedTargetTemp = targetTemperature;
     }
     return enqueue("SetTargetTemperature", data);
 }
@@ -418,11 +406,10 @@ void EqivaBluetooth::characteristicChanged(const QLowEnergyCharacteristic &info,
 
             quint8 mode = (lockAndMode & 0x0F);
             m_targetTemp = 1.0 * rawTemp / 2;
-            m_enabled = m_targetTemp >= 5;
             if (m_targetTemp < 5) {
                 m_targetTemp = 5;
             }
-            qCDebug(dcEQ3()) << m_name << "Status notification received: Enabled:" << m_enabled << "Temp:" << m_targetTemp << "Keylock:" << m_locked << "Window open:" << m_windowOpen << "Mode:" << mode << "Valve open:" << m_valveOpen << "Boost:" << m_boostEnabled << "Battery critical" << m_batteryCritical;
+            qCDebug(dcEQ3()) << m_name << "Status notification received: Enabled:" << "Temp:" << m_targetTemp << "Keylock:" << m_locked << "Window open:" << m_windowOpen << "Mode:" << mode << "Valve open:" << m_valveOpen << "Boost:" << m_boostEnabled << "Battery critical" << m_batteryCritical;
 
             m_boostEnabled = false;
             switch (mode) {
@@ -449,7 +436,6 @@ void EqivaBluetooth::characteristicChanged(const QLowEnergyCharacteristic &info,
                 break;
             }
 
-            emit enabledChanged();
             emit lockedChanged();
             emit boostEnabledChanged();
             emit modeChanged();
