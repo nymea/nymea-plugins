@@ -50,6 +50,17 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": -1
+                        },
+                        {
+                            "id": "0b5a48c9-73b8-42ab-9909-71b8dc2227e3",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
@@ -103,6 +114,28 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 100
+                        },
+                        {
+                            "id": "b8bf3085-8061-4cd6-af1f-f76a03054f46",
+                            "name": "powerCH1",
+                            "displayName": "Power channel 1",
+                            "displayNameEvent": "Power channel 1 changed",
+                            "displayNameAction": "Set power channel 1",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "4fbcaeb6-9242-4aa6-b462-a214fb38bcc9",
+                            "name": "powerCH2",
+                            "displayName": "Power channel 2",
+                            "displayNameEvent": "Power channel 2 changed",
+                            "displayNameAction": "Set power channel 2",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
@@ -164,6 +197,39 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 100
+                        },
+                        {
+                            "id": "27bdb42d-ef95-4905-ac3d-925bcc8a1ba1",
+                            "name": "powerCH1",
+                            "displayName": "Power channel 1",
+                            "displayNameEvent": "Power channel 1 changed",
+                            "displayNameAction": "Set power channel 1",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "705d8277-896a-4d56-b9ff-0a614ecfd39c",
+                            "name": "powerCH2",
+                            "displayName": "Power channel 2",
+                            "displayNameEvent": "Power channel 2 changed",
+                            "displayNameAction": "Set power channel 2",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "156f285d-e474-43d9-9a9d-17b3bcaef893",
+                            "name": "powerCH3",
+                            "displayName": "Power channel 3",
+                            "displayNameEvent": "Power channel 3 changed",
+                            "displayNameAction": "Set power channel 3",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
@@ -233,6 +299,50 @@
                             "minValue": 0,
                             "maxValue": 100,
                             "defaultValue": 100
+                        },
+                        {
+                            "id": "e8fd95c3-2323-40d8-89cf-40e0068977d8",
+                            "name": "powerCH1",
+                            "displayName": "Power channel 1",
+                            "displayNameEvent": "Power channel 1 changed",
+                            "displayNameAction": "Set power channel 1",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "baf0ca62-7f09-45ea-aea1-6de34764e6cb",
+                            "name": "powerCH2",
+                            "displayName": "Power channel 2",
+                            "displayNameEvent": "Power channel 2 changed",
+                            "displayNameAction": "Set power channel 2",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "8b939d15-3e45-40aa-bb53-9b3fb47f3cb3",
+                            "name": "powerCH3",
+                            "displayName": "Power channel 3",
+                            "displayNameEvent": "Power channel 3 changed",
+                            "displayNameAction": "Set power channel 3",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "4060baa0-2b11-4905-908c-b6f1c3b6a892",
+                            "name": "powerCH4",
+                            "displayName": "Power channel 4",
+                            "displayNameEvent": "Power channel 4 changed",
+                            "displayNameAction": "Set power channel 4",
+                            "type": "bool",
+                            "writable": true,
+                            "defaultValue": false,
+                            "ioType": "digitalOutput"
                         }
                     ]
                 },
