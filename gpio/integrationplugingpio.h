@@ -71,11 +71,9 @@ private:
     QList<GpioDescriptor> beagleboneBlackGpioDescriptors();
     PluginTimer *m_counterTimer = nullptr;
     QHash<ThingId, int> m_counterValues;
-    QHash<Thing *, QTimer *> m_longPressTimers;
 
 private slots:
     void onGpioValueChanged(const bool &value);
-    void onLongPressedTimeout();
 };
 
 #endif // INTEGRATIONPLUGINGPIO_H
