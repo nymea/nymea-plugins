@@ -76,6 +76,8 @@ BluetoothGattDescriptor::BluetoothGattDescriptor(const QDBusObjectPath &path, co
 
     processProperties(properties);
 
+    readValue();
+
 //    QDBusPendingCall readingCall = m_descriptorInterface->asyncCall("GetAll", QVariantMap());
 //    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(readingCall, this);
 //    connect(watcher, &QDBusPendingCallWatcher::finished, this, [=](){
@@ -158,11 +160,11 @@ void BluetoothGattDescriptor::onReadingFinished(QDBusPendingCallWatcher *call)
 
 void BluetoothGattDescriptor::onWritingFinished(QDBusPendingCallWatcher *call)
 {
+    QByteArray value = m_asyncWrites.take(call);
     QDBusPendingReply<void> reply = *call;
     if (reply.isError()) {
         qCWarning(dcBluez()) << "Could not write descriptor" << m_uuid.toString() << reply.error().name() << reply.error().message();
     } else {
-        QByteArray value = m_asyncWrites.take(call);
         qCDebug(dcBluez()) << "Async descriptor writing finished for" << m_uuid.toString() << value;
         emit writingFinished(value);
     }

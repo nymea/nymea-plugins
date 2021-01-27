@@ -214,18 +214,18 @@ bool Nuki::enableNotificationsIndications(BluetoothGattCharacteristic *character
         return false;
     }
 
-    qCDebug(dcNuki()) << "Enable notifications on" << characteristic;
-    if (!characteristic->startNotifications()) {
-        qCDebug(dcNuki()) << "Failed to start notifications on" << characteristic;
-        return false;
-    }
+//    qCDebug(dcNuki()) << "Enable notifications on" << characteristic;
+//    if (!characteristic->startNotifications()) {
+//        qCDebug(dcNuki()) << "Failed to start notifications on" << characteristic;
+//        return false;
+//    }
 
     if (characteristic->properties().testFlag(BluetoothGattCharacteristic::Indicate)) {
         qCDebug(dcNuki()) << "Enable indications on" << characteristic;
         QByteArray configuration;
         QDataStream stream(&configuration, QIODevice::WriteOnly);
         stream.setByteOrder(QDataStream::LittleEndian);
-        stream << static_cast<quint16>(0x02);
+        stream << static_cast<quint16>(2);
         if (!clientConfiguration->writeValue(configuration)) {
             qCWarning(dcNuki()) << "Failed to write client configuration descriptor on" << characteristic;
             return false;
@@ -590,6 +590,8 @@ void Nuki::setAvailable(bool available)
 
     if (m_available) {
         executeCurrentAction();
+
+
     } else {
         // Finish any running actions
         finishCurrentAction(false);
