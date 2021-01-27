@@ -64,15 +64,11 @@ private:
     void updateChildDevices(Thing *thing);
     void queryDevice(Thing *thing);
 
-    void controlTuyaSwitch(const QString &devId, const QString &command, const QString &value, ThingActionInfo *info);
+    void controlTuyaSwitch(const QString &devId, const QString &command, const QVariant &value, ThingActionInfo *info);
 
     QHash<ThingId, QTimer*> m_tokenExpiryTimers;
     PluginTimer *m_pluginTimerQuery = nullptr;
     PluginTimer *m_pluginTimerDiscovery = nullptr;
-
-    QHash<ThingClassId, ParamTypeId> m_devIdParamTypeIdsMap;
-    QHash<ThingClassId, StateTypeId> m_connectedStateTypeIdsMap;
-    QHash<ThingClassId, StateTypeId> m_powerStateTypeIdsMap;
 
     QHash<Thing*, QList<Thing*>> m_pollQueue;
 };

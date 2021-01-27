@@ -124,6 +124,79 @@
                             "displayName": "Stop"
                         }
                     ]
+                },
+                {
+                    "id": "6aaa67b5-b1ef-41e8-af72-0915e529b3c9",
+                    "name": "tuyaLight",
+                    "displayName": "Tuya color light",
+                    "createMethods": ["auto"],
+                    "interfaces": ["colorlight", "connectable"],
+                    "paramTypes": [
+                        {
+                            "id": "7fda1e07-6e80-465a-8322-872d8ab42583",
+                            "name": "id",
+                            "displayName": "ID",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "6735b5eb-091b-4cad-aaa4-33ff76690e68",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "cached": false
+                        },
+                        {
+                            "id": "5b2f7c3e-6701-447f-9158-53abb5e81395",
+                            "name": "power",
+                            "displayName": "Power",
+                            "displayNameEvent": "Power changed",
+                            "displayNameAction": "Set power",
+                            "type": "bool",
+                            "defaultValue": false,
+                            "writable": true,
+                            "ioType": "digitalOutput"
+                        },
+                        {
+                            "id": "e2eba44d-73f9-43bc-97a3-ac4ff347b02c",
+                            "name": "brightness",
+                            "displayName": "Brightness",
+                            "displayNameEvent": "Brightness changed",
+                            "displayNameAction": "Set brightness",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "defaultValue": "0",
+                            "writable": true
+                        },
+                        {
+                            "id": "7ccf9dc3-6b3f-4793-b0d5-3c97afb34cf0",
+                            "name": "color",
+                            "displayName": "Color",
+                            "displayNameEvent": "Color changed",
+                            "displayNameAction": "Set color",
+                            "type": "QColor",
+                            "defaultValue": "white",
+                            "writable": true
+                        },
+                        {
+                            "id": "8a07b6ca-3cb1-43f1-9b49-405349c2f146",
+                            "name": "colorTemperature",
+                            "displayName": "Color temperature",
+                            "displayNameEvent": "Color temperature changed",
+                            "displayNameAction": "Set color temperature",
+                            "type": "int",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "defaultValue": "50",
+                            "writable": true
+                        }
+                    ]
                 }
             ]
         }

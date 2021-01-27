@@ -49,15 +49,25 @@
 const int queryInterval = 130;
 const int discoveryInterval = 610;
 
+QHash<ThingClassId, ParamTypeId> idParamTypeIdsMap = {
+    {tuyaClosableThingClassId, tuyaClosableThingIdParamTypeId},
+    {tuyaSwitchThingClassId, tuyaSwitchThingIdParamTypeId},
+    {tuyaLightThingClassId, tuyaLightThingIdParamTypeId}
+};
+
+QHash<ThingClassId, StateTypeId> connectedStateTypeIdsMap = {
+    {tuyaClosableThingClassId, tuyaClosableConnectedStateTypeId},
+    {tuyaSwitchThingClassId, tuyaSwitchConnectedStateTypeId},
+    {tuyaLightThingClassId, tuyaLightConnectedStateTypeId}
+};
+
+QHash<ActionTypeId, ThingClassId> powerStateTypeIdsMap = {
+    {tuyaSwitchThingClassId, tuyaSwitchPowerStateTypeId},
+    {tuyaLightThingClassId, tuyaLightPowerStateTypeId}
+};
+
 IntegrationPluginTuya::IntegrationPluginTuya(QObject *parent): IntegrationPlugin(parent)
 {
-    m_devIdParamTypeIdsMap[tuyaClosableThingClassId] = tuyaClosableThingIdParamTypeId;
-    m_devIdParamTypeIdsMap[tuyaSwitchThingClassId] = tuyaSwitchThingIdParamTypeId;
-
-    m_connectedStateTypeIdsMap[tuyaClosableThingClassId] = tuyaClosableConnectedStateTypeId;
-    m_connectedStateTypeIdsMap[tuyaSwitchThingClassId] = tuyaSwitchConnectedStateTypeId;
-
-    m_powerStateTypeIdsMap[tuyaSwitchThingClassId] = tuyaSwitchPowerStateTypeId;
 }
 
 IntegrationPluginTuya::~IntegrationPluginTuya()
@@ -236,19 +246,20 @@ void IntegrationPluginTuya::confirmPairing(ThingPairingInfo *info, const QString
 
 void IntegrationPluginTuya::executeAction(ThingActionInfo *info)
 {
-    if (info->action().actionTypeId() == tuyaSwitchPowerActionTypeId) {
-        bool on = info->action().param(tuyaSwitchPowerActionPowerParamTypeId).value().toBool();
-        QString devId = info->thing()->paramValue(tuyaSwitchThingIdParamTypeId).toString();
+    QString devId = info->thing()->paramValue(idParamTypeIdsMap.value(info->thing()->thingClassId())).toString();
+
+    if (powerStateTypeIdsMap.values().contains(info->action().actionTypeId())) {
+        bool on = info->action().paramValue(info->action().actionTypeId()).toBool();
         controlTuyaSwitch(devId, "turnOnOff", on ? "1" : "0", info);
         connect(info, &ThingActionInfo::finished, [info, on](){
             if (info->status() == Thing::ThingErrorNoError) {
-                info->thing()->setStateValue(tuyaSwitchPowerStateTypeId, on);
+                info->thing()->setStateValue(powerStateTypeIdsMap.value(info->thing()->thingClassId()), on);
             }
         });
         return;
     }
+
     if (info->thing()->thingClassId() == tuyaClosableThingClassId) {
-        QString devId = info->thing()->paramValue(tuyaClosableThingIdParamTypeId).toString();
         if (info->action().actionTypeId() == tuyaClosableOpenActionTypeId) {
             controlTuyaSwitch(devId, "turnOnOff", "1", info);
             return;
@@ -261,7 +272,45 @@ void IntegrationPluginTuya::executeAction(ThingActionInfo *info)
             controlTuyaSwitch(devId, "startStop", "0", info);
             return;
         }
+    }
 
+    if (info->action().actionTypeId() == tuyaLightBrightnessActionTypeId) {
+        int brightness = info->action().paramValue(tuyaLightBrightnessActionBrightnessParamTypeId).toInt() * 10;
+        controlTuyaSwitch(devId, "brightnessSet", QString::number(qMax(10, brightness)), info);
+        connect(info, &ThingActionInfo::finished, [info, brightness](){
+            if (info->status() == Thing::ThingErrorNoError) {
+                info->thing()->setStateValue(tuyaLightBrightnessStateTypeId, brightness / 10);
+            }
+        });
+        return;
+    }
+
+    if (info->action().actionTypeId() == tuyaLightColorActionTypeId) {
+        QColor color = info->action().paramValue(tuyaLightColorActionColorParamTypeId).value<QColor>();
+        QVariantMap colorMap;
+        colorMap.insert("hue", color.hsvHue());
+        colorMap.insert("saturation", color.hsvSaturation());
+        colorMap.insert("brightness", qMax(10, info->thing()->stateValue(tuyaLightBrightnessStateTypeId).toInt() * 10));
+        controlTuyaSwitch(devId, "colorSet", colorMap, info);
+        connect(info, &ThingActionInfo::finished, [info, color](){
+            if (info->status() == Thing::ThingErrorNoError) {
+                info->thing()->setStateValue(tuyaLightColorStateTypeId, color);
+            }
+        });
+        return;
+    }
+
+    if (info->action().actionTypeId() == tuyaLightColorTemperatureActionTypeId) {
+        int ct = info->action().paramValue(tuyaLightColorTemperatureStateTypeId).toInt();
+        QVariantMap params;
+        params.insert("value", ct * 10);
+        controlTuyaSwitch(devId, "colorTemperatureSet", params, info);
+        connect(info, &ThingActionInfo::finished, [info, ct](){
+            if (info->status() == Thing::ThingErrorNoError) {
+                info->thing()->setStateValue(tuyaLightColorTemperatureStateTypeId, ct);
+            }
+        });
+        return;
     }
     Q_ASSERT_X(false, "tuyaplugin", "Unhandled action type " + info->action().actionTypeId().toByteArray());
 }
@@ -406,33 +455,50 @@ void IntegrationPluginTuya::updateChildDevices(Thing *thing)
             QString name = deviceMap.value("name").toString();
 
             if (devType == "switch") {
-                bool online = deviceMap.value("data").toMap().value("online").toBool();
-                bool state = deviceMap.value("data").toMap().value("state").toBool();
-
                 Thing *d = myThings().findByParams(ParamList() << Param(tuyaSwitchThingIdParamTypeId, id));
-                if (d) {
-                    qCDebug(dcTuya()) << "Found existing Tuya switch" << d->name() << id << name << (online ? "online:" : "offline") << (state ? "on": "off");
-                    d->setStateValue(tuyaSwitchConnectedStateTypeId, online);
-                    d->setStateValue(tuyaSwitchPowerStateTypeId, state);
-                } else {
+                if (!d) {
                     qCDebug(dcTuya()) << "Found new Tuya switch" << id << name;
                     ThingDescriptor descriptor(tuyaSwitchThingClassId, name, QString(), thing->id());
                     descriptor.setParams(ParamList() << Param(tuyaSwitchThingIdParamTypeId, id));
                     unknownDevices.append(descriptor);
-                }
-            } else if (devType == "cover") {
-                bool online = deviceMap.value("data").toMap().value("online").toBool();
-
-                Thing *d = myThings().findByParams(ParamList() << Param(tuyaClosableThingIdParamTypeId, id));
-                if (d) {
-                    qCDebug(dcTuya()) << "Found existing Tuya cover" << d->name() << id << name << (online ? "online" : "offline");
-                    d->setStateValue(tuyaClosableConnectedStateTypeId, online);
                 } else {
+                    bool online = deviceMap.value("data").toMap().value("online").toBool();
+                    bool state = deviceMap.value("data").toMap().value("state").toBool();
+                    qCDebug(dcTuya()) << "Found existing Tuya switch" << d->name() << id << name << (online ? "online:" : "offline") << (state ? "on": "off");
+                    d->setStateValue(tuyaSwitchConnectedStateTypeId, online);
+                    d->setStateValue(tuyaSwitchPowerStateTypeId, state);
+                }
+
+            } else if (devType == "cover") {
+                Thing *d = myThings().findByParams(ParamList() << Param(tuyaClosableThingIdParamTypeId, id));
+                if (!d) {
                     qCDebug(dcTuya()) << "Found new Tuya cover" << id << name;
                     ThingDescriptor descriptor(tuyaClosableThingClassId, name, QString(), thing->id());
                     descriptor.setParams(ParamList() << Param(tuyaClosableThingIdParamTypeId, id));
                     unknownDevices.append(descriptor);
+                } else {
+                    bool online = deviceMap.value("data").toMap().value("online").toBool();
+                    qCDebug(dcTuya()) << "Found existing Tuya cover" << d->name() << id << name << (online ? "online" : "offline");
+                    d->setStateValue(tuyaClosableConnectedStateTypeId, online);
                 }
+
+            } else if (devType == "light") {
+                Thing *d = myThings().findByParams(ParamList() << Param(tuyaLightThingIdParamTypeId, id));
+                if (!d) {
+                    qCDebug(dcTuya()) << "Found new color Tuya light" << id << name;
+                    ThingDescriptor descriptor(tuyaLightThingClassId, name, QString(), thing->id());
+                    descriptor.setParams(ParamList() << Param(tuyaLightThingIdParamTypeId, id));
+                    unknownDevices.append(descriptor);
+                } else {
+                    bool online = deviceMap.value("data").toMap().value("online").toBool();
+                    bool state = deviceMap.value("data").toMap().value("state").toBool();
+                    qCDebug(dcTuya()) << "Found existing Tuya color light" << d->name() << id << name << (online ? "online" : "offline");
+                    int brightness = deviceMap.value("data").toMap().value("brightness").toInt() / 10; // Apparently the value in the tuya cloud is 10 - 1000
+                    d->setStateValue(tuyaLightConnectedStateTypeId, online);
+                    d->setStateValue(tuyaLightPowerStateTypeId, state);
+                    d->setStateValue(tuyaLightBrightnessStateTypeId, brightness);
+                }
+
             } else {
                 qCWarning(dcTuya()) << "Skipping unsupported thing type:" << devType;
                 qCWarning(dcTuya()) << "Please report this including the following data:\n" << qUtf8Printable(QJsonDocument::fromVariant(deviceVariant).toJson());
@@ -451,7 +517,7 @@ void IntegrationPluginTuya::queryDevice(Thing *thing)
 {
     qCDebug(dcTuya()) << "Updating thing:" << thing;
 
-    QString devId = thing->paramValue(m_devIdParamTypeIdsMap.value(thing->thingClassId())).toString();
+    QString devId = thing->paramValue(idParamTypeIdsMap.value(thing->thingClassId())).toString();
 
     pluginStorage()->beginGroup(thing->parentId().toString());
     QString accesToken = pluginStorage()->value("accessToken").toString();
@@ -510,15 +576,15 @@ void IntegrationPluginTuya::queryDevice(Thing *thing)
         bool state = result.value("payload").toMap().value("data").toMap().value("state").toBool();
         qCDebug(dcTuya()) << "Device" << thing->name() << "is online:" << connected << "on:" << state;
 
-        thing->setStateValue(m_connectedStateTypeIdsMap.value(thing->thingClassId()), connected);
+        thing->setStateValue(connectedStateTypeIdsMap.value(thing->thingClassId()), connected);
 
-        if (m_powerStateTypeIdsMap.contains(thing->thingClassId())) {
-            thing->setStateValue(m_powerStateTypeIdsMap.value(thing->thingClassId()), state);
+        if (powerStateTypeIdsMap.contains(thing->thingClassId())) {
+            thing->setStateValue(powerStateTypeIdsMap.value(thing->thingClassId()), state);
         }
     });
 }
 
-void IntegrationPluginTuya::controlTuyaSwitch(const QString &devId, const QString &command, const QString &value, ThingActionInfo *info)
+void IntegrationPluginTuya::controlTuyaSwitch(const QString &devId, const QString &command, const QVariant &value, ThingActionInfo *info)
 {
     Thing *thing = info->thing();
     Thing *parentDevice = myThings().findById(thing->parentId());
@@ -550,6 +616,8 @@ void IntegrationPluginTuya::controlTuyaSwitch(const QString &devId, const QStrin
 
     QJsonDocument jsonDoc = QJsonDocument::fromVariant(data);
 
+    qCDebug(dcTuya()) << "Controlling payload:" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
+
     QNetworkReply *reply = hardwareManager()->networkManager()->post(request, jsonDoc.toJson(QJsonDocument::Compact));
     connect(reply, &QNetworkReply::finished, [reply](){reply->deleteLater();});
     connect(reply, &QNetworkReply::finished, info, [info, reply](){
@@ -571,7 +639,7 @@ void IntegrationPluginTuya::controlTuyaSwitch(const QString &devId, const QStrin
         QVariantMap dataMap = jsonDoc.toVariant().toMap();
         bool success = dataMap.value("header").toMap().value("code").toString() == "SUCCESS";
         if (!success) {
-            qCWarning(dcTuya()) << "Tuya response indicates an issue...";
+            qCWarning(dcTuya()) << "Tuya response indicates an issue:" << qUtf8Printable(jsonDoc.toJson(QJsonDocument::Indented));
             info->finish(Thing::ThingErrorHardwareFailure);
             return;
         }
