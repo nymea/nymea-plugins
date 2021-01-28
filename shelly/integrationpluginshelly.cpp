@@ -1232,6 +1232,25 @@ void IntegrationPluginShelly::setupShellyGateway(ThingSetupInfo *info)
 void IntegrationPluginShelly::setupShellyChild(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
+    qCDebug(dcShelly()) << "Setting up shelly child:" << info->thing()->name();
+
+    Thing *parent = myThings().findById(thing->parentId());
+    Q_ASSERT_X(parent != nullptr, "Shelly::setupChild", "Child has no parent!");
+    if (!parent->setupComplete()) {
+        qCDebug(dcShelly()) << "Parent for" << info->thing()->name() << "is not set up yet... Waiting...";
+        // If the parent isn't set up yet, wait for it...
+        connect(parent, &Thing::setupStatusChanged, info, [=](){
+            qCDebug(dcShelly()) << "Setup for" << parent->name() << "Completed. Continuing with setup of child" << info->thing()->name();
+            if (parent->setupStatus() == Thing::ThingSetupStatusComplete) {
+                setupShellyChild(info);
+            } else if (parent->setupStatus() == Thing::ThingSetupStatusFailed) {
+                info->finish(Thing::ThingErrorHardwareFailure);
+            }
+        });
+        return;
+    }
+
+    qCDebug(dcShelly()) << "Parent for" << info->thing()->name() << "is set up. Finishing child setup.";
 
     // Connect to settings changes to store them to the thing
     connect(info->thing(), &Thing::settingChanged, this, [this, thing](const ParamTypeId &paramTypeId, const QVariant &value){
