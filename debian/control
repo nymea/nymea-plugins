@@ -450,6 +450,21 @@ Description: nymea.io plugin for lifx
  This package will install the nymea.io plugin for lifx
 
 
+Package: nymea-plugin-lukeroberts
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for Luke Roberts
+ The nymea daemon is a plugin based IoT (Internet of Things) server. The
+ server works like a translator for devices, things and services and
+ allows them to interact.
+ With the powerful rule engine you are able to connect any device available
+ in the system and create individual scenes and behaviors for your environment.
+ .
+ This package will install the nymea.io plugin for Luke Roberts
+
+
 Package: nymea-plugin-mailnotification
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1150,6 +1165,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-kodi,
          nymea-plugin-lgsmarttv,
          nymea-plugin-lifx,
+         nymea-plugin-lukeroberts,
          nymea-plugin-mailnotification,
          nymea-plugin-texasinstruments,
          nymea-plugin-telegram,
