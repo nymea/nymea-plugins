@@ -89,7 +89,7 @@ struct Scene {
     int8_t id;
     QString name;
 };
-    explicit LukeRoberts(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent = nullptr);
+    explicit LukeRoberts(BluetoothLowEnergyDevice *bluetoothDevice);
 
     BluetoothLowEnergyDevice *bluetoothDevice();
     void ping();
@@ -133,7 +133,7 @@ private slots:
     void onDeviceInfoServiceStateChanged(const QLowEnergyService::ServiceState &state);
 
     void onControlServiceChanged(const QLowEnergyService::ServiceState &state);
-    void onExternalApiEndpointCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
+    void onControlServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value);
 };
 
 #endif // LUKEROBERTS_H

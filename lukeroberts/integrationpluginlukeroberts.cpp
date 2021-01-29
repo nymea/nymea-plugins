@@ -91,42 +91,48 @@ void IntegrationPluginLukeRoberts::setupThing(ThingSetupInfo *info)
 
     qCDebug(dcLukeRoberts()) << "Setup device" << thing->name() << thing->params();
 
-    QBluetoothAddress address = QBluetoothAddress(thing->paramValue(modelFThingMacParamTypeId).toString());
-    QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, thing->name(), 0);
+    if (thing->thingClassId() == modelFThingClassId) {
+        QBluetoothAddress address = QBluetoothAddress(thing->paramValue(modelFThingMacParamTypeId).toString());
+        QBluetoothDeviceInfo deviceInfo = QBluetoothDeviceInfo(address, thing->name(), 0);
 
-    BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::RandomAddress);
+        BluetoothLowEnergyDevice *bluetoothDevice = hardwareManager()->bluetoothLowEnergyManager()->registerDevice(deviceInfo, QLowEnergyController::RandomAddress);
 
-    LukeRoberts *lamp = new LukeRoberts(bluetoothDevice, this);
-    connect(lamp, &LukeRoberts::connectedChanged, this, &IntegrationPluginLukeRoberts::onConnectedChanged);
-    connect(lamp, &LukeRoberts::deviceInformationChanged, this, &IntegrationPluginLukeRoberts::onDeviceInformationChanged);
+        LukeRoberts *lamp = new LukeRoberts(bluetoothDevice);
+        connect(lamp, &LukeRoberts::connectedChanged, this, &IntegrationPluginLukeRoberts::onConnectedChanged);
+        connect(lamp, &LukeRoberts::deviceInformationChanged, this, &IntegrationPluginLukeRoberts::onDeviceInformationChanged);
+        connect(lamp, &LukeRoberts::statusCodeReveiced, this, &IntegrationPluginLukeRoberts::onStatusCodeReceived);
+        connect(lamp, &LukeRoberts::sceneListReceived, this, &IntegrationPluginLukeRoberts::onSceneListReceived);
+        connect(lamp, &LukeRoberts::destroyed, this, [this, lamp] {m_lamps.remove(lamp);});
 
-    m_lamps.insert(lamp, thing);
+        m_lamps.insert(lamp, thing);
+        connect(lamp, &LukeRoberts::deviceInitializationFinished, info, [this, info, lamp](bool success){
+            qCDebug(dcLukeRoberts()) << "Lamp device initialization finished";
+            Thing *thing = info->thing();
 
-    connect(lamp, &LukeRoberts::deviceInitializationFinished, info, [this, info, lamp](bool success){
-        Thing *thing = info->thing();
+            if (!thing->setupComplete()) {
+                if (success) {
+                    info->finish(Thing::ThingErrorNoError);
+                } else {
+                    m_lamps.take(lamp);
 
-        if (!thing->setupComplete()) {
-            if (success) {
-                info->finish(Thing::ThingErrorNoError);
-            } else {
-                m_lamps.take(lamp);
+                    hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(lamp->bluetoothDevice());
+                    lamp->deleteLater();
 
-                hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(lamp->bluetoothDevice());
-                lamp->deleteLater();
-
-                info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error connecting to lamp."));
+                    info->finish(Thing::ThingErrorHardwareFailure, QT_TR_NOOP("Error connecting to lamp."));
+                }
             }
-        }
 
-    });
-    lamp->bluetoothDevice()->connectDevice();
+        });
+        lamp->bluetoothDevice()->connectDevice();
+    }
 }
 
 void IntegrationPluginLukeRoberts::postSetupThing(Thing *thing)
 {
-    Q_UNUSED(thing)
+    qCDebug(dcLukeRoberts()) << "Post setup device" << thing->name();
 
     if (!m_reconnectTimer) {
+        qCDebug(dcLukeRoberts()) << "Initializing reconnect timer";
         m_reconnectTimer = hardwareManager()->pluginTimerManager()->registerTimer(10);
         connect(m_reconnectTimer, &PluginTimer::timeout, this, &IntegrationPluginLukeRoberts::onReconnectTimeout);
     }
@@ -138,49 +144,58 @@ void IntegrationPluginLukeRoberts::executeAction(ThingActionInfo *info)
     Thing *thing = info->thing();
     Action action = info->action();
 
-    QPointer<LukeRoberts> lamp = m_lamps.key(thing);
-    if (lamp.isNull())
-        return info->finish(Thing::ThingErrorHardwareFailure);
+    if (thing->thingClassId() == modelFThingClassId) {
+        QPointer<LukeRoberts> lamp = m_lamps.key(thing);
+        if (lamp.isNull())
+            return info->finish(Thing::ThingErrorHardwareFailure);
 
-    if (!lamp->bluetoothDevice()->connected()) {
-        return info->finish(Thing::ThingErrorHardwareNotAvailable);
-    }
-
-    if (action.actionTypeId() == modelFPowerActionTypeId) {
-        bool power = action.param(modelFPowerActionPowerParamTypeId).value().toBool();
-        if (!power) {
-            lamp->selectScene(0); //Scene 0 is the off scene
-        } else {
-            lamp->selectScene(0xff); // Scene 0xff is the default scene
+        if (!lamp->bluetoothDevice()->connected()) {
+            return info->finish(Thing::ThingErrorHardwareNotAvailable);
         }
 
-    } else if (action.actionTypeId() == modelFBrightnessActionTypeId) {
-        int brightness = action.param(modelFBrightnessActionBrightnessParamTypeId).value().toInt();
-        lamp->modifyBrightness(brightness);
+        if (action.actionTypeId() == modelFPowerActionTypeId) {
+            bool power = action.param(modelFPowerActionPowerParamTypeId).value().toBool();
+            if (!power) {
+                lamp->selectScene(0); //Scene 0 is the off scene
+            } else {
+                lamp->selectScene(0xff); // Scene 0xff is the default scene
+            }
 
-    } else if (action.actionTypeId() == modelFColorActionTypeId) {
-        QColor rgb = QColor::fromRgb(QRgb(action.param(modelFColorActionColorParamTypeId).value().toInt()));
-        lamp->setImmediateLight(0, rgb.saturation(), rgb.hue(), rgb.lightness());
+        } else if (action.actionTypeId() == modelFBrightnessActionTypeId) {
+            int brightness = action.param(modelFBrightnessActionBrightnessParamTypeId).value().toInt();
+            lamp->modifyBrightness(brightness);
 
-    } else if (action.actionTypeId() == modelFColorTemperatureActionTypeId) {
-        int kelvin = action.param(modelFColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
-        lamp->modifyColorTemperature(kelvin);
+        } else if (action.actionTypeId() == modelFColorActionTypeId) {
+            QColor rgb = QColor::fromRgb(QRgb(action.param(modelFColorActionColorParamTypeId).value().toInt()));
+            lamp->setImmediateLight(0, rgb.saturation(), rgb.hue(), rgb.lightness());
+
+        } else if (action.actionTypeId() == modelFColorTemperatureActionTypeId) {
+            int kelvin = action.param(modelFColorTemperatureActionColorTemperatureParamTypeId).value().toInt();
+            lamp->modifyColorTemperature(kelvin);
+        }
+    } else {
+
     }
 }
 
 
 void IntegrationPluginLukeRoberts::thingRemoved(Thing *thing)
 {
-    if (!m_lamps.values().contains(thing))
-        return;
+    qCDebug(dcLukeRoberts()) << "Delete thing" << thing->name();
 
-    LukeRoberts *lamp = m_lamps.key(thing);
-    m_lamps.take(lamp);
+    if (thing->thingClassId() == modelFThingClassId) {
+        if (!m_lamps.values().contains(thing))
+            return;
 
-    hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(lamp->bluetoothDevice());
-    lamp->deleteLater();
+        LukeRoberts *lamp = m_lamps.key(thing);
+        m_lamps.remove(lamp);
+
+        hardwareManager()->bluetoothLowEnergyManager()->unregisterDevice(lamp->bluetoothDevice());
+        lamp->deleteLater();
+    }
 
     if (myThings().isEmpty()) {
+        qCDebug(dcLukeRoberts()) << "Unregistering reconnect timer";
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_reconnectTimer);
         m_reconnectTimer = nullptr;
     }
@@ -206,7 +221,6 @@ void IntegrationPluginLukeRoberts::browserItem(BrowserItemResult *result)
         return;
     }
     qDebug(dcLukeRoberts()) << "Browse item called";
-
 }
 
 void IntegrationPluginLukeRoberts::executeBrowserItem(BrowserActionInfo *info)
@@ -228,13 +242,6 @@ void IntegrationPluginLukeRoberts::executeBrowserItemAction(BrowserItemActionInf
         return;
     }
 }
-
-void IntegrationPluginLukeRoberts::onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value)
-{
-    Q_UNUSED(paramTypeId)
-    Q_UNUSED(value)
-}
-
 
 void IntegrationPluginLukeRoberts::onReconnectTimeout()
 {

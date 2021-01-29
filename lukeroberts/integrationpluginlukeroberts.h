@@ -69,7 +69,6 @@ private:
     QHash<int, BrowserItemActionInfo*> m_pendingBrowserItemActions;
 
 private slots:
-    void onPluginConfigurationChanged(const ParamTypeId &paramTypeId, const QVariant &value);
     void onReconnectTimeout();
 
     void onConnectedChanged(bool connected);

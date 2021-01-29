@@ -36,8 +36,8 @@
 
 
 
-LukeRoberts::LukeRoberts(BluetoothLowEnergyDevice *bluetoothDevice, QObject *parent) :
-    QObject(parent),
+LukeRoberts::LukeRoberts(BluetoothLowEnergyDevice *bluetoothDevice) :
+    QObject(bluetoothDevice),
     m_bluetoothDevice(bluetoothDevice)
 {
     connect(m_bluetoothDevice, &BluetoothLowEnergyDevice::connectedChanged, this, &LukeRoberts::onConnectedChanged);
@@ -225,7 +225,14 @@ void LukeRoberts::onServiceDiscoveryFinished()
             return;
         }
 
+        //
+        //characteristicRead(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+        //characteristicWritten(const QLowEnergyCharacteristic &characteristic, const QByteArray &newValue)
+        //escriptorRead(const QLowEnergyDescriptor &descriptor, const QByteArray &value)
+        //descriptorWritten(const QLowEnergyDescriptor &descriptor, const QByteArray &newValue)
+        //error(QLowEnergyService::ServiceError newError)
         connect(m_deviceInfoService, &QLowEnergyService::stateChanged, this, &LukeRoberts::onDeviceInfoServiceStateChanged);
+        //connect(m_deviceInfoService, &QLowEnergyService::characteristicChanged, this, &LukeRoberts::onDeviceInfoServiceCharacteristicChanged);
 
         if (m_deviceInfoService->state() == QLowEnergyService::DiscoveryRequired) {
             m_deviceInfoService->discoverDetails();
@@ -242,6 +249,7 @@ void LukeRoberts::onServiceDiscoveryFinished()
         }
 
         connect(m_controlService, &QLowEnergyService::stateChanged, this, &LukeRoberts::onControlServiceChanged);
+        connect(m_deviceInfoService, &QLowEnergyService::characteristicChanged, this, &LukeRoberts::onControlServiceCharacteristicChanged);
 
         if (m_controlService->state() == QLowEnergyService::DiscoveryRequired) {
             m_controlService->discoverDetails();
@@ -279,7 +287,7 @@ void LukeRoberts::onControlServiceChanged(const QLowEnergyService::ServiceState 
     // Custom API endpoint
     m_externalApiEndpoint = m_controlService->characteristic(externalApiEndpointCharacteristicUuid);
     if (!m_externalApiEndpoint.isValid()) {
-        qCWarning(dcLukeRoberts()) << "Input button characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
+        qCWarning(dcLukeRoberts()) << "External api endpoint characteristc not found for device " << bluetoothDevice()->name() << bluetoothDevice()->address().toString();
         return;
     }
     // Enable notifications
@@ -287,7 +295,7 @@ void LukeRoberts::onControlServiceChanged(const QLowEnergyService::ServiceState 
     m_controlService->writeDescriptor(notificationDescriptor, QByteArray::fromHex("0100"));
 }
 
-void LukeRoberts::onExternalApiEndpointCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
+void LukeRoberts::onControlServiceCharacteristicChanged(const QLowEnergyCharacteristic &characteristic, const QByteArray &value)
 {
     if (characteristic.uuid() == m_externalApiEndpoint.uuid()) {
         qCDebug(dcLukeRoberts()) << "Data received" << value;
@@ -303,6 +311,5 @@ void LukeRoberts::onExternalApiEndpointCharacteristicChanged(const QLowEnergyCha
         }
 
     }
-
     qCDebug(dcLukeRoberts()) << "Service characteristic changed" << characteristic.name() << value.toHex();
 }
