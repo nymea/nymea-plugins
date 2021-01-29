@@ -158,6 +158,10 @@ QUuid KeContact::enableOutput(bool state)
 
 QUuid KeContact::setMaxAmpere(int milliAmpere)
 {
+    if (milliAmpere < 6000 || milliAmpere > 63000) {
+        qCWarning(dcKebaKeContact()) << "KeContact: Set max ampere, mA out of range [6000, 63000]" << milliAmpere;
+        return "";
+    }
     QUuid requestId = QUuid::createUuid();
     m_pendingRequests.append(requestId);
     // Print information that we are executing now the update action
@@ -307,7 +311,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
         m_requestTimeoutTimer->stop();
         handleNextCommandInQueue();
 
-        qCDebug(dcKebaKeContact()) << "Firmware information reveiced";
+        qCDebug(dcKebaKeContact()) << "Firmware information received";
         QByteArrayList firmware = datagram.split(':');
         if (firmware.length() >= 2) {
             emit deviceInformationReceived(firmware[1]);
@@ -382,7 +386,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
             } else if (id == 3) {
 
                 ReportThree reportThree;
-                qCDebug(dcKebaKeContact()) << "Report 3 reveiced";
+                qCDebug(dcKebaKeContact()) << "Report 3 received";
                 reportThree.currentPhase1 = data.value("I1").toInt()/1000.00;
                 reportThree.currentPhase2 = data.value("I2").toInt()/1000.00;
                 reportThree.currentPhase3 = data.value("I3").toInt()/1000.00;
@@ -399,6 +403,7 @@ void KeContact::onReceivedDatagram(const QHostAddress &address, const QByteArray
             } else if (id >= 100) {
 
                 Report1XX report;
+                qCDebug(dcKebaKeContact()) << "Report" << id << "received";
                 report.sessionId = data.value("Session ID").toInt();
                 report.currHW = data.value("Curr HW").toInt();
                 report.startTime = data.value("E Start   ").toInt()/10000.00;

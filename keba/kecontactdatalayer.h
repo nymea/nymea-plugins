@@ -9,6 +9,7 @@ class KeContactDataLayer : public QObject
     Q_OBJECT
 public:
     explicit KeContactDataLayer(QObject *parent = nullptr);
+    ~KeContactDataLayer();
     bool init();
 
     void write(const QHostAddress &address, const QByteArray &data);
@@ -22,6 +23,8 @@ signals:
 
 private slots:
     void readPendingDatagrams();
+    void onSocketError(QAbstractSocket::SocketError error);
+    void onSocketStateChanged(QAbstractSocket::SocketState socketState);
 };
 
 #endif // KECONTACTDATALAYER_H
