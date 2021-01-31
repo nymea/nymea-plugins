@@ -97,7 +97,7 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
                 (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation &&
                  endpoint->deviceId() == Zigbee::HomeAutomationDeviceOnOffLight)) {
 
-            qCDebug(dcZigbeeGenericLights()) << "Handeling on/off light for" << node << endpoint;
+            qCDebug(dcZigbeeGenericLights()) << "Handling on/off light for" << node << endpoint;
             createLightThing(onOffLightThingClassId, networkUuid, node, endpoint);
             handled = true;
         }
@@ -107,7 +107,7 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
                 (endpoint->profile() == Zigbee::ZigbeeProfile::ZigbeeProfileHomeAutomation &&
                  endpoint->deviceId() == Zigbee::HomeAutomationDeviceDimmableLight)) {
 
-            qCDebug(dcZigbeeGenericLights()) << "Handeling dimmable light for" << node << endpoint;
+            qCDebug(dcZigbeeGenericLights()) << "Handling dimmable light for" << node << endpoint;
             createLightThing(dimmableLightThingClassId, networkUuid, node, endpoint);
             handled = true;
         }
@@ -118,7 +118,7 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
                 (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation &&
                  endpoint->deviceId() == Zigbee::HomeAutomationDeviceColourTemperatureLight)) {
 
-            qCDebug(dcZigbeeGenericLights()) << "Handeling color temperature light for" << node << endpoint;
+            qCDebug(dcZigbeeGenericLights()) << "Handling color temperature light for" << node << endpoint;
             createLightThing(colorTemperatureLightThingClassId, networkUuid, node, endpoint);
             handled = true;
         }
@@ -127,7 +127,7 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
                 (endpoint->profile() == Zigbee::ZigbeeProfileLightLink && endpoint->deviceId() == Zigbee::LightLinkDeviceExtendedColourLight) ||
                 (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation && endpoint->deviceId() == Zigbee::HomeAutomationDeviceExtendedColourLight)) {
 
-            qCDebug(dcZigbeeGenericLights()) << "Handeling color light for" << node << endpoint;
+            qCDebug(dcZigbeeGenericLights()) << "Handling color light for" << node << endpoint;
             createLightThing(colorLightThingClassId, networkUuid, node, endpoint);
             handled = true;
         }

@@ -18,6 +18,9 @@ Simple on/off power sockets.
 
 > Most power sockets have a pairing button. Once the device is powered, it can be resetted / paired by clicking the button multiple times of keeping it pressed for several seconds.
 
+### Radiator thermostats
+
+Radiator thermostats that follow the ZigBee specification.
 
 ## Requirements
 

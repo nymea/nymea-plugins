@@ -75,7 +75,11 @@ private:
 
     void initSimplePowerSocket(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
     void initializeDoorLock(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void initThermostat(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
 
+    void bindPowerConfigurationCluster(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
+    void connectToPowerConfigurationCluster(Thing *thing, ZigbeeNodeEndpoint *endpoint);
 };
 
 #endif // INTEGRATIONPLUGINZIGBEEGENERIC_H
