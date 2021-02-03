@@ -4,7 +4,7 @@ Priority: options
 Maintainer: Michael Zanetti <michael.zanetti@guh.io>
 Build-depends: libboblight-dev,
                debhelper (>= 0.0.0),
-               libnymea1-dev (>= 0.17),
+               libnymea-dev (>= 0.26~),
                libnymea-mqtt-dev,
                libnymea-zigbee-dev,
                libqt5serialport5-dev,
