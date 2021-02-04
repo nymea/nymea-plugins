@@ -324,19 +324,21 @@
                             "name": "ip",
                             "displayName": "IPv4 address",
                             "type" : "QString",
-                            "inputType": "IPv4Address"
+                            "readOnly": true
                         },
                         {
                             "id": "f796664d-6cb7-4f29-9d05-771968d82a32",
                             "name": "serialNumber",
                             "displayName": "Serial number",
-                            "type" : "QString"
+                            "type" : "QString",
+                            "readOnly": true
                         },
                         {
                             "id": "ab1a0be8-e3a5-4f95-b9b7-893de1ca4cf7",
                             "name": "modelName",
                             "displayName": "Model name",
-                            "type" : "QString"
+                            "type" : "QString",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [

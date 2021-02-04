@@ -103,6 +103,7 @@ private:
     QHash<int, HeosPlayer *> m_playerBuffer;
 
     Heos *createHeosConnection(const QHostAddress &address);
+    QHostAddress discoverHeos(const QString &serialnumber);
 
 private slots:
     void onPluginTimer();
