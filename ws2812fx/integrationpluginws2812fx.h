@@ -94,6 +94,7 @@
 #define FX_MODE_CUSTOM_3                59
 
 #include "integrations/integrationplugin.h"
+#include "nymealight.h"
 
 #include <QTimer>
 #include <QSerialPort>
@@ -115,24 +116,10 @@ public:
     void executeAction(ThingActionInfo *info) override;
 
 private:
-    enum CommandType {
-        Color,
-        Speed,
-        Brightness,
-        Mode
-    };
-
-    QHash<Thing *, QSerialPort *> m_serialPorts;
+    QHash<Thing *, NymeaLight *> m_lights;
     QList<QString> m_usedInterfaces;
-    QHash<CommandType, ThingActionInfo*> m_pendingActions;
-
-    QTimer *m_reconnectTimer = nullptr;
-    void sendCommand(ThingActionInfo *info, const QByteArray &command, CommandType commandType);
 
 private slots:
-    void onReadyRead();
-    void onReconnectTimer();
-    void onSerialError(QSerialPort::SerialPortError error);
 
 signals:
 
