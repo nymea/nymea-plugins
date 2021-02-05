@@ -25,13 +25,6 @@
                     "interfaces": ["mediaplayer", "mediacontroller", "volumecontroller", "mediametadataprovider", "connectable", "power"],
                     "paramTypes": [
                         {
-                            "id": "cb6eeeb0-3d75-43b6-8177-b5ac19648557",
-                            "name": "ip",
-                            "displayName": "IPv4 address",
-                            "type" : "QString",
-                            "inputType": "IPv4Address"
-                        },
-                        {
                             "id": "2e8806cb-f6f3-4e9a-b6ea-0b35f75e61c5",
                             "name": "id",
                             "displayName": "ID",

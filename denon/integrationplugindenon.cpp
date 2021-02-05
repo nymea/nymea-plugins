@@ -96,7 +96,6 @@ void IntegrationPluginDenon::discoverThings(ThingDiscoveryInfo *info)
                 discoveredIds.append(id);
                 ThingDescriptor thingDescriptor(AVRX1000ThingClassId, name, address);
                 ParamList params;
-                params.append(Param(AVRX1000ThingIpParamTypeId, address));
                 params.append(Param(AVRX1000ThingIdParamTypeId, id));
                 thingDescriptor.setParams(params);
                 foreach (Thing *existingThing, myThings().filterByThingClassId(AVRX1000ThingClassId)) {
@@ -196,12 +195,17 @@ void IntegrationPluginDenon::setupThing(ThingSetupInfo *info)
     Thing *thing = info->thing();
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
-        qCDebug(dcDenon) << "Setup Denon thing" << thing->paramValue(AVRX1000ThingIpParamTypeId).toString();
 
-        QHostAddress address(thing->paramValue(AVRX1000ThingIpParamTypeId).toString());
+
+        if (m_avrConnections.contains(thing->id())) {
+            qCDebug(dcDenon()) << "Setup after reconfiguration, cleaning up ...";
+            m_avrConnections.take(thing->id())->deleteLater();
+
+        }
+        QString id = thing->paramValue(AVRX1000ThingIdParamTypeId).toString();
+        QHostAddress address = findAvrById(id);
         if (address.isNull()) {
-            qCWarning(dcDenon) << "Could not parse ip address" << thing->paramValue(AVRX1000ThingIpParamTypeId).toString();
-            info->finish(Thing::ThingErrorInvalidParameter, QT_TR_NOOP("The given IP address is not valid."));
+            info->finish(Thing::ThingErrorHardwareNotAvailable);
             return;
         }
 
@@ -617,6 +621,14 @@ void IntegrationPluginDenon::onAvrConnectionChanged(bool status)
 
     if (thing->thingClassId() == AVRX1000ThingClassId) {
         thing->setStateValue(AVRX1000ConnectedStateTypeId, denonConnection->connected());
+
+        if (!status) {
+            QString id = thing->paramValue(AVRX1000ThingIdParamTypeId).toString();
+            QHostAddress address = findAvrById(id);
+            if (!address.isNull()){
+                denonConnection->setHostAddress(address);
+            }
+        }
     }
 }
 
@@ -1444,7 +1456,14 @@ Heos *IntegrationPluginDenon::createHeosConnection(const QHostAddress &address)
     return heos;
 }
 
-QHostAddress IntegrationPluginDenon::discoverHeos(const QString &serialnumber)
+QHostAddress IntegrationPluginDenon::findAvrById(const QString &id)
 {
-
+    foreach (const ZeroConfServiceEntry &service, m_serviceBrowser->serviceEntries()) {
+        if (service.txt().contains("am=AVRX1000")) {
+            if (service.name().split("@").first() == id) {
+                return service.hostAddress();
+            }
+        }
+    }
+    return QHostAddress();
 }
