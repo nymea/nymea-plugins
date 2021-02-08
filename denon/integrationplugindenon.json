@@ -314,13 +314,6 @@
                     "interfaces": ["gateway"],
                     "paramTypes": [
                         {
-                            "id": "a54b98b4-b78f-41dd-a257-14425c6cf9ab",
-                            "name": "ip",
-                            "displayName": "IPv4 address",
-                            "type" : "QString",
-                            "readOnly": true
-                        },
-                        {
                             "id": "f796664d-6cb7-4f29-9d05-771968d82a32",
                             "name": "serialNumber",
                             "displayName": "Serial number",
