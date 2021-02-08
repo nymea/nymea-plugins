@@ -700,6 +700,15 @@ Description: nymea.io plugin for Texas Instruments devices
  This package will install the nymea.io plugin for Texas Instruments devices
 
 
+Package: nymea-plugin-telegram
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for Telegram
+ This plugin allows nymea to send messages to telegram via the bot API.
+
+
 Package: nymea-plugin-tplink
 Architecture: any
 Depends: ${shlibs:Depends},
@@ -1160,6 +1169,7 @@ Depends: nymea-plugin-anel,
          nymea-plugin-lifx,
          nymea-plugin-mailnotification,
          nymea-plugin-texasinstruments,
+         nymea-plugin-telegram,
          nymea-plugin-nanoleaf,
          nymea-plugin-netatmo,
          nymea-plugin-networkdetector,

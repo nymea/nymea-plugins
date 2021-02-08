@@ -57,6 +57,7 @@ PLUGIN_DIRS = \
     tado                \
     tasmota             \
     tcpcommander        \
+    telegram            \
     texasinstruments    \
     tplink              \
     tuya                \
