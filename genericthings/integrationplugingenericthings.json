@@ -972,6 +972,65 @@
                     ]
                 },
                 {
+                    "id": "d4d873fd-f0fc-433f-b615-91c1506a1890",
+                    "name": "lightSensor",
+                    "displayName": "Generic light sensor",
+                    "createMethods": ["user"],
+                    "interfaces": ["lightsensor"],
+                    "settingsTypes": [
+                        {
+                            "id": "6dea7384-b079-443b-8cc2-1479138fa212",
+                            "name": "minLux",
+                            "displayName": "Minimum Lux",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "unit": "Lux"
+                        },
+                        {
+                            "id": "7fe74404-d7f0-41af-a8d4-dd1bda27f752",
+                            "name": "maxLux",
+                            "displayName": "Maximum Lux",
+                            "type": "double",
+                            "defaultValue": 120000,
+                            "unit": "Lux"
+                        },
+                        {
+                            "id": "f800988f-1ad5-4ffb-9aa8-70ef17614966",
+                            "name": "accuracy",
+                            "displayName": "Accuracy (decimal places)",
+                            "type": "uint",
+                            "minValue": 0,
+                            "maxValue": 5,
+                            "defaultValue": 1
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "fe12ef32-9f2f-41cd-acb7-6b8e4acffa3b",
+                            "name": "lightIntensity",
+                            "displayName": "Light intensity",
+                            "displayNameEvent": "Light intensity changed",
+                            "type": "double",
+                            "unit": "Lux",
+                            "defaultValue": 0
+                        },
+                        {
+                            "id": "520e5d27-7d15-4d79-94cf-5d01f5a09ea8",
+                            "name": "input",
+                            "displayName": "Input value",
+                            "displayNameEvent": "Input value changed",
+                            "displayNameAction": "Set input value",
+                            "type": "double",
+                            "defaultValue": 0,
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "unit": "Percentage",
+                            "writable": true,
+                            "ioType": "analogOutput"
+                        }
+                    ]
+                },
+                {
                     "id": "c3123967-f741-4fe1-a0d4-9a3e405d7e52",
                     "name": "extendedSmartMeterConsumer",
                     "displayName": "Impulse based energy meter",

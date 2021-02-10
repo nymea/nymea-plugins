@@ -574,6 +574,21 @@ void IntegrationPluginGenericThings::executeAction(ThingActionInfo *info)
         } else {
             Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
         }
+    } else if (thing->thingClassId() == lightSensorThingClassId) {
+        if (action.actionTypeId() == lightSensorInputActionTypeId) {
+            double value = info->action().param(lightSensorInputActionInputParamTypeId).value().toDouble();
+            thing->setStateValue(lightSensorInputStateTypeId, value);
+            double min = info->thing()->setting(lightSensorSettingsMinLuxParamTypeId).toDouble();
+            double max = info->thing()->setting(lightSensorSettingsMaxLuxParamTypeId).toDouble();
+            double newValue = mapDoubleValue(value, 0, 100, min, max);
+            double roundingFactor = qPow(10, info->thing()->setting(lightSensorSettingsAccuracyParamTypeId).toInt());
+            newValue = qRound(newValue * roundingFactor) / roundingFactor;
+            thing->setStateValue(lightSensorLightIntensityStateTypeId, newValue);
+            info->finish(Thing::ThingErrorNoError);
+            return;
+        } else {
+            Q_ASSERT_X(false, "executeAction", QString("Unhandled actionTypeId: %1").arg(action.actionTypeId().toString()).toUtf8());
+        }
     } else if (thing->thingClassId() == extendedSmartMeterConsumerThingClassId) {
         if (action.actionTypeId() == extendedSmartMeterConsumerImpulseInputActionTypeId) {
             bool value = info->action().param(extendedSmartMeterConsumerImpulseInputActionImpulseInputParamTypeId).value().toBool();
