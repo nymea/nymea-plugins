@@ -24,6 +24,12 @@ The [Hue dimmer switch](https://www.philips-hue.com/en-us/p/hue-dimmer-switch/04
 
 **Pairing instructions**: Open the ZigBee network for joining. Press the setup button for 5 seconds until the LED start blinking in different colors.
 
+### Hue smart button
+
+The [Hue Smart button](https://www.philips-hue.com/en-us/p/hue-smart-button/046677553715) is fully supported.
+
+**Pairing instructions**: Open the ZigBee network for joining. Press the setup button behind the back cap for 5 seconds until the LED start blinking in different colors.
+
 ### Hue lights
 
 Most of the lights and lamps from Philips Hue should be handled in a generic way by the `nymea-plugin-zigbee-generic-lights` plugin. There are 2 methods for bringing a Hue light / bulb into the nymea ZigBee network.
