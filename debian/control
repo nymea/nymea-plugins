@@ -910,6 +910,7 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          nymea-plugins-translations,
+Replaces: guh-plugin-snapd
 Description: nymea.io plugin for snapd
  The nymea daemon is a plugin based IoT (Internet of Things) server. The
  server works like a translator for devices, things and services and
