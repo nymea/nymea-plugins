@@ -157,7 +157,9 @@ The name of the ParamType (ThingClass: tasmotaSwitch, Type: thing, ID: {564cf6c6
         <source>Power changed</source>
         <extracomment>The name of the EventType ({88dbdf8e-45ff-466f-8352-8654a6b5fe68}) of ThingClass tasmotaLight
 ----------
-The name of the EventType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch</extracomment>
+The name of the EventType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch
+----------
+The name of the EventType ({0b5a48c9-73b8-42ab-9909-71b8dc2227e3}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -172,14 +174,22 @@ The name of the ParamType (ThingClass: tasmotaSwitch, ActionType: power, ID: {41
 ----------
 The name of the ParamType (ThingClass: tasmotaSwitch, EventType: power, ID: {413503d7-fc9f-417a-95fa-5c350a6f69f9})
 ----------
-The name of the StateType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch</extracomment>
+The name of the StateType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch
+----------
+The name of the ParamType (ThingClass: sonoff_basic, ActionType: power, ID: {0b5a48c9-73b8-42ab-9909-71b8dc2227e3})
+----------
+The name of the ParamType (ThingClass: sonoff_basic, EventType: power, ID: {0b5a48c9-73b8-42ab-9909-71b8dc2227e3})
+----------
+The name of the StateType ({0b5a48c9-73b8-42ab-9909-71b8dc2227e3}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Set power</source>
         <extracomment>The name of the ActionType ({88dbdf8e-45ff-466f-8352-8654a6b5fe68}) of ThingClass tasmotaLight
 ----------
-The name of the ActionType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch</extracomment>
+The name of the ActionType ({413503d7-fc9f-417a-95fa-5c350a6f69f9}) of ThingClass tasmotaSwitch
+----------
+The name of the ActionType ({0b5a48c9-73b8-42ab-9909-71b8dc2227e3}) of ThingClass sonoff_basic</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -299,6 +309,132 @@ The name of the EventType ({08b4ec84-1aec-4e68-a3b4-ae251b8cbe6d}) of ThingClass
 The name of the EventType ({3d6a567f-d266-4711-bcf1-3ac1f53abadb}) of ThingClass sonoff_dual
 ----------
 The name of the EventType ({f70e202a-c178-4fbe-a778-713220d11b23}) of ThingClass sonoff_basic</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power channel 1</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_quad, ActionType: powerCH1, ID: {e8fd95c3-2323-40d8-89cf-40e0068977d8})
+----------
+The name of the ParamType (ThingClass: sonoff_quad, EventType: powerCH1, ID: {e8fd95c3-2323-40d8-89cf-40e0068977d8})
+----------
+The name of the StateType ({e8fd95c3-2323-40d8-89cf-40e0068977d8}) of ThingClass sonoff_quad
+----------
+The name of the ParamType (ThingClass: sonoff_tri, ActionType: powerCH1, ID: {27bdb42d-ef95-4905-ac3d-925bcc8a1ba1})
+----------
+The name of the ParamType (ThingClass: sonoff_tri, EventType: powerCH1, ID: {27bdb42d-ef95-4905-ac3d-925bcc8a1ba1})
+----------
+The name of the StateType ({27bdb42d-ef95-4905-ac3d-925bcc8a1ba1}) of ThingClass sonoff_tri
+----------
+The name of the ParamType (ThingClass: sonoff_dual, ActionType: powerCH1, ID: {b8bf3085-8061-4cd6-af1f-f76a03054f46})
+----------
+The name of the ParamType (ThingClass: sonoff_dual, EventType: powerCH1, ID: {b8bf3085-8061-4cd6-af1f-f76a03054f46})
+----------
+The name of the StateType ({b8bf3085-8061-4cd6-af1f-f76a03054f46}) of ThingClass sonoff_dual</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power channel 1 changed</source>
+        <extracomment>The name of the EventType ({e8fd95c3-2323-40d8-89cf-40e0068977d8}) of ThingClass sonoff_quad
+----------
+The name of the EventType ({27bdb42d-ef95-4905-ac3d-925bcc8a1ba1}) of ThingClass sonoff_tri
+----------
+The name of the EventType ({b8bf3085-8061-4cd6-af1f-f76a03054f46}) of ThingClass sonoff_dual</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power channel 2</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_quad, ActionType: powerCH2, ID: {baf0ca62-7f09-45ea-aea1-6de34764e6cb})
+----------
+The name of the ParamType (ThingClass: sonoff_quad, EventType: powerCH2, ID: {baf0ca62-7f09-45ea-aea1-6de34764e6cb})
+----------
+The name of the StateType ({baf0ca62-7f09-45ea-aea1-6de34764e6cb}) of ThingClass sonoff_quad
+----------
+The name of the ParamType (ThingClass: sonoff_tri, ActionType: powerCH2, ID: {705d8277-896a-4d56-b9ff-0a614ecfd39c})
+----------
+The name of the ParamType (ThingClass: sonoff_tri, EventType: powerCH2, ID: {705d8277-896a-4d56-b9ff-0a614ecfd39c})
+----------
+The name of the StateType ({705d8277-896a-4d56-b9ff-0a614ecfd39c}) of ThingClass sonoff_tri
+----------
+The name of the ParamType (ThingClass: sonoff_dual, ActionType: powerCH2, ID: {4fbcaeb6-9242-4aa6-b462-a214fb38bcc9})
+----------
+The name of the ParamType (ThingClass: sonoff_dual, EventType: powerCH2, ID: {4fbcaeb6-9242-4aa6-b462-a214fb38bcc9})
+----------
+The name of the StateType ({4fbcaeb6-9242-4aa6-b462-a214fb38bcc9}) of ThingClass sonoff_dual</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power channel 2 changed</source>
+        <extracomment>The name of the EventType ({baf0ca62-7f09-45ea-aea1-6de34764e6cb}) of ThingClass sonoff_quad
+----------
+The name of the EventType ({705d8277-896a-4d56-b9ff-0a614ecfd39c}) of ThingClass sonoff_tri
+----------
+The name of the EventType ({4fbcaeb6-9242-4aa6-b462-a214fb38bcc9}) of ThingClass sonoff_dual</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power channel 3</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_quad, ActionType: powerCH3, ID: {8b939d15-3e45-40aa-bb53-9b3fb47f3cb3})
+----------
+The name of the ParamType (ThingClass: sonoff_quad, EventType: powerCH3, ID: {8b939d15-3e45-40aa-bb53-9b3fb47f3cb3})
+----------
+The name of the StateType ({8b939d15-3e45-40aa-bb53-9b3fb47f3cb3}) of ThingClass sonoff_quad
+----------
+The name of the ParamType (ThingClass: sonoff_tri, ActionType: powerCH3, ID: {156f285d-e474-43d9-9a9d-17b3bcaef893})
+----------
+The name of the ParamType (ThingClass: sonoff_tri, EventType: powerCH3, ID: {156f285d-e474-43d9-9a9d-17b3bcaef893})
+----------
+The name of the StateType ({156f285d-e474-43d9-9a9d-17b3bcaef893}) of ThingClass sonoff_tri</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power channel 3 changed</source>
+        <extracomment>The name of the EventType ({8b939d15-3e45-40aa-bb53-9b3fb47f3cb3}) of ThingClass sonoff_quad
+----------
+The name of the EventType ({156f285d-e474-43d9-9a9d-17b3bcaef893}) of ThingClass sonoff_tri</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power channel 4</source>
+        <extracomment>The name of the ParamType (ThingClass: sonoff_quad, ActionType: powerCH4, ID: {4060baa0-2b11-4905-908c-b6f1c3b6a892})
+----------
+The name of the ParamType (ThingClass: sonoff_quad, EventType: powerCH4, ID: {4060baa0-2b11-4905-908c-b6f1c3b6a892})
+----------
+The name of the StateType ({4060baa0-2b11-4905-908c-b6f1c3b6a892}) of ThingClass sonoff_quad</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power channel 4 changed</source>
+        <extracomment>The name of the EventType ({4060baa0-2b11-4905-908c-b6f1c3b6a892}) of ThingClass sonoff_quad</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set power channel 1</source>
+        <extracomment>The name of the ActionType ({e8fd95c3-2323-40d8-89cf-40e0068977d8}) of ThingClass sonoff_quad
+----------
+The name of the ActionType ({27bdb42d-ef95-4905-ac3d-925bcc8a1ba1}) of ThingClass sonoff_tri
+----------
+The name of the ActionType ({b8bf3085-8061-4cd6-af1f-f76a03054f46}) of ThingClass sonoff_dual</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set power channel 2</source>
+        <extracomment>The name of the ActionType ({baf0ca62-7f09-45ea-aea1-6de34764e6cb}) of ThingClass sonoff_quad
+----------
+The name of the ActionType ({705d8277-896a-4d56-b9ff-0a614ecfd39c}) of ThingClass sonoff_tri
+----------
+The name of the ActionType ({4fbcaeb6-9242-4aa6-b462-a214fb38bcc9}) of ThingClass sonoff_dual</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set power channel 3</source>
+        <extracomment>The name of the ActionType ({8b939d15-3e45-40aa-bb53-9b3fb47f3cb3}) of ThingClass sonoff_quad
+----------
+The name of the ActionType ({156f285d-e474-43d9-9a9d-17b3bcaef893}) of ThingClass sonoff_tri</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set power channel 4</source>
+        <extracomment>The name of the ActionType ({4060baa0-2b11-4905-908c-b6f1c3b6a892}) of ThingClass sonoff_quad</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
