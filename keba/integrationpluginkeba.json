@@ -13,7 +13,7 @@
                     "name": "wallbox",
                     "displayName": "Keba KeContact",
                     "createMethods": ["discovery", "user"],
-                    "interfaces": ["extendedevcharger", "smartmeterconsumer", "connectable"],
+                    "interfaces": ["evcharger", "smartmeterconsumer", "connectable"],
                     "paramTypes":[
                         {
                             "id": "730cd3d3-5f0e-4028-a8c2-ced7574f13f3",
