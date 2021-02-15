@@ -195,7 +195,7 @@
                     "name": "evCharger",
                     "displayName": "EV Charging Station",
                     "createMethods": ["user"],
-                    "interfaces": ["extendedevcharger"],
+                    "interfaces": ["evcharger"],
                     "paramTypes": [ ],
                     "stateTypes": [
                         {
