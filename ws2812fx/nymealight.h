@@ -16,6 +16,9 @@ public:
     // Set the color. If fade duration is 0, the color will be set immediatly,
     // otherwise it will fade to the color with the given fade duration
     NymeaLightInterfaceReply *setColor(const QColor &color, quint16 fadeDuration = 0);
+    NymeaLightInterfaceReply *setBrightness(quint8 brightness, quint16 fadeDuration = 0);
+    NymeaLightInterfaceReply *setSpeed(quint16 speed, quint16 fadeDuration = 0);
+    NymeaLightInterfaceReply *setEffect(quint8 effect);
 
     bool available() const;
 

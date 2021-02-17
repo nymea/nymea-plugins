@@ -56,10 +56,10 @@ bool NymeaLightSerialInterface::available()
 void NymeaLightSerialInterface::sendData(const QByteArray &data)
 {
     // Stream bytes using SLIP
-    qCDebug(dcWs2812fx()) << "Write data" << data.toHex();
-
     QByteArray message;
     QDataStream stream(&message, QIODevice::WriteOnly);
+    stream << static_cast<quint8>(SlipProtocolEnd);
+
     for (int i = 0; i < data.length(); i++) {
         quint8 dataByte = data.at(i);
         switch (dataByte) {
@@ -76,6 +76,9 @@ void NymeaLightSerialInterface::sendData(const QByteArray &data)
             break;
         }
     }
+    stream << static_cast<quint8>(SlipProtocolEnd);
+
+    qCDebug(dcWs2812fx()) << "UART -->" << message.toHex();
     m_serialPort->write(message);
     m_serialPort->flush();
 }
@@ -83,7 +86,6 @@ void NymeaLightSerialInterface::sendData(const QByteArray &data)
 void NymeaLightSerialInterface::onReadyRead()
 {
     QByteArray data = m_serialPort->readAll();
-    qCDebug(dcWs2812fx()) << "Received data" << data.toHex();
     for (int i = 0; i < data.length(); i++) {
         quint8 receivedByte = data.at(i);
 
@@ -106,7 +108,10 @@ void NymeaLightSerialInterface::onReadyRead()
         switch (receivedByte) {
         case SlipProtocolEnd:
             // We are done with this package, process it and reset the buffer
-            emit dataReceived(m_buffer);
+            if (!m_buffer.isEmpty() && m_buffer.length() >= 3) {
+                qCDebug(dcWs2812fx()) << "UART <--" << m_buffer.toHex();
+                emit dataReceived(m_buffer);
+            }
             m_buffer.clear();
             m_protocolEscaping = false;
             break;

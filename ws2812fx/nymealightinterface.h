@@ -2,6 +2,7 @@
 #define NYMEALIGHTINTERFACE_H
 
 #include <QObject>
+#include <QTimer>
 
 class NymeaLightInterface : public QObject
 {
@@ -12,6 +13,7 @@ public:
         CommandSetBrightness = 0x01,
         CommandSetSpeed = 0x02,
         CommandSetEffect = 0x03,
+        CommandDebug = 0xFE,
         CommandCustom = 0xFF
     };
     Q_ENUM(Command)
@@ -21,6 +23,7 @@ public:
         StatusInvalidProtocol = 0x01,
         StatusInvalidCommand = 0x02,
         StatusInvalidPlayload = 0x03,
+        StatusTimeout = 0xfe,
         StatusUnknownError = 0xff
     };
     Q_ENUM(Status)
@@ -45,6 +48,7 @@ signals:
 
 };
 
+
 class NymeaLightInterfaceReply : public QObject
 {
     Q_OBJECT
@@ -62,14 +66,24 @@ signals:
 
 private:
     explicit NymeaLightInterfaceReply(const QByteArray &requestData, QObject *parent = nullptr) : QObject(parent), m_requestData(requestData) {
+
         Q_ASSERT(m_requestData.length() >= 2);
         m_command = static_cast<NymeaLightInterface::Command>(m_requestData.at(0));
         m_requestId = static_cast<quint8>(m_requestData.at(1));
+
+        m_timer = new QTimer(this);
+        m_timer->setInterval(2000);
+        m_timer->setSingleShot(true);
+        connect(m_timer, &QTimer::timeout, this, [=](){
+            m_status = NymeaLightInterface::StatusTimeout;
+            emit finished();
+        });
     }
 
+    QTimer *m_timer = nullptr;
     QByteArray m_requestData;
     NymeaLightInterface::Command m_command;
-    quint8 m_requestId;
+    quint8 m_requestId = 0;
     NymeaLightInterface::Status m_status = NymeaLightInterface::StatusUnknownError;
 };
 
