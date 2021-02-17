@@ -87,6 +87,11 @@ private:
     void readLightColorTemperatureState(Thing *thing);
     void readLightColorXYState(Thing *thing);
 
+    // Configure reporting
+    void configureLightPowerReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+    void configureLightBrightnessReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint);
+
+
     // Color temperature information handling
     typedef struct ColorTemperatureRange {
         quint16 minValue = 250;

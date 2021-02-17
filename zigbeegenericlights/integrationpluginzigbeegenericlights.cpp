@@ -112,7 +112,6 @@ bool IntegrationPluginZigbeeGenericLights::handleNode(ZigbeeNode *node, const QU
             handled = true;
         }
 
-
         if ((endpoint->profile() == Zigbee::ZigbeeProfileLightLink &&
              endpoint->deviceId() == Zigbee::LightLinkDeviceColourTemperatureLight) ||
                 (endpoint->profile() == Zigbee::ZigbeeProfileHomeAutomation &&
@@ -229,11 +228,16 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
         });
 
         // Read the power state once the node gets reachable
-        connect(node, &ZigbeeNode::reachableChanged, thing, [thing, this](bool reachable){
+        connect(node, &ZigbeeNode::reachableChanged, thing, [=](bool reachable){
             if (reachable) {
+                configureLightPowerReporting(node, endpoint);
                 readLightPowerState(thing);
             }
         });
+
+        if (node->reachable()) {
+            configureLightPowerReporting(node, endpoint);
+        }
     }
 
     // Dimmable light
@@ -280,12 +284,19 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
         });
 
         // Read the states once the node gets reachable
-        connect(node, &ZigbeeNode::reachableChanged, thing, [thing, this](bool reachable){
+        connect(node, &ZigbeeNode::reachableChanged, thing, [=](bool reachable){
             if (reachable) {
+                configureLightPowerReporting(node, endpoint);
+                configureLightBrightnessReporting(node, endpoint);
                 readLightPowerState(thing);
                 readLightLevelState(thing);
             }
         });
+
+        if (node->reachable()) {
+            configureLightPowerReporting(node, endpoint);
+            configureLightBrightnessReporting(node, endpoint);
+        }
     }
 
     // Color temperature light
@@ -354,17 +365,25 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
         });
 
         // Read the states once the node gets reachable
-        connect(node, &ZigbeeNode::reachableChanged, thing, [thing, this](bool reachable){
+        connect(node, &ZigbeeNode::reachableChanged, thing, [=](bool reachable){
             if (reachable) {
+                configureLightPowerReporting(node, endpoint);
+                configureLightBrightnessReporting(node, endpoint);
+
                 readColorTemperatureRange(thing);
                 readLightPowerState(thing);
                 readLightLevelState(thing);
                 readLightColorTemperatureState(thing);
             }
         });
+
+        if (node->reachable()) {
+            configureLightPowerReporting(node, endpoint);
+            configureLightBrightnessReporting(node, endpoint);
+        }
     }
 
-    // Color temperature light
+    // Color light
     if (thing->thingClassId() == colorLightThingClassId) {
 
         // Get the on/off cluster
@@ -430,8 +449,11 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
         });
 
         // Read the states once the node gets reachable
-        connect(node, &ZigbeeNode::reachableChanged, thing, [thing, this](bool reachable){
+        connect(node, &ZigbeeNode::reachableChanged, thing, [=](bool reachable){
             if (reachable) {
+                configureLightPowerReporting(node, endpoint);
+                configureLightBrightnessReporting(node, endpoint);
+
                 // Note: this will also read the color temperature range if available
                 readColorCapabilities(thing);
                 readLightPowerState(thing);
@@ -439,8 +461,12 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
                 readLightColorXYState(thing);
             }
         });
-    }
 
+        if (node->reachable()) {
+            configureLightPowerReporting(node, endpoint);
+            configureLightBrightnessReporting(node, endpoint);
+        }
+    }
 
     info->finish(Thing::ThingErrorNoError);
 }
@@ -541,7 +567,10 @@ void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
     // Color temperature light
     if (thing->thingClassId() == colorTemperatureLightThingClassId) {
         if (info->action().actionTypeId() == colorTemperatureLightAlertActionTypeId) {
-            executeAlertAction(info, endpoint);
+            qCWarning(dcZigbeeGenericLights()) << "FIXME: configure power reporting";
+            configureLightPowerReporting(node, endpoint);
+            configureLightBrightnessReporting(node, endpoint);
+            //executeAlertAction(info, endpoint);
             return;
         }
 
@@ -940,6 +969,65 @@ void IntegrationPluginZigbeeGenericLights::readLightColorXYState(Thing *thing)
         QColor color = ZigbeeUtils::convertXYToColor(currentX, currentY);
         qCDebug(dcZigbeeGenericLights()) << "Current color" << color.toRgb() << QPoint(currentX, currentY);
         thing->setStateValue(colorLightColorStateTypeId, color);
+    });
+}
+
+void IntegrationPluginZigbeeGenericLights::configureLightPowerReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    // Bind the cluster to the coordinator
+    qCDebug(dcZigbeeGenericLights()) << "Bind on/off cluster to coordinator IEEE address";
+    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdOnOff, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeGenericLights()) << "Failed to bind on/off cluster to coordinator" << zdoReply->error();
+        } else {
+            qCDebug(dcZigbeeGenericLights()) << "Bind on/off cluster to coordinator finished successfully";
+        }
+
+        // Configure attribute reporting for lock state
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+        reportingConfig.attributeId = ZigbeeClusterOnOff::AttributeOnOff;
+        reportingConfig.dataType = Zigbee::Bool;
+        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+        qCDebug(dcZigbeeGenericLights()) << "Configure attribute reporting for on/off cluster";
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdOnOff)->configureReporting({reportingConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeGenericLights()) << "Failed configure attribute reporting on on/off cluster" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeeGenericLights()) << "Attribute reporting configuration finished for on/off cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
+    });
+}
+
+void IntegrationPluginZigbeeGenericLights::configureLightBrightnessReporting(ZigbeeNode *node, ZigbeeNodeEndpoint *endpoint)
+{
+    qCDebug(dcZigbeeGenericLights()) << "Bind level cluster to coordinator IEEE address";
+    ZigbeeDeviceObjectReply * zdoReply = node->deviceObject()->requestBindIeeeAddress(endpoint->endpointId(), ZigbeeClusterLibrary::ClusterIdLevelControl, hardwareManager()->zigbeeResource()->coordinatorAddress(node->networkUuid()), 0x01);
+    connect(zdoReply, &ZigbeeDeviceObjectReply::finished, node, [=](){
+        if (zdoReply->error() != ZigbeeDeviceObjectReply::ErrorNoError) {
+            qCWarning(dcZigbeeGenericLights()) << "Failed to bind level cluster to coordinator" << zdoReply->error();
+        } else {
+            qCDebug(dcZigbeeGenericLights()) << "Bind level cluster to coordinator finished successfully";
+        }
+
+        // Configure attribute reporting for lock state
+        ZigbeeClusterLibrary::AttributeReportingConfiguration reportingConfig;
+        reportingConfig.attributeId = ZigbeeClusterLevelControl::AttributeCurrentLevel;
+        reportingConfig.dataType = Zigbee::Uint8;
+        reportingConfig.reportableChange = ZigbeeDataType(static_cast<quint8>(1)).data();
+
+        qCDebug(dcZigbeeGenericLights()) << "Configure attribute reporting for level cluster";
+        ZigbeeClusterReply *reportingReply = endpoint->getInputCluster(ZigbeeClusterLibrary::ClusterIdLevelControl)->configureReporting({reportingConfig});
+        connect(reportingReply, &ZigbeeClusterReply::finished, this, [=](){
+            if (reportingReply->error() != ZigbeeClusterReply::ErrorNoError) {
+                qCWarning(dcZigbeeGenericLights()) << "Failed configure attribute reporting on level cluster" << reportingReply->error();
+            } else {
+                qCDebug(dcZigbeeGenericLights()) << "Attribute reporting configuration finished for level cluster" << ZigbeeClusterLibrary::parseAttributeReportingStatusRecords(reportingReply->responseFrame().payload);
+            }
+        });
     });
 }
 
