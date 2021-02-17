@@ -700,6 +700,15 @@ Depends: ${shlibs:Depends},
          nymea-plugins-translations,
 Description: nymea.io plugin for Telegram
  This plugin allows nymea to send messages to telegram via the bot API.
+ 
+
+Package: nymea-plugin-tempo
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         nymea-plugins-translations,
+Description: nymea.io plugin for Tempo time tracking
+ This package will install the nymea.io plugin for Tempo time tracking.
 
 
 Package: nymea-plugin-tplink

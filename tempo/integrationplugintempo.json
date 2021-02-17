@@ -1,0 +1,172 @@
+{
+    "id": "809bc4ca-d1cd-4279-9e0d-7324537ccb5a",
+    "name": "tempo",
+    "displayName": "Tempo",
+    "apiKeys": ["tempo"],
+    "paramTypes": [
+        {
+            "id": "c130b2b7-6d30-406e-899b-669a065daee3",
+            "name": "customClientId",
+            "displayName": "Custom client id",
+            "defaultValue": "",
+            "type": "QString"
+        },
+        {
+            "id": "9c759711-e772-44ce-9d86-6a3af89c2d94",
+            "name": "customClientSecret",
+            "displayName": "Custom client secret",
+            "defaultValue": "",
+            "type": "QString"
+        }
+    ],
+    "vendors": [
+        {
+            "id": "58fc1ab7-b8b5-4e52-8388-72957ce5852d",
+            "name": "tempo",
+            "displayName": "Tempo",
+            "thingClasses": [
+                {
+                    "id": "878eae0a-6217-4b36-bd46-72c911e52e73",
+                    "name": "tempoConnection",
+                    "displayName": "Tempo connection",
+                    "interfaces": ["account"],
+                    "createMethods": ["user"],
+                    "setupMethod": "oauth",
+                    "paramTypes": [
+                        {
+                            "id": "b4110c37-8331-4057-8e9f-12f34c2623fe",
+                            "name": "atlassianAccountName",
+                            "displayName": "Atlassian account name",
+                            "type": "QString",
+                            "defaultValue": ""
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "15f45315-5419-4e1b-ace3-fc21503d3b70",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "e4b5be87-dbc9-481e-88da-608c71be8bda",
+                            "name": "loggedIn",
+                            "displayName": "Logged in",
+                            "displayNameEvent": "Logged in changed",
+                            "defaultValue": true,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "f3b9581b-7828-4fbe-be5f-3e8aad78a71e",
+                            "name": "userDisplayName",
+                            "displayName": "User name",
+                            "displayNameEvent": "User name changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "db70444d-bf67-4133-b2de-54aefbdd7149",
+                            "name": "autoAddAccounts",
+                            "displayName": "Auto add accounts",
+                            "displayNameEvent": "Auto add accounts",
+                            "defaultValue": true,
+                            "type": "bool"
+                        }
+                    ]
+                },
+                {
+                    "id": "8be71352-bdfd-450b-903e-79a4ed203701",
+                    "name": "account",
+                    "displayName": "Account",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["auto"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "c6aeddae-56af-496d-a419-1635ff9bae50",
+                            "name": "id",
+                            "displayName": "ID",
+                            "defaultValue": "-",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "0b776bc1-9e56-4205-9bc3-b356026f5b64",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "7948f15b-7243-404e-9e67-18e915e8b328",
+                            "name": "status",
+                            "displayName": "Status",
+                            "displayNameEvent": "Status changed",
+                            "defaultValue": "OPEN",
+                            "possibleValues": [
+                                "OPEN",
+                                "CLOSED",
+                                "ARCHIVED"
+                            ],
+                            "type": "QString"
+                        },
+                        {
+                            "id": "abd55ea0-ad4e-413e-bc77-3e8b7f0a9be4",
+                            "name": "global",
+                            "displayName": "Global",
+                            "displayNameEvent": "Global changed",
+                            "defaultValue": false,
+                            "type": "bool"
+                        },
+                        {
+                            "id": "44ebbc18-7511-48c0-860b-c4de5f634ed6",
+                            "name": "monthlyBudget",
+                            "displayName": "Monthly budget",
+                            "displayNameEvent": "Monthly budget changed",
+                            "defaultValue": 0,
+                            "type": "int"
+                        },
+                        {
+                            "id": "f1f2af66-d09a-4242-9058-401145f662c4",
+                            "name": "lead",
+                            "displayName": "Lead",
+                            "displayNameEvent": "Lead changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "ece43b12-4a0d-4e25-b811-b1aca610bea8",
+                            "name": "contact",
+                            "displayName": "Contact",
+                            "displayNameEvent": "Contact changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "3af6d1c0-bb0a-406f-809b-2c367e1a16bb",
+                            "name": "category",
+                            "displayName": "Category",
+                            "displayNameEvent": "Category changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "3dcc1426-51f8-46fa-9967-5a93d7bb2633",
+                            "name": "Customer",
+                            "displayName": "Customer",
+                            "displayNameEvent": "Customer changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
