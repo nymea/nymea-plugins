@@ -100,6 +100,7 @@
                             "displayNameAction": "Set effect mode",
                             "type": "QString",
                             "defaultValue": "Static",
+                            "writable": true,
                             "possibleValues": [
                                 "Static",
                                 "Blink",
@@ -161,8 +162,7 @@
                                 "Custom 1",
                                 "Custom 2",
                                 "Custom 3"
-                            ],
-                            "writable": true
+                            ]
                         }
                     ]
                 }

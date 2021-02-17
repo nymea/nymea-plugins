@@ -34,6 +34,7 @@ private:
 private slots:
     void onReadyRead();
     void onSerialError(QSerialPort::SerialPortError error);
+
 };
 
 #endif // NYMEALIGHTSERIALINTERFACE_H
