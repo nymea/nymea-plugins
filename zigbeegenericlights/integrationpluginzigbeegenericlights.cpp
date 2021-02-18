@@ -277,10 +277,27 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
             thing->setStateValue(dimmableLightBrightnessStateTypeId, percentage);
         }
 
-        connect(levelCluster, &ZigbeeClusterLevelControl::currentLevelChanged, thing, [thing](quint8 level){
-            int percentage = qRound(level * 100.0 / 255.0);
-            qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << level << percentage << "%";
-            thing->setStateValue(dimmableLightBrightnessStateTypeId, percentage);
+        connect(levelCluster, &ZigbeeClusterLevelControl::currentLevelChanged, thing, [this, thing](quint8 level){
+            // Let's check if we have a pending action, if so,
+            // do not update the state and wait until we reached the desired brightness level
+            if (m_pendingBrightnessActions.contains(thing)) {
+                quint8 targetBrightness = m_pendingBrightnessActions.value(thing)->action().paramValue(dimmableLightBrightnessActionBrightnessParamTypeId).toInt();
+                quint8 targetLevel = static_cast<quint8>(qRound(255.0 * targetBrightness / 100.0));
+                // Note check +-1 since there could be some rounding issue
+                if (level == targetLevel || level == targetLevel - 1 || level == targetLevel + 1) {
+                    qCDebug(dcZigbeeGenericLights()) << "Brightness moving finihed" << level << "-->" << targetLevel;
+                    qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << targetLevel << targetBrightness << "%";
+                    thing->setStateValue(dimmableLightBrightnessStateTypeId, targetBrightness);
+                    ThingActionInfo *info = m_pendingBrightnessActions.take(thing);
+                    info->finish(Thing::ThingErrorNoError);
+                } else {
+                    qCDebug(dcZigbeeGenericLights()) << "Brightness moving" << level << "-->" << targetLevel;
+                }
+            } else {
+                int percentage = qRound(level * 100.0 / 255.0);
+                qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << level << percentage << "%";
+                thing->setStateValue(dimmableLightBrightnessStateTypeId, percentage);
+            }
         });
 
         // Read the states once the node gets reachable
@@ -336,10 +353,27 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
             thing->setStateValue(colorTemperatureLightBrightnessStateTypeId, percentage);
         }
 
-        connect(levelCluster, &ZigbeeClusterLevelControl::currentLevelChanged, thing, [thing](quint8 level){
-            int percentage = qRound(level * 100.0 / 255.0);
-            qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << level << percentage << "%";
-            thing->setStateValue(colorTemperatureLightBrightnessStateTypeId, percentage);
+        connect(levelCluster, &ZigbeeClusterLevelControl::currentLevelChanged, thing, [this, thing](quint8 level){
+            // Let's check if we have a pending action, if so,
+            // do not update the state and wait until we reached the desired brightness level
+            if (m_pendingBrightnessActions.contains(thing)) {
+                quint8 targetBrightness = m_pendingBrightnessActions.value(thing)->action().paramValue(colorTemperatureLightBrightnessActionBrightnessParamTypeId).toInt();
+                quint8 targetLevel = static_cast<quint8>(qRound(255.0 * targetBrightness / 100.0));
+                // Note check +-1 since there could be some rounding issue
+                if (level == targetLevel || level == targetLevel - 1 || level == targetLevel + 1) {
+                    qCDebug(dcZigbeeGenericLights()) << "Brightness moving finihed" << level << "-->" << targetLevel;
+                    qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << targetLevel << targetBrightness << "%";
+                    thing->setStateValue(colorTemperatureLightBrightnessStateTypeId, targetBrightness);
+                    ThingActionInfo *info = m_pendingBrightnessActions.take(thing);
+                    info->finish(Thing::ThingErrorNoError);
+                } else {
+                    qCDebug(dcZigbeeGenericLights()) << "Brightness moving" << level << "-->" << targetLevel;
+                }
+            } else {
+                int percentage = qRound(level * 100.0 / 255.0);
+                qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << level << percentage << "%";
+                thing->setStateValue(colorTemperatureLightBrightnessStateTypeId, percentage);
+            }
         });
 
 
@@ -420,12 +454,28 @@ void IntegrationPluginZigbeeGenericLights::setupThing(ThingSetupInfo *info)
             thing->setStateValue(colorLightBrightnessStateTypeId, percentage);
         }
 
-        connect(levelCluster, &ZigbeeClusterLevelControl::currentLevelChanged, thing, [thing](quint8 level){
-            int percentage = qRound(level * 100.0 / 255.0);
-            qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << level << percentage << "%";
-            thing->setStateValue(colorLightBrightnessStateTypeId, percentage);
+        connect(levelCluster, &ZigbeeClusterLevelControl::currentLevelChanged, thing, [this, thing](quint8 level){
+            // Let's check if we have a pending action, if so,
+            // do not update the state and wait until we reached the desired brightness level
+            if (m_pendingBrightnessActions.contains(thing)) {
+                quint8 targetBrightness = m_pendingBrightnessActions.value(thing)->action().paramValue(colorLightBrightnessActionBrightnessParamTypeId).toInt();
+                quint8 targetLevel = static_cast<quint8>(qRound(255.0 * targetBrightness / 100.0));
+                // Note check +-1 since there could be some rounding issue
+                if (level == targetLevel || level == targetLevel - 1 || level == targetLevel + 1) {
+                    qCDebug(dcZigbeeGenericLights()) << "Brightness moving finihed" << level << "-->" << targetLevel;
+                    qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << targetLevel << targetBrightness << "%";
+                    thing->setStateValue(colorLightBrightnessStateTypeId, targetBrightness);
+                    ThingActionInfo *info = m_pendingBrightnessActions.take(thing);
+                    info->finish(Thing::ThingErrorNoError);
+                } else {
+                    qCDebug(dcZigbeeGenericLights()) << "Brightness moving" << level << "-->" << targetLevel;
+                }
+            } else {
+                int percentage = qRound(level * 100.0 / 255.0);
+                qCDebug(dcZigbeeGenericLights()) << thing << "level state changed" << level << percentage << "%";
+                thing->setStateValue(colorLightBrightnessStateTypeId, percentage);
+            }
         });
-
 
         // Get color cluster
         ZigbeeClusterColorControl *colorCluster = endpoint->inputCluster<ZigbeeClusterColorControl>(ZigbeeClusterLibrary::ClusterIdColorControl);
@@ -567,10 +617,7 @@ void IntegrationPluginZigbeeGenericLights::executeAction(ThingActionInfo *info)
     // Color temperature light
     if (thing->thingClassId() == colorTemperatureLightThingClassId) {
         if (info->action().actionTypeId() == colorTemperatureLightAlertActionTypeId) {
-            qCWarning(dcZigbeeGenericLights()) << "FIXME: configure power reporting";
-            configureLightPowerReporting(node, endpoint);
-            configureLightBrightnessReporting(node, endpoint);
-            //executeAlertAction(info, endpoint);
+            executeAlertAction(info, endpoint);
             return;
         }
 
@@ -775,9 +822,29 @@ void IntegrationPluginZigbeeGenericLights::executeBrightnessAction(ThingActionIn
         if (reply->error() != ZigbeeClusterReply::ErrorNoError) {
             info->finish(Thing::ThingErrorHardwareFailure);
         } else {
-            info->finish(Thing::ThingErrorNoError);
-            thing->setStateValue(powerStateTypeId, (brightness > 0 ? true : false));
-            thing->setStateValue(brightnessStateTypeId, brightness);
+            if (m_pendingBrightnessActions.contains(thing)) {
+                qCDebug(dcZigbeeGenericLights()) << "Finish previouse action";
+                m_pendingBrightnessActions.take(thing)->finish(Thing::ThingErrorNoError);
+            }
+
+            connect(info, &ThingActionInfo::aborted, thing, [=](){
+                 qCWarning(dcZigbeeGenericLights()) << "Action aborted";
+                 if (m_pendingBrightnessActions.values().contains(info)) {
+                     m_pendingBrightnessActions.take(thing);
+                 }
+            });
+
+            // If we are already on the desired level, finish the action
+            if (levelCluster->currentLevel() == level) {
+                thing->setStateValue(powerStateTypeId, (brightness > 0 ? true : false));
+                thing->setStateValue(brightnessStateTypeId, brightness);
+                info->finish(Thing::ThingErrorNoError);
+                return;
+            }
+
+            // We are not yet on the target level, let's wait until the brightness has been reached
+            m_pendingBrightnessActions.insert(thing, info);
+            qCDebug(dcZigbeeGenericLights()) << "Wait until the brightness has reached the target value";
         }
     });
 }

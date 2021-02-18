@@ -68,6 +68,7 @@ private:
     QHash<ThingClassId, StateTypeId> m_versionStateTypeIds;
 
     QHash<Thing *, ZigbeeNode *> m_thingNodes;
+    QHash<Thing *, ThingActionInfo *> m_pendingBrightnessActions;
 
     // Get the endpoint for the given thing
     ZigbeeNodeEndpoint *findEndpoint(Thing *thing);
