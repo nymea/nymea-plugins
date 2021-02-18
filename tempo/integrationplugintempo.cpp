@@ -49,40 +49,16 @@ void IntegrationPluginTempo::startPairing(ThingPairingInfo *info)
 
     if (info->thingClassId() == tempoConnectionThingClassId) {
 
-        QByteArray clientId = configValue(tempoPluginCustomClientIdParamTypeId).toByteArray();
-        QByteArray clientSecret = configValue(tempoPluginCustomClientSecretParamTypeId).toByteArray();
-        if (clientId.isEmpty() || clientSecret.isEmpty()) {
-            clientId = apiKeyStorage()->requestKey("tempo").data("clientId");
-            clientSecret = apiKeyStorage()->requestKey("tempo").data("clientSecret");
-        } else {
-            qCDebug(dcTempo()) << "Using custom client secret and id";
-        }
-        if (clientId.isEmpty() || clientSecret.isEmpty()) {
-            info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client id and/or seceret is not available."));
-            return;
-        }
 
         QString jiraCloudInstanceName = info->params().paramValue(tempoConnectionThingAtlassianAccountNameParamTypeId).toString();
-        Tempo *tempo = new Tempo(hardwareManager()->networkManager(), clientId, clientSecret, this);
 
-        QUrl url = tempo->getLoginUrl(QUrl("https://127.0.0.1:8888"), jiraCloudInstanceName);
         qCDebug(dcTempo()) << "Checking if the Tempo server is reachable: https://api.tempo.io/core/3";
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(QUrl("https://api.tempo.io/core/3")));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, info, [reply, info, tempo, url, this] {
+        connect(reply, &QNetworkReply::finished, info, [reply, info, this] {
 
             if (reply->error() != QNetworkReply::NetworkError::HostNotFoundError) {
                 qCDebug(dcTempo()) << "Tempo server is reachable";
-                ThingId thingId = info->thingId();
-                m_setupTempoConnections.insert(info->thingId(), tempo);
-                connect(info, &ThingPairingInfo::aborted, this, [thingId, this] {
-                    qCWarning(dcTempo()) << "ThingPairingInfo aborted, cleaning up";
-                    Tempo *tempo = m_setupTempoConnections.take(thingId);
-                    if (tempo)
-                        tempo->deleteLater();
-                });
-                qCDebug(dcTempo()) << "OAuthUrl" << url.toString();
-                info->setOAuthUrl(url);
                 info->finish(Thing::ThingErrorNoError);
             } else {
                 qCWarning(dcTempo()) << "Got online check error" << reply->error() << reply->errorString();
@@ -101,34 +77,59 @@ void IntegrationPluginTempo::confirmPairing(ThingPairingInfo *info, const QStrin
 
     if (info->thingClassId() == tempoConnectionThingClassId) {
         qCDebug(dcTempo()) << "Confirm  pairing" << info->thingName();
-        QUrl url(secret);
-        QUrlQuery query(url);
-        QByteArray authorizationCode = query.queryItemValue("code").toLocal8Bit();
-        if (authorizationCode.isEmpty()) {
+        if (secret.isEmpty()) {
             qCWarning(dcTempo()) << "No authorization code received.";
             return info->finish(Thing::ThingErrorAuthenticationFailure);
         }
-
-        Tempo *tempo = m_setupTempoConnections.value(info->thingId());
-        if (!tempo) {
-            qWarning(dcTempo()) << "No tempo connection found for device:"  << info->thingName();
-            m_setupTempoConnections.remove(info->thingId());
-            return info->finish(Thing::ThingErrorHardwareFailure);
-        }
-        qCDebug(dcTempo()) << "Authorization code" << authorizationCode.mid(0, 4)+QString().fill('*', authorizationCode.length()-4) ;
-        tempo->getAccessTokenFromAuthorizationCode(authorizationCode);
-        connect(tempo, &Tempo::receivedRefreshToken, info, [info, this](const QByteArray &refreshToken){
-            qCDebug(dcTempo()) << "Token:" << refreshToken.mid(0, 4)+QString().fill('*', refreshToken.length()-4) ;
-
-            pluginStorage()->beginGroup(info->thingId().toString());
-            pluginStorage()->setValue("refresh_token", refreshToken);
-            pluginStorage()->endGroup();
-
-            info->finish(Thing::ThingErrorNoError);
+        QString atlassianAccountName = info->params().paramValue(tempoConnectionThingAtlassianAccountNameParamTypeId).toString();
+        Tempo *tempo = new Tempo(hardwareManager()->networkManager(), atlassianAccountName, secret, this);
+        tempo->getAccounts();
+        connect(info, &ThingPairingInfo::aborted, tempo, &Tempo::deleteLater);
+        connect(tempo, &Tempo::authenticationStatusChanged, info, [info, tempo, this] (bool authenticated){
+            if (authenticated) {
+                m_setupTempoConnections.insert(info->thingId(), tempo);
+                info->finish(Thing::ThingErrorNoError);
+            }
         });
     } else {
         Q_ASSERT_X(false, "confirmPairing", QString("Unhandled thingClassId: %1").arg(info->thingClassId().toString()).toUtf8());
     }
+}
+
+void IntegrationPluginTempo::discoverThings(ThingDiscoveryInfo *info)
+{
+    qCDebug(dcTempo()) << "Discover things";
+    if (info->thingClassId() == accountThingClassId) {
+        Q_FOREACH(Tempo *tempo, m_tempoConnections) {
+            tempo->getAccounts();
+            Thing *parentThing = m_tempoConnections.key(tempo);
+            if (!parentThing) {
+                qCWarning(dcTempo()) << "Parent not found";
+                return;
+            }
+            connect(tempo, &Tempo::accountsReceived, info, [info, parentThing, this, tempo] (const QList<Tempo::Account> &accounts) {
+                Q_FOREACH(Tempo::Account account, accounts) {
+                    ThingDescriptor descriptor(accountThingClassId, account.name, account.customer.name, parentThing->id());
+                    ParamList params;
+                    params << Param(accountThingKeyParamTypeId, account.key);
+                    descriptor.setParams(params);
+                    info->addThingDescriptor(descriptor);
+                }
+            });
+        }
+    } else if (info->thingClassId() == teamThingClassId) {
+        Q_FOREACH(Tempo *tempo, m_tempoConnections) {
+            tempo->getTeams();
+            Thing *parentThing = m_tempoConnections.key(tempo);
+            if (!parentThing) {
+                qCWarning(dcTempo()) << "Parent not found";
+                return;
+            }
+        }
+    }
+    QTimer::singleShot(5000, info, [info] {
+        info->finish(Thing::ThingErrorNoError);
+    });
 }
 
 void IntegrationPluginTempo::setupThing(ThingSetupInfo *info)
@@ -155,37 +156,30 @@ void IntegrationPluginTempo::setupThing(ThingSetupInfo *info)
         } else {
             //device loaded from the device database, needs a new access token;
             pluginStorage()->beginGroup(thing->id().toString());
-            QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
+            QByteArray token = pluginStorage()->value("token").toByteArray();
             pluginStorage()->endGroup();
-            if (refreshToken.isEmpty()) {
-                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Refresh token is not available."));
+            if (token.isEmpty()) {
+                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Token is not available."));
                 return;
             }
+            QString jiraInstanceName = thing->paramValue(tempoConnectionThingAtlassianAccountNameParamTypeId).toString();
+            Tempo *tempo = new Tempo(hardwareManager()->networkManager(), jiraInstanceName, token, this);
+            tempo->getAccounts();
 
-            QByteArray clientId = configValue(tempoPluginCustomClientIdParamTypeId).toByteArray();
-            QByteArray clientSecret = configValue(tempoPluginCustomClientSecretParamTypeId).toByteArray();
-            if (clientId.isEmpty() || clientSecret.isEmpty()) {
-                clientId = apiKeyStorage()->requestKey("tempo").data("clientId");
-                clientSecret = apiKeyStorage()->requestKey("tempo").data("clientSecret");
-            } else {
-                qCDebug(dcTempo()) << "Using custom API id and secret.";
-            }
-            if (clientId.isEmpty() || clientSecret.isEmpty()) {
-                info->finish(Thing::ThingErrorAuthenticationFailure, tr("Client id and/or secret is not available."));
-                return;
-            }
-            Tempo *tempo = new Tempo(hardwareManager()->networkManager(), clientId, clientSecret, this);
-            tempo->getAccessTokenFromRefreshToken(refreshToken);
-            connect(tempo, &Tempo::receivedAccessToken, info, [info] {
-                info->finish(Thing::ThingErrorNoError);
-            });
             connect(info, &ThingSetupInfo::aborted, tempo, &Tempo::deleteLater);
+            connect(tempo, &Tempo::authenticationStatusChanged, info, [info, tempo, this] (bool authenticated){
+                if (authenticated) {
+                    m_tempoConnections.insert(info->thing(), tempo);
+                    info->finish(Thing::ThingErrorNoError);
+                }
+            });
         }
         connect(tempo, &Tempo::connectionChanged, this, &IntegrationPluginTempo::onConnectionChanged);
         connect(tempo, &Tempo::authenticationStatusChanged, this, &IntegrationPluginTempo::onAuthenticationStatusChanged);
         connect(tempo, &Tempo::accountsReceived, this, &IntegrationPluginTempo::onReceivedAccounts);
 
-    } else if (thing->thingClassId() == accountThingClassId) {
+    } else if (thing->thingClassId() == accountThingClassId ||
+               thing->thingClassId() == teamThingClassId){
         Thing *parentThing = myThings().findById(thing->parentId());
         if (parentThing->setupComplete()) {
             info->finish(Thing::ThingErrorNoError);
@@ -230,6 +224,8 @@ void IntegrationPluginTempo::postSetupThing(Thing *thing)
         tempo->getAccounts();
 
     } else if (thing->thingClassId() == accountThingClassId) {
+
+    } else if (thing->thingClassId() == teamThingClassId) {
 
     }
 }
@@ -276,46 +272,12 @@ void IntegrationPluginTempo::onAuthenticationStatusChanged(bool authenticated)
         return;
 
     thing->setStateValue(tempoConnectionLoggedInStateTypeId, authenticated);
-    if (!authenticated) {
-        //refresh access token needs to be refreshed
-        pluginStorage()->beginGroup(thing->id().toString());
-        QByteArray refreshToken = pluginStorage()->value("refresh_token").toByteArray();
-        pluginStorage()->endGroup();
-        tempoConnection->getAccessTokenFromRefreshToken(refreshToken);
-    }
 }
 
 
 void IntegrationPluginTempo::onReceivedAccounts(const QList<Tempo::Account> &accounts)
 {
     qCDebug(dcTempo()) << "Received" << accounts.count() << "accounts";
-
-    Tempo *tempoConnection = static_cast<Tempo *>(sender());
-    Thing *parentThing = m_tempoConnections.key(tempoConnection);
-    if (!parentThing)
-        return;
-
-    ThingDescriptors desciptors;
-    Q_FOREACH(Tempo::Account account, accounts) {
-        ThingClassId thingClassId;
-
-        //Thing * existingThing = myThings().findByParams(ParamList() << Param(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId));
-        //if (existingThing) {
-        //    qCDebug(dcTempo()) << "Thing is already added to system" << existingThing->name();
-        //Set connected state;
-        //existingThing->setStateValue(m_connectedStateTypeIds.value(thingClassId), appliance.connected);
-        //    continue;
-        // }
-        qCDebug(dcTempo()) << "Found new account:" << account.name << "key:" << account.key << "id:" << account.id;
-        ThingDescriptor descriptor(thingClassId, account.name, account.key, parentThing->id());
-
-        ParamList params;
-        //params << Param(m_idParamTypeIds.value(thingClassId), appliance.homeApplianceId);
-        descriptor.setParams(params);
-        desciptors.append(descriptor);
-    }
-    if (!desciptors.isEmpty())
-        emit autoThingsAppeared(desciptors);
 }
 
 void IntegrationPluginTempo::onAccountWorkloadReceived(const QString &accountKey, QList<Tempo::Worklog> workloads)

@@ -102,31 +102,29 @@ public:
       QString authorDisplayName;
     };
 
-    explicit Tempo(NetworkAccessManager *networkmanager, const QByteArray &clientId, const QByteArray &clientSecret, QObject *parent = nullptr);
-    QByteArray accessToken();
-    QByteArray refreshToken();
+    struct Team {
+        QUrl self;
+        int id;
+        QString name;
+        QString summary;
+        Lead lead;
+    };
 
-    QUrl getLoginUrl(const QUrl &redirectUrl, const QString &jiraCloudInstanceName);
+    explicit Tempo(NetworkAccessManager *networkmanager, const QString &jiraCloudInstanceName, const QString &token, QObject *parent = nullptr);
+    ~Tempo() override;
+    QString token() const;
 
-    void getAccessTokenFromRefreshToken(const QByteArray &refreshToken);
-    void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
-
+    void getTeams();
     void getAccounts();
     void getWorkloadByAccount(const QString &accountKey, QDate from, QDate to);
 
 private:
-
     QByteArray m_baseTokenUrl = "https://api.tempo.io/oauth/token/";
     QByteArray m_baseControlUrl = "https://api.tempo.io/core/3/";
-    QByteArray m_clientId;
-    QByteArray m_clientSecret;
-
-    QByteArray m_accessToken;
-    QByteArray m_refreshToken;
-    QByteArray m_redirectUri  = "https://127.0.0.1:8888";
+    QString m_token;
+    QString m_jiraCloudInstanceName;
 
     NetworkAccessManager *m_networkManager = nullptr;
-    QTimer *m_tokenRefreshTimer = nullptr;
 
     void setAuthenticated(bool state);
     void setConnected(bool state);
@@ -135,16 +133,15 @@ private:
     bool m_connected = false;
 
     bool checkStatusCode(QNetworkReply *reply, const QByteArray &rawData);
+
 private slots:
-    void onRefreshTimer();
 
 signals:
     void authenticationStatusChanged(bool state);
     void connectionChanged(bool connected);
-    void receivedRefreshToken(const QByteArray &refreshToken);
-    void receivedAccessToken(const QByteArray &accessToken);
-    void accountsReceived(const QList<Account> accounts);
 
+    void teamsReceived(const QList<Team> teams);
+    void accountsReceived(const QList<Account> accounts);
     void accountWorklogsReceived(const QString &accountKey, QList<Worklog> worklogs);
 };
 

@@ -2,23 +2,6 @@
     "id": "809bc4ca-d1cd-4279-9e0d-7324537ccb5a",
     "name": "tempo",
     "displayName": "Tempo",
-    "apiKeys": ["tempo"],
-    "paramTypes": [
-        {
-            "id": "c130b2b7-6d30-406e-899b-669a065daee3",
-            "name": "customClientId",
-            "displayName": "Custom client id",
-            "defaultValue": "",
-            "type": "QString"
-        },
-        {
-            "id": "9c759711-e772-44ce-9d86-6a3af89c2d94",
-            "name": "customClientSecret",
-            "displayName": "Custom client secret",
-            "defaultValue": "",
-            "type": "QString"
-        }
-    ],
     "vendors": [
         {
             "id": "58fc1ab7-b8b5-4e52-8388-72957ce5852d",
@@ -31,7 +14,7 @@
                     "displayName": "Tempo connection",
                     "interfaces": ["account"],
                     "createMethods": ["user"],
-                    "setupMethod": "oauth",
+                    "setupMethod": "displayPin",
                     "paramTypes": [
                         {
                             "id": "b4110c37-8331-4057-8e9f-12f34c2623fe",
@@ -82,7 +65,7 @@
                     "name": "account",
                     "displayName": "Account",
                     "interfaces": ["connectable"],
-                    "createMethods": ["auto"],
+                    "createMethods": ["discovery"],
                     "browsable": true,
                     "paramTypes": [
                         {
@@ -181,6 +164,34 @@
                             "defaultValue": 0,
                             "type": "uint",
                             "unit": "Minutes"
+                        }
+                    ]
+                },
+                {
+                    "id": "11c85176-e7fe-44b4-995a-24757273f3af",
+                    "name": "team",
+                    "displayName": "Team",
+                    "interfaces": ["connectable"],
+                    "createMethods": ["discovery"],
+                    "browsable": true,
+                    "paramTypes": [
+                        {
+                            "id": "bb90e986-fcfa-47e8-8783-f2b5a887314a",
+                            "name": "key",
+                            "displayName": "Key",
+                            "defaultValue": "",
+                            "type": "QString"
+                        }
+                    ],
+                    "stateTypes": [
+                        {
+                            "id": "a125d3b5-676f-49eb-bb93-feae233c2e91",
+                            "name": "connected",
+                            "displayName": "Connected",
+                            "displayNameEvent": "Connected changed",
+                            "defaultValue": true,
+                            "cached": false,
+                            "type": "bool"
                         }
                     ]
                 }

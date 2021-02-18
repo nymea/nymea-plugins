@@ -34,158 +34,61 @@
 #include "tempo.h"
 #include "extern-plugininfo.h"
 
-Tempo::Tempo(NetworkAccessManager *networkmanager, const QByteArray &clientId, const QByteArray &clientSecret, QObject *parent) :
+Tempo::Tempo(NetworkAccessManager *networkmanager, const QString &jiraCloudInstanceName, const QString &token, QObject *parent) :
     QObject(parent),
-    m_clientId(clientId),
-    m_clientSecret(clientSecret),
+    m_token(token),
+    m_jiraCloudInstanceName(jiraCloudInstanceName),
     m_networkManager(networkmanager)
-
 {
-    m_tokenRefreshTimer = new QTimer(this);
-    m_tokenRefreshTimer->setSingleShot(true);
-    connect(m_tokenRefreshTimer, &QTimer::timeout, this, &Tempo::onRefreshTimer);
+    qCDebug(dcTempo()) << "Creating tempo connection to" << m_jiraCloudInstanceName;
 }
 
-QByteArray Tempo::accessToken()
+Tempo::~Tempo()
 {
-    return m_accessToken;
+    qCDebug(dcTempo()) << "Deleting tempo connection to" << m_jiraCloudInstanceName;
 }
 
-QByteArray Tempo::refreshToken()
+QString Tempo::token() const
 {
-    return m_refreshToken;
+    return m_token;
 }
 
-QUrl Tempo::getLoginUrl(const QUrl &redirectUrl, const QString &jiraCloudInstanceName)
+void Tempo::getTeams()
 {
-    if (m_clientId.isEmpty()) {
-        qWarning(dcTempo) << "Client Id not defined!";
-        return QUrl("");
-    }
-
-    if (redirectUrl.isEmpty()){
-        qWarning(dcTempo) << "No redirect uri defined!";
-    }
-    m_redirectUri = QUrl::toPercentEncoding(redirectUrl.toString());
-
-    QUrl url;
-    url.setScheme("https");
-    url.setHost(jiraCloudInstanceName+".atlassian.net");
-    url.setPath("/plugins/servlet/ac/io.tempo.jira/oauth-authorize/");
-    QUrlQuery query;
-    query.addQueryItem("client_id", m_clientId);
-    query.addQueryItem("redirect_uri", m_redirectUri);
-    query.addQueryItem("access_type", "tenant_user");
-    url.setQuery(query);
-    return url;
-}
-
-void Tempo::getAccessTokenFromRefreshToken(const QByteArray &refreshToken)
-{
-    if (refreshToken.isEmpty()) {
-        qWarning(dcTempo) << "No refresh token given!";
-        setAuthenticated(false);
-        return;
-    }
-
-    QUrl url(m_baseTokenUrl);
-    QUrlQuery query;
-    query.clear();
-    query.addQueryItem("grant_type", "refresh_token");
-    query.addQueryItem("refresh_token", refreshToken);
-    query.addQueryItem("client_secret", m_clientSecret);
+    QUrl url = QUrl(m_baseControlUrl+"/teams");
+    qCDebug(dcTempo()) << "Get teams, url" << url.toString();
 
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    request.setRawHeader("Authorization", "Bearer "+m_token.toUtf8());
 
-    QNetworkReply *reply = m_networkManager->post(request, query.toString().toUtf8());
+    QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply](){
+    connect(reply, &QNetworkReply::finished, this, [this, reply]{
 
         QByteArray rawData = reply->readAll();
         if (!checkStatusCode(reply, rawData)) {
             return;
         }
-        QJsonDocument data = QJsonDocument::fromJson(rawData);
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap();
+        QVariantList teamList = dataMap.value("results").toList();
+        QList<Team> teams;
+        Q_FOREACH(QVariant var, teamList) {
+            QVariantMap map = var.toMap();
+            Team team;
+            team.self = map["self"].toString();
+            team.id = map["id"].toInt();
+            team.name = map["name"].toString();
+            team.summary = map["summery"].toString();
 
-        if(!data.toVariant().toMap().contains("access_token")) {
-            setAuthenticated(false);
-            return;
+            QVariantMap lead = map["lead"].toMap();
+            team.lead.self = lead["self"].toString();
+            team.lead.accountId = lead["accountId"].toString();
+            team.lead.displayName = lead["displayName"].toString();
+
+            teams.append(team);
         }
-        m_accessToken = data.toVariant().toMap().value("access_token").toByteArray();
-        emit receivedAccessToken(m_accessToken);
-
-        if (data.toVariant().toMap().contains("expires_in")) {
-            int expireTime = data.toVariant().toMap().value("expires_in").toInt();
-            qCDebug(dcTempo) << "Access token expires int" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
-            if (!m_tokenRefreshTimer) {
-                qWarning(dcTempo()) << "Access token refresh timer not initialized";
-                return;
-            }
-            if (expireTime < 20) {
-                qCWarning(dcTempo()) << "Expire time too short";
-                return;
-            }
-            m_tokenRefreshTimer->start((expireTime - 20) * 1000);
-        }
-    });
-}
-
-void Tempo::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode)
-{
-    // Obtaining access token
-    if(authorizationCode.isEmpty())
-        qWarning(dcTempo()) << "No authorization code given!";
-    if(m_clientId.isEmpty())
-        qWarning(dcTempo()) << "Client key not set!";
-    if(m_clientSecret.isEmpty())
-        qWarning(dcTempo()) << "Client secret not set!";
-
-    QUrl url = QUrl(m_baseTokenUrl);
-    QUrlQuery query;    url.setQuery(query);
-
-    query.clear();
-    query.addQueryItem("client_id", m_clientId);
-    query.addQueryItem("client_secret", m_clientSecret);
-    query.addQueryItem("redirect_uri", m_redirectUri);
-    query.addQueryItem("grant_type", "authorization_code");
-    query.addQueryItem("code", authorizationCode);
-    // query.addQueryItem("code_verifier", m_codeChallenge);
-
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
-
-    QNetworkReply *reply = m_networkManager->post(request, query.toString().toUtf8());
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, reply](){
-
-        QByteArray rawData = reply->readAll();
-        if (!checkStatusCode(reply, rawData)) {
-            return;
-        }
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(rawData);
-        if(!jsonDoc.toVariant().toMap().contains("access_token") || !jsonDoc.toVariant().toMap().contains("refresh_token") ) {
-            setAuthenticated(false);
-            return;
-        }
-        m_accessToken = jsonDoc.toVariant().toMap().value("access_token").toByteArray();
-        receivedAccessToken(m_accessToken);
-        m_refreshToken = jsonDoc.toVariant().toMap().value("refresh_token").toByteArray();
-        receivedRefreshToken(m_refreshToken);
-
-        if (jsonDoc.toVariant().toMap().contains("expires_in")) {
-            int expireTime = jsonDoc.toVariant().toMap().value("expires_in").toInt();
-            qCDebug(dcTempo()) << "Token expires in" << expireTime << "s, at" << QDateTime::currentDateTime().addSecs(expireTime).toString();
-            if (!m_tokenRefreshTimer) {
-                qWarning(dcTempo()) << "Token refresh timer not initialized";
-                setAuthenticated(false);
-                return;
-            }
-            if (expireTime < 20) {
-                qCWarning(dcTempo()) << "Expire time too short";
-                return;
-            }
-            m_tokenRefreshTimer->start((expireTime - 20) * 1000);
+        if (!teams.isEmpty()) {
+            emit teamsReceived(teams);
         }
     });
 }
@@ -193,9 +96,10 @@ void Tempo::getAccessTokenFromAuthorizationCode(const QByteArray &authorizationC
 void Tempo::getAccounts()
 {
     QUrl url = QUrl(m_baseControlUrl+"/accounts");
+    qCDebug(dcTempo()) << "Get accounts. Url" << url.toString();
 
     QNetworkRequest request(url);
-    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Authorization", "Bearer "+m_token.toUtf8());
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
@@ -243,7 +147,7 @@ void Tempo::getAccounts()
             accounts.append(account);
         }
         if (!accounts.isEmpty()) {
-
+            emit accountsReceived(accounts);
         }
     });
 }
@@ -256,8 +160,10 @@ void Tempo::getWorkloadByAccount(const QString &accountKey, QDate from, QDate to
     query.addQueryItem("to", to.toString(Qt::DateFormat::ISODate));
     url.setQuery(query);
 
+    qCDebug(dcTempo()) << "Get workload by account. Url" << url.toString();
+
     QNetworkRequest request(url);
-    request.setRawHeader("Authorization", "Bearer "+m_accessToken);
+    request.setRawHeader("Authorization", "Bearer "+m_token.toUtf8());
 
     QNetworkReply *reply = m_networkManager->get(request);
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
@@ -290,12 +196,6 @@ void Tempo::getWorkloadByAccount(const QString &accountKey, QDate from, QDate to
         if (!worklogs.isEmpty())
             emit accountWorklogsReceived(accountKey, worklogs);
     });
-}
-
-void Tempo::onRefreshTimer()
-{
-    qCDebug(dcTempo()) << "Refresh authentication token";
-    getAccessTokenFromRefreshToken(m_refreshToken);
 }
 
 void Tempo::setAuthenticated(bool state)
