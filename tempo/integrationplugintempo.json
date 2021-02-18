@@ -87,9 +87,9 @@
                     "paramTypes": [
                         {
                             "id": "c6aeddae-56af-496d-a419-1635ff9bae50",
-                            "name": "id",
-                            "displayName": "ID",
-                            "defaultValue": "-",
+                            "name": "key",
+                            "displayName": "Key",
+                            "defaultValue": "",
                             "type": "QString"
                         }
                     ],
@@ -163,6 +163,24 @@
                             "displayNameEvent": "Customer changed",
                             "defaultValue": "",
                             "type": "QString"
+                        },
+                        {
+                            "id": "1ac39002-56a1-4911-aa68-9d14e142edae",
+                            "name": "totalTimeSpent",
+                            "displayName": "Total time spent",
+                            "displayNameEvent": "Total time spent changed",
+                            "defaultValue": 0,
+                            "type": "uint",
+                            "unit": "Minutes"
+                        },
+                        {
+                            "id": "81bec4e8-9fd3-43d1-b339-2a7fdd83e8cb",
+                            "name": "monthTimeSpent",
+                            "displayName": "This month time spent",
+                            "displayNameEvent": "This month time spent changed",
+                            "defaultValue": 0,
+                            "type": "uint",
+                            "unit": "Minutes"
                         }
                     ]
                 }

@@ -50,6 +50,7 @@ public:
     void confirmPairing(ThingPairingInfo *info, const QString &username, const QString &secret) override;
 
     void setupThing(ThingSetupInfo *info) override;
+    void postSetupThing(Thing *thing) override;
     void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
@@ -62,7 +63,8 @@ private:
 private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
-    void onRequestExecuted(QUuid requestId, bool success);
     void onReceivedAccounts(const QList<Tempo::Account> &accounts);
+
+    void onAccountWorkloadReceived(const QString &accountKey, QList<Tempo::Worklog> workloads);
 };
 #endif // INTEGRATIONPLUGINTEMPO_H

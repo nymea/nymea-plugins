@@ -166,6 +166,7 @@ private:
     bool m_connected = false;
 
     bool checkStatusCode(QNetworkReply *reply, const QByteArray &rawData);
+
 private slots:
     void onRefreshTimeout();
 

@@ -88,11 +88,25 @@ public:
         Customer customer;
     };
 
+    struct Worklog {
+      QUrl self;
+      int tempoWorklogId;
+      int jiraWorklogId;
+      QString issue;
+      int timeSpentSeconds;
+      QDateTime startedAt;
+      QString description;
+      QDateTime createdAt;
+      QDateTime updatedAt;
+      QString authorAccountId;
+      QString authorDisplayName;
+    };
+
     explicit Tempo(NetworkAccessManager *networkmanager, const QByteArray &clientId, const QByteArray &clientSecret, QObject *parent = nullptr);
     QByteArray accessToken();
     QByteArray refreshToken();
 
-    static QUrl getLoginUrl(const QUrl &redirectUrl, const QString &jiraCloudInstanceName, const QByteArray &clientId);
+    QUrl getLoginUrl(const QUrl &redirectUrl, const QString &jiraCloudInstanceName);
 
     void getAccessTokenFromRefreshToken(const QByteArray &refreshToken);
     void getAccessTokenFromAuthorizationCode(const QByteArray &authorizationCode);
@@ -130,6 +144,8 @@ signals:
     void receivedRefreshToken(const QByteArray &refreshToken);
     void receivedAccessToken(const QByteArray &accessToken);
     void accountsReceived(const QList<Account> accounts);
+
+    void accountWorklogsReceived(const QString &accountKey, QList<Worklog> worklogs);
 };
 
 #endif // TEMPO_H
