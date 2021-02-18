@@ -66,7 +66,6 @@
                     "displayName": "Account",
                     "interfaces": ["connectable"],
                     "createMethods": ["discovery"],
-                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "c6aeddae-56af-496d-a419-1635ff9bae50",
@@ -173,14 +172,13 @@
                     "displayName": "Team",
                     "interfaces": ["connectable"],
                     "createMethods": ["discovery"],
-                    "browsable": true,
                     "paramTypes": [
                         {
                             "id": "bb90e986-fcfa-47e8-8783-f2b5a887314a",
-                            "name": "key",
-                            "displayName": "Key",
-                            "defaultValue": "",
-                            "type": "QString"
+                            "name": "id",
+                            "displayName": "Id",
+                            "defaultValue": 0,
+                            "type": "int"
                         }
                     ],
                     "stateTypes": [

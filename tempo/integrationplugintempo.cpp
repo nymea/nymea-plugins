@@ -85,8 +85,11 @@ void IntegrationPluginTempo::confirmPairing(ThingPairingInfo *info, const QStrin
         Tempo *tempo = new Tempo(hardwareManager()->networkManager(), atlassianAccountName, secret, this);
         tempo->getAccounts();
         connect(info, &ThingPairingInfo::aborted, tempo, &Tempo::deleteLater);
-        connect(tempo, &Tempo::authenticationStatusChanged, info, [info, tempo, this] (bool authenticated){
+        connect(tempo, &Tempo::authenticationStatusChanged, info, [info, tempo, secret, this] (bool authenticated){
             if (authenticated) {
+                pluginStorage()->beginGroup(info->thingId().toString());
+                pluginStorage()->setValue("token", secret);
+                pluginStorage()->endGroup();
                 m_setupTempoConnections.insert(info->thingId(), tempo);
                 info->finish(Thing::ThingErrorNoError);
             }
@@ -99,6 +102,10 @@ void IntegrationPluginTempo::confirmPairing(ThingPairingInfo *info, const QStrin
 void IntegrationPluginTempo::discoverThings(ThingDiscoveryInfo *info)
 {
     qCDebug(dcTempo()) << "Discover things";
+    if (m_tempoConnections.isEmpty()) {
+        return info->finish(Thing::ThingErrorHardwareNotAvailable, tr("Create a Tempo connection first"));
+    }
+
     if (info->thingClassId() == accountThingClassId) {
         Q_FOREACH(Tempo *tempo, m_tempoConnections) {
             tempo->getAccounts();
@@ -109,6 +116,9 @@ void IntegrationPluginTempo::discoverThings(ThingDiscoveryInfo *info)
             }
             connect(tempo, &Tempo::accountsReceived, info, [info, parentThing, this, tempo] (const QList<Tempo::Account> &accounts) {
                 Q_FOREACH(Tempo::Account account, accounts) {
+                    if (account.status == Tempo::Status::Archived)
+                        continue;
+
                     ThingDescriptor descriptor(accountThingClassId, account.name, account.customer.name, parentThing->id());
                     ParamList params;
                     params << Param(accountThingKeyParamTypeId, account.key);
@@ -125,6 +135,16 @@ void IntegrationPluginTempo::discoverThings(ThingDiscoveryInfo *info)
                 qCWarning(dcTempo()) << "Parent not found";
                 return;
             }
+            connect(tempo, &Tempo::teamsReceived, info, [info, parentThing, this, tempo] (const QList<Tempo::Team> &teams) {
+                Q_FOREACH(Tempo::Team team, teams) {
+
+                    ThingDescriptor descriptor(teamThingClassId, team.name, team.summary, parentThing->id());
+                    ParamList params;
+                    params << Param(teamThingIdParamTypeId, team.id);
+                    descriptor.setParams(params);
+                    info->addThingDescriptor(descriptor);
+                }
+            });
         }
     }
     QTimer::singleShot(5000, info, [info] {
@@ -164,8 +184,6 @@ void IntegrationPluginTempo::setupThing(ThingSetupInfo *info)
             }
             QString jiraInstanceName = thing->paramValue(tempoConnectionThingAtlassianAccountNameParamTypeId).toString();
             Tempo *tempo = new Tempo(hardwareManager()->networkManager(), jiraInstanceName, token, this);
-            tempo->getAccounts();
-
             connect(info, &ThingSetupInfo::aborted, tempo, &Tempo::deleteLater);
             connect(tempo, &Tempo::authenticationStatusChanged, info, [info, tempo, this] (bool authenticated){
                 if (authenticated) {
@@ -173,6 +191,7 @@ void IntegrationPluginTempo::setupThing(ThingSetupInfo *info)
                     info->finish(Thing::ThingErrorNoError);
                 }
             });
+            tempo->getAccounts();
         }
         connect(tempo, &Tempo::connectionChanged, this, &IntegrationPluginTempo::onConnectionChanged);
         connect(tempo, &Tempo::authenticationStatusChanged, this, &IntegrationPluginTempo::onAuthenticationStatusChanged);
