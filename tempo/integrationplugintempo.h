@@ -52,20 +52,22 @@ public:
     void discoverThings(ThingDiscoveryInfo *info) override;
     void setupThing(ThingSetupInfo *info) override;
     void postSetupThing(Thing *thing) override;
-    void executeAction(ThingActionInfo *info) override;
     void thingRemoved(Thing *thing) override;
 
 private:
     PluginTimer *m_pluginTimer15min = nullptr;
 
     QHash<ThingId, Tempo *> m_setupTempoConnections;
-    QHash<Thing *, Tempo *> m_tempoConnections;
+    QHash<ThingId, Tempo *> m_tempoConnections;
 
 private slots:
     void onConnectionChanged(bool connected);
     void onAuthenticationStatusChanged(bool authenticated);
-    void onReceivedAccounts(const QList<Tempo::Account> &accounts);
+
+    void onAccountsReceived(const QList<Tempo::Account> accounts);
+    void onTeamsReceived(const QList<Tempo::Team> teams);
 
     void onAccountWorkloadReceived(const QString &accountKey, QList<Tempo::Worklog> workloads);
+    void onTeamWorkloadReceived(int teamId, QList<Tempo::Worklog> workloads);
 };
 #endif // INTEGRATIONPLUGINTEMPO_H

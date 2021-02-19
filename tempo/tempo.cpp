@@ -134,15 +134,24 @@ void Tempo::getAccounts()
             account.lead.self = lead["self"].toString();
             account.lead.accountId = lead["accountId"].toString();
             account.lead.displayName = lead["displayName"].toString();
-            //TODO Customer
+
             QVariantMap customer = map["customer"].toMap();
-            account.customer.self = lead["self"].toString();
-            //TODO Category
+            account.customer.self = customer["self"].toString();
+            account.customer.key = customer["key"].toString();
+            account.customer.id = customer["id"].toInt();
+            account.customer.name = customer["name"].toString();
+
             QVariantMap category = map["category"].toMap();
-            account.category.self = lead["self"].toString();
-            //TODO Contact
+            account.category.self = category["self"].toString();
+            account.category.key = category["key"].toString();
+            account.category.name = category["name"].toString();
+            account.category.id = category["id"].toInt();
+
             QVariantMap contact = map["contact"].toMap();
-            account.contact.self = lead["self"].toString();
+            account.contact.self = contact["self"].toString();
+            account.contact.type = contact["type"].toString();
+            account.contact.accountId = contact["accountId"].toString();
+            account.contact.displayName = contact["displayName"].toString();
 
             accounts.append(account);
         }
@@ -152,12 +161,14 @@ void Tempo::getAccounts()
     });
 }
 
-void Tempo::getWorkloadByAccount(const QString &accountKey, QDate from, QDate to)
+void Tempo::getWorkloadByAccount(const QString &accountKey, QDate from, QDate to, int offset, int limit)
 {
     QUrl url = QUrl(m_baseControlUrl+"/worklogs/account/"+accountKey);
     QUrlQuery query;
     query.addQueryItem("from", from.toString(Qt::DateFormat::ISODate));
     query.addQueryItem("to", to.toString(Qt::DateFormat::ISODate));
+    query.addQueryItem("offset", QString::number(offset));
+    query.addQueryItem("limit", QString::number(limit));
     url.setQuery(query);
 
     qCDebug(dcTempo()) << "Get workload by account. Url" << url.toString();
@@ -174,27 +185,38 @@ void Tempo::getWorkloadByAccount(const QString &accountKey, QDate from, QDate to
             return;
         }
         QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap();
-        QVariantList worklogList = dataMap.value("results").toList();
-        QList<Worklog> worklogs;
-        Q_FOREACH(QVariant var, worklogList) {
-            QVariantMap map = var.toMap();
-            Worklog worklog;
-            worklog.self = map["self"].toString();
-            worklog.tempoWorklogId = map["tempoWorklogId"].toInt();
-            worklog.jiraWorklogId = map["jiraWorklogId"].toInt();
-            worklog.issue = map["issue"].toMap().value("key").toString();
-            worklog.timeSpentSeconds = map["timeSpentSeconds"].toInt();
-            //TODO startDate: required (date-only)
-            //TODO startTime: required (time-only)
-            worklog.description = map["description"].toString();
-            //TODO createdAt: required (datetime)
-            //TODO updatedAt: required (datetime)
-            worklog.authorAccountId = map["author"].toMap().value("accountId").toString();
-            worklog.authorDisplayName = map["author"].toMap().value("displayName").toString();
-            worklogs.append(worklog);
-        }
+        QList<Worklog> worklogs = parseJsonForWorklog(dataMap);
         if (!worklogs.isEmpty())
             emit accountWorklogsReceived(accountKey, worklogs);
+    });
+}
+
+void Tempo::getWorkloadByTeam(int teamId, QDate from, QDate to, int offset, int limit)
+{
+    QUrl url = QUrl(m_baseControlUrl+"/worklogs/team/"+QString::number(teamId));
+    QUrlQuery query;
+    query.addQueryItem("from", from.toString(Qt::DateFormat::ISODate));
+    query.addQueryItem("to", to.toString(Qt::DateFormat::ISODate));
+    query.addQueryItem("offset", QString::number(offset));
+    query.addQueryItem("limit", QString::number(limit));
+    url.setQuery(query);
+
+    qCDebug(dcTempo()) << "Get workload by account. Url" << url.toString();
+
+    QNetworkRequest request(url);
+    request.setRawHeader("Authorization", "Bearer "+m_token.toUtf8());
+
+    QNetworkReply *reply = m_networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, teamId, reply]{
+        QByteArray rawData = reply->readAll();
+        if (!checkStatusCode(reply, rawData)) {
+            return;
+        }
+        QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap();
+        QList<Worklog> worklogs = parseJsonForWorklog(dataMap);
+        if (!worklogs.isEmpty())
+            emit teamWorklogsReceived(teamId, worklogs);
     });
 }
 
@@ -212,6 +234,30 @@ void Tempo::setConnected(bool state)
         m_connected = state;
         emit connectionChanged(state);
     }
+}
+
+QList<Tempo::Worklog> Tempo::parseJsonForWorklog(const QVariantMap &data)
+{
+    QVariantList worklogList = data.value("results").toList();
+    QList<Worklog> worklogs;
+    Q_FOREACH(QVariant var, worklogList) {
+        QVariantMap map = var.toMap();
+        Worklog worklog;
+        worklog.self = map["self"].toString();
+        worklog.tempoWorklogId = map["tempoWorklogId"].toInt();
+        worklog.jiraWorklogId = map["jiraWorklogId"].toInt();
+        worklog.issue = map["issue"].toMap().value("key").toString();
+        worklog.timeSpentSeconds = map["timeSpentSeconds"].toInt();
+        //TODO startDate: required (date-only)
+        //TODO startTime: required (time-only)
+        worklog.description = map["description"].toString();
+        worklog.createdAt =  QDateTime::fromString(map["createdAt"].toString(), Qt::ISODate);
+        worklog.updatedAt =  QDateTime::fromString(map["updatedAt"].toString(), Qt::ISODate);
+        worklog.authorAccountId = map["author"].toMap().value("accountId").toString();
+        worklog.authorDisplayName = map["author"].toMap().value("displayName").toString();
+        worklogs.append(worklog);
+    }
+    return worklogs;
 }
 
 bool Tempo::checkStatusCode(QNetworkReply *reply, const QByteArray &rawData)

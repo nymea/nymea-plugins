@@ -63,8 +63,9 @@ public:
 
     struct Category {
        QUrl self;
-       QString accountId;
-       QString displayName;
+       QString key;
+       int id;
+       QString name;
     };
 
     struct Customer {
@@ -116,11 +117,11 @@ public:
 
     void getTeams();
     void getAccounts();
-    void getWorkloadByAccount(const QString &accountKey, QDate from, QDate to);
+    void getWorkloadByAccount(const QString &accountKey, QDate from, QDate to, int offset = 0, int limit = 50);
+    void getWorkloadByTeam(int teamId, QDate from, QDate to, int offset = 0, int limit = 50);
 
 private:
-    QByteArray m_baseTokenUrl = "https://api.tempo.io/oauth/token/";
-    QByteArray m_baseControlUrl = "https://api.tempo.io/core/3/";
+    QByteArray m_baseControlUrl = "https://api.tempo.io/core/3";
     QString m_token;
     QString m_jiraCloudInstanceName;
 
@@ -132,6 +133,7 @@ private:
     bool m_authenticated = false;
     bool m_connected = false;
 
+    QList<Worklog> parseJsonForWorklog(const QVariantMap &data);
     bool checkStatusCode(QNetworkReply *reply, const QByteArray &rawData);
 
 private slots:
@@ -143,6 +145,7 @@ signals:
     void teamsReceived(const QList<Team> teams);
     void accountsReceived(const QList<Account> accounts);
     void accountWorklogsReceived(const QString &accountKey, QList<Worklog> worklogs);
+    void teamWorklogsReceived(int teamId, QList<Worklog> worklogs);
 };
 
 #endif // TEMPO_H

@@ -41,22 +41,6 @@
                             "displayNameEvent": "Logged in changed",
                             "defaultValue": true,
                             "type": "bool"
-                        },
-                        {
-                            "id": "f3b9581b-7828-4fbe-be5f-3e8aad78a71e",
-                            "name": "userDisplayName",
-                            "displayName": "User name",
-                            "displayNameEvent": "User name changed",
-                            "defaultValue": "",
-                            "type": "QString"
-                        },
-                        {
-                            "id": "db70444d-bf67-4133-b2de-54aefbdd7149",
-                            "name": "autoAddAccounts",
-                            "displayName": "Auto add accounts",
-                            "displayNameEvent": "Auto add accounts",
-                            "defaultValue": true,
-                            "type": "bool"
                         }
                     ]
                 },
@@ -72,7 +56,8 @@
                             "name": "key",
                             "displayName": "Key",
                             "defaultValue": "",
-                            "type": "QString"
+                            "type": "QString",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -90,11 +75,11 @@
                             "name": "status",
                             "displayName": "Status",
                             "displayNameEvent": "Status changed",
-                            "defaultValue": "OPEN",
+                            "defaultValue": "Open",
                             "possibleValues": [
-                                "OPEN",
-                                "CLOSED",
-                                "ARCHIVED"
+                                "Open",
+                                "Closed",
+                                "Archived"
                             ],
                             "type": "QString"
                         },
@@ -152,8 +137,8 @@
                             "displayName": "Total time spent",
                             "displayNameEvent": "Total time spent changed",
                             "defaultValue": 0,
-                            "type": "uint",
-                            "unit": "Minutes"
+                            "type": "double",
+                            "unit": "Hours"
                         },
                         {
                             "id": "81bec4e8-9fd3-43d1-b339-2a7fdd83e8cb",
@@ -161,8 +146,8 @@
                             "displayName": "This month time spent",
                             "displayNameEvent": "This month time spent changed",
                             "defaultValue": 0,
-                            "type": "uint",
-                            "unit": "Minutes"
+                            "type": "double",
+                            "unit": "Hours"
                         }
                     ]
                 },
@@ -178,7 +163,8 @@
                             "name": "id",
                             "displayName": "Id",
                             "defaultValue": 0,
-                            "type": "int"
+                            "type": "int",
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
@@ -190,6 +176,23 @@
                             "defaultValue": true,
                             "cached": false,
                             "type": "bool"
+                        },
+                        {
+                            "id": "667a9d8d-4e80-4c7c-938c-d698853fa4b1",
+                            "name": "lead",
+                            "displayName": "Lead",
+                            "displayNameEvent": "Lead changed",
+                            "defaultValue": "",
+                            "type": "QString"
+                        },
+                        {
+                            "id": "a694682e-3c2a-4146-aa56-9e75fd82bcab",
+                            "name": "totalTimeSpent",
+                            "displayName": "Total time spent",
+                            "displayNameEvent": "Total time spent changed",
+                            "defaultValue": 0,
+                            "type": "double",
+                            "unit": "Hours"
                         }
                     ]
                 }
