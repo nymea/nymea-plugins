@@ -404,11 +404,11 @@ void IntegrationPluginZigbeeLumi::setupThing(ThingSetupInfo *info)
         if (pressureCluster) {
             // Only set the state if the cluster actually has the attribute
             if (pressureCluster->hasAttribute(ZigbeeClusterPressureMeasurement::AttributeMeasuredValue)) {
-                thing->setStateValue(lumiWeatherSensorPressureStateTypeId, pressureCluster->pressure() * 101);
+                thing->setStateValue(lumiWeatherSensorPressureStateTypeId, pressureCluster->pressure() * 10);
             }
 
             connect(pressureCluster, &ZigbeeClusterPressureMeasurement::pressureChanged, thing, [thing](double pressure){
-                thing->setStateValue(lumiWeatherSensorPressureStateTypeId, pressure * 101);
+                thing->setStateValue(lumiWeatherSensorPressureStateTypeId, pressure * 10);
             });
         } else {
             qCWarning(dcZigbeeLumi()) << "Could not find the pressure measurement server cluster on" << thing << endpoint;
