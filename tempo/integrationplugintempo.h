@@ -57,6 +57,7 @@ public:
 private:
     PluginTimer *m_pluginTimer15min = nullptr;
 
+    QHash<ThingId, QList<Tempo::Worklog>> m_worklogBuffer;
     QHash<ThingId, Tempo *> m_setupTempoConnections;
     QHash<ThingId, Tempo *> m_tempoConnections;
 
@@ -67,7 +68,7 @@ private slots:
     void onAccountsReceived(const QList<Tempo::Account> accounts);
     void onTeamsReceived(const QList<Tempo::Team> teams);
 
-    void onAccountWorkloadReceived(const QString &accountKey, QList<Tempo::Worklog> workloads);
-    void onTeamWorkloadReceived(int teamId, QList<Tempo::Worklog> workloads);
+    void onAccountWorkloadReceived(const QString &accountKey, QList<Tempo::Worklog> workloads, int limit, int offset);
+    void onTeamWorkloadReceived(int teamId, QList<Tempo::Worklog> workloads, int limit, int offset);
 };
 #endif // INTEGRATIONPLUGINTEMPO_H

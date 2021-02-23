@@ -34,18 +34,17 @@
 #include "tempo.h"
 #include "extern-plugininfo.h"
 
-Tempo::Tempo(NetworkAccessManager *networkmanager, const QString &jiraCloudInstanceName, const QString &token, QObject *parent) :
+Tempo::Tempo(NetworkAccessManager *networkmanager, const QString &token, QObject *parent) :
     QObject(parent),
     m_token(token),
-    m_jiraCloudInstanceName(jiraCloudInstanceName),
     m_networkManager(networkmanager)
 {
-    qCDebug(dcTempo()) << "Creating tempo connection to" << m_jiraCloudInstanceName;
+    qCDebug(dcTempo()) << "Creating tempo connection";
 }
 
 Tempo::~Tempo()
 {
-    qCDebug(dcTempo()) << "Deleting tempo connection to" << m_jiraCloudInstanceName;
+    qCDebug(dcTempo()) << "Deleting tempo connection";
 }
 
 QString Tempo::token() const
@@ -185,9 +184,11 @@ void Tempo::getWorkloadByAccount(const QString &accountKey, QDate from, QDate to
             return;
         }
         QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap();
+        int offset = dataMap.value("metadata").toMap().value("offset").toInt();
+        int limit = dataMap.value("metadata").toMap().value("limit").toInt();
         QList<Worklog> worklogs = parseJsonForWorklog(dataMap);
         if (!worklogs.isEmpty())
-            emit accountWorklogsReceived(accountKey, worklogs);
+            emit accountWorklogsReceived(accountKey, worklogs, limit, offset);
     });
 }
 
@@ -214,9 +215,11 @@ void Tempo::getWorkloadByTeam(int teamId, QDate from, QDate to, int offset, int 
             return;
         }
         QVariantMap dataMap = QJsonDocument::fromJson(rawData).toVariant().toMap();
+        int offset = dataMap.value("metadata").toMap().value("offset").toInt();
+        int limit = dataMap.value("metadata").toMap().value("limit").toInt();
         QList<Worklog> worklogs = parseJsonForWorklog(dataMap);
         if (!worklogs.isEmpty())
-            emit teamWorklogsReceived(teamId, worklogs);
+            emit teamWorklogsReceived(teamId, worklogs, limit, offset);
     });
 }
 
@@ -239,6 +242,11 @@ void Tempo::setConnected(bool state)
 QList<Tempo::Worklog> Tempo::parseJsonForWorklog(const QVariantMap &data)
 {
     QVariantList worklogList = data.value("results").toList();
+    qCDebug(dcTempo()) << "Worklog received";
+    qCDebug(dcTempo()) << "     - Count:" << data.value("metadata").toMap().value("count");
+    qCDebug(dcTempo()) << "     - Offset:" << data.value("metadata").toMap().value("offset");
+    qCDebug(dcTempo()) << "     - Limit:" << data.value("metadata").toMap().value("limit");
+
     QList<Worklog> worklogs;
     Q_FOREACH(QVariant var, worklogList) {
         QVariantMap map = var.toMap();
@@ -248,8 +256,8 @@ QList<Tempo::Worklog> Tempo::parseJsonForWorklog(const QVariantMap &data)
         worklog.jiraWorklogId = map["jiraWorklogId"].toInt();
         worklog.issue = map["issue"].toMap().value("key").toString();
         worklog.timeSpentSeconds = map["timeSpentSeconds"].toInt();
-        //TODO startDate: required (date-only)
-        //TODO startTime: required (time-only)
+        worklog.startDate = QDate::fromString(map["startDate"].toString(), Qt::ISODate);
+        worklog.startTime = QTime::fromString(map["startTime"].toString(), Qt::ISODate);
         worklog.description = map["description"].toString();
         worklog.createdAt =  QDateTime::fromString(map["createdAt"].toString(), Qt::ISODate);
         worklog.updatedAt =  QDateTime::fromString(map["updatedAt"].toString(), Qt::ISODate);

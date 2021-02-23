@@ -15,15 +15,6 @@
                     "interfaces": ["account"],
                     "createMethods": ["user"],
                     "setupMethod": "displayPin",
-                    "paramTypes": [
-                        {
-                            "id": "b4110c37-8331-4057-8e9f-12f34c2623fe",
-                            "name": "atlassianAccountName",
-                            "displayName": "Atlassian account name",
-                            "type": "QString",
-                            "defaultValue": ""
-                        }
-                    ],
                     "stateTypes": [
                         {
                             "id": "15f45315-5419-4e1b-ace3-fc21503d3b70",
@@ -50,6 +41,15 @@
                     "displayName": "Account",
                     "interfaces": ["connectable"],
                     "createMethods": ["discovery"],
+                    "settingsTypes": [
+                        {
+                            "id": "56c460b2-37d8-453a-b4f4-8e58be348f85",
+                            "name": "startDate",
+                            "displayName": "Start date",
+                            "defaultValue": "",
+                            "type": "QDate"
+                        }
+                    ],
                     "paramTypes": [
                         {
                             "id": "c6aeddae-56af-496d-a419-1635ff9bae50",
@@ -190,6 +190,15 @@
                             "name": "totalTimeSpent",
                             "displayName": "Total time spent",
                             "displayNameEvent": "Total time spent changed",
+                            "defaultValue": 0,
+                            "type": "double",
+                            "unit": "Hours"
+                        },
+                        {
+                            "id": "f5ec7b30-3074-41e9-b1fc-62b6307ddbe1",
+                            "name": "monthTimeSpent",
+                            "displayName": "This month time spent",
+                            "displayNameEvent": "This month time spent changed",
                             "defaultValue": 0,
                             "type": "double",
                             "unit": "Hours"

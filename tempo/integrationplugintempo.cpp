@@ -49,20 +49,17 @@ void IntegrationPluginTempo::startPairing(ThingPairingInfo *info)
 
     if (info->thingClassId() == tempoConnectionThingClassId) {
 
-
-        QString jiraCloudInstanceName = info->params().paramValue(tempoConnectionThingAtlassianAccountNameParamTypeId).toString();
-
         qCDebug(dcTempo()) << "Checking if the Tempo server is reachable: https://api.tempo.io/core/3";
         QNetworkReply *reply = hardwareManager()->networkManager()->get(QNetworkRequest(QUrl("https://api.tempo.io/core/3")));
         connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-        connect(reply, &QNetworkReply::finished, info, [reply, info, this] {
+        connect(reply, &QNetworkReply::finished, info, [reply, info] {
 
             if (reply->error() != QNetworkReply::NetworkError::HostNotFoundError) {
                 qCDebug(dcTempo()) << "Tempo server is reachable";
-                info->finish(Thing::ThingErrorNoError);
+                info->finish(Thing::ThingErrorNoError, QT_TR_NOOP("Please enter your Tempo API integration token."));
             } else {
                 qCWarning(dcTempo()) << "Got online check error" << reply->error() << reply->errorString();
-                info->finish(Thing::ThingErrorSetupFailed, tr("Tempo server not reachable, please check the internet connection"));
+                info->finish(Thing::ThingErrorSetupFailed, tr("Tempo server not reachable, please check the internet connection."));
             }
         });
     } else {
@@ -81,8 +78,7 @@ void IntegrationPluginTempo::confirmPairing(ThingPairingInfo *info, const QStrin
             qCWarning(dcTempo()) << "No authorization code received.";
             return info->finish(Thing::ThingErrorAuthenticationFailure);
         }
-        QString atlassianAccountName = info->params().paramValue(tempoConnectionThingAtlassianAccountNameParamTypeId).toString();
-        Tempo *tempo = new Tempo(hardwareManager()->networkManager(), atlassianAccountName, secret, this);
+        Tempo *tempo = new Tempo(hardwareManager()->networkManager(), secret, this);
         tempo->getAccounts();
         connect(info, &ThingPairingInfo::aborted, tempo, &Tempo::deleteLater);
         connect(tempo, &Tempo::authenticationStatusChanged, info, [info, tempo, secret, this] (bool authenticated){
@@ -155,7 +151,7 @@ void IntegrationPluginTempo::discoverThings(ThingDiscoveryInfo *info)
 void IntegrationPluginTempo::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-    qCDebug(dcTempo()) << "Setup thing";
+    qCDebug(dcTempo()) << "Setup thing" << thing->name();
 
     if (thing->thingClassId() == tempoConnectionThingClassId) {
 
@@ -172,6 +168,12 @@ void IntegrationPluginTempo::setupThing(ThingSetupInfo *info)
                 qCWarning(dcTempo()) << "Tempo connection object not found for thing" << thing->name();
             }
             m_tempoConnections.insert(thing->id(), tempo);
+            connect(tempo, &Tempo::connectionChanged, this, &IntegrationPluginTempo::onConnectionChanged);
+            connect(tempo, &Tempo::authenticationStatusChanged, this, &IntegrationPluginTempo::onAuthenticationStatusChanged);
+            connect(tempo, &Tempo::accountsReceived, this, &IntegrationPluginTempo::onAccountsReceived);
+            connect(tempo, &Tempo::teamsReceived, this, &IntegrationPluginTempo::onTeamsReceived);
+            connect(tempo, &Tempo::accountWorklogsReceived, this, &IntegrationPluginTempo::onAccountWorkloadReceived);
+            connect(tempo, &Tempo::teamWorklogsReceived, this, &IntegrationPluginTempo::onTeamWorkloadReceived);
             info->finish(Thing::ThingErrorNoError);
         } else {
             //device loaded from the device database, needs a new access token;
@@ -182,8 +184,7 @@ void IntegrationPluginTempo::setupThing(ThingSetupInfo *info)
                 info->finish(Thing::ThingErrorAuthenticationFailure, tr("Token is not available."));
                 return;
             }
-            QString jiraInstanceName = thing->paramValue(tempoConnectionThingAtlassianAccountNameParamTypeId).toString();
-            Tempo *tempo = new Tempo(hardwareManager()->networkManager(), jiraInstanceName, token, this);
+            Tempo *tempo = new Tempo(hardwareManager()->networkManager(), token, this);
             connect(info, &ThingSetupInfo::aborted, tempo, &Tempo::deleteLater);
             connect(tempo, &Tempo::authenticationStatusChanged, info, [info, tempo, this] (bool authenticated){
                 if (authenticated) {
@@ -236,12 +237,10 @@ void IntegrationPluginTempo::postSetupThing(Thing *thing)
                 Q_FOREACH (Thing *childThing, myThings().filterByParentId(thing->id())) {
                     if (childThing->thingClassId() == accountThingClassId) {
                         QString key = childThing->paramValue(accountThingKeyParamTypeId).toString();
-                        QDate from(1970, 1, 1);
-                        tempo->getWorkloadByAccount(key, from, QDate::currentDate());
+                        tempo->getWorkloadByAccount(key, QDate(1970, 1, 1), QDate::currentDate(), 0, 1000);
                     } else if (childThing->thingClassId() == teamThingClassId) {
                         int id = childThing->paramValue(teamThingIdParamTypeId).toInt();
-                        QDate from(1970, 1, 1);
-                        tempo->getWorkloadByTeam(id, from, QDate::currentDate());
+                        tempo->getWorkloadByTeam(id, QDate(1970, 1, 1), QDate::currentDate(), 0, 1000);
                     }
                 }
             }
@@ -260,13 +259,13 @@ void IntegrationPluginTempo::postSetupThing(Thing *thing)
         Tempo *tempo = m_tempoConnections.value(thing->parentId());
         QString key = thing->paramValue(accountThingKeyParamTypeId).toString();
         QDate from(1970, 1, 1);
-        tempo->getWorkloadByAccount(key, from, QDate::currentDate());
+        tempo->getWorkloadByAccount(key, from, QDate::currentDate(), 0, 1000);
         tempo->getAccounts();
     } else if (thing->thingClassId() == teamThingClassId) {
         Tempo *tempo = m_tempoConnections.value(thing->parentId());
         int id = thing->paramValue(teamThingIdParamTypeId).toInt();
         QDate from(1970, 1, 1);
-        tempo->getWorkloadByTeam(id, from, QDate::currentDate());
+        tempo->getWorkloadByTeam(id, from, QDate::currentDate(), 0, 1000);
         tempo->getTeams();
     }
 }
@@ -276,7 +275,11 @@ void IntegrationPluginTempo::thingRemoved(Thing *thing)
     qCDebug(dcTempo()) << "Thing removed" << thing->name();
     if (thing->thingClassId() == tempoConnectionThingClassId) {
         m_tempoConnections.take(thing->id())->deleteLater();
+    } else if (thing->thingClassId() == teamThingClassId ||
+               thing->thingClassId() == accountThingClassId) {
+        m_worklogBuffer.remove(thing->id());
     }
+
     if (myThings().isEmpty()) {
         qCDebug(dcTempo()) << "Stopping plugin timer";
         hardwareManager()->pluginTimerManager()->unregisterTimer(m_pluginTimer15min);
@@ -315,20 +318,20 @@ void IntegrationPluginTempo::onAccountsReceived(const QList<Tempo::Account> acco
     qCDebug(dcTempo()) << "Accounts received";
 
     Q_FOREACH(Tempo::Account account, accounts) {
-        qCDebug(dcTempo()) << "     - Account" << account.name;
-        qCDebug(dcTempo()) << "         - Key" << account.key;
-        qCDebug(dcTempo()) << "         - Monthly budget"  << account.monthlyBudget;
-        qCDebug(dcTempo()) << "         - Lead" << account.lead.displayName;
-        qCDebug(dcTempo()) << "         - Is Global" << account.global;
-        qCDebug(dcTempo()) << "         - Contact type" << account.contact.type;
-        qCDebug(dcTempo()) << "         - Contact account id" << account.contact.accountId;
-        qCDebug(dcTempo()) << "         - Contact" << account.contact.displayName;
-        qCDebug(dcTempo()) << "         - Category Id" << account.category.id;
-        qCDebug(dcTempo()) << "         - Category name" << account.category.name;
-        qCDebug(dcTempo()) << "         - Category key" << account.category.key;
-        qCDebug(dcTempo()) << "         - Customer id" << account.customer.id;
-        qCDebug(dcTempo()) << "         - Customer key" << account.customer.key;
-        qCDebug(dcTempo()) << "         - Customer name" << account.customer.name;
+        //        qCDebug(dcTempo()) << "     - Account" << account.name;
+        //        qCDebug(dcTempo()) << "         - Key" << account.key;
+        //        qCDebug(dcTempo()) << "         - Monthly budget"  << account.monthlyBudget;
+        //        qCDebug(dcTempo()) << "         - Lead" << account.lead.displayName;
+        //        qCDebug(dcTempo()) << "         - Is Global" << account.global;
+        //        qCDebug(dcTempo()) << "         - Contact type" << account.contact.type;
+        //        qCDebug(dcTempo()) << "         - Contact account id" << account.contact.accountId;
+        //        qCDebug(dcTempo()) << "         - Contact" << account.contact.displayName;
+        //        qCDebug(dcTempo()) << "         - Category Id" << account.category.id;
+        //        qCDebug(dcTempo()) << "         - Category name" << account.category.name;
+        //        qCDebug(dcTempo()) << "         - Category key" << account.category.key;
+        //        qCDebug(dcTempo()) << "         - Customer id" << account.customer.id;
+        //        qCDebug(dcTempo()) << "         - Customer key" << account.customer.key;
+        //        qCDebug(dcTempo()) << "         - Customer name" << account.customer.name;
 
         Thing *thing = myThings().findByParams(ParamList() << Param(accountThingKeyParamTypeId, account.key));
         if (!thing) {
@@ -368,7 +371,7 @@ void IntegrationPluginTempo::onTeamsReceived(const QList<Tempo::Team> teams)
     }
 }
 
-void IntegrationPluginTempo::onAccountWorkloadReceived(const QString &accountKey, QList<Tempo::Worklog> workloads)
+void IntegrationPluginTempo::onAccountWorkloadReceived(const QString &accountKey, QList<Tempo::Worklog> workloads, int limit, int offset)
 {
     qCDebug(dcTempo()) << "Account workload received, account key:" << accountKey << "Worklog etries: "<< workloads.count();
     Thing *thing = myThings().findByParams(ParamList() << Param(accountThingKeyParamTypeId, accountKey));
@@ -377,32 +380,87 @@ void IntegrationPluginTempo::onAccountWorkloadReceived(const QString &accountKey
         return;
     }
 
-    uint totalTimeSpentSeconds = 0;
-    uint thisMonthTimeSpentSeconds = 0;
-    QDate today = QDate::currentDate();
-    Q_FOREACH(Tempo::Worklog workload, workloads) {
-        if (workload.createdAt.date().month() == today.month()) {
-            thisMonthTimeSpentSeconds += workload.timeSpentSeconds;
-        }
-        totalTimeSpentSeconds += workload.timeSpentSeconds;
+    if (offset == 0) {
+        m_worklogBuffer.remove(thing->id());
     }
-    thing->setStateValue(accountTotalTimeSpentStateTypeId, totalTimeSpentSeconds/3600.00);
-    thing->setStateValue(accountMonthTimeSpentStateTypeId, thisMonthTimeSpentSeconds/3600.00);
+    if (workloads.count() >= limit) {
+        //limit is reached
+        if (m_worklogBuffer.contains(thing->id())) {
+            m_worklogBuffer[thing->id()].append(workloads);
+        } else {
+            m_worklogBuffer.insert(thing->id(), workloads);
+        }
+        Tempo *tempo = m_tempoConnections.value(thing->parentId());
+        if (tempo) {
+            tempo->getWorkloadByAccount(accountKey, QDate(1970, 1, 1), QDate::currentDate(), offset+workloads.count(), limit);
+        }
+
+    } else {
+        uint totalTimeSpentSeconds = 0;
+        uint thisMonthTimeSpentSeconds = 0;
+        QDate today = QDate::currentDate();
+        Q_FOREACH(Tempo::Worklog workload, workloads) {
+            if ((workload.startDate.month() == today.month()) && (workload.startDate.year() == today.year())) {
+                thisMonthTimeSpentSeconds += workload.timeSpentSeconds;
+            }
+            totalTimeSpentSeconds += workload.timeSpentSeconds;
+        }
+        if (m_worklogBuffer.contains(thing->id())) {
+            Q_FOREACH(Tempo::Worklog workload, m_worklogBuffer.take(thing->id())) {
+                if ((workload.startDate.month() == today.month()) && (workload.startDate.year() == today.year())) {
+                    thisMonthTimeSpentSeconds += workload.timeSpentSeconds;
+                }
+                totalTimeSpentSeconds += workload.timeSpentSeconds;
+            }
+        }
+        thing->setStateValue(accountTotalTimeSpentStateTypeId, totalTimeSpentSeconds/3600.00);
+        thing->setStateValue(accountMonthTimeSpentStateTypeId, thisMonthTimeSpentSeconds/3600.00);
+    }
 }
 
-void IntegrationPluginTempo::onTeamWorkloadReceived(int teamId, QList<Tempo::Worklog> workloads)
+void IntegrationPluginTempo::onTeamWorkloadReceived(int teamId, QList<Tempo::Worklog> workloads, int limit, int offset)
 {
-    qCDebug(dcTempo()) << "Team workload received, team ID:" << teamId << "Worklog etries: "<< workloads.count();
+    qCDebug(dcTempo()) << "Team workload received, team ID:" << teamId << "Worklog entries: "<< workloads.count();
     Thing *thing = myThings().findByParams(ParamList() << Param(teamThingIdParamTypeId, teamId));
     if (!thing) {
         qCWarning(dcTempo()) << "Could not find team thing for account key" << teamId;
         return;
     }
-
-    uint totalTimeSpentSeconds = 0;
-    Q_FOREACH(Tempo::Worklog workload, workloads) {
-        totalTimeSpentSeconds += workload.timeSpentSeconds;
+    if (offset == 0) {
+        m_worklogBuffer.remove(thing->id());
     }
-    thing->setStateValue(teamTotalTimeSpentStateTypeId, totalTimeSpentSeconds/3600.00);
+    if (workloads.count() >= limit) {
+        //limit is reached#
+        if (m_worklogBuffer.contains(thing->id())) {
+            m_worklogBuffer[thing->id()].append(workloads);
+        } else {
+            m_worklogBuffer.insert(thing->id(), workloads);
+        }
+        Tempo *tempo = m_tempoConnections.value(thing->parentId());
+        if (tempo) {
+            tempo->getWorkloadByTeam(teamId, QDate(1970, 1, 1), QDate::currentDate(), offset+workloads.count(), limit);
+        }
+
+    } else {
+        uint totalTimeSpentSeconds = 0;
+        uint thisMonthTimeSpentSeconds = 0;
+        QDate today = QDate::currentDate();
+        Q_FOREACH(Tempo::Worklog workload, workloads) {
+            if ((workload.startDate.month() == today.month()) && (workload.startDate.year() == today.year())) {
+                thisMonthTimeSpentSeconds += workload.timeSpentSeconds;
+            }
+            totalTimeSpentSeconds += workload.timeSpentSeconds;
+        }
+        if (m_worklogBuffer.contains(thing->id())) {
+            Q_FOREACH(Tempo::Worklog workload, m_worklogBuffer.take(thing->id())) {
+                if ((workload.startDate.month() == today.month()) && (workload.startDate.year() == today.year())) {
+                    thisMonthTimeSpentSeconds += workload.timeSpentSeconds;
+                }
+                totalTimeSpentSeconds += workload.timeSpentSeconds;
+            }
+        }
+        thing->setStateValue(teamTotalTimeSpentStateTypeId, totalTimeSpentSeconds/3600.00);
+        thing->setStateValue(teamMonthTimeSpentStateTypeId, thisMonthTimeSpentSeconds/3600.00);
+    }
 }
 

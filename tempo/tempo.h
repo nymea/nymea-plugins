@@ -95,7 +95,8 @@ public:
       int jiraWorklogId;
       QString issue;
       int timeSpentSeconds;
-      QDateTime startedAt;
+      QDate startDate;
+      QTime startTime;
       QString description;
       QDateTime createdAt;
       QDateTime updatedAt;
@@ -111,7 +112,7 @@ public:
         Lead lead;
     };
 
-    explicit Tempo(NetworkAccessManager *networkmanager, const QString &jiraCloudInstanceName, const QString &token, QObject *parent = nullptr);
+    explicit Tempo(NetworkAccessManager *networkmanager, const QString &token, QObject *parent = nullptr);
     ~Tempo() override;
     QString token() const;
 
@@ -123,7 +124,6 @@ public:
 private:
     QByteArray m_baseControlUrl = "https://api.tempo.io/core/3";
     QString m_token;
-    QString m_jiraCloudInstanceName;
 
     NetworkAccessManager *m_networkManager = nullptr;
 
@@ -144,8 +144,8 @@ signals:
 
     void teamsReceived(const QList<Team> teams);
     void accountsReceived(const QList<Account> accounts);
-    void accountWorklogsReceived(const QString &accountKey, QList<Worklog> worklogs);
-    void teamWorklogsReceived(int teamId, QList<Worklog> worklogs);
+    void accountWorklogsReceived(const QString &accountKey, QList<Worklog> worklogs, int limit, int offset);
+    void teamWorklogsReceived(int teamId, QList<Worklog> worklogs, int limit, int offset);
 };
 
 #endif // TEMPO_H
