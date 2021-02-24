@@ -133,13 +133,14 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
         Q_FOREACH(QVariant value, overviewList) {
             QVariantMap map = value.toMap();
             if (map["meta"].toString() == "GriPwr") {
-                overview.power = map["value"].toInt();
-                qCDebug(dcSma()) << "SunnyWebBox:       - Power" << overview.power;
+                overview.power = map["value"].toString().toInt();
+                QString unit = map["unit"].toString();
+                qCDebug(dcSma()) << "SunnyWebBox:       - Power" << overview.power << unit;
             } else if (map["meta"].toString() == "GriEgyTdy") {
-                overview.dailyYield = map["value"].toInt();
+                overview.dailyYield = map["value"].toString().toInt();
                 qCDebug(dcSma()) << "SunnyWebBox:       - Daily yield" << overview.dailyYield;
             } else if (map["meta"].toString() == "GriEgyTot") {
-                overview.totalYield = map["value"].toInt();
+                overview.totalYield = map["value"].toString().toInt();
                 qCDebug(dcSma()) << "SunnyWebBox:       - Total yield" << overview.totalYield;
             } else if (map["meta"].toString() == "OpStt") {
                 overview.status = map["value"].toString();
@@ -154,7 +155,7 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
     } else if (messageType == "GetDevices") {
         QList<Device> devices;
         QVariantList deviceList = result.value("devices").toList();
-        qCDebug(dcSma()) << "SunnyWebBox: GetDevices";
+        qCDebug(dcSma()) << "SunnyWebBox: GetDevices" << result.value("totalDevicesReturned").toInt();
         Q_FOREACH(QVariant value, deviceList) {
             Device device;
             QVariantMap map = value.toMap();

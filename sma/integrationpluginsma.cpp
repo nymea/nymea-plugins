@@ -108,7 +108,6 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
             m_sunnyWebBoxes.insert(info->thing(), sunnyWebBox);
         });
-        return info->finish(Thing::ThingErrorNoError);
 
     } else if (thing->thingClassId() == inverterThingClassId) {
         Thing *parentThing = myThings().findById(thing->parentId());
