@@ -132,16 +132,19 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
         qCDebug(dcSma()) << "SunnyWebBox: GetPlantOverview";
         Q_FOREACH(QVariant value, overviewList) {
             QVariantMap map = value.toMap();
+
             if (map["meta"].toString() == "GriPwr") {
                 overview.power = map["value"].toString().toInt();
                 QString unit = map["unit"].toString();
                 qCDebug(dcSma()) << "SunnyWebBox:       - Power" << overview.power << unit;
             } else if (map["meta"].toString() == "GriEgyTdy") {
-                overview.dailyYield = map["value"].toString().toInt();
-                qCDebug(dcSma()) << "SunnyWebBox:       - Daily yield" << overview.dailyYield;
+                overview.dailyYield = map["value"].toString().toDouble();
+                QString unit = map["unit"].toString();
+                qCDebug(dcSma()) << "SunnyWebBox:       - Daily yield" << overview.dailyYield << unit;
             } else if (map["meta"].toString() == "GriEgyTot") {
-                overview.totalYield = map["value"].toString().toInt();
-                qCDebug(dcSma()) << "SunnyWebBox:       - Total yield" << overview.totalYield;
+                overview.totalYield = map["value"].toString().toDouble();
+                QString unit = map["unit"].toString();
+                qCDebug(dcSma()) << "SunnyWebBox:       - Total yield" << overview.totalYield << unit;
             } else if (map["meta"].toString() == "OpStt") {
                 overview.status = map["value"].toString();
                 qCDebug(dcSma()) << "SunnyWebBox:       - Status" << overview.status;

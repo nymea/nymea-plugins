@@ -227,6 +227,9 @@ void IntegrationPluginSma::onDevicesReceived(const QString &messageId, QList<Sun
     Q_FOREACH(SunnyWebBox::Device device, devices){
         qCDebug(dcSma()) << "   - Device received" << device.name << device.key;
         ThingDescriptor descriptor(inverterThingClassId, device.name, device.key ,thing->id());
+        ParamList params;
+        params << Param(inverterThingIdParamTypeId, device.key);
+        descriptor.setParams(params);
         descriptors.append(descriptor);
     }
     emit autoThingsAppeared(descriptors);
