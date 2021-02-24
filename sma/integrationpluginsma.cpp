@@ -107,6 +107,7 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
             connect(sunnyWebBox, &SunnyWebBox::devicesReceived, this, &IntegrationPluginSma::onDevicesReceived);
             connect(sunnyWebBox, &SunnyWebBox::processDataReceived, this, &IntegrationPluginSma::onProcessDataReceived);
             connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
+            connect(sunnyWebBox, &SunnyWebBox::parametersReceived, this, &IntegrationPluginSma::onParametersReceived);
             m_sunnyWebBoxes.insert(info->thing(), sunnyWebBox);
         });
 
