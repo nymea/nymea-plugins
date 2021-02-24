@@ -71,7 +71,6 @@ private:
     QHash<QString, ThingActionInfo *> m_asyncActions;
     SunnyWebBoxCommunication *m_sunnyWebBoxCommunication = nullptr;
 
-    SunnyWebBox *createSunnyWebBoxConnection(Thing *thing);
     void setupChild(ThingSetupInfo *info, Thing *parentThing);
     void getData(Thing *thing);
 };

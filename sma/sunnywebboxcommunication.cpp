@@ -42,6 +42,7 @@ SunnyWebBoxCommunication::SunnyWebBoxCommunication(NetworkAccessManager *network
     QObject(parent),
     m_networkManager(networkAccessManager)
 {
+    qCDebug(dcSma()) << "Creating SunnyWebBoxCommunictaion";
     m_udpSocket = new QUdpSocket(this);
     m_udpSocket->bind(QHostAddress::Any, m_port);
 
@@ -63,51 +64,7 @@ SunnyWebBoxCommunication::SunnyWebBoxCommunication(NetworkAccessManager *network
     });
 }
 
-QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure)
-{
-    QString requestId = QUuid::createUuid().toString().remove('{').remove('-').left(14);
 
-    QJsonDocument doc;
-    QJsonObject obj;
-    obj["format"] = "JSON";
-    obj["id"] = requestId;
-    obj["proc"] = procedure;
-    obj["version"] = "1.0";
-    doc.setObject(obj);
-
-    QUrl url;
-    url.setHost(address.toString());
-    url.setPath("/rpc");
-    url.setScheme("http");
-    QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
-    QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
-
-    QNetworkReply *reply = m_networkManager->post(request, data);
-    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
-    connect(reply, &QNetworkReply::finished, this, [this, address, requestId, reply]{
-
-        //int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        QByteArray data = reply->readAll();
-        qCDebug(dcSma()) << "Received reply" << data;
-        datagramReceived(address, data);
-    });
-
-   /* if(!m_messageResponsePending) {
-        qCDebug(dcSma()) << "Send message" << data << address << m_port;
-        m_udpSocket->writeDatagram(data, address, m_port);
-        m_messageResponsePending = true;
-    } else {
-        if (m_messageQueue[address].length() < 40) {
-            qCDebug(dcSma()) << "Adding message to queue" << data << address << m_port;
-            m_messageQueue[address].append(data);
-        } else {
-            qCWarning(dcSma()) << "Message queue overflow";
-            return "";
-        }
-    }*/
-    return requestId;
-}
 
 QString SunnyWebBoxCommunication::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
 {

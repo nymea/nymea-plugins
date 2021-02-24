@@ -73,7 +73,8 @@ public:
         double value;
     };
 
-    explicit SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAddress &hostAddress, QObject *parrent = 0);
+    explicit SunnyWebBox(NetworkAccessManager *networkAccessManager, const QHostAddress &hostAddress, QObject *parrent = 0);
+    ~SunnyWebBox();
 
     QString getPlantOverview(); // Returns an object with the following plant data: PAC, E-TODAY, E-TOTAL, MODE, ERROR
     QString getDevices(); //Returns a hierarchical list of all detected plant devices.
@@ -89,10 +90,11 @@ public:
 private:
 
     QHostAddress m_hostAddresss;
-    SunnyWebBoxCommunication *m_communication = nullptr;
+    NetworkAccessManager *m_networkManager = nullptr;
 
-public slots:
-    void onMessageReceived(const QHostAddress &address, const QString &messageId, const QString &messageType, const QVariantMap &result);
+    QString sendMessage(const QHostAddress &address, const QString &procedure);
+    QString sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params);
+    void parseMessage(const QString &messageId, const QString &messageType, const QVariantMap &result);
 
 signals:
     void connectedChanged(bool connected);

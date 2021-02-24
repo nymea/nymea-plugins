@@ -73,12 +73,10 @@ void IntegrationPluginSma::discoverThings(ThingDiscoveryInfo *info)
 void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 {
     Thing *thing = info->thing();
-
-    if (!m_sunnyWebBoxCommunication) {
-        m_sunnyWebBoxCommunication = new SunnyWebBoxCommunication(hardwareManager()->networkManager(), this);
-    }
+    qCDebug(dcSma()) << "Setup thing" << thing->name();
 
     if (!m_refreshTimer) {
+        qCDebug(dcSma()) << "Starting refresh timer";
         m_refreshTimer = hardwareManager()->pluginTimerManager()->registerTimer(30);
         connect(m_refreshTimer, &PluginTimer::timeout, this, &IntegrationPluginSma::onRefreshTimer);
     }
@@ -93,15 +91,23 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
                 return;
             }
         }
-        SunnyWebBox *sunnyWebBox = new SunnyWebBox(m_sunnyWebBoxCommunication, QHostAddress(thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()), this);
-        connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
-        connect(sunnyWebBox, &SunnyWebBox::devicesReceived, this, &IntegrationPluginSma::onDevicesReceived);
-        connect(sunnyWebBox, &SunnyWebBox::processDataReceived, this, &IntegrationPluginSma::onProcessDataReceived);
-        connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
-        m_sunnyWebBoxes.insert(thing, sunnyWebBox);
-        connect(info, &ThingSetupInfo::aborted, this, [thing, this] { m_sunnyWebBoxes.remove(thing);});
+        if (m_sunnyWebBoxes.contains(thing)) {
+            qCDebug(dcSma()) << "Setup after reconfiguration, cleaning up...";
+            m_sunnyWebBoxes.take(thing)->deleteLater();
+        }
+        SunnyWebBox *sunnyWebBox = new SunnyWebBox(hardwareManager()->networkManager(), QHostAddress(thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()), this);
+        connect(info, &ThingSetupInfo::aborted, sunnyWebBox, &SunnyWebBox::deleteLater);
+        connect(sunnyWebBox, &SunnyWebBox::destroyed, this, [thing, this] { m_sunnyWebBoxes.remove(thing);});
         QString requestId = sunnyWebBox->getPlantOverview();
-        m_asyncSetup.insert(requestId, info);
+        connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, info, [sunnyWebBox, info, this] {
+            qCDebug(dcSma()) << "Received plant overview, finishing setup";
+            info->finish(Thing::ThingErrorNoError);
+            connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
+            connect(sunnyWebBox, &SunnyWebBox::devicesReceived, this, &IntegrationPluginSma::onDevicesReceived);
+            connect(sunnyWebBox, &SunnyWebBox::processDataReceived, this, &IntegrationPluginSma::onProcessDataReceived);
+            connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
+            m_sunnyWebBoxes.insert(info->thing(), sunnyWebBox);
+        });
         return info->finish(Thing::ThingErrorNoError);
 
     } else if (thing->thingClassId() == inverterThingClassId) {
@@ -127,6 +133,7 @@ void IntegrationPluginSma::setupThing(ThingSetupInfo *info)
 
 void IntegrationPluginSma::postSetupThing(Thing *thing)
 {
+    qCDebug(dcSma()) << "Post setup thing" << thing->name();
     if (thing->thingClassId() == sunnyWebBoxThingClassId) {
         SunnyWebBox *sunnyWebBox = m_sunnyWebBoxes.value(thing);
         if (!sunnyWebBox)
@@ -167,9 +174,10 @@ void IntegrationPluginSma::thingRemoved(Thing *thing)
         m_sunnyWebBoxes.take(thing)->deleteLater();
     }
 
-    if (myThings().filterByThingClassId(sunnyWebBoxThingClassId).isEmpty()) {
-        m_sunnyWebBoxCommunication->deleteLater();
-        m_sunnyWebBoxCommunication = nullptr;
+    if (myThings().isEmpty()) {
+        qCDebug(dcSma()) << "Stopping timer";
+        hardwareManager()->pluginTimerManager()->unregisterTimer(m_refreshTimer);
+        m_refreshTimer = nullptr;
     }
 }
 
@@ -209,7 +217,6 @@ void IntegrationPluginSma::onDevicesReceived(const QString &messageId, QList<Sun
         ThingActionInfo *info = m_asyncActions.value(messageId);
         info->finish(Thing::ThingErrorNoError);
     }
-
 
     Thing *thing = m_sunnyWebBoxes.key(static_cast<SunnyWebBox *>(sender()));
     if (!thing)
@@ -252,16 +259,6 @@ void IntegrationPluginSma::onParameterChannelsReceived(const QString &messageId,
         return;
 
     qCDebug(dcSma()) << "Parameter channels received" << deviceKey << parameterChannels;
-}
-
-SunnyWebBox * IntegrationPluginSma::createSunnyWebBoxConnection(Thing *thing)
-{
-    SunnyWebBox *sunnyWebBox = new SunnyWebBox(m_sunnyWebBoxCommunication, QHostAddress(thing->paramValue(sunnyWebBoxThingHostParamTypeId).toString()), this);
-    m_sunnyWebBoxes.insert(thing, sunnyWebBox);
-    connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
-    connect(sunnyWebBox, &SunnyWebBox::parameterChannelsReceived, this, &IntegrationPluginSma::onParameterChannelsReceived);
-    //connect(sunnyWebBox, &SunnyWebBox::plantOverviewReceived, this, &IntegrationPluginSma::onPlantOverviewReceived);
-    return sunnyWebBox;
 }
 
 void IntegrationPluginSma::setupChild(ThingSetupInfo *info, Thing *parentThing)

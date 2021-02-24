@@ -35,37 +35,42 @@
 #include "QJsonObject"
 #include "QJsonArray"
 
-SunnyWebBox::SunnyWebBox(SunnyWebBoxCommunication *communication, const QHostAddress &hostAddress,  QObject *parrent) :
+SunnyWebBox::SunnyWebBox(NetworkAccessManager *networkAccessManager, const QHostAddress &hostAddress,  QObject *parrent) :
     QObject(parrent),
     m_hostAddresss(hostAddress),
-    m_communication(communication)
+    m_networkManager(networkAccessManager)
 {
+    qCDebug(dcSma()) << "SunnyWebBox: Creating Sunny Web Box connection";
     //TODO connect communication with socket state;
-    connect(m_communication, &SunnyWebBoxCommunication::messageReceived, this, &SunnyWebBox::onMessageReceived);
+}
+
+SunnyWebBox::~SunnyWebBox()
+{
+    qCDebug(dcSma()) << "SunnyWebBox: Deleting Sunny Web Box connection";
 }
 
 QString SunnyWebBox::getPlantOverview()
 {
-    return m_communication->sendMessage(m_hostAddresss, "GetPlantOverview");
+    return sendMessage(m_hostAddresss, "GetPlantOverview");
 }
 
 QString SunnyWebBox::getDevices()
 {
-    return m_communication->sendMessage(m_hostAddresss, "GetDevices");
+    return sendMessage(m_hostAddresss, "GetDevices");
 }
 
 QString SunnyWebBox::getProcessDataChannels(const QString &deviceId)
 {
     QJsonObject params;
     params["device"] = deviceId;
-    return m_communication->sendMessage(m_hostAddresss, "GetProcessDataChannels", params);
+    return sendMessage(m_hostAddresss, "GetProcessDataChannels", params);
 }
 
 QString SunnyWebBox::getProcessData(const QStringList &deviceKeys)
 {
     QJsonObject params;
     params["device"] = deviceKeys.first();
-    return m_communication->sendMessage(m_hostAddresss, "GetProcessData", params);
+    return sendMessage(m_hostAddresss, "GetProcessData", params);
 }
 
 QString SunnyWebBox::getParameterChannels(const QString &deviceKey)
@@ -76,7 +81,7 @@ QString SunnyWebBox::getParameterChannels(const QString &deviceKey)
     deviceObj["key"] = deviceKey;
     devicesArray.append(deviceObj);
     paramsObj["devices"] = devicesArray;
-    return m_communication->sendMessage(m_hostAddresss, "GetParameterChannels", paramsObj);
+    return sendMessage(m_hostAddresss, "GetParameterChannels", paramsObj);
 }
 
 QString SunnyWebBox::getParameters(const QStringList &deviceKeys)
@@ -87,7 +92,7 @@ QString SunnyWebBox::getParameters(const QStringList &deviceKeys)
     deviceObj["key"] = deviceKeys.first(); //TODO
     devicesArray.append(deviceObj);
     paramsObj["devices"] = devicesArray;
-    return m_communication->sendMessage(m_hostAddresss, "GetParameter", paramsObj);
+    return sendMessage(m_hostAddresss, "GetParameter", paramsObj);
 }
 
 QString SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString, QVariant> &channels)
@@ -106,11 +111,12 @@ QString SunnyWebBox::setParameters(const QString &deviceKey, const QHash<QString
     deviceObj["channels"] = channelsArray;
     devicesArray.append(deviceObj);
     paramsObj["devices"] = devicesArray;
-    return m_communication->sendMessage(m_hostAddresss, "SetParameter", paramsObj);
+    return sendMessage(m_hostAddresss, "SetParameter", paramsObj);
 }
 
 void SunnyWebBox::setHostAddress(const QHostAddress &address)
 {
+    qCDebug(dcSma()) << "SunnyWebBox: Setting host address to" << address.toString();
     m_hostAddresss = address;
 }
 
@@ -119,12 +125,8 @@ QHostAddress SunnyWebBox::hostAddress()
     return m_hostAddresss;
 }
 
-void SunnyWebBox::onMessageReceived(const QHostAddress &address, const QString &messageId, const QString &messageType, const QVariantMap &result)
+void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageType, const QVariantMap &result)
 {
-    if (address != m_hostAddresss) {
-        return;
-    }
-
     if (messageType == "GetPlantOverview") {
         Overview overview;
         QVariantList overviewList = result.value("overview").toList();
@@ -215,3 +217,70 @@ void SunnyWebBox::onMessageReceived(const QHostAddress &address, const QString &
         qCWarning(dcSma()) << "Unknown message type" << messageType;
     }
 }
+
+QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &procedure)
+{
+    return sendMessage(address, procedure, QJsonObject());
+}
+
+QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
+{
+    QString requestId = QUuid::createUuid().toString().remove('{').remove('-').left(14);
+
+    QJsonDocument doc;
+    QJsonObject obj;
+    obj["format"] = "JSON";
+    obj["id"] = requestId;
+    obj["proc"] = procedure;
+    obj["version"] = "1.0";
+
+    if (!params.isEmpty()) {
+        obj.insert("params", params);
+    }
+    doc.setObject(obj);
+
+    QUrl url;
+    url.setHost(address.toString());
+    url.setPath("/rpc");
+    url.setPort(80);
+    url.setScheme("http");
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader, "application/json");
+    QByteArray data = doc.toJson(QJsonDocument::JsonFormat::Compact);
+    data.prepend("RPC=");
+    QNetworkReply *reply = m_networkManager->post(request, data);
+    connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
+    connect(reply, &QNetworkReply::finished, this, [this, address, requestId, reply]{
+
+        //int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        QByteArray data = reply->readAll();
+        qCDebug(dcSma()) << "Received reply" << data;
+
+        QJsonParseError error;
+        QJsonDocument doc = QJsonDocument::fromJson(data, &error);
+        if (error.error != QJsonParseError::NoError) {
+            qCWarning(dcSma()) << "Could not parse JSON" << error.errorString();
+            return;
+        }
+        if (!doc.isObject()) {
+            qCWarning(dcSma()) << "JSON is not an Object";
+            return;
+        }
+        QVariantMap map = doc.toVariant().toMap();
+        if (map["version"] != "1.0") {
+            qCWarning(dcSma()) << "API version not supported" << map["version"];
+            return;
+        }
+
+        if (map.contains("proc") && map.contains("result")) {
+            QString requestType = map["proc"].toString();
+            QString requestId = map["id"].toString();
+            QVariantMap result = map.value("result").toMap();
+            parseMessage(requestId, requestType, result);
+        } else {
+            qCWarning(dcSma()) << "Missing proc or result value";
+        }
+    });
+    return requestId;
+}
+
