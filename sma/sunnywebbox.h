@@ -88,7 +88,7 @@ public:
     QHostAddress hostAddress();
 
 private:
-
+    bool m_connected = false;
     QHostAddress m_hostAddresss;
     NetworkAccessManager *m_networkManager = nullptr;
 
@@ -96,6 +96,7 @@ private:
     QString sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params);
     void parseMessage(const QString &messageId, const QString &messageType, const QVariantMap &result);
 
+    void setConnectionStatus(bool connected);
 signals:
     void connectedChanged(bool connected);
 

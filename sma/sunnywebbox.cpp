@@ -41,7 +41,6 @@ SunnyWebBox::SunnyWebBox(NetworkAccessManager *networkAccessManager, const QHost
     m_networkManager(networkAccessManager)
 {
     qCDebug(dcSma()) << "SunnyWebBox: Creating Sunny Web Box connection";
-    //TODO connect communication with socket state;
 }
 
 SunnyWebBox::~SunnyWebBox()
@@ -130,18 +129,24 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
     if (messageType == "GetPlantOverview") {
         Overview overview;
         QVariantList overviewList = result.value("overview").toList();
+        qCDebug(dcSma()) << "SunnyWebBox: GetPlantOverview";
         Q_FOREACH(QVariant value, overviewList) {
             QVariantMap map = value.toMap();
             if (map["meta"].toString() == "GriPwr") {
                 overview.power = map["value"].toInt();
+                qCDebug(dcSma()) << "SunnyWebBox:       - Power" << overview.power;
             } else if (map["meta"].toString() == "GriEgyTdy") {
                 overview.dailyYield = map["value"].toInt();
+                qCDebug(dcSma()) << "SunnyWebBox:       - Daily yield" << overview.dailyYield;
             } else if (map["meta"].toString() == "GriEgyTot") {
                 overview.totalYield = map["value"].toInt();
+                qCDebug(dcSma()) << "SunnyWebBox:       - Total yield" << overview.totalYield;
             } else if (map["meta"].toString() == "OpStt") {
                 overview.status = map["value"].toString();
+                qCDebug(dcSma()) << "SunnyWebBox:       - Status" << overview.status;
             } else if (map["meta"].toString() == "Msg") {
                 overview.error = map["value"].toString();
+                qCDebug(dcSma()) << "SunnyWebBox:       - Error" << overview.error;
             }
         }
         emit plantOverviewReceived(messageId, overview);
@@ -149,12 +154,14 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
     } else if (messageType == "GetDevices") {
         QList<Device> devices;
         QVariantList deviceList = result.value("devices").toList();
+        qCDebug(dcSma()) << "SunnyWebBox: GetDevices";
         Q_FOREACH(QVariant value, deviceList) {
             Device device;
             QVariantMap map = value.toMap();
             device.name = map["name"].toString();
+            qCDebug(dcSma()) << "SunnyWebBox:       - Name" << device.name;
             device.key = map["key"].toString();
-
+            qCDebug(dcSma()) << "SunnyWebBox:       - Key" << device.key;
             QVariantList childrenList = map["children"].toList();
             Q_FOREACH(QVariant childValue, childrenList) {
                 Device child;
@@ -214,7 +221,16 @@ void SunnyWebBox::parseMessage(const QString &messageId, const QString &messageT
             emit parametersReceived(messageId, key, parameters);
         }
     } else {
-        qCWarning(dcSma()) << "Unknown message type" << messageType;
+        qCWarning(dcSma()) << "SunnyWebBox: Unknown message type" << messageType;
+    }
+}
+
+void SunnyWebBox::setConnectionStatus(bool connected)
+{
+    if (m_connected != connected) {
+        qCDebug(dcSma()) << "SunnyWebBox: Connection status changed" << connected;
+        m_connected = connected;
+        emit connectedChanged(m_connected);
     }
 }
 
@@ -225,6 +241,7 @@ QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &pro
 
 QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &procedure, const QJsonObject &params)
 {
+    qCDebug(dcSma()) << "SunnyWebBox: Send message to" << address.toString() << "Procedure:" << procedure << "Params:" << params;
     QString requestId = QUuid::createUuid().toString().remove('{').remove('-').left(14);
 
     QJsonDocument doc;
@@ -252,23 +269,28 @@ QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &pro
     connect(reply, &QNetworkReply::finished, reply, &QNetworkReply::deleteLater);
     connect(reply, &QNetworkReply::finished, this, [this, address, requestId, reply]{
 
-        //int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (reply->error() != QNetworkReply::NoError) {
+            setConnectionStatus(false);
+            return;
+        }
+        setConnectionStatus(true);
+
         QByteArray data = reply->readAll();
-        qCDebug(dcSma()) << "Received reply" << data;
+        qCDebug(dcSma()) << "SunnyWebBox: Received reply" << data;
 
         QJsonParseError error;
         QJsonDocument doc = QJsonDocument::fromJson(data, &error);
         if (error.error != QJsonParseError::NoError) {
-            qCWarning(dcSma()) << "Could not parse JSON" << error.errorString();
+            qCWarning(dcSma()) << "SunnyWebBox: Could not parse JSON" << error.errorString();
             return;
         }
         if (!doc.isObject()) {
-            qCWarning(dcSma()) << "JSON is not an Object";
+            qCWarning(dcSma()) << "SunnyWebBox: JSON is not an Object";
             return;
         }
         QVariantMap map = doc.toVariant().toMap();
         if (map["version"] != "1.0") {
-            qCWarning(dcSma()) << "API version not supported" << map["version"];
+            qCWarning(dcSma()) << "SunnyWebBox: API version not supported" << map["version"];
             return;
         }
 
@@ -278,7 +300,7 @@ QString SunnyWebBox::sendMessage(const QHostAddress &address, const QString &pro
             QVariantMap result = map.value("result").toMap();
             parseMessage(requestId, requestType, result);
         } else {
-            qCWarning(dcSma()) << "Missing proc or result value";
+            qCWarning(dcSma()) << "SunnyWebBox: Missing proc or result value";
         }
     });
     return requestId;

@@ -139,6 +139,7 @@ void IntegrationPluginSma::postSetupThing(Thing *thing)
         if (!sunnyWebBox)
             return;
         sunnyWebBox->getDevices();
+        thing->setStateValue(sunnyWebBoxConnectedStateTypeId, true);
     } else if (thing->thingClassId() == inverterThingClassId) {
 
     }
@@ -190,6 +191,7 @@ void IntegrationPluginSma::onRefreshTimer()
 
 void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview)
 {
+    qCDebug(dcSma()) << "Plant overview received" << overview.status;
     if (m_asyncSetup.contains(messageId)) {
         ThingSetupInfo *info = m_asyncSetup.value(messageId);
         info->finish(Thing::ThingErrorNoError);
@@ -199,7 +201,6 @@ void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, Sun
     if (!thing)
         return;
 
-    qCDebug(dcSma()) << "Plant overview received" << overview.status;
     thing->setStateValue(sunnyWebBoxConnectedStateTypeId, true);
     thing->setStateValue(sunnyWebBoxCurrentPowerStateTypeId, overview.power);
     thing->setStateValue(sunnyWebBoxDayEnergyStateTypeId, overview.dailyYield);
@@ -213,6 +214,7 @@ void IntegrationPluginSma::onPlantOverviewReceived(const QString &messageId, Sun
 
 void IntegrationPluginSma::onDevicesReceived(const QString &messageId, QList<SunnyWebBox::Device> devices)
 {
+    qCDebug(dcSma()) << "Devices received, count:" << devices.count();
     if (m_asyncActions.contains(messageId)) {
         ThingActionInfo *info = m_asyncActions.value(messageId);
         info->finish(Thing::ThingErrorNoError);
@@ -224,7 +226,7 @@ void IntegrationPluginSma::onDevicesReceived(const QString &messageId, QList<Sun
 
     ThingDescriptors descriptors;
     Q_FOREACH(SunnyWebBox::Device device, devices){
-        qCDebug(dcSma()) << "Device received" << device.name << device.key;
+        qCDebug(dcSma()) << "   - Device received" << device.name << device.key;
         ThingDescriptor descriptor(inverterThingClassId, device.name, device.key ,thing->id());
         descriptors.append(descriptor);
     }
