@@ -59,8 +59,10 @@ public:
 private slots:
     void onRefreshTimer();
 
+    void onConnectedChanged(bool connected);
     void onPlantOverviewReceived(const QString &messageId, SunnyWebBox::Overview overview);
     void onDevicesReceived(const QString &messageId, QList<SunnyWebBox::Device> devices);
+    void onParametersReceived(const QString &messageId, const QString &deviceKey, const QList<SunnyWebBox::Parameter> &parameters);
     void onProcessDataReceived(const QString &messageId, const QString &deviceKey, const QHash<QString, QVariant> &channels);
     void onParameterChannelsReceived(const QString &messageId, const QString &deviceKey, QStringList parameterChannels);
 
@@ -71,7 +73,6 @@ private:
     QHash<QString, ThingActionInfo *> m_asyncActions;
     SunnyWebBoxCommunication *m_sunnyWebBoxCommunication = nullptr;
 
-    void setupChild(ThingSetupInfo *info, Thing *parentThing);
     void getData(Thing *thing);
 };
 

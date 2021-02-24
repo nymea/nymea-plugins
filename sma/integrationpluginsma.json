@@ -105,8 +105,7 @@
                             "name": "id",
                             "displayName": "Device ID",
                             "type": "QString",
-                            "inputType": "TextLine",
-                             "readOnly": true
+                            "readOnly": true
                         }
                     ],
                     "stateTypes": [
